@@ -35,7 +35,7 @@ public abstract class AbstractVerificationCommand extends org.workcraft.commands
 
     private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!checkPrerequisites(we)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
         TaskManager manager = Framework.getInstance().getTaskManager();

@@ -49,7 +49,7 @@ public class OutputDeterminacyVerificationCommand extends org.workcraft.commands
 
     private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!isApplicableTo(we)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
         OutputDeterminacyTask task = new OutputDeterminacyTask(we);

@@ -57,12 +57,12 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
 
     private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {
         if (!isApplicableTo(we)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (!MpsatUtils.mutexStructuralCheck(stg, false)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
         Framework framework = Framework.getInstance();

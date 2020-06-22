@@ -178,18 +178,18 @@ public class PetriSimulationTool extends SimulationTool {
         return "Click on a highlighted transition to fire it.";
     }
 
-    protected void coloriseTokens(Transition transition) {
+    public void coloriseTokens(Transition transition) {
         VisualPetri model = (VisualPetri) getUnderlyingModel();
         VisualTransition vt = model.getVisualTransition(transition);
         if (vt == null) return;
-        Color tokenColor = Color.black;
+        Color tokenColor = Color.BLACK;
         ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
         if (tokenColorGenerator != null) {
             // generate token colour
             tokenColor = tokenColorGenerator.updateColor();
         } else {
             // combine preset token colours
-            for (Connection c: model.getConnections(vt)) {
+            for (Connection c : model.getConnections(vt)) {
                 if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
                     VisualConnection vc = (VisualConnection) c;
                     if (vc.isTokenColorPropagator() && (vc.getFirst() instanceof VisualPlace)) {
@@ -200,11 +200,11 @@ public class PetriSimulationTool extends SimulationTool {
             }
         }
         // propagate the colour to postset tokens
-        for (Connection c: model.getConnections(vt)) {
+        for (Connection c : model.getConnections(vt)) {
             if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
                 VisualConnection vc = (VisualConnection) c;
                 if (vc.isTokenColorPropagator() && (vc.getSecond() instanceof VisualPlace)) {
-                    VisualPlace vp = (VisualPlace) vc.getFirst();
+                    VisualPlace vp = (VisualPlace) vc.getSecond();
                     vp.setTokenColor(tokenColor);
                 }
             }

@@ -71,7 +71,7 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
 
     private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {
         if (!checkPrerequisites(we)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
             return;
         }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);

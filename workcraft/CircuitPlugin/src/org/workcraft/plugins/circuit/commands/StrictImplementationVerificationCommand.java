@@ -61,7 +61,7 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
 
     private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
         if (!checkPrerequisites(we)) {
-            monitor.isFinished(Result.failure());
+            monitor.isFinished(Result.cancel());
         } else {
             Framework framework = Framework.getInstance();
             TaskManager manager = framework.getTaskManager();

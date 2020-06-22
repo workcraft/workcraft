@@ -3,6 +3,7 @@ package org.workcraft.serialisation;
 import org.w3c.dom.Element;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.types.GeneralTwoWayMap;
 import org.workcraft.types.ListMap;
 import org.workcraft.types.TwoWayMap;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 class XMLDeserialiserState implements References {
+
     private final ReferenceResolver externalReferences;
     private final GeneralTwoWayMap<String, Object> internalReferenceMap = new TwoWayMap<>();
     public HashMap<Object, Element> instanceElements = new HashMap<>();
@@ -37,27 +39,27 @@ class XMLDeserialiserState implements References {
         return children.get(parent);
     }
 
-    public void setInstanceElement(Object instance, Element element) {
-        instanceElements.put(instance, element);
+    public void setInstanceElement(Object object, Element element) {
+        instanceElements.put(object, element);
     }
 
-    public Element getInstanceElement(Object instance) {
-        return instanceElements.get(instance);
+    public Element getInstanceElement(Object object) {
+        return instanceElements.get(object);
     }
 
-    public void setObject(String reference, Object obj) {
-        internalReferenceMap.put(reference, obj);
+    public void setObject(String reference, Object object) {
+        internalReferenceMap.put(NamespaceHelper.convertLegacyHierarchySeparators(reference), object);
     }
 
     @Override
     public Object getObject(String reference) {
         if (reference.isEmpty()) return null;
-        return internalReferenceMap.getValue(reference);
+        return internalReferenceMap.getValue(NamespaceHelper.convertLegacyHierarchySeparators(reference));
     }
 
     @Override
-    public String getReference(Object obj) {
-        return internalReferenceMap.getKey(obj);
+    public String getReference(Object object) {
+        return internalReferenceMap.getKey(object);
     }
 
     @Override

@@ -183,10 +183,10 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
         for (Node node : vnet.getNodes()) {
             if (node instanceof VisualQueueComponent) {
                 vqc = (VisualQueueComponent) node;
-                vqc.setForegroundColor(Color.black);
+                vqc.setForegroundColor(Color.BLACK);
             } else if (node instanceof VisualSyncComponent) {
                 vsc = (VisualSyncComponent) node;
-                vsc.setForegroundColor(Color.black);
+                vsc.setForegroundColor(Color.BLACK);
             }
         }
     }
@@ -210,7 +210,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                         rstr = xnet.getName(qc);
                         rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if (rstr.equals(st)) {
-                            vqc.setForegroundColor(Color.red);
+                            vqc.setForegroundColor(Color.RED);
                         }
                     } else if (node instanceof VisualSyncComponent) {
                         vsc = (VisualSyncComponent) node;
@@ -220,7 +220,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                         rstr = xnet.getName(sc);
                         rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if (rstr.equals(st)) {
-                            vsc.setForegroundColor(Color.red);
+                            vsc.setForegroundColor(Color.RED);
                         }
                     }
                 }
@@ -253,7 +253,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                             rstr = xnet.getName(qc);
                             rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if (rstr.equals(str) && typ == 0) {
-                                vqc.setForegroundColor(Color.pink);
+                                vqc.setForegroundColor(Color.PINK);
                             }
                         } else if (node instanceof VisualSyncComponent) {
                             vsc = (VisualSyncComponent) node;
@@ -263,7 +263,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                             rstr = xnet.getName(sc);
                             rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if (rstr.equals(str) && typ == 0) {
-                                vsc.setForegroundColor(Color.pink);
+                                vsc.setForegroundColor(Color.PINK);
                             }
                         }
                     }
@@ -282,7 +282,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                             rstr = xnet.getName(qc);
                             rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if (rstr.equals(str) && (typ == 1)) {
-                                vqc.setForegroundColor(Color.red);
+                                vqc.setForegroundColor(Color.RED);
                             }
                         } else if (node instanceof VisualSyncComponent) {
                             vsc = (VisualSyncComponent) node;
@@ -291,7 +291,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                             rstr = xnet.getName(sc);
                             rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                             if (rstr.equals(str) && (typ == 1)) {
-                                vsc.setForegroundColor(Color.red);
+                                vsc.setForegroundColor(Color.RED);
                             }
                         }
                     }
@@ -318,7 +318,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                         rstr = xnet.getName(qc);
                         rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if (rstr.equals(ql.name)) {
-                            vqc.setForegroundColor(Color.green);
+                            vqc.setForegroundColor(Color.GREEN);
                         }
                     } else if (node instanceof VisualSyncComponent) {
                         vsc = (VisualSyncComponent) node;
@@ -327,7 +327,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                         rstr = xnet.getName(sc);
                         rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
                         if (rstr.equals(ql.name)) {
-                            vsc.setForegroundColor(Color.green);
+                            vsc.setForegroundColor(Color.GREEN);
                         }
                     }
                 }

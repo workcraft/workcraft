@@ -341,7 +341,7 @@ public class TransformationCommandTests {
         Assertions.assertEquals(1, stg.getVisualDummyTransitions().size());
 
         DummyToSignalTransitionTransformationCommand dummyToSignalTransitionCommand = new DummyToSignalTransitionTransformationCommand();
-        VisualDummyTransition dummy = stg.getVisualComponentByMathReference("dum0", VisualDummyTransition.class);
+        VisualDummyTransition dummy = stg.getVisualComponentByMathReference("dum", VisualDummyTransition.class);
         Assertions.assertNotNull(dummy);
         stg.select(dummy);
         dummyToSignalTransitionCommand.execute(we);

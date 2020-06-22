@@ -170,7 +170,7 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         final Throwable genericCause = synthResult.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
-            errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
+            errorMessage += ERROR_CAUSE_PREFIX + genericCause.getMessage();
         } else {
             final SynthesisOutput synthOutput = synthResult.getPayload();
             if (synthOutput != null) {

@@ -167,7 +167,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         final Throwable genericCause = chainResult.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
-            errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
+            errorMessage += ERROR_CAUSE_PREFIX + genericCause.getMessage();
         } else {
             final SynthesisChainOutput chainOutput = chainResult.getPayload();
             final Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
@@ -177,13 +177,13 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 final Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
+                    errorMessage += ERROR_CAUSE_PREFIX + exportCause.getMessage();
                 }
             } else if ((punfResult != null) && (punfResult.isFailure())) {
                 errorMessage += "\n\nPunf could not build the unfolding prefix.";
                 final Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + punfCause.toString();
+                    errorMessage += ERROR_CAUSE_PREFIX + punfCause.getMessage();
                 } else {
                     final PunfOutput punfOutput = punfResult.getPayload();
                     if (punfOutput != null) {
@@ -195,7 +195,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
                 errorMessage += "\n\nMPSat did not execute as expected.";
                 final Throwable mpsatCause = mpsatResult.getCause();
                 if (mpsatCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.toString();
+                    errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.getMessage();
                 } else {
                     final MpsatOutput mpsatOutput = mpsatResult.getPayload();
                     if (mpsatOutput != null) {

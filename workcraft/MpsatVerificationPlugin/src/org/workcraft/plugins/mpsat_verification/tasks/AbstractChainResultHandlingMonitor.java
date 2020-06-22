@@ -119,7 +119,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
         Throwable genericCause = chainResult.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
-            errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
+            errorMessage += ERROR_CAUSE_PREFIX + genericCause.getMessage();
         } else {
             T chainOutput = chainResult.getPayload();
             Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
@@ -130,13 +130,13 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
+                    errorMessage += ERROR_CAUSE_PREFIX + exportCause.getMessage();
                 }
             } else if ((pcompResult != null) && (pcompResult.isFailure())) {
                 errorMessage += "\n\nPcomp could not compose models.";
                 Throwable pcompCause = pcompResult.getCause();
                 if (pcompCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + pcompCause.toString();
+                    errorMessage += ERROR_CAUSE_PREFIX + pcompCause.getMessage();
                 } else {
                     PcompOutput pcompOutput = pcompResult.getPayload();
                     if (pcompOutput != null) {
@@ -148,7 +148,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
                 errorMessage += "\n\nPunf could not build the unfolding prefix.";
                 Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + punfCause.toString();
+                    errorMessage += ERROR_CAUSE_PREFIX + punfCause.getMessage();
                 } else {
                     PunfOutput punfOutput = punfResult.getPayload();
                     if (punfOutput != null) {
@@ -160,7 +160,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
                 errorMessage += "\n\nMPSat did not execute as expected.";
                 Throwable mpsatCause = mpsatResult.getCause();
                 if (mpsatCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.toString();
+                    errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.getMessage();
                 } else {
                     MpsatOutput mpsatOutput = mpsatResult.getPayload();
                     if (mpsatOutput != null) {
