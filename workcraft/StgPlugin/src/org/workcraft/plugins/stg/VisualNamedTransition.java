@@ -24,10 +24,6 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
         namedTransition.addObserver(this);
     }
 
-    public Point2D getRenderedTextOffset() {
-        return new Point2D.Double(0.0, 0.0);
-    }
-
     @Override
     public boolean getLabelVisibility() {
         return false;

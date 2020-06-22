@@ -4,10 +4,11 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.stg.references.StgNameManager;
 import org.workcraft.serialisation.NoAutoSerialisation;
 
 @DisplayName("Dummy transition")
-@IdentifierPrefix("dum")
+@IdentifierPrefix(StgNameManager.DUMMY_PREFIX)
 @VisualClass(VisualDummyTransition.class)
 public class DummyTransition extends NamedTransition {
     public static final String PROPERTY_NAME = "Name";

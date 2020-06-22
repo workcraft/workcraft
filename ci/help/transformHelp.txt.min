@@ -34,6 +34,9 @@ transformStgExpandHandshakeReqAck(work) - transform the STG 'work' by expanding 
 transformStgExplicitPlace(work) - transform the STG 'work' by making selected (or all) places explicit
 transformStgImplicitPlace(work) - transform the STG 'work' by making selected (or all) places implicit
 transformStgInsertDummy(work) - transform the STG 'work' by inserting dummies into selected arcs
+transformStgInsertInputTransition(work) - transform the STG 'work' by inserting input transitions into selected arcs
+transformStgInsertInternalTransition(work) - transform the STG 'work' by inserting internal transitions into selected arcs
+transformStgInsertOutputTransition(work) - transform the STG 'work' by inserting output transitions into selected arcs
 transformStgMergeTransition(work) - transform the STG 'work' by merging selected transitions
 transformStgMirrorSignal(work) - transform the STG 'work' by mirroring selected (or all) signals
 transformStgMirrorTransition(work) - transform the STG 'work' by mirroring selected (or all) transition sign

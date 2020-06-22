@@ -13,6 +13,11 @@ import org.workcraft.types.Triple;
 
 public class StgNameManager extends DefaultNameManager {
 
+    public static final String INPUT_SIGNAL_PREFIX = "in";
+    public static final String OUTPUT_SIGNAL_PREFIX = "out";
+    public static final String INTERNAL_SIGNAL_PREFIX = "sig";
+    public static final String DUMMY_PREFIX = "dum";
+
     private final InstanceManager instancedNameManager = new InstanceManager();
     private final ListMap<String, SignalTransition> signalTransitions = new ListMap<>();
     private final ListMap<String, DummyTransition> dummyTransitions = new ListMap<>();
@@ -21,9 +26,9 @@ public class StgNameManager extends DefaultNameManager {
     public String getPrefix(Node node) {
         if (node instanceof SignalTransition) {
             switch (((SignalTransition) node).getSignalType()) {
-            case INPUT: return "in";
-            case OUTPUT: return "out";
-            case INTERNAL: return "sig";
+            case INPUT: return INPUT_SIGNAL_PREFIX;
+            case OUTPUT: return OUTPUT_SIGNAL_PREFIX;
+            case INTERNAL: return INTERNAL_SIGNAL_PREFIX;
             }
         }
         return super.getPrefix(node);

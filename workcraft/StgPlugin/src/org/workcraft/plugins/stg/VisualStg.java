@@ -324,10 +324,7 @@ public class VisualStg extends AbstractVisualModel {
             throw new RuntimeException("Cannot create a transition of a signal with the hierarchical name '" + signalName + "'.");
         }
 
-        String transitionName = null;
-        if ((signalName != null) && (direction != null)) {
-            transitionName = signalName + direction.toString();
-        }
+        String transitionName = (signalName == null) || (direction == null) ? null : signalName + direction.toString();
         Container mathContainer = NamespaceHelper.getMathContainer(this, container);
         SignalTransition mathTransition = getMathModel().createSignalTransition(transitionName, mathContainer);
         mathTransition.setSignalType(type);
