@@ -27,6 +27,12 @@ public class NamespaceHelper {
     private static final int HEAD_GROUP = 1;
     private static final int TAIL_GROUP = 4;
 
+    public static String convertLegacyHierarchySeparators(String ref) {
+        // Use negative lookahead (?![0-9]) to make sure that hierarchy separator is not followed by a number.
+        // This is because "/[0-9]" is used in in STG for transition instances.
+        return ref.replaceAll("/(?![0-9])", HIERARCHY_SEPARATOR);
+    }
+
     public static String getHierarchySeparator() {
         return HIERARCHY_SEPARATOR;
     }
