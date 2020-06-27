@@ -467,14 +467,13 @@ public class MainWindow extends JFrame {
     }
 
     public void shutdown() throws OperationCancelledException {
-        try {
-            closeEditorWindows();
-        } catch (ClassCastException e) {
-            // FIXME: Flexdock may throw ClassCast exception when closing Workcraft.
+        closeEditorWindows();
+        if (!weWindowsMap.isEmpty()) {
+            throw new OperationCancelledException("Operation cancelled by user.");
         }
 
-        final Framework framework = Framework.getInstance();
-        if (framework.getWorkspace().isChanged() && !framework.getWorkspace().isTemporary()) {
+        Workspace workspace = Framework.getInstance().getWorkspace();
+        if (workspace.isChanged() && !workspace.isTemporary()) {
             int result = JOptionPane.showConfirmDialog(this,
                     "!Current workspace has unsaved changes.\n" + "Save before closing?",
                     "Close work", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -979,7 +978,11 @@ public class MainWindow extends JFrame {
             }
         }
         for (DockableWindow window: windowsToClose) {
-            closeDockableWindow(window);
+            try {
+                closeDockableWindow(window);
+            } catch (ClassCastException e) {
+                // FIXME: Flexdock may throw ClassCast exception when closing Workcraft.
+            }
         }
     }
 
