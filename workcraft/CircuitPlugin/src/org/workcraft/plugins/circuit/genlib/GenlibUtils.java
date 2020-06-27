@@ -8,12 +8,10 @@ import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
-import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.utils.ExpressionUtils;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.ExpressionUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
 
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class GenlibUtils {
 
-    public static FunctionComponent instantiateGate(final Gate gate, final String instanceName, final Circuit circuit) {
+    public static FunctionComponent instantiateGate(Gate gate, String instanceName, Circuit circuit) {
         final FunctionComponent component = new FunctionComponent();
         component.setModule(gate.name);
         circuit.add(component);
@@ -56,6 +54,22 @@ public class GenlibUtils {
             throw new RuntimeException(e);
         }
         return component;
+    }
+
+    public static void convertToGate(VisualCircuit circuit, VisualFunctionComponent component, Gate gate) {
+        component.getReferencedComponent().setModule(gate.name);
+        VisualFunctionContact contact = component.getGateOutput();
+        circuit.setMathName(contact, gate.function.name);
+        String setFunction = GenlibUtils.getSetFunction(gate);
+        String resetFunction = GenlibUtils.getResetFunction(gate);
+        try {
+            BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setFunction);
+            contact.setSetFunction(setFormula);
+            BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, resetFunction);
+            contact.setResetFunction(resetFormula);
+        } catch (org.workcraft.formula.jj.ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static String getSetFunction(Gate gate) {
