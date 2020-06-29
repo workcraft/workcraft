@@ -24,14 +24,14 @@ public class BatikUtils {
     public static void transcode(VisualModel model, OutputStream out)
             throws SerialisationException {
 
-        BatikUtils.generateSvgGraphics(model, out);
+        generateSvgGraphics(model, out);
     }
 
     public static void transcode(VisualModel model, OutputStream out, Transcoder transcoder)
             throws SerialisationException {
 
         ByteArrayOutputStream bufOut = new ByteArrayOutputStream();
-        BatikUtils.generateSvgGraphics(model, bufOut);
+        generateSvgGraphics(model, bufOut);
         ByteArrayInputStream bufIn = new ByteArrayInputStream(bufOut.toByteArray());
         TranscoderInput transcoderInput = new TranscoderInput(bufIn);
         TranscoderOutput transcoderOutput = new TranscoderOutput(out);
