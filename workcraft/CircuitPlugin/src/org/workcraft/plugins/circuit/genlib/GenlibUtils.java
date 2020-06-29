@@ -56,12 +56,15 @@ public class GenlibUtils {
         return component;
     }
 
-    public static void convertToGate(VisualCircuit circuit, VisualFunctionComponent component, Gate gate) {
+    public static void instantiateGate(Gate gate, VisualCircuit circuit, VisualFunctionComponent component) {
         component.getReferencedComponent().setModule(gate.name);
         VisualFunctionContact contact = component.getGateOutput();
+        if (contact == null) {
+            contact = component.createContact(IOType.OUTPUT);
+        }
         circuit.setMathName(contact, gate.function.name);
-        String setFunction = GenlibUtils.getSetFunction(gate);
-        String resetFunction = GenlibUtils.getResetFunction(gate);
+        String setFunction = getSetFunction(gate);
+        String resetFunction = getResetFunction(gate);
         try {
             BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setFunction);
             contact.setSetFunction(setFormula);

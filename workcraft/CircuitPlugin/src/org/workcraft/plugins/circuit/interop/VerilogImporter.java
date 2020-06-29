@@ -25,7 +25,6 @@ import org.workcraft.plugins.circuit.utils.*;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
@@ -739,28 +738,22 @@ public class VerilogImporter implements Importer {
         FunctionContact g1Contact = addMutexPin(circuit, component, module.g1, instance.g1, wires);
         addMutexPin(circuit, component, module.r2, instance.r2, wires);
         FunctionContact g2Contact = addMutexPin(circuit, component, module.g2, instance.g2, wires);
-        try {
-            setMutexFunctions(circuit, component, g1Contact, module.r1.name, module.r2.name, module.g2.name);
-            setMutexFunctions(circuit, component, g2Contact, module.r2.name, module.r1.name, module.g1.name);
-        } catch (org.workcraft.formula.jj.ParseException e) {
-            throw new RuntimeException(e);
-        }
+
+        String r1Name = module.r1.name;
+        String g1Name = module.g1.name;
+        String r2Name = module.r2.name;
+        String g2Name = module.g2.name;
+        String g1Set = MutexUtils.getGrantSet(r1Name, g2Name, r2Name);
+        String g1Reset = MutexUtils.getGrantReset(r1Name);
+        String g2Set = MutexUtils.getGrantSet(r2Name, g1Name, r1Name);
+        String g2Reset = MutexUtils.getGrantReset(r2Name);
+
+        MutexUtils.setMutexFunctions(circuit, component, g1Contact, g1Set, g1Reset);
+        MutexUtils.setMutexFunctions(circuit, component, g2Contact, g2Set, g2Reset);
+
         setMutexGrant(circuit, instance.g1, wires);
         setMutexGrant(circuit, instance.g2, wires);
         return component;
-    }
-
-    private void setMutexFunctions(Circuit circuit, final FunctionComponent component, FunctionContact grantContact,
-            String reqPinName, String otherReqPinName, String otherGrantPinName) throws org.workcraft.formula.jj.ParseException {
-        String setString = reqPinName + " * " + otherGrantPinName + "'";
-        if (StgSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
-            setString += " + " + reqPinName + " * " + otherReqPinName + "'";
-        }
-        BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setString);
-        grantContact.setSetFunctionQuiet(setFormula);
-        String resetString = reqPinName + "'";
-        BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, resetString);
-        grantContact.setResetFunctionQuiet(resetFormula);
     }
 
     private void setMutexGrant(Circuit circuit, Signal signal, HashMap<String, Wire> wires) {
@@ -783,8 +776,9 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private FunctionContact addMutexPin(Circuit circuit, FunctionComponent component, Signal port, Signal signal,
-            HashMap<String, Wire> wires) {
+    private FunctionContact addMutexPin(Circuit circuit, FunctionComponent component, Signal port,
+            Signal signal, HashMap<String, Wire> wires) {
+
         FunctionContact contact = new FunctionContact();
         if (port.type == Signal.Type.INPUT) {
             contact.setIOType(IOType.INPUT);

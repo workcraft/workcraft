@@ -50,7 +50,7 @@ public class VisualCircuit extends AbstractVisualModel {
         setGraphEditorTools();
     }
 
-    private void setGraphEditorTools() {
+    public void setGraphEditorTools() {
         List<GraphEditorTool> tools = new ArrayList<>();
         tools.add(new CircuitSelectionTool());
         tools.add(new CommentGeneratorTool());

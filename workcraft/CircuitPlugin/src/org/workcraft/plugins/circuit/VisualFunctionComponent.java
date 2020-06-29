@@ -120,6 +120,13 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         return Hierarchy.filterNodesByType(getChildren(), VisualFunctionContact.class);
     }
 
+    @Override
+    public VisualFunctionContact createContact(Contact.IOType ioType) {
+        VisualFunctionContact vc = new VisualFunctionContact(new FunctionContact(ioType));
+        addContact(vc);
+        return vc;
+    }
+
     public VisualFunctionContact getVisualContact(Contact contact) {
         for (Node node: getChildren()) {
             if (!(node instanceof VisualFunctionContact)) continue;
@@ -484,6 +491,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         super.copyStyle(src);
         if (src instanceof VisualFunctionComponent) {
             VisualFunctionComponent srcComponent = (VisualFunctionComponent) src;
+            setRenderType(srcComponent.getRenderType());
             setIsZeroDelay(srcComponent.getIsZeroDelay());
         }
     }
