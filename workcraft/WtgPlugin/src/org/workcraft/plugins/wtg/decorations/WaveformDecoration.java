@@ -5,7 +5,9 @@ import org.workcraft.gui.tools.Decoration;
 public interface WaveformDecoration extends Decoration {
     boolean isActive();
 
-    class Active extends Empty implements WaveformDecoration {
+    class Active implements WaveformDecoration {
+        private Active() {
+        }
         @Override
         public boolean isActive() {
             return true;
@@ -13,7 +15,9 @@ public interface WaveformDecoration extends Decoration {
         public static final Active INSTANCE = new Active();
     }
 
-    class Inactive extends Empty implements WaveformDecoration {
+    class Inactive implements WaveformDecoration {
+        private Inactive() {
+        }
         @Override
         public boolean isActive() {
             return false;
