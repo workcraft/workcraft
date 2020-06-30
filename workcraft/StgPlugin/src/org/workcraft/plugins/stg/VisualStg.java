@@ -13,7 +13,6 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.CommentGeneratorTool;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
@@ -22,7 +21,10 @@ import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 @DisplayName("Signal Transition Graph")
 public class VisualStg extends AbstractVisualModel {
@@ -33,7 +35,6 @@ public class VisualStg extends AbstractVisualModel {
 
     public VisualStg(Stg model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
     }
 
     @Override
@@ -53,18 +54,17 @@ public class VisualStg extends AbstractVisualModel {
         }
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new StgSelectionTool());
-        tools.add(new CommentGeneratorTool());
-        tools.add(new StgConnectionTool());
-        tools.add(new ReadArcConnectionTool());
-        tools.add(new PlaceGeneratorTool());
-        tools.add(new SignalTransitionGeneratorTool());
-        tools.add(new DummyTransitionGeneratorTool());
-        tools.add(new StgSimulationTool());
-        tools.add(new EncodingConflictAnalyserTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new StgSelectionTool());
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new StgConnectionTool());
+        addGraphEditorTool(new ReadArcConnectionTool());
+        addGraphEditorTool(new PlaceGeneratorTool());
+        addGraphEditorTool(new SignalTransitionGeneratorTool());
+        addGraphEditorTool(new DummyTransitionGeneratorTool());
+        addGraphEditorTool(new StgSimulationTool());
+        addGraphEditorTool(new EncodingConflictAnalyserTool());
     }
 
     @Override

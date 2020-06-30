@@ -2,6 +2,7 @@ package org.workcraft.plugins.dfs;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
+import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -10,13 +11,17 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.dom.generators.DefaultNodeGenerator;
-import org.workcraft.gui.tools.*;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.ConnectionTool;
+import org.workcraft.gui.tools.NodeGeneratorTool;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.dfs.tools.CycleAnalyserTool;
 import org.workcraft.plugins.dfs.tools.DfsSimulationTool;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @DisplayName("Dataflow Structure")
 @ShortName("DFS")
@@ -28,24 +33,22 @@ public class VisualDfs extends AbstractVisualModel {
 
     public VisualDfs(Dfs model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new SelectionTool(true, false, true, true));
-        tools.add(new CommentGeneratorTool());
-        tools.add(new ConnectionTool());
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Logic.class)));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Register.class)));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(ControlRegister.class)));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(PushRegister.class)));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(PopRegister.class)));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(CounterflowLogic.class)));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(CounterflowRegister.class)));
-        tools.add(new CycleAnalyserTool());
-        tools.add(new DfsSimulationTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new SelectionTool(true, false, true, true));
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new ConnectionTool());
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Logic.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Register.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(ControlRegister.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(PushRegister.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(PopRegister.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(CounterflowLogic.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(CounterflowRegister.class)));
+        addGraphEditorTool(new CycleAnalyserTool());
+        addGraphEditorTool(new DfsSimulationTool());
     }
 
     @Override

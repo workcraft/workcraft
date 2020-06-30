@@ -11,7 +11,6 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.ConnectionTool;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.tools.PlaceGeneratorTool;
 import org.workcraft.plugins.policy.observers.SpanningTreeInvalidator;
@@ -26,7 +25,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 @DisplayName ("Policy Net")
 @ShortName("policy")
@@ -42,19 +40,17 @@ public class VisualPolicy extends VisualPetri {
 
     public VisualPolicy(Policy model, VisualGroup root) {
         super(model, root == null ? new VisualLocality((Locality) model.getRoot()) : root);
-        setGraphEditorTools();
         new SpanningTreeInvalidator(this).attach(getRoot());
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new PolicySelectionTool());
-        tools.add(new CommentGeneratorTool());
-        tools.add(new ConnectionTool());
-        tools.add(new PlaceGeneratorTool());
-        tools.add(new BundledTransitionGeneratorTool());
-        tools.add(new PolicySimulationTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new PolicySelectionTool());
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new ConnectionTool());
+        addGraphEditorTool(new PlaceGeneratorTool());
+        addGraphEditorTool(new BundledTransitionGeneratorTool());
+        addGraphEditorTool(new PolicySimulationTool());
     }
 
     @Override

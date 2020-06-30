@@ -10,12 +10,15 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.gui.tools.*;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.ConnectionTool;
+import org.workcraft.gui.tools.NodeGeneratorTool;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.fsm.*;
 import org.workcraft.plugins.fst.tools.FstSimulationTool;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.*;
+import java.util.Collection;
 
 @DisplayName("Finite State Transducer")
 public class VisualFst extends VisualFsm {
@@ -26,17 +29,15 @@ public class VisualFst extends VisualFsm {
 
     public VisualFst(Fst model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new SelectionTool(true, false, true, true));
-        tools.add(new CommentGeneratorTool());
-        tools.add(new ConnectionTool(false, true, true));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
-        tools.add(new FstSimulationTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new SelectionTool(true, false, true, true));
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new ConnectionTool(false, true, true));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
+        addGraphEditorTool(new FstSimulationTool());
     }
 
     @Override

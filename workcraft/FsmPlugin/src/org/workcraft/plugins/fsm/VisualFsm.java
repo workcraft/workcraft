@@ -11,13 +11,19 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.gui.tools.*;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.ConnectionTool;
+import org.workcraft.gui.tools.NodeGeneratorTool;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.SortUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 @DisplayName("Finite State Machine")
 public class VisualFsm extends AbstractVisualModel {
@@ -28,18 +34,16 @@ public class VisualFsm extends AbstractVisualModel {
 
     public VisualFsm(Fsm model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
         new FirstStateSupervisor().attach(getRoot());
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new SelectionTool(true, false, true, true));
-        tools.add(new CommentGeneratorTool());
-        tools.add(new ConnectionTool(false, true, true));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
-        tools.add(new FsmSimulationTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new SelectionTool(true, false, true, true));
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new ConnectionTool(false, true, true));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
+        addGraphEditorTool(new FsmSimulationTool());
     }
 
     @Override

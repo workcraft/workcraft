@@ -13,7 +13,10 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.tools.*;
+import org.workcraft.gui.tools.CommentGeneratorTool;
+import org.workcraft.gui.tools.ConnectionTool;
+import org.workcraft.gui.tools.NodeGeneratorTool;
+import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.graph.tools.GraphSimulationTool;
 
@@ -32,17 +35,15 @@ public class VisualGraph extends AbstractVisualModel {
 
     public VisualGraph(Graph model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new SelectionTool(true, false, true, true));
-        tools.add(new CommentGeneratorTool());
-        tools.add(new ConnectionTool(false, true, true));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
-        tools.add(new GraphSimulationTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new SelectionTool(true, false, true, true));
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new ConnectionTool(false, true, true));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
+        addGraphEditorTool(new GraphSimulationTool());
     }
 
     @Override

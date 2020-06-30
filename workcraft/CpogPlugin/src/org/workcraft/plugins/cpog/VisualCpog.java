@@ -17,16 +17,13 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.ConnectionTool;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.cpog.observers.VariableConsistencySupervisor;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @DisplayName("Conditional Partial Order Graph")
 public class VisualCpog extends AbstractVisualModel {
@@ -37,19 +34,17 @@ public class VisualCpog extends AbstractVisualModel {
 
     public VisualCpog(Cpog model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
         new VariableConsistencySupervisor(this).attach(getRoot());
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new CpogSelectionTool());
-        tools.add(new CommentGeneratorTool());
-        tools.add(new ConnectionTool(false, true, true));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Variable.class)));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(RhoClause.class)));
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new CpogSelectionTool());
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new ConnectionTool(false, true, true));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Variable.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(RhoClause.class)));
     }
 
     @Override

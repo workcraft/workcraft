@@ -103,9 +103,9 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
         private final VisualCircuit circuit = new VisualCircuit(new Circuit()) {
             @Override
-            public void setGraphEditorTools() {
-                // Prevent creation of GraphEditorTools because it leads to a loop
-                // between VisualCircuit and FunctionComponentGeneratorTool classes.
+            public void registerGraphEditorTools() {
+                // Prevent creation registration of GraphEditorTools because it leads to a
+                // loop between VisualCircuit and FunctionComponentGeneratorTool classes.
             }
         };
 
@@ -281,6 +281,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
         Instantiator instantiator = (circuit, component) -> {
             component.getReferencedComponent().setModule(module.name);
+            component.setRenderType(ComponentRenderingResult.RenderType.BOX);
 
             VisualFunctionContact r1Contact = component.createContact(IOType.INPUT);
             circuit.setMathName(r1Contact, r1Name);
