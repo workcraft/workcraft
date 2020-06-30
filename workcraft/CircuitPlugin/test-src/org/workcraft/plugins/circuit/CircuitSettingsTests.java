@@ -50,6 +50,12 @@ public class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getGateLibrary()),
                 framework.getConfigVar(prefix + ".gateLibrary", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getWaitData()),
+                framework.getConfigVar(prefix + ".waitData", false));
+
+        Assertions.assertEquals(Config.toString(CircuitSettings.getMutexData()),
+                framework.getConfigVar(prefix + ".mutexData", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getExportSubstitutionLibrary()),
                 framework.getConfigVar(prefix + ".exportSubstitutionLibrary", false));
 
@@ -61,9 +67,6 @@ public class CircuitSettingsTests {
 
         Assertions.assertEquals(Config.toString(CircuitSettings.getInvertImportSubstitutionRules()),
                 framework.getConfigVar(prefix + ".invertImportSubstitutionRules", false));
-
-        Assertions.assertEquals(Config.toString(CircuitSettings.getMutexData()),
-                framework.getConfigVar(prefix + ".mutexData", false));
 
         Assertions.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));

@@ -46,7 +46,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         addPropertyDeclaration(new PropertyDeclaration<>(RenderType.class,
                 PROPERTY_RENDER_TYPE,
                 this::setRenderType, this::getRenderType)
-                .setCombinable().setTemplatable());
+                .setCombinable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 FunctionComponent.PROPERTY_IS_ZERO_DELAY,
@@ -491,7 +491,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         super.copyStyle(src);
         if (src instanceof VisualFunctionComponent) {
             VisualFunctionComponent srcComponent = (VisualFunctionComponent) src;
-            setRenderType(srcComponent.getRenderType());
             setIsZeroDelay(srcComponent.getIsZeroDelay());
         }
     }

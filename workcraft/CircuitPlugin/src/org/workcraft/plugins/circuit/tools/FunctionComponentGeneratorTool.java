@@ -4,12 +4,17 @@ import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.Framework;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.NodeGeneratorTool;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -17,9 +22,12 @@ import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
+import org.workcraft.plugins.circuit.naryformula.SplitForm;
+import org.workcraft.plugins.circuit.naryformula.SplitFormGenerator;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.utils.MutexUtils;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Wait;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
@@ -34,6 +42,10 @@ import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
+
+    public static final TableLayout SELECT_PANEL_LAYOUT = GuiUtils.createTableLayout(
+            new double[]{TableLayout.PREFERRED, TableLayout.FILL},
+            new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED});
 
     private JPanel panel = null;
     private LibraryItem libraryItem = null;
@@ -76,7 +88,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
         enum Type {
             UNDEFINED,
-            COMBINATIONAL_GATE,
+            COMBINATIONAL_SIMPLE_GATE,
+            COMBINATIONAL_COMPLEX_GATE,
             SEQUENTIAL_GATE,
             ARBITRATION_PRIMITIVE,
         }
@@ -120,10 +133,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                 public boolean getNameVisibility() {
                     return false;
                 }
-                @Override
-                public boolean getLabelVisibility() {
-                    return false;
-                }
             };
             circuit.getMathModel().add(component.getReferencedComponent());
             circuit.add(component);
@@ -133,14 +142,20 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
         @Override
         public void paintComponent(Graphics g) {
-            setBackground(EditorCommonSettings.getBackgroundColor());
             super.paintComponent(g);
-            Graphics2D g2d = (Graphics2D) g;
-            g2d.translate(getWidth() / 2, getHeight() / 2);
+            setBackground(EditorCommonSettings.getBackgroundColor());
             if (component != null) {
+                component.copyStyle(getTemplateNode());
+                Graphics2D g2d = (Graphics2D) g;
+                int width = getWidth();
+                if (component.getRenderType() == ComponentRenderingResult.RenderType.BOX) {
+                    width *= 0.8;
+                }
+                int height = getHeight();
+                g2d.translate(width / 2, height / 2);
                 Rectangle2D bb = component.getBoundingBox();
-                double scaleX = getWidth() / bb.getWidth();
-                double scaleY = getHeight() / bb.getHeight();
+                double scaleX = (width - 2 * SizeHelper.getLayoutHGap()) / bb.getWidth();
+                double scaleY = (height - 2 * SizeHelper.getLayoutVGap()) / bb.getHeight();
                 double scale = Math.min(Math.min(scaleX, scaleY), MAX_SCALE_FACTOR);
                 g2d.scale(scale, scale);
                 circuit.draw(g2d, Decorator.Empty.INSTANCE);
@@ -167,9 +182,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             return panel;
         }
 
-        JPanel selectPanel = new JPanel(GuiUtils.createTableLayout(
-                new double[]{TableLayout.PREFERRED, TableLayout.FILL},
-                new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED}));
+        JPanel selectPanel = new JPanel(SELECT_PANEL_LAYOUT);
 
         JComboBox<FilterItem> filterComboBox = new JComboBox<>();
         JComboBox<LibraryItem> libraryComboBox = new JComboBox<>();
@@ -183,6 +196,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         JLabel infoLabel = new JLabel();
         infoLabel.setHorizontalAlignment(JLabel.CENTER);
         infoPanel.add(infoLabel, BorderLayout.CENTER);
+
+        getTemplateNode().addObserver((StateObserver) e -> symbolPanel.repaint());
 
         filterComboBox.addActionListener(event -> {
             libraryComboBox.removeAllItems();
@@ -198,11 +213,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             Object item = libraryComboBox.getSelectedItem();
             if (item instanceof LibraryItem) {
                 libraryItem = (LibraryItem) item;
-                //LibraryItem libraryItem = (LibraryItem) item;
                 getTemplateNode().getReferencedComponent().setModule(libraryItem.name);
-                getTemplateNode().setRenderType(libraryItem.type == LibraryItem.Type.ARBITRATION_PRIMITIVE
-                        ? ComponentRenderingResult.RenderType.BOX : ComponentRenderingResult.RenderType.GATE);
-
                 infoLabel.setText(libraryItem.description);
                 symbolPanel.setInstntiator(libraryItem.instantiator);
                 Framework.getInstance().updatePropertyView();
@@ -210,12 +221,28 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             }
         });
 
+        registerFilters(filterComboBox);
+
+        panel = new JPanel(GuiUtils.createBorderLayout());
+        panel.setBorder(GuiUtils.getGapBorder());
+        panel.add(selectPanel, BorderLayout.NORTH);
+        panel.add(symbolPanel, BorderLayout.CENTER);
+        panel.add(infoPanel, BorderLayout.SOUTH);
+        panel.setPreferredSize(new Dimension(0, 0));
+        return panel;
+    }
+
+    private void registerFilters(JComboBox<FilterItem> filterComboBox) {
         filterComboBox.removeAllItems();
 
         List<LibraryItem> allComponents = getLibraryItems();
 
-        List<LibraryItem> combinationalGates = allComponents.stream()
-                .filter(o -> o.type == LibraryItem.Type.COMBINATIONAL_GATE)
+        List<LibraryItem> combinationalSimpleGates = allComponents.stream()
+                .filter(o -> o.type == LibraryItem.Type.COMBINATIONAL_SIMPLE_GATE)
+                .collect(Collectors.toList());
+
+        List<LibraryItem> combinationalComplexGates = allComponents.stream()
+                .filter(o -> o.type == LibraryItem.Type.COMBINATIONAL_COMPLEX_GATE)
                 .collect(Collectors.toList());
 
         List<LibraryItem> sequentialGates = allComponents.stream()
@@ -228,20 +255,13 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
         filterComboBox.addItem(new FilterItem("All available components", allComponents));
 
-        filterComboBox.addItem(new FilterItem("Simple combinational gates", combinationalGates));
+        filterComboBox.addItem(new FilterItem("Simple combinational gates", combinationalSimpleGates));
 
-        filterComboBox.addItem(new FilterItem("Multi-level combinational gates", combinationalGates));
+        filterComboBox.addItem(new FilterItem("Multi-level combinational gates", combinationalComplexGates));
 
         filterComboBox.addItem(new FilterItem("Sequential gates", sequentialGates));
 
         filterComboBox.addItem(new FilterItem("Arbitration primitives", arbitrationPrimitives));
-
-        panel = new JPanel(GuiUtils.createBorderLayout());
-        panel.add(selectPanel, BorderLayout.NORTH);
-        panel.add(symbolPanel, BorderLayout.CENTER);
-        panel.add(infoPanel, BorderLayout.SOUTH);
-        panel.setPreferredSize(new Dimension(0, 0));
-        return panel;
     }
 
     private List<LibraryItem> getLibraryItems() {
@@ -250,9 +270,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         if (library != null) {
             for (String gateName : library.getNames()) {
                 Gate gate = library.get(gateName);
-                LibraryItem.Type type = gate.isSequential()
-                        ? LibraryItem.Type.SEQUENTIAL_GATE
-                        : LibraryItem.Type.COMBINATIONAL_GATE;
+                LibraryItem.Type type = getGateType(gate);
 
                 Instantiator instantiator = (circuit, component)
                         -> GenlibUtils.instantiateGate(gate, circuit, component);
@@ -261,9 +279,58 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                 result.add(new LibraryItem(gateName, type, instantiator, description));
             }
         }
+        result.add(createWaitItem());
         result.add(createMutexItem());
         Collections.sort(result, Comparator.comparing(LibraryItem::toString));
         return result;
+    }
+
+    private LibraryItem.Type getGateType(Gate gate) {
+        if (gate.isSequential()) {
+            return LibraryItem.Type.SEQUENTIAL_GATE;
+        } else {
+            try {
+                BooleanFormula formula = BooleanFormulaParser.parse(gate.function.formula);
+                SplitForm splitFormFormula = SplitFormGenerator.generate(formula);
+                if (splitFormFormula.countLevels() < 2) {
+                    return LibraryItem.Type.COMBINATIONAL_SIMPLE_GATE;
+                } else {
+                    return LibraryItem.Type.COMBINATIONAL_COMPLEX_GATE;
+                }
+            } catch (ParseException e) {
+            }
+        }
+        return LibraryItem.Type.UNDEFINED;
+    }
+
+    private LibraryItem createWaitItem() {
+        Wait module = CircuitSettings.parseWaitData();
+        String name = module.name;
+        String sigName = module.sig.name;
+        String ctrlName = module.ctrl.name;
+        String sanName = module.san.name;
+        String description = sanName + " = " + ctrlName;
+
+        Instantiator instantiator = (circuit, component) -> {
+            component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+
+            VisualFunctionContact sigContact = component.createContact(IOType.INPUT);
+            circuit.setMathName(sigContact, sigName);
+            sigContact.setPosition(new Point2D.Double(-1.5, 0.0));
+
+            VisualFunctionContact ctrlContact = component.createContact(IOType.INPUT);
+            circuit.setMathName(ctrlContact, ctrlName);
+            ctrlContact.setDirection(VisualContact.Direction.EAST);
+            ctrlContact.setPosition(new Point2D.Double(1.5, 0.5));
+
+            VisualFunctionContact sanContact = component.createContact(IOType.OUTPUT);
+            circuit.setMathName(sanContact, sanName);
+            sanContact.setPosition(new Point2D.Double(1.5, -0.5));
+
+            BooleanFormula setFormula = ctrlContact.getReferencedComponent();
+            sanContact.getReferencedComponent().setSetFunctionQuiet(setFormula);
+        };
+        return new LibraryItem(name, LibraryItem.Type.ARBITRATION_PRIMITIVE, instantiator, description);
     }
 
     private LibraryItem createMutexItem() {
@@ -280,7 +347,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                 + "<br>" + MutexUtils.getGrantSetReset(g2Name, g2Set, g2Reset) + "</html>";
 
         Instantiator instantiator = (circuit, component) -> {
-            component.getReferencedComponent().setModule(module.name);
             component.setRenderType(ComponentRenderingResult.RenderType.BOX);
 
             VisualFunctionContact r1Contact = component.createContact(IOType.INPUT);
