@@ -62,14 +62,14 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
             return;
         }
 
-        SplitForm functions = SplitFormGenerator.generate(setFunction);
-        if (functions.getClauses().stream().filter(f -> !(f instanceof BooleanVariable)).count() < 2) {
+        SplitForm splitFormFormula = SplitFormGenerator.generate(setFunction);
+        if (splitFormFormula.countLevels() < 2) {
             LogUtils.logWarning("Gate " + str + " cannot be split as it is too simple");
             return;
         }
 
         LogUtils.logInfo("Splitting multi-level gate " + str + " into:");
-        splitComplexGate(circuit, gate, functions);
+        splitComplexGate(circuit, gate, splitFormFormula);
     }
 
     private static void splitComplexGate(VisualCircuit circuit, VisualFunctionComponent complexGate, SplitForm functions) {
