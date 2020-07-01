@@ -1,7 +1,5 @@
 package org.workcraft.plugins.son.gui;
 
-import org.workcraft.dom.visual.SizeHelper;
-
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
@@ -98,7 +96,7 @@ public class OutputArea extends JFrame {
         setVisible(true);
         setTitle(title);
 
-        Dimension screenSize = SizeHelper.getScreenDimension();
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation(screenSize.width / 2, screenSize.height / 4);
     }
 
