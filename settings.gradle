@@ -17,8 +17,8 @@ pluginManagement {
 gradle.ext.javaVersion = '1.8'
 
 // Code quality and coverage tools (Checkstyle, PMD, Jacoco)
-gradle.ext.checkstyleVersion = '8.33'
-gradle.ext.pmdVersion = '6.24.0'
+gradle.ext.checkstyleVersion = '8.34'
+gradle.ext.pmdVersion = '6.25.0'
 gradle.ext.jacocoVersion = '0.8.5'
 
 
