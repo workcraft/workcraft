@@ -1,7 +1,5 @@
 package org.workcraft.plugins.circuit.tools;
 
-import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.Framework;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.visual.SizeHelper;
@@ -9,8 +7,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.jj.BooleanFormulaParser;
-import org.workcraft.formula.jj.ParseException;
+import org.workcraft.gui.controls.IntRangeSlider;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.NodeGeneratorTool;
@@ -22,48 +19,43 @@ import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
-import org.workcraft.plugins.circuit.naryformula.SplitForm;
-import org.workcraft.plugins.circuit.naryformula.SplitFormGenerator;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.utils.MutexUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
-    public static final TableLayout SELECT_PANEL_LAYOUT = GuiUtils.createTableLayout(
-            new double[]{TableLayout.PREFERRED, TableLayout.FILL},
-            new double[]{TableLayout.PREFERRED, TableLayout.PREFERRED});
+    private final JRadioButton allTypeFilter = new JRadioButton("all");
+    private final JRadioButton combTypeFilter = new JRadioButton("com");
+    private final JRadioButton seqTypeFilter = new JRadioButton("seq");
+    private final JRadioButton arbTypeFilter = new JRadioButton("arb");
+    private final IntRangeSlider pinsFilter = new IntRangeSlider();
+    private final JTextField nameFilter = new JTextField("");
+    private final JScrollPane libraryScroll = new JScrollPane();
+    private final SymbolPanel symbolPanel = new SymbolPanel();
+    private final JLabel infoLabel = new JLabel();
 
     private JPanel panel = null;
+    private List<LibraryItem> libraryItems = null;
     private LibraryItem libraryItem = null;
-
-    class FilterItem {
-        private final String description;
-        private final List<LibraryItem> components;
-
-        FilterItem(String description, List<LibraryItem> components) {
-            this.description = description;
-            this.components = components;
-        }
-
-        @Override
-        public String toString() {
-            return description + " (" + components.size() + ")";
-        }
-    }
 
     interface Instantiator extends BiConsumer<VisualCircuit, VisualFunctionComponent> {
         class Empty implements Instantiator {
@@ -83,31 +75,40 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     static class LibraryItem {
         private final String name;
         private final Type type;
+        private int pinCount;
         private final Instantiator instantiator;
         private final String description;
 
         enum Type {
             UNDEFINED,
-            COMBINATIONAL_SIMPLE_GATE,
-            COMBINATIONAL_COMPLEX_GATE,
+            COMBINATIONAL_GATE,
             SEQUENTIAL_GATE,
             ARBITRATION_PRIMITIVE,
         }
 
         LibraryItem() {
-            this("", Type.UNDEFINED, Instantiator.Empty.INSTANCE, "");
+            this("", Type.UNDEFINED, 0, Instantiator.Empty.INSTANCE, "");
         }
 
-        LibraryItem(String name, Type type, Instantiator instantiator, String description) {
+        LibraryItem(String name, Type type, int pinCount, Instantiator instantiator, String description) {
             this.name = name;
             this.type = type;
+            this.pinCount = pinCount;
             this.instantiator = instantiator;
             this.description = description;
         }
 
         @Override
         public String toString() {
-            return name;
+            return name.isEmpty() ? "\u00BB Custom component" : name;
+        }
+    }
+
+    class LibraryList extends JList<LibraryItem> {
+
+        LibraryList(List<LibraryItem> items) {
+            super(new Vector<>(items));
+            setBorder(GuiUtils.getEmptyBorder());
         }
     }
 
@@ -182,46 +183,23 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             return panel;
         }
 
-        JPanel selectPanel = new JPanel(SELECT_PANEL_LAYOUT);
+        JPanel filterPanel = new JPanel();
+        filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
+        filterPanel.add(createTypeFilterPanel(editor));
+        filterPanel.add(GuiUtils.createVGap());
+        filterPanel.add(createPinsFilterPanel(editor));
+        filterPanel.add(GuiUtils.createVGap());
+        filterPanel.add(createNameFilterPanel(editor));
 
-        JComboBox<FilterItem> filterComboBox = new JComboBox<>();
-        JComboBox<LibraryItem> libraryComboBox = new JComboBox<>();
-        selectPanel.add(new JLabel("Filter:"), new TableLayoutConstraints(0, 0));
-        selectPanel.add(filterComboBox, new TableLayoutConstraints(1, 0));
-        selectPanel.add(new JLabel("Component:"), new TableLayoutConstraints(0, 1));
-        selectPanel.add(libraryComboBox, new TableLayoutConstraints(1, 1));
+        JPanel selectPanel = new JPanel(GuiUtils.createBorderLayout());
+        selectPanel.add(filterPanel, BorderLayout.NORTH);
+        selectPanel.add(libraryScroll, BorderLayout.CENTER);
 
-        SymbolPanel symbolPanel = new SymbolPanel();
         JPanel infoPanel = new JPanel(GuiUtils.createBorderLayout());
-        JLabel infoLabel = new JLabel();
         infoLabel.setHorizontalAlignment(JLabel.CENTER);
         infoPanel.add(infoLabel, BorderLayout.CENTER);
 
         getTemplateNode().addObserver((StateObserver) e -> symbolPanel.repaint());
-
-        filterComboBox.addActionListener(event -> {
-            libraryComboBox.removeAllItems();
-            libraryComboBox.addItem(new LibraryItem());
-            Object item = filterComboBox.getSelectedItem();
-            if (item instanceof FilterItem) {
-                FilterItem filterItem = (FilterItem) item;
-                filterItem.components.forEach(libraryComboBox::addItem);
-            }
-        });
-
-        libraryComboBox.addActionListener(event -> {
-            Object item = libraryComboBox.getSelectedItem();
-            if (item instanceof LibraryItem) {
-                libraryItem = (LibraryItem) item;
-                getTemplateNode().getReferencedComponent().setModule(libraryItem.name);
-                infoLabel.setText(libraryItem.description);
-                symbolPanel.setInstntiator(libraryItem.instantiator);
-                Framework.getInstance().updatePropertyView();
-                editor.requestFocus();
-            }
-        });
-
-        registerFilters(filterComboBox);
 
         panel = new JPanel(GuiUtils.createBorderLayout());
         panel.setBorder(GuiUtils.getGapBorder());
@@ -229,78 +207,151 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         panel.add(symbolPanel, BorderLayout.CENTER);
         panel.add(infoPanel, BorderLayout.SOUTH);
         panel.setPreferredSize(new Dimension(0, 0));
+        updateLibraryList(editor);
         return panel;
     }
 
-    private void registerFilters(JComboBox<FilterItem> filterComboBox) {
-        filterComboBox.removeAllItems();
+    private JPanel createTypeFilterPanel(final GraphEditor editor) {
+        JPanel result = new JPanel(GuiUtils.createNogapFlowLayout());
+        result.add(new JLabel("Type: "));
+        result.add(allTypeFilter);
+        result.add(combTypeFilter);
+        result.add(seqTypeFilter);
+        result.add(arbTypeFilter);
 
-        List<LibraryItem> allComponents = getLibraryItems();
+        ButtonGroup typeFilterGroup = new ButtonGroup();
+        typeFilterGroup.add(allTypeFilter);
+        typeFilterGroup.add(combTypeFilter);
+        typeFilterGroup.add(seqTypeFilter);
+        typeFilterGroup.add(arbTypeFilter);
 
-        List<LibraryItem> combinationalSimpleGates = allComponents.stream()
-                .filter(o -> o.type == LibraryItem.Type.COMBINATIONAL_SIMPLE_GATE)
-                .collect(Collectors.toList());
+        allTypeFilter.addActionListener(event -> updateLibraryList(editor));
+        combTypeFilter.addActionListener(event -> updateLibraryList(editor));
+        seqTypeFilter.addActionListener(event -> updateLibraryList(editor));
+        arbTypeFilter.addActionListener(event -> updateLibraryList(editor));
+        allTypeFilter.setSelected(true);
+        return result;
+    }
 
-        List<LibraryItem> combinationalComplexGates = allComponents.stream()
-                .filter(o -> o.type == LibraryItem.Type.COMBINATIONAL_COMPLEX_GATE)
-                .collect(Collectors.toList());
+    private JPanel createPinsFilterPanel(final GraphEditor editor) {
+        Pair<Integer, Integer> pinRange = GenlibUtils.getPinRange(LibraryManager.getLibrary());
+        pinsFilter.setMinimum(pinRange.getFirst());
+        pinsFilter.setMaximum(pinRange.getSecond());
+        pinsFilter.addChangeListener(event -> updateLibraryList(editor));
+        return GuiUtils.createLabeledComponent(pinsFilter, "Pins:  ");
+    }
 
-        List<LibraryItem> sequentialGates = allComponents.stream()
-                .filter(o -> o.type == LibraryItem.Type.SEQUENTIAL_GATE)
-                .collect(Collectors.toList());
+    private JPanel createNameFilterPanel(final GraphEditor editor) {
+        nameFilter.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void removeUpdate(DocumentEvent event) {
+                updateLibraryList(null);
+            }
+            @Override
+            public void insertUpdate(DocumentEvent event) {
+                updateLibraryList(null);
+            }
+            @Override
+            public void changedUpdate(DocumentEvent event) {
+                updateLibraryList(null);
+            }
+        });
+        nameFilter.setText("");
 
-        List<LibraryItem> arbitrationPrimitives = allComponents.stream()
-                .filter(o -> o.type == LibraryItem.Type.ARBITRATION_PRIMITIVE)
-                .collect(Collectors.toList());
+        nameFilter.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent event) {
+                editor.requestFocus();
+            }
+        });
 
-        filterComboBox.addItem(new FilterItem("All available components", allComponents));
+        nameFilter.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent event) {
+                char keyChar = event.getKeyChar();
+                if ((keyChar == KeyEvent.VK_ENTER) || (keyChar == KeyEvent.VK_ESCAPE)) {
+                    editor.requestFocus();
+                }
+            }
+        });
 
-        filterComboBox.addItem(new FilterItem("Simple combinational gates", combinationalSimpleGates));
+        return GuiUtils.createLabeledComponent(nameFilter, "Name:");
+    }
 
-        filterComboBox.addItem(new FilterItem("Multi-level combinational gates", combinationalComplexGates));
+    private void updateLibraryList(final GraphEditor editor) {
+        ArrayList<LibraryItem> components = new ArrayList<>();
+        components.add(new LibraryItem());
+        components.addAll(getLibraryItems().stream()
+                .filter(o -> filterByType(o) && filterByPins(o) && filterByName(o))
+                .collect(Collectors.toList()));
 
-        filterComboBox.addItem(new FilterItem("Sequential gates", sequentialGates));
+        LibraryList libraryList = new LibraryList(components);
+        libraryScroll.setViewportView(libraryList);
+        libraryList.addListSelectionListener(e -> {
+            libraryItem = libraryList.getSelectedValue();
+            if (libraryItem != null) {
+                getTemplateNode().getReferencedComponent().setModule(this.libraryItem.name);
+                infoLabel.setText(this.libraryItem.description);
+                symbolPanel.setInstntiator(this.libraryItem.instantiator);
+                Framework.getInstance().updatePropertyView();
+            }
+        });
+        libraryList.setSelectedIndex(0);
+        if (editor != null) {
+            editor.requestFocus();
+        }
+    }
 
-        filterComboBox.addItem(new FilterItem("Arbitration primitives", arbitrationPrimitives));
+    private boolean filterByType(LibraryItem libraryItem) {
+        if (combTypeFilter.isSelected()) {
+            return libraryItem.type == LibraryItem.Type.COMBINATIONAL_GATE;
+        }
+        if (seqTypeFilter.isSelected()) {
+            return libraryItem.type == LibraryItem.Type.SEQUENTIAL_GATE;
+        }
+        if (arbTypeFilter.isSelected()) {
+            return libraryItem.type == LibraryItem.Type.ARBITRATION_PRIMITIVE;
+        }
+        return true;
+    }
+
+    private boolean filterByPins(LibraryItem libraryItem) {
+        return (libraryItem.pinCount >= pinsFilter.getValue()) && (libraryItem.pinCount <= pinsFilter.getSecondValue());
+    }
+
+    private boolean filterByName(LibraryItem libraryItem) {
+        String needle = nameFilter.getText().trim().toLowerCase(Locale.ROOT);
+        String haystack = libraryItem.name.toLowerCase(Locale.ROOT);
+        return haystack.contains(needle);
     }
 
     private List<LibraryItem> getLibraryItems() {
-        List<LibraryItem> result = new ArrayList<>();
+        if (libraryItems != null) {
+            return libraryItems;
+        }
+
+        libraryItems = new ArrayList<>();
         Library library = LibraryManager.getLibrary();
         if (library != null) {
             for (String gateName : library.getNames()) {
                 Gate gate = library.get(gateName);
-                LibraryItem.Type type = getGateType(gate);
+                LibraryItem.Type type = gate.isSequential()
+                        ? LibraryItem.Type.SEQUENTIAL_GATE
+                        : LibraryItem.Type.COMBINATIONAL_GATE;
+
+                int pinCount = GenlibUtils.getPinCount(gate);
 
                 Instantiator instantiator = (circuit, component)
                         -> GenlibUtils.instantiateGate(gate, circuit, component);
 
                 String description = gate.function.name + " = " + gate.function.formula;
-                result.add(new LibraryItem(gateName, type, instantiator, description));
+                libraryItems.add(new LibraryItem(gateName, type, pinCount, instantiator, description));
             }
         }
-        result.add(createWaitItem());
-        result.add(createMutexItem());
-        Collections.sort(result, Comparator.comparing(LibraryItem::toString));
-        return result;
-    }
-
-    private LibraryItem.Type getGateType(Gate gate) {
-        if (gate.isSequential()) {
-            return LibraryItem.Type.SEQUENTIAL_GATE;
-        } else {
-            try {
-                BooleanFormula formula = BooleanFormulaParser.parse(gate.function.formula);
-                SplitForm splitFormFormula = SplitFormGenerator.generate(formula);
-                if (splitFormFormula.countLevels() < 2) {
-                    return LibraryItem.Type.COMBINATIONAL_SIMPLE_GATE;
-                } else {
-                    return LibraryItem.Type.COMBINATIONAL_COMPLEX_GATE;
-                }
-            } catch (ParseException e) {
-            }
-        }
-        return LibraryItem.Type.UNDEFINED;
+        libraryItems.add(createWaitItem());
+        libraryItems.add(createMutexItem());
+        Collections.sort(libraryItems, Comparator.comparing(LibraryItem::toString));
+        return libraryItems;
     }
 
     private LibraryItem createWaitItem() {
@@ -330,7 +381,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             BooleanFormula setFormula = ctrlContact.getReferencedComponent();
             sanContact.getReferencedComponent().setSetFunctionQuiet(setFormula);
         };
-        return new LibraryItem(name, LibraryItem.Type.ARBITRATION_PRIMITIVE, instantiator, description);
+        return new LibraryItem(name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator, description);
     }
 
     private LibraryItem createMutexItem() {
@@ -368,7 +419,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             MutexUtils.setMutexFunctions(circuit, component, g1Contact, g1Set, g1Reset);
             MutexUtils.setMutexFunctions(circuit, component, g2Contact, g2Set, g2Reset);
         };
-        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, instantiator, description);
+        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator, description);
     }
 
     @Override

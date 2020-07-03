@@ -157,4 +157,33 @@ public class GenlibUtils {
         return result;
     }
 
+    public static int getPinCount(Gate gate) {
+        try {
+            BooleanFormula formula = BooleanFormulaParser.parse(gate.function.formula);
+            return FormulaUtils.extractOrderedVariables(formula).size() + (gate.isSequential() ? 0 : 1);
+        } catch (ParseException e) {
+            return 0;
+        }
+    }
+
+    public static Pair<Integer, Integer> getPinRange(Library library) {
+        int min = 0;
+        int max = 0;
+        if (library != null) {
+            boolean first = true;
+            for (String gateName : library.getNames()) {
+                Gate gate = library.get(gateName);
+                int pinCount = GenlibUtils.getPinCount(gate);
+                if (first || (pinCount < min)) {
+                    min = pinCount;
+                }
+                if (first || (pinCount > max)) {
+                    max = pinCount;
+                }
+                first = false;
+            }
+        }
+        return Pair.of(min, max);
+    }
+
 }

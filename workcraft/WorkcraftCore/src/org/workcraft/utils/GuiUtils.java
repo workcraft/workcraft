@@ -265,6 +265,10 @@ public class GuiUtils {
         return Box.createHorizontalStrut(SizeHelper.getLayoutHGap());
     }
 
+    public static Component createVGap() {
+        return Box.createVerticalStrut(SizeHelper.getLayoutVGap());
+    }
+
     public static Border getEmptyBorder() {
         int gap = (int) Math.round(0.2 * SizeHelper.getBaseSize());
         return new EmptyBorder(gap, gap, gap, gap);
