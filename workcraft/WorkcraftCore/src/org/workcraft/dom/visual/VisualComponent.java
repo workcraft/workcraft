@@ -341,8 +341,12 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     // This method is needed for VisualGroup to update the rendered text of its children
     // before they were drawn, which is necessary for computing their bounding boxes
     public void cacheRenderedText(DrawRequest r) {
-        cacheLabelRenderedText(r);
-        cacheNameRenderedText(r);
+        if (getLabelVisibility()) {
+            cacheLabelRenderedText(r);
+        }
+        if (getNameVisibility()) {
+            cacheNameRenderedText(r);
+        }
     }
 
     public Shape getShape() {

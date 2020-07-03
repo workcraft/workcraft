@@ -51,7 +51,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     private final JTextField nameFilter = new JTextField("");
     private final JScrollPane libraryScroll = new JScrollPane();
     private final SymbolPanel symbolPanel = new SymbolPanel();
-    private final JLabel infoLabel = new JLabel();
 
     private JPanel panel = null;
     private List<LibraryItem> libraryItems = null;
@@ -77,7 +76,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         private final Type type;
         private int pinCount;
         private final Instantiator instantiator;
-        private final String description;
 
         enum Type {
             UNDEFINED,
@@ -87,15 +85,14 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         }
 
         LibraryItem() {
-            this("", Type.UNDEFINED, 0, Instantiator.Empty.INSTANCE, "");
+            this("", Type.UNDEFINED, 0, Instantiator.Empty.INSTANCE);
         }
 
-        LibraryItem(String name, Type type, int pinCount, Instantiator instantiator, String description) {
+        LibraryItem(String name, Type type, int pinCount, Instantiator instantiator) {
             this.name = name;
             this.type = type;
             this.pinCount = pinCount;
             this.instantiator = instantiator;
-            this.description = description;
         }
 
         @Override
@@ -113,7 +110,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     class SymbolPanel extends JPanel {
-        private static final double MAX_SCALE_FACTOR = 50.0;
+        private static final double MIN_SCALE_FACTOR = 10.0;
+        private static final double MAX_SCALE_FACTOR = 100.0;
 
         private final VisualCircuit circuit = new VisualCircuit(new Circuit()) {
             @Override
@@ -143,21 +141,28 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
         @Override
         public void paintComponent(Graphics g) {
-            super.paintComponent(g);
             setBackground(EditorCommonSettings.getBackgroundColor());
+            super.paintComponent(g);
             if (component != null) {
                 component.copyStyle(getTemplateNode());
-                Graphics2D g2d = (Graphics2D) g;
+                // Cache component text to better estimate its bounding box
+                component.cacheRenderedText(null);
                 int width = getWidth();
                 if (component.getRenderType() == ComponentRenderingResult.RenderType.BOX) {
                     width *= 0.8;
                 }
-                int height = getHeight();
-                g2d.translate(width / 2, height / 2);
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.translate(width / 2, getHeight() / 2);
                 Rectangle2D bb = component.getBoundingBox();
-                double scaleX = (width - 2 * SizeHelper.getLayoutHGap()) / bb.getWidth();
-                double scaleY = (height - 2 * SizeHelper.getLayoutVGap()) / bb.getHeight();
-                double scale = Math.min(Math.min(scaleX, scaleY), MAX_SCALE_FACTOR);
+                double scaleX = (width - 5 * SizeHelper.getLayoutHGap()) / bb.getWidth();
+                double scaleY = (getHeight() - 5 * SizeHelper.getLayoutVGap()) / bb.getHeight();
+                double scale = Math.min(scaleX, scaleY);
+                if (scale < MIN_SCALE_FACTOR) {
+                    scale = MIN_SCALE_FACTOR;
+                }
+                if (scale > MAX_SCALE_FACTOR) {
+                    scale = MAX_SCALE_FACTOR;
+                }
                 g2d.scale(scale, scale);
                 circuit.draw(g2d, Decorator.Empty.INSTANCE);
             }
@@ -191,21 +196,17 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         filterPanel.add(GuiUtils.createVGap());
         filterPanel.add(createNameFilterPanel(editor));
 
-        JPanel selectPanel = new JPanel(GuiUtils.createBorderLayout());
-        selectPanel.add(filterPanel, BorderLayout.NORTH);
-        selectPanel.add(libraryScroll, BorderLayout.CENTER);
-
-        JPanel infoPanel = new JPanel(GuiUtils.createBorderLayout());
-        infoLabel.setHorizontalAlignment(JLabel.CENTER);
-        infoPanel.add(infoLabel, BorderLayout.CENTER);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, libraryScroll, symbolPanel);
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setDividerLocation(filterPanel.getMinimumSize().height);
+        splitPane.setResizeWeight(0.5);
 
         getTemplateNode().addObserver((StateObserver) e -> symbolPanel.repaint());
 
         panel = new JPanel(GuiUtils.createBorderLayout());
         panel.setBorder(GuiUtils.getGapBorder());
-        panel.add(selectPanel, BorderLayout.NORTH);
-        panel.add(symbolPanel, BorderLayout.CENTER);
-        panel.add(infoPanel, BorderLayout.SOUTH);
+        panel.add(filterPanel, BorderLayout.NORTH);
+        panel.add(splitPane, BorderLayout.CENTER);
         panel.setPreferredSize(new Dimension(0, 0));
         updateLibraryList(editor);
         return panel;
@@ -291,7 +292,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             libraryItem = libraryList.getSelectedValue();
             if (libraryItem != null) {
                 getTemplateNode().getReferencedComponent().setModule(this.libraryItem.name);
-                infoLabel.setText(this.libraryItem.description);
                 symbolPanel.setInstntiator(this.libraryItem.instantiator);
                 Framework.getInstance().updatePropertyView();
             }
@@ -316,7 +316,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     private boolean filterByPins(LibraryItem libraryItem) {
-        return (libraryItem.pinCount >= pinsFilter.getValue()) && (libraryItem.pinCount <= pinsFilter.getSecondValue());
+        return (libraryItem.pinCount >= pinsFilter.getValue())
+                && (libraryItem.pinCount <= pinsFilter.getSecondValue());
     }
 
     private boolean filterByName(LibraryItem libraryItem) {
@@ -344,8 +345,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                 Instantiator instantiator = (circuit, component)
                         -> GenlibUtils.instantiateGate(gate, circuit, component);
 
-                String description = gate.function.name + " = " + gate.function.formula;
-                libraryItems.add(new LibraryItem(gateName, type, pinCount, instantiator, description));
+                libraryItems.add(new LibraryItem(gateName, type, pinCount, instantiator));
             }
         }
         libraryItems.add(createWaitItem());
@@ -360,7 +360,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         String sigName = module.sig.name;
         String ctrlName = module.ctrl.name;
         String sanName = module.san.name;
-        String description = sanName + " = " + ctrlName;
 
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.BOX);
@@ -381,7 +380,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             BooleanFormula setFormula = ctrlContact.getReferencedComponent();
             sanContact.getReferencedComponent().setSetFunctionQuiet(setFormula);
         };
-        return new LibraryItem(name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator, description);
+        return new LibraryItem(name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator);
     }
 
     private LibraryItem createMutexItem() {
@@ -394,8 +393,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         String g1Reset = MutexUtils.getGrantReset(r1Name);
         String g2Set = MutexUtils.getGrantSet(r2Name, g1Name, r1Name);
         String g2Reset = MutexUtils.getGrantReset(r2Name);
-        String description = "<html>" + MutexUtils.getGrantSetReset(g1Name, g1Set, g1Reset)
-                + "<br>" + MutexUtils.getGrantSetReset(g2Name, g2Set, g2Reset) + "</html>";
 
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.BOX);
@@ -419,7 +416,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             MutexUtils.setMutexFunctions(circuit, component, g1Contact, g1Set, g1Reset);
             MutexUtils.setMutexFunctions(circuit, component, g2Contact, g2Set, g2Reset);
         };
-        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator, description);
+        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
     }
 
     @Override
