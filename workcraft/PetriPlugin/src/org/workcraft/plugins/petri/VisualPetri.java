@@ -10,14 +10,11 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.tools.CommentGeneratorTool;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.petri.tools.*;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @DisplayName ("Petri Net")
 public class VisualPetri extends AbstractVisualModel {
@@ -28,19 +25,17 @@ public class VisualPetri extends AbstractVisualModel {
 
     public VisualPetri(Petri model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new PetriSelectionTool());
-        tools.add(new CommentGeneratorTool());
-        tools.add(new PetriConnectionTool());
-        tools.add(new ReadArcConnectionTool());
-        tools.add(new PlaceGeneratorTool());
-        tools.add(new TransitionGeneratorTool());
-        tools.add(new PetriSimulationTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new PetriSelectionTool());
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new PetriConnectionTool());
+        addGraphEditorTool(new ReadArcConnectionTool());
+        addGraphEditorTool(new PlaceGeneratorTool());
+        addGraphEditorTool(new TransitionGeneratorTool());
+        addGraphEditorTool(new PetriSimulationTool());
     }
 
     @Override

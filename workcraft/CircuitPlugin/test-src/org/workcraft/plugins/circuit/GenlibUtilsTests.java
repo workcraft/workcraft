@@ -83,4 +83,18 @@ public class GenlibUtilsTests {
             System.out.println("]");
         }
     }
+
+    @Test
+    public void testPinCount() {
+        Library gateLibrary = LibraryManager.getLibrary();
+        Assertions.assertEquals(0, GenlibUtils.getPinCount(null));
+        Assertions.assertEquals(2, GenlibUtils.getPinCount(gateLibrary.get("BUF")));
+        Assertions.assertEquals(1, GenlibUtils.getPinCount(gateLibrary.get("LOGIC1")));
+        Assertions.assertEquals(3, GenlibUtils.getPinCount(gateLibrary.get("C2")));
+        Assertions.assertEquals(4, GenlibUtils.getPinCount(gateLibrary.get("OR3")));
+        Assertions.assertEquals(5, GenlibUtils.getPinCount(gateLibrary.get("NAND4BB")));
+        Assertions.assertEquals(7, GenlibUtils.getPinCount(gateLibrary.get("AOI222")));
+        Assertions.assertEquals(Pair.of(1, 7), GenlibUtils.getPinRange(gateLibrary));
+    }
+
 }

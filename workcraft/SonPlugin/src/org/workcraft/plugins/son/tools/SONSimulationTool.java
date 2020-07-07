@@ -68,8 +68,9 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
 
-    private static final double DEFAULT_SIMULATION_DELAY = 0.3;
-    private static final double EDGE_SPEED_MULTIPLIER = 10;
+    private static final int SLIDER_RANGE = 10;
+    private static final double BASE_SPEED = 300;
+    private static final double INCREMENT_SPEED = 10;
 
     protected final Trace mainTrace = new Trace();
     protected final Trace branchTrace = new Trace();
@@ -121,8 +122,11 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         errorButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-trace-error.svg"),
                 "Enable/Disable error tracing");
 
-        speedSlider = new JSlider(-1000, 1000, 0);
+        speedSlider = new JSlider(-SLIDER_RANGE, SLIDER_RANGE, 0);
         speedSlider.setToolTipText("Simulation playback speed");
+        speedSlider.setMajorTickSpacing(SLIDER_RANGE);
+        speedSlider.setMinorTickSpacing(1);
+        speedSlider.setPaintTicks(true);
 
         copyStateButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/son-simulation-trace-copy.svg"),
                 "Copy trace to clipboard");
@@ -389,7 +393,8 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     }
 
     private int getAnimationDelay() {
-        return (int) (1000.0 * DEFAULT_SIMULATION_DELAY * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / 1000.0));
+        double power = (double) -speedSlider.getValue() / SLIDER_RANGE;
+        return (int) (BASE_SPEED * Math.pow(INCREMENT_SPEED, power));
     }
 
     @SuppressWarnings("serial")

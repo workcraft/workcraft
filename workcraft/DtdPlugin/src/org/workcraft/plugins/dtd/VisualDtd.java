@@ -12,7 +12,6 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.tools.CommentGeneratorTool;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.dtd.observers.DtdStateSupervisor;
 import org.workcraft.plugins.dtd.tools.DtdConnectionTool;
 import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
@@ -23,7 +22,6 @@ import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.List;
 import java.util.Queue;
 import java.util.*;
 
@@ -51,17 +49,15 @@ public class VisualDtd extends AbstractVisualModel {
 
     public VisualDtd(Dtd model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
         new DtdStateSupervisor(this).attach(getRoot());
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new DtdSelectionTool());
-        tools.add(new CommentGeneratorTool());
-        tools.add(new DtdConnectionTool());
-        tools.add(new SignalGeneratorTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new DtdSelectionTool());
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new DtdConnectionTool());
+        addGraphEditorTool(new SignalGeneratorTool());
     }
 
     @Override

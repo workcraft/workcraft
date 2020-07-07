@@ -17,18 +17,14 @@ public interface Decoration {
     }
 
     class Empty implements Decoration {
-        @Override
-        public Color getColorisation() {
-            return null;
-        }
-        @Override
-        public Color getBackground() {
-            return null;
+        private Empty() {
         }
         public static final Empty INSTANCE = new Empty();
     }
 
     class Shaded implements Decoration {
+        private Shaded() {
+        }
         @Override
         public Color getColorisation() {
             return SelectionDecorationSettings.getShadingColor();
@@ -37,6 +33,8 @@ public interface Decoration {
     }
 
     class Highlighted implements Decoration {
+        private Highlighted() {
+        }
         @Override
         public Color getColorisation() {
             return SelectionDecorationSettings.getHighlightingColor();
@@ -45,6 +43,8 @@ public interface Decoration {
     }
 
     class Selected implements Decoration {
+        private Selected() {
+        }
         @Override
         public Color getColorisation() {
             return SelectionDecorationSettings.getSelectionColor();

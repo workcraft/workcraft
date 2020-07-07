@@ -6,10 +6,10 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -83,9 +83,9 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     // cache of "excited" containers (the ones containing the excited simulation elements)
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
 
-    private static final double MILLISECONDS_IN_SECOND = 1000.0;
-    private static final double DEFAULT_SIMULATION_DELAY = 0.3;
-    private static final double EDGE_SPEED_MULTIPLIER = 10;
+    private static final int SLIDER_RANGE = 10;
+    private static final double BASE_SPEED = 300;
+    private static final double INCREMENT_SPEED = 10;
 
     protected Map<? extends Node, Integer> initialState;
     public HashMap<? extends Node, Integer> savedState;
@@ -115,8 +115,11 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         recordButton = GuiUtils.createIconButton(ICON_RECORD, HINT_RECORD);
         ejectButton = GuiUtils.createIconButton(ICON_EJECT, HINT_EJECT);
 
-        speedSlider = new JSlider(-1000, 1000, 0);
+        speedSlider = new JSlider(-SLIDER_RANGE, SLIDER_RANGE, 0);
         speedSlider.setToolTipText("Simulation playback speed");
+        speedSlider.setMajorTickSpacing(SLIDER_RANGE);
+        speedSlider.setMinorTickSpacing(1);
+        speedSlider.setPaintTicks(true);
 
         JButton generateGraphButton = GuiUtils.createIconButton(ICON_TIMING_DIAGRAM, HINT_TIMING_DIAGRAM);
         JButton copyStateButton = GuiUtils.createIconButton(ICON_COPY_STATE, HINT_COPY_STATE);
@@ -582,8 +585,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     }
 
     private int getAnimationDelay() {
-        return (int) (MILLISECONDS_IN_SECOND * DEFAULT_SIMULATION_DELAY
-                * Math.pow(EDGE_SPEED_MULTIPLIER, -speedSlider.getValue() / MILLISECONDS_IN_SECOND));
+        double power = (double) -speedSlider.getValue() / SLIDER_RANGE;
+        return (int) (BASE_SPEED * Math.pow(INCREMENT_SPEED, power));
     }
 
     @SuppressWarnings("serial")

@@ -46,8 +46,7 @@ public class ModalDialog<T> extends JDialog {
 
         pack();
         Dimension dimension = getSize();
-        setMinimumSize(SizeHelper.getFitScreenDimension(dimension, 0.3f, 0.4f));
-        setSize(SizeHelper.getFitScreenDimension(dimension, 0.5f, 0.5f));
+        setMinimumSize(dimension);
         setLocationRelativeTo(owner);
     }
 

@@ -46,7 +46,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         addPropertyDeclaration(new PropertyDeclaration<>(RenderType.class,
                 PROPERTY_RENDER_TYPE,
                 this::setRenderType, this::getRenderType)
-                .setCombinable().setTemplatable());
+                .setCombinable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 FunctionComponent.PROPERTY_IS_ZERO_DELAY,
@@ -118,6 +118,13 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     public Collection<VisualFunctionContact> getVisualFunctionContacts() {
         return Hierarchy.filterNodesByType(getChildren(), VisualFunctionContact.class);
+    }
+
+    @Override
+    public VisualFunctionContact createContact(Contact.IOType ioType) {
+        VisualFunctionContact vc = new VisualFunctionContact(new FunctionContact(ioType));
+        addContact(vc);
+        return vc;
     }
 
     public VisualFunctionContact getVisualContact(Contact contact) {

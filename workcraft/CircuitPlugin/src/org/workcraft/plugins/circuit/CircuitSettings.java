@@ -9,6 +9,7 @@ import org.workcraft.plugins.circuit.genlib.UnaryGateInterface;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DialogUtils;
@@ -35,6 +36,14 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final int MUTEX_R2_GROUP = 4;
     private static final int MUTEX_G2_GROUP = 5;
 
+    private static final Pattern WAIT_DATA_PATTERN = Pattern.compile(
+            "(\\w+)\\((\\w+),\\((\\w+),(\\w+)\\)\\)");
+
+    private static final int WAIT_NAME_GROUP = 1;
+    private static final int WAIT_SIG_GROUP = 2;
+    private static final int WAIT_CTRL_GROUP = 3;
+    private static final int WAIT_SAN_GROUP = 4;
+
     private static final Pattern GATE2_DATA_PATTERN = Pattern.compile("(\\w+)\\((\\w+),(\\w+)\\)");
     private static final int GATE_NAME_GROUP = 1;
     private static final int GATE_PIN1_GROUP = 2;
@@ -43,6 +52,9 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
 
+    /*
+     * Keys
+     */
     private static final String keyShowContacts = prefix + ".showContacts";
     private static final String keyContactFontSize = prefix + ".contactFontSize";
     private static final String keyFunctionFontSize = prefix + ".functionFontSize";
@@ -52,7 +64,9 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyActiveWireColor = prefix + ".activeWireColor";
     private static final String keyInactiveWireColor = prefix + ".inactiveWireColor";
     private static final String keySimplifyStg = prefix + ".simplifyStg";
+    // Gate library
     private static final String keyGateLibrary = prefix + ".gateLibrary";
+    private static final String keyWaitData = prefix + ".waitData";
     private static final String keyMutexData = prefix + ".mutexData";
     // Import/export
     private static final String keyExportSubstitutionLibrary = prefix + ".exportSubstitutionLibrary";
@@ -76,6 +90,9 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyScanenPortPin = prefix + ".scanenPortPin";
     private static final String keyScantmPortPin = prefix + ".scantmPortPin";
 
+    /*
+     * Defaults
+     */
     private static final boolean defaultShowContacts = false;
     private static final double defaultContactFontSize = 0.4f;
     private static final double defaultFunctionFontSize = 0.5f;
@@ -85,7 +102,10 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
     private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
     private static final boolean defaultSimplifyStg = true;
+    // Gate library
     private static final String defaultGateLibrary = BackendUtils.getLibraryPath("workcraft.lib");
+    private static final String defaultWaitData = "WAIT (sig, (ctrl, san))";
+    private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     // Import/export
     private static final String defaultExportSubstitutionLibrary = "";
     private static final boolean defaultInvertExportSubstitutionRules = false;
@@ -93,7 +113,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultInvertImportSubstitutionRules = true;
     private static final int defaultVerilogAssignDelay = 0;
     private static final String defaultBusSuffix = "__$";
-    private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
     private static final String defaultResetActiveLowPort = "rst_n";
@@ -109,6 +128,9 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultScanenPortPin = "scanen / SE";
     private static final String defaultScantmPortPin = "scantm / TM";
 
+    /*
+     * Variables
+     */
     private static boolean showContacts = defaultShowContacts;
     private static double contactFontSize = defaultContactFontSize;
     private static double functionFontSize = defaultFunctionFontSize;
@@ -118,14 +140,17 @@ public class CircuitSettings extends AbstractModelSettings {
     private static Color activeWireColor = defaultActiveWireColor;
     private static Color inactiveWireColor = defaultInactiveWireColor;
     private static boolean simplifyStg = defaultSimplifyStg;
+    // Gate library
     private static String gateLibrary = defaultGateLibrary;
+    private static String waitData = defaultWaitData;
+    private static String mutexData = defaultMutexData;
+    // Import/export
     private static String exportSubstitutionLibrary = defaultExportSubstitutionLibrary;
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
     private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
-    private static int verilogAssignDelay = defaultVerilogAssignDelay;
     private static String busSuffix = defaultBusSuffix;
-    private static String mutexData = defaultMutexData;
+    private static int verilogAssignDelay = defaultVerilogAssignDelay;
     // Reset
     private static String resetActiveHighPort = defaultResetActiveHighPort;
     private static String resetActiveLowPort = defaultResetActiveLowPort;
@@ -158,7 +183,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getFunctionFontSize));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Show names of zero-dealy components",
+                "Show names of zero-delay components",
                 CircuitSettings::setShowZeroDelayNames,
                 CircuitSettings::getShowZeroDelayNames));
 
@@ -193,18 +218,29 @@ public class CircuitSettings extends AbstractModelSettings {
                 () -> getBaseRelativeFile(getGateLibrary())));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Mutex name and request-grant pairs",
+                "WAIT name, dirty input and clean handshake",
+                value -> {
+                    if (parseWaitData(value) != null) {
+                        setWaitData(value);
+                    } else {
+                        errorDescriptionFormat("WAIT", defaultWaitData);
+                    }
+                },
+                CircuitSettings::getWaitData));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                "MUTEX name and request-grant pairs",
                 value -> {
                     if (parseMutexData(value) != null) {
                         setMutexData(value);
                     } else {
-                        errorDescriptionFormat("Mutex", defaultMutexData);
+                        errorDescriptionFormat("MUTEX", defaultMutexData);
                     }
                 },
                 CircuitSettings::getMutexData));
 
         properties.add(new PropertyDeclaration<>(Mutex.Protocol.class,
-                "Mutex protocol",
+                "MUTEX protocol",
                 StgSettings::setMutexProtocol,
                 StgSettings::getMutexProtocol));
 
@@ -236,7 +272,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getVerilogAssignDelay));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Bus split suffix on Veriolog import ($ is replaced by index)",
+                PropertyHelper.BULLET_PREFIX + "Bus split suffix on Verilog import ($ is replaced by index)",
                 CircuitSettings::setBusSuffix,
                 CircuitSettings::getBusSuffix));
 
@@ -342,7 +378,9 @@ public class CircuitSettings extends AbstractModelSettings {
         setActiveWireColor(config.getColor(keyActiveWireColor, defaultActiveWireColor));
         setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
+        // Gate library
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
+        setWaitData(config.getString(keyWaitData, defaultWaitData));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
         // Import/export
         setExportSubstitutionLibrary(config.getString(keyExportSubstitutionLibrary, defaultExportSubstitutionLibrary));
@@ -378,7 +416,9 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setColor(keyActiveWireColor, getActiveWireColor());
         config.setColor(keyInactiveWireColor, getInactiveWireColor());
         config.setBoolean(keySimplifyStg, getSimplifyStg());
+        // Gate library
         config.set(keyGateLibrary, getGateLibrary());
+        config.set(keyWaitData, getWaitData());
         config.set(keyMutexData, getMutexData());
         // Import/export
         config.set(keyExportSubstitutionLibrary, getExportSubstitutionLibrary());
@@ -481,6 +521,18 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setGateLibrary(String value) {
         gateLibrary = value;
+    }
+
+    public static String getWaitData() {
+        return waitData;
+    }
+
+    public static void setWaitData(String value) {
+        waitData = value;
+    }
+
+    public static Wait parseWaitData() {
+        return parseWaitData(getWaitData());
     }
 
     public static String getMutexData() {
@@ -696,6 +748,19 @@ public class CircuitSettings extends AbstractModelSettings {
             Signal r2 = new Signal(matcher.group(MUTEX_R2_GROUP), Signal.Type.INPUT);
             Signal g2 = new Signal(matcher.group(MUTEX_G2_GROUP), Signal.Type.OUTPUT);
             result = new Mutex(name, r1, g1, r2, g2);
+        }
+        return result;
+    }
+
+    private static Wait parseWaitData(String str) {
+        Wait result = null;
+        Matcher matcher = WAIT_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
+        if (matcher.find()) {
+            String name = matcher.group(WAIT_NAME_GROUP);
+            Signal sig = new Signal(matcher.group(WAIT_SIG_GROUP), Signal.Type.INPUT);
+            Signal ctrl = new Signal(matcher.group(WAIT_CTRL_GROUP), Signal.Type.INPUT);
+            Signal san = new Signal(matcher.group(WAIT_SAN_GROUP), Signal.Type.OUTPUT);
+            result = new Wait(name, sig, ctrl, san);
         }
         return result;
     }

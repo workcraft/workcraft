@@ -9,7 +9,6 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.CommentGeneratorTool;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
@@ -21,7 +20,6 @@ import org.workcraft.utils.Hierarchy;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @DisplayName("Waveform Transition Graph")
 public class VisualWtg extends VisualDtd {
@@ -32,19 +30,17 @@ public class VisualWtg extends VisualDtd {
 
     public VisualWtg(Wtg model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new WtgSelectionTool());
-        tools.add(new CommentGeneratorTool());
-        tools.add(new WtgConnectionTool());
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class), true));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Waveform.class), true));
-        tools.add(new SignalGeneratorTool());
-        tools.add(new WtgSimulationTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new WtgSelectionTool());
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new WtgConnectionTool());
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(State.class), true));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Waveform.class), true));
+        addGraphEditorTool(new SignalGeneratorTool());
+        addGraphEditorTool(new WtgSimulationTool());
     }
 
     @Override

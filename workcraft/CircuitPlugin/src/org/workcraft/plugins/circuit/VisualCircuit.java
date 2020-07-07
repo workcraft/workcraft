@@ -19,7 +19,6 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.Decorator;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.RouterClient;
@@ -32,8 +31,10 @@ import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.List;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
@@ -47,20 +48,18 @@ public class VisualCircuit extends AbstractVisualModel {
 
     public VisualCircuit(Circuit model, VisualGroup root)  {
         super(model, root);
-        setGraphEditorTools();
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
-        tools.add(new CircuitSelectionTool());
-        tools.add(new CommentGeneratorTool());
-        tools.add(new CircuitConnectionTool());
-        tools.add(new FunctionComponentGeneratorTool());
-        tools.add(new ContactGeneratorTool());
-        tools.add(new CircuitSimulationTool());
-        tools.add(new InitialisationAnalyserTool());
-        tools.add(new CycleAnalyserTool());
-        setGraphEditorTools(tools);
+    @Override
+    public void registerGraphEditorTools() {
+        addGraphEditorTool(new CircuitSelectionTool());
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new CircuitConnectionTool());
+        addGraphEditorTool(new FunctionComponentGeneratorTool());
+        addGraphEditorTool(new ContactGeneratorTool());
+        addGraphEditorTool(new CircuitSimulationTool());
+        addGraphEditorTool(new InitialisationAnalyserTool());
+        addGraphEditorTool(new CycleAnalyserTool());
     }
 
     @Override

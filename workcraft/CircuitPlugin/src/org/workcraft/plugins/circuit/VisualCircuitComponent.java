@@ -192,7 +192,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     public VisualContact createContact(Contact.IOType ioType) {
-        VisualFunctionContact vc = new VisualFunctionContact(new FunctionContact(ioType));
+        VisualContact vc = new VisualContact(new Contact(ioType));
         addContact(vc);
         return vc;
     }

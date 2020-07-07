@@ -22,6 +22,10 @@ import java.util.*;
 
 public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
+    public static final TableLayout TABLE_LAYOUT = GuiUtils.createTableLayout(
+            new double[]{TableLayout.FILL},
+            new double[]{TableLayout.PREFERRED, TableLayout.FILL});
+
     private static final String REQ_LABEL = "REQ";
     private static final String ACK_LABEL = "ACK";
     private static final String ASSERTED_LABEL = Character.toString((char) 0x2191);
@@ -89,7 +93,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     class SignalList extends JList<String> {
 
         SignalList(Collection<String> signals, Color color) {
-            super(signals.toArray(new String[signals.size()]));
+            super(new Vector<>(signals));
             setBorder(GuiUtils.getEmptyBorder());
             setSelectionModel(new ListMultipleSelectionModel());
             setCellRenderer(new ListCellRenderer(color));
@@ -116,10 +120,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     @Override
     public JPanel createContentPanel() {
         JPanel result = super.createContentPanel();
-        result.setLayout(GuiUtils.createTableLayout(
-                new double[]{TableLayout.FILL},
-                new double[]{TableLayout.PREFERRED, TableLayout.FILL}));
-
+        result.setLayout(TABLE_LAYOUT);
         result.add(createOptionsPanel(), new TableLayoutConstraints(0, 1));
         // Preset panel has to be created the last as its guiMapper refers to other controls
         presetPanel = createPresetPanel();

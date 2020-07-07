@@ -32,8 +32,10 @@ import org.workcraft.utils.Hierarchy;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.List;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 @DisplayName ("Structured Occurrence Nets")
 public class VisualSON extends AbstractVisualModel {
@@ -48,23 +50,21 @@ public class VisualSON extends AbstractVisualModel {
 
     public VisualSON(SON model, VisualGroup root) {
         super(model, root);
-        setGraphEditorTools();
         BlockConnector.blockInternalConnector(this);
     }
 
-    private void setGraphEditorTools() {
-        List<GraphEditorTool> tools = new ArrayList<>();
+    @Override
+    public void registerGraphEditorTools() {
         GraphEditorTool channelPlaceTool = new NodeGeneratorTool(new DefaultNodeGenerator(ChannelPlace.class));
-        tools.add(new SONSelectionTool(channelPlaceTool));
-        tools.add(new CommentGeneratorTool());
-        tools.add(new SONConnectionTool());
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Condition.class)));
-        tools.add(new NodeGeneratorTool(new DefaultNodeGenerator(Event.class)));
-        tools.add(channelPlaceTool);
-        tools.add(new SONSimulationTool());
-        tools.add(new ScenarioGeneratorTool());
-        tools.add(new TimeValueSetterTool());
-        setGraphEditorTools(tools);
+        addGraphEditorTool(new SONSelectionTool(channelPlaceTool));
+        addGraphEditorTool(new CommentGeneratorTool());
+        addGraphEditorTool(new SONConnectionTool());
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Condition.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Event.class)));
+        addGraphEditorTool(channelPlaceTool);
+        addGraphEditorTool(new SONSimulationTool());
+        addGraphEditorTool(new ScenarioGeneratorTool());
+        addGraphEditorTool(new TimeValueSetterTool());
     }
 
     @Override

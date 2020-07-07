@@ -68,7 +68,9 @@ public interface VisualModel extends Model<VisualNode, VisualConnection>, Observ
     AbstractLayoutCommand getBestLayouter();
     Rectangle2D getBoundingBox();
 
-    void setGraphEditorTools(List<GraphEditorTool> tool);
+    void registerGraphEditorTools();
+    void addGraphEditorTool(GraphEditorTool tool);
+    void removeGraphEditorTool(GraphEditorTool tool);
     List<GraphEditorTool> getGraphEditorTools();
 
     ModelProperties getProperties(VisualNode node);

@@ -10,9 +10,9 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.gui.*;
 import org.workcraft.gui.actions.ActionButton;
+import org.workcraft.gui.properties.*;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.GraphEditorTool;
-import org.workcraft.gui.properties.*;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
@@ -56,22 +56,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             if (updatePropertyViewRequested) {
                 SwingUtilities.invokeLater(() -> updatePropertyView());
             }
-        }
-    }
-
-    private final class TemplateResetActionListener implements ActionListener {
-        private final VisualNode templateNode;
-        private final VisualNode defaultNode;
-
-        private TemplateResetActionListener(VisualNode templateNode, VisualNode defaultNode) {
-            this.templateNode = templateNode;
-            this.defaultNode = defaultNode;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            templateNode.copyStyle(defaultNode);
-            updatePropertyViewRequested = true;
         }
     }
 
@@ -430,7 +414,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             propertyEditorWindow.set(wrapProperties(properties));
             if ((templateNode != null) && (defaultNode != null)) {
                 JButton resetButton = new JButton(RESET_TO_DEFAULTS);
-                resetButton.addActionListener(new TemplateResetActionListener(templateNode, defaultNode));
+                resetButton.addActionListener(event -> {
+                    templateNode.copyStyle(defaultNode);
+                    updatePropertyViewRequested = true;
+                });
                 propertyEditorWindow.add(resetButton, BorderLayout.SOUTH);
                 // A hack to display reset button: toggle its visibility a couple of times.
                 resetButton.setVisible(false);
@@ -440,6 +427,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         mainWindow.setPropertyEditorTitle(title);
         updatePropertyViewRequested = false;
     }
+
 
     private void updateEditor() {
         super.repaint();
@@ -508,17 +496,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                 double ratioX = 1.0;
                 double ratioY = 1.0;
                 if ((viewportBox.getWidth() > VIEWPORT_MARGIN) && (viewportBox.getHeight() > VIEWPORT_MARGIN)) {
-                    if (viewportBox.getWidth() > viewportBox.getHeight()) {
-                        ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / viewportBox.getHeight();
-                        ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / viewportBox.getHeight();
-                    } else {
-                        ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / viewportBox.getWidth();
-                        ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / viewportBox.getWidth();
-                    }
+                    double minDimension = Math.min(viewportBox.getWidth(), viewportBox.getHeight());
+                    ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / minDimension;
+                    ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / minDimension;
                 }
-                Point2D ratio = new Point2D.Double(ratioX, ratioY);
-                double scaleX = ratio.getX() / modelBox.getWidth();
-                double scaleY = ratio.getY() / modelBox.getHeight();
+                double scaleX = ratioX / modelBox.getWidth();
+                double scaleY = ratioY / modelBox.getHeight();
                 double scale = 2.0 * Math.min(scaleX, scaleY);
                 viewport.scale(scale);
                 panCenter();

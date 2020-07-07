@@ -1,33 +1,30 @@
 package org.workcraft.gui.tools;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Graphics2D;
-import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
-
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.generators.NodeGenerator;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.dom.generators.NodeGenerator;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.geom.Point2D;
 
 public class NodeGeneratorTool extends AbstractGraphEditorTool {
 
     private final NodeGenerator generator;
+    private final boolean topLevelOnly;
+
     private VisualNode lastGeneratedNode = null;
     private String warningMessage = null;
     private Container currentLevel = null;
-    private boolean topLevelOnly = false;
 
     public NodeGeneratorTool(NodeGenerator generator) {
         this(generator, false);

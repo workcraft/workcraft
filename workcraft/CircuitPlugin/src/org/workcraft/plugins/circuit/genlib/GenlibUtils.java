@@ -8,12 +8,10 @@ import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
-import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.utils.ExpressionUtils;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.ExpressionUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
 
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
 
 public class GenlibUtils {
 
-    public static FunctionComponent instantiateGate(final Gate gate, final String instanceName, final Circuit circuit) {
+    public static FunctionComponent instantiateGate(Gate gate, String instanceName, Circuit circuit) {
         final FunctionComponent component = new FunctionComponent();
         component.setModule(gate.name);
         circuit.add(component);
@@ -56,6 +54,25 @@ public class GenlibUtils {
             throw new RuntimeException(e);
         }
         return component;
+    }
+
+    public static void instantiateGate(Gate gate, VisualCircuit circuit, VisualFunctionComponent component) {
+        component.getReferencedComponent().setModule(gate.name);
+        VisualFunctionContact contact = component.getGateOutput();
+        if (contact == null) {
+            contact = component.createContact(IOType.OUTPUT);
+        }
+        circuit.setMathName(contact, gate.function.name);
+        String setFunction = getSetFunction(gate);
+        String resetFunction = getResetFunction(gate);
+        try {
+            BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setFunction);
+            contact.setSetFunction(setFormula);
+            BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, resetFunction);
+            contact.setResetFunction(resetFormula);
+        } catch (org.workcraft.formula.jj.ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static String getSetFunction(Gate gate) {
@@ -138,6 +155,37 @@ public class GenlibUtils {
             }
         }
         return result;
+    }
+
+    public static int getPinCount(Gate gate) {
+        if (gate != null) {
+            try {
+                BooleanFormula formula = BooleanFormulaParser.parse(gate.function.formula);
+                return FormulaUtils.extractOrderedVariables(formula).size() + (gate.isSequential() ? 0 : 1);
+            } catch (ParseException e) {
+            }
+        }
+        return 0;
+    }
+
+    public static Pair<Integer, Integer> getPinRange(Library library) {
+        int min = 0;
+        int max = 0;
+        if (library != null) {
+            boolean first = true;
+            for (String gateName : library.getNames()) {
+                Gate gate = library.get(gateName);
+                int pinCount = GenlibUtils.getPinCount(gate);
+                if (first || (pinCount < min)) {
+                    min = pinCount;
+                }
+                if (first || (pinCount > max)) {
+                    max = pinCount;
+                }
+                first = false;
+            }
+        }
+        return Pair.of(min, max);
     }
 
 }

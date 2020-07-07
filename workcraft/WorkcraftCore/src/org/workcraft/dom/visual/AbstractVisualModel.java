@@ -57,6 +57,9 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         super(root);
         this.mathModel = mathModel;
         this.currentLevel = getRoot();
+
+        registerGraphEditorTools();
+
         new TransformEventPropagator().attach(getRoot());
         new SelectionEventPropagator(this).attach(getRoot());
         new RemovedNodeDeselector(this).attach(getRoot());
@@ -706,14 +709,22 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     }
 
     @Override
-    public final void setGraphEditorTools(List<GraphEditorTool> tools) {
-        graphEditorTools.clear();
-        graphEditorTools.addAll(tools);
+    public void registerGraphEditorTools() {
+    }
+
+    @Override
+    public final void addGraphEditorTool(GraphEditorTool tool) {
+        graphEditorTools.add(tool);
+    }
+
+    @Override
+    public final void removeGraphEditorTool(GraphEditorTool tool) {
+        graphEditorTools.remove(tool);
     }
 
     @Override
     public final List<GraphEditorTool> getGraphEditorTools() {
-        return graphEditorTools;
+        return Collections.unmodifiableList(graphEditorTools);
     }
 
     @Override

@@ -17,9 +17,11 @@ public interface Decorator {
 
         public static final Empty INSTANCE = new Empty();
 
+        private Empty() {
+        }
+
         @Override
         public Decoration getDecoration(Node node) {
-
             return null;
         }
 
