@@ -94,6 +94,8 @@ class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
 
     @Override
     public StgModel getSrcStg(WorkspaceEntry we) {
+        // Output determinacy uses composition of *modified* STG components.
+        // Original STGs are obtained from WorkspaceEntries.
         ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
         return WorkspaceUtils.getAs(me, StgModel.class);
     }

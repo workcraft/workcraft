@@ -7,18 +7,18 @@ import java.util.Map;
 
 public class MultiSubExportOutput extends MultiExportOutput {
 
-    private final List<Map<String, String>> substitutions;
+    private final List<Map<String, String>> substitutionsList;
 
-    public MultiSubExportOutput(List<File> files, List<Map<String, String>> substitutions) {
+    public MultiSubExportOutput(List<File> files, List<Map<String, String>> substitutionsList) {
         super(files);
-        this.substitutions = substitutions;
+        this.substitutionsList = substitutionsList;
     }
 
     public Map<String, String> getSubstitutions(int index) {
-        if ((substitutions == null) || (index < 0) || (index > substitutions.size())) {
+        if ((substitutionsList == null) || (index < 0) || (index > substitutionsList.size())) {
             return new HashMap<>();
         }
-        return substitutions.get(index);
+        return substitutionsList.get(index);
     }
 
 }

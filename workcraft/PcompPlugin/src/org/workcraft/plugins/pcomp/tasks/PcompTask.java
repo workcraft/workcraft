@@ -11,8 +11,11 @@ import java.util.Collection;
 
 public class PcompTask implements Task<PcompOutput> {
 
-    public static final String OUTPUT_FILE_NAME = "composition.g";
-    public static final String DETAIL_FILE_NAME = "detail.xml";
+    public static final String DETAIL_FILE_PREFIX = "detail";
+    public static final String DETAIL_FILE_EXTENSION = ".xml";
+
+    private static final String OUTPUT_FILE_NAME = "composition.g";
+    private static final String DETAIL_FILE_NAME = DETAIL_FILE_PREFIX + DETAIL_FILE_EXTENSION;
 
     private final Collection<File> inputFiles;
     private final PcompParameters parameters;

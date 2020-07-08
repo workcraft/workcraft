@@ -20,7 +20,7 @@ public class CircuitStgUtils {
             File directory, ProgressMonitor<?> monitor) {
 
         String sysStgFileName = StgUtils.SYSTEM_FILE_PREFIX + StgFormat.getInstance().getExtension();
-        String detailFileName = StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION;
+        String detailFileName = PcompTask.DETAIL_FILE_PREFIX + PcompTask.DETAIL_FILE_EXTENSION;
         return composeDevWithEnv(devStgFile, envStgFile, directory, monitor, sysStgFileName, detailFileName);
     }
 

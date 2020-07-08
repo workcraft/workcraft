@@ -19,8 +19,9 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
-import org.workcraft.utils.*;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
@@ -66,19 +67,17 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
     @Override
     public Map<String, String> getSubstitutions(WorkspaceEntry we) {
         int index = wes.indexOf(we);
-        return getSubstitutions(index);
+        if ((getExportOutput() instanceof MultiSubExportOutput) && (index >= 0)) {
+            MultiSubExportOutput exportOutput = (MultiSubExportOutput) getExportOutput();
+            return exportOutput.getSubstitutions(index);
+        }
+        return new HashMap<>();
     }
 
     @Override
     public ComponentData getCompositionData(WorkspaceEntry we) {
         int index = wes.indexOf(we);
         return getCompositionData(index);
-    }
-
-    @Override
-    public StgModel getSrcStg(WorkspaceEntry we) {
-        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
-        return WorkspaceUtils.getAs(me, StgModel.class);
     }
 
     @Override

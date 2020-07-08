@@ -34,6 +34,7 @@ import java.util.Queue;
 import java.util.*;
 
 public class StgUtils {
+
     public static final String SPEC_FILE_PREFIX = "net";
     public static final String DEVICE_FILE_PREFIX = "dev";
     public static final String ENVIRONMENT_FILE_PREFIX = "env";
@@ -41,9 +42,6 @@ public class StgUtils {
 
     public static final String MUTEX_FILE_SUFFIX = "-mutex";
     public static final String MODIFIED_FILE_SUFFIX = "-mod";
-
-    public static final String DETAIL_FILE_PREFIX = "detail";
-    public static final String XML_FILE_EXTENSION = ".xml";
 
     private static void replaceNamedTransition(Stg stg, NamedTransition oldTransition, NamedTransition newTransition) {
         for (MathNode pred : stg.getPreset(oldTransition)) {
@@ -64,7 +62,7 @@ public class StgUtils {
         stg.remove(oldTransition);
     }
 
-    public static DummyTransition convertSignalToDummyTransition(Stg stg, SignalTransition signalTransition) {
+    private static DummyTransition convertSignalToDummyTransition(Stg stg, SignalTransition signalTransition) {
         Container container = (Container) signalTransition.getParent();
         DummyTransition dummyTransition = stg.createDummyTransition(null, container);
         replaceNamedTransition(stg, signalTransition, dummyTransition);
@@ -163,24 +161,23 @@ public class StgUtils {
         }
     }
 
-    public static Map<String, String> convertInternalSignalsToDummies(Stg stg) {
-        Map<String, String> result = new HashMap<>();
+    public static void convertInternalSignalsToDummies(Stg stg) {
+        convertInternalSignalsToDummies(stg, new HashMap<>());
+    }
+
+    public static void convertInternalSignalsToDummies(Stg stg, Map<String, String> substitutions) {
         for (SignalTransition signalTransition : stg.getSignalTransitions(Signal.Type.INTERNAL)) {
             String signalTransitionRef = stg.getNodeReference(signalTransition);
             DummyTransition dummyTransition = StgUtils.convertSignalToDummyTransition(stg, signalTransition);
             String dummyTransitionRef = stg.getNodeReference(dummyTransition);
-            result.put(dummyTransitionRef, signalTransitionRef);
+            substitutions.put(dummyTransitionRef, signalTransitionRef);
         }
-        return result;
     }
 
-    public static Set<String> convertInternalSignalsToOutputs(Stg stg) {
-        Set<String> result = new HashSet<>();
+    public static void convertInternalSignalsToOutputs(Stg stg) {
         for (String signal : stg.getSignalReferences(Signal.Type.INTERNAL)) {
             stg.setSignalType(signal, Signal.Type.OUTPUT);
-            result.add(signal);
         }
-        return result;
     }
 
     public static WorkspaceEntry createStgWorkIfNewSignals(WorkspaceEntry srcWe, Stg dstStg) {
@@ -353,10 +350,10 @@ public class StgUtils {
         }
         // Connect places and transitions.
         for (Connection connection : stg.getConnections()) {
-            MathNode first = nodeMap.get(connection.getFirst());
-            MathNode second = nodeMap.get(connection.getSecond());
+            MathNode firstNode = nodeMap.get(connection.getFirst());
+            MathNode secondNode = nodeMap.get(connection.getSecond());
             try {
-                result.connect(first, second);
+                result.connect(firstNode, secondNode);
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }

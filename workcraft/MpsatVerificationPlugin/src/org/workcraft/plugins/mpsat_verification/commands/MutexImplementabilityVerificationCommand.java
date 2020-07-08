@@ -17,8 +17,8 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 public class MutexImplementabilityVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
@@ -69,7 +69,7 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
         TaskManager manager = framework.getTaskManager();
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        ArrayList<VerificationParameters> settingsList = ReachUtils.getMutexImplementabilityParameters(mutexes);
+        List<VerificationParameters> settingsList = ReachUtils.getMutexImplementabilityParameters(mutexes);
         CombinedChainTask task = new CombinedChainTask(we, settingsList, null);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);

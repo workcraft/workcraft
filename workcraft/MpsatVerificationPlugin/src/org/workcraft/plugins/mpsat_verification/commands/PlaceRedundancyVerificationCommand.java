@@ -30,14 +30,14 @@ import java.util.stream.Collectors;
 public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
         implements NodeTransformer, ScriptableDataCommand<Boolean, Collection<String>> {
 
-    private static final String REACH_PLACE_REDUNDANCY_NAMES =
+    private static final String PLACE_REDUNDANCY_NAMES_REPLACEMENT =
             "/* insert place names for redundancy check */"; // For example: "p1", "<a+;b->
 
-    private static final String REACH_PLACE_REDUNDANCY =
+    private static final String PLACE_REDUNDANCY_REACH =
             "// Checks whether the given set of places can be removed from the net without affecting its behaviour, in the\n" +
             "// sense that no transition can be disabled solely because of the absence of tokens on any of these places.\n" +
             "let\n" +
-            "    PNAMES = {" + REACH_PLACE_REDUNDANCY_NAMES + "\"\"} \\ {\"\"},\n" +
+            "    PNAMES = {" + PLACE_REDUNDANCY_NAMES_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
             "    PL = gather pn in PNAMES { P pn }\n" +
             "{\n" +
             "    exists t in TRANSITIONS {\n" +
@@ -111,12 +111,12 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
         }
 
         String str = data.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
-        String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);
+        String reach = PLACE_REDUNDANCY_REACH.replace(PLACE_REDUNDANCY_NAMES_REPLACEMENT, str);
         VerificationParameters verificationParameters = new VerificationParameters("Place redundancy",
                 VerificationMode.REACHABILITY_REDUNDANCY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reachPlaceRedundancy, true);
+                reach, true);
 
         TaskManager manager = Framework.getInstance().getTaskManager();
         VerificationChainTask task = new VerificationChainTask(we, verificationParameters);

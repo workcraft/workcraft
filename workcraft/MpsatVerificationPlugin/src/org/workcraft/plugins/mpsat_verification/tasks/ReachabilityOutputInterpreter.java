@@ -104,13 +104,9 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     }
 
     public Map<String, String> getSubstitutions(WorkspaceEntry we) {
-        return getSubstitutions(0);
-    }
-
-    public Map<String, String> getSubstitutions(int index) {
-        if (getExportOutput() instanceof MultiSubExportOutput) {
-            MultiSubExportOutput exportOutput = (MultiSubExportOutput) getExportOutput();
-            return exportOutput.getSubstitutions(index);
+        if (getExportOutput() instanceof SubExportOutput) {
+            SubExportOutput exportOutput = (SubExportOutput) getExportOutput();
+            return exportOutput.getSubstitutions();
         }
         return new HashMap<>();
     }
@@ -133,15 +129,19 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     }
 
     public StgModel getSrcStg(WorkspaceEntry we) {
+        // If the property is verified on a composition STG, then use the
+        // corresponding component STG; otherwise use input STG of MPSat task.
+        StgModel stg = null;
         ComponentData data = getCompositionData(we);
-        if (data == null) {
-            return getOutput().getInputStg();
+        if (data != null) {
+            File file = new File(data.getFileName());
+            if ((file != null) && file.exists()) {
+                stg = StgUtils.importStg(file);
+            }
+        } else {
+            stg = getOutput().getInputStg();
         }
-        File file = new File(data.getFileName());
-        if ((file != null) && file.exists()) {
-            return StgUtils.importStg(file);
-        }
-        return null;
+        return stg;
     }
 
     public String getMessage(boolean propertyHolds) {
