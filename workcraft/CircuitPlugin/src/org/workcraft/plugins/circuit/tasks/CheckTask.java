@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.tasks;
 import org.workcraft.Framework;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
@@ -17,6 +16,7 @@ import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -161,7 +161,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                     }
 
                     // Generating .g for the whole system (circuit and environment)
-                    pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
+                    pcompResult = PcompUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
                     if (!pcompResult.isSuccess()) {
                         if (pcompResult.isCancel()) {
                             return Result.cancel();
@@ -205,7 +205,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                     }
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
-                    modPcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, modEnvStgFile, directory, monitor,
+                    modPcompResult = PcompUtils.composeDevWithEnv(devStgFile, modEnvStgFile, directory, monitor,
                             StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension,
                             PcompTask.DETAIL_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + PcompTask.DETAIL_FILE_EXTENSION);
 

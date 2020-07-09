@@ -1,9 +1,9 @@
 package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualStg;
@@ -56,7 +56,7 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
             envStgFile.deleteOnExit();
         }
         // Generating .g for the whole system (circuit and environment)
-        Result<? extends PcompOutput> pcompResult = CircuitStgUtils.composeDevWithEnv(
+        Result<? extends PcompOutput> pcompResult = PcompUtils.composeDevWithEnv(
                 devStgFile, envStgFile, directory, null);
 
         if (pcompResult.isSuccess()) {

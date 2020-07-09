@@ -2,13 +2,13 @@ package org.workcraft.plugins.circuit.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
@@ -96,7 +96,7 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
                 }
 
                 // Generating .g for the whole system (circuit and environment)
-                pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
+                pcompResult = PcompUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
                 if (!pcompResult.isSuccess()) {
                     if (pcompResult.isCancel()) {
                         return Result.cancel();

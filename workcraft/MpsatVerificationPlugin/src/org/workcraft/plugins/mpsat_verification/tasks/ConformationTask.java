@@ -7,8 +7,7 @@ import org.workcraft.plugins.mpsat_verification.utils.TransformUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.pcomp.tasks.PcompParameters;
-import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
@@ -23,7 +22,10 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public class ConformationTask implements Task<VerificationChainOutput> {
 
@@ -89,12 +91,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.40);
 
             // Generating .g for the whole system (model and environment)
-            PcompParameters pcompParameters = new PcompParameters(PcompParameters.SharedSignalMode.OUTPUT, true, false);
-            PcompTask pcompTask = new PcompTask(Arrays.asList(devStgFile, envStgFile), pcompParameters, directory);
-
-            Result<? extends PcompOutput> pcompResult = taskManager.execute(
-                    pcompTask, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
-
+            Result<? extends PcompOutput> pcompResult = PcompUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
             if (!pcompResult.isSuccess()) {
                 if (pcompResult.isCancel()) {
                     return Result.cancel();

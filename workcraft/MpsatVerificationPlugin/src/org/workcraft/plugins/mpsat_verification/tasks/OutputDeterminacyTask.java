@@ -10,8 +10,7 @@ import org.workcraft.plugins.mpsat_verification.utils.TransformUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.pcomp.tasks.PcompParameters;
-import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -121,12 +120,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.30);
 
             // Generating .g for the whole system (model and environment)
-            PcompParameters pcompParameters = new PcompParameters(PcompParameters.SharedSignalMode.OUTPUT, true, false);
-            PcompTask pcompTask = new PcompTask(stgFiles, pcompParameters, directory);
-
-            Result<? extends PcompOutput> pcompResult = taskManager.execute(
-                    pcompTask, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
-
+            Result<? extends PcompOutput> pcompResult = PcompUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
             if (!pcompResult.isSuccess()) {
                 if (pcompResult.isCancel()) {
                     return Result.cancel();
