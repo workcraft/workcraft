@@ -47,9 +47,9 @@ public class PunfLtlxTask implements Task<PunfOutput> {
         if (result.isSuccess() && (result.getOutcome() != null)) {
             int returnCode = output.getReturnCode();
             if ((returnCode == 0) || (returnCode == 1)) {
-                return Result.success(new PunfOutput(output));
+                return Result.success(new PunfOutput(output, outputFile));
             }
-            return Result.failure(new PunfOutput(output));
+            return Result.failure(new PunfOutput(output, outputFile));
         }
 
         if (result.isCancel()) {
