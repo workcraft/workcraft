@@ -7,9 +7,10 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.types.Pair;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ReachUtils {
@@ -33,7 +34,7 @@ public class ReachUtils {
                 MpsatVerificationSettings.getSolutionCount());
     }
 
-    private static final String REACH_CONSISTENCY =
+    private static final String CONSISTENCY_REACH =
             "// Checks whether the STG is consistent, i.e. rising and falling transitions of every signal alternate in all traces\n" +
             "exists s in SIGNALS \\ DUMMY {\n" +
             "    let Es = ev s {\n" +
@@ -48,24 +49,24 @@ public class ReachUtils {
                 VerificationMode.STG_REACHABILITY_CONSISTENCY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                REACH_CONSISTENCY, true);
+                CONSISTENCY_REACH, true);
     }
 
-    private static final String REACH_DUMMY_CHECK =
+    private static final String DUMMY_CHECK_REACH =
             "exists e in EVENTS {\n" +
             "    is_dummy e\n" +
             "}\n";
 
-    private static final String REPLACEMENT_OUTPUT_PERSISTENCY_EXCEPTIONS =
+    private static final String OUTPUT_PERSISTENCY_EXCEPTIONS_REPLACEMENT =
             "/* insert signal pairs of output persistency exceptions */"; // For example: {"me1_g1", "me1_g2"}, {"me2_g1", "me2_g2"},
 
-    private static final String REACH_OUTPUT_PERSISTENCY =
+    private static final String OUTPUT_PERSISTENCY_REACH =
             "// Checks whether the STG is output-persistent, i.e. no local signal can be disabled by any other signal,\n" +
             "// with the exception of the provided set of pairs of signals (e.g. mutex outputs).\n" +
-            REACH_DUMMY_CHECK +
+            DUMMY_CHECK_REACH +
             "? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
-            "    EXCEPTIONS = {" + REPLACEMENT_OUTPUT_PERSISTENCY_EXCEPTIONS + "{\"\"}} \\ {{\"\"}},\n" +
+            "    EXCEPTIONS = {" + OUTPUT_PERSISTENCY_EXCEPTIONS_REPLACEMENT + "{\"\"}} \\ {{\"\"}},\n" +
             "    SIGE = gather pair in EXCEPTIONS {\n" +
             "        gather str in pair { S str }\n" +
             "    },\n" +
@@ -94,7 +95,7 @@ public class ReachUtils {
             "}\n";
 
     public static VerificationParameters getOutputPersistencyParameters() {
-        return getOutputPersistencyParameters(new LinkedList<>());
+        return getOutputPersistencyParameters(Collections.emptyList());
     }
 
     public static VerificationParameters getOutputPersistencyParameters(Collection<Pair<String, String>> exceptionPairs) {
@@ -104,7 +105,7 @@ public class ReachUtils {
                 str += "{\"" + exceptionPair.getFirst() + "\", \"" + exceptionPair.getSecond() + "\"}, ";
             }
         }
-        String reachOutputPersistence = REACH_OUTPUT_PERSISTENCY.replace(REPLACEMENT_OUTPUT_PERSISTENCY_EXCEPTIONS, str);
+        String reachOutputPersistence = OUTPUT_PERSISTENCY_REACH.replace(OUTPUT_PERSISTENCY_EXCEPTIONS_REPLACEMENT, str);
         return new VerificationParameters("Output persistency",
                 VerificationMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
@@ -112,9 +113,9 @@ public class ReachUtils {
                 reachOutputPersistence, true);
     }
 
-    private static final String REACH_DI_INTERFACE =
+    private static final String DI_INTERFACE_REACH =
             "// Checks whether the STG's interface is delay insensitive, i.e. an input transition cannot trigger another input transition\n" +
-            REACH_DUMMY_CHECK +
+            DUMMY_CHECK_REACH +
             "? fail \"Delay insensitivity can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
             "    TRINP = tran INPUTS * tran EVENTS\n" +
@@ -138,12 +139,12 @@ public class ReachUtils {
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                REACH_DI_INTERFACE, true);
+                DI_INTERFACE_REACH, true);
     }
 
-    private static final String REACH_INPUT_PROPERNESS =
+    private static final String INPUT_PROPERNESS_REACH =
             "// Checks whether the STG is input proper, i.e. no input can be triggered by an internal signal or disabled by a local signal.\n" +
-            REACH_DUMMY_CHECK +
+            DUMMY_CHECK_REACH +
             "? fail \"Input properness can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
             "    TR = tran EVENTS,\n" +
@@ -185,81 +186,66 @@ public class ReachUtils {
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                REACH_INPUT_PROPERNESS, true);
+                INPUT_PROPERNESS_REACH, true);
     }
 
-    // REACH expression for checking conformation (this is a template, the list of places needs to be updated)
-    private static final String REPLACEMENT_CONFORMATION_DEV_PLACES =
-            "/* insert device place names here */"; // For example: "p0", "<a-,b+>"
+    private static final String SHADOW_TRANSITIONS_REPLACEMENT =
+            "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
 
-    // Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
-    // Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
-    // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
-    private static final String REACH_CONFORMATION =
-            "// Check a device STG for conformation to its environment STG.\n" +
-            "// LIMITATIONS (could be checked before parallel composition):\n" +
-            "// - The set of device STG place names is non-empty (this limitation can be easily removed).\n" +
-            "// - Each transition in the device STG must have some arcs, i.e. its preset or postset is non-empty.\n" +
-            "// - The device STG must have no dummies.\n" +
+    private static final String CONFORMATION_REACH =
+            "// Check whether several STGs conform to each other.\n" +
+            "// The enabled-via-dummies semantics is assumed for @.\n" +
+            "// Configurations with maximal dummies are assumed to be allowed.\n" +
             "let\n" +
-            "     // PDEV_NAMES is the set of names of places in the composed STG which originated from the device STG.\n" +
-            "     // This set may in fact contain places from the environment STG, e.g. when PCOMP removes duplicate\n" +
-            "     // places from the composed STG, it substitutes them with equivalent places that remain.\n" +
-            "     // LIMITATION: syntax error if any of these sets is empty.\n" +
-            "    PDEV_NAMES = {" + REPLACEMENT_CONFORMATION_DEV_PLACES + "\"\"} \\ {\"\"},\n" +
-            "    // PDEV is the set of places with the names in PDEV_NAMES.\n" +
-            "    // XML-based PUNF / MPSAT are needed here to process dead places correctly.\n" +
-            "    PDEV = gather nm in PDEV_NAMES { P nm },\n" +
-            "    // PDEV_EXT includes PDEV and places with the names of the form p@num, where p is a place in PDEV.\n" +
-            "    // Such places appeared during optimisation of the unfolding prefix due to splitting places\n" +
-            "    // incident with multiple read arcs (-r option of punf).\n" +
-            "    // Note that such a place must have the same preset and postset (ignoring context) as p.\n" +
-            "    PDEV_EXT = PDEV + gather p in PP \".*@[0-9]+\" s.t.\n" +
-            "    let name_p=name p, pre_p=pre p, post_p=post p, s_pre_p=pre_p \\ post_p, s_post_p=post_p \\ pre_p {\n" +
-            "        exists q in PDEV {\n" +
-            "            let name_q=name q, pre_q=pre q, post_q=post q {\n" +
-            "                name_p[..len name_q] = name_q + \"@\" &\n" +
-            "                pre_q \\ post_q=s_pre_p & post_q \\ pre_q=s_post_p\n" +
-            "            }\n" +
-            "        }\n" +
-            "    }\n" +
-            "    { p },\n" +
-            "    // TDEV is the set of device transitions.\n" +
-            "    // XML-based PUNF / MPSAT are needed here to process dead transitions correctly.\n" +
-            "    // LIMITATION: each transition in the device must have some arcs, i.e. its preset or postset is non-empty.\n" +
-            "    TDEV = tran sig (pre PDEV + post PDEV)\n" +
+            "    // Set of phantom output transition names in the whole composed STG.\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
             "{\n" +
-            "     // The device STG must have no dummies.\n" +
-            "    card (sig TDEV * DUMMY) != 0 ? fail \"Conformation can currently be checked only for device STGs without dummies\" :\n" +
-            "    exists t in TDEV s.t. is_output t {\n" +
-            "         // Check if t is enabled in the device STG.\n" +
-            "         // LIMITATION: The device STG must have no dummies (this limitation is checked above.)\n" +
-            "        forall p in pre t s.t. p in PDEV_EXT { $p }\n" +
-            "        &\n" +
-            "         // Check if t is enabled in the composed STG (and thus in the environment STG).\n" +
-            "        ~@ sig t\n" +
+            "    // Optimisation: make sure phantom events are not in the configuration.\n" +
+            "    forall e in ev SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
+            "    &\n" +
+            "    // Check if some output signal is enabled due to phantom transitions only;\n" +
+            "    // this would mean that some component STG does not conform to the rest of the composition.\n" +
+            "    exists o in OUTPUTS {\n" +
+            "        let tran_o = tran o {\n" +
+            "            exists t in tran_o * SHADOW_OUTPUT_TRANSITIONS {\n" +
+            "                forall p in pre t { $p }\n" +
+            "            }\n" +
+            "            &\n" +
+            "            forall tt in tran_o \\ SHADOW_OUTPUT_TRANSITIONS { ~@tt }\n" +
+            "        }\n" +
             "    }\n" +
             "}\n";
 
-    // Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
-    // Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
-    // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
-    public static VerificationParameters getConformationParameters(Collection<String> devPlaceRefs) {
-        String str = devPlaceRefs.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
-        String reachConformation = REACH_CONFORMATION.replace(REPLACEMENT_CONFORMATION_DEV_PLACES, str);
+    public static VerificationParameters getConformationParameters(Set<String> shadowTransitionNames) {
+        String reach = getConformationReach(shadowTransitionNames);
         return new VerificationParameters("Conformation",
                 VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reachConformation, true);
+                reach, true);
+    }
+
+    public static VerificationParameters getNwayConformationParameters(Set<String> shadowTransitionNames) {
+        String reach = getConformationReach(shadowTransitionNames);
+        return new VerificationParameters("N-way conformation",
+                VerificationMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reach, true);
+    }
+
+    private static String getConformationReach(Set<String> shadowTransitionNames) {
+        String str = shadowTransitionNames.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
+        return CONFORMATION_REACH.replace(SHADOW_TRANSITIONS_REPLACEMENT, str);
     }
 
     // REACH expression for checking if these two pairs of signals can be implemented by a mutex
-    private static final String REPLACEMENT_MUTEX_R1 = "/* insert r1 name here */";
-    private static final String REPLACEMENT_MUTEX_G1 = "/* insert g1 name here */";
-    private static final String REPLACEMENT_MUTEX_R2 = "/* insert r2 name here */";
-    private static final String REPLACEMENT_MUTEX_G2 = "/* insert g2 name here */";
-    private static final String REACH_MUTEX_IMPLEMENTABILITY_STRICT =
+    private static final String MUTEX_R1_REPLACEMENT = "/* insert r1 name here */";
+    private static final String MUTEX_G1_REPLACEMENT = "/* insert g1 name here */";
+    private static final String MUTEX_R2_REPLACEMENT = "/* insert r2 name here */";
+    private static final String MUTEX_G2_REPLACEMENT = "/* insert g2 name here */";
+    private static final String MUTEX_IMPLEMENTABILITY_STRICT_REACH =
             "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
             "// by a STRICT mutex with requests r1/r2 and grants g1/g2.\n" +
             "// The properties to check are:\n" +
@@ -272,10 +258,10 @@ public class ReachUtils {
             "// Note that the latter property does not follow from the above constraints\n" +
             "// for the next state functions of the grants (e.g. in the initial state).\n" +
             "let\n" +
-            "    r1s = S\"" + REPLACEMENT_MUTEX_R1 + "\",\n" +
-            "    g1s = S\"" + REPLACEMENT_MUTEX_G1 + "\",\n" +
-            "    r2s = S\"" + REPLACEMENT_MUTEX_R2 + "\",\n" +
-            "    g2s = S\"" + REPLACEMENT_MUTEX_G2 + "\",\n" +
+            "    r1s = S\"" + MUTEX_R1_REPLACEMENT + "\",\n" +
+            "    g1s = S\"" + MUTEX_G1_REPLACEMENT + "\",\n" +
+            "    r2s = S\"" + MUTEX_R2_REPLACEMENT + "\",\n" +
+            "    g2s = S\"" + MUTEX_G2_REPLACEMENT + "\",\n" +
             "    r1 = $r1s,\n" +
             "    g1 = $g1s,\n" +
             "    r2 = $r2s,\n" +
@@ -301,7 +287,7 @@ public class ReachUtils {
             "    r1 & g1 & r2 & g2\n" +
             "}\n";
 
-    private static final String REACH_MUTEX_IMPLEMENTABILITY_RELAXED =
+    private static final String MUTEX_IMPLEMENTABILITY_RELAXED_REACH =
             "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
             "// by a RELAXED mutex with requests r1/r2 and grants g1/g2.\n" +
             "// The properties to check are:\n" +
@@ -312,10 +298,10 @@ public class ReachUtils {
             "// Note that the latter property does not follow from the above constraints\n" +
             "// for the next state functions of the grants (e.g. in the initial state).\n" +
             "let\n" +
-            "    r1s = S\"" + REPLACEMENT_MUTEX_R1 + "\",\n" +
-            "    g1s = S\"" + REPLACEMENT_MUTEX_G1 + "\",\n" +
-            "    r2s = S\"" + REPLACEMENT_MUTEX_R2 + "\",\n" +
-            "    g2s = S\"" + REPLACEMENT_MUTEX_G2 + "\",\n" +
+            "    r1s = S\"" + MUTEX_R1_REPLACEMENT + "\",\n" +
+            "    g1s = S\"" + MUTEX_G1_REPLACEMENT + "\",\n" +
+            "    r2s = S\"" + MUTEX_R2_REPLACEMENT + "\",\n" +
+            "    g2s = S\"" + MUTEX_G2_REPLACEMENT + "\",\n" +
             "    r1 = $r1s,\n" +
             "    g1 = $g1s,\n" +
             "    r2 = $r2s,\n" +
@@ -330,20 +316,16 @@ public class ReachUtils {
             "    r1 & g1 & r2 & g2  // mutual exclusion of critical sections\n" +
             "}\n";
 
-    public static ArrayList<VerificationParameters> getMutexImplementabilityParameters(Collection<Mutex> mutexes) {
-        final ArrayList<VerificationParameters> settingsList = new ArrayList<>();
-        for (Mutex mutex: mutexes) {
-            settingsList.add(getMutexImplementabilityParameters(mutex));
-        }
-        return settingsList;
+    public static List<VerificationParameters> getMutexImplementabilityParameters(Collection<Mutex> mutexes) {
+        return mutexes.stream().map(ReachUtils::getMutexImplementabilityParameters).collect(Collectors.toList());
     }
 
     private static VerificationParameters getMutexImplementabilityParameters(Mutex mutex) {
         String reach = getMutexImplementabilityReach()
-                .replace(REPLACEMENT_MUTEX_R1, mutex.r1.name)
-                .replace(REPLACEMENT_MUTEX_G1, mutex.g1.name)
-                .replace(REPLACEMENT_MUTEX_R2, mutex.r2.name)
-                .replace(REPLACEMENT_MUTEX_G2, mutex.g2.name);
+                .replace(MUTEX_R1_REPLACEMENT, mutex.r1.name)
+                .replace(MUTEX_G1_REPLACEMENT, mutex.g1.name)
+                .replace(MUTEX_R2_REPLACEMENT, mutex.r2.name)
+                .replace(MUTEX_G2_REPLACEMENT, mutex.g2.name);
 
         return new VerificationParameters("Mutex implementability for place '" + mutex.name + "'",
                 VerificationMode.STG_REACHABILITY, 0,
@@ -354,9 +336,9 @@ public class ReachUtils {
 
     private static String getMutexImplementabilityReach() {
         if (StgSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
-            return REACH_MUTEX_IMPLEMENTABILITY_RELAXED;
+            return MUTEX_IMPLEMENTABILITY_RELAXED_REACH;
         }
-        return REACH_MUTEX_IMPLEMENTABILITY_STRICT;
+        return MUTEX_IMPLEMENTABILITY_STRICT_REACH;
     }
 
     public static String getBooleanAsString(boolean value) {

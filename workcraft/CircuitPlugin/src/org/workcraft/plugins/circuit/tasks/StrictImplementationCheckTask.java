@@ -33,32 +33,29 @@ import java.util.Collection;
 public class StrictImplementationCheckTask implements Task<VerificationChainOutput> {
 
     // Reach expression for checking strict implementation
-    private static final String REACH_STRICT_IMPLEMENTATION_SIGNAL =
+    private static final String STRICT_IMPLEMENTATION_SIGNAL_REPLACEMENT =
             "/* insert signal name here */";
 
-    private static final String REACH_STRICT_IMPLEMENTATION_EXPR =
+    private static final String STRICT_IMPLEMENTATION_EXPR_REPLACEMENT =
             "/* insert complex gate expression here */";
 
-    private static final String REACH_STRICT_IMPLEMENTATION_EXPR_SET =
+    private static final String STRICT_IMPLEMENTATION_EXPR_SET_REPLACEMENT =
             "/* insert generalised C-element set function here */";
 
-    private static final String REACH_STRICT_IMPLEMENTATION_EXPR_RESET =
+    private static final String STRICT_IMPLEMENTATION_EXPR_RESET_REPLACEMENT =
             "/* insert generalised C-element reset function here */";
 
-    private static final String REACH_STRICT_IMPLEMENTATION_COMPLEX_GATE =
-            "('S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\" ^ (" + REACH_STRICT_IMPLEMENTATION_EXPR + "))";
+    private static final String STRICT_IMPLEMENTATION_COMPLEX_GATE_REACH =
+            "('S\"" + STRICT_IMPLEMENTATION_SIGNAL_REPLACEMENT + "\" ^ (" + STRICT_IMPLEMENTATION_EXPR_REPLACEMENT + "))";
 
-    private static final String REACH_STRICT_IMPLEMENTATION_GENERALISED_CELEMENT =
+    private static final String STRICT_IMPLEMENTATION_GENERALISED_CELEMENT_REACH =
             "let\n" +
-            "    signal=S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\",\n" +
-            "    setExpr=" + REACH_STRICT_IMPLEMENTATION_EXPR_SET + ",\n" +
-            "    resetExpr=" + REACH_STRICT_IMPLEMENTATION_EXPR_RESET + " {\n" +
+            "    signal=S\"" + STRICT_IMPLEMENTATION_SIGNAL_REPLACEMENT + "\",\n" +
+            "    setExpr=" + STRICT_IMPLEMENTATION_EXPR_SET_REPLACEMENT + ",\n" +
+            "    resetExpr=" + STRICT_IMPLEMENTATION_EXPR_RESET_REPLACEMENT + " {\n" +
             "    (@signal & ~setExpr & ~$signal) | (setExpr & ~'signal) |\n" +
             "    (@signal & ~resetExpr & $signal) | (resetExpr & 'signal)\n" +
             "}\n";
-
-    private static final String REACH_STRICT_IMPLEMENTATION =
-            "// Checks the STG is strictly implemented by a circuit.\n";
 
     private final WorkspaceEntry we;
 
@@ -175,29 +172,29 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
     }
 
     private VerificationParameters getVerificationParameters(Collection<SignalInfo> signalInfos) {
-        String reachStrictImplementation = REACH_STRICT_IMPLEMENTATION;
+        String reach = "// Checks the STG is strictly implemented by a circuit.\n";
         boolean isFirstSignal = true;
         for (SignalInfo signalInfo: signalInfos) {
             boolean isComplexGate = (signalInfo.resetExpr == null) || signalInfo.resetExpr.isEmpty();
-            String s = isComplexGate ? REACH_STRICT_IMPLEMENTATION_COMPLEX_GATE : REACH_STRICT_IMPLEMENTATION_GENERALISED_CELEMENT;
-            s = s.replace(REACH_STRICT_IMPLEMENTATION_SIGNAL, signalInfo.name);
+            String signalReach = isComplexGate ? STRICT_IMPLEMENTATION_COMPLEX_GATE_REACH : STRICT_IMPLEMENTATION_GENERALISED_CELEMENT_REACH;
+            signalReach = signalReach.replace(STRICT_IMPLEMENTATION_SIGNAL_REPLACEMENT, signalInfo.name);
             if (isComplexGate) {
-                s = s.replace(REACH_STRICT_IMPLEMENTATION_EXPR, signalInfo.setExpr);
+                signalReach = signalReach.replace(STRICT_IMPLEMENTATION_EXPR_REPLACEMENT, signalInfo.setExpr);
             } else {
-                s = s.replace(REACH_STRICT_IMPLEMENTATION_EXPR_SET, signalInfo.setExpr);
-                s = s.replace(REACH_STRICT_IMPLEMENTATION_EXPR_RESET, signalInfo.resetExpr);
+                signalReach = signalReach.replace(STRICT_IMPLEMENTATION_EXPR_SET_REPLACEMENT, signalInfo.setExpr);
+                signalReach = signalReach.replace(STRICT_IMPLEMENTATION_EXPR_RESET_REPLACEMENT, signalInfo.resetExpr);
             }
             if (!isFirstSignal) {
-                reachStrictImplementation += "\n|\n";
+                reach += "\n|\n";
             }
-            reachStrictImplementation += s;
+            reach += signalReach;
             isFirstSignal = false;
         }
         return new VerificationParameters("Strict implementation",
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reachStrictImplementation, true);
+                reach, true);
     }
 
 }

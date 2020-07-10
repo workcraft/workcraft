@@ -42,8 +42,7 @@ public class VerificationCommandTests {
                 null,  // DI interface
                 null, // normalcy
                 null,  // mutex implementability (strict)
-                null,  // mutex implementability (relaxed)
-                null, null // conformation
+                null  // mutex implementability (relaxed)
         );
     }
 
@@ -62,8 +61,7 @@ public class VerificationCommandTests {
                 null,  // DI interface
                 null, // normalcy
                 null,  // mutex implementability (strict)
-                null,  // mutex implementability (relaxed)
-                null, null // conformation
+                null  // mutex implementability (relaxed)
         );
     }
 
@@ -82,8 +80,7 @@ public class VerificationCommandTests {
                 true,  // DI interface
                 false, // normalcy
                 null,  // mutex implementability (strict)
-                null,  // mutex implementability (relaxed)
-                null, null // conformation
+                null  // mutex implementability (relaxed)
         );
     }
 
@@ -102,8 +99,7 @@ public class VerificationCommandTests {
                 false, // DI interface
                 false, // normalcy
                 true,  // mutex implementability (strict)
-                false,  // mutex implementability (relaxed)
-                null, null // conformation
+                false  // mutex implementability (relaxed)
         );
     }
 
@@ -122,8 +118,7 @@ public class VerificationCommandTests {
                 false, // DI interface
                 false, // normalcy
                 null,  // mutex implementability (strict)
-                null,  // mutex implementability (relaxed)
-                null, null // conformation
+                null  // mutex implementability (relaxed)
         );
     }
 
@@ -142,8 +137,7 @@ public class VerificationCommandTests {
                 true,  // DI interface
                 true,  // normalcy
                 false,  // mutex implementability (strict)
-                false,  // mutex implementability (relaxed)
-                "org/workcraft/plugins/mpsat_verification/charge.stg.work", true // conformation
+                false  // mutex implementability (relaxed)
         );
     }
 
@@ -153,8 +147,7 @@ public class VerificationCommandTests {
             Boolean csc, Boolean usc,
             Boolean diInterface, Boolean normalcy,
             Boolean mutexImplementabilityStrict,
-            Boolean mutexImplementabilityRelaxed,
-            String envToConform, Boolean conformation)
+            Boolean mutexImplementabilityRelaxed)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
@@ -198,12 +191,6 @@ public class VerificationCommandTests {
 
         StgSettings.setMutexProtocol(Mutex.Protocol.STRICT);
         Assertions.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
-
-        ConformationVerificationCommand conformationCommand = new ConformationVerificationCommand();
-        if (envToConform != null) {
-            URL envUrl = classLoader.getResource(envToConform);
-            Assertions.assertEquals(conformation, conformationCommand.execute(we, conformationCommand.deserialiseData(envUrl.getFile())));
-        }
     }
 
 }

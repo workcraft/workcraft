@@ -4,7 +4,10 @@ import org.workcraft.dom.Container;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
-import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.utils.Hierarchy;
 
@@ -14,18 +17,14 @@ import java.util.Set;
 
 public class TransformUtils {
 
-    public static Set<String> generateShadows(Stg compStg, CompositionData compositionData) {
-        Set<String> result = new HashSet<>();
+    public static void generateShadows(Stg compStg, CompositionData compositionData, Set<String> shadowTransitions) {
         for (String stgFileName : compositionData.getFileNames()) {
             ComponentData componentData = compositionData.getComponentData(stgFileName);
-            Set<String> shadowTransitons = generateShadows(compStg, componentData);
-            result.addAll(shadowTransitons);
+            generateShadows(compStg, componentData, shadowTransitions);
         }
-        return result;
     }
 
-    public static Set<String> generateShadows(Stg compStg, ComponentData componentData) {
-        Set<String> result = new HashSet<>();
+    public static void generateShadows(Stg compStg, ComponentData componentData, Set<String> shadowTransitions) {
         File stgFile = new File(componentData.getFileName());
         Stg stg = StgUtils.importStg(stgFile);
         Set<String> dstPlaceRefs = componentData.getDstPlaces();
@@ -38,11 +37,10 @@ public class TransformUtils {
                 if (!srcPlaces.isEmpty()) {
                     SignalTransition shadowTransition = createShadow(compStg, signalTransition, srcPlaces);
                     String shadowTransitionRef = compStg.getNodeReference(shadowTransition);
-                    result.add(shadowTransitionRef);
+                    shadowTransitions.add(shadowTransitionRef);
                 }
             }
         }
-        return result;
     }
 
     private static SignalTransition createShadow(Stg compStg, SignalTransition signalTransition, Set<StgPlace> srcPlaces) {

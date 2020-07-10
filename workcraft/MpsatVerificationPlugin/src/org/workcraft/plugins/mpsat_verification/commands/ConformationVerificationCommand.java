@@ -27,7 +27,7 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
 
     @Override
     public String getDisplayName() {
-        return "1-way conformation (1st STG without dummies) [MPSat]...";
+        return "1-way conformation [MPSat]...";
     }
 
     @Override
@@ -104,11 +104,6 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
             return false;
         }
 
-        if (!stg.getDummyTransitions().isEmpty()) {
-            // - The device STG must have no dummies.
-            DialogUtils.showError("For conformation check the STG must have no dummies.");
-            return false;
-        }
         return true;
     }
 

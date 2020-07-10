@@ -10,8 +10,7 @@ import org.workcraft.plugins.mpsat_verification.utils.TransformUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.pcomp.tasks.PcompParameters;
-import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -33,16 +32,16 @@ import java.util.stream.Collectors;
 
 public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
 
-    private static final String REPLACEMENT_SHADOW_TRANSITIONS =
+    private static final String SHADOW_TRANSITIONS_REPLACEMENT =
             "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
 
-    private static final String REACH_OUTPUT_DETERMINACY =
+    private static final String OUTPUT_DETERMINACY_REACH =
             "// Check whether an STG is output-determinate.\n" +
             "// The enabled-via-dummies semantics is assumed for @.\n" +
             "// Configurations with maximal dummies are assumed to be allowed.\n" +
             "let\n" +
             "    // Set of phantom output transition names in the whole composed STG.\n" +
-            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + REPLACEMENT_SHADOW_TRANSITIONS + "\"\"} \\ {\"\"},\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
             "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
             "{\n" +
             "    // Optimisation: make sure phantom events are not in the configuration.\n" +
@@ -69,7 +68,6 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
         this.we = we;
     }
 
-    @SuppressWarnings("PMD.PrematureDeclaration")
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         Framework framework = Framework.getInstance();
@@ -122,12 +120,7 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.30);
 
             // Generating .g for the whole system (model and environment)
-            PcompParameters pcompParameters = new PcompParameters(PcompParameters.SharedSignalMode.OUTPUT, true, false);
-            PcompTask pcompTask = new PcompTask(stgFiles, pcompParameters, directory);
-
-            Result<? extends PcompOutput> pcompResult = taskManager.execute(
-                    pcompTask, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
-
+            Result<? extends PcompOutput> pcompResult = PcompUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
             if (!pcompResult.isSuccess()) {
                 if (pcompResult.isCancel()) {
                     return Result.cancel();
@@ -143,7 +136,8 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             CompositionData compositionData = new CompositionData(detailFile);
             ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Stg modSysStg = StgUtils.loadStg(sysStgFile);
-            Set<String> devShadowTransitions = TransformUtils.generateShadows(modSysStg, devComponentData);
+            Set<String> devShadowTransitions = new HashSet<>();
+            TransformUtils.generateShadows(modSysStg, devComponentData, devShadowTransitions);
             File modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
             Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
 
@@ -215,13 +209,13 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
 
     private VerificationParameters getVerificationParameters(Collection<String> shadowTransitionRefs) {
         String str = shadowTransitionRefs.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
-        String reachConformationNway = REACH_OUTPUT_DETERMINACY.replace(REPLACEMENT_SHADOW_TRANSITIONS, str);
+        String reach = OUTPUT_DETERMINACY_REACH.replace(SHADOW_TRANSITIONS_REPLACEMENT, str);
 
         return new VerificationParameters("Output determinacy",
                 VerificationMode.STG_REACHABILITY_OUTPUT_DETERMINACY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reachConformationNway, true);
+                reach, true);
     }
 
 }

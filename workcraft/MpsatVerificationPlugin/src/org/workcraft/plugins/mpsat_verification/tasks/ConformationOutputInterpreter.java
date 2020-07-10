@@ -15,6 +15,9 @@ import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
+import org.workcraft.utils.WorkUtils;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
@@ -45,7 +48,7 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
             if (propertyHolds) {
                 result += "\nYet ";
             } else {
-                result += "<br>Also ";
+                result += "\nAlso ";
             }
             result += TextUtils.wrapMessageWithItems("composition has dead signal", signals);
             if (propertyHolds) {
@@ -53,6 +56,17 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
             }
         }
         return result;
+    }
+
+    @Override
+    public StgModel getSrcStg(WorkspaceEntry we) {
+        if (WorkspaceUtils.isApplicable(we, StgModel.class)) {
+            // STG conformation uses composition of *modified* STG components (internal signals
+            // are replaced with dummies). Original STGs are obtained from WorkspaceEntries.
+            ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
+            return WorkspaceUtils.getAs(me, StgModel.class);
+        }
+        return super.getSrcStg(we);
     }
 
     @Override
