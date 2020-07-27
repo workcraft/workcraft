@@ -28,7 +28,10 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Queue;
 import java.util.*;
@@ -212,14 +215,6 @@ public class StgUtils {
         }
     }
 
-    public static Stg importStg(byte[] bytes) {
-        if (bytes == null) {
-            return null;
-        }
-        ByteArrayInputStream is = new ByteArrayInputStream(bytes);
-        return importStg(is);
-    }
-
     public static Stg importStg(InputStream is) {
         StgImporter importer = new StgImporter();
         try {
@@ -238,10 +233,7 @@ public class StgUtils {
 
         ExportTask exportTask = new ExportTask(exporter, stg, file);
         String description = "Exporting " + file.getAbsolutePath();
-        SubtaskMonitor<Object> subtaskMonitor = null;
-        if (monitor != null) {
-            subtaskMonitor = new SubtaskMonitor<>(monitor);
-        }
+        SubtaskMonitor<Object> subtaskMonitor = monitor == null ? null : new SubtaskMonitor<>(monitor);
         TaskManager taskManager = Framework.getInstance().getTaskManager();
         return taskManager.execute(exportTask, description, subtaskMonitor);
     }
