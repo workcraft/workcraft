@@ -13,14 +13,14 @@ import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("serial")
-public class ReachibilityDialog extends JDialog {
+public class ReachabilityDialog extends JDialog {
 
-    public ReachibilityDialog(Window owner, WorkspaceEntry we, String title,
+    public ReachabilityDialog(Window owner, WorkspaceEntry we, String title,
             String message, Solution solution) {
         this(owner, we, title, message, Collections.singletonList(solution));
     }
 
-    public ReachibilityDialog(Window owner, WorkspaceEntry we, String title,
+    public ReachabilityDialog(Window owner, WorkspaceEntry we, String title,
             String message, List<Solution> solutions) {
 
         JLabel messageLabel = new JLabel(message);

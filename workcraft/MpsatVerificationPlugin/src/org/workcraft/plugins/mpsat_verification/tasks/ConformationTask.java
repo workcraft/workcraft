@@ -3,14 +3,13 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
-import org.workcraft.plugins.mpsat_verification.utils.TransformUtils;
-import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -24,10 +23,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ConformationTask implements Task<VerificationChainOutput> {
 
@@ -48,7 +48,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(we.getTitle()));
-        Chain<VerificationChainOutput> chain = new Chain<>(() -> init(), monitor);
+        Chain<VerificationChainOutput> chain = new Chain<>(this::init, monitor);
         chain.andOnSuccess(payload -> exportDevStg(payload, monitor, directory), 0.1);
         chain.andOnSuccess(payload -> exportEnvStg(payload, monitor, directory), 0.2);
         chain.andOnSuccess(payload -> composeSysStg(payload, monitor, directory), 0.4);
@@ -86,7 +86,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         File devStgFile = new File(directory, DEV_STG_FILE_NAME);
         Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(devStg, devStgFile, monitor);
         Result<SubExportOutput> exportResult = new Result<>(new SubExportOutput(devStgFile, devSubstitutions));
-        return new Result(devExportResult.getOutcome(), payload.applyExportResult(exportResult));
+        return new Result<>(devExportResult.getOutcome(), payload.applyExportResult(exportResult));
     }
 
     private Result<? extends VerificationChainOutput> exportEnvStg(VerificationChainOutput payload,
@@ -108,7 +108,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
 
         File envStgFile = new File(directory, ENV_STG_FILE_NAME);
         Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(envStg, envStgFile, monitor);
-        return new Result(envExportResult.getOutcome(), payload);
+        return new Result<>(envExportResult.getOutcome(), payload);
     }
 
     private Result<? extends VerificationChainOutput> composeSysStg(VerificationChainOutput payload,
@@ -120,7 +120,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         Result<? extends PcompOutput> pcompResult = PcompUtils.composeDevWithEnv(
                 devStgFile, envStgFile, directory, monitor);
 
-        return new Result(pcompResult.getOutcome(), payload.applyPcompResult(pcompResult));
+        return new Result<>(pcompResult.getOutcome(), payload.applyPcompResult(pcompResult));
     }
 
     private Result<? extends VerificationChainOutput> exportShadowSysStg(VerificationChainOutput payload,
@@ -133,19 +133,21 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         } catch (FileNotFoundException e) {
             return Result.exception(e);
         }
-        File devStgFile = new File(directory, DEV_STG_FILE_NAME);
-        ComponentData componentData = compositionData.getComponentData(devStgFile);
 
         // Insert shadow transitions into the composed STG
         Stg sysStg = StgUtils.importStg(pcompOutput.getOutputFile());
-        Set<String> shadowTransitions = new HashSet<>();
-        TransformUtils.generateShadows(sysStg, componentData, shadowTransitions);
+        CompositionTransformer transformer = new CompositionTransformer(sysStg, compositionData);
+        File devStgFile = new File(directory, DEV_STG_FILE_NAME);
+        Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(devStgFile);
 
         File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
-
         Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(sysStg, modSysStgFile, monitor);
-        VerificationParameters verificationParameters = ReachUtils.getConformationParameters(shadowTransitions);
-        return new Result(modSysExportResult.getOutcome(), payload.applyVerificationParameters(verificationParameters));
+        Set<String> shadowTransitionRefs = shadowTransitions.stream()
+                .map(sysStg::getNodeReference)
+                .collect(Collectors.toSet());
+
+        VerificationParameters verificationParameters = ReachUtils.getConformationParameters(shadowTransitionRefs);
+        return new Result<>(modSysExportResult.getOutcome(), payload.applyVerificationParameters(verificationParameters));
     }
 
     private Result<? extends VerificationChainOutput> unfoldSysStg(VerificationChainOutput payload,
@@ -157,7 +159,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         Result<? extends PunfOutput> punfResult = Framework.getInstance().getTaskManager().execute(
                 punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
 
-        return new Result(punfResult.getOutcome(), payload.applyPunfResult(punfResult));
+        return new Result<>(punfResult.getOutcome(), payload.applyPunfResult(punfResult));
     }
 
     private Result<? extends VerificationChainOutput> verifyProperty(VerificationChainOutput payload,
@@ -178,7 +180,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                     : "The model conforms to its environment (" + envFile.getName() + ").";
         }
 
-        return new Result(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult).applyMessage(message));
+        return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult).applyMessage(message));
     }
 
 }

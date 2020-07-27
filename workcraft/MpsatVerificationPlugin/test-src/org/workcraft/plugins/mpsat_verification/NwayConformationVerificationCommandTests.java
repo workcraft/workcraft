@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.NwayConformationVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
@@ -27,7 +26,7 @@ public class NwayConformationVerificationCommandTests {
     }
 
     @Test
-    public void testHoldNwayConformationVerification() throws DeserialisationException {
+    public void testHoldNwayConformationVerification() {
         testConformationNwayVerificationCommand(true,
                 "block1.stg.work",
                 "block2.stg.work",
@@ -35,7 +34,7 @@ public class NwayConformationVerificationCommandTests {
     }
 
     @Test
-    public void testViolateNwayConformationVerification() throws DeserialisationException {
+    public void testViolateNwayConformationVerification() {
         testConformationNwayVerificationCommand(false,
                  "block1-bad.stg.work",
                 "block2.stg.work",
@@ -43,13 +42,13 @@ public class NwayConformationVerificationCommandTests {
     }
 
     @Test
-    public void testFailNwayConformationVerification() throws DeserialisationException {
+    public void testFailNwayConformationVerification() {
         testConformationNwayVerificationCommand(null,
                 "block1.stg.work");
     }
 
     @Test
-    public void testFailIncorrectNwayConformationVerification() throws DeserialisationException {
+    public void testFailIncorrectNwayConformationVerification() {
         testConformationNwayVerificationCommand(null,
                 "block.stg.work",
                 "block.stg.work");

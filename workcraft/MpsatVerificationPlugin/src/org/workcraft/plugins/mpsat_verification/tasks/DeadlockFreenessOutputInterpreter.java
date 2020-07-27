@@ -2,7 +2,8 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.gui.dialogs.ReachabilityDialog;
+import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
@@ -74,20 +75,23 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
         List<Solution> solutions = getOutput().getSolutions();
         boolean propertyHolds = !TraceUtils.hasTraces(solutions);
         if (propertyHolds) {
-            showOutcome(propertyHolds, "The system is deadlock-free");
+            OutcomeUtils.showOutcome(true, "The system is deadlock-free", isInteractive());
         } else {
             List<Solution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
             if (!TraceUtils.hasTraces(processedSolutions)) {
-                showOutcome(propertyHolds, "Deadlock freeness cannot be reliably verified because of conformation violation");
+                OutcomeUtils.showOutcome(false,
+                        "Deadlock freeness cannot be reliably verified because of conformation violation",
+                        isInteractive());
+
                 return null;
             } else {
                 String message = "The system has a deadlock";
-                LogUtils.logWarning(message);
+                OutcomeUtils.logOutcome(false, message);
                 if (isInteractive()) {
                     message = "<html><br>&#160;" + message + " after the following trace(s):<br><br></html>";
                     MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                    ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                            mainWindow, getWorkspaceEntry(), TITLE, message, processedSolutions);
+                    ReachabilityDialog solutionsDialog = new ReachabilityDialog(
+                            mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, processedSolutions);
 
                     solutionsDialog.reveal();
                 }

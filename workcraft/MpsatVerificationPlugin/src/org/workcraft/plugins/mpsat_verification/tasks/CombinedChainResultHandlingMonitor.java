@@ -30,32 +30,36 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
         MpsatOutput violationMpsatOutput = getViolationMpsatOutput(chainResult);
 
         if (violationMpsatOutput == null) {
-            String msg = "The following checks passed:";
+            StringBuilder msg = new StringBuilder("The following checks passed:");
             for (VerificationParameters verificationParameters : chainOutput.getVerificationParametersList()) {
-                msg += "\n * " + verificationParameters.getDescription();
+                msg.append("\n * ").append(verificationParameters.getDescription());
             }
             // No solution found in any of the MPSat tasks
             if (vacuousMutexImplementability) {
                 // Add trivial mutex implementability result if no mutex places found
-                msg += "\n * Mutex implementability (vacuously)";
+                msg.append("\n * Mutex implementability (vacuously)");
             }
 
             if (isInteractive()) {
-                DialogUtils.showInfo(msg);
+                DialogUtils.showInfo(msg.toString());
             } else {
-                LogUtils.logInfo(msg);
+                LogUtils.logInfo(msg.toString());
             }
             return true;
         }
 
         Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
         ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
+
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
         PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
+
         VerificationParameters violationVerificationParameters = violationMpsatOutput.getVerificationParameters();
 
+        String message = (chainOutput == null) ? null : chainOutput.getMessage();
+
         return new VerificationOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                violationMpsatOutput, violationVerificationParameters, chainOutput.getMessage(),
+                violationMpsatOutput, violationVerificationParameters, message,
                 isInteractive()).interpret();
     }
 

@@ -3,13 +3,13 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
-import org.workcraft.plugins.mpsat_verification.utils.TransformUtils;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -22,6 +22,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class NwayConformationTask implements Task<VerificationChainOutput> {
 
@@ -84,12 +85,12 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.40);
 
             // Insert shadow transitions into the composed STG
-            File sysStgFile = pcompResult.getPayload().getOutputFile();
-            File detailFile = pcompResult.getPayload().getDetailFile();
-            CompositionData compositionData = new CompositionData(detailFile);
-            Stg modSysStg = StgUtils.importStg(sysStgFile);
-            Set<String> shadowTransitions = new HashSet<>();
-            TransformUtils.generateShadows(modSysStg, compositionData, shadowTransitions);
+            Stg modSysStg = StgUtils.importStg(pcompResult.getPayload().getOutputFile());
+            CompositionData compositionData = new CompositionData(pcompResult.getPayload().getDetailFile());
+            CompositionTransformer transformer = new CompositionTransformer(modSysStg, compositionData);
+            Collection<SignalTransition> shadowTransitions = new HashSet<>();
+            shadowTransitions.addAll(transformer.insetShadowTransitions());
+
             File modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
             Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
 
@@ -109,9 +110,13 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.60);
 
             // Check for conformation
-            VerificationParameters verificationParameters = ReachUtils.getNwayConformationParameters(shadowTransitions);
+            Set<String> shadowTransitionRefs = shadowTransitions.stream()
+                    .map(modSysStg::getNodeReference)
+                    .collect(Collectors.toSet());
+
+            VerificationParameters verificationParameters = ReachUtils.getNwayConformationParameters(shadowTransitionRefs);
             // Store system STG WITHOUT shadow transitions -- this is important for interpretation of violation traces
-            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, sysStgFile, verificationParameters, directory);
+            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, pcompResult.getPayload().getOutputFile(), verificationParameters, directory);
             Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
 

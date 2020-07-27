@@ -2,7 +2,8 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.gui.dialogs.ReachabilityDialog;
+import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -12,8 +13,6 @@ import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -25,8 +24,6 @@ import java.util.List;
 import java.util.Map;
 
 class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutput, Boolean> {
-
-    protected static final String TITLE = "Verification results";
 
     private final ExportOutput exportOutput;
     private final PcompOutput pcompOutput;
@@ -47,26 +44,6 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
 
     public PcompOutput getPcompOutput() {
         return pcompOutput;
-    }
-
-    public void showOutcome(boolean propertyHolds, String message) {
-        if (isInteractive()) {
-            if (propertyHolds) {
-                DialogUtils.showInfo(message, TITLE);
-            } else {
-                DialogUtils.showWarning(message, TITLE);
-            }
-        } else {
-            logOutcome(propertyHolds, message);
-        }
-    }
-
-    public void logOutcome(boolean propertyHolds, String message) {
-        if (propertyHolds) {
-            LogUtils.logInfo(message);
-        } else {
-            LogUtils.logWarning(message);
-        }
     }
 
     public void reportSolutions(List<Solution> solutions) {
@@ -170,16 +147,16 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         boolean propertyHolds = predicateSatisfiable != inversePredicate;
         String message = getMessage(propertyHolds);
         if (!predicateSatisfiable) {
-            showOutcome(propertyHolds, message);
+            OutcomeUtils.showOutcome(propertyHolds, message, isInteractive());
         } else {
-            logOutcome(propertyHolds, message);
+            OutcomeUtils.logOutcome(propertyHolds, message);
             reportSolutions(solutions);
             List<Solution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
             if (isInteractive()) {
                 message = extendMessage(message);
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                        mainWindow, getWorkspaceEntry(), TITLE, message, processedSolutions);
+                ReachabilityDialog solutionsDialog = new ReachabilityDialog(
+                        mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, processedSolutions);
 
                 solutionsDialog.reveal();
             }

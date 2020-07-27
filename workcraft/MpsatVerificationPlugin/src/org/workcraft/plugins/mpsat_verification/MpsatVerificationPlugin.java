@@ -52,6 +52,10 @@ public class MpsatVerificationPlugin implements Plugin {
         // Commands with user-defined parameters
         ScriptableCommandUtils.registerDataCommand(PlaceRedundancyVerificationCommand.class, "checkStgPlaceRedundancy",
                 "check the STG (or Petri net) 'work' for redundancy of places in space-separated list 'data'");
+        ScriptableCommandUtils.registerDataCommand(RefinementVerificationCommand.class, "checkStgRefinement",
+                "check the STG 'work' is a correct refinement of the STG specified by file name 'data'");
+        ScriptableCommandUtils.registerDataCommand(RelaxedRefinementVerificationCommand.class, "checkStgRefinementRelaxed",
+                "check the STG 'work' is a correct refinement of the STG specified by file name 'data' allowing concurrency reduction");
         ScriptableCommandUtils.registerDataCommand(ConformationVerificationCommand.class, "checkStgConformation",
                 "check the STG 'work' for conformation to the STG specified by file name 'data'");
         ScriptableCommandUtils.registerDataCommand(NwayConformationVerificationCommand.class, "checkStgNwayConformation",

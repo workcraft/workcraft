@@ -99,13 +99,17 @@ public class ReachUtils {
     }
 
     public static VerificationParameters getOutputPersistencyParameters(Collection<Pair<String, String>> exceptionPairs) {
-        String str = "";
+        StringBuilder str = new StringBuilder();
         if (exceptionPairs != null) {
             for (Pair<String, String> exceptionPair: exceptionPairs) {
-                str += "{\"" + exceptionPair.getFirst() + "\", \"" + exceptionPair.getSecond() + "\"}, ";
+                str.append("{\"");
+                str.append(exceptionPair.getFirst());
+                str.append("\", \"");
+                str.append(exceptionPair.getSecond());
+                str.append("\"}, ");
             }
         }
-        String reachOutputPersistence = OUTPUT_PERSISTENCY_REACH.replace(OUTPUT_PERSISTENCY_EXCEPTIONS_REPLACEMENT, str);
+        String reachOutputPersistence = OUTPUT_PERSISTENCY_REACH.replace(OUTPUT_PERSISTENCY_EXCEPTIONS_REPLACEMENT, str.toString());
         return new VerificationParameters("Output persistency",
                 VerificationMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
@@ -236,7 +240,10 @@ public class ReachUtils {
     }
 
     private static String getConformationReach(Set<String> shadowTransitionNames) {
-        String str = shadowTransitionNames.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
+        String str = shadowTransitionNames.stream()
+                .map(ref -> "\"" + ref + "\", ")
+                .collect(Collectors.joining());
+
         return CONFORMATION_REACH.replace(SHADOW_TRANSITIONS_REPLACEMENT, str);
     }
 
@@ -253,7 +260,7 @@ public class ReachUtils {
             "//   ~r1 => ~nxt(g1)\n" +
             "//   r2&g2 => ~nxt(g1)\n" +
             "// (and the symmetric constraints for nxt(g2)).\n" +
-            "// Furthemore, the mutual exclusion of the critical sections is checked:\n" +
+            "// Furthermore, the mutual exclusion of the critical sections is checked:\n" +
             "// ~( (r1&g1) & (r2&g2) )\n" +
             "// Note that the latter property does not follow from the above constraints\n" +
             "// for the next state functions of the grants (e.g. in the initial state).\n" +
@@ -293,7 +300,7 @@ public class ReachUtils {
             "// The properties to check are:\n" +
             "//   nxt(g1) = r1 & (~r2 | ~g2)\n" +
             "//   nxt(g2) = r2 & (~r1 | ~g1)\n" +
-            "// Furthemore, the mutual exclusion of the critical sections is checked:\n" +
+            "// Furthermore, the mutual exclusion of the critical sections is checked:\n" +
             "// ~( (r1&g1) & (r2&g2) )\n" +
             "// Note that the latter property does not follow from the above constraints\n" +
             "// for the next state functions of the grants (e.g. in the initial state).\n" +

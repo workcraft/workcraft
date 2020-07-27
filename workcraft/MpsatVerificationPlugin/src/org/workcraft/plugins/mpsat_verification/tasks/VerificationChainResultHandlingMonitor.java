@@ -16,7 +16,6 @@ public class VerificationChainResultHandlingMonitor extends AbstractChainResultH
     @Override
     public Boolean handleSuccess(Result<? extends VerificationChainOutput> chainResult) {
         VerificationChainOutput chainOutput = chainResult.getPayload();
-        VerificationParameters verificationParameters = chainOutput.getVerificationParameters();
 
         Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
         ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
@@ -27,8 +26,12 @@ public class VerificationChainResultHandlingMonitor extends AbstractChainResultH
         Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
         MpsatOutput mpsatOutput = (mpsatResult == null) ? null : mpsatResult.getPayload();
 
+        VerificationParameters verificationParameters = (chainOutput == null) ? null : chainOutput.getVerificationParameters();
+
+        String message = (chainOutput == null) ? null : chainOutput.getMessage();
+
         return new VerificationOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                mpsatOutput, verificationParameters, chainOutput.getMessage(), isInteractive()).interpret();
+                mpsatOutput, verificationParameters, message, isInteractive()).interpret();
     }
 
     @Override

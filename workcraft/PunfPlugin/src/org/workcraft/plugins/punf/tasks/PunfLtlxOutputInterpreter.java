@@ -2,7 +2,7 @@ package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.gui.dialogs.ReachabilityDialog;
 import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -80,7 +80,7 @@ public class PunfLtlxOutputInterpreter extends AbstractOutputInterpreter<PunfOut
             if (isInteractive()) {
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 message = extendMessage(message);
-                ReachibilityDialog solutionsDialog = new ReachibilityDialog(
+                ReachabilityDialog solutionsDialog = new ReachabilityDialog(
                         mainWindow, getWorkspaceEntry(), TITLE, message, solution);
 
                 solutionsDialog.reveal();

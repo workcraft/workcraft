@@ -16,7 +16,7 @@ public class ComponentData {
     private final HashMap<String, String> placesSrc2Dst = new HashMap<>();
     private final HashMap<String, String> transitionsDst2Src = new HashMap<>();
 
-    public ComponentData(Element fileElement, Element placesElement, Element transitionsElelemnt) {
+    public ComponentData(Element fileElement, Element placesElement, Element transitionsElement) {
         fileName = fileElement.getTextContent();
         for (Element element: XmlUtils.getChildElements(TAG_MAP, placesElement)) {
             for (Element src: XmlUtils.getChildElements(TAG_SRC, element)) {
@@ -25,7 +25,7 @@ public class ComponentData {
                 }
             }
         }
-        for (Element element: XmlUtils.getChildElements(TAG_MAP, transitionsElelemnt)) {
+        for (Element element: XmlUtils.getChildElements(TAG_MAP, transitionsElement)) {
             for (Element src: XmlUtils.getChildElements(TAG_SRC, element)) {
                 for (Element dst: XmlUtils.getChildElements(TAG_DST, element)) {
                     transitionsDst2Src.put(dst.getTextContent(), src.getTextContent());

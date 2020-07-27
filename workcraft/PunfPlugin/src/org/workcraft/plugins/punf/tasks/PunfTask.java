@@ -11,10 +11,15 @@ import java.util.ArrayList;
 public class PunfTask implements Task<PunfOutput> {
 
     public static final String PNML_FILE_EXTENSION = ".pnml";
+    public static final String UNFOLDING_FILE_NAME = "unfolding" + PNML_FILE_EXTENSION;
 
     private final File inputFile;
     private final File outputFile;
     private final File directory;
+
+    public PunfTask(File inputFile, File directory) {
+        this(inputFile, new File(directory, UNFOLDING_FILE_NAME), directory);
+    }
 
     public PunfTask(File inputFile, File outputFile, File directory) {
         this.inputFile = inputFile;

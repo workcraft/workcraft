@@ -3,9 +3,10 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.gui.dialogs.ReachabilityDialog;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.utils.EnablednessUtils;
+import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Transition;
@@ -19,7 +20,6 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -89,9 +89,9 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
         boolean propertyHolds = solutions.isEmpty();
         String message = getMessage(propertyHolds);
         if (propertyHolds) {
-            DialogUtils.showInfo(message, TITLE);
+            OutcomeUtils.showOutcome(true, message, isInteractive());
         } else {
-            LogUtils.logWarning(message);
+            OutcomeUtils.logOutcome(false, message);
             reportSolutions(solutions);
             Framework framework = Framework.getInstance();
             if (isInteractive() && framework.isInGuiMode()) {
@@ -100,9 +100,9 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
                     List<Solution> processedSolutions = processSolutions(we, solutions);
                     if (!processedSolutions.isEmpty() && framework.isInGuiMode()) {
                         mainWindow.requestFocus(we);
-                        String title = TITLE + " for model '" + we.getTitle() + "'";
+                        String title = OutcomeUtils.TITLE + " for model '" + we.getTitle() + "'";
                         String extendedMessage = extendMessage(message);
-                        ReachibilityDialog solutionsDialog = new ReachibilityDialog(
+                        ReachabilityDialog solutionsDialog = new ReachabilityDialog(
                                 mainWindow, we, title, extendedMessage, processedSolutions);
 
                         solutionsDialog.reveal();
