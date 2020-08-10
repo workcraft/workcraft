@@ -62,10 +62,10 @@ public class ConformationVerificationCommandTests {
         URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
-        ConformationVerificationCommand conformationCommand = new ConformationVerificationCommand();
+        ConformationVerificationCommand command = new ConformationVerificationCommand();
         URL envUrl = classLoader.getResource(envName);
-        File data = envUrl == null ? null : conformationCommand.deserialiseData(envUrl.getFile());
-        Assertions.assertEquals(expectedOutcome, conformationCommand.execute(we, data));
+        File data = envUrl == null ? null : command.deserialiseData(envUrl.getFile());
+        Assertions.assertEquals(expectedOutcome, command.execute(we, data));
     }
 
 }

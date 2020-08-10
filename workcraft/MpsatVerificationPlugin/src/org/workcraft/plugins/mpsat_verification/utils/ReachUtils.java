@@ -233,7 +233,7 @@ public class ReachUtils {
     public static VerificationParameters getNwayConformationParameters(Set<String> shadowTransitionNames) {
         String reach = getConformationReach(shadowTransitionNames);
         return new VerificationParameters("N-way conformation",
-                VerificationMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
+                VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
                 reach, true);

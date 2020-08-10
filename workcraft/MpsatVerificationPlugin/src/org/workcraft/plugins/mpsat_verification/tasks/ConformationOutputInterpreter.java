@@ -157,13 +157,13 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
         // Check if any output can be fired that is not enabled in the composition STG
 
         // Find enabled signals whose state is unknown (due to dummies) in the composition STG.
-        // If there is only one such signal, then it is actually the one disabled in the composition STG.
         HashSet<String> suspiciousSignals = EnablednessUtils.getEnabledSignals(stg, Signal.Type.OUTPUT);
         suspiciousSignals.retainAll(compEnabledness.getUnknownSet());
         if (suspiciousSignals.size() == 1) {
+            // If there is only one such signal, then it is actually the one disabled in the composition STG.
             compEnabledness.alter(Collections.emptySet(), suspiciousSignals, Collections.emptySet());
         }
-        // Find the first enabled transition that is definitely disabled in composition STG.
+        // Find an enabled transition that is definitely disabled in composition STG.
         SignalTransition problematicTransition = null;
         for (SignalTransition transition: stg.getSignalTransitions(Signal.Type.OUTPUT)) {
             String signalRef = stg.getSignalReference(transition);
@@ -172,22 +172,23 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
                 break;
             }
         }
-        // If problematic transition found, add it to the trace. Otherwise add suspicious signals to the trace description.
-        Solution processedSolution = null;
+
+        String comment = null;
         if (problematicTransition != null) {
+            // If the problematic transition found, add it to the trace.
             String ref = stg.getSignalReference(problematicTransition) + problematicTransition.getDirection();
             LogUtils.logWarning("Output '" + ref + "' becomes unexpectedly enabled");
             trace.add(stg.getNodeReference(problematicTransition));
-            String comment = "Unexpected change of output '" + ref + "'";
-            processedSolution = new Solution(trace, null, comment);
+            comment = "Unexpected change of output '" + ref + "'";
         } else if (!suspiciousSignals.isEmpty()) {
+            // Otherwise add all disabled signals to the trace description.
             String refs = String.join(", ", suspiciousSignals);
             LogUtils.logWarning("One of these outputs becomes unexpectedly enabled (via internal signals or dummies):\n" + refs);
-            String comment = "Unexpected change of one of the outputs: " + refs;
-            processedSolution = new Solution(trace, null, comment);
+            comment = "Unexpected change of one of the outputs: " + refs;
         }
+
         PetriUtils.setMarking(stg, marking);
-        return processedSolution;
+        return new Solution(trace, null, comment);
     }
 
 }
