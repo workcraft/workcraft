@@ -5,14 +5,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Enabledness {
+
     private final HashSet<String> enabled;
     private final HashSet<String> disabled;
-    private final HashSet<String> unknown;
 
-    public Enabledness(Collection<String> enabled, Collection<String> disabled, Collection<String> unknown) {
+    public Enabledness(Collection<String> enabled, Collection<String> disabled) {
         this.enabled = new HashSet<>(enabled);
         this.disabled = new HashSet<>(disabled);
-        this.unknown = new HashSet<>(unknown);
     }
 
     public boolean isEnabled(String ref) {
@@ -23,10 +22,6 @@ public class Enabledness {
         return disabled.contains(ref);
     }
 
-    public boolean isUnknown(String ref) {
-        return unknown.contains(ref);
-    }
-
     public Set<String> getEnabledSet() {
         return new HashSet<>(enabled);
     }
@@ -35,22 +30,14 @@ public class Enabledness {
         return new HashSet<>(disabled);
     }
 
-    public Set<String> getUnknownSet() {
-        return new HashSet<>(unknown);
+    public void enable(Collection<String> items) {
+        disabled.removeAll(items);
+        enabled.addAll(items);
     }
 
-    public void alter(Collection<String> enabled, Collection<String> disabled, Collection<String> unknown) {
-        this.enabled.removeAll(disabled);
-        this.enabled.removeAll(unknown);
-        this.enabled.addAll(enabled);
-
-        this.disabled.removeAll(enabled);
-        this.disabled.removeAll(unknown);
-        this.disabled.addAll(disabled);
-
-        this.unknown.removeAll(enabled);
-        this.unknown.removeAll(disabled);
-        this.unknown.addAll(unknown);
+    public void disable(Collection<String> items) {
+        this.enabled.removeAll(items);
+        this.disabled.addAll(items);
     }
 
 }

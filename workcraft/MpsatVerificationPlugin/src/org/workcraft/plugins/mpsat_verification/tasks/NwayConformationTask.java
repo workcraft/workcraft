@@ -48,9 +48,7 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
                 // Clone STG before converting its internal signals to dummies
                 ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
                 Stg stg = WorkspaceUtils.getAs(me, Stg.class);
-                Map<String, String> substitutions = new HashMap<>();
-                StgUtils.convertInternalSignalsToDummies(stg, substitutions);
-                substitutionsList.add(substitutions);
+                substitutionsList.add(StgUtils.convertInternalSignalsToDummies(stg));
 
                 // Generating .g for the model
                 File stgFile = new File(directory, we.getTitle() + stgFileExtension);

@@ -68,14 +68,22 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
             return trace;
         }
         Trace result = new Trace();
-        for (String ref: trace) {
+        for (String ref : trace) {
             String srcRef = data.getSrcTransition(ref);
             if (srcRef != null) {
-                if (substitutions.containsKey(srcRef)) {
-                    srcRef = substitutions.get(srcRef);
-                }
                 result.add(srcRef);
             }
+        }
+        return getSubstitutedTrace(result, substitutions);
+    }
+
+    public Trace getSubstitutedTrace(Trace trace, Map<String, String> substitutions) {
+        if ((trace == null) || trace.isEmpty() || (substitutions == null)) {
+            return trace;
+        }
+        Trace result = new Trace();
+        for (String ref : trace) {
+            result.add(substitutions.getOrDefault(ref, ref));
         }
         return result;
     }
@@ -99,6 +107,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
                 try {
                     compositionData = new CompositionData(detailFile);
                 } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -106,10 +115,14 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     }
 
     public StgModel getSrcStg(WorkspaceEntry we) {
+        return getSrcStg(0);
+    }
+
+    public StgModel getSrcStg(int index) {
         // If the property is verified on a composition STG, then use the
         // corresponding component STG; otherwise use input STG of MPSat task.
         StgModel stg = null;
-        ComponentData data = getCompositionData(we);
+        ComponentData data = getCompositionData(index);
         if (data != null) {
             File file = new File(data.getFileName());
             if ((file != null) && file.exists()) {

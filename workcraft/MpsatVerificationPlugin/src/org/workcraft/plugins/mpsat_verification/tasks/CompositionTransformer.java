@@ -9,6 +9,7 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.utils.StgUtils;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.Hierarchy;
 
 import java.io.File;
@@ -17,10 +18,17 @@ import java.util.stream.Collectors;
 
 public class CompositionTransformer {
 
+    static class ShadowConfig extends Triple<String, SignalTransition.Direction, Set<StgPlace>> {
+        ShadowConfig(String signal, SignalTransition.Direction direction, Set<StgPlace> preset) {
+            super(signal, direction, preset);
+        }
+    }
+
     private final Stg compositionStg;
     private final CompositionData compositionData;
     private final Map<ComponentData, Collection<StgPlace>> componentToPlacesMap;
     private final Map<String, Collection<SignalTransition>> signalToTransitionsMap;
+    private final Set<ShadowConfig> shadowConfigs = new HashSet<>();
 
     public CompositionTransformer(Stg compositionStg, CompositionData compositionData) {
         this.compositionStg = compositionStg;
@@ -69,36 +77,48 @@ public class CompositionTransformer {
         return result;
     }
 
-    public Collection<SignalTransition> insetShadowTransitions(String signal, File componentFile) {
+    private Collection<SignalTransition> insetShadowTransitions(String signal, File componentFile) {
         Collection<SignalTransition> result = new HashSet<>();
-        for (SignalTransition signalTransition : signalToTransitionsMap.get(signal)) {
-            SignalTransition shadowTransition = insetShadowTransition(signalTransition, componentFile);
-            if (shadowTransition != null) {
-                result.add(shadowTransition);
+        ComponentData componentData = compositionData.getComponentData(componentFile);
+        Set<StgPlace> componentPlaces = new HashSet<>(componentToPlacesMap.get(componentData));
+        for (SignalTransition.Direction direction : SignalTransition.Direction.values()) {
+            result.addAll(insetShadowTransitions(signal, direction, componentPlaces));
+        }
+        return result;
+    }
+
+    private Collection<SignalTransition> insetShadowTransitions(String signal,
+            SignalTransition.Direction direction, Set<StgPlace> componentPlaces) {
+
+        Collection<SignalTransition> result = new HashSet<>();
+        Collection<SignalTransition> signalTransitions = signalToTransitionsMap.getOrDefault(signal, new HashSet<>());
+        for (SignalTransition signalTransition : signalTransitions) {
+            if (signalTransition.getDirection() == direction) {
+                Set<StgPlace> componentPreset = new HashSet<>(componentPlaces);
+                componentPreset.retainAll(compositionStg.getPreset(signalTransition));
+                ShadowConfig shadowConfig = new ShadowConfig(signal, direction, componentPreset);
+                if (!componentPreset.isEmpty() && !shadowConfigs.contains(shadowConfig)) {
+                    shadowConfigs.add(shadowConfig);
+                    result.add(insetShadowTransition(signal, direction, componentPreset));
+                }
             }
         }
         return result;
     }
 
-    public SignalTransition insetShadowTransition(SignalTransition signalTransition, File componentFile) {
-        ComponentData componentData = compositionData.getComponentData(componentFile);
-        Set<StgPlace> componentPlaces = new HashSet<>(componentToPlacesMap.get(componentData));
-        componentPlaces.retainAll(compositionStg.getPreset(signalTransition));
-        if (componentPlaces.isEmpty()) {
-            return null;
-        }
-        String signalName = signalTransition.getSignalName();
-        SignalTransition.Direction direction = signalTransition.getDirection();
-        Container container = Hierarchy.getNearestContainer(signalTransition);
-        SignalTransition shadowTransition = compositionStg.createSignalTransition(signalName, direction, container);
-        for (StgPlace componentPlace : componentPlaces) {
-            compositionStg.makeExplicit(componentPlace);
+    private SignalTransition insetShadowTransition(String signal,
+            SignalTransition.Direction direction, Set<StgPlace> preset) {
+
+        SignalTransition shadowTransition = compositionStg.createSignalTransition(signal, direction, null);
+        for (StgPlace place : preset) {
+            compositionStg.makeExplicit(place);
             try {
-                compositionStg.connect(componentPlace, shadowTransition);
+                compositionStg.connect(place, shadowTransition);
             } catch (InvalidConnectionException e) {
                 throw new RuntimeException(e);
             }
         }
+        Container container = Hierarchy.getNearestContainer(shadowTransition);
         StgPlace shadowPlace = compositionStg.createPlace(null, container);
         try {
             compositionStg.connect(shadowTransition, shadowPlace);

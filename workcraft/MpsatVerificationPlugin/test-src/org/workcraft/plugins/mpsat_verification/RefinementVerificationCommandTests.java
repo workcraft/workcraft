@@ -44,6 +44,14 @@ public class RefinementVerificationCommandTests {
     }
 
     @Test
+    public void testModelSelectorCrCscDumRefinementVerification() throws DeserialisationException {
+        String specificationFileName = PackageUtils.getPackagePath(getClass(), "mode_selector-csc-dum.stg.work");
+        String implementationFileName = PackageUtils.getPackagePath(getClass(), "mode_selector-cr-dum.stg.work");
+        testRefinementVerificationCommands(specificationFileName, implementationFileName, false, false);
+        testRefinementVerificationCommands(specificationFileName, implementationFileName, true, true);
+    }
+
+    @Test
     public void testReadCompletionTaRefinementVerification() throws DeserialisationException {
         String specificationFileName = PackageUtils.getPackagePath(getClass(), "read_completion.stg.work");
         String implementationFileName = PackageUtils.getPackagePath(getClass(), "read_completion-ta.stg.work");

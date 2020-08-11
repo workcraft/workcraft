@@ -45,7 +45,7 @@ class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
             Trace envTrace = getProjectedTrace(compTrace, envData, substitutions);
             LogUtils.logMessage("Projected pair of traces:\n    " + devTrace.toString() + "\n    " + envTrace.toString());
 
-            Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
+            Enabledness compEnabledness = EnablednessUtils.getEnablednessAfterTrace(compStg, compTrace);
             Solution projectedSolution = new Solution(devTrace, envTrace);
             Solution processedSolution = processSolution(stg, projectedSolution, compEnabledness);
             if (processedSolution != null) {
@@ -65,9 +65,10 @@ class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
         }
         // Check if any output can be fired that is not enabled in the composition
         HashSet<String> suspiciousSignals = EnablednessUtils.getEnabledSignals(stg, Signal.Type.OUTPUT);
-        suspiciousSignals.retainAll(compEnabledness.getUnknownSet());
+        suspiciousSignals.removeAll(compEnabledness.getEnabledSet());
+        suspiciousSignals.removeAll(compEnabledness.getDisabledSet());
         if (suspiciousSignals.size() == 1) {
-            compEnabledness.alter(Collections.emptySet(), suspiciousSignals, Collections.emptySet());
+            compEnabledness.disable(suspiciousSignals);
         }
 
         SignalTransition problematicTransition = null;

@@ -24,7 +24,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -80,8 +79,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         Stg devStg = WorkspaceUtils.getAs(me, Stg.class);
 
         // Convert internal signals of the device STG to dummies and keep track of renaming
-        Map<String, String> devSubstitutions = new HashMap<>();
-        StgUtils.convertInternalSignalsToDummies(devStg, devSubstitutions);
+        Map<String, String> devSubstitutions = StgUtils.convertInternalSignalsToDummies(devStg);
 
         File devStgFile = new File(directory, DEV_STG_FILE_NAME);
         Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(devStg, devStgFile, monitor);

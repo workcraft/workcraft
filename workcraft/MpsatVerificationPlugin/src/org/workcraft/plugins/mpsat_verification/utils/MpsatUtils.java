@@ -9,14 +9,15 @@ import org.workcraft.plugins.mpsat_verification.presets.MpsatDataSerialiser;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatSyntaxCheckTask;
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.traces.Trace;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -89,6 +90,27 @@ public class MpsatUtils {
             SyntaxUtils.processBisonSyntaxError("Error: incorrect syntax of the expression: ",
                     result.getPayload(), codePanel);
         }
+    }
+
+    public static  Trace fixTraceToggleEvents(StgModel stg, Trace trace) {
+        Trace result = new Trace();
+        for (String ref : trace) {
+            if (stg.getNodeByReference(ref) != null) {
+                result.add(ref);
+            } else {
+                Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
+                if (r != null) {
+                    String newRef = r.getFirst() + r.getSecond();
+                    if (r.getThird() != null) {
+                        newRef += "/" + r.getThird();
+                    }
+                    if (stg.getNodeByReference(newRef) != null) {
+                        result.add(newRef);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 }

@@ -26,7 +26,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class RefinementTask implements Task<VerificationChainOutput> {
@@ -143,8 +146,7 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         Stg stg = WorkspaceUtils.getAs(me, Stg.class);
 
         // Convert internal signals of the implementation STG to dummies and keep track of renaming
-        Map<String, String> substitutions = new HashMap<>();
-        StgUtils.convertInternalSignalsToDummies(stg, substitutions);
+        Map<String, String> substitutions = StgUtils.convertInternalSignalsToDummies(stg);
 
         File file = new File(directory, IMPLEMENTATION_STG_FILE_NAME);
         Result<? extends ExportOutput> result = StgUtils.exportStg(stg, file, monitor);
@@ -190,7 +192,8 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         PcompParameters pcompParameters = new PcompParameters(
                 PcompParameters.SharedSignalMode.OUTPUT, true, false);
 
-        PcompTask task = new PcompTask(Arrays.asList(specificationStgFile, implementationStgFile),
+        // Note: implementation STG must go first, as this order is used in the analysis of violation traces
+        PcompTask task = new PcompTask(Arrays.asList(implementationStgFile, specificationStgFile),
                 pcompParameters, directory);
 
         Result<? extends PcompOutput> result = Framework.getInstance().getTaskManager().execute(
@@ -230,8 +233,8 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         // - all outputs of implementation STG
         shadowTransitions.addAll(transformer.insetShadowTransitions(outputSignals, implementationStgFile));
 
-        File modCompositionStgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
-        Result<? extends ExportOutput> result = StgUtils.exportStg(compositionStg, modCompositionStgFile, monitor);
+        File shadowCompositionStgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
+        Result<? extends ExportOutput> result = StgUtils.exportStg(compositionStg, shadowCompositionStgFile, monitor);
 
         Set<String> shadowTransitionRefs = shadowTransitions.stream()
                 .map(compositionStg::getNodeReference)
@@ -248,7 +251,7 @@ public class RefinementTask implements Task<VerificationChainOutput> {
 
         String reach = REFINEMENT_REACH.replace(SHADOW_TRANSITIONS_REPLACEMENT, str);
         return new VerificationParameters("Refinement",
-                VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
+                VerificationMode.STG_REACHABILITY_REFINEMENT, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
                 reach, true);

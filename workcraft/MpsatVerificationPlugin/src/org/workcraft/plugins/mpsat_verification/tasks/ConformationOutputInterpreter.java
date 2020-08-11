@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.utils.EnablednessUtils;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
@@ -8,11 +9,9 @@ import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
-import org.workcraft.types.Triple;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkUtils;
@@ -78,7 +77,7 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
         StgModel compStg = getOutput().getInputStg();
         for (Solution solution: solutions) {
             // FIXME: This is to rename toggle events from x to x~
-            Trace compTrace = fixTraceToggleEvents(compStg, solution.getMainTrace());
+            Trace compTrace = MpsatUtils.fixTraceToggleEvents(compStg, solution.getMainTrace());
             if (needsMultiLineMessage) {
                 LogUtils.logMessage("  " + compTrace.toString());
             } else {
@@ -115,8 +114,8 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
                     LogUtils.logMessage("Projection to '" + we.getTitle() + "': " + traceText);
                 }
                 // FIXME: This is to rename toggle events from x to x~
-                Trace compTrace = fixTraceToggleEvents(compStg, solution.getMainTrace());
-                Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
+                Trace compTrace = MpsatUtils.fixTraceToggleEvents(compStg, solution.getMainTrace());
+                Enabledness compEnabledness = EnablednessUtils.getEnablednessAfterTrace(compStg, compTrace);
                 Solution processedSolution = processSolution(stg, trace, compEnabledness);
                 if (processedSolution != null) {
                     result.add(processedSolution);
@@ -126,28 +125,7 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
         return result;
     }
 
-    private Trace fixTraceToggleEvents(StgModel stg, Trace trace) {
-        Trace result = new Trace();
-        for (String ref : trace) {
-            if (stg.getNodeByReference(ref) != null) {
-                result.add(ref);
-            } else {
-                Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
-                if (r != null) {
-                    String newRef = r.getFirst() + r.getSecond();
-                    if (r.getThird() != null) {
-                        newRef += "/" + r.getThird();
-                    }
-                    if (stg.getNodeByReference(newRef) != null) {
-                        result.add(newRef);
-                    }
-                }
-            }
-        }
-        return result;
-    }
-
-    private Solution processSolution(StgModel stg, Trace trace, Enabledness compEnabledness) {
+    public Solution processSolution(StgModel stg, Trace trace, Enabledness compEnabledness) {
         // Execute trace to a potentially problematic state
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (!PetriUtils.fireTrace(stg, trace)) {
@@ -158,10 +136,11 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
 
         // Find enabled signals whose state is unknown (due to dummies) in the composition STG.
         HashSet<String> suspiciousSignals = EnablednessUtils.getEnabledSignals(stg, Signal.Type.OUTPUT);
-        suspiciousSignals.retainAll(compEnabledness.getUnknownSet());
+        suspiciousSignals.removeAll(compEnabledness.getEnabledSet());
+        suspiciousSignals.removeAll(compEnabledness.getDisabledSet());
         if (suspiciousSignals.size() == 1) {
             // If there is only one such signal, then it is actually the one disabled in the composition STG.
-            compEnabledness.alter(Collections.emptySet(), suspiciousSignals, Collections.emptySet());
+            compEnabledness.disable(suspiciousSignals);
         }
         // Find an enabled transition that is definitely disabled in composition STG.
         SignalTransition problematicTransition = null;
@@ -173,22 +152,25 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
             }
         }
 
-        String comment = null;
+        Solution processedSolution = null;
         if (problematicTransition != null) {
             // If the problematic transition found, add it to the trace.
             String ref = stg.getSignalReference(problematicTransition) + problematicTransition.getDirection();
             LogUtils.logWarning("Output '" + ref + "' becomes unexpectedly enabled");
             trace.add(stg.getNodeReference(problematicTransition));
-            comment = "Unexpected change of output '" + ref + "'";
+            String comment = "Unexpected change of output '" + ref + "'";
+            processedSolution = new Solution(trace, null, comment);
         } else if (!suspiciousSignals.isEmpty()) {
             // Otherwise add all disabled signals to the trace description.
             String refs = String.join(", ", suspiciousSignals);
             LogUtils.logWarning("One of these outputs becomes unexpectedly enabled (via internal signals or dummies):\n" + refs);
-            comment = "Unexpected change of one of the outputs: " + refs;
+            String comment = "Unexpected enabling of one of the outputs: " + refs;
+            processedSolution = new Solution(trace, null, comment);
         }
 
         PetriUtils.setMarking(stg, marking);
-        return new Solution(trace, null, comment);
+        // Note that if no violating transitions found, then this component does not break conformation -- return null
+        return processedSolution;
     }
 
 }

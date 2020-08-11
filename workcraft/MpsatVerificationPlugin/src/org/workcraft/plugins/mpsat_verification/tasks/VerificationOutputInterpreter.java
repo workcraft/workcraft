@@ -42,10 +42,10 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
             OutcomeUtils.showOutcome(propertyHolds, message, isInteractive());
             return propertyHolds;
 
-        case REACHABILITY:
-        case STG_REACHABILITY:
         case NORMALCY:
         case ASSERTION:
+        case REACHABILITY:
+        case STG_REACHABILITY:
             return new ReachabilityOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();
 
@@ -69,12 +69,16 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
             return new OutputDeterminacyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();
 
+        case STG_REACHABILITY_REFINEMENT:
+            return new RefinementOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                    getOutput(), isInteractive()).interpret();
+
         case STG_REACHABILITY_CONFORMATION:
             return new ConformationOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();
 
-        case CSC_CONFLICT_DETECTION:
         case USC_CONFLICT_DETECTION:
+        case CSC_CONFLICT_DETECTION:
             return new EncodingConflictOutputHandler(getWorkspaceEntry(), getOutput(),
                     isInteractive()).interpret();
 

@@ -191,7 +191,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
     private String findUnexpectedOutputAfterTrace(Trace compTrace, Map<WorkspaceEntry, Trace> workToTraceMap) {
         // Find output enabled in component STG that is not enabled in the composition STG
         StgModel compStg = getOutput().getInputStg();
-        Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
+        Enabledness compEnabledness = EnablednessUtils.getEnablednessAfterTrace(compStg, compTrace);
         for (WorkspaceEntry we : wes) {
             StgModel stg = getSrcStg(we);
             Trace projTrace = workToTraceMap.get(we);
@@ -202,9 +202,10 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
             // Find enabled signals whose state is unknown (due to dummies) in the composition STG.
             // If there is only one such signal, then it is actually the one disabled in the composition STG.
             HashSet<String> suspiciousSignals = EnablednessUtils.getEnabledSignals(stg, Signal.Type.OUTPUT);
-            suspiciousSignals.retainAll(compEnabledness.getUnknownSet());
+            suspiciousSignals.removeAll(compEnabledness.getEnabledSet());
+            suspiciousSignals.removeAll(compEnabledness.getDisabledSet());
             if (suspiciousSignals.size() == 1) {
-                compEnabledness.alter(Collections.emptySet(), suspiciousSignals, Collections.emptySet());
+                compEnabledness.disable(suspiciousSignals);
             }
             // Find the first enabled transition that is definitely disabled in composition STG.
             for (SignalTransition transition : stg.getSignalTransitions(Signal.Type.OUTPUT)) {
