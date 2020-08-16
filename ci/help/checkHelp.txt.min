@@ -32,6 +32,8 @@ checkStgOutputDeterminacy(work) - check the STG 'work' for output determinacy
 checkStgOutputPersistency(work) - check the STG 'work' for output persistency
 checkStgPlaceRedundancy(work, data) - check the STG (or Petri net) 'work' for redundancy of places in space-separated list 'data'
 checkStgReachAssertion(work, data) - check the STG 'work' for REACH assertion 'data'
+checkStgRefinement(work, data) - check the STG 'work' is a refinement of the STG specified by file name 'data'
+checkStgRefinementRelaxed(work, data) - check the STG 'work' is a relaxed refinement (allows concurrency reduction) of the STG specified by file name 'data'
 checkStgSignalAssertion(work, data) - check the STG 'work' for signal assertion 'data'
 checkStgSpotAssertion(work, data) - check the STG 'work' for SPOT assertion 'data'
 checkStgUsc(work) - check the STG 'work' for unique state coding

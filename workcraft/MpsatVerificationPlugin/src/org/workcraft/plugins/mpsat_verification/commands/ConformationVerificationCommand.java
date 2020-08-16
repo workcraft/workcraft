@@ -32,7 +32,7 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
 
     @Override
     public int getPriority() {
-        return 2;
+        return 4;
     }
 
     @Override

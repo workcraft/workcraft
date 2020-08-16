@@ -32,12 +32,29 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
     }
 
     @Override
-    public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
+    public String extendMessage(String message) {
+        return "<html><br>&#160;" + message + " after the following trace(s):<br><br></html>";
+    }
+
+    @Override
+    public void reportSolutions(String message, List<Solution> solutions) {
+        Framework framework = Framework.getInstance();
+        if (isInteractive() && framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
+            ReachabilityDialog solutionsDialog = new ReachabilityDialog(
+                    mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, solutions);
+
+            solutionsDialog.reveal();
+        }
+    }
+
+    @Override
+    public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
 
-        StgModel stg = getSrcStg(we);
-        ComponentData data = getCompositionData(we);
-        Map<String, String> substitutions = getSubstitutions(we);
+        StgModel stg = getStg();
+        ComponentData data = getComponentData();
+        Map<String, String> substitutions = getSubstitutions();
 
         for (Solution solution : solutions) {
             LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
@@ -77,25 +94,17 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
         if (propertyHolds) {
             OutcomeUtils.showOutcome(true, "The system is deadlock-free", isInteractive());
         } else {
-            List<Solution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
+            List<Solution> processedSolutions = processSolutions(solutions);
             if (!TraceUtils.hasTraces(processedSolutions)) {
                 OutcomeUtils.showOutcome(false,
                         "Deadlock freeness cannot be reliably verified because of conformation violation",
                         isInteractive());
 
                 return null;
-            } else {
-                String message = "The system has a deadlock";
-                OutcomeUtils.logOutcome(false, message);
-                if (isInteractive()) {
-                    message = "<html><br>&#160;" + message + " after the following trace(s):<br><br></html>";
-                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                    ReachabilityDialog solutionsDialog = new ReachabilityDialog(
-                            mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, processedSolutions);
-
-                    solutionsDialog.reveal();
-                }
             }
+            String message = "The system has a deadlock";
+            OutcomeUtils.logOutcome(false, message);
+            reportSolutions(extendMessage(message), processedSolutions);
         }
         return propertyHolds;
     }

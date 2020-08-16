@@ -3,24 +3,24 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.plugins.mpsat_verification.utils.EnablednessUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
+import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.io.File;
 import java.util.*;
 
-class RefinementOutputInterpreter extends ConformationOutputInterpreter {
-
-    private static final int IMPLEMENTATION_INDEX = 0;
-    private static final int SPECIFICATION_INDEX = 1;
+class RefinementOutputInterpreter extends AbstractCompositionOutputInterpreter {
 
     RefinementOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
             PcompOutput pcompOutput, MpsatOutput mpsatOutput, boolean interactive) {
@@ -29,21 +29,23 @@ class RefinementOutputInterpreter extends ConformationOutputInterpreter {
     }
 
     @Override
-    public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
+    public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
 
+        String title = getWorkspaceEntry().getTitle();
         StgModel compositionStg = getOutput().getInputStg();
+        CompositionData compositionData = getCompositionData();
 
-        ComponentData implementationData = getCompositionData(IMPLEMENTATION_INDEX);
-        StgModel implementationStg = getSrcStg(IMPLEMENTATION_INDEX);
+        ComponentData implementationData = compositionData.getComponentData(0);
+        StgModel implementationStg = StgUtils.importStg(new File(implementationData.getFileName()));
 
-        ComponentData specificationData = getCompositionData(SPECIFICATION_INDEX);
-        StgModel specificationStg = getSrcStg(SPECIFICATION_INDEX);
+        ComponentData specificationData = compositionData.getComponentData(1);
+        StgModel specificationStg = StgUtils.importStg(new File(specificationData.getFileName()));
 
         HashSet<String> visitedTraces = new HashSet<>();
         boolean needsMultiLineMessage = solutions.size() > 1;
         if (needsMultiLineMessage) {
-            LogUtils.logMessage("Unique projection(s) to '" + we.getTitle() + "':");
+            LogUtils.logMessage("Unique projection(s) to '" + title + "':");
         }
 
         for (Solution solution : solutions) {
@@ -57,7 +59,7 @@ class RefinementOutputInterpreter extends ConformationOutputInterpreter {
                 if (needsMultiLineMessage) {
                     LogUtils.logMessage("  " + traceText);
                 } else {
-                    LogUtils.logMessage("Projection to '" + we.getTitle() + "': " + traceText);
+                    LogUtils.logMessage("Projection to '" + title + "': " + traceText);
                 }
                 Enabledness specificationEnabledness = EnablednessUtils.getEnablednessAfterTrace(specificationStg, specificationTrace);
                 Solution processedSolution = processSolution(implementationStg, implementationTrace, specificationEnabledness);
@@ -69,8 +71,7 @@ class RefinementOutputInterpreter extends ConformationOutputInterpreter {
         return result;
     }
 
-    @Override
-    public Solution processSolution(StgModel stg, Trace trace, Enabledness specificationEnabledness) {
+    private Solution processSolution(StgModel stg, Trace trace, Enabledness specificationEnabledness) {
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (!PetriUtils.fireTrace(stg, trace)) {
             PetriUtils.setMarking(stg, marking);
@@ -145,7 +146,7 @@ class RefinementOutputInterpreter extends ConformationOutputInterpreter {
         }
 
         PetriUtils.setMarking(stg, marking);
-        Map<String, String> substitutions = getSubstitutions(null);
+        Map<String, String> substitutions = getSubstitutions();
         return new Solution(getSubstitutedTrace(trace, substitutions), null, comment);
     }
 

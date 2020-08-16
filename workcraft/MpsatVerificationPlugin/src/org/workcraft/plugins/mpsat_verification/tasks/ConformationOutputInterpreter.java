@@ -13,20 +13,14 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
-
-    private static final Pattern DEAD_SIGNAL_PATTERN = Pattern.compile(
-            "Warning: signal (\\w+) is dead");
+class ConformationOutputInterpreter extends AbstractCompositionOutputInterpreter {
 
     ConformationOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
             PcompOutput pcompOutput, MpsatOutput mpsatOutput, boolean interactive) {
@@ -35,70 +29,36 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
     }
 
     @Override
-    public String getMessage(boolean propertyHolds) {
-        String result = super.getMessage(propertyHolds);
-        String mpsatStderr = getOutput().getStderrString();
-        Matcher matcher = DEAD_SIGNAL_PATTERN.matcher(mpsatStderr);
-        List<String> signals = new ArrayList<>();
-        while (matcher.find()) {
-            signals.add(matcher.group(1));
-        }
-        if (!signals.isEmpty()) {
-            if (propertyHolds) {
-                result += "\nYet ";
-            } else {
-                result += "\nAlso ";
-            }
-            result += TextUtils.wrapMessageWithItems("composition has dead signal", signals);
-            if (propertyHolds) {
-                result += "\nWarning: dead signals may indicate design issues!";
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public StgModel getSrcStg(WorkspaceEntry we) {
+    public StgModel getStg() {
+        // 1-way conformation for STG uses composition of *modified* STG components (internal signals
+        // are replaced with dummies), therefore original STG should be obtained from WorkspaceEntries.
+        WorkspaceEntry we = getWorkspaceEntry();
         if (WorkspaceUtils.isApplicable(we, StgModel.class)) {
-            // STG conformation uses composition of *modified* STG components (internal signals
-            // are replaced with dummies). Original STGs are obtained from WorkspaceEntries.
             ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
             return WorkspaceUtils.getAs(me, StgModel.class);
         }
-        return super.getSrcStg(we);
+        // Conformation of a circuit to its environment uses unmodified device STG that can be
+        // obtained from composition data as implemented in ReachabilityOutputInterpreter.
+        return super.getStg();
     }
 
     @Override
-    public void reportSolutions(List<Solution> solutions) {
-        boolean needsMultiLineMessage = solutions.size() > 1;
-        if (needsMultiLineMessage) {
-            LogUtils.logMessage("Violation traces of the composition:");
-        }
-        StgModel compStg = getOutput().getInputStg();
-        for (Solution solution: solutions) {
-            // FIXME: This is to rename toggle events from x to x~
-            Trace compTrace = MpsatUtils.fixTraceToggleEvents(compStg, solution.getMainTrace());
-            if (needsMultiLineMessage) {
-                LogUtils.logMessage("  " + compTrace.toString());
-            } else {
-                LogUtils.logMessage("Violation trace of the composition: " + compTrace.toString());
-            }
-        }
+    public List<Solution> processSolutions(List<Solution> solutions) {
+        String title = getWorkspaceEntry().getTitle();
+        StgModel stg = getStg();
+        ComponentData data = getComponentData();
+        Map<String, String> substitutions = getSubstitutions();
+        return processSolutions(solutions, title, stg, data, substitutions);
     }
 
-    @Override
-    public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
+    public List<Solution> processSolutions(List<Solution> solutions, String title, StgModel stg,
+            ComponentData data, Map<String, String> substitutions) {
+
         List<Solution> result = new LinkedList<>();
-
-        StgModel stg = getSrcStg(we);
-
-        ComponentData data = getCompositionData(we);
-        Map<String, String> substitutions = getSubstitutions(we);
-
         HashSet<String> visitedTraces = new HashSet<>();
         boolean needsMultiLineMessage = solutions.size() > 1;
         if (needsMultiLineMessage) {
-            LogUtils.logMessage("Unique projection(s) to '" + we.getTitle() + "':");
+            LogUtils.logMessage("Unique projection(s) to '" + title + "':");
         }
 
         StgModel compStg = getOutput().getInputStg();
@@ -111,9 +71,8 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
                 if (needsMultiLineMessage) {
                     LogUtils.logMessage("  " + traceText);
                 } else {
-                    LogUtils.logMessage("Projection to '" + we.getTitle() + "': " + traceText);
+                    LogUtils.logMessage("Projection to '" + title + "': " + traceText);
                 }
-                // FIXME: This is to rename toggle events from x to x~
                 Trace compTrace = MpsatUtils.fixTraceToggleEvents(compStg, solution.getMainTrace());
                 Enabledness compEnabledness = EnablednessUtils.getEnablednessAfterTrace(compStg, compTrace);
                 Solution processedSolution = processSolution(stg, trace, compEnabledness);
@@ -125,7 +84,7 @@ class ConformationOutputInterpreter extends ReachabilityOutputInterpreter {
         return result;
     }
 
-    public Solution processSolution(StgModel stg, Trace trace, Enabledness compEnabledness) {
+    private Solution processSolution(StgModel stg, Trace trace, Enabledness compEnabledness) {
         // Execute trace to a potentially problematic state
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (!PetriUtils.fireTrace(stg, trace)) {

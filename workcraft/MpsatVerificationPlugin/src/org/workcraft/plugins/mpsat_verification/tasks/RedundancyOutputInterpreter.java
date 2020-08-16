@@ -14,7 +14,7 @@ class RedundancyOutputInterpreter extends ReachabilityOutputInterpreter {
 
     @Override
     public String getMessage(boolean propertyHolds) {
-        return "The selected places are " + (propertyHolds ? "essential" : "redundant");
+        return "The selected places are " + (propertyHolds ? "redundant" : "essential");
     }
 
     @Override

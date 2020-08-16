@@ -46,13 +46,22 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         return pcompOutput;
     }
 
-    public void reportSolutions(List<Solution> solutions) {
+    public void reportSolutions(String message, List<Solution> solutions) {
+        List<Solution> processedSolutions = processSolutions(solutions);
+        Framework framework = Framework.getInstance();
+        if (isInteractive() && framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
+            ReachabilityDialog solutionsDialog = new ReachabilityDialog(
+                    mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, processedSolutions);
+
+            solutionsDialog.reveal();
+        }
     }
 
-    public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
+    public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
-        ComponentData data = getCompositionData(we);
-        Map<String, String> substitutions = getSubstitutions(we);
+        ComponentData data = getComponentData();
+        Map<String, String> substitutions = getSubstitutions();
         for (Solution solution: solutions) {
             Trace mainTrace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
             Trace branchTrace = getProjectedTrace(solution.getBranchTrace(), data, substitutions);
@@ -88,7 +97,23 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         return result;
     }
 
-    public Map<String, String> getSubstitutions(WorkspaceEntry we) {
+    public StgModel getStg() {
+        // If the property is verified on a composition STG, then use the
+        // corresponding component STG; otherwise use input STG of MPSat task.
+        StgModel stg = null;
+        ComponentData data = getComponentData();
+        if (data != null) {
+            File file = new File(data.getFileName());
+            if ((file != null) && file.exists()) {
+                stg = StgUtils.importStg(file);
+            }
+        } else {
+            stg = getOutput().getInputStg();
+        }
+        return stg;
+    }
+
+    public Map<String, String> getSubstitutions() {
         if (getExportOutput() instanceof SubExportOutput) {
             SubExportOutput exportOutput = (SubExportOutput) getExportOutput();
             return exportOutput.getSubstitutions();
@@ -96,11 +121,12 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         return new HashMap<>();
     }
 
-    public ComponentData getCompositionData(WorkspaceEntry we) {
-        return getCompositionData(0);
+    public ComponentData getComponentData() {
+        CompositionData compositionData = getCompositionData();
+        return compositionData == null ? null : compositionData.getComponentData(0);
     }
 
-    public ComponentData getCompositionData(int index) {
+    public CompositionData getCompositionData() {
         if (compositionData == null) {
             if (getPcompOutput() != null) {
                 File detailFile = getPcompOutput().getDetailFile();
@@ -111,27 +137,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
                 }
             }
         }
-        return compositionData == null ? null : compositionData.getComponentData(index);
-    }
-
-    public StgModel getSrcStg(WorkspaceEntry we) {
-        return getSrcStg(0);
-    }
-
-    public StgModel getSrcStg(int index) {
-        // If the property is verified on a composition STG, then use the
-        // corresponding component STG; otherwise use input STG of MPSat task.
-        StgModel stg = null;
-        ComponentData data = getCompositionData(index);
-        if (data != null) {
-            File file = new File(data.getFileName());
-            if ((file != null) && file.exists()) {
-                stg = StgUtils.importStg(file);
-            }
-        } else {
-            stg = getOutput().getInputStg();
-        }
-        return stg;
+        return compositionData;
     }
 
     public String getMessage(boolean propertyHolds) {
@@ -163,16 +169,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
             OutcomeUtils.showOutcome(propertyHolds, message, isInteractive());
         } else {
             OutcomeUtils.logOutcome(propertyHolds, message);
-            reportSolutions(solutions);
-            List<Solution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
-            if (isInteractive()) {
-                message = extendMessage(message);
-                MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                ReachabilityDialog solutionsDialog = new ReachabilityDialog(
-                        mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, processedSolutions);
-
-                solutionsDialog.reveal();
-            }
+            reportSolutions(extendMessage(message), solutions);
         }
         return propertyHolds;
     }
