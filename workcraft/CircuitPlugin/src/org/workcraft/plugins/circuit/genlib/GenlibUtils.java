@@ -76,21 +76,15 @@ public class GenlibUtils {
     }
 
     private static String getSetFunction(Gate gate) {
-        String result = null;
-        if (gate.isSequential()) {
-            result = ExpressionUtils.extactSetExpression(gate.function.formula, gate.seq);
-        } else {
-            result = gate.function.formula;
-        }
-        return result;
+        return gate.isSequential()
+                ? ExpressionUtils.extactSetExpression(gate.function.formula, gate.seq)
+                : gate.function.formula;
     }
 
     private static String getResetFunction(Gate gate) {
-        String result = null;
-        if (gate.isSequential()) {
-            result = ExpressionUtils.extactResetExpression(gate.function.formula, gate.seq);
-        }
-        return result;
+        return gate.isSequential()
+                ? ExpressionUtils.extactResetExpression(gate.function.formula, gate.seq)
+                : null;
     }
 
     public static Pair<Gate, Map<BooleanVariable, String>> findMapping(BooleanFormula formula, Library library) {
