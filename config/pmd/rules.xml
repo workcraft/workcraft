@@ -9,6 +9,7 @@
 
     <rule ref="category/java/bestpractices.xml">
         <exclude name="UnusedImports"/> <!-- Too restrictive as forbids on demand imports -->
+        <exclude name="UnusedAssignment"/> <!-- Too restrictive as forbids initialisation to null -->
         <exclude name="SwitchStmtsShouldHaveDefault"/> <!-- Too restrictive as may mask new enum items -->
         <exclude name="JUnitTestsShouldIncludeAssert"/>  <!-- Too restrictive as forbids test delegation -->
         <exclude name="SystemPrintln"/> <!-- Too restrictive and used often -->
