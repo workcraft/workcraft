@@ -6,14 +6,13 @@ import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
-import org.workcraft.plugins.mpsat_verification.utils.TransformUtils;
-import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.LabelParser;
@@ -134,10 +133,11 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             File sysStgFile = pcompResult.getPayload().getOutputFile();
             File detailFile = pcompResult.getPayload().getDetailFile();
             CompositionData compositionData = new CompositionData(detailFile);
-            ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Stg modSysStg = StgUtils.loadStg(sysStgFile);
-            Set<String> devShadowTransitions = new HashSet<>();
-            TransformUtils.generateShadows(modSysStg, devComponentData, devShadowTransitions);
+            CompositionTransformer transformer = new CompositionTransformer(modSysStg, compositionData);
+            Collection<SignalTransition> shadowTransitions = new HashSet<>();
+            shadowTransitions.addAll(transformer.insetShadowTransitions(devStgFile));
+
             File modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
             Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
 
@@ -157,7 +157,11 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             monitor.progressUpdate(0.60);
 
             // Check for output determinacy
-            VerificationParameters verificationParameters = getVerificationParameters(devShadowTransitions);
+            Set<String> shadowTransitionRefs = shadowTransitions.stream()
+                    .map(modSysStg::getNodeReference)
+                    .collect(Collectors.toSet());
+
+            VerificationParameters verificationParameters = getVerificationParameters(shadowTransitionRefs);
             MpsatTask mpsatTask = new MpsatTask(unfoldingFile, sysStgFile, verificationParameters, directory);
             Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running output determinacy check [MPSat]", new SubtaskMonitor<>(monitor));

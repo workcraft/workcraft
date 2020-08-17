@@ -2,7 +2,7 @@ package org.workcraft.plugins.punf.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.gui.dialogs.ReachabilityDialog;
 import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -56,11 +56,6 @@ public class PunfLtlxOutputInterpreter extends AbstractOutputInterpreter<PunfOut
         return result;
     }
 
-    public String extendMessage(String message) {
-        String traceInfo = "Violation trace in <i>PREFIX</i>{<i>LOOP</i>} form:";
-        return "<html>" + message + "<br><br>" + traceInfo + "</html>";
-    }
-
     @Override
     public Boolean interpret() {
         if (getOutput() == null) {
@@ -77,11 +72,13 @@ public class PunfLtlxOutputInterpreter extends AbstractOutputInterpreter<PunfOut
             }
         } else {
             LogUtils.logWarning(message);
-            if (isInteractive()) {
-                MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                message = extendMessage(message);
-                ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                        mainWindow, getWorkspaceEntry(), TITLE, message, solution);
+            Framework framework = Framework.getInstance();
+            if (isInteractive() && framework.isInGuiMode()) {
+                MainWindow mainWindow = framework.getMainWindow();
+                String traceInfo = "Violation trace in <i>PREFIX</i>{<i>LOOP</i>} form:";
+                String extendedMessage = "<html>" + message + "<br><br>" + traceInfo + "</html>";
+                ReachabilityDialog solutionsDialog = new ReachabilityDialog(
+                        mainWindow, getWorkspaceEntry(), TITLE, extendedMessage, solution);
 
                 solutionsDialog.reveal();
             }

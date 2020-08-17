@@ -2,11 +2,11 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class VerificationOutputInterpreter extends AbstractOutputInterpreter<MpsatOutput, Boolean> {
@@ -30,7 +30,7 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
 
     @Override
     public Boolean interpret() {
-        // One of the Mpsat tasks returned a solution trace
+        // One of the MPSat tasks returned a solution trace
         VerificationMode verificationMode = verificationParameters.getMode();
         switch (verificationMode) {
         case UNDEFINED:
@@ -38,17 +38,14 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
             if ((message == null) && (verificationParameters.getDescription() != null)) {
                 message = verificationParameters.getDescription();
             }
-            if (isInteractive()) {
-                DialogUtils.showInfo(message, "Verification results");
-            } else {
-                LogUtils.logInfo(message);
-            }
-            return true;
+            boolean propertyHolds = verificationParameters.getInversePredicate();
+            OutcomeUtils.showOutcome(propertyHolds, message, isInteractive());
+            return propertyHolds;
 
-        case REACHABILITY:
-        case STG_REACHABILITY:
         case NORMALCY:
         case ASSERTION:
+        case REACHABILITY:
+        case STG_REACHABILITY:
             return new ReachabilityOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();
 
@@ -72,12 +69,16 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
             return new OutputDeterminacyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();
 
+        case STG_REACHABILITY_REFINEMENT:
+            return new RefinementOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                    getOutput(), isInteractive()).interpret();
+
         case STG_REACHABILITY_CONFORMATION:
             return new ConformationOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();
 
-        case CSC_CONFLICT_DETECTION:
         case USC_CONFLICT_DETECTION:
+        case CSC_CONFLICT_DETECTION:
             return new EncodingConflictOutputHandler(getWorkspaceEntry(), getOutput(),
                     isInteractive()).interpret();
 

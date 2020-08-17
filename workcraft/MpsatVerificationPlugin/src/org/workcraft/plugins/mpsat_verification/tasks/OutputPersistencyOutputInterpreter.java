@@ -26,12 +26,12 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
     }
 
     @Override
-    public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
+    public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
 
-        Map<String, String> substitutions = getSubstitutions(we);
-        ComponentData data = getCompositionData(we);
-        StgModel stg = getSrcStg(we);
+        Map<String, String> substitutions = getSubstitutions();
+        ComponentData data = getComponentData();
+        StgModel stg = getStg();
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
 
         for (Solution solution: solutions) {

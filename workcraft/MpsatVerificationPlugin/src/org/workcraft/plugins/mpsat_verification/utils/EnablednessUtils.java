@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.utils;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.traces.Trace;
 import org.workcraft.plugins.mpsat_verification.tasks.Enabledness;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -10,27 +9,23 @@ import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.traces.Trace;
 
 import java.util.HashMap;
 import java.util.HashSet;
 
 public class EnablednessUtils {
 
-    public static Enabledness getOutputEnablednessAfterTrace(StgModel stg, Trace trace) {
+    public static Enabledness getEnablednessAfterTrace(StgModel stg, Trace trace) {
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (!PetriUtils.fireTrace(stg, trace)) {
             PetriUtils.setMarking(stg, marking);
             throw new RuntimeException("Cannot execute trace: " + trace.toString());
         }
-        Signal.Type type = Signal.Type.OUTPUT;
-        HashSet<String> enabled = getEnabledSignals(stg, type);
-        HashSet<String> disabled = getDisabledSignals(stg, type);
-        HashSet<String> unknown = new HashSet<>(stg.getSignalReferences(type));
-        unknown.removeAll(enabled);
-        unknown.removeAll(disabled);
-        Enabledness enabledness = new Enabledness(enabled, disabled, unknown);
+        HashSet<String> enabled = getEnabledSignals(stg, null);
+        HashSet<String> disabled = getDisabledSignals(stg, null);
         PetriUtils.setMarking(stg, marking);
-        return enabledness;
+        return new Enabledness(enabled, disabled);
     }
 
     public static HashSet<String> getEnabledSignals(StgModel stg, Signal.Type type) {

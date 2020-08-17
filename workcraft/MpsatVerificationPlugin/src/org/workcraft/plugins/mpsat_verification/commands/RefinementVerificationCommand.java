@@ -4,12 +4,13 @@ import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Format;
-import org.workcraft.plugins.mpsat_verification.tasks.ConformationTask;
+import org.workcraft.plugins.mpsat_verification.tasks.RefinementTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
+import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -17,12 +18,12 @@ import org.workcraft.workspace.WorkspaceEntry;
 import javax.swing.*;
 import java.io.File;
 
-public class ConformationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+public class RefinementVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableDataCommand<Boolean, File> {
 
     @Override
     public String getDisplayName() {
-        return "1-way conformation [MPSat]...";
+        return "Refinement [MPSat]...";
     }
 
     @Override
@@ -32,7 +33,7 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
 
     @Override
     public int getPriority() {
-        return 4;
+        return 2;
     }
 
     @Override
@@ -44,7 +45,7 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
     public void run(WorkspaceEntry we) {
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         Format format = StgFormat.getInstance();
-        JFileChooser fc = mainWindow.createOpenDialog("Select environment STG file", false, true, format);
+        JFileChooser fc = mainWindow.createOpenDialog("Select specification STG file", false, true, format);
         if (fc.showDialog(mainWindow, "OK") == JFileChooser.APPROVE_OPTION) {
             File data = fc.getSelectedFile();
             VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
@@ -55,9 +56,13 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
     @Override
     public void run(WorkspaceEntry we, File data, ProgressMonitor monitor) {
         TaskManager manager = Framework.getInstance().getTaskManager();
-        ConformationTask task = new ConformationTask(we, data);
+        Task task = new RefinementTask(we, data, getAllowConcurrencyReduction());
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
+    }
+
+    public boolean getAllowConcurrencyReduction() {
+        return false;
     }
 
     @Override

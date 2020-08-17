@@ -164,17 +164,15 @@ public class StgUtils {
         }
     }
 
-    public static void convertInternalSignalsToDummies(Stg stg) {
-        convertInternalSignalsToDummies(stg, new HashMap<>());
-    }
-
-    public static void convertInternalSignalsToDummies(Stg stg, Map<String, String> substitutions) {
+    public static Map<String, String> convertInternalSignalsToDummies(Stg stg) {
+        Map<String, String> result = new HashMap<>();
         for (SignalTransition signalTransition : stg.getSignalTransitions(Signal.Type.INTERNAL)) {
             String signalTransitionRef = stg.getNodeReference(signalTransition);
             DummyTransition dummyTransition = StgUtils.convertSignalToDummyTransition(stg, signalTransition);
             String dummyTransitionRef = stg.getNodeReference(dummyTransition);
-            substitutions.put(dummyTransitionRef, signalTransitionRef);
+            result.put(dummyTransitionRef, signalTransitionRef);
         }
+        return result;
     }
 
     public static void convertInternalSignalsToOutputs(Stg stg) {

@@ -3,10 +3,12 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.gui.dialogs.ReachabilityDialog;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.utils.EnablednessUtils;
+import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
+import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.utils.PetriUtils;
@@ -19,9 +21,11 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
+import org.workcraft.utils.WorkUtils;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
@@ -64,65 +68,55 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
         this.wes = wes;
     }
 
-    @Override
-    public Map<String, String> getSubstitutions(WorkspaceEntry we) {
+    private StgModel getComponentStg(WorkspaceEntry we) {
+        // N-way conformation uses composition of *modified* STG components (internal signals
+        // are replaced with dummies). Original STGs are obtained from WorkspaceEntries.
+        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
+        return WorkspaceUtils.getAs(me, StgModel.class);
+    }
+
+    private ComponentData getComponentData(WorkspaceEntry we) {
+        CompositionData compositionData = getCompositionData();
+        return compositionData == null ? null : compositionData.getComponentData(wes.indexOf(we));
+    }
+
+    private Map<String, String> getComponentSubstitutions(WorkspaceEntry we) {
         int index = wes.indexOf(we);
         if ((getExportOutput() instanceof MultiSubExportOutput) && (index >= 0)) {
             MultiSubExportOutput exportOutput = (MultiSubExportOutput) getExportOutput();
             return exportOutput.getSubstitutions(index);
         }
-        return new HashMap<>();
+        return getSubstitutions();
     }
 
     @Override
-    public ComponentData getCompositionData(WorkspaceEntry we) {
-        int index = wes.indexOf(we);
-        return getCompositionData(index);
-    }
-
-    @Override
-    public Boolean interpret() {
-        if (getOutput() == null) {
-            return null;
-        }
-        List<Solution> solutions = getOutput().getSolutions();
-        boolean propertyHolds = solutions.isEmpty();
-        String message = getMessage(propertyHolds);
-        if (propertyHolds) {
-            DialogUtils.showInfo(message, TITLE);
-        } else {
-            LogUtils.logWarning(message);
-            reportSolutions(solutions);
-            Framework framework = Framework.getInstance();
-            if (isInteractive() && framework.isInGuiMode()) {
-                MainWindow mainWindow = framework.getMainWindow();
-                for (WorkspaceEntry we : wes) {
-                    List<Solution> processedSolutions = processSolutions(we, solutions);
-                    if (!processedSolutions.isEmpty() && framework.isInGuiMode()) {
-                        mainWindow.requestFocus(we);
-                        String title = TITLE + " for model '" + we.getTitle() + "'";
-                        String extendedMessage = extendMessage(message);
-                        ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                                mainWindow, we, title, extendedMessage, processedSolutions);
-
-                        solutionsDialog.reveal();
-                    }
-                }
-            }
-        }
-        return propertyHolds;
-    }
-
-    @Override
-    public void reportSolutions(List<Solution> solutions) {
+    public void reportSolutions(String message, List<Solution> solutions) {
         if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.BRIEF) {
-            super.reportSolutions(solutions);
+            writeBrief(solutions);
         }
         if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.TABLE) {
             writeTables(solutions);
         }
         if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.LIST) {
             writeLists(solutions);
+        }
+        Framework framework = Framework.getInstance();
+        if (isInteractive() && framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
+            for (WorkspaceEntry we : wes) {
+                String title = we.getTitle();
+                StgModel stg = getComponentStg(we);
+                ComponentData data = getComponentData(we);
+                Map<String, String> substitutions = getComponentSubstitutions(we);
+                List<Solution> processedSolutions = processSolutions(solutions, title, stg, data, substitutions);
+                if (!processedSolutions.isEmpty() && framework.isInGuiMode()) {
+                    mainWindow.requestFocus(we);
+                    ReachabilityDialog solutionsDialog = new ReachabilityDialog(
+                            mainWindow, we, OutcomeUtils.TITLE + " for model '" + title + "'", message, processedSolutions);
+
+                    solutionsDialog.reveal();
+                }
+            }
         }
     }
 
@@ -175,8 +169,8 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
     }
 
     private Trace calcProjectionTrace(Trace compTrace, WorkspaceEntry we) {
-        ComponentData data = getCompositionData(we);
-        Map<String, String> substitutions = getSubstitutions(we);
+        ComponentData data = getComponentData(we);
+        Map<String, String> substitutions = getComponentSubstitutions(we);
         Trace result = new Trace();
         for (String ref : compTrace) {
             String srcRef = data.getSrcTransition(ref);
@@ -191,9 +185,9 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
     private String findUnexpectedOutputAfterTrace(Trace compTrace, Map<WorkspaceEntry, Trace> workToTraceMap) {
         // Find output enabled in component STG that is not enabled in the composition STG
         StgModel compStg = getOutput().getInputStg();
-        Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
+        Enabledness compEnabledness = EnablednessUtils.getEnablednessAfterTrace(compStg, compTrace);
         for (WorkspaceEntry we : wes) {
-            StgModel stg = getSrcStg(we);
+            StgModel stg = getComponentStg(we);
             Trace projTrace = workToTraceMap.get(we);
             // Execute projected trace to a potentially problematic state
             if (!PetriUtils.fireTrace(stg, projTrace)) {
@@ -202,9 +196,10 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
             // Find enabled signals whose state is unknown (due to dummies) in the composition STG.
             // If there is only one such signal, then it is actually the one disabled in the composition STG.
             HashSet<String> suspiciousSignals = EnablednessUtils.getEnabledSignals(stg, Signal.Type.OUTPUT);
-            suspiciousSignals.retainAll(compEnabledness.getUnknownSet());
+            suspiciousSignals.removeAll(compEnabledness.getEnabledSet());
+            suspiciousSignals.removeAll(compEnabledness.getDisabledSet());
             if (suspiciousSignals.size() == 1) {
-                compEnabledness.alter(Collections.emptySet(), suspiciousSignals, Collections.emptySet());
+                compEnabledness.disable(suspiciousSignals);
             }
             // Find the first enabled transition that is definitely disabled in composition STG.
             for (SignalTransition transition : stg.getSignalTransitions(Signal.Type.OUTPUT)) {
@@ -220,7 +215,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
     private Trace calcProjectedEvents(Trace compTrace, String unexpectedEvent, Map<WorkspaceEntry, Trace> workToTraceMap) {
         Trace result = new Trace(compTrace);
         for (WorkspaceEntry we : wes) {
-            StgModel stg = getSrcStg(we);
+            StgModel stg = getComponentStg(we);
             Trace projTrace = workToTraceMap.get(we);
             int i = 0;
             for (String ref : projTrace) {
@@ -256,7 +251,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
     private Trace getTraceTags(WorkspaceEntry we, Trace projTrace, String unexpectedEvent) {
         Trace result = new Trace();
-        StgModel stg = getSrcStg(we);
+        StgModel stg = getComponentStg(we);
         for (String ref : projTrace) {
             String tag = getNodeTag(stg, ref);
             result.add(tag);
@@ -361,6 +356,23 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
                 LogUtils.logMessage(prefix + outputStr + " " + RIGHT_ARROW_SYMBOL + " " + inputStr);
             }
         }
+    }
+
+    @Override
+    public Boolean interpret() {
+        if (getOutput() == null) {
+            return null;
+        }
+        List<Solution> solutions = getOutput().getSolutions();
+        boolean propertyHolds = solutions.isEmpty();
+        String message = getMessage(propertyHolds);
+        if (propertyHolds) {
+            OutcomeUtils.showOutcome(true, message, isInteractive());
+        } else {
+            OutcomeUtils.logOutcome(false, message);
+            reportSolutions(extendMessage(message), solutions);
+        }
+        return propertyHolds;
     }
 
 }

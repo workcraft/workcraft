@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.utils.EnablednessUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
+import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.utils.PetriUtils;
@@ -12,14 +13,11 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.WorkUtils;
-import org.workcraft.utils.WorkspaceUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
-class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
+class OutputDeterminacyOutputInterpreter extends AbstractCompositionOutputInterpreter {
 
     OutputDeterminacyOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
             PcompOutput pcompOutput, MpsatOutput mpsatOutput, boolean interactive) {
@@ -28,14 +26,15 @@ class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
     }
 
     @Override
-    public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
+    public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
 
         StgModel compStg = getOutput().getInputStg();
-        StgModel stg = getSrcStg(we);
-        ComponentData devData = getCompositionData(0);
-        ComponentData envData = getCompositionData(1);
-        Map<String, String> substitutions = getSubstitutions(we);
+        StgModel stg = getStg();
+        CompositionData compositionData = getCompositionData();
+        ComponentData devData = compositionData.getComponentData(0);
+        ComponentData envData = compositionData.getComponentData(1);
+        Map<String, String> substitutions = getSubstitutions();
 
         for (Solution solution: solutions) {
             Trace compTrace = solution.getMainTrace();
@@ -45,7 +44,7 @@ class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
             Trace envTrace = getProjectedTrace(compTrace, envData, substitutions);
             LogUtils.logMessage("Projected pair of traces:\n    " + devTrace.toString() + "\n    " + envTrace.toString());
 
-            Enabledness compEnabledness = EnablednessUtils.getOutputEnablednessAfterTrace(compStg, compTrace);
+            Enabledness compEnabledness = EnablednessUtils.getEnablednessAfterTrace(compStg, compTrace);
             Solution projectedSolution = new Solution(devTrace, envTrace);
             Solution processedSolution = processSolution(stg, projectedSolution, compEnabledness);
             if (processedSolution != null) {
@@ -65,9 +64,10 @@ class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
         }
         // Check if any output can be fired that is not enabled in the composition
         HashSet<String> suspiciousSignals = EnablednessUtils.getEnabledSignals(stg, Signal.Type.OUTPUT);
-        suspiciousSignals.retainAll(compEnabledness.getUnknownSet());
+        suspiciousSignals.removeAll(compEnabledness.getEnabledSet());
+        suspiciousSignals.removeAll(compEnabledness.getDisabledSet());
         if (suspiciousSignals.size() == 1) {
-            compEnabledness.alter(Collections.emptySet(), suspiciousSignals, Collections.emptySet());
+            compEnabledness.disable(suspiciousSignals);
         }
 
         SignalTransition problematicTransition = null;
@@ -90,14 +90,6 @@ class OutputDeterminacyOutputInterpreter extends ReachabilityOutputInterpreter {
         }
         PetriUtils.setMarking(stg, marking);
         return new Solution(solution.getMainTrace(), solution.getBranchTrace(), comment);
-    }
-
-    @Override
-    public StgModel getSrcStg(WorkspaceEntry we) {
-        // Output determinacy uses composition of *modified* STG components.
-        // Original STGs are obtained from WorkspaceEntries.
-        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
-        return WorkspaceUtils.getAs(me, StgModel.class);
     }
 
 }

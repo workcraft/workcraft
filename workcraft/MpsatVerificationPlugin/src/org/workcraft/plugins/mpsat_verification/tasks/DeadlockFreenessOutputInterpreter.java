@@ -2,7 +2,8 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.dialogs.ReachibilityDialog;
+import org.workcraft.gui.dialogs.ReachabilityDialog;
+import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
@@ -31,12 +32,29 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
     }
 
     @Override
-    public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
+    public String extendMessage(String message) {
+        return "<html><br>&#160;" + message + " after the following trace(s):<br><br></html>";
+    }
+
+    @Override
+    public void reportSolutions(String message, List<Solution> solutions) {
+        Framework framework = Framework.getInstance();
+        if (isInteractive() && framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
+            ReachabilityDialog solutionsDialog = new ReachabilityDialog(
+                    mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, solutions);
+
+            solutionsDialog.reveal();
+        }
+    }
+
+    @Override
+    public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
 
-        StgModel stg = getSrcStg(we);
-        ComponentData data = getCompositionData(we);
-        Map<String, String> substitutions = getSubstitutions(we);
+        StgModel stg = getStg();
+        ComponentData data = getComponentData();
+        Map<String, String> substitutions = getSubstitutions();
 
         for (Solution solution : solutions) {
             LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
@@ -74,24 +92,19 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
         List<Solution> solutions = getOutput().getSolutions();
         boolean propertyHolds = !TraceUtils.hasTraces(solutions);
         if (propertyHolds) {
-            showOutcome(propertyHolds, "The system is deadlock-free");
+            OutcomeUtils.showOutcome(true, "The system is deadlock-free", isInteractive());
         } else {
-            List<Solution> processedSolutions = processSolutions(getWorkspaceEntry(), solutions);
+            List<Solution> processedSolutions = processSolutions(solutions);
             if (!TraceUtils.hasTraces(processedSolutions)) {
-                showOutcome(propertyHolds, "Deadlock freeness cannot be reliably verified because of conformation violation");
-                return null;
-            } else {
-                String message = "The system has a deadlock";
-                LogUtils.logWarning(message);
-                if (isInteractive()) {
-                    message = "<html><br>&#160;" + message + " after the following trace(s):<br><br></html>";
-                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                    ReachibilityDialog solutionsDialog = new ReachibilityDialog(
-                            mainWindow, getWorkspaceEntry(), TITLE, message, processedSolutions);
+                OutcomeUtils.showOutcome(false,
+                        "Deadlock freeness cannot be reliably verified because of conformation violation",
+                        isInteractive());
 
-                    solutionsDialog.reveal();
-                }
+                return null;
             }
+            String message = "The system has a deadlock";
+            OutcomeUtils.logOutcome(false, message);
+            reportSolutions(extendMessage(message), processedSolutions);
         }
         return propertyHolds;
     }

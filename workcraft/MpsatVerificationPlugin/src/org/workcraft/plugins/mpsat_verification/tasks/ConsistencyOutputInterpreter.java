@@ -24,10 +24,10 @@ class ConsistencyOutputInterpreter extends ReachabilityOutputInterpreter {
     }
 
     @Override
-    public List<Solution> processSolutions(WorkspaceEntry we, List<Solution> solutions) {
+    public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
-        ComponentData data = getCompositionData(we);
-        Map<String, String> substitutions = getSubstitutions(we);
+        ComponentData data = getComponentData();
+        Map<String, String> substitutions = getSubstitutions();
         for (Solution solution: solutions) {
             LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
             Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
