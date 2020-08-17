@@ -28,8 +28,8 @@ public class SortUtils {
             char c2 = s2.charAt(i2);
             int b = 0;
             if (Character.isDigit(c1) && Character.isDigit(c2)) {
-                String d1 = getNumbericalPart(s1, i1);
-                String d2 = getNumbericalPart(s2, i2);
+                String d1 = getNumericalPart(s1, i1);
+                String d2 = getNumericalPart(s2, i2);
                 i1 += d1.length();
                 i2 += d2.length();
                 b = Integer.compare(Integer.valueOf(d1), Integer.valueOf(d2));
@@ -45,7 +45,7 @@ public class SortUtils {
         return Integer.compare(len1 - i1, len2 - i2);
     }
 
-    private static String getNumbericalPart(String s, int index) {
+    private static String getNumericalPart(String s, int index) {
         String result = "";
         for (int i = index; i < s.length();  i++) {
             char c = s.charAt(i);

@@ -27,10 +27,7 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.shared.ColorGenerator;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.ColorUtils;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.TraceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 
 import javax.activation.ActivationDataFlavor;
@@ -45,10 +42,8 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragSource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.List;
+import java.util.*;
 
 public class StgSimulationTool extends PetriSimulationTool {
 
@@ -68,28 +63,21 @@ public class StgSimulationTool extends PetriSimulationTool {
         super(true);
     }
 
-    public final class SignalData {
+    public static final class SignalData {
         public final String name;
         public final Signal.Type type;
 
         public Signal.State value = Signal.State.UNDEFINED;
         public boolean excited = false;
-        public Boolean visible = true;
+        public Boolean visible;
         public Color color = Color.BLACK;
 
-        public SignalData(final String name, final Signal.Type type) {
+        public SignalData(String name, Signal.Type type) {
             this.name = name;
             this.type = type;
+            visible = type != Signal.Type.INTERNAL;
         }
 
-        public void copy(final SignalData signalData) {
-            if (signalData != null) {
-                value = signalData.value;
-                excited = signalData.excited;
-                visible = signalData.visible;
-                color = signalData.color;
-            }
-        }
     }
 
     @SuppressWarnings("serial")
@@ -160,7 +148,6 @@ public class StgSimulationTool extends PetriSimulationTool {
         public Class<?> getColumnClass(final int col) {
             switch (col) {
             case COLUMN_SIGNAL:
-                return SignalData.class;
             case COLUMN_STATE:
                 return SignalData.class;
             case COLUMN_VISIBLE:
@@ -185,7 +172,6 @@ public class StgSimulationTool extends PetriSimulationTool {
                 if (signalData != null) {
                     switch (col) {
                     case COLUMN_SIGNAL:
-                        return signalData;
                     case COLUMN_STATE:
                         return signalData;
                     case COLUMN_VISIBLE:
@@ -203,12 +189,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         @Override
         public boolean isCellEditable(final int row, final int col) {
             switch (col) {
-            case COLUMN_SIGNAL:
-                return false;
-            case COLUMN_STATE:
-                return false;
             case COLUMN_VISIBLE:
-                return true;
             case COLUMN_COLOR:
                 return true;
             default:
@@ -278,7 +259,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         @Override
         protected Transferable createTransferable(final JComponent c) {
             assert c == table;
-            return new DataHandler(Integer.valueOf(table.getSelectedRow()), localObjectFlavor.getMimeType());
+            return new DataHandler(table.getSelectedRow(), localObjectFlavor.getMimeType());
         }
 
         @Override
@@ -304,7 +285,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             }
             target.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             try {
-                final Integer rowFrom = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
+                final int rowFrom = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
                 if (rowTo > rowFrom) {
                     rowTo--;
                 }
@@ -510,7 +491,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         for (final String signalRef : signals) {
             final SignalData signalData = signalDataMap.get(signalRef);
             if ((signalData != null) && signalData.visible) {
-                result.add(new Pair(signalData.name, signalData.color));
+                result.add(Pair.of(signalData.name, signalData.color));
             }
         }
         return result;
@@ -531,16 +512,15 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     private void initialiseStateMap() {
-        final Stg stg = getUnderlyingStg();
-        final HashMap<String, SignalData> newStateMap = new HashMap<>();
-        final LinkedList<String> allSignals = new LinkedList<>();
-        for (final Signal.Type type: Signal.Type.values()) {
-            final Set<String> typedSignals = stg.getSignalReferences(type);
+        Stg stg = getUnderlyingStg();
+        HashMap<String, SignalData> newStateMap = new HashMap<>();
+        List<String> allSignals = new LinkedList<>();
+        for (Signal.Type type: Signal.Type.values()) {
+            List<String> typedSignals = new LinkedList<>(stg.getSignalReferences(type));
+            SortUtils.sortNatural(typedSignals);
             allSignals.addAll(typedSignals);
-            for (final String signal: typedSignals) {
-                final SignalData signalData = new SignalData(signal, type);
-                signalData.copy(signalDataMap.get(signal));
-                signalData.visible = type != Signal.Type.INTERNAL;
+            for (String signal: typedSignals) {
+                SignalData signalData = signalDataMap.getOrDefault(signal, new SignalData(signal, type));
                 newStateMap.put(signal, signalData);
             }
         }
