@@ -1,17 +1,19 @@
 package org.workcraft.gui.trees;
 
+import org.workcraft.gui.workspace.Path;
+import org.workcraft.types.Func;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.workcraft.gui.workspace.Path;
-import org.workcraft.types.Func;
-
 public class FilteredTreeSource<T> implements TreeSource<T> {
+
     private final TreeSource<T> source;
     private final HashMap<T, Boolean> acceptableCache = new HashMap<>();
-    private Func<T, Boolean> filter;
     private final LinkedList<TreeListener<T>> listeners = new LinkedList<>();
+
+    private Func<T, Boolean> filter;
 
     public FilteredTreeSource(TreeSource<T> sourceTree, Func<T, Boolean> filter) {
         this.source = sourceTree;
@@ -52,8 +54,8 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
     }
 
     private boolean hasAcceptableChildren(T node, int depth) {
-        for (T t : source.getChildren(node)) {
-            if (isAcceptable(t, depth - 1)) {
+        for (T childNode : source.getChildren(node)) {
+            if (isAcceptable(childNode, depth - 1)) {
                 return true;
             }
         }
@@ -63,9 +65,9 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
     @Override
     public List<T> getChildren(T node) {
         LinkedList<T> result = new LinkedList<>();
-        for (T t : source.getChildren(node)) {
-            if (isAcceptable(t, 10)) {
-                result.add(t);
+        for (T childNode : source.getChildren(node)) {
+            if (isAcceptable(childNode, 10)) {
+                result.add(childNode);
             }
         }
         return result;
@@ -90,4 +92,5 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
     public Path<T> getPath(T node) {
         return source.getPath(node);
     }
+
 }

@@ -11,6 +11,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("serial")
@@ -23,14 +24,15 @@ public class WorkspaceChooser extends JPanel {
     public WorkspaceChooser(Workspace workspace, Func<Path<String>, Boolean> filter) {
         super();
         this.filter = filter;
-
         setLayout(GuiUtils.createBorderLayout());
         setBorder(GuiUtils.getEmptyBorder());
 
         nameFilter = new JTextField();
-
+        JPanel searchPanel = GuiUtils.createLabeledComponent(nameFilter, "Search: ");
+        String tipText = "Hide unselected items that do not contain the given substring";
+        searchPanel.setToolTipText(tipText);
+        nameFilter.setToolTipText(tipText);
         nameFilter.getDocument().addDocumentListener(new DocumentListener() {
-
             @Override
             public void removeUpdate(DocumentEvent e) {
                 updateFilter();
@@ -47,20 +49,31 @@ public class WorkspaceChooser extends JPanel {
             }
         });
 
-        add(GuiUtils.createLabeledComponent(nameFilter, "Search: "), BorderLayout.NORTH);
-
         filteredSource = new FilteredTreeSource<>(workspace.getTree(), filter);
-
-        tree = TreeWindow.create(filteredSource, new WorkspaceTreeDecorator(workspace), null);
-
-        JScrollPane scroll = new JScrollPane();
-        scroll.setViewportView(tree);
-
-        expand(filteredSource.getRoot());
-
-        add(scroll, BorderLayout.CENTER);
-
         filteredSource.setFilter(filter);
+        tree = TreeWindow.create(filteredSource, new WorkspaceTreeDecorator(workspace), null);
+        expand();
+
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(tree);
+
+        JButton toggleButton = new JButton("Toggle selection");
+        toggleButton.addActionListener(e -> {
+            Set<Path<String>> checkedNodes = new HashSet<>(getCheckedNodes());
+            for (Path<String> node : getLeaves()) {
+                if (isFiltered(node)) {
+                    tree.setChecked(node, !checkedNodes.contains(node));
+                }
+            }
+        });
+
+        add(searchPanel, BorderLayout.NORTH);
+        add(scrollPane, BorderLayout.CENTER);
+        add(toggleButton, BorderLayout.SOUTH);
+    }
+
+    private void expand() {
+        expand(filteredSource.getRoot());
     }
 
     private void expand(Path<String> node) {
@@ -69,19 +82,20 @@ public class WorkspaceChooser extends JPanel {
                 tree.makeVisible(filteredSource.getPath(node));
             }
         } else {
-            for (Path<String> n : filteredSource.getChildren(node)) {
-                expand(n);
+            for (Path<String> childNode : filteredSource.getChildren(node)) {
+                expand(childNode);
             }
         }
     }
 
     private void updateFilter() {
-        filteredSource.setFilter(arg -> applyFilter(arg));
-        expand(filteredSource.getRoot());
+        filteredSource.setFilter(this::isFiltered);
+        expand();
     }
 
-    private boolean applyFilter(Path<String> arg) {
-        return (filter.eval(arg) && arg.getNode().contains(nameFilter.getText())) || getCheckedNodes().contains(arg);
+    private boolean isFiltered(Path<String> arg) {
+        return (filter.eval(arg) && arg.getNode().contains(nameFilter.getText()))
+                || getCheckedNodes().contains(arg);
     }
 
     public void setChecked(Path<String> node, boolean value) {
@@ -98,6 +112,23 @@ public class WorkspaceChooser extends JPanel {
 
     public Set<Path<String>> getCheckedNodes() {
         return tree.getCheckedNodes();
+    }
+
+
+    private Set<Path<String>> getLeaves() {
+        return getLeaves(filteredSource.getRoot());
+    }
+
+    private Set<Path<String>> getLeaves(Path<String> node) {
+        Set<Path<String>> result = new HashSet<>();
+        for (Path<String> childNode : filteredSource.getChildren(node)) {
+            if (filteredSource.isLeaf(childNode)) {
+                result.add(childNode);
+            } else {
+                result.addAll(getLeaves(childNode));
+            }
+        }
+        return result;
     }
 
 }
