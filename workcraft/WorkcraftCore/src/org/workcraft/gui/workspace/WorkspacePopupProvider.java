@@ -5,7 +5,7 @@ import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering.Position;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.gui.MainMenu;
+import org.workcraft.gui.Menu;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginManager;
@@ -22,10 +22,12 @@ import java.util.List;
 
 public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
-    private final WorkspaceWindow wsWindow;
+    private final WorkspaceWindow workspaceWindow;
 
-    public WorkspacePopupProvider(WorkspaceWindow wsWindow) {
-        this.wsWindow = wsWindow;
+    private boolean allowFileRemoval = false;
+
+    public WorkspacePopupProvider(WorkspaceWindow workspaceWindow) {
+        this.workspaceWindow = workspaceWindow;
     }
 
     @Override
@@ -44,13 +46,13 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
         if (file.isDirectory()) {
             popup.addSeparator();
             final JMenuItem miLink = new JMenuItem("Link external files or directories...");
-            miLink.addActionListener(event -> wsWindow.addToWorkspace(path));
+            miLink.addActionListener(event -> workspaceWindow.addToWorkspace(path));
             popup.add(miLink);
             final JMenuItem miCreateWork = new JMenuItem("Create work...");
             miCreateWork.addActionListener(event -> {
                 try {
                     framework.getMainWindow().createWork(path);
-                } catch (OperationCancelledException e1) {
+                } catch (OperationCancelledException e) {
                 }
             });
             popup.add(miCreateWork);
@@ -72,7 +74,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         }
                     }
                     workspace.fireWorkspaceChanged();
-                } catch (OperationCancelledException e1) {
+                } catch (OperationCancelledException e) {
                 }
             });
             popup.add(miCreateFolder);
@@ -108,28 +110,36 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     popup.add(label);
                     popup.addSeparator();
 
-                    JMenuItem miOpenView = new JMenuItem("Open editor");
-                    miOpenView.addActionListener(event -> mainWindow.createEditorWindow(we));
+                    JMenuItem miOpenEditor = new JMenuItem("Open editor");
+                    miOpenEditor.addActionListener(event -> mainWindow.createEditorWindow(we));
+                    popup.add(miOpenEditor);
 
                     JMenuItem miSave = new JMenuItem("Save");
                     miSave.addActionListener(event -> {
                         try {
                             mainWindow.saveWork(we);
-                        } catch (OperationCancelledException e1) {
+                        } catch (OperationCancelledException e) {
                         }
                     });
+                    popup.add(miSave);
 
                     JMenuItem miSaveAs = new JMenuItem("Save as...");
                     miSaveAs.addActionListener(event -> {
                         try {
                             mainWindow.saveWorkAs(we);
-                        } catch (OperationCancelledException e1) {
+                        } catch (OperationCancelledException e) {
                         }
                     });
-
-                    popup.add(miSave);
                     popup.add(miSaveAs);
-                    popup.add(miOpenView);
+
+                    JMenuItem miClose = new JMenuItem("Close");
+                    miClose.addActionListener(event -> mainWindow.closeEditors(we));
+                    popup.add(miClose);
+
+                    JMenu mnExport = new JMenu("Export");
+                    mnExport.setEnabled(false);
+                    Menu.addExporters(mnExport, we);
+                    popup.add(mnExport);
 
                     List<Command> applicableVisibleCommands = CommandUtils.getApplicableVisibleCommands(we);
                     List<String> sections = CommandUtils.getSections(applicableVisibleCommands);
@@ -138,7 +148,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         popup.addSeparator();
                     }
                     for (String section: sections) {
-                        String sectionMenuName = MainMenu.getMenuNameFromSection(section);
+                        String sectionMenuName = Menu.getMenuNameFromSection(section);
                         JMenu sectionMenu = new JMenu(sectionMenuName);
 
                         List<Command> sectionCommands = CommandUtils.getSectionCommands(section, applicableVisibleCommands);
@@ -166,25 +176,26 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     }
                 }
             }
-            popup.addSeparator();
 
-            JMenuItem miRemove = new JMenuItem("Delete");
-            miRemove.addActionListener(event -> {
-                try {
-                    workspace.deleteEntry(path);
-                } catch (OperationCancelledException e1) {
-                }
-            });
-            popup.add(miRemove);
+            if (allowFileRemoval) {
+                popup.addSeparator();
+                JMenuItem miRemove = new JMenuItem("Delete");
+                miRemove.addActionListener(event -> workspace.deleteEntry(path));
+                popup.add(miRemove);
+            }
         }
 
-        popup.addSeparator();
         if (path.isEmpty()) {
-            for (Component c : wsWindow.createMenu().getMenuComponents()) {
+            popup.addSeparator();
+            for (Component c : workspaceWindow.createMenu().getMenuComponents()) {
                 popup.add(c);
             }
         }
         return popup;
+    }
+
+    public void setAllowFileRemoval(boolean value) {
+        allowFileRemoval = value;
     }
 
 }

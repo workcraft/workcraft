@@ -5,11 +5,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
 import org.workcraft.commands.AbstractLayoutCommand;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.*;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
@@ -66,7 +68,7 @@ public final class Framework {
     private File lastDirectory = null;
     private final LinkedHashSet<String> recentFilePaths = new LinkedHashSet<>();
 
-    class ExecuteScriptAction implements ContextAction {
+    static class ExecuteScriptAction implements ContextAction<Object> {
         private final String script;
         private final Scriptable scope;
 
@@ -81,7 +83,7 @@ public final class Framework {
         }
     }
 
-    class ExecuteCompiledScriptAction implements ContextAction {
+    static class ExecuteCompiledScriptAction implements ContextAction<Object> {
         private final Script script;
         private final Scriptable scope;
 
@@ -96,7 +98,7 @@ public final class Framework {
         }
     }
 
-    class CompileScriptFromReaderAction implements ContextAction {
+    static class CompileScriptFromReaderAction implements ContextAction<Object> {
         private final String sourceName;
         private final BufferedReader reader;
 
@@ -106,7 +108,7 @@ public final class Framework {
         }
 
         @Override
-        public Object run(Context cx) {
+        public Script run(Context cx) {
             try {
                 return cx.compileReader(reader, sourceName, 1, null);
             } catch (IOException e) {
@@ -115,7 +117,7 @@ public final class Framework {
         }
     }
 
-    class SetArgs implements ContextAction {
+    class SetArgs implements ContextAction<Void> {
         private Object[] args;
 
         public void setArgs(Object[] args) {
@@ -123,12 +125,11 @@ public final class Framework {
         }
 
         @Override
-        public Object run(Context cx) {
+        public Void run(Context cx) {
             Object scriptable = Context.javaToJS(args, systemScope);
             ScriptableObject.putProperty(systemScope, ARGS_VARIABLE, scriptable);
             systemScope.setAttributes(ARGS_VARIABLE, ScriptableObject.READONLY);
             return null;
-
         }
     }
 
@@ -152,7 +153,7 @@ public final class Framework {
         }
     }
 
-    private class JavascriptItem {
+    private static class JavascriptItem {
         public final String name;
         public final String params;
         public final String description;
@@ -398,7 +399,7 @@ public final class Framework {
         return doContextAction(new ExecuteScriptAction(script, scope));
     }
 
-    private Object doContextAction(ContextAction action) {
+    private Object doContextAction(ContextAction<Object> action) {
         try {
             return contextFactory.call(action);
         } catch (JavaScriptException ex) {
@@ -548,30 +549,30 @@ public final class Framework {
         return CommandUtils.execute(we, className, serialisedData);
     }
 
-    public WorkspaceEntry createWork(ModelEntry me, Path<String> desiredPath) {
-        final Path<String> directory = desiredPath.getParent();
-        final String desiredName = desiredPath.getNode();
-        return createWork(me, directory, desiredName);
+    public WorkspaceEntry createWork(ModelEntry me, String desiredName) {
+        return createWork(me, Path.empty(), desiredName);
     }
 
-    public WorkspaceEntry createWork(ModelEntry me, Path<String> directory, String desiredName) {
-        final Path<String> path = getWorkspace().createWorkPath(directory, desiredName);
+    public WorkspaceEntry createWork(ModelEntry me, Path<String> parent, String name) {
+        final Path<String> path = getWorkspace().createWorkPath(parent, name);
         boolean open = me.isVisual() || EditorCommonSettings.getOpenNonvisual();
         return createWork(me, path, open, true);
     }
 
     private WorkspaceEntry createWork(ModelEntry me, Path<String> path, boolean open, boolean changed) {
         WorkspaceEntry we = new WorkspaceEntry();
-        we.setChanged(changed);
-        we.setModelEntry(createVisual(me));
+        we.setModelEntry(createVisualIfAbsent(me));
         getWorkspace().addWork(path, we);
         if (open && isInGuiMode()) {
-            getMainWindow().createEditorWindow(we);
+            if ((me == we.getModelEntry()) || attemptLayout(we.getModelEntry().getVisualModel())) {
+                getMainWindow().createEditorWindow(we);
+            }
         }
+        we.setChanged(changed);
         return we;
     }
 
-    private ModelEntry createVisual(ModelEntry me) {
+    private ModelEntry createVisualIfAbsent(ModelEntry me) {
         ModelEntry result = me;
         VisualModel visualModel = me.getVisualModel();
         if (visualModel != null) {
@@ -579,7 +580,7 @@ public final class Framework {
         } else {
             ModelDescriptor md = me.getDescriptor();
             if (md == null) {
-                DialogUtils.showError("Math model is not defined for '" + md.getDisplayName() + "'.");
+                DialogUtils.showError("Model descriptor is not defined.");
                 return result;
             }
             VisualModelDescriptor vmd = md.getVisualModelDescriptor();
@@ -587,30 +588,49 @@ public final class Framework {
                 DialogUtils.showError("Visual model is not defined for '" + md.getDisplayName() + "'.");
                 return result;
             }
+
             try {
                 visualModel = vmd.create(me.getMathModel());
                 result = new ModelEntry(md, visualModel);
             } catch (VisualModelInstantiationException e) {
                 DialogUtils.showError(e.getMessage());
             }
-            // FIXME: Send notification to components, so their dimensions are updated before layout.
-            for (VisualComponent component : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class)) {
-                if (component instanceof StateObserver) {
-                    ((StateObserver) component).notify(new ModelModifiedEvent(visualModel));
-                }
-            }
-            AbstractLayoutCommand layoutCommand = visualModel.getBestLayouter();
-            if (layoutCommand == null) {
-                layoutCommand = new DotLayoutCommand();
-            }
-            try {
-                layoutCommand.layout(visualModel);
-            } catch (LayoutException e) {
-                layoutCommand = new RandomLayoutCommand();
-                layoutCommand.layout(visualModel);
-            }
         }
         return result;
+    }
+
+    private boolean attemptLayout(VisualModel model) {
+        int answer = 0;
+        Container root = model.getRoot();
+        int nodeCount = Hierarchy.getDescendantsOfType(root, VisualNode.class).size();
+        if (nodeCount > EditorCommonSettings.getLargeModelSize()) {
+            String message = "The model may be too large for automatic"
+                    + "\nlayout (" + nodeCount + " elements)."
+                    + "\nPerform layout anyway before opening in editor?";
+
+            answer = DialogUtils.showYesNoCancel(message, "Layout", 2);
+        }
+
+        if (answer > 1) {
+            return false;
+        }
+        // FIXME: Send notification to components, so their dimensions are updated before layout.
+        for (VisualComponent component : Hierarchy.getDescendantsOfType(root, VisualComponent.class)) {
+            if (component instanceof StateObserver) {
+                ((StateObserver) component).notify(new ModelModifiedEvent(model));
+            }
+        }
+        AbstractLayoutCommand layoutCommand = answer == 0 ? model.getBestLayouter() : new RandomLayoutCommand();
+        if (layoutCommand == null) {
+            layoutCommand = new DotLayoutCommand();
+        }
+        try {
+            layoutCommand.layout(model);
+        } catch (LayoutException e) {
+            layoutCommand = new RandomLayoutCommand();
+            layoutCommand.layout(model);
+        }
+        return true;
     }
 
     /**
@@ -647,10 +667,7 @@ public final class Framework {
                 Path<String> parent = path == null ? Path.empty() : path.getParent();
                 path = getWorkspace().createWorkPath(parent, desiredName);
             }
-            we = createWork(me, path, false, false);
-            if (we.getModelEntry().isVisual() && (mainWindow != null)) {
-                mainWindow.createEditorWindow(we);
-            }
+            we = createWork(me, path, true, false);
             if (isWorkFile) {
                 // Load resources
                 try (InputStream is = new FileInputStream(file)) {
@@ -879,7 +896,7 @@ public final class Framework {
     public void updatePropertyView() {
         if (isInGuiMode()) {
             GraphEditorPanel editor = getMainWindow().getCurrentEditor();
-            SwingUtilities.invokeLater(() -> editor.updatePropertyView());
+            SwingUtilities.invokeLater(editor::updatePropertyView);
         }
     }
 

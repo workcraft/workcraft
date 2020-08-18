@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @SuppressWarnings("serial")
-public class MainMenu extends JMenuBar {
+public class Menu extends JMenuBar {
 
     private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
 
@@ -39,7 +39,7 @@ public class MainMenu extends JMenuBar {
     private final LinkedList<JMenu> mnCommandsList = new LinkedList<>();
     private final JMenu mnHelp = new JMenu("Help");
 
-    MainMenu() {
+    Menu() {
         super();
         addFileMenu();
         addEditMenu();
@@ -269,47 +269,7 @@ public class MainMenu extends JMenuBar {
     private void setExportMenu(final WorkspaceEntry we) {
         mnExport.removeAll();
         mnExport.setEnabled(false);
-
-        VisualModel model = we.getModelEntry().getVisualModel();
-        PluginManager pm = Framework.getInstance().getPluginManager();
-        List<Exporter> exporters = pm.getSortedExporters();
-
-        boolean hasVisualModelExporter = false;
-        for (Exporter exporter : exporters) {
-            if (exporter.isCompatible(model)) {
-                if (!hasVisualModelExporter) {
-                    addExportSeparator("Visual model");
-                }
-                addExporter(exporter);
-                hasVisualModelExporter = true;
-            }
-        }
-
-        boolean hasMathModelExporter = false;
-        for (Exporter exporter : exporters) {
-            if (exporter.isCompatible(model.getMathModel())) {
-                if (!hasMathModelExporter) {
-                    addExportSeparator("Math model");
-                }
-                addExporter(exporter);
-                hasMathModelExporter = true;
-            }
-        }
-        revalidate();
-    }
-
-    private void addExportSeparator(String text) {
-        mnExport.add(new JLabel(text));
-        mnExport.addSeparator();
-    }
-
-    private void addExporter(Exporter exporter) {
-        Format format = exporter.getFormat();
-        String text = format.getDescription() + " (*" + format.getExtension() + ")";
-        Action action = new Action(text, () -> Framework.getInstance().getMainWindow().export(exporter));
-        ActionMenuItem miExport = new ActionMenuItem(action);
-        mnExport.add(miExport);
-        mnExport.setEnabled(true);
+        addExporters(mnExport, we);
     }
 
     public void setExportMenuState(boolean enable) {
@@ -476,6 +436,52 @@ public class MainMenu extends JMenuBar {
             setExportMenu(we);
             we.updateActionState();
         }
+    }
+    public static void addExporters(JMenu menu, WorkspaceEntry we) {
+        VisualModel model = we.getModelEntry().getVisualModel();
+        PluginManager pm = Framework.getInstance().getPluginManager();
+        List<Exporter> exporters = pm.getSortedExporters();
+
+        boolean hasVisualModelExporter = false;
+        for (Exporter exporter : exporters) {
+            if (exporter.isCompatible(model)) {
+                if (!hasVisualModelExporter) {
+                    addTextSeparator(menu, "Visual model");
+                }
+                addMenuItem(menu, exporter, we);
+                hasVisualModelExporter = true;
+            }
+        }
+
+        boolean hasMathModelExporter = false;
+        for (Exporter exporter : exporters) {
+            if (exporter.isCompatible(model.getMathModel())) {
+                if (!hasMathModelExporter) {
+                    addTextSeparator(menu, "Math model");
+                }
+                addMenuItem(menu, exporter, we);
+                hasMathModelExporter = true;
+            }
+        }
+        menu.revalidate();
+    }
+
+    private static void addTextSeparator(JMenu menu, String text) {
+        menu.add(new JLabel(text));
+        menu.addSeparator();
+    }
+
+    private static void addMenuItem(JMenu menu, Exporter exporter, WorkspaceEntry we) {
+        menu.add(getMenuItem(exporter, we));
+        menu.setEnabled(true);
+    }
+
+    private static JMenuItem getMenuItem(Exporter exporter, WorkspaceEntry we) {
+        Format format = exporter.getFormat();
+        String text = format.getDescription() + " (*" + format.getExtension() + ")";
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        Action action = new Action(text, () -> mainWindow.export(exporter, we));
+        return new ActionMenuItem(action);
     }
 
 }

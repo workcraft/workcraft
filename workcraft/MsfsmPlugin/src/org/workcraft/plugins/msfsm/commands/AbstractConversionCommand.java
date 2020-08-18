@@ -62,7 +62,7 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Col
         TaskManager taskManager = framework.getTaskManager();
         ConversionTask task = new ConversionTask(we, getFileName(), getConversionCommands());
         boolean hasSignals = hasSignals(we);
-        ConversionResultHandlingMonitor monitor = new ConversionResultHandlingMonitor(we, !hasSignals);
+        ConversionResultHandlingMonitor monitor = new ConversionResultHandlingMonitor(!hasSignals);
         taskManager.queue(task, "MSFSM conversion", monitor);
         return monitor;
     }

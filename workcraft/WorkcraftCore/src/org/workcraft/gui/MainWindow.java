@@ -15,6 +15,7 @@ import org.flexdock.perspective.persist.PersistenceHandler;
 import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.workcraft.Framework;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -111,7 +112,7 @@ public class MainWindow extends JFrame {
     private final LinkedList<DockableWindow> utilityWindows = new LinkedList<>();
 
     private GraphEditorPanel editorInFocus;
-    private MainMenu mainMenu;
+    private Menu menu;
     private ToolBar globalToolbar;
     private JToolBar modelToolbar;
     private JToolBar controlToolbar;
@@ -176,7 +177,7 @@ public class MainWindow extends JFrame {
             dockableWindow.setClosed(true);
             DockingManager.close(dockableWindow);
         }
-        mainMenu.registerUtilityWindow(dockableWindow);
+        menu.registerUtilityWindow(dockableWindow);
         utilityWindows.add(dockableWindow);
     }
 
@@ -186,10 +187,10 @@ public class MainWindow extends JFrame {
         setTitle(TITLE_WORKCRAFT);
 
         // Create main menu
-        mainMenu = new MainMenu();
-        MenuBarUI menuUI = mainMenu.getUI();
-        setJMenuBar(mainMenu);
-        mainMenu.updateRecentMenu();
+        menu = new Menu();
+        MenuBarUI menuUI = menu.getUI();
+        setJMenuBar(menu);
+        menu.updateRecentMenu();
 
         // Tweak look-and-feel
         SilverOceanTheme.enable();
@@ -197,7 +198,7 @@ public class MainWindow extends JFrame {
         SwingUtilities.updateComponentTreeUI(this);
         if (DesktopApi.getOs().isMac()) {
             // Menu UI needs to be restored for OSX (global menu Look-and-Feel)
-            mainMenu.setUI(menuUI);
+            menu.setUI(menuUI);
         }
 
         // Create content panel and docking ports
@@ -213,9 +214,9 @@ public class MainWindow extends JFrame {
         globalToolbar = new ToolBar();
         modelToolbar = new JToolBar(TITLE_MODEL_TOOLS);
         controlToolbar = new JToolBar(TITLE_TOOL_CONTROLS);
-        mainMenu.registerToolbar(globalToolbar);
-        mainMenu.registerToolbar(modelToolbar);
-        mainMenu.registerToolbar(controlToolbar);
+        menu.registerToolbar(globalToolbar);
+        menu.registerToolbar(modelToolbar);
+        menu.registerToolbar(controlToolbar);
         loadToolbarParametersFromConfig();
 
         // Create dockable windows
@@ -242,7 +243,7 @@ public class MainWindow extends JFrame {
     }
 
     private void setWorkActionsEnableness(boolean enable) {
-        mainMenu.setExportMenuState(enable);
+        menu.setExportMenuState(enable);
         MainWindowActions.MERGE_WORK_ACTION.setEnabled(enable);
         MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(enable);
         MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(enable);
@@ -271,7 +272,7 @@ public class MainWindow extends JFrame {
     }
 
     public void updateMainMenuState(boolean canModify) {
-        mainMenu.updateCommandsMenuState(canModify);
+        menu.updateCommandsMenuState(canModify);
     }
 
     public void toggleDockableWindowMaximized(DockableWindow dockableWindow) {
@@ -313,7 +314,7 @@ public class MainWindow extends JFrame {
             }
             // Remove commands menu and update property window
             if (editorInFocus == editor) {
-                mainMenu.removeCommandsMenu();
+                menu.removeCommandsMenu();
                 editorInFocus = null;
                 setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
             }
@@ -360,12 +361,12 @@ public class MainWindow extends JFrame {
     }
 
     private void setToolbarVisibility(JToolBar toolbar, boolean visibility) {
-        mainMenu.setToolbarVisibility(toolbar, visibility);
+        menu.setToolbarVisibility(toolbar, visibility);
         toolbar.setVisible(visibility);
     }
 
     private void closeDockableUtilityWindow(DockableWindow dockableWindow) {
-        mainMenu.setWindowVisibility(dockableWindow, false);
+        menu.setWindowVisibility(dockableWindow, false);
         DockingManager.close(dockableWindow);
         dockableWindow.setClosed(true);
     }
@@ -373,7 +374,7 @@ public class MainWindow extends JFrame {
     public void displayDockableWindow(DockableWindow window) {
         DockingManager.display(window);
         window.setClosed(false);
-        mainMenu.setWindowVisibility(window, true);
+        menu.setWindowVisibility(window, true);
     }
 
     public void toggleDockableWindow(DockableWindow window) {
@@ -644,7 +645,7 @@ public class MainWindow extends JFrame {
             updateDockableWindowVisibility();
 
             WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
-            mainMenu.setMenuForWorkspaceEntry(we);
+            menu.setMenuForWorkspaceEntry(we);
             Framework.getInstance().updateJavaScript(we);
         }
         SwingUtilities.invokeLater(() -> {
@@ -749,7 +750,7 @@ public class MainWindow extends JFrame {
                 we = framework.loadWork(file);
                 framework.setLastDirectory(file);
                 framework.pushRecentFilePath(file);
-                mainMenu.updateRecentMenu();
+                menu.updateRecentMenu();
             } catch (DeserialisationException e) {
                 DialogUtils.showError("A problem was encountered while trying to load '"
                         + file.getPath() + "'.\n" + e.getMessage());
@@ -818,7 +819,7 @@ public class MainWindow extends JFrame {
         Workspace workspace = Framework.getInstance().getWorkspace();
         File file = workspace.getFile(we);
         if (file == null) {
-            file = new File(getFileNameForCurrentWork());
+            file = new File(we.getFileName());
         }
         JFileChooser fc = createSaveDialog("Save work as", file, null);
         String path = ExportUtils.getValidSavePath(fc, null);
@@ -839,7 +840,7 @@ public class MainWindow extends JFrame {
         File file = framework.getWorkspace().getFile(we);
         framework.setLastDirectory(file);
         framework.pushRecentFilePath(file);
-        mainMenu.updateRecentMenu();
+        menu.updateRecentMenu();
     }
 
     public void importFrom(Importer importer) {
@@ -864,7 +865,7 @@ public class MainWindow extends JFrame {
                     me.getMathModel().setTitle(title);
                 }
                 final Framework framework = Framework.getInstance();
-                framework.createWork(me, Path.empty(), file.getName());
+                framework.createWork(me, file.getName());
                 framework.setLastDirectory(file);
             } catch (IOException | DeserialisationException | OperationCancelledException e) {
                 DialogUtils.showError(e.getMessage());
@@ -872,14 +873,14 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void export(Exporter exporter) {
+    public void export(Exporter exporter, WorkspaceEntry we) {
         Format format = exporter.getFormat();
         String title = "Export as " + format.getDescription();
-        File file = new File(getFileNameForCurrentWork());
+        File file = new File(we.getFileName());
         JFileChooser fc = createSaveDialog(title, file, format);
         try {
+            Model model = we.getModelEntry().getModel();
             String path = ExportUtils.getValidSavePath(fc, format);
-            VisualModel model = editorInFocus.getModel();
             ExportTask exportTask = new ExportTask(exporter, model, new File(path));
             final Framework framework = Framework.getInstance();
             final TaskManager taskManager = framework.getTaskManager();
@@ -889,17 +890,6 @@ public class MainWindow extends JFrame {
             framework.setLastDirectory(fc.getCurrentDirectory());
         } catch (OperationCancelledException e) {
         }
-    }
-
-    private String getFileNameForCurrentWork() {
-        String fileName = "";
-        if (editorInFocus != null) {
-            WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
-            if (we != null) {
-                fileName = we.getFileName();
-            }
-        }
-        return fileName;
     }
 
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
@@ -1067,7 +1057,7 @@ public class MainWindow extends JFrame {
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         if (dialog.reveal()) {
-            mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
+            menu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
             for (WorkspaceEntry we: weWindowsMap.keySet()) {
                 refreshWorkspaceEntryTitle(we, false);
             }

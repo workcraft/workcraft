@@ -12,7 +12,6 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.*;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
@@ -197,7 +196,7 @@ public class VerilogImporter implements Importer {
         Framework framework = Framework.getInstance();
         for (Circuit circuit : circuitFileNames.keySet()) {
             ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-            WorkspaceEntry we = framework.createWork(me, Path.empty(), circuit.getTitle());
+            WorkspaceEntry we = framework.createWork(me, circuit.getTitle());
             try {
                 File file = new File(dir, circuitFileNames.get(circuit));
                 framework.saveWork(we, file);

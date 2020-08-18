@@ -9,7 +9,6 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualFstDescriptor;
@@ -132,7 +131,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
     private WorkspaceEntry addWork(Framework framework, WorkspaceEntry we, GraphEditorPanel editor, ModelEntry me) {
         WorkspaceEntry newWe = null;
         if (!isCurrentWorkEmpty(editor)) {
-            newWe = framework.createWork(me, Path.<String>empty(), name);
+            newWe = framework.createWork(me, name);
         } else {
             we.setModelEntry(me);
             newWe = we;

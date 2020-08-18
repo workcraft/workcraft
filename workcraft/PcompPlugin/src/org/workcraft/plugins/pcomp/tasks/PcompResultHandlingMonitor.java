@@ -1,14 +1,16 @@
 package org.workcraft.plugins.pcomp.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.utils.MutexUtils;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -27,16 +29,13 @@ public class PcompResultHandlingMonitor extends AbstractResultHandlingMonitor<Pc
     public WorkspaceEntry handle(final Result<? extends PcompOutput> pcompResult) {
         PcompOutput pcompOutput = pcompResult.getPayload();
         if (pcompResult.isSuccess()) {
-            try {
-                Framework framework = Framework.getInstance();
-                File outputFile = pcompOutput.getOutputFile();
-                WorkspaceEntry we = framework.loadWork(outputFile);
-                StgModel model = WorkspaceUtils.getAs(we, StgModel.class);
-                MutexUtils.restoreMutexPlacesByName(model, mutexes);
-                return we;
-            } catch (DeserialisationException e) {
-                DialogUtils.showError(e.getMessage());
-            }
+            File outputFile = pcompOutput.getOutputFile();
+            Stg stg = StgUtils.importStg(outputFile);
+            MutexUtils.restoreMutexPlacesByName(stg, mutexes);
+
+            ModelEntry me = new ModelEntry(new StgDescriptor(), stg);
+            String name = FileUtils.getFileNameWithoutExtension(outputFile);
+            return Framework.getInstance().createWork(me, name);
         }
 
         if (pcompResult.isFailure()) {

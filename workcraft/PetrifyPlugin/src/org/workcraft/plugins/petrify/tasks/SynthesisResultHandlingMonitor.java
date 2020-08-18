@@ -130,7 +130,7 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         Circuit circuit = verilogImporter.createCircuit(verilogModule, mutexes);
         ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
         Framework framework = Framework.getInstance();
-        WorkspaceEntry dstWe = framework.createWork(dstMe, we.getWorkspacePath());
+        WorkspaceEntry dstWe = framework.createWork(dstMe, we.getFileName());
 
         VisualCircuit visualCircuit = WorkspaceUtils.getAs(dstWe, VisualCircuit.class);
         setComponentsRenderStyle(visualCircuit);

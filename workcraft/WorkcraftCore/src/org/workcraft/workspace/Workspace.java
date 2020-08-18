@@ -4,7 +4,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.types.LinkedTwoWayMap;
 import org.workcraft.utils.DialogUtils;
@@ -390,7 +389,7 @@ public class Workspace {
         return openFiles.getValue(path);
     }
 
-    public void deleteEntry(Path<String> path) throws OperationCancelledException {
+    public void deleteEntry(Path<String> path) {
         final File file = getFile(path);
         if (file.exists()) {
             if (file.isDirectory()) {
@@ -406,7 +405,7 @@ public class Workspace {
         }
     }
 
-    private void deleteFile(Path<String> path) throws OperationCancelledException {
+    private void deleteFile(Path<String> path) {
         final WorkspaceEntry openFile = getWork(path);
         if (openFile != null) {
             final Framework framework = Framework.getInstance();

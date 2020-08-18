@@ -12,7 +12,6 @@ import org.workcraft.gui.properties.BooleanCellRenderer;
 import org.workcraft.gui.properties.ColorCellEditor;
 import org.workcraft.gui.properties.ColorCellRenderer;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.dtd.DtdDescriptor;
 import org.workcraft.plugins.dtd.VisualDtd;
@@ -479,10 +478,9 @@ public class StgSimulationTool extends PetriSimulationTool {
             final LinkedList<Pair<String, Color>> visibleSignals = getVisibleSignals();
             final StgToDtdConverter converter = new StgToDtdConverter(stg, trace, visibleSignals);
             final VisualDtd dtd = converter.getVisualDtd();
-            final Path<String> path = editor.getWorkspaceEntry().getWorkspacePath();
             final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
             final Framework framework = Framework.getInstance();
-            framework.createWork(me, path);
+            framework.createWork(me, editor.getWorkspaceEntry().getFileName());
         }
     }
 
