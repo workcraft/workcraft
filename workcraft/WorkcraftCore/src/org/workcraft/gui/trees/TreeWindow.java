@@ -10,6 +10,7 @@ import org.workcraft.workspace.Workspace;
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -53,16 +54,16 @@ public class TreeWindow<T> extends JPanel {
                     }
 
                     if (!externalExpanded) {
-                        for (T n : getChildren(getRoot())) {
-                            if (Workspace.EXTERNAL_PATH.equals(decorator.getName(n))) {
-                                expanded.add(new TreePath(Path.getPath(getPath(n)).toArray()));
+                        for (T node : getChildren(getRoot())) {
+                            if (Workspace.EXTERNAL_PATH.equals(decorator.getName(node))) {
+                                expanded.add(new TreePath(Path.getPath(getPath(node)).toArray()));
                                 externalExpanded = true;
                             }
                         }
                     }
                     super.restructured(path);
-                    for (TreePath p : expanded) {
-                        tree.expandPath(p);
+                    for (TreePath treePath : expanded) {
+                        tree.expandPath(treePath);
                     }
                 }
             };
@@ -198,6 +199,13 @@ public class TreeWindow<T> extends JPanel {
                 Path<T> root = Path.root(source.getRoot());
                 sourceWithRestructuredTrapped.getListener().restructured(root);
             }
+            if ((checkBoxMode != CheckBoxMode.NONE) && (e.getKeyCode() == KeyEvent.VK_SPACE)) {
+                Object selectedComponent = tree.getSelectionPath().getLastPathComponent();
+                if (selectedComponent != null) {
+                    T node = (T) selectedComponent;
+                    setChecked(node, !getCheckedNodes().contains(node));
+                }
+            }
         }
     }
 
@@ -235,6 +243,8 @@ public class TreeWindow<T> extends JPanel {
         tree = new JTree();
         tree.setFocusable(true);
         tree.setBorder(GuiUtils.getEmptyBorder());
+        tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+
 
         checkBox = new JCheckBox();
         checkBox.setBackground(tree.getBackground());
@@ -257,8 +267,9 @@ public class TreeWindow<T> extends JPanel {
         tree.makeVisible(new TreePath(Path.getPath(node).toArray()));
     }
 
-    public static <Node> TreeWindow<Node> create(TreeSource<Node> source, TreeDecorator<Node> decorator,
-            TreePopupProvider<Node> popupProvider) {
+    public static <T> TreeWindow<T> create(TreeSource<T> source,
+            TreeDecorator<T> decorator, TreePopupProvider<T> popupProvider) {
+
         return new TreeWindow<>(source, decorator, popupProvider);
     }
 

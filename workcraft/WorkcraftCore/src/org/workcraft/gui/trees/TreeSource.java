@@ -1,8 +1,8 @@
 package org.workcraft.gui.trees;
 
-import java.util.List;
-
 import org.workcraft.gui.workspace.Path;
+
+import java.util.List;
 
 public interface TreeSource<T> {
     void addListener(TreeListener<T> listener);
