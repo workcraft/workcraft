@@ -45,6 +45,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static final String keyTitleStyle = prefix + ".titleStyle";
     private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
     private static final String keyOpenNonvisual = prefix + ".openNonvisual";
+    private static final String keyLargeModelSize = prefix + ".largeModelSize";
     private static final String keyRedrawInterval = prefix + ".redrawInterval";
 
     private static final Color defaultBackgroundColor = Color.WHITE;
@@ -62,6 +63,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final boolean defaultShowAbsolutePaths = false;
     private static final boolean defaultOpenNonvisual = true;
+    private static final int defaultLargeModelSize = 500;
     private static final int defaultRedrawInterval = 20;
 
     private static Color backgroundColor = defaultBackgroundColor;
@@ -79,6 +81,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static TitleStyle titleStyle = defaultTitleStyle;
     private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
     private static boolean openNonvisual = defaultOpenNonvisual;
+    private static int largeModelSize = defaultLargeModelSize;
     private static int redrawInterval = defaultRedrawInterval;
 
     static {
@@ -158,6 +161,11 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 EditorCommonSettings::getOpenNonvisual));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
+                "Model size for layout warning (0-9999 elements)",
+                EditorCommonSettings::setLargeModelSize,
+                EditorCommonSettings::getLargeModelSize));
+
+        properties.add(new PropertyDeclaration<>(Integer.class,
                 "Minimal redraw interval (ms)",
                 EditorCommonSettings::setRedrawInterval,
                 EditorCommonSettings::getRedrawInterval));
@@ -185,6 +193,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
         setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
         setOpenNonvisual(config.getBoolean(keyOpenNonvisual, defaultOpenNonvisual));
+        setLargeModelSize(config.getInt(keyLargeModelSize, defaultLargeModelSize));
         setRedrawInterval(config.getInt(keyRedrawInterval, defaultRedrawInterval));
     }
 
@@ -205,6 +214,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         config.setEnum(keyTitleStyle, getTitleStyle());
         config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
         config.setBoolean(keyOpenNonvisual, getOpenNonvisual());
+        config.setInt(keyLargeModelSize, getLargeModelSize());
         config.setInt(keyRedrawInterval, getRedrawInterval());
     }
 
@@ -337,6 +347,20 @@ public class EditorCommonSettings extends AbstractCommonSettings {
 
     public static void setOpenNonvisual(boolean value) {
         openNonvisual = value;
+    }
+
+    public static int getLargeModelSize() {
+        return largeModelSize;
+    }
+
+    public static void setLargeModelSize(int value) {
+        if (value < 0) {
+            value = 0;
+        }
+        if (value > 9999) {
+            value = 9999;
+        }
+        largeModelSize = value;
     }
 
     public static void setRedrawInterval(int value) {

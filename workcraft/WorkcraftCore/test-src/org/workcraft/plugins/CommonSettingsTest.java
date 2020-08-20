@@ -111,6 +111,9 @@ public class CommonSettingsTest {
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getOpenNonvisual()),
                 framework.getConfigVar(prefix + ".openNonvisual", false));
 
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getLargeModelSize()),
+                framework.getConfigVar(prefix + ".largeModelSize", false));
+
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getRedrawInterval()),
                 framework.getConfigVar(prefix + ".redrawInterval", false));
     }

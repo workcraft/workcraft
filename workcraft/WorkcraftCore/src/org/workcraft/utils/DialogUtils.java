@@ -120,6 +120,10 @@ public class DialogUtils {
         return initial;
     }
 
+    public static int showYesNoCancel(String msg, String title, int defaultChoice) {
+        return showYesNoCancel(msg, title, JOptionPane.QUESTION_MESSAGE, defaultChoice);
+    }
+
     private static int showYesNoCancel(String msg, String title, int messageType, int defaultChoice) {
         String yesText = UIManager.getString("OptionPane.yesButtonText");
         String noText = UIManager.getString("OptionPane.noButtonText");
@@ -127,12 +131,9 @@ public class DialogUtils {
         return showChoice(msg, title, messageType, yesText, noText, cancelText, defaultChoice);
     }
 
-    public static int showYesNoCancel(String msg, String title, int defaultChoice) {
-        return showYesNoCancel(msg, title, JOptionPane.QUESTION_MESSAGE, defaultChoice);
-    }
-
     private static int showChoice(String msg, String title, int messageType,
             String yesText, String noText, String cancelText, int defaultChoice) {
+
         int result = JOptionPane.CANCEL_OPTION;
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();

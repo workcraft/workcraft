@@ -1,7 +1,6 @@
 package org.workcraft.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.utils.CommandUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -32,14 +31,8 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Wor
 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
-        final ModelEntry meDst = convert(we.getModelEntry());
-        if (meDst == null) {
-            return null;
-        } else {
-            final Framework framework = Framework.getInstance();
-            final Path<String> desiredPath = we.getWorkspacePath();
-            return framework.createWork(meDst, desiredPath);
-        }
+        final ModelEntry me = convert(we.getModelEntry());
+        return me == null ? null : Framework.getInstance().createWork(me, we.getFileName());
     }
 
     public abstract ModelEntry convert(ModelEntry me);

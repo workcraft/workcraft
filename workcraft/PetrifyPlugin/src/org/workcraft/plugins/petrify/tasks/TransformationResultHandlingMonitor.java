@@ -3,7 +3,6 @@ package org.workcraft.plugins.petrify.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.dialogs.ExceptionDialog;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.PetriDescriptor;
 import org.workcraft.plugins.petri.PetriModel;
@@ -42,9 +41,8 @@ public class TransformationResultHandlingMonitor extends AbstractResultHandlingM
             ModelDescriptor modelDescriptor = convertToPetriNet ? new PetriDescriptor() : new StgDescriptor();
             model.setTitle(we.getModelTitle());
             ModelEntry me = new ModelEntry(modelDescriptor, model);
-            Path<String> path = we.getWorkspacePath();
             Framework framework = Framework.getInstance();
-            weResult = framework.createWork(me, path);
+            weResult = framework.createWork(me, we.getFileName());
         } else if (result.isFailure()) {
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());

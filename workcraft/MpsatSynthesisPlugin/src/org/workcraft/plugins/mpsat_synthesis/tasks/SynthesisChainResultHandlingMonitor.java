@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat_synthesis.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -90,8 +89,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         MutexUtils.restoreMutexSignals(stg, mutexes);
         MutexUtils.restoreMutexPlacesByName(stg, mutexes);
         final ModelEntry me = new ModelEntry(new StgDescriptor(), stg);
-        final Path<String> path = we.getWorkspacePath();
-        return Framework.getInstance().createWork(me, path);
+        return Framework.getInstance().createWork(me, we.getFileName());
     }
 
     private WorkspaceEntry handleSynthesisOutput(MpsatOutput mpsatOutput,
@@ -134,7 +132,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         Circuit circuit = verilogImporter.createCircuit(verilogModule, mutexes);
         ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
         Framework framework = Framework.getInstance();
-        WorkspaceEntry dstWe = framework.createWork(dstMe, we.getWorkspacePath());
+        WorkspaceEntry dstWe = framework.createWork(dstMe, we.getFileName());
 
         VisualCircuit visualCircuit = WorkspaceUtils.getAs(dstWe, VisualCircuit.class);
         setComponentsRenderStyle(visualCircuit, renderType);

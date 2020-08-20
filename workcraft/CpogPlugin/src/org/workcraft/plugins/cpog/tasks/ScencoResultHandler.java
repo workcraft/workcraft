@@ -45,7 +45,7 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoOutput> {
                 Circuit circuit = verilogImporter.createCircuit(verilogModule);
                 ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                 Framework framework = Framework.getInstance();
-                WorkspaceEntry weCircuit = framework.createWork(me, we.getWorkspacePath());
+                WorkspaceEntry weCircuit = framework.createWork(me, we.getFileName());
                 VisualCircuit visualCircuit = WorkspaceUtils.getAs(weCircuit, VisualCircuit.class);
                 visualCircuit.setTitle(we.getModelTitle());
                 framework.updatePropertyView();

@@ -3,7 +3,6 @@ package org.workcraft.plugins.atacs.tasks;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
@@ -72,10 +71,9 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
 
         removePortsForExposedInternalSignals(circuit);
 
-        Path<String> path = we.getWorkspacePath();
         ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
         Framework framework = Framework.getInstance();
-        WorkspaceEntry dstWe = framework.createWork(dstMe, path);
+        WorkspaceEntry dstWe = framework.createWork(dstMe, we.getFileName());
 
         VisualCircuit visualCircuit = WorkspaceUtils.getAs(dstWe, VisualCircuit.class);
         setComponentsRenderStyle(visualCircuit);

@@ -3,7 +3,6 @@ package org.workcraft.plugins.msfsm.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.FsmDescriptor;
 import org.workcraft.plugins.fsm.VisualFsm;
@@ -29,11 +28,9 @@ public class ConversionResultHandlingMonitor extends AbstractResultHandlingMonit
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
-    private final WorkspaceEntry we;
     private final boolean convertToFsm;
 
-    public ConversionResultHandlingMonitor(WorkspaceEntry we, boolean convertToFsm) {
-        this.we = we;
+    public ConversionResultHandlingMonitor(boolean convertToFsm) {
         this.convertToFsm = convertToFsm;
     }
 
@@ -51,7 +48,6 @@ public class ConversionResultHandlingMonitor extends AbstractResultHandlingMonit
 
     private Collection<WorkspaceEntry> handleSuccess(ConversionOutput msfsmOutput) {
         Collection<WorkspaceEntry> wes = new ArrayList<>();
-        Path path = we.getWorkspacePath();
         Framework framework = Framework.getInstance();
         for (File file : msfsmOutput.getFiles()) {
             try {
@@ -60,7 +56,7 @@ public class ConversionResultHandlingMonitor extends AbstractResultHandlingMonit
                 Fsm model = convertToFsm ? convertFstToFsm(fst) : fst;
                 ModelDescriptor modelDescriptor = convertToFsm ? new FsmDescriptor() : new FstDescriptor();
                 ModelEntry me = new ModelEntry(modelDescriptor, model);
-                WorkspaceEntry we = framework.createWork(me, path);
+                WorkspaceEntry we = framework.createWork(me, file.getName());
                 wes.add(we);
             } catch (FileNotFoundException | DeserialisationException e) {
                 throw new RuntimeException("Cannot import file " + file.getAbsolutePath());

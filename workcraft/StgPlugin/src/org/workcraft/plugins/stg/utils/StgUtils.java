@@ -11,7 +11,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NoExporterException;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.petri.Place;
@@ -194,8 +193,7 @@ public class StgUtils {
                 String msg = TextUtils.wrapMessageWithItems("STG modified by inserting new signal", newSignals);
                 LogUtils.logInfo(msg);
                 ModelEntry dstMe = new ModelEntry(new StgDescriptor(), dstStg);
-                Path<String> path = srcWe.getWorkspacePath();
-                dstWe = Framework.getInstance().createWork(dstMe, path);
+                dstWe = Framework.getInstance().createWork(dstMe, srcWe.getFileName());
             }
         }
         return dstWe;

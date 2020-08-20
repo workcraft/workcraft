@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.dialogs.ExceptionDialog;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
@@ -64,15 +63,15 @@ public class StgToFstConversionCommand extends AbstractConversionCommand {
         TaskManager taskManager = Framework.getInstance().getTaskManager();
         WriteSgConversionTask task = new WriteSgConversionTask(we, isBinary());
         Result<? extends WriteSgConversionOutput> result = taskManager.execute(task, "Building state graph");
-        return processResult(result, we.getWorkspacePath());
+        return processResult(result, we.getFileName());
     }
 
-    private WorkspaceEntry processResult(Result<? extends WriteSgConversionOutput> result, Path<String> path) {
+    private WorkspaceEntry processResult(Result<? extends WriteSgConversionOutput> result, String name) {
         WorkspaceEntry we = null;
         WriteSgConversionOutput output = result.getPayload();
         if (result.isSuccess()) {
             ModelEntry me = new ModelEntry(new FstDescriptor(), output.getFst());
-            we = Framework.getInstance().createWork(me, path);
+            we = Framework.getInstance().createWork(me, name);
             // NOTE: WorkspaceEntry with a new ModelEntry is created
             VisualModel visualModel = we.getModelEntry().getVisualModel();
             if (visualModel instanceof VisualFst) {

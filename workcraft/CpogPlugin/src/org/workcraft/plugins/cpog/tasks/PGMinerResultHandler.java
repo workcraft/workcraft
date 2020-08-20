@@ -5,7 +5,6 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualCpogDescriptor;
@@ -59,8 +58,7 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOu
             try {
                 visualCpog = vmd.create(mathModel);
                 final ModelEntry me = new ModelEntry(cpogModel, visualCpog);
-                final Path<String> path = we.getWorkspacePath();
-                weResult = framework.createWork(me, path);
+                weResult = framework.createWork(me, we.getFileName());
             } catch (final VisualModelInstantiationException e) {
                 DialogUtils.showError(e.getMessage());
             }
