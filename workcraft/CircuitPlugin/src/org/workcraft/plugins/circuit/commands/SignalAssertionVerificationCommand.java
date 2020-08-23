@@ -53,7 +53,7 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
         MainWindow mainWindow = framework.getMainWindow();
         PresetManager<String> presetManager = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
 
-        presetManager.addExample("Mutual exclusion of signals",
+        presetManager.addExamplePreset("Mutual exclusion of signals",
                 "// Signals u and v are mutually exclusive\n" + "!u || !v");
 
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "Signal assertion", presetManager);

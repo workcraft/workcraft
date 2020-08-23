@@ -1,38 +1,67 @@
 package org.workcraft.presets;
 
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 
 @SuppressWarnings("serial")
 public class PresetManagerPanel<T> extends JPanel {
 
-    public static final ListCellRenderer PRESET_LIST_RENDERER = new ListCellRenderer() {
+    class PresetComboBox extends JComboBox<Preset<T>> {
+        @Override
+        public Preset<T> getSelectedItem() {
+            return (Preset<T>) super.getSelectedItem();
+        }
+    }
 
-        private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+    class PresetRenderer implements ListCellRenderer<Preset<T>> {
+        private static final String PRESERVE_PREFIX = "&#x2713; ";
+        private static final String EXAMPLE_PREFIX = "&#xBB; ";
+        private static final String EXTERNAL_SUFFIX = " &#x2190; ";
+
+        private final DefaultListCellRenderer renderer = new DefaultListCellRenderer();
 
         @Override
-        public Component getListCellRendererComponent(JList list, Object value, int index,
-                boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<? extends Preset<T>> list,
+                Preset<T> value, int index, boolean isSelected, boolean cellHasFocus) {
 
-            Component renderer = defaultRenderer.getListCellRendererComponent(list, value, index,
-                    isSelected, cellHasFocus);
+            Component component = renderer.getListCellRendererComponent(list,
+                    getDescription(value), index, isSelected, cellHasFocus);
 
-            if (value instanceof Preset) {
-                Preset preset = (Preset) value;
-                if (preset.isBuiltIn()) {
-                    renderer.setEnabled(false);
-                }
-            }
-            return renderer;
+            File file = value.getFile();
+            renderer.setToolTipText(file == null ? null : file.getAbsolutePath());
+            component.setEnabled(!presetManager.isExamplePreset(value));
+            return component;
         }
-    };
+
+        private String getDescription(Preset<T> preset) {
+            if (preset == null) {
+                return "";
+            }
+            String prefix = presetManager.isPreservedPreset(preset) ? PRESERVE_PREFIX
+                    : presetManager.isExamplePreset(preset) ? EXAMPLE_PREFIX : "";
+
+            File file = preset.getFile();
+            String suffix = "";
+            if (file != null) {
+                String decoratedFileName = file.exists() ? file.getName()
+                        : "<span style=\"color: #ff0000\">" + file.getName() + "</span>";
+
+                suffix =  EXTERNAL_SUFFIX + "<i>" + decoratedFileName + "</i>";
+            }
+            return "<html>" + prefix + preset.getDescription() + suffix + "</html>";
+        }
+    }
 
     private final PresetManager<T> presetManager;
     private final DataMapper<T> guiMapper;
-    private final JComboBox presetCombo = new JComboBox();
+    private final PresetComboBox presetCombo = new PresetComboBox();
+    private final PresetRenderer presetRenderer = new PresetRenderer();
 
     public PresetManagerPanel(PresetManager<T> presetManager, DataMapper<T> guiMapper) {
         super();
@@ -42,34 +71,37 @@ public class PresetManagerPanel<T> extends JPanel {
     }
 
     private void initialise() {
-        JButton createButton = GuiUtils.createDialogButton("Save as...");
-        createButton.addActionListener(event -> savePreset());
+        JButton duplicateButton = GuiUtils.createDialogButton("Duplicate...");
+        duplicateButton.setToolTipText("Duplicate selected preset with a new name");
+        duplicateButton.addActionListener(event -> duplicatePreset());
 
         JButton updateButton = GuiUtils.createDialogButton("Update");
-        updateButton.setEnabled(false);
         updateButton.addActionListener(event -> updatePreset());
 
         JButton renameButton = GuiUtils.createDialogButton("Rename...");
-        renameButton.setEnabled(false);
         renameButton.addActionListener(event -> renamePreset());
 
         JButton deleteButton = GuiUtils.createDialogButton("Delete");
-        deleteButton.setEnabled(false);
         deleteButton.addActionListener(event -> deletePreset());
+
+        JButton linkButton = GuiUtils.createDialogButton("Link...");
+        linkButton.addActionListener(event -> linkPreset());
 
         // Use 0 gap in FlowLayout to remove the gap after the last button and explicitly add gaps between the buttons.
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        buttonsPanel.add(createButton);
+        buttonsPanel.add(duplicateButton);
         buttonsPanel.add(GuiUtils.createHGap());
         buttonsPanel.add(updateButton);
         buttonsPanel.add(GuiUtils.createHGap());
         buttonsPanel.add(renameButton);
         buttonsPanel.add(GuiUtils.createHGap());
         buttonsPanel.add(deleteButton);
+        buttonsPanel.add(GuiUtils.createHGap());
+        buttonsPanel.add(linkButton);
 
         fillPresetComboAndSelect(null);
         // Assign listener only after the initial fill-in, so actions are not triggered while controls are still being created
-        presetCombo.addActionListener(event -> setButtonsState(updateButton, renameButton, deleteButton));
+        presetCombo.addActionListener(event -> setButtonsState(updateButton, renameButton, deleteButton, linkButton));
 
         setBorder(GuiUtils.getTitledBorder("Presets"));
         setLayout(GuiUtils.createBorderLayout());
@@ -77,8 +109,8 @@ public class PresetManagerPanel<T> extends JPanel {
         add(buttonsPanel, BorderLayout.SOUTH);
     }
 
-    private void fillPresetComboAndSelect(Preset selectedPreset) {
-        presetCombo.setRenderer(PRESET_LIST_RENDERER);
+    private void fillPresetComboAndSelect(Preset<T> selectedPreset) {
+        presetCombo.setRenderer(presetRenderer);
         presetCombo.removeAllItems();
         for (Preset<T> preset : presetManager.getPresets()) {
             presetCombo.addItem(preset);
@@ -90,12 +122,23 @@ public class PresetManagerPanel<T> extends JPanel {
         }
     }
 
-    private void savePreset() {
-        String description = DialogUtils.showInput("Enter preset description:", "");
+    private String askPresetDescription() {
+        Preset<T> preset = getSelectedPreset();
+        if (preset == null) {
+            return null;
+        }
+        String message = "Enter preset unique name:";
+        String title = "Preset description";
+        String description = preset.getDescription();
+        return DialogUtils.showInput(message, title, description);
+    }
+
+    private void duplicatePreset() {
+        String description = askPresetDescription();
         if ((description != null) && !description.isEmpty()) {
             T data = guiMapper.getDataFromControls();
-            Preset<T> newPreset = new Preset<>(description, data, false);
-            Preset savedPreset = presetManager.savePreset(newPreset);
+            Preset<T> newPreset = new Preset<>(description, data);
+            Preset<T> savedPreset = presetManager.duplicatePreset(newPreset);
             if (savedPreset != null) {
                 fillPresetComboAndSelect(savedPreset);
             }
@@ -103,53 +146,93 @@ public class PresetManagerPanel<T> extends JPanel {
     }
 
     private void updatePreset() {
-        Preset<T> preset = (Preset<T>) presetCombo.getSelectedItem();
-        presetManager.updatePreset(preset, guiMapper.getDataFromControls());
-        fillPresetComboAndSelect(preset);
-    }
-
-    private void renamePreset() {
-        Preset<T> preset = (Preset<T>) presetCombo.getSelectedItem();
-        String description = DialogUtils.showInput("Enter preset description:", preset.getDescription());
-        if ((description != null) && !description.isEmpty()) {
-            presetManager.renamePreset(preset, description);
+        Preset<T> preset = getSelectedPreset();
+        if (preset != null) {
+            presetManager.updatePreset(preset, guiMapper.getDataFromControls());
             fillPresetComboAndSelect(preset);
         }
     }
 
-    private void deletePreset() {
-        Preset<T> preset = (Preset<T>) presetCombo.getSelectedItem();
-        String msg = "Are you sure you want to delete the preset \'" + preset.getDescription() + "\'?";
-        if (DialogUtils.showConfirm(msg, "Delete preset", false)) {
-            presetManager.removePreset(preset);
-            fillPresetComboAndSelect(null);
+    private void renamePreset() {
+        Preset<T> preset = getSelectedPreset();
+        if (preset != null) {
+            String description = askPresetDescription();
+            if ((description != null) && !description.isEmpty()) {
+                presetManager.renamePreset(preset, description);
+                fillPresetComboAndSelect(preset);
+            }
         }
     }
 
-    private void setButtonsState(JButton updateButton, JButton renameButton, JButton deleteButton) {
+    private void deletePreset() {
+        Preset<T> preset = getSelectedPreset();
+        if (preset != null) {
+            String description = preset.getDescription();
+            String msg = "Are you sure you want to delete preset '" + description + "'?";
+            if (DialogUtils.showConfirm(msg, "Delete preset", false)) {
+                presetManager.deletePreset(preset);
+                fillPresetComboAndSelect(null);
+            }
+        }
+    }
+
+    private void linkPreset() {
+        Preset<T> preset = getSelectedPreset();
+        if (preset != null) {
+            File file = preset.getFile();
+            if (file != null) {
+                file = null;
+            } else {
+                MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                JFileChooser fc = mainWindow.createOpenDialog("Choose file",
+                        false, false, null);
+
+                if (fc.showDialog(mainWindow, "Select") == JFileChooser.APPROVE_OPTION) {
+                    file = fc.getSelectedFile();
+                }
+            }
+            preset.setFile(file);
+            presetManager.updatePreset(preset, guiMapper.getDataFromControls());
+            fillPresetComboAndSelect(preset);
+        }
+    }
+
+    private void setButtonsState(JButton updateButton, JButton renameButton, JButton deleteButton, JButton linkButton) {
         updateButton.setEnabled(false);
         updateButton.setToolTipText("");
         renameButton.setEnabled(false);
         renameButton.setToolTipText("");
         deleteButton.setEnabled(false);
         deleteButton.setToolTipText("");
-        Object selectedItem = presetCombo.getSelectedItem();
-        if (selectedItem instanceof Preset) {
-            Preset<T> selectedPreset = (Preset<T>) selectedItem;
-            if (selectedPreset.isBuiltIn()) {
-                String hintText = "Cannot make changes to a built-in preset";
+        linkButton.setEnabled(false);
+        linkButton.setToolTipText("");
+        Preset<T> preset = getSelectedPreset();
+        if (preset != null) {
+            if (presetManager.isExamplePreset(preset)) {
+                String hintText = "Cannot make changes to an example preset";
                 updateButton.setToolTipText(hintText);
                 renameButton.setToolTipText(hintText);
                 deleteButton.setToolTipText(hintText);
+                linkButton.setToolTipText(hintText);
+                linkButton.setText("Link...");
             } else {
                 updateButton.setEnabled(true);
-                updateButton.setToolTipText("Save these settings to the currently selected preset");
                 renameButton.setEnabled(true);
-                renameButton.setToolTipText("Rename the currently selected preset");
+                renameButton.setToolTipText("Rename selected preset");
                 deleteButton.setEnabled(true);
-                deleteButton.setToolTipText("Delete the currently selected preset");
+                deleteButton.setToolTipText("Delete selected preset");
+                linkButton.setEnabled(true);
+                if (preset.getFile() == null) {
+                    linkButton.setToolTipText("Link external file that overrides preset settings");
+                    linkButton.setText("Link...");
+                    updateButton.setToolTipText("Update selected preset from dialog data");
+                } else {
+                    linkButton.setToolTipText("Unlink external file that overrides preset settings");
+                    linkButton.setText("Unlink");
+                    updateButton.setToolTipText("Update selected preset from settings and linked file");
+                }
             }
-            guiMapper.applyDataToControls(selectedPreset.getData());
+            guiMapper.applyDataToControls(preset.getData());
         }
     }
 
@@ -157,6 +240,10 @@ public class PresetManagerPanel<T> extends JPanel {
         if (presetCombo.getItemCount() > 0) {
             presetCombo.setSelectedIndex(0);
         }
+    }
+
+    public Preset<T> getSelectedPreset() {
+        return presetCombo.getSelectedItem();
     }
 
 }

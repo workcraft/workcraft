@@ -52,8 +52,8 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         PresetManager<String> presetManager = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
-        presetManager.addExample("Every request is acknowledged", "G(\"req\" -> (\"ack\" M \"req\"))");
-        presetManager.addExample("Mutual exclusion of signals", "G((!\"u\") | (!\"v\"))");
+        presetManager.addExamplePreset("Every request is acknowledged", "G(\"req\" -> (\"ack\" M \"req\"))");
+        presetManager.addExamplePreset("Mutual exclusion of signals", "G((!\"u\") | (!\"v\"))");
 
         TextPresetDialog dialog = new TextPresetDialog(mainWindow, "SPOT assertion", presetManager);
         dialog.addHelpButton(new File("https://spot.lrde.epita.fr/tl.pdf"));

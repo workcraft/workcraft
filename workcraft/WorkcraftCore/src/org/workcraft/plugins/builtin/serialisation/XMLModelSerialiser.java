@@ -12,7 +12,6 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.XMLSerialisationManager;
 import org.workcraft.utils.XmlUtils;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.OutputStream;
 import java.util.UUID;
 
@@ -38,33 +37,29 @@ public class XMLModelSerialiser implements ModelSerialiser {
     public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer refs)
             throws SerialisationException {
 
-        try {
-            ReferenceProducer internalRefs = obj -> {
-                if (obj instanceof Node) {
-                    return model.getNodeReference((Node) obj);
-                }
-                return null;
-            };
+        ReferenceProducer internalRefs = obj -> {
+            if (obj instanceof Node) {
+                return model.getNodeReference((Node) obj);
+            }
+            return null;
+        };
 
-            Document doc = XmlUtils.createDocument();
-            Element modelElement = doc.createElement("model");
-            Element rootElement = doc.createElement("root");
+        Document doc = XmlUtils.createDocument();
+        Element modelElement = doc.createElement("model");
+        Element rootElement = doc.createElement("root");
 
-            serialisation.begin(internalRefs, refs);
+        serialisation.begin(internalRefs, refs);
 
-            serialisation.serialise(modelElement, model);
-            serialisation.serialise(rootElement, model.getRoot());
+        serialisation.serialise(modelElement, model);
+        serialisation.serialise(rootElement, model.getRoot());
 
-            serialisation.end();
+        serialisation.end();
 
-            doc.appendChild(modelElement);
-            modelElement.appendChild(rootElement);
-            XmlUtils.writeDocument(doc, out);
+        doc.appendChild(modelElement);
+        modelElement.appendChild(rootElement);
+        XmlUtils.writeDocument(doc, out);
 
-            return internalRefs;
-        } catch (ParserConfigurationException e) {
-            throw new SerialisationException(e);
-        }
+        return internalRefs;
     }
 
 }

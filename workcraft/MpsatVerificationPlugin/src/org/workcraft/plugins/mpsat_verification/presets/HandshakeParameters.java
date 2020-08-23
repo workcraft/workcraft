@@ -145,6 +145,10 @@ public class HandshakeParameters {
     private final State state;
     private final boolean allowInversion;
 
+    public HandshakeParameters() {
+        this(Collections.emptySet(), Collections.emptySet());
+    }
+
     public HandshakeParameters(Collection<String> reqs, Collection<String> acks) {
         this(Type.PASSIVE, reqs, acks, true, true, State.REQ0ACK0, false);
     }

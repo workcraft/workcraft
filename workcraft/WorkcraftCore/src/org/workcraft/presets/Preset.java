@@ -1,15 +1,16 @@
 package org.workcraft.presets;
 
+import java.io.File;
+
 public class Preset<T> {
 
     private String description;
     private T data;
-    private final boolean builtIn;
+    private File file;
 
-    public Preset(String description, T data, boolean builtIn) {
+    public Preset(String description, T data) {
         this.description = description;
         this.data = data;
-        this.builtIn = builtIn;
     }
 
     public String getDescription() {
@@ -28,13 +29,12 @@ public class Preset<T> {
         this.data = data;
     }
 
-    public boolean isBuiltIn() {
-        return builtIn;
+    public File getFile() {
+        return file;
     }
 
-    @Override
-    public String toString() {
-        return getDescription();
+    public void setFile(File file) {
+        this.file = file;
     }
 
 }

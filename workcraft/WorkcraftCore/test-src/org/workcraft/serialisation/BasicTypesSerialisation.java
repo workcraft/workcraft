@@ -9,7 +9,6 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.builtin.serialisation.xml.*;
 import org.workcraft.utils.XmlUtils;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.geom.AffineTransform;
 
 public class BasicTypesSerialisation {
@@ -34,7 +33,7 @@ public class BasicTypesSerialisation {
 
             Assertions.assertEquals(TestEnum.ONE, ds.deserialise(e));
             Assertions.assertEquals(TestEnum.TWO, ds.deserialise(e2));
-        } catch (ParserConfigurationException | SerialisationException | DeserialisationException e) {
+        } catch (SerialisationException | DeserialisationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -54,7 +53,7 @@ public class BasicTypesSerialisation {
 
             Assertions.assertEquals(Integer.valueOf(8), ds.deserialise(e));
             Assertions.assertEquals(Integer.valueOf(-500), ds.deserialise(e2));
-        } catch (ParserConfigurationException | SerialisationException  e) {
+        } catch (SerialisationException  e) {
             throw new RuntimeException(e);
         }
     }
@@ -79,7 +78,7 @@ public class BasicTypesSerialisation {
             Assertions.assertEquals(Double.valueOf(-1E8), ds.deserialise(e));
             Assertions.assertEquals(Double.valueOf(123.456), ds.deserialise(e2));
             Assertions.assertEquals(Double.valueOf(r), ds.deserialise(e3));
-        } catch (ParserConfigurationException | SerialisationException e) {
+        } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -99,7 +98,7 @@ public class BasicTypesSerialisation {
             s.serialise(e, t);
 
             Assertions.assertEquals(t, ds.deserialise(e));
-        } catch (ParserConfigurationException | SerialisationException e) {
+        } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -132,7 +131,7 @@ public class BasicTypesSerialisation {
             Assertions.assertEquals("череззаборногузадерищенко", ds.deserialise(e1));
             Assertions.assertEquals("", ds.deserialise(e2));
             Assertions.assertEquals("\" <xml", ds.deserialise(e3));
-        } catch (ParserConfigurationException | SerialisationException e) {
+        } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }
     }

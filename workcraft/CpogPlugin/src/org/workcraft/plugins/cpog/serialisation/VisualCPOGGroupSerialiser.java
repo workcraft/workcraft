@@ -5,9 +5,10 @@ import org.workcraft.plugins.cpog.Encoding;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VariableState;
 import org.workcraft.plugins.cpog.VisualScenario;
-import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.CustomXMLSerialiser;
 import org.workcraft.serialisation.NodeSerialiser;
+import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.utils.XmlUtils;
 
 import java.util.Map;
 
@@ -28,11 +29,9 @@ public class VisualCPOGGroupSerialiser implements CustomXMLSerialiser<VisualScen
         for (Variable var : states.keySet()) {
             VariableState state = states.get(var);
 
-            Element subelement = element.getOwnerDocument().createElement("encoding");
+            Element subelement = XmlUtils.createChildElement("encoding", element);
             subelement.setAttribute("variable", externalReferences.getReference(var));
             subelement.setAttribute("state", state.name());
-
-            element.appendChild(subelement);
         }
     }
 

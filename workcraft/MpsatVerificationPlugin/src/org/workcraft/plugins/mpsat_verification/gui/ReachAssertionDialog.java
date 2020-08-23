@@ -135,7 +135,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
                 MpsatVerificationSettings.getSolutionCount(),
                 expression, true);
 
-        presetManager.addExample(title, verificationParameters);
+        presetManager.addExamplePreset(title, verificationParameters);
 
     }
 

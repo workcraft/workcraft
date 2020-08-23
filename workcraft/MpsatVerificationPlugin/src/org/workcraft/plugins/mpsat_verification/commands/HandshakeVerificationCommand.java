@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
-import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
@@ -31,7 +31,6 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
 
     private static final String PRESET_KEY = "handshake-wizard.xml";
     private static final HandshakeDataSerialiser DATA_SERIALISER = new HandshakeDataSerialiser();
-    private static final String DEFAULT_DESCRIPTION = "Custom REACH assertion";
 
     private static HandshakeParameters preservedData = null;
 
@@ -74,9 +73,9 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
 
     @Override
     public HandshakeParameters deserialiseData(String data) {
-        if (data.startsWith("<") && data.endsWith(">")) {
-            Document document = PresetManager.buildPresetDocumentFromSettings(DEFAULT_DESCRIPTION, data);
-            return DATA_SERIALISER.fromXML(document.getDocumentElement());
+        if (TextUtils.isXmlElement(data)) {
+            Element presetElement  = PresetManager.createPresetElement("Handshake wizard assertion", data);
+            return DATA_SERIALISER.fromXML(presetElement, new HandshakeParameters());
         }
         Matcher matcher = DATA_PATTERN.matcher(data);
         if (matcher.matches()) {

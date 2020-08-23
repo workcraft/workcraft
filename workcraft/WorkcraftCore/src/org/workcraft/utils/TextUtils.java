@@ -11,11 +11,13 @@ public class TextUtils {
 
     public static final int DEFAULT_WRAP_LENGTH = 100;
     private static final String ELLIPSIS_SYMBOL = Character.toString((char) 0x2026);
-    public static final String NEWLINE_REGEX = "\\r?\\n";
-    public static final Pattern LEADING_SPACES_PATTERN = Pattern.compile("^\\s+");
+    private static final String NEWLINE_REGEX = "\\r?\\n";
+    private static final Pattern LEADING_SPACES_PATTERN = Pattern.compile("^\\s+");
+    private static final Pattern XML_ELEMENT_PATTERN = Pattern.compile(
+            "^\\s*<([\\w-.]+).*(</\\1\\s*|/)>\\s*$", Pattern.DOTALL);
 
     public static String truncateText(String text, int length) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         boolean firstLine = true;
         for (String line : splitLines(text)) {
             if (firstLine) {
@@ -32,7 +34,7 @@ public class TextUtils {
         if (line.length() <= length) {
             return line;
         }
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         int curLength = 0;
         for (String word : splitWords(line)) {
             int wordLength = word.length();
@@ -60,7 +62,7 @@ public class TextUtils {
     }
 
     public static String wrapText(String text, int length) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         boolean firstLine = true;
         for (String line : splitLines(text)) {
             if (firstLine) {
@@ -81,7 +83,7 @@ public class TextUtils {
         if (line.length() <= length) {
             return line;
         }
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         int curLength = 0;
         for (String word : splitWords(line)) {
             int wordLength = word.length();
@@ -115,7 +117,7 @@ public class TextUtils {
     }
 
     public static String getHeadAndTail(String text, int firstCount, int lastCount) {
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         List<String> lines = splitLines(text);
         int index = 0;
         boolean dotsInserted = false;
@@ -243,17 +245,24 @@ public class TextUtils {
     }
 
     public static String abbreviate(String s) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         int len = s == null ? 0 : s.length();
         boolean b = true;
         for (int i = 0; i < len; i++) {
             char c = s.charAt(i);
             if (b && !Character.isSpaceChar(c) || Character.isUpperCase(c)) {
-                result += c;
+                result.append(c);
             }
             b = Character.isSpaceChar(c);
         }
-        return result;
+        return result.toString();
+    }
+
+    public static boolean isXmlElement(String text) {
+        if (text != null) {
+            return XML_ELEMENT_PATTERN.matcher(text).matches();
+        }
+        return false;
     }
 
 }

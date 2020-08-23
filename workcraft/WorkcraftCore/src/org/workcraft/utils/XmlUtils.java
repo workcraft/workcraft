@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -22,78 +23,108 @@ import java.util.List;
 
 public class XmlUtils {
 
+    public static String readTextAttribute(Element element, String attributeName, String defaultValue) {
+        if ((element == null) || !element.hasAttribute(attributeName)) {
+            return defaultValue;
+        }
+        return element.getAttribute(attributeName);
+    }
+
     public static int readIntAttribute(Element element, String attributeName, int defaultValue) {
-        String value = element.getAttribute(attributeName);
+        if ((element == null) || !element.hasAttribute(attributeName)) {
+            return defaultValue;
+        }
         try {
-            return Integer.parseInt(value);
+            return Integer.parseInt(element.getAttribute(attributeName));
         } catch (NumberFormatException e) {
             return defaultValue;
         }
     }
 
-    public static boolean readBooleanAttribute(Element element, String attributeName, boolean defaultValue) {
-        String value = element.getAttribute(attributeName);
-        if (value.isEmpty()) {
+    public static boolean readBooleanAttribute(Element element, String attributeName,
+            boolean defaultValue) {
+
+        if ((element == null) || !element.hasAttribute(attributeName)) {
             return defaultValue;
-        } else {
-            return Boolean.parseBoolean(value);
         }
+        return Boolean.parseBoolean(element.getAttribute(attributeName));
     }
 
-    public static <T extends Enum<T>> T readEnumAttribute(Element element, String attributeName, Class<T> enumType, T defaultValue) {
-        String value = element.getAttribute(attributeName);
+    public static <T extends Enum<T>> T readEnumAttribute(Element element, String attributeName,
+            Class<T> enumType, T defaultValue) {
+
+        if ((element == null) || !element.hasAttribute(attributeName)) {
+            return defaultValue;
+        }
         try {
-            return Enum.valueOf(enumType, value);
+            return Enum.valueOf(enumType, element.getAttribute(attributeName));
         } catch (IllegalArgumentException e) {
             return defaultValue;
         }
     }
 
-    public static List<Element> getChildElements(String tagName, Element element) {
+    public static List<Element> getChildElements(String elementName, Element parent) {
         LinkedList<Element> result = new LinkedList<>();
-        NodeList nl = element.getChildNodes();
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node n = nl.item(i);
-            if ((n.getNodeType() == Node.ELEMENT_NODE) && tagName.equals(n.getNodeName())) {
-                result.add((Element) n);
+        if (parent != null) {
+            NodeList nodes = parent.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if ((node.getNodeType() == Node.ELEMENT_NODE) && elementName.equals(node.getNodeName())) {
+                    result.add((Element) node);
+                }
             }
         }
         return result;
     }
 
-    public static Element getChildElement(String tagName, Element element) {
-        NodeList nl = element.getChildNodes();
-        for (int i = 0; i < nl.getLength(); i++) {
-            Node n = nl.item(i);
-            if ((n.getNodeType() == Node.ELEMENT_NODE) && tagName.equals(n.getNodeName())) {
-                return (Element) n;
+    public static Element getChildElement(String elementName, Element parent) {
+        if (parent != null) {
+            NodeList nodes = parent.getChildNodes();
+            for (int i = 0; i < nodes.getLength(); i++) {
+                Node node = nodes.item(i);
+                if ((node.getNodeType() == Node.ELEMENT_NODE) && elementName.equals(node.getNodeName())) {
+                    return (Element) node;
+                }
             }
         }
         return null;
     }
 
-    public static Element createChildElement(String tagName, Element parentElement) {
-        Element result = parentElement.getOwnerDocument().createElement(tagName);
-        parentElement.appendChild(result);
+    public static Element createChildElement(String elementName, Document document) {
+        Element result = document.createElement(elementName);
+        document.appendChild(result);
         return result;
     }
 
-    public static Document createDocument() throws ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        return db.newDocument();
+    public static Element createChildElement(String elementName, Element parent) {
+        Document document = parent.getOwnerDocument();
+        Element result = document.createElement(elementName);
+        parent.appendChild(result);
+        return result;
     }
 
-    public static Document loadDocument(File file) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        return db.parse(file);
+    private static DocumentBuilder createDocumentBuilder() {
+        try {
+            return DocumentBuilderFactory.newInstance().newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static Document loadDocument(InputStream is) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        return db.parse(is);
+    public static Document createDocument() {
+        return createDocumentBuilder().newDocument();
+    }
+
+    public static Document createDocument(String xml) throws IOException, SAXException {
+        return createDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+    }
+
+    public static Document loadDocument(File file) throws IOException, SAXException {
+        return createDocumentBuilder().parse(file);
+    }
+
+    public static Document loadDocument(InputStream is) throws IOException, SAXException {
+        return createDocumentBuilder().parse(is);
     }
 
     public static void writeDocument(Document doc, OutputStream os) {

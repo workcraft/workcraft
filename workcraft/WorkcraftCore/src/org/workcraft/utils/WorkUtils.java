@@ -265,7 +265,7 @@ public final class WorkUtils {
                 throw new DeserialisationException("Meta entry is missing");
             }
             return XmlUtils.loadDocument(metaData);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+        } catch (SAXException | IOException e) {
             throw new DeserialisationException("Cannot load meta entry", e);
         }
     }
@@ -294,7 +294,7 @@ public final class WorkUtils {
                 }
                 model.addToSelection(nodes);
             }
-        } catch (IOException | ParserConfigurationException | SAXException e) {
+        } catch (IOException | SAXException e) {
             throw new DeserialisationException("Cannot load selection state", e);
         }
     }

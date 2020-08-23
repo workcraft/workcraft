@@ -11,7 +11,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.tools.Decorator;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.io.*;
@@ -57,7 +56,7 @@ public class BatikUtils {
             model.draw(g2d, Decorator.Empty.INSTANCE);
             g2d.stream(new OutputStreamWriter(out, StandardCharsets.UTF_8));
             out.flush();
-        } catch (ParserConfigurationException | IOException e) {
+        } catch (IOException e) {
             throw new SerialisationException(e);
         }
     }

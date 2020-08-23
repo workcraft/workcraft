@@ -8,10 +8,11 @@ import javax.swing.*;
 public class DialogUtils {
 
     private static final int TRUNCATE_LENGTH = 100;
-    private static final String TITLE_MESSAGE = "Message";
-    private static final String TITLE_INFO = "Information";
-    private static final String TITLE_ERROR = "Error";
-    private static final String TITLE_WARNING = "Warning";
+    private static final String MESSAGE_TITLE = "Message";
+    private static final String INFO_TITLE = "Information";
+    private static final String ERROR_TITLE = "Error";
+    private static final String WARNING_TITLE = "Warning";
+    private static final String INPUT_TITLE = "Input";
 
     private static void showMessage(String msg, String title, int messageType) {
         switch (messageType) {
@@ -37,7 +38,7 @@ public class DialogUtils {
     }
 
     public static void showMessage(String msg) {
-        showMessage(msg, TITLE_MESSAGE);
+        showMessage(msg, MESSAGE_TITLE);
     }
 
     public static void showMessage(String msg, String title) {
@@ -45,7 +46,7 @@ public class DialogUtils {
     }
 
     public static void showInfo(String msg) {
-        showInfo(msg, TITLE_INFO);
+        showInfo(msg, INFO_TITLE);
     }
 
     public static void showInfo(String msg, String title) {
@@ -53,7 +54,7 @@ public class DialogUtils {
     }
 
     public static void showWarning(String msg) {
-        showWarning(msg, TITLE_WARNING);
+        showWarning(msg, WARNING_TITLE);
     }
 
     public static void showWarning(String msg, String title) {
@@ -61,7 +62,7 @@ public class DialogUtils {
     }
 
     public static void showError(String msg) {
-        showError(msg, TITLE_ERROR);
+        showError(msg, ERROR_TITLE);
     }
 
     public static void showError(String msg, String title) {
@@ -73,7 +74,7 @@ public class DialogUtils {
     }
 
     public static boolean showConfirmInfo(String msg) {
-        return showConfirmInfo(msg, TITLE_INFO, true);
+        return showConfirmInfo(msg, INFO_TITLE, true);
     }
 
     public static boolean showConfirmInfo(String msg, String title, boolean defaultChoice) {
@@ -81,7 +82,7 @@ public class DialogUtils {
     }
 
     public static boolean showConfirmWarning(String msg) {
-        return showConfirmWarning(msg, TITLE_WARNING, true);
+        return showConfirmWarning(msg, WARNING_TITLE, true);
     }
 
     public static boolean showConfirmWarning(String msg, String title, boolean defaultChoice) {
@@ -89,7 +90,7 @@ public class DialogUtils {
     }
 
     public static boolean showConfirmError(String msg) {
-        return showConfirmError(msg, TITLE_ERROR,  true);
+        return showConfirmError(msg, ERROR_TITLE,  true);
     }
 
     public static boolean showConfirmError(String msg,  String title, boolean defaultChoice) {
@@ -112,10 +113,19 @@ public class DialogUtils {
     }
 
     public static String showInput(String msg, String initial) {
+        return showInput(msg, INPUT_TITLE, initial);
+    }
+
+    public static String showInput(String msg, String title, String initial) {
+        return showInput(msg, title, JOptionPane.QUESTION_MESSAGE, initial);
+    }
+
+    private static String showInput(String msg, String title, int messageType, String initial) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         if ((mainWindow != null) && framework.isInGuiMode()) {
-            return JOptionPane.showInputDialog(mainWindow, msg, initial);
+            return (String) JOptionPane.showInputDialog(mainWindow, msg, title,
+                    messageType, null, null, initial);
         }
         return initial;
     }
