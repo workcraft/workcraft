@@ -41,12 +41,15 @@ public class VerificationParameters {
     //   false - property holds when predicate is satisfiable
     private final boolean inversePredicate;
 
-    public VerificationParameters(String description, VerificationMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit) {
+    public VerificationParameters(String description, VerificationMode mode, int verbosity,
+            SolutionMode solutionMode, int solutionNumberLimit) {
+
         this(description, mode, verbosity, solutionMode, solutionNumberLimit, null, true);
     }
 
-    public VerificationParameters(String description, VerificationMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit,
-            String expression, boolean inversePredicate) {
+    public VerificationParameters(String description, VerificationMode mode, int verbosity,
+            SolutionMode solutionMode, int solutionNumberLimit, String expression, boolean inversePredicate) {
+
         this.description = description;
         this.mode = mode;
         this.verbosity = verbosity;

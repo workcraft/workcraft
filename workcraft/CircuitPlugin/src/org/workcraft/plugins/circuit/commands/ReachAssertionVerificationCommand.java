@@ -1,5 +1,6 @@
 package org.workcraft.plugins.circuit.commands;
 
+import org.w3c.dom.Element;
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
@@ -12,6 +13,7 @@ import org.workcraft.plugins.mpsat_verification.presets.MpsatPresetManager;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
+import org.workcraft.presets.PresetManager;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
@@ -22,6 +24,7 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
 
     private static final String PRESET_KEY = "reach-assertions.xml";
     private static final MpsatDataSerialiser DATA_SERIALISER = new MpsatDataSerialiser();
+    private static final String DESCRIPTION = "Custom REACH assertion";
 
     private static VerificationParameters preservedData = null;
 
@@ -72,7 +75,8 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
 
     @Override
     public VerificationParameters deserialiseData(String data) {
-        return MpsatUtils.deserialiseData(data, DATA_SERIALISER);
+        Element presetElement = PresetManager.createPresetElement(DESCRIPTION, data);
+        return DATA_SERIALISER.fromXML(presetElement, null);
     }
 
     @Override

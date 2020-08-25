@@ -2,36 +2,28 @@ package org.workcraft.presets;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.XmlUtils;
+import org.w3c.dom.Node;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.Resource;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class PresetManager<T> {
 
     public static final String PRESETS_ELEMENT_NAME = "presets";
     public static final String PRESET_ELEMENT_NAME = "preset";
     public static final String DESCRIPTION_ATTRIBUTE_NAME = "description";
-
-    private static final String AUTO_PRESERVE_PREFIX = "\u2713 ";
-    private static final String EXAMPLE_PRESET_PREFIX = "\u00BB ";
+    public static final String FILE_ATTRIBUTE_NAME = "file";
 
     private final WorkspaceEntry we;
     private final String key;
     private final ArrayList<Preset<T>> presets = new ArrayList<>();
+    private final Set<Preset<T>> examplePresets = new HashSet<>();
     private final DataSerialiser<T> serialiser;
     private final Preset<T> preservedPreset;
 
@@ -40,86 +32,144 @@ public class PresetManager<T> {
         this.key = key;
         this.serialiser = serialiser;
         // Add auto-preserved presets in the beginning of the list
-        if (preservedData == null) {
-            preservedPreset = null;
-        } else {
-            preservedPreset = new Preset<>(AUTO_PRESERVE_PREFIX + "Auto-preserved",
-                    preservedData, true);
-
-            presets.add(preservedPreset);
-        }
+        preservedPreset = preservedData == null ? null : addExamplePreset("Auto-preserved", preservedData);
         // Add user-defined presets after the auto-preserved one
         Resource resource = we.getResource(key);
         if (resource != null) {
             try {
                 Document doc = XmlUtils.loadDocument(resource.toStream());
-                for (Element element : XmlUtils.getChildElements(PRESET_ELEMENT_NAME, doc.getDocumentElement())) {
-                    String description = element.getAttribute(DESCRIPTION_ATTRIBUTE_NAME);
-                    T data = serialiser.fromXML(element);
-                    presets.add(new Preset<>(description, data, false));
+                for (Element presetElement : XmlUtils.getChildElements(PRESET_ELEMENT_NAME, doc.getDocumentElement())) {
+                    Preset<T> preset = parsePreset(presetElement, serialiser);
+                    presets.add(preset);
                 }
-            } catch (ParserConfigurationException | SAXException | IOException e) {
+            } catch (SAXException | IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        sortUserPresets();
+        sortCustomPresets();
     }
 
-    private void sortUserPresets() {
-        if (preservedPreset == null) {
-            presets.sort(Comparator.comparing(Preset::toString));
-        } else {
-            Collections.sort(presets.subList(1, presets.size()), Comparator.comparing(Preset::toString));
+    private Preset<T> parsePreset(Element presetElement, DataSerialiser<T> serialiser) {
+        T data = serialiser.fromXML(presetElement, null);
+        File file = null;
+        if (presetElement.hasAttribute(FILE_ATTRIBUTE_NAME)) {
+            file = new File(presetElement.getAttribute(FILE_ATTRIBUTE_NAME));
+            data = overridePresetData(data, file);
         }
+        String description = XmlUtils.readTextAttribute(presetElement, DESCRIPTION_ATTRIBUTE_NAME, "");
+        Preset<T> preset = new Preset<>(description, data);
+        preset.setFile(file);
+        return preset;
+    }
+
+    private void sortCustomPresets() {
+        int fromIndex = preservedPreset == null ? 0 : 1;
+        int toIndex = fromIndex + presets.size() - examplePresets.size();
+        List<Preset<T>> userPresets = presets.subList(fromIndex, toIndex);
+        userPresets.sort(Comparator.comparing(Preset::getDescription));
     }
 
     public WorkspaceEntry getWorkspaceEntry() {
         return we;
     }
 
-    public void addExample(String description, T data) {
-        presets.add(new Preset<>(EXAMPLE_PRESET_PREFIX + description, data, true));
+    public Preset<T> addExamplePreset(String description, T data) {
+        Preset<T> preset = new Preset<>(description, data);
+        presets.add(preset);
+        examplePresets.add(preset);
+        return preset;
     }
 
-    public Preset savePreset(Preset<T> newPreset) {
-        Preset oldPreset = null;
-        for (Preset preset : presets) {
-            if (!preset.isBuiltIn() && preset.toString().equals(newPreset.toString())) {
-                oldPreset = preset;
-                break;
-            }
-        }
-        Preset savedPreset = null;
-        if (oldPreset == null) {
-            savedPreset = newPreset;
-            presets.add(savedPreset);
-            savePresets();
-        } else {
-            String msg = "Preset \'" + newPreset.getDescription() + "\' already exists.\nOverwrite?";
-            if (DialogUtils.showConfirm(msg, "Overwrite preset", false)) {
-                savedPreset = oldPreset;
-                updatePreset(savedPreset, newPreset.getData());
-            }
-        }
-        return savedPreset;
+    public boolean isExamplePreset(Preset<T> preset) {
+        return (preset != null) && examplePresets.contains(preset);
+    }
+
+    public boolean isPreservedPreset(Preset<T> preset) {
+        return (preset != null) && (preset == preservedPreset);
     }
 
     public void updatePreset(Preset<T> preset, T data) {
-        checkBuiltIn(preset);
-        preset.setData(data);
+        if (isExamplePreset(preset)) {
+            throw new RuntimeException("Cannot overwrite an example preset");
+        }
+        File file = preset.getFile();
+        preset.setData(overridePresetData(data, file));
         savePresets();
     }
 
-    public void removePreset(Preset<T> preset) {
-        checkBuiltIn(preset);
+    private T overridePresetData(T data, File file) {
+        if (file != null) {
+            try {
+                String dataText = FileUtils.readAllText(file);
+                Element presetElement = createPresetElement(null, dataText);
+                data = serialiser.fromXML(presetElement, data);
+            } catch (IOException e) {
+                LogUtils.logError("Cannot read linked file '" + file.getAbsolutePath() + "'");
+            }
+        }
+        return data;
+    }
+
+    public Preset<T> duplicatePreset(Preset<T> preset) {
+        String description = preset.getDescription();
+        Preset<T> oldPreset = getPresetByDescription(description);
+        if (preset != oldPreset) {
+            if (oldPreset == null) {
+                int index = preservedPreset == null ? 0 : 1;
+                presets.add(index, preset);
+                savePresets();
+                return preset;
+            }
+            if (canOverwritePreset(oldPreset)) {
+                oldPreset.setData(preset.getData());
+                savePresets();
+                return oldPreset;
+            }
+        }
+        return null;
+    }
+
+    public void renamePreset(Preset<T> preset, String description) {
+        if (isExamplePreset(preset)) {
+            throw new RuntimeException("Cannot rename example preset '" + preset.getDescription() + "'");
+        }
+        Preset<T> oldPreset = getPresetByDescription(description);
+        if (preset != oldPreset) {
+            if (oldPreset == null) {
+                preset.setDescription(description);
+                savePresets();
+            } else if (canOverwritePreset(oldPreset)) {
+                presets.remove(oldPreset);
+                preset.setDescription(description);
+                savePresets();
+            }
+        }
+    }
+
+    public void deletePreset(Preset<T> preset) {
+        if (isExamplePreset(preset)) {
+            throw new RuntimeException("Cannot delete example preset '" + preset.getDescription() + "'");
+        }
         presets.remove(preset);
         savePresets();
     }
 
-    public void renamePreset(Preset<T> preset, String description) {
-        checkBuiltIn(preset);
-        preset.setDescription(description);
-        savePresets();
+    private Preset<T> getPresetByDescription(String description) {
+        for (Preset<T> preset : presets) {
+            if (description.equals(preset.getDescription())) {
+                return preset;
+            }
+        }
+        return null;
+    }
+
+    private boolean canOverwritePreset(Preset<T> preset) {
+        if (isExamplePreset(preset)) {
+            DialogUtils.showError("Cannot overwrite example preset '" + preset.getDescription() + "'.");
+            return false;
+        }
+        String msg = "Preset '" + preset.getDescription() + "' already exists.\nOverwrite?";
+        return DialogUtils.showConfirm(msg, "Overwrite preset", false);
     }
 
     public List<Preset<T>> getPresets() {
@@ -127,53 +177,49 @@ public class PresetManager<T> {
     }
 
     private void savePresets() {
-        sortUserPresets();
-        try {
-            boolean isEmpty = true;
-            Document doc = XmlUtils.createDocument();
-            Element root = doc.createElement(PRESETS_ELEMENT_NAME);
-            doc.appendChild(root);
-            for (Preset<T> preset : presets) {
-                if (!preset.isBuiltIn()) {
-                    Element pe = doc.createElement(PRESET_ELEMENT_NAME);
-                    pe.setAttribute(DESCRIPTION_ATTRIBUTE_NAME, preset.getDescription());
-                    serialiser.toXML(preset.getData(), pe);
-                    root.appendChild(pe);
-                    isEmpty = false;
+        sortCustomPresets();
+        boolean isEmpty = true;
+        Document doc = XmlUtils.createDocument();
+        Element root = XmlUtils.createChildElement(PRESETS_ELEMENT_NAME, doc);
+        for (Preset<T> preset : presets) {
+            if (!isExamplePreset(preset)) {
+                Element presetElement = XmlUtils.createChildElement(PRESET_ELEMENT_NAME, root);
+                presetElement.setAttribute(DESCRIPTION_ATTRIBUTE_NAME, preset.getDescription());
+                serialiser.toXML(preset.getData(), presetElement);
+                File file = preset.getFile();
+                if (file != null) {
+                    presetElement.setAttribute(FILE_ATTRIBUTE_NAME, file.getAbsolutePath());
                 }
+                isEmpty = false;
             }
-            if (isEmpty) {
-                we.removeResource(key);
-            } else {
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                XmlUtils.writeDocument(doc, os);
-                we.addResource(new Resource(key, os));
-            }
-            we.setChanged(true);
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
         }
+        if (isEmpty) {
+            we.removeResource(key);
+        } else {
+            ByteArrayOutputStream os = new ByteArrayOutputStream();
+            XmlUtils.writeDocument(doc, os);
+            we.addResource(new Resource(key, os));
+        }
+        we.setChanged(true);
     }
 
-    private void checkBuiltIn(Preset<T> preset) {
-        if (preset.isBuiltIn()) {
-            throw new RuntimeException("Invalid operation attempted on a built-in preset.");
+    public static Element createPresetElement(String description, String dataText) {
+        Document presetDocument = XmlUtils.createDocument();
+        Element presetElement = XmlUtils.createChildElement(PRESET_ELEMENT_NAME, presetDocument);
+        presetElement.setAttribute(DESCRIPTION_ATTRIBUTE_NAME, description);
+        if (TextUtils.isXmlElement(dataText)) {
+            try {
+                Document dataDocument = XmlUtils.createDocument(dataText);
+                Element documentElement = dataDocument.getDocumentElement();
+                Node dataNode = presetDocument.adoptNode(documentElement);
+                presetElement.appendChild(dataNode);
+            } catch (SAXException | IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            presetElement.setTextContent(dataText);
         }
-    }
-
-    public static Document buildPresetDocumentFromSettings(String name, String settings) {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder;
-        try {
-            builder = factory.newDocumentBuilder();
-            String xml = "<" + PRESET_ELEMENT_NAME + " "
-                    + DESCRIPTION_ATTRIBUTE_NAME + "=\"" + name + "\">"
-                    + settings + "</" + PresetManager.PRESET_ELEMENT_NAME + ">";
-
-            return builder.parse(new InputSource(new StringReader(xml)));
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
-        }
+        return presetElement;
     }
 
 }

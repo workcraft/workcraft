@@ -4,6 +4,7 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Dependent;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.utils.XmlUtils;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -13,6 +14,7 @@ import java.util.Collection;
 import static org.workcraft.serialisation.BeanInfoCache.getBeanInfo;
 
 public class DefaultNodeSerialiser {
+
     private final SerialiserFactory fac;
     private final NodeSerialiser serialiser;
 
@@ -22,7 +24,8 @@ public class DefaultNodeSerialiser {
     }
 
     private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel)
-            throws IntrospectionException, InvocationTargetException, InstantiationException, SerialisationException, IllegalAccessException {
+            throws IntrospectionException, InvocationTargetException, InstantiationException,
+            SerialisationException, IllegalAccessException {
 
         if (object == null) {
             return;
@@ -58,8 +61,7 @@ public class DefaultNodeSerialiser {
             }
             if (serialiser instanceof BasicXMLSerialiser) {
                 BasicXMLSerialiser basicSerialiser = (BasicXMLSerialiser) serialiser;
-                Element propertyElement = element.getOwnerDocument().createElement("property");
-                element.appendChild(propertyElement);
+                Element propertyElement = XmlUtils.createChildElement("property", element);
                 propertyElement.setAttribute("class", desc.getPropertyType().getName());
                 propertyElement.setAttribute("name", desc.getName());
                 basicSerialiser.serialise(propertyElement, propertyObject);
@@ -67,12 +69,12 @@ public class DefaultNodeSerialiser {
         }
     }
 
-    private void doSerialisation(Element parentElement, Object object,
-            ReferenceProducer internalReferences,
+    private void doSerialisation(Element parent, Object object, ReferenceProducer internalReferences,
             ReferenceProducer externalReferences, Class<?> currentLevel)
-            throws InstantiationException, IllegalAccessException, SerialisationException, IntrospectionException, InvocationTargetException {
+            throws InstantiationException, IllegalAccessException, SerialisationException,
+            IntrospectionException, InvocationTargetException {
 
-        Element curLevelElement = parentElement.getOwnerDocument().createElement(currentLevel.getSimpleName());
+        Element curLevelElement = parent.getOwnerDocument().createElement(currentLevel.getSimpleName());
 
         autoSerialiseProperties(curLevelElement, object, currentLevel);
 
@@ -94,17 +96,17 @@ public class DefaultNodeSerialiser {
         }
 
         if (curLevelElement.getAttributes().getLength() > 0 || curLevelElement.getChildNodes().getLength() > 0) {
-            parentElement.appendChild(curLevelElement);
+            parent.appendChild(curLevelElement);
         }
 
         if (currentLevel.getSuperclass() != Object.class) {
-            doSerialisation(parentElement, object, internalReferences, externalReferences, currentLevel.getSuperclass());
+            doSerialisation(parent, object, internalReferences, externalReferences, currentLevel.getSuperclass());
         }
     }
 
-    public void serialise(Element parentElement, Object object,
-            ReferenceProducer internalReferences,
+    public void serialise(Element parentElement, Object object, ReferenceProducer internalReferences,
             ReferenceProducer externalReferences) throws SerialisationException {
+
         try {
             doSerialisation(parentElement, object, internalReferences, externalReferences, object.getClass());
 
@@ -113,4 +115,5 @@ public class DefaultNodeSerialiser {
             throw new SerialisationException(e);
         }
     }
+
 }

@@ -1,18 +1,13 @@
 package org.workcraft.plugins.mpsat_verification.utils;
 
-import org.w3c.dom.Document;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.controls.CodePanel;
-import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.presets.MpsatDataSerialiser;
-import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatSyntaxCheckTask;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.MutexUtils;
-import org.workcraft.presets.PresetManager;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
@@ -57,19 +52,6 @@ public class MpsatUtils {
             return false;
         }
         return true;
-    }
-
-    public static VerificationParameters deserialiseData(String data, MpsatDataSerialiser dataSerialiser) {
-        String description = "Custom REACH assertion";
-        if (data.startsWith("<") && data.endsWith(">")) {
-            Document document = PresetManager.buildPresetDocumentFromSettings(description, data);
-            return dataSerialiser.fromXML(document.getDocumentElement());
-        }
-        return new VerificationParameters(description,
-                VerificationMode.STG_REACHABILITY, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                data, true);
     }
 
     public static void checkSyntax(WorkspaceEntry we, CodePanel codePanel, VerificationParameters verificationParameters) {

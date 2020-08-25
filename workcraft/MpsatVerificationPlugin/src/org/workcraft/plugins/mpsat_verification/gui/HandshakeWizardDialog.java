@@ -250,10 +250,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
     private PresetManagerPanel<HandshakeParameters> createPresetPanel() {
         HandshakePresetManager presetManager = getUserData();
-
-        Set<String> empty = Collections.emptySet();
-        presetManager.addExample("Clear", new HandshakeParameters(empty, empty));
-
+        presetManager.addExamplePreset("Clear", new HandshakeParameters());
         DataMapper<HandshakeParameters> guiMapper = new DataMapper<HandshakeParameters>() {
             @Override
             public void applyDataToControls(HandshakeParameters data) {

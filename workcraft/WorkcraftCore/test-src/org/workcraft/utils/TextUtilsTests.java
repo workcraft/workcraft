@@ -149,4 +149,17 @@ public class TextUtilsTests {
         Assertions.assertEquals("ABC", TextUtils.abbreviate("AaaBbbCcc111"));
     }
 
+    @Test
+    public void isXmlElementTest() {
+        Assertions.assertFalse(TextUtils.isXmlElement(null));
+        Assertions.assertFalse(TextUtils.isXmlElement(""));
+        Assertions.assertFalse(TextUtils.isXmlElement("abc"));
+        Assertions.assertFalse(TextUtils.isXmlElement(" a b c "));
+        Assertions.assertTrue(TextUtils.isXmlElement("<tag attr=val>text</tag>"));
+        Assertions.assertFalse(TextUtils.isXmlElement("<tag attr=val>text</gat>"));
+        Assertions.assertTrue(TextUtils.isXmlElement(" <tag attr=val> text </tag > "));
+        Assertions.assertTrue(TextUtils.isXmlElement(" <t-a.g attr=val>\nline1\nline2\n</t-a.g > "));
+        Assertions.assertTrue(TextUtils.isXmlElement("<tag attr=val/>"));
+    }
+
 }

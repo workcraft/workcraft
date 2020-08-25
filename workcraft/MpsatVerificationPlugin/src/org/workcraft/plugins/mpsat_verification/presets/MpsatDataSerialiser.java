@@ -14,50 +14,69 @@ public class MpsatDataSerialiser implements DataSerialiser<VerificationParameter
     private static final String SETTINGS_VERBOSITY_ATTRIBUTE = "verbosity";
     private static final String SETTINGS_SOLUTION_LIMIT_ATTRIBUTE = "solutionNumberLimit";
     private static final String SETTINGS_SOLUTION_MODE_ATTRIBUTE = "solutionMode";
-    private static final String SETTINGS_REACH_ELEMENT = "reach";
     private static final String SETTINGS_INVERSE_PREDICATE_ATTRIBUTE = "inversePredicate";
+    private static final String REACH_ELEMENT = "reach";
 
     @Override
-    public VerificationParameters fromXML(Element parent) {
-        Element element = XmlUtils.getChildElement(SETTINGS_ELEMENT, parent);
+    public VerificationParameters fromXML(Element parent, VerificationParameters defaultVerificationParameters) {
+        if (defaultVerificationParameters == null) {
+            defaultVerificationParameters = new VerificationParameters(
+                    null, VerificationMode.STG_REACHABILITY, 0,
+                    MpsatVerificationSettings.getSolutionMode(),
+                    MpsatVerificationSettings.getSolutionCount());
+        }
+        Element settingsElement = XmlUtils.getChildElement(SETTINGS_ELEMENT, parent);
 
-        String description = element.getAttribute(SETTINGS_DESCRIPTION_ATTRIBUTE);
+        String description = XmlUtils.readTextAttribute(settingsElement,
+                SETTINGS_DESCRIPTION_ATTRIBUTE, defaultVerificationParameters.getDescription());
 
-        VerificationMode mode = XmlUtils.readEnumAttribute(element, SETTINGS_MODE_ATTRIBUTE,
-                VerificationMode.class, VerificationMode.STG_REACHABILITY);
+        VerificationMode mode = XmlUtils.readEnumAttribute(settingsElement,
+                SETTINGS_MODE_ATTRIBUTE, VerificationMode.class, defaultVerificationParameters.getMode());
 
-        int verbosity = XmlUtils.readIntAttribute(element, SETTINGS_VERBOSITY_ATTRIBUTE, 0);
+        int verbosity = XmlUtils.readIntAttribute(settingsElement, SETTINGS_VERBOSITY_ATTRIBUTE,
+                defaultVerificationParameters.getVerbosity());
 
-        int solutionNumberLimit = XmlUtils.readIntAttribute(element, SETTINGS_SOLUTION_LIMIT_ATTRIBUTE,
-                MpsatVerificationSettings.getSolutionCount());
+        int solutionNumberLimit = XmlUtils.readIntAttribute(settingsElement,
+                SETTINGS_SOLUTION_LIMIT_ATTRIBUTE, defaultVerificationParameters.getSolutionNumberLimit());
 
-        SolutionMode solutionMode = XmlUtils.readEnumAttribute(element, SETTINGS_SOLUTION_MODE_ATTRIBUTE,
-                SolutionMode.class, MpsatVerificationSettings.getSolutionMode());
+        SolutionMode solutionMode = XmlUtils.readEnumAttribute(settingsElement,
+                SETTINGS_SOLUTION_MODE_ATTRIBUTE, SolutionMode.class,
+                defaultVerificationParameters.getSolutionMode());
 
-        Element reachElement = XmlUtils.getChildElement(SETTINGS_REACH_ELEMENT, element);
-        String reach = reachElement == null ? "" : reachElement.getTextContent();
+        boolean inversePredicate = XmlUtils.readBooleanAttribute(settingsElement,
+                SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, defaultVerificationParameters.getInversePredicate());
 
-        boolean inversePredicate = XmlUtils.readBooleanAttribute(element, SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, true);
+        Element lastElement = settingsElement == null ? parent : settingsElement;
+        Element reachElement = XmlUtils.getChildElement(REACH_ELEMENT, lastElement);
+        String reach = reachElement != null ? reachElement.getTextContent() : lastElement.getTextContent();
 
-        return new VerificationParameters(description, mode, verbosity, solutionMode, solutionNumberLimit, reach, inversePredicate);
+        return new VerificationParameters(description, mode, verbosity, solutionMode,
+                solutionNumberLimit, reach, inversePredicate);
     }
 
     @Override
     public void toXML(VerificationParameters verificationParameters, Element parent) {
-        Element element = parent.getOwnerDocument().createElement(SETTINGS_ELEMENT);
-        element.setAttribute(SETTINGS_DESCRIPTION_ATTRIBUTE, verificationParameters.getDescription());
-        element.setAttribute(SETTINGS_MODE_ATTRIBUTE, verificationParameters.getMode().name());
-        element.setAttribute(SETTINGS_VERBOSITY_ATTRIBUTE, Integer.toString(verificationParameters.getVerbosity()));
-        element.setAttribute(SETTINGS_SOLUTION_LIMIT_ATTRIBUTE, Integer.toString(verificationParameters.getSolutionNumberLimit()));
-        element.setAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE, verificationParameters.getSolutionMode().name());
+        Element settingsElement = XmlUtils.createChildElement(SETTINGS_ELEMENT, parent);
 
-        Element reach = parent.getOwnerDocument().createElement(SETTINGS_REACH_ELEMENT);
-        reach.setTextContent(verificationParameters.getExpression());
-        element.appendChild(reach);
+        settingsElement.setAttribute(SETTINGS_DESCRIPTION_ATTRIBUTE,
+                verificationParameters.getDescription());
 
-        element.setAttribute(SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, Boolean.toString(verificationParameters.getInversePredicate()));
+        settingsElement.setAttribute(SETTINGS_MODE_ATTRIBUTE,
+                verificationParameters.getMode().name());
 
-        parent.appendChild(element);
+        settingsElement.setAttribute(SETTINGS_VERBOSITY_ATTRIBUTE,
+                Integer.toString(verificationParameters.getVerbosity()));
+
+        settingsElement.setAttribute(SETTINGS_SOLUTION_LIMIT_ATTRIBUTE,
+                Integer.toString(verificationParameters.getSolutionNumberLimit()));
+
+        settingsElement.setAttribute(SETTINGS_SOLUTION_MODE_ATTRIBUTE,
+                verificationParameters.getSolutionMode().name());
+
+        settingsElement.setAttribute(SETTINGS_INVERSE_PREDICATE_ATTRIBUTE,
+                Boolean.toString(verificationParameters.getInversePredicate()));
+
+        settingsElement.setTextContent(verificationParameters.getExpression());
     }
 
 }

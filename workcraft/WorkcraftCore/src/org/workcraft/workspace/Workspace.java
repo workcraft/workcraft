@@ -194,7 +194,7 @@ public class Workspace {
             }
             addMount(Path.empty(), getBaseDir(), true);
             setTemporary(false);
-        } catch (ParserConfigurationException | SAXException | IOException e) {
+        } catch (SAXException | IOException e) {
             throw new DeserialisationException(e);
         }
         fireWorkspaceChanged();

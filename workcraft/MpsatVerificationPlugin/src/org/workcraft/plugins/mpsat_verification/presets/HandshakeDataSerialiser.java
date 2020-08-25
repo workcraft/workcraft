@@ -20,27 +20,34 @@ public class HandshakeDataSerialiser implements DataSerialiser<HandshakeParamete
     private static final String SETTINGS_ALLOW_INVERSION_ATTRIBUTE = "allow-inversion";
 
     @Override
-    public HandshakeParameters fromXML(Element parent) {
-        Element element = XmlUtils.getChildElement(SETTINGS_ELEMENT, parent);
-        if (element == null) {
-            return null;
+    public HandshakeParameters fromXML(Element parent, HandshakeParameters defaultHandshakeParameters) {
+        if (defaultHandshakeParameters == null) {
+            defaultHandshakeParameters = new HandshakeParameters();
         }
 
-        HandshakeParameters.Type type = XmlUtils.readEnumAttribute(element, SETTINGS_TYPE_ATTRIBUTE,
-                HandshakeParameters.Type.class, HandshakeParameters.Type.PASSIVE);
+        Element settingsElement = XmlUtils.getChildElement(SETTINGS_ELEMENT, parent);
+        Collection<String> reqs = readSignals(settingsElement, SETTINGS_REQ_ELEMENT);
+        Collection<String> acks = readSignals(settingsElement, SETTINGS_ACK_ELEMENT);
 
-        Collection<String> reqs = readSignals(element, SETTINGS_REQ_ELEMENT);
-        Collection<String> acks = readSignals(element, SETTINGS_ACK_ELEMENT);
+        HandshakeParameters.Type type = XmlUtils.readEnumAttribute(settingsElement,
+                SETTINGS_TYPE_ATTRIBUTE, HandshakeParameters.Type.class,
+                defaultHandshakeParameters.getType());
 
-        boolean checkAssert = XmlUtils.readBooleanAttribute(element, SETTINGS_CHECK_ASSERTION_ATTRIBUTE, true);
-        boolean checkWithdraw = XmlUtils.readBooleanAttribute(element, SETTINGS_CHECK_WITHDRAWAL_ATTRIBUTE, true);
+        boolean checkAssert = XmlUtils.readBooleanAttribute(settingsElement,
+                SETTINGS_CHECK_ASSERTION_ATTRIBUTE, defaultHandshakeParameters.isCheckAssertion());
 
-        HandshakeParameters.State state = XmlUtils.readEnumAttribute(element, SETTINGS_STATE_ATTRIBUTE,
-                HandshakeParameters.State.class, HandshakeParameters.State.REQ0ACK0);
+        boolean checkWithdraw = XmlUtils.readBooleanAttribute(settingsElement,
+                SETTINGS_CHECK_WITHDRAWAL_ATTRIBUTE, defaultHandshakeParameters.isCheckWithdrawal());
 
-        boolean allowInversion = XmlUtils.readBooleanAttribute(element, SETTINGS_ALLOW_INVERSION_ATTRIBUTE, false);
+        HandshakeParameters.State state = XmlUtils.readEnumAttribute(settingsElement,
+                SETTINGS_STATE_ATTRIBUTE, HandshakeParameters.State.class,
+                defaultHandshakeParameters.getState());
 
-        return new HandshakeParameters(type, reqs, acks, checkAssert, checkWithdraw, state, allowInversion);
+        boolean allowInversion = XmlUtils.readBooleanAttribute(settingsElement,
+                SETTINGS_ALLOW_INVERSION_ATTRIBUTE, defaultHandshakeParameters.isAllowInversion());
+
+        return new HandshakeParameters(type, reqs, acks, checkAssert, checkWithdraw, state,
+                allowInversion);
     }
 
     private Collection<String> readSignals(Element parent, String elementName) {
@@ -53,22 +60,29 @@ public class HandshakeDataSerialiser implements DataSerialiser<HandshakeParamete
 
     @Override
     public void toXML(HandshakeParameters handshakeParameters, Element parent) {
-        Element element = parent.getOwnerDocument().createElement(SETTINGS_ELEMENT);
-        element.setAttribute(SETTINGS_TYPE_ATTRIBUTE, handshakeParameters.getType().name());
-        writeSignalse(element, handshakeParameters.getReqs(), SETTINGS_REQ_ELEMENT);
-        writeSignalse(element, handshakeParameters.getAcks(), SETTINGS_ACK_ELEMENT);
-        element.setAttribute(SETTINGS_CHECK_ASSERTION_ATTRIBUTE, Boolean.toString(handshakeParameters.isCheckAssertion()));
-        element.setAttribute(SETTINGS_CHECK_WITHDRAWAL_ATTRIBUTE, Boolean.toString(handshakeParameters.isCheckWithdrawal()));
-        element.setAttribute(SETTINGS_STATE_ATTRIBUTE, handshakeParameters.getState().name());
-        element.setAttribute(SETTINGS_ALLOW_INVERSION_ATTRIBUTE, Boolean.toString(handshakeParameters.isAllowInversion()));
-        parent.appendChild(element);
+        Element settingsElement = XmlUtils.createChildElement(SETTINGS_ELEMENT, parent);
+        writeSignals(settingsElement, handshakeParameters.getReqs(), SETTINGS_REQ_ELEMENT);
+        writeSignals(settingsElement, handshakeParameters.getAcks(), SETTINGS_ACK_ELEMENT);
+
+        settingsElement.setAttribute(SETTINGS_TYPE_ATTRIBUTE, handshakeParameters.getType().name());
+
+        settingsElement.setAttribute(SETTINGS_CHECK_ASSERTION_ATTRIBUTE,
+                Boolean.toString(handshakeParameters.isCheckAssertion()));
+
+        settingsElement.setAttribute(SETTINGS_CHECK_WITHDRAWAL_ATTRIBUTE,
+                Boolean.toString(handshakeParameters.isCheckWithdrawal()));
+
+        settingsElement.setAttribute(SETTINGS_STATE_ATTRIBUTE,
+                handshakeParameters.getState().name());
+
+        settingsElement.setAttribute(SETTINGS_ALLOW_INVERSION_ATTRIBUTE,
+                Boolean.toString(handshakeParameters.isAllowInversion()));
     }
 
-    private void writeSignalse(Element parent, Collection<String> signals, String elementName) {
+    private void writeSignals(Element parent, Collection<String> signals, String elementName) {
         for (String signal : signals) {
-            Element element = parent.getOwnerDocument().createElement(elementName);
+            Element element = XmlUtils.createChildElement(elementName, parent);
             element.setAttribute(SETTINGS_NAME_ATTRIBUTE, signal);
-            parent.appendChild(element);
         }
     }
 
