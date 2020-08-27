@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
-import org.workcraft.utils.WorkUtils;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
@@ -18,6 +17,7 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.*;
@@ -32,7 +32,9 @@ public class SaveLoadTests {
 
     @Disabled
     @Test
-    public void testMathModelLoad() throws PluginInstantiationException, DeserialisationException, InvalidConnectionException {
+    public void testMathModelLoad()
+            throws PluginInstantiationException, IOException, DeserialisationException, InvalidConnectionException {
+
         Framework framework = Framework.getInstance();
         framework.getPluginManager().initPlugins();
 
@@ -48,7 +50,9 @@ public class SaveLoadTests {
 
     @Disabled
     @Test
-    public void testVisualModelLoad() throws PluginInstantiationException, DeserialisationException, InvalidConnectionException {
+    public void testVisualModelLoad()
+            throws PluginInstantiationException, IOException, DeserialisationException, InvalidConnectionException {
+
         Framework framework = Framework.getInstance();
         framework.getPluginManager().initPlugins();
 
@@ -59,21 +63,25 @@ public class SaveLoadTests {
         VisualPetri petriVisual = (VisualPetri) modelEntry.getModel();
         Assertions.assertNotNull(petriVisual);
 
-        Petri petri = (Petri) petriVisual.getMathModel();
+        Petri petri = petriVisual.getMathModel();
         Assertions.assertNotNull(petri);
 
         VisualPetri sample = buildSampleVisualPetri();
-        assertPetriEquals(petri, (Petri) sample.getMathModel());
+        assertPetriEquals(petri, sample.getMathModel());
     }
 
     @Test
-    public void ensureMathSamplesUpToDate() throws SerialisationException, PluginInstantiationException, InvalidConnectionException {
+    public void ensureMathSamplesUpToDate()
+            throws InvalidConnectionException, SerialisationException, PluginInstantiationException {
+
         System.out.println("If the serialisation format has changed, you can use these new serialisation samples:");
         ensureSampleUpToDate("testDataMathModel", buildSamplePetri(), testDataMathModel);
         ensureSampleUpToDate("testDataVisualModel", buildSampleVisualPetri(), testDataVisualModel);
     }
 
-    private void ensureSampleUpToDate(String sampleVarName, Model model, String currentValue) throws PluginInstantiationException, SerialisationException {
+    private void ensureSampleUpToDate(String sampleVarName, Model model, String currentValue)
+            throws PluginInstantiationException, SerialisationException {
+
         Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
         pm.initPlugins();
@@ -111,7 +119,9 @@ public class SaveLoadTests {
 
         Assertions.assertEquals(getConnections(expected).size(), getConnections(actual).size());
         for (MathConnection connection : getConnections(expected)) {
-            assertConnectionEquals(connection, (MathConnection) actual.getNodeByReference(expected.getNodeReference(connection)));
+            String connectionRef = expected.getNodeReference(connection);
+            MathConnection mathConnection = (MathConnection) actual.getNodeByReference(connectionRef);
+            assertConnectionEquals(connection, mathConnection);
         }
     }
 

@@ -669,12 +669,8 @@ public final class Framework {
             }
             we = createWork(me, path, true, false);
             if (isWorkFile) {
-                // Load resources
-                try (InputStream is = new FileInputStream(file)) {
-                    WorkUtils.loadResources(is).forEach(we::addResource);
-                } catch (IOException e) {
-                    throw new DeserialisationException(e);
-                }
+                Collection<Resource> resources = WorkUtils.loadResources(file);
+                resources.forEach(we::addResource);
             }
         }
         updateJavaScript(we);
