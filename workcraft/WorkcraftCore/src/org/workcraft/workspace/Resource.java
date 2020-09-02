@@ -10,6 +10,8 @@ import java.util.Arrays;
 
 public class Resource {
 
+    public static final String FILE_ATTRIBUTE_SUFFIX = "file";
+
     private final String name;
     private final byte[] data;
 

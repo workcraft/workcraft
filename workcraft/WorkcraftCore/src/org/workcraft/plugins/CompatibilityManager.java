@@ -2,12 +2,12 @@ package org.workcraft.plugins;
 
 import org.workcraft.Info;
 import org.workcraft.Version;
-import org.workcraft.utils.WorkUtils;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkUtils;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -74,7 +74,9 @@ public class CompatibilityManager {
         replacementData.model.put(oldModelName, modelName);
     }
 
-    public void registerGlobalReplacement(Version version, String modelName, String pattern, String replacement) {
+    public void registerGlobalReplacement(Version version, String modelName, String pattern,
+            String replacement) {
+
         ReplacementData replacementData = getReplacementData(version);
         Replacement replacementMap = replacementData.global.get(modelName);
         if (replacementMap == null) {
@@ -85,7 +87,9 @@ public class CompatibilityManager {
     }
 
     @SuppressWarnings("PMD.UseObjectForClearerAPI")
-    public void registerContextualReplacement(Version version, String modelName, String className, String pattern, String replacement) {
+    public void registerContextualReplacement(Version version, String modelName, String className,
+            String pattern, String replacement) {
+
         ReplacementData replacementData = getReplacementData(version);
         ContextualReplacement contextualMap = replacementData.local.get(modelName);
         if (contextualMap == null) {
@@ -173,7 +177,9 @@ public class CompatibilityManager {
             Version workVersion = WorkUtils.extractVersion(zipFile);
             Version currentVersion = Info.getVersion();
             if ((workVersion != null) && (currentVersion != null) && (currentVersion.compareTo(workVersion) < 0)) {
-                String msg = "Workcraft v" + currentVersion + " may incorrectly read a file produced by newer Workcraft v" + workVersion;
+                String msg = "Workcraft v" + currentVersion
+                        + " may incorrectly read a file produced by newer Workcraft v" + workVersion;
+
                 String msgFull = msg + ".\nProceed with loading of work file '" + file.getAbsolutePath() + "' anyway?";
                 boolean proceed = DialogUtils.showConfirmWarning(msgFull, "Open file", true);
                 if (!proceed) {
@@ -189,45 +195,39 @@ public class CompatibilityManager {
         return result;
     }
 
-    public ByteArrayInputStream process(InputStream is, Version version) {
+    public ByteArrayInputStream process(InputStream is, Version version) throws IOException {
         ByteArrayOutputStream result = new ByteArrayOutputStream();
         ZipInputStream zis = new ZipInputStream(is, StandardCharsets.UTF_8);
         ZipOutputStream zos = new ZipOutputStream(result, StandardCharsets.UTF_8);
         ZipEntry zei = null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(zis, StandardCharsets.UTF_8));
-        try {
-            while ((zei = zis.getNextEntry()) != null) {
-                ZipEntry zeo = new ZipEntry(zei.getName());
-                zos.putNextEntry(zeo);
-                String modelName = null;
-                String className = null;
-                String line = null;
-                while ((line = reader.readLine()) != null) {
-                    line += "\n";
-                    if (WorkUtils.isMetaEntry(zei)) {
-                        byte[] data = replaceMetaData(version, line).getBytes(StandardCharsets.UTF_8);
-                        zos.write(data, 0, data.length);
-                    } else if (modelName == null) {
-                        String processedLine = replaceModelName(version, line);
-                        byte[] data = processedLine.getBytes(StandardCharsets.UTF_8);
-                        zos.write(data, 0, data.length);
-                        modelName = WorkUtils.extractModelName(processedLine);
-                    } else {
-                        String s = WorkUtils.extractClassName(line);
-                        if (s != null) {
-                            className = s;
-                        }
-                        byte[] data = replaceEntry(version, modelName, className, line).getBytes(StandardCharsets.UTF_8);
-                        zos.write(data, 0, data.length);
+        while ((zei = zis.getNextEntry()) != null) {
+            ZipEntry zeo = new ZipEntry(zei.getName());
+            zos.putNextEntry(zeo);
+            String modelName = null;
+            String className = null;
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                line += "\n";
+                if (WorkUtils.isMetaEntry(zei)) {
+                    zos.write(replaceMetaData(version, line).getBytes(StandardCharsets.UTF_8));
+                } else if (modelName == null) {
+                    String processedLine = replaceModelName(version, line);
+                    zos.write(processedLine.getBytes(StandardCharsets.UTF_8));
+                    modelName = WorkUtils.extractModelName(processedLine);
+                } else {
+                    String s = WorkUtils.extractClassName(line);
+                    if (s != null) {
+                        className = s;
                     }
+                    zos.write(replaceEntry(version, modelName, className, line).getBytes(StandardCharsets.UTF_8));
                 }
-                zis.closeEntry();
-                zos.closeEntry();
             }
-            zos.close();
-            result.close();
-        } catch (IOException e) {
+            zis.closeEntry();
+            zos.closeEntry();
         }
+        zos.close();
+        result.close();
         return new ByteArrayInputStream(result.toByteArray());
     }
 

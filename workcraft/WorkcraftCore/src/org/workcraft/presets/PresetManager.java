@@ -15,10 +15,10 @@ import java.util.*;
 
 public class PresetManager<T> {
 
-    public static final String PRESETS_ELEMENT_NAME = "presets";
-    public static final String PRESET_ELEMENT_NAME = "preset";
-    public static final String DESCRIPTION_ATTRIBUTE_NAME = "description";
-    public static final String FILE_ATTRIBUTE_NAME = "file";
+    private static final String PRESETS_ELEMENT_NAME = "presets";
+    private static final String PRESET_ELEMENT_NAME = "preset";
+    private static final String DESCRIPTION_ATTRIBUTE_NAME = "description";
+    private static final String FILE_ATTRIBUTE_NAME = Resource.FILE_ATTRIBUTE_SUFFIX;
 
     private final WorkspaceEntry we;
     private final String key;
@@ -43,7 +43,7 @@ public class PresetManager<T> {
                     presets.add(preset);
                 }
             } catch (SAXException | IOException e) {
-                throw new RuntimeException(e);
+                LogUtils.logError("Failed loading presets from resource '" + resource.getName() + "'");
             }
         }
         sortCustomPresets();
@@ -101,7 +101,7 @@ public class PresetManager<T> {
         if (file != null) {
             try {
                 String dataText = FileUtils.readAllText(file);
-                Element presetElement = createPresetElement(null, dataText);
+                Element presetElement = createPresetElement("Linked preset", dataText);
                 data = serialiser.fromXML(presetElement, data);
             } catch (IOException e) {
                 LogUtils.logError("Cannot read linked file '" + file.getAbsolutePath() + "'");
@@ -214,7 +214,7 @@ public class PresetManager<T> {
                 Node dataNode = presetDocument.adoptNode(documentElement);
                 presetElement.appendChild(dataNode);
             } catch (SAXException | IOException e) {
-                throw new RuntimeException(e);
+                new RuntimeException("Incorrect XML format for preset data:\n" + dataText);
             }
         } else {
             presetElement.setTextContent(dataText);

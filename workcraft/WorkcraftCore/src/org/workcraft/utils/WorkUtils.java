@@ -9,12 +9,14 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.NodeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.PluginManager;
@@ -28,7 +30,6 @@ import org.workcraft.workspace.Resource;
 import org.workcraft.workspace.Stamp;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
@@ -111,19 +112,25 @@ public final class WorkUtils {
             // Load (from *.work) or import (other extensions) work.
             if (FileFilters.isWorkFile(file)) {
                 try {
-                    final CompatibilityManager cm = Framework.getInstance().getCompatibilityManager();
+                    CompatibilityManager cm = Framework.getInstance().getCompatibilityManager();
                     InputStream is = cm.process(file);
                     me = loadModel(is);
-                    FileReferenceUtils.makeAbsolute(me.getVisualModel(), FileUtils.getBasePath(file));
+                    String base = FileUtils.getBasePath(file);
+                    adjustPropertyFilePaths(me.getVisualModel(), base, true);
                 } catch (OperationCancelledException e) {
+                    // Operation cancelled by the user
                 }
             } else {
                 try {
-                    final Importer importer = ImportUtils.chooseBestImporter(file);
+                    Importer importer = ImportUtils.chooseBestImporter(file);
+                    if (importer == null) {
+                        throw new DeserialisationException("Cannot identify appropriate importer for file '" + file.getAbsolutePath() + "'");
+                    }
                     me = ImportUtils.importFromFile(importer, file);
                 } catch (IOException e) {
                     throw new DeserialisationException(e);
                 } catch (OperationCancelledException e) {
+                    // Operation cancelled by the user
                 }
             }
         }
@@ -312,7 +319,17 @@ public final class WorkUtils {
         return null;
     }
 
-    public static Collection<Resource> loadResources(InputStream is) throws IOException {
+    public static Collection<Resource> loadResources(File file) throws DeserialisationException {
+        try (InputStream is = new FileInputStream(file)) {
+            Collection<Resource> resources = loadResources(is);
+            String base = FileUtils.getBasePath(file);
+            return adjustResourceFilePaths(resources, base, true);
+        } catch (IOException e) {
+            throw new DeserialisationException(e);
+        }
+    }
+
+    private static Collection<Resource> loadResources(InputStream is) throws IOException {
         byte[] bytes = DataAccumulator.loadStream(is);
         Collection<Resource> result = new ArrayList<>();
         ByteArrayInputStream zippedData = new ByteArrayInputStream(bytes);
@@ -335,13 +352,15 @@ public final class WorkUtils {
 
         try {
             FileOutputStream os = new FileOutputStream(file);
-            FileReferenceUtils.makeRelative(me.getVisualModel(), FileUtils.getBasePath(file));
-            saveModel(me, resources, os);
+            String base = FileUtils.getBasePath(file);
+            adjustPropertyFilePaths(me.getVisualModel(), base, false);
+            Collection<Resource> adjustedResources = adjustResourceFilePaths(resources, base, false);
+            saveModel(me, adjustedResources, os);
             os.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
         } finally {
-            FileReferenceUtils.makeAbsolute(me.getVisualModel());
+            adjustPropertyFilePaths(me.getVisualModel(), null, true);
         }
     }
 
@@ -388,14 +407,12 @@ public final class WorkUtils {
                     zos.closeEntry();
                 }
             }
-        } catch (ParserConfigurationException | IOException e) {
+        } catch (IOException e) {
             throw new SerialisationException(e);
         }
     }
 
-    private static void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs)
-            throws ParserConfigurationException {
-
+    private static void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs) {
         Document stateDocument = XmlUtils.createDocument();
         Element stateRoot = stateDocument.createElement(STATE_WORK_ELEMENT);
         stateDocument.appendChild(stateRoot);
@@ -416,9 +433,7 @@ public final class WorkUtils {
         XmlUtils.writeDocument(stateDocument, os);
     }
 
-    private static void saveMeta(ModelEntry modelEntry, OutputStream os, String uuid)
-            throws ParserConfigurationException {
-
+    private static void saveMeta(ModelEntry modelEntry, OutputStream os, String uuid) {
         Document metaDocument = XmlUtils.createDocument();
         Element metaRoot = metaDocument.createElement(META_WORK_ELEMENT);
         metaDocument.appendChild(metaRoot);
@@ -453,6 +468,67 @@ public final class WorkUtils {
             metaRoot.appendChild(visualElement);
         }
         XmlUtils.writeDocument(metaDocument, os);
+    }
+
+    private static void adjustPropertyFilePaths(VisualModel model, String base, boolean absolute) {
+        Set<PropertyDescriptor> properties = new HashSet<>();
+        properties.addAll(model.getProperties(null).getDescriptors());
+        for (VisualNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
+            properties.addAll(node.getDescriptors());
+            properties.addAll(model.getProperties(node).getDescriptors());
+        }
+        for (PropertyDescriptor property : properties) {
+            adjustPropertyFilePath(property, base, absolute);
+        }
+    }
+
+    private static void adjustPropertyFilePath(PropertyDescriptor property, String base, boolean absolute) {
+        Object value = property.getValue();
+        if (value instanceof FileReference) {
+            FileReference fileReference = (FileReference) value;
+            fileReference.setBase(base);
+            if (absolute) {
+                fileReference.setBase(null);
+            }
+        }
+    }
+
+    private static Collection<Resource> adjustResourceFilePaths(Collection<Resource> resources, String base, boolean absolute) {
+        Collection<Resource> result = new HashSet<>();
+        for (Resource resource : resources) {
+            try {
+                result.add(adjustResourceFilePath(resource, base, absolute));
+            } catch (IOException e) {
+                LogUtils.logError("Failed loading resource '" + resource.getName() + "'");
+            }
+        }
+        return result;
+    }
+
+    private static Resource adjustResourceFilePath(Resource resource, String base, boolean absolute) throws IOException {
+        Pattern pattern = Pattern.compile(Resource.FILE_ATTRIBUTE_SUFFIX + "\\s*=\\s*\"(.+)\"");
+        InputStream is = new ByteArrayInputStream(resource.toByteArray());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            line += "\n";
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.find()) {
+                String path = matcher.group(1);
+                FileReference fileReference = new FileReference();
+                fileReference.setPath(path);
+                fileReference.setBase(base);
+                if (absolute) {
+                    fileReference.setBase(null);
+                }
+                String attribute = matcher.group();
+                String adjustedAttribute = attribute.replace(path, fileReference.getPath());
+                line = line.replace(attribute, adjustedAttribute);
+            }
+            os.write(line.getBytes());
+        }
+        return new Resource(resource.getName(), os);
     }
 
     public static Version extractVersion(ZipFile zipFile) throws IOException {

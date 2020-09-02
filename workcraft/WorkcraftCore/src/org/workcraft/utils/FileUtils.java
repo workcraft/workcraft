@@ -318,10 +318,7 @@ public class FileUtils {
     }
 
     public static String fixSeparator(String path) {
-        if (path != null) {
-            return path.replace("\\", "/");
-        }
-        return null;
+        return path == null ? null : path.replace("\\", "/");
     }
 
     public static File getFileByPathAndBase(String path, String base) {

@@ -71,8 +71,8 @@ public class PresetManagerPanel<T> extends JPanel {
     }
 
     private void initialise() {
-        JButton duplicateButton = GuiUtils.createDialogButton("Duplicate...");
-        duplicateButton.setToolTipText("Duplicate selected preset with a new name");
+        JButton duplicateButton = GuiUtils.createDialogButton("Save as...");
+        duplicateButton.setToolTipText("Save selected preset with a new name");
         duplicateButton.addActionListener(event -> duplicatePreset());
 
         JButton updateButton = GuiUtils.createDialogButton("Update");

@@ -81,8 +81,8 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
         if (matcher.matches()) {
             String[] split = data.split("}\\s*\\{");
             if (split.length == 2) {
-                String reqsStr = split[0].replaceAll("\\{", "").trim();
-                String acksStr = split[1].replaceAll("}", "").trim();
+                String reqsStr = split[0].replace("{", "").trim();
+                String acksStr = split[1].replace("}", "").trim();
                 return new HandshakeParameters(getSignals(reqsStr), getSignals(acksStr));
             }
         }
