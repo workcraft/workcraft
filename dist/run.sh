@@ -44,6 +44,24 @@ copy_jars() {
     fi
 }
 
+fix_permissions() {
+    path="$1"
+    if [ -e "$path" ]; then
+        if [ -d "$path" ]; then
+            chmod 0755 $path
+            for child in $path/*; do
+                fix_permissions "$child"
+            done
+        else
+            if [ -x "$path" ]; then
+                chmod 0755 $path
+            else
+                chmod 0644 $path
+            fi
+        fi
+    fi
+}
+
 # Defaults
 platforms=""
 plugins="$PLUGINS_DIR"
@@ -112,10 +130,11 @@ for platform in $platforms; do
     mkdir -p $dist_path
     cp -r $template_path/* $dist_path/
 
-    # Set Resources as the distribution path on OS X
+    # Set Resources as the distribution path on OSX
     if [ "$platform" = "osx" ]; then
-        # Update Info.plist with version tag (OS X `sed -i` requires backup extension, e.g. `sed -i.bak`)
-        sed -i.bak "s/__VERSION__/$tag/" ${dist_path}/Contents/Info.plist
+        # Update Info.plist with version tag
+        # OSX sed in-place edit requires backup extension (e.g. `sed -i.bak`)
+        sed -i.bak "s/__VERSION__/${tag}/" ${dist_path}/Contents/Info.plist
         rm -f ${dist_path}/Contents/Info.plist.bak
 
         dist_path=$dist_path/Contents/Resources
@@ -130,11 +149,13 @@ for platform in $platforms; do
     done
 
     doc_path="$DIR/$DOC_DIR"
-    for d in $doc_path/*; do
-        if [ "$d" != "$doc_path/README.md" ]; then
-            cp -r $d $dist_path/
+    for doc in $doc_path/*; do
+        if [ "$doc" != "$doc_path/README.md" ]; then
+            cp -r $doc $dist_path/
         fi
     done
+
+    fix_permissions "$platform_path"
 
     cd $platform_path
 
