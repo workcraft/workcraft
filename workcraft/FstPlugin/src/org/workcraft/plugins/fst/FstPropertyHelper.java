@@ -12,8 +12,10 @@ import org.workcraft.plugins.fst.utils.FstUtils;
 import org.workcraft.utils.SortUtils;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.*;
 
 public class FstPropertyHelper {
 
@@ -24,7 +26,7 @@ public class FstPropertyHelper {
             for (Signal.Type type : Signal.Type.values()) {
                 if (type == Signal.Type.DUMMY) continue;
                 List<Signal> signals = new LinkedList<>(mathFst.getSignals(type));
-                Collections.sort(signals, (s1, s2) -> SortUtils.compareNatural(
+                signals.sort((s1, s2) -> SortUtils.compareNatural(
                         visualFst.getMathName(s1), visualFst.getMathName(s2)));
 
                 for (final Signal signal : signals) {
@@ -33,7 +35,7 @@ public class FstPropertyHelper {
             }
         } else {
             List<Signal> signals = new LinkedList<>(mathFst.getSignals());
-            Collections.sort(signals, (s1, s2) -> SortUtils.compareNatural(
+            signals.sort((s1, s2) -> SortUtils.compareNatural(
                     visualFst.getMathName(s1), visualFst.getMathName(s2)));
 
             for (final Signal signal : signals) {

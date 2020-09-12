@@ -1,131 +1,98 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.exceptions.NoExporterException;
-import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.util.Collection;
 
 public class VerificationChainTask implements Task<VerificationChainOutput> {
 
+    private static final String STG_FILE_EXTENSION = StgFormat.getInstance().getExtension();
+    private static final String NET_FILE_NAME = StgUtils.SPEC_FILE_PREFIX + STG_FILE_EXTENSION;
+
     private final WorkspaceEntry we;
     private final VerificationParameters verificationParameters;
-    private final Collection<Mutex> mutexes;
 
     public VerificationChainTask(WorkspaceEntry we, VerificationParameters verificationParameters) {
-        this(we, verificationParameters, null);
-    }
-
-    public VerificationChainTask(WorkspaceEntry we, VerificationParameters verificationParameters,
-            Collection<Mutex> mutexes) {
-
         this.we = we;
         this.verificationParameters = verificationParameters;
-        this.mutexes = mutexes;
     }
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
-        TaskManager taskManager = Framework.getInstance().getTaskManager();
-        String prefix = FileUtils.getTempPrefix(we.getTitle());
-        File directory = FileUtils.createTempDirectory(prefix);
-        try {
-            PetriModel model = WorkspaceUtils.getAs(we, PetriModel.class);
-            StgFormat format = StgFormat.getInstance();
-            Exporter exporter = ExportUtils.chooseBestExporter(model, format);
-            if (exporter == null) {
-                throw new NoExporterException(model, StgFormat.getInstance());
-            }
-            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
-
-            // Generate .g for the model
-            File netFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + format.getExtension());
-            ExportTask exportTask = new ExportTask(exporter, model, netFile);
-            Result<? extends ExportOutput> exportResult = taskManager.execute(
-                    exportTask, "Exporting .g", subtaskMonitor);
-
-            if (!exportResult.isSuccess()) {
-                if (exportResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        exportResult, null, null, null, verificationParameters));
-            }
-            if ((mutexes != null) && !mutexes.isEmpty()) {
-                Stg stg = StgUtils.loadStg(netFile);
-                MutexUtils.factoroutMutexs(stg, mutexes);
-                netFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + format.getExtension());
-                exportTask = new ExportTask(exporter, model, netFile);
-                exportResult = taskManager.execute(exportTask, "Exporting .g");
-
-                if (!exportResult.isSuccess()) {
-                    if (exportResult.isCancel()) {
-                        return Result.cancel();
-                    }
-                    return Result.failure(new VerificationChainOutput(
-                            exportResult, null, null, null, verificationParameters));
-                }
-            }
-            monitor.progressUpdate(0.33);
-
-            // Generate unfolding
-            File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
-
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        exportResult, null, punfResult, null, verificationParameters));
-            }
-            monitor.progressUpdate(0.66);
-
-            // Run MPSat on the generated unfolding
-            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
-            Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
-                    mpsatTask, "Running verification [MPSat]", subtaskMonitor);
-
-            if (!mpsatResult.isSuccess()) {
-                if (mpsatResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        exportResult, null, punfResult, mpsatResult, verificationParameters));
-            }
-            monitor.progressUpdate(1.0);
-
-            return Result.success(new VerificationChainOutput(
-                    exportResult, null, punfResult, mpsatResult, verificationParameters));
-        } catch (Throwable e) {
-            return new Result<>(e);
-        } finally {
-            FileUtils.deleteOnExitRecursively(directory);
+        Result<? extends VerificationChainOutput> result = checkTrivialCases();
+        if (result == null) {
+            File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(we.getTitle()));
+            Chain<VerificationChainOutput> chain = new Chain<>(this::init, monitor);
+            chain.andOnSuccess(payload -> exportNet(payload, monitor, directory), 0.1);
+            chain.andOnSuccess(payload -> unfoldNet(payload, monitor, directory), 0.5);
+            chain.andOnSuccess(payload -> verifyProperty(payload, monitor, directory), 1.0);
+            chain.andThen(() -> FileUtils.deleteOnExitRecursively(directory));
+            result = chain.process();
         }
+        return result;
     }
 
-    public VerificationParameters getVerificationParameters() {
-        return verificationParameters;
+    private Result<? extends VerificationChainOutput> checkTrivialCases() {
+        // The model should be a Petri net (not necessarily an STG)
+        if (!WorkspaceUtils.isApplicable(we, PetriModel.class)) {
+            return Result.exception("Incorrect model type");
+        }
+        if (verificationParameters == null) {
+            return Result.exception("Verification parameters undefined");
+        }
+        return null;
     }
 
-    public WorkspaceEntry getWorkspaceEntry() {
-        return we;
+    private Result<? extends VerificationChainOutput> init() {
+        VerificationParameters verificationParameters = ReachUtils.getToolchainPreparationParameters();
+        return Result.success(new VerificationChainOutput().applyVerificationParameters(verificationParameters));
+    }
+
+
+    private Result<? extends VerificationChainOutput> exportNet(VerificationChainOutput payload,
+            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
+
+        // The model should be a Petri net (not necessarily an STG)
+        PetriModel net = WorkspaceUtils.getAs(we, PetriModel.class);
+        File netFile = new File(directory, NET_FILE_NAME);
+        Result<? extends ExportOutput> exportResult = StgUtils.exportStg(net, netFile, monitor);
+        return new Result(exportResult.getOutcome(), payload.applyExportResult(exportResult));
+    }
+
+    private Result<? extends VerificationChainOutput> unfoldNet(VerificationChainOutput payload,
+            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
+
+        File netFile = new File(directory, NET_FILE_NAME);
+        PunfTask punfTask = new PunfTask(netFile, directory);
+        Result<? extends PunfOutput> punfResult = Framework.getInstance().getTaskManager().execute(
+                punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
+
+        return new Result<>(punfResult.getOutcome(), payload.applyPunfResult(punfResult));
+    }
+
+    private Result<? extends VerificationChainOutput> verifyProperty(VerificationChainOutput payload,
+            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
+
+        File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
+        // Store STG  -- redundant !!!
+        File netFile = new File(directory, NET_FILE_NAME);
+        MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
+        Result<? extends MpsatOutput>  mpsatResult = Framework.getInstance().getTaskManager().execute(
+                mpsatTask, "Running verification [MPSat]", new SubtaskMonitor<>(monitor));
+
+        return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult)
+                .applyVerificationParameters(verificationParameters));
     }
 
 }

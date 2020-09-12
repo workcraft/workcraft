@@ -16,6 +16,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MpsatTask implements Task<MpsatOutput> {
@@ -47,9 +48,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         command.add(toolName);
 
         // Built-in arguments
-        for (String arg : verificationParameters.getMpsatArguments(directory)) {
-            command.add(arg);
-        }
+        command.addAll(Arrays.asList(verificationParameters.getMpsatArguments(directory)));
 
         // Extra arguments (should go before the file parameters)
         String extraArgs = MpsatVerificationSettings.getArgs();
@@ -84,9 +83,9 @@ public class MpsatTask implements Task<MpsatOutput> {
                 Stg stg = StgUtils.importStg(netFile);
                 try {
                     MpsatOutputReader outputReader = new MpsatOutputReader(outputFile);
-                    List<Solution> solutions = outputReader.getSolutions();
                     if (outputReader.isSuccess()) {
-                        return Result.success(new MpsatOutput(output, stg, solutions, verificationParameters));
+                        List<Solution> solutions = outputReader.getSolutions();
+                        return Result.success(new MpsatOutput(output, verificationParameters, stg, solutions));
                     }
                     return Result.exception(outputReader.getMessage());
                 } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -94,7 +93,7 @@ public class MpsatTask implements Task<MpsatOutput> {
                 }
 
             }
-            return Result.failure(new MpsatOutput(output, null, null, verificationParameters));
+            return Result.failure(new MpsatOutput(output, verificationParameters));
         }
 
         if (result.isCancel()) {

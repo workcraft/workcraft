@@ -1,9 +1,11 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -26,16 +28,14 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class RefinementTask implements Task<VerificationChainOutput> {
 
-    private static final VerificationParameters REFINEMENT_TRIVIAL_VIOLATION = new VerificationParameters("Refinement",
-            VerificationMode.UNDEFINED, 0, null, 0, null, false);
+    private static final VerificationParameters TRIVIAL_VIOLATION_PARAMETERS = new VerificationParameters(
+            "Refinement", VerificationMode.UNDEFINED, 0,
+            null, 0, null, false);
 
     private static final String SHADOW_TRANSITIONS_REPLACEMENT =
             "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
@@ -52,8 +52,8 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             "    // Optimisation: make sure shadow events are not in the configuration.\n" +
             "    forall e in ev SHADOW_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
             "    &\n" +
-            "    // Check if some signal is enabled due to shadow transitions only;\n" +
-            "    // this would mean that some component STG does not conform to the rest of the composition.\n" +
+            "    // Check if some signal is enabled due to shadow transitions only,\n" +
+            "    // which would mean that some condition of violation witness holds.\n" +
             "    exists s in (INPUTS + OUTPUTS) {\n" +
             "        let tran_s = tran s {\n" +
             "            exists t in tran_s * SHADOW_TRANSITIONS {\n" +
@@ -86,11 +86,10 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         if (result == null) {
             File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(we.getTitle()));
             Chain<VerificationChainOutput> chain = new Chain<>(this::init, monitor);
-            chain.andOnSuccess(payload -> exportImplementationStg(payload, monitor, directory), 0.1);
-            chain.andOnSuccess(payload -> exportSpecificationStg(payload, monitor, directory), 0.2);
-            chain.andOnSuccess(payload -> buildCompositionStg(payload, monitor, directory), 0.4);
-            chain.andOnSuccess(payload -> exportCompositionStg(payload, monitor, directory), 0.6);
-            chain.andOnSuccess(payload -> unfoldCompositionStg(payload, monitor, directory), 0.8);
+            chain.andOnSuccess(payload -> exportInterfaces(payload, monitor, directory), 0.1);
+            chain.andOnSuccess(payload -> composeInterfaces(payload, monitor, directory), 0.2);
+            chain.andOnSuccess(payload -> exportComposition(payload, monitor, directory), 0.3);
+            chain.andOnSuccess(payload -> unfoldComposition(payload, monitor, directory), 0.5);
             chain.andOnSuccess(payload -> verifyProperty(payload, monitor, directory), 1.0);
             chain.andThen(() -> FileUtils.deleteOnExitRecursively(directory));
             result = chain.process();
@@ -120,14 +119,14 @@ public class RefinementTask implements Task<VerificationChainOutput> {
 
         if (!specificationStg.getSignalReferences(Signal.Type.INPUT).containsAll(implementationInputs)) {
             return Result.success(new VerificationChainOutput()
-                    .applyVerificationParameters(REFINEMENT_TRIVIAL_VIOLATION)
-                    .applyMessage("Refinement violated because\nimplementation has inputs that are not in specification"));
+                    .applyVerificationParameters(TRIVIAL_VIOLATION_PARAMETERS)
+                    .applyMessage("Refinement is violated because\nimplementation has inputs that are not in specification"));
         }
 
         if (!specificationStg.getSignalReferences(Signal.Type.OUTPUT).equals(implementationOutputs)) {
             return Result.success(new VerificationChainOutput()
-                    .applyVerificationParameters(REFINEMENT_TRIVIAL_VIOLATION)
-                    .applyMessage("Refinement violated because\nimplementation outputs differ from specification"));
+                    .applyVerificationParameters(TRIVIAL_VIOLATION_PARAMETERS)
+                    .applyMessage("Refinement is violated because\nimplementation outputs differ from specification"));
         }
 
         return null;
@@ -138,23 +137,7 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         return Result.success(new VerificationChainOutput().applyVerificationParameters(verificationParameters));
     }
 
-    private Result<? extends VerificationChainOutput> exportImplementationStg(VerificationChainOutput payload,
-            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
-
-        // Clone STG before converting its internal signals to dummies
-        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
-        Stg stg = WorkspaceUtils.getAs(me, Stg.class);
-
-        // Convert internal signals of the implementation STG to dummies and keep track of renaming
-        Map<String, String> substitutions = StgUtils.convertInternalSignalsToDummies(stg);
-
-        File file = new File(directory, IMPLEMENTATION_STG_FILE_NAME);
-        Result<? extends ExportOutput> result = StgUtils.exportStg(stg, file, monitor);
-        Result<SubExportOutput> subExportResult = Result.success(new SubExportOutput(file, substitutions));
-        return new Result<>(result.getOutcome(), payload.applyExportResult(subExportResult));
-    }
-
-    private Result<? extends VerificationChainOutput> exportSpecificationStg(VerificationChainOutput payload,
+    private Result<? extends VerificationChainOutput> exportInterfaces(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         Stg specificationStg = StgUtils.loadStg(specificationFile);
@@ -162,8 +145,11 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             return Result.exception("Cannot load specification STG from file '" + specificationFile.getAbsolutePath() + "'");
         }
 
+        // Clone implementation STG as its internal signals will need to be converted to dummies
+        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
+        Stg implementationStg = WorkspaceUtils.getAs(me, Stg.class);
+
         // Make sure that signal types of the specification STG match those of the implementation STG
-        Stg implementationStg = StgUtils.importStg(new File(directory, IMPLEMENTATION_STG_FILE_NAME));
         Set<String> implementationInputs = implementationStg.getSignalReferences(Signal.Type.INPUT);
         Set<String> implementationOutputs = implementationStg.getSignalReferences(Signal.Type.OUTPUT);
         StgUtils.restoreInterfaceSignals(specificationStg, implementationInputs, implementationOutputs);
@@ -176,15 +162,32 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             return Result.exception("Outputs of specification STG differ from outputs of implementation STG");
         }
 
-        // Convert internal signals of the specification STG to dummies
-        StgUtils.convertInternalSignalsToDummies(specificationStg);
-
+        // Export specification STG (convert internal signals to dummies and keep track of renaming)
+        @SuppressWarnings("PMD.PrematureDeclaration")
+        Map<String, String> specificationSubstitutions = StgUtils.convertInternalSignalsToDummies(specificationStg);
         File specificationStgFile = new File(directory, SPECIFICATION_STG_FILE_NAME);
-        Result<? extends ExportOutput> result = StgUtils.exportStg(specificationStg, specificationStgFile, monitor);
-        return new Result<>(result.getOutcome(), payload);
+        Result<? extends ExportOutput> specificationExportResult = StgUtils.exportStg(specificationStg, specificationStgFile, monitor);
+        if (!specificationExportResult.isSuccess()) {
+            return new Result<>(specificationExportResult.getOutcome(), payload);
+        }
+
+        // Export implementation STG (convert internal signals to dummies and keep track of renaming)
+        @SuppressWarnings("PMD.PrematureDeclaration")
+        Map<String, String> implementationSubstitutions = StgUtils.convertInternalSignalsToDummies(implementationStg);
+        File implementationStgFile = new File(directory, IMPLEMENTATION_STG_FILE_NAME);
+        Result<? extends ExportOutput> implementationExportResult = StgUtils.exportStg(implementationStg, implementationStgFile, monitor);
+        if (!implementationExportResult.isSuccess()) {
+            return new Result<>(implementationExportResult.getOutcome(), payload);
+        }
+
+        ExtendedExportOutput extendedExportOutput = new ExtendedExportOutput();
+        extendedExportOutput.add(specificationStgFile, specificationSubstitutions);
+        extendedExportOutput.add(implementationStgFile, implementationSubstitutions);
+        Result<ExtendedExportOutput> extendedExportResult = Result.success(extendedExportOutput);
+        return Result.success(payload.applyExportResult(extendedExportResult));
     }
 
-    private Result<? extends VerificationChainOutput> buildCompositionStg(VerificationChainOutput payload,
+    private Result<? extends VerificationChainOutput> composeInterfaces(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         File specificationStgFile = new File(directory, SPECIFICATION_STG_FILE_NAME);
@@ -196,13 +199,13 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         PcompTask task = new PcompTask(Arrays.asList(implementationStgFile, specificationStgFile),
                 pcompParameters, directory);
 
-        Result<? extends PcompOutput> result = Framework.getInstance().getTaskManager().execute(
+        Result<? extends PcompOutput> pcompResult = Framework.getInstance().getTaskManager().execute(
                 task, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
 
-        return new Result<>(result.getOutcome(), payload.applyPcompResult(result));
+        return new Result<>(pcompResult.getOutcome(), payload.applyPcompResult(pcompResult));
     }
 
-    private Result<? extends VerificationChainOutput> exportCompositionStg(VerificationChainOutput payload,
+    private Result<? extends VerificationChainOutput> exportComposition(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         PcompOutput pcompOutput = payload.getPcompResult().getPayload();
@@ -220,7 +223,7 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         Set<String> inputSignals = implementationStg.getSignalReferences(Signal.Type.INPUT);
         Set<String> outputSignals = implementationStg.getSignalReferences(Signal.Type.OUTPUT);
 
-        // Insert shadow transitions into the composition STG
+        // Insert shadow transitions into the composition STG and adjust compositionData accordingly
         Stg compositionStg = StgUtils.importStg(pcompOutput.getOutputFile());
         CompositionTransformer transformer = new CompositionTransformer(compositionStg, compositionData);
         Set<SignalTransition> shadowTransitions = new HashSet<>();
@@ -233,18 +236,23 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         // - all outputs of implementation STG
         shadowTransitions.addAll(transformer.insetShadowTransitions(outputSignals, implementationStgFile));
 
-        File shadowCompositionStgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
-        Result<? extends ExportOutput> result = StgUtils.exportStg(compositionStg, shadowCompositionStgFile, monitor);
+        // Apply substitutions to the composition data of the STG components
+        CompositionUtils.applyExportSubstitutions(compositionData, payload.getExportResult().getPayload());
 
-        Set<String> shadowTransitionRefs = shadowTransitions.stream()
-                .map(compositionStg::getNodeReference)
-                .collect(Collectors.toSet());
-
+        // Fill verification parameters with the inserted shadow transitions
+        Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(compositionStg, shadowTransitions);
         VerificationParameters verificationParameters = getVerificationParameters(shadowTransitionRefs);
-        return new Result<>(result.getOutcome(), payload.applyVerificationParameters(verificationParameters));
+
+        File shadowCompositionStgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
+        Result<? extends ExportOutput> exportResult = StgUtils.exportStg(compositionStg, shadowCompositionStgFile, monitor);
+        CompositionExportOutput compositionExportOutput = new CompositionExportOutput(shadowCompositionStgFile, compositionData);
+
+        return new Result<>(exportResult.getOutcome(), payload
+                .applyExportResult(Result.success(compositionExportOutput))
+                .applyVerificationParameters(verificationParameters));
     }
 
-    private VerificationParameters getVerificationParameters(Set<String> shadowTransitionRefs) {
+    private VerificationParameters getVerificationParameters(Collection<String> shadowTransitionRefs) {
         String str = shadowTransitionRefs.stream()
                 .map(ref -> "\"" + ref + "\", ")
                 .collect(Collectors.joining());
@@ -257,13 +265,13 @@ public class RefinementTask implements Task<VerificationChainOutput> {
                 reach, true);
     }
 
-    private Result<? extends VerificationChainOutput> unfoldCompositionStg(VerificationChainOutput payload,
+    private Result<? extends VerificationChainOutput> unfoldComposition(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         File stgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
-        PunfTask task = new PunfTask(stgFile, directory);
+        PunfTask punfTask = new PunfTask(stgFile, directory);
         Result<? extends PunfOutput> result = Framework.getInstance().getTaskManager().execute(
-                task, "Unfolding .g", new SubtaskMonitor<>(monitor));
+                punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
 
         return new Result<>(result.getOutcome(), payload.applyPunfResult(result));
     }
@@ -272,12 +280,12 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
-        // Store composition STG without shadow transitions -- this is important for interpretation of violation traces
-        File compositionStgFile = payload.getPcompResult().getPayload().getOutputFile();
+        // Store composition STG  -- redundant !!!
+        File compositionStgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
         VerificationParameters verificationParameters = payload.getVerificationParameters();
-        MpsatTask task = new MpsatTask(unfoldingFile, compositionStgFile, verificationParameters, directory);
+        MpsatTask mpsatTask = new MpsatTask(unfoldingFile, compositionStgFile, verificationParameters, directory);
         Result<? extends MpsatOutput>  result = Framework.getInstance().getTaskManager().execute(
-                task, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
+                mpsatTask, "Running refinement check [MPSat]", new SubtaskMonitor<>(monitor));
 
         return new Result<>(result.getOutcome(), payload.applyMpsatResult(result));
     }

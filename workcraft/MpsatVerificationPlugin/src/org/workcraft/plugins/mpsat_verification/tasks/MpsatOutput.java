@@ -15,8 +15,12 @@ public class MpsatOutput extends ExternalProcessOutput {
     private final List<Solution> solutions;
     private final VerificationParameters verificationParameters;
 
-    public MpsatOutput(ExternalProcessOutput output, Stg inputStg, List<Solution> solutions,
-            VerificationParameters verificationParameters) {
+    public MpsatOutput(ExternalProcessOutput output, VerificationParameters verificationParameters) {
+        this(output, verificationParameters, null, null);
+    }
+
+    public MpsatOutput(ExternalProcessOutput output, VerificationParameters verificationParameters,
+            Stg inputStg, List<Solution> solutions) {
 
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
         this.inputStg = inputStg;

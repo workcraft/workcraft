@@ -22,7 +22,6 @@ import org.workcraft.utils.SortUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @DisplayName("Finite State Machine")
@@ -98,8 +97,8 @@ public class VisualFsm extends AbstractVisualModel {
         if (node == null) {
             properties.add(PropertyHelper.createSeparatorProperty("Symbols"));
             List<Symbol> symbols = new ArrayList<>(mathFsm.getSymbols());
-            Collections.sort(symbols, (s1, s2) -> SortUtils.compareNatural(
-                    mathFsm.getNodeReference(s1), mathFsm.getNodeReference(s1)));
+            symbols.sort((s1, s2) -> SortUtils.compareNatural(
+                    mathFsm.getNodeReference(s1), mathFsm.getNodeReference(s2)));
 
             for (final Symbol symbol : symbols) {
                 properties.add(FsmPropertyHelper.getSymbolProperty(this, symbol));

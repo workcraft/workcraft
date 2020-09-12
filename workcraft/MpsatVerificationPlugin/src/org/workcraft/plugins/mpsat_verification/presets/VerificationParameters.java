@@ -89,9 +89,7 @@ public class VerificationParameters {
 
     public String[] getMpsatArguments(File workingDirectory) {
         ArrayList<String> args = new ArrayList<>();
-        for (String arg: getMode().getArguments()) {
-            args.add(arg);
-        }
+        args.addAll(getMode().getArguments());
 
         String expression = getExpression();
         if (expression != null) {
@@ -137,7 +135,7 @@ public class VerificationParameters {
             break;
         }
 
-        return args.toArray(new String[args.size()]);
+        return args.toArray(new String[0]);
     }
 
 }

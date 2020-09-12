@@ -1,17 +1,14 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.exceptions.NoExporterException;
-import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
-import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
-import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -22,9 +19,16 @@ import java.util.List;
 
 public class CombinedChainTask implements Task<CombinedChainOutput> {
 
+    private static final String STG_FILE_EXTENSION = StgFormat.getInstance().getExtension();
+    private static final String NET_FILE_NAME = StgUtils.SPEC_FILE_PREFIX + STG_FILE_EXTENSION;
+
     private final WorkspaceEntry we;
     private final List<VerificationParameters> verificationParametersList;
     private final Task<VerificationChainOutput> extraTask;
+
+    public CombinedChainTask(WorkspaceEntry we, List<VerificationParameters> verificationParametersList) {
+        this(we, verificationParametersList, null);
+    }
 
     public CombinedChainTask(WorkspaceEntry we, List<VerificationParameters> verificationParametersList,
             Task<VerificationChainOutput> extraTask) {
@@ -36,106 +40,90 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
 
     @Override
     public Result<? extends CombinedChainOutput> run(ProgressMonitor<? super CombinedChainOutput> monitor) {
-        Result<? extends CombinedChainOutput> chainResult = processSettingList(monitor);
-
-        // Only proceed with the extra task if the main tasks are all successful and have no solutions.
-        if ((extraTask != null) && (chainResult.isSuccess())
-                && (CombinedChainResultHandlingMonitor.getViolationMpsatOutput(chainResult) == null)) {
-
-            Result<? extends VerificationChainOutput> taskResult = processExtraTask(monitor);
-            if (taskResult.isCancel()) {
-                return Result.cancel();
-            }
-
-            VerificationChainOutput payload = taskResult.getPayload();
-
-            Result<? extends ExportOutput> exportResult = payload.getExportResult();
-            Result<? extends PcompOutput> pcompResult = payload.getPcompResult();
-            Result<? extends PunfOutput> punfResult = payload.getPunfResult();
-            List<Result<? extends MpsatOutput>> mpsatResultList = chainResult.getPayload().getMpsatResultList();
-            mpsatResultList.add(payload.getMpsatResult());
-            verificationParametersList.add(payload.getVerificationParameters());
-
-            chainResult = new Result<>(taskResult.getOutcome(),
-                    new CombinedChainOutput(exportResult, pcompResult, punfResult, mpsatResultList, verificationParametersList));
+        Result<? extends CombinedChainOutput> result = checkTrivialCases();
+        if (result == null) {
+            File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(we.getTitle()));
+            Chain<CombinedChainOutput> chain = new Chain<>(this::init, monitor);
+            chain.andOnSuccess(payload -> exportNet(payload, monitor, directory), 0.1);
+            chain.andOnSuccess(payload -> unfoldNet(payload, monitor, directory), 0.5);
+            chain.andOnSuccess(payload -> verifyPropertyList(payload, monitor, directory), 9.0);
+            chain.andOnSuccess(payload -> runExtraTask(payload, monitor), 1.0);
+            chain.andThen(() -> FileUtils.deleteOnExitRecursively(directory));
+            result = chain.process();
         }
-        return chainResult;
+        return result;
     }
 
-    private Result<? extends CombinedChainOutput> processSettingList(ProgressMonitor<? super CombinedChainOutput> monitor) {
-        TaskManager taskManager = Framework.getInstance().getTaskManager();
-        String prefix = FileUtils.getTempPrefix(we.getTitle());
-        File directory = FileUtils.createTempDirectory(prefix);
+    private Result<? extends CombinedChainOutput> checkTrivialCases() {
+        // The model should be a Petri net (not necessarily an STG)
+        if (!WorkspaceUtils.isApplicable(we, PetriModel.class)) {
+            return Result.exception("Incorrect model type");
+        }
+        if (verificationParametersList == null) {
+            return Result.exception("Verification parameters undefined");
+        }
+        return null;
+    }
+
+    private Result<? extends CombinedChainOutput> init() {
+        return Result.success(new CombinedChainOutput().applyVerificationParametersList(verificationParametersList));
+    }
+
+    private Result<? extends CombinedChainOutput> exportNet(CombinedChainOutput payload,
+            ProgressMonitor<? super CombinedChainOutput> monitor, File directory) {
+
+        // The model should be a Petri net (not necessarily an STG)
+        PetriModel net = WorkspaceUtils.getAs(we, PetriModel.class);
+        File netFile = new File(directory, NET_FILE_NAME);
+        Result<? extends ExportOutput> exportResult = StgUtils.exportStg(net, netFile, monitor);
+        return new Result<>(exportResult.getOutcome(), payload.applyExportResult(exportResult));
+    }
+
+    private Result<? extends CombinedChainOutput> unfoldNet(CombinedChainOutput payload,
+            ProgressMonitor<? super CombinedChainOutput> monitor, File directory) {
+
+        File netFile = new File(directory, NET_FILE_NAME);
+        PunfTask punfTask = new PunfTask(netFile, directory);
+        Result<? extends PunfOutput> punfResult = Framework.getInstance().getTaskManager().execute(
+                punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
+
+        return new Result<>(punfResult.getOutcome(), payload.applyPunfResult(punfResult));
+    }
+
+    private Result<? extends CombinedChainOutput> verifyPropertyList(CombinedChainOutput payload,
+            ProgressMonitor<? super CombinedChainOutput> monitor, File directory) {
+
+        File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
+        // Store STG  -- redundant !!!
+        File netFile = new File(directory, NET_FILE_NAME);
         ArrayList<Result<? extends MpsatOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
-        try {
-            PetriModel model = WorkspaceUtils.getAs(we, PetriModel.class);
-            StgFormat format = StgFormat.getInstance();
-            Exporter exporter = ExportUtils.chooseBestExporter(model, format);
-            if (exporter == null) {
-                throw new NoExporterException(model, format);
+        for (VerificationParameters verificationParameters : verificationParametersList) {
+            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
+            Result<? extends MpsatOutput>  mpsatResult = Framework.getInstance().getTaskManager().execute(
+                    mpsatTask, "Running verification [MPSat]", new SubtaskMonitor<>(monitor));
+
+            mpsatResultList.add(mpsatResult);
+            if (!mpsatResult.isSuccess()) {
+                return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResultList(mpsatResultList));
             }
-            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
-
-            // Generate .g for the model
-            File netFile = new File(directory, "net" + format.getExtension());
-            ExportTask exportTask = new ExportTask(exporter, model, netFile);
-            Result<? extends ExportOutput> exportResult = taskManager.execute(
-                    exportTask, "Exporting .g", subtaskMonitor);
-
-            if (!exportResult.isSuccess()) {
-                if (exportResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new CombinedChainOutput(
-                        exportResult, null, null, mpsatResultList, verificationParametersList));
-            }
-            monitor.progressUpdate(0.33);
-
-            // Generate unfolding
-            File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
-
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new CombinedChainOutput(
-                        exportResult, null, punfResult, mpsatResultList, verificationParametersList));
-            }
-            monitor.progressUpdate(0.66);
-
-            // Run MPSat on the generated unfolding
-            for (VerificationParameters verificationParameters: verificationParametersList) {
-                MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
-                Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
-                        mpsatTask, "Running verification [MPSat]", subtaskMonitor);
-                mpsatResultList.add(mpsatResult);
-                if (!mpsatResult.isSuccess()) {
-                    if (mpsatResult.isCancel()) {
-                        return Result.cancel();
-                    }
-                    return Result.failure(new CombinedChainOutput(
-                            exportResult, null, punfResult, mpsatResultList, verificationParametersList));
-                }
-            }
-            monitor.progressUpdate(1.0);
-
-            return Result.success(new CombinedChainOutput(
-                    exportResult, null, punfResult, mpsatResultList, verificationParametersList));
-        } catch (Throwable e) {
-            return new Result<>(e);
-        } finally {
-            FileUtils.deleteOnExitRecursively(directory);
         }
+        return Result.success(payload.applyMpsatResultList(mpsatResultList));
     }
 
-    private Result<? extends VerificationChainOutput> processExtraTask(ProgressMonitor<? super CombinedChainOutput> monitor) {
-        Framework framework = Framework.getInstance();
-        TaskManager taskManager = framework.getTaskManager();
-        String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
-        return taskManager.execute(extraTask, description, subtaskMonitor);
+    private Result<? extends CombinedChainOutput> runExtraTask(CombinedChainOutput payload,
+            ProgressMonitor<? super CombinedChainOutput> monitor) {
+
+        // Only proceed with the extra task if the main tasks have no solutions
+        if ((extraTask != null) && (CombinedChainResultHandlingMonitor.getViolationMpsatOutput(payload) == null)) {
+            Result<? extends VerificationChainOutput> taskResult = Framework.getInstance().getTaskManager().execute(
+                    extraTask, MpsatUtils.getToolchainDescription(we.getTitle()), new SubtaskMonitor<Object>(monitor));
+
+            VerificationChainOutput extraPayload = taskResult.getPayload();
+            payload.getMpsatResultList().add(extraPayload.getMpsatResult());
+            payload.getVerificationParametersList().add(extraPayload.getVerificationParameters());
+            return new Result<>(taskResult.getOutcome(), payload);
+        }
+        return Result.success(payload);
     }
 
 }

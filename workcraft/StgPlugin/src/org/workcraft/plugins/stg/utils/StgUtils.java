@@ -13,6 +13,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
@@ -220,7 +221,7 @@ public class StgUtils {
         }
     }
 
-    public static Result<? extends ExportOutput> exportStg(Stg stg, File file, ProgressMonitor<?> monitor) {
+    public static Result<? extends ExportOutput> exportStg(PetriModel stg, File file, ProgressMonitor<?> monitor) {
         StgFormat format = StgFormat.getInstance();
         Exporter exporter = ExportUtils.chooseBestExporter(stg, format);
         if (exporter == null) {
@@ -358,6 +359,16 @@ public class StgUtils {
             }
         }
         return SignalCommonSettings.getDummyColor();
+    }
+
+    public static Set<String> getAllEvents(Collection<String> signals) {
+        Set<String> result = new HashSet<>();
+        for (String signal : signals) {
+            for (SignalTransition.Direction direction : SignalTransition.Direction.values()) {
+                result.add(signal + direction);
+            }
+        }
+        return result;
     }
 
 }

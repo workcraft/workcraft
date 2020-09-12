@@ -2,18 +2,22 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.pcomp.utils.PcompUtils;
+import org.workcraft.plugins.pcomp.tasks.PcompParameters;
+import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -26,10 +30,23 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.util.*;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
+
+    private static final VerificationParameters TRIVIAL_HOLD_PARAMETERS = new VerificationParameters(
+            "Output determinacy (vacuously)", VerificationMode.UNDEFINED, 0,
+            null, 0, null, true);
+
+    private static final String STG_FILE_EXTENSION = StgFormat.getInstance().getExtension();
+    private static final String DEV_STG_FILE_NAME = StgUtils.DEVICE_FILE_PREFIX + STG_FILE_EXTENSION;
+    private static final String ENV_STG_FILE_NAME = StgUtils.ENVIRONMENT_FILE_PREFIX + STG_FILE_EXTENSION;
+    private static final String MOD_SYS_STG_FILE_NAME = StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + STG_FILE_EXTENSION;
 
     private static final String SHADOW_TRANSITIONS_REPLACEMENT =
             "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
@@ -69,129 +86,34 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
-        Framework framework = Framework.getInstance();
-        TaskManager taskManager = framework.getTaskManager();
-
-        String prefix = FileUtils.getTempPrefix(we.getTitle());
-        File directory = FileUtils.createTempDirectory(prefix);
-        String stgFileExtension = StgFormat.getInstance().getExtension();
-        VerificationParameters preparationParameters = ReachUtils.getToolchainPreparationParameters();
-        try {
-            // Clone STG before converting its internal signals to outputs
-            ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
-            Stg stg = WorkspaceUtils.getAs(me, Stg.class);
-            StgUtils.convertInternalSignalsToOutputs(stg);
-
-            // Structural check for vacuously held output-determinacy, i.e. there are no dummies
-            // and there are no choices between transitions of the same signal.
-            if (isVacuouslyOutputDeterminate(stg)) {
-                VerificationParameters vacuousParameters = new VerificationParameters("Output determinacy (vacuously)",
-                        VerificationMode.UNDEFINED, 0, null, 0);
-                return Result.success(new VerificationChainOutput(
-                        null, null, null, null,
-                        vacuousParameters, "Output determinacy vacuously holds."));
-            }
-            monitor.progressUpdate(0.20);
-
-            // Generating two copies of .g file for the model (dev and env)
-            File devStgFile = new File(directory, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension);
-            Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(stg, devStgFile, monitor);
-            if (!devExportResult.isSuccess()) {
-                if (devExportResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        devExportResult, null, null, null, preparationParameters));
-            }
-
-            File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
-            Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(stg, envStgFile, monitor);
-            if (!envExportResult.isSuccess()) {
-                if (envExportResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        envExportResult, null, null, null, preparationParameters));
-            }
-
-            List<File> stgFiles = Arrays.asList(devStgFile, envStgFile);
-            Result<MultiExportOutput> multiExportResult = new Result<>(new MultiExportOutput(stgFiles));
-            monitor.progressUpdate(0.30);
-
-            // Generating .g for the whole system (model and environment)
-            Result<? extends PcompOutput> pcompResult = PcompUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
-            if (!pcompResult.isSuccess()) {
-                if (pcompResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        multiExportResult, pcompResult, null, null, preparationParameters));
-            }
-            monitor.progressUpdate(0.50);
-
-            // Insert shadow transitions into the composed STG
-            File sysStgFile = pcompResult.getPayload().getOutputFile();
-            File detailFile = pcompResult.getPayload().getDetailFile();
-            CompositionData compositionData = new CompositionData(detailFile);
-            Stg modSysStg = StgUtils.loadStg(sysStgFile);
-            CompositionTransformer transformer = new CompositionTransformer(modSysStg, compositionData);
-            Collection<SignalTransition> shadowTransitions = new HashSet<>();
-            shadowTransitions.addAll(transformer.insetShadowTransitions(devStgFile));
-
-            File modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
-            Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
-
-            // Generate unfolding
-            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(modSysStgFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = taskManager.execute(
-                    punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
-
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        modSysExportResult, pcompResult, punfResult, null, preparationParameters));
-            }
-            monitor.progressUpdate(0.60);
-
-            // Check for output determinacy
-            Set<String> shadowTransitionRefs = shadowTransitions.stream()
-                    .map(modSysStg::getNodeReference)
-                    .collect(Collectors.toSet());
-
-            VerificationParameters verificationParameters = getVerificationParameters(shadowTransitionRefs);
-            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, sysStgFile, verificationParameters, directory);
-            Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
-                    mpsatTask, "Running output determinacy check [MPSat]", new SubtaskMonitor<>(monitor));
-
-            if (!mpsatResult.isSuccess()) {
-                if (mpsatResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        modSysExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
-            }
-            monitor.progressUpdate(0.80);
-
-            if (mpsatResult.getPayload().hasSolutions()) {
-                return Result.success(new VerificationChainOutput(
-                        multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
-                        "This model is not output determinate."));
-            }
-            monitor.progressUpdate(1.0);
-
-            // Success
-            return Result.success(new VerificationChainOutput(
-                    multiExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
-                    "Output determinacy holds."));
-
-        } catch (Throwable e) {
-            return new Result<>(e);
-        } finally {
-            FileUtils.deleteOnExitRecursively(directory);
+        Result<? extends VerificationChainOutput> result = checkTrivialCases();
+        if (result == null) {
+            File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(we.getTitle()));
+            Chain<VerificationChainOutput> chain = new Chain<>(this::init, monitor);
+            chain.andOnSuccess(payload -> exportComponents(payload, monitor, directory), 0.1);
+            chain.andOnSuccess(payload -> composeComponents(payload, monitor, directory), 0.2);
+            chain.andOnSuccess(payload -> exportComposition(payload, monitor, directory), 0.3);
+            chain.andOnSuccess(payload -> unfoldComposition(payload, monitor, directory), 0.5);
+            chain.andOnSuccess(payload -> verifyProperty(payload, monitor, directory), 1.0);
+            chain.andThen(() -> FileUtils.deleteOnExitRecursively(directory));
+            result = chain.process();
         }
+        return result;
+    }
+
+    private Result<? extends VerificationChainOutput> checkTrivialCases() {
+        if (!WorkspaceUtils.isApplicable(we, StgModel.class)) {
+            return Result.exception("Incorrect model type");
+        }
+
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        if (isVacuouslyOutputDeterminate(stg)) {
+            return Result.success(new VerificationChainOutput()
+                    .applyVerificationParameters(TRIVIAL_HOLD_PARAMETERS)
+                    .applyMessage("Output determinacy vacuously holds."));
+        }
+
+        return null;
     }
 
     private boolean isVacuouslyOutputDeterminate(Stg stg) {
@@ -211,15 +133,121 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
         return true;
     }
 
-    private VerificationParameters getVerificationParameters(Collection<String> shadowTransitionRefs) {
-        String str = shadowTransitionRefs.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
-        String reach = OUTPUT_DETERMINACY_REACH.replace(SHADOW_TRANSITIONS_REPLACEMENT, str);
+    private Result<? extends VerificationChainOutput> init() {
+        VerificationParameters verificationParameters = ReachUtils.getToolchainPreparationParameters();
+        return Result.success(new VerificationChainOutput().applyVerificationParameters(verificationParameters));
+    }
 
+    private Result<? extends VerificationChainOutput> exportComponents(VerificationChainOutput payload,
+            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
+
+        // Clone STG as its internal signals will be converted to outputs
+        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
+        Stg stg = WorkspaceUtils.getAs(me, Stg.class);
+        StgUtils.convertInternalSignalsToOutputs(stg);
+
+        // Generating two copies of .g file for the model (dev and env)
+        File devStgFile = new File(directory, DEV_STG_FILE_NAME);
+        Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(stg, devStgFile, monitor);
+        if (!devExportResult.isSuccess()) {
+            return new Result<>(devExportResult.getOutcome(), payload);
+        }
+
+        File envStgFile = new File(directory, ENV_STG_FILE_NAME);
+        Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(stg, envStgFile, monitor);
+        if (!envExportResult.isSuccess()) {
+            return new Result<>(envExportResult.getOutcome(), payload);
+        }
+
+        return Result.success(payload.applyExportResult(devExportResult));
+    }
+
+    private Result<? extends VerificationChainOutput> composeComponents(VerificationChainOutput payload,
+            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
+
+        File devStgFile = new File(directory, DEV_STG_FILE_NAME);
+        File envStgFile = new File(directory, ENV_STG_FILE_NAME);
+        PcompParameters pcompParameters = new PcompParameters(
+                PcompParameters.SharedSignalMode.OUTPUT, true, false);
+
+        // Note: device STG must go first, as this order is used in the analysis of violation traces
+        PcompTask task = new PcompTask(Arrays.asList(devStgFile, envStgFile), pcompParameters, directory);
+
+        Result<? extends PcompOutput> pcompResult = Framework.getInstance().getTaskManager().execute(
+                task, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
+
+        return new Result<>(pcompResult.getOutcome(), payload.applyPcompResult(pcompResult));
+    }
+
+    private Result<? extends VerificationChainOutput> exportComposition(VerificationChainOutput payload,
+            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
+
+        PcompOutput pcompOutput = payload.getPcompResult().getPayload();
+        CompositionData compositionData;
+        try {
+            compositionData = new CompositionData(pcompOutput.getDetailFile());
+        } catch (FileNotFoundException e) {
+            return Result.exception(e);
+        }
+
+        // Insert shadow transitions into the composition STG for the device local signals
+        Stg sysStg = StgUtils.importStg(pcompOutput.getOutputFile());
+        CompositionTransformer transformer = new CompositionTransformer(sysStg, compositionData);
+        Set<String> localSignals = new HashSet<>();
+        localSignals.addAll(sysStg.getSignalReferences(Signal.Type.OUTPUT));
+        localSignals.addAll(sysStg.getSignalReferences(Signal.Type.INTERNAL));
+        File devStgFile = new File(directory, DEV_STG_FILE_NAME);
+        Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(localSignals, devStgFile);
+
+        // Fill verification parameters with the inserted shadow transitions
+        Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(sysStg, shadowTransitions);
+        VerificationParameters verificationParameters = getVerificationParameters(shadowTransitionRefs);
+
+        File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
+        Result<? extends ExportOutput> exportResult = StgUtils.exportStg(sysStg, modSysStgFile, monitor);
+        CompositionExportOutput sysExportOutput = new CompositionExportOutput(modSysStgFile, compositionData);
+
+        return new Result<>(exportResult.getOutcome(), payload
+                .applyExportResult(Result.success(sysExportOutput))
+                .applyVerificationParameters(verificationParameters));
+    }
+
+    private VerificationParameters getVerificationParameters(Collection<String> shadowTransitionRefs) {
+        String str = shadowTransitionRefs.stream()
+                .map(ref -> "\"" + ref + "\", ")
+                .collect(Collectors.joining());
+
+        String reach = OUTPUT_DETERMINACY_REACH.replace(SHADOW_TRANSITIONS_REPLACEMENT, str);
         return new VerificationParameters("Output determinacy",
                 VerificationMode.STG_REACHABILITY_OUTPUT_DETERMINACY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
                 reach, true);
+    }
+
+    private Result<? extends VerificationChainOutput> unfoldComposition(VerificationChainOutput payload,
+            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
+
+        File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
+        PunfTask punfTask = new PunfTask(modSysStgFile, directory);
+        Result<? extends PunfOutput> punfResult = Framework.getInstance().getTaskManager().execute(
+                punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
+
+        return new Result<>(punfResult.getOutcome(), payload.applyPunfResult(punfResult));
+    }
+
+    private Result<? extends VerificationChainOutput> verifyProperty(VerificationChainOutput payload,
+            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
+
+        File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
+        // Store composition STG  -- redundant !!!
+        File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
+        VerificationParameters verificationParameters = payload.getVerificationParameters();
+        MpsatTask mpsatTask = new MpsatTask(unfoldingFile, modSysStgFile, verificationParameters, directory);
+        Result<? extends MpsatOutput>  mpsatResult = Framework.getInstance().getTaskManager().execute(
+                mpsatTask, "Running output determinacy check [MPSat]", new SubtaskMonitor<>(monitor));
+
+        return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult));
     }
 
 }

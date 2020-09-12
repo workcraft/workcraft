@@ -18,10 +18,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutput, Boolean> {
 
@@ -61,10 +59,9 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
         ComponentData data = getComponentData();
-        Map<String, String> substitutions = getSubstitutions();
-        for (Solution solution: solutions) {
-            Trace mainTrace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
-            Trace branchTrace = getProjectedTrace(solution.getBranchTrace(), data, substitutions);
+        for (Solution solution : solutions) {
+            Trace mainTrace = projectTrace(solution.getMainTrace(), data);
+            Trace branchTrace = projectTrace(solution.getBranchTrace(), data);
             String comment = solution.getComment();
             Solution processedSolution = new Solution(mainTrace, branchTrace, comment);
             result.add(processedSolution);
@@ -72,27 +69,16 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         return result;
     }
 
-    public Trace getProjectedTrace(Trace trace, ComponentData data, Map<String, String> substitutions) {
-        if ((trace == null) || trace.isEmpty() || (data == null)) {
+    public Trace projectTrace(Trace trace, ComponentData componentData) {
+        if ((trace == null) || trace.isEmpty() || (componentData == null)) {
             return trace;
         }
         Trace result = new Trace();
         for (String ref : trace) {
-            String srcRef = data.getSrcTransition(ref);
+            String srcRef = componentData.getSrcTransition(ref);
             if (srcRef != null) {
                 result.add(srcRef);
             }
-        }
-        return getSubstitutedTrace(result, substitutions);
-    }
-
-    public Trace getSubstitutedTrace(Trace trace, Map<String, String> substitutions) {
-        if ((trace == null) || trace.isEmpty() || (substitutions == null)) {
-            return trace;
-        }
-        Trace result = new Trace();
-        for (String ref : trace) {
-            result.add(substitutions.getOrDefault(ref, ref));
         }
         return result;
     }
@@ -104,7 +90,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         ComponentData data = getComponentData();
         if (data != null) {
             File file = new File(data.getFileName());
-            if ((file != null) && file.exists()) {
+            if (file.exists()) {
                 stg = StgUtils.importStg(file);
             }
         } else {
@@ -113,20 +99,15 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         return stg;
     }
 
-    public Map<String, String> getSubstitutions() {
-        if (getExportOutput() instanceof SubExportOutput) {
-            SubExportOutput exportOutput = (SubExportOutput) getExportOutput();
-            return exportOutput.getSubstitutions();
-        }
-        return new HashMap<>();
-    }
-
     public ComponentData getComponentData() {
         CompositionData compositionData = getCompositionData();
         return compositionData == null ? null : compositionData.getComponentData(0);
     }
 
     public CompositionData getCompositionData() {
+        if (getExportOutput() instanceof CompositionExportOutput) {
+            return ((CompositionExportOutput) getExportOutput()).getCompositionData();
+        }
         if (compositionData == null) {
             if (getPcompOutput() != null) {
                 File detailFile = getPcompOutput().getDetailFile();

@@ -65,13 +65,17 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
 
     public static MpsatOutput getViolationMpsatOutput(Result<? extends CombinedChainOutput> chainResult) {
         if ((chainResult != null) && (chainResult.isSuccess())) {
-            CombinedChainOutput chainOutput = chainResult.getPayload();
-            for (Result<? extends MpsatOutput> mpsatResult : chainOutput.getMpsatResultList()) {
-                if (mpsatResult != null) {
-                    MpsatOutput mpsatOutput = mpsatResult.getPayload();
-                    if (TraceUtils.hasTraces(mpsatOutput.getSolutions())) {
-                        return mpsatOutput;
-                    }
+            return getViolationMpsatOutput(chainResult.getPayload());
+        }
+        return null;
+    }
+
+    public static MpsatOutput getViolationMpsatOutput(CombinedChainOutput chainOutput) {
+        for (Result<? extends MpsatOutput> mpsatResult : chainOutput.getMpsatResultList()) {
+            if (mpsatResult != null) {
+                MpsatOutput mpsatOutput = mpsatResult.getPayload();
+                if (TraceUtils.hasTraces(mpsatOutput.getSolutions())) {
+                    return mpsatOutput;
                 }
             }
         }

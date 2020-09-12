@@ -12,7 +12,6 @@ import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Function;
 
@@ -47,7 +46,7 @@ public abstract class AbstractTagCommand implements ScriptableCommand<Void> {
             we.uncaptureMemento();
         } else {
             we.saveMemento();
-            ArrayList<String> refs = ReferenceHelper.getReferenceList(circuit, contacts);
+            Collection<String> refs = ReferenceHelper.getReferenceList(circuit, contacts);
             LogUtils.logInfo(TextUtils.wrapMessageWithItems(getMessage(), refs));
         }
 

@@ -10,9 +10,10 @@ public class VerificationChainOutput extends ChainOutput {
 
     private final Result<? extends MpsatOutput> mpsatResult;
     private final VerificationParameters verificationParameters;
+    private final String message;
 
     public VerificationChainOutput() {
-        this(null, null, null, null, null);
+        this(null, null, null, null, null, null);
     }
 
     public VerificationChainOutput(Result<? extends ExportOutput> exportResult,
@@ -31,9 +32,10 @@ public class VerificationChainOutput extends ChainOutput {
             VerificationParameters verificationParameters,
             String message) {
 
-        super(exportResult, pcompResult, punfResult, message);
+        super(exportResult, pcompResult, punfResult);
         this.mpsatResult = mpsatResult;
         this.verificationParameters = verificationParameters;
+        this.message = message;
     }
 
     public Result<? extends MpsatOutput> getMpsatResult() {
@@ -42,6 +44,10 @@ public class VerificationChainOutput extends ChainOutput {
 
     public VerificationParameters getVerificationParameters() {
         return verificationParameters;
+    }
+
+    public String getMessage() {
+        return message;
     }
 
     public VerificationChainOutput applyExportResult(Result<? extends ExportOutput> exportResult) {

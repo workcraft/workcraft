@@ -1,18 +1,15 @@
 package org.workcraft.plugins.circuit.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
-import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.*;
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
-import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
@@ -21,6 +18,7 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -31,61 +29,10 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CheckTask implements Task<VerificationChainOutput> {
-
-    private static final String DEV_PLACES_REPLACEMENT =
-            "/* insert device place names here */"; // For example: "p0", "<a-,b+>"
-
-    private static final String CIRCUIT_CONFORMATION_REACH =
-            "// Check a device STG for conformation to its environment STG.\n" +
-            "// LIMITATIONS (could be checked before parallel composition):\n" +
-            "// - The set of device STG place names is non-empty (this limitation can be easily removed).\n" +
-            "// - Each transition in the device STG must have some arcs, i.e. its preset or postset is non-empty.\n" +
-            "// - The device STG must have no dummies.\n" +
-            "let\n" +
-            "     // PDEV_NAMES is the set of names of places in the composed STG which originated from the device STG.\n" +
-            "     // This set may in fact contain places from the environment STG, e.g. when PCOMP removes duplicate\n" +
-            "     // places from the composed STG, it substitutes them with equivalent places that remain.\n" +
-            "     // LIMITATION: syntax error if any of these sets is empty.\n" +
-            "    PDEV_NAMES = {" + DEV_PLACES_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
-            "    // PDEV is the set of places with the names in PDEV_NAMES.\n" +
-            "    // XML-based PUNF / MPSAT are needed here to process dead places correctly.\n" +
-            "    PDEV = gather nm in PDEV_NAMES { P nm },\n" +
-            "    // PDEV_EXT includes PDEV and places with the names of the form p@num, where p is a place in PDEV.\n" +
-            "    // Such places appeared during optimisation of the unfolding prefix due to splitting places\n" +
-            "    // incident with multiple read arcs (-r option of punf).\n" +
-            "    // Note that such a place must have the same preset and postset (ignoring context) as p.\n" +
-            "    PDEV_EXT = PDEV + gather p in PP \".*@[0-9]+\" s.t.\n" +
-            "    let name_p=name p, pre_p=pre p, post_p=post p, s_pre_p=pre_p \\ post_p, s_post_p=post_p \\ pre_p {\n" +
-            "        exists q in PDEV {\n" +
-            "            let name_q=name q, pre_q=pre q, post_q=post q {\n" +
-            "                name_p[..len name_q] = name_q + \"@\" &\n" +
-            "                pre_q \\ post_q=s_pre_p & post_q \\ pre_q=s_post_p\n" +
-            "            }\n" +
-            "        }\n" +
-            "    }\n" +
-            "    { p },\n" +
-            "    // TDEV is the set of device transitions.\n" +
-            "    // XML-based PUNF / MPSAT are needed here to process dead transitions correctly.\n" +
-            "    // LIMITATION: each transition in the device must have some arcs, i.e. its preset or postset is non-empty.\n" +
-            "    TDEV = tran sig (pre PDEV + post PDEV)\n" +
-            "{\n" +
-            "     // The device STG must have no dummies.\n" +
-            "    card (sig TDEV * DUMMY) != 0 ? fail \"Conformation can currently be checked only for device STGs without dummies\" :\n" +
-            "    exists t in TDEV s.t. is_output t {\n" +
-            "         // Check if t is enabled in the device STG.\n" +
-            "         // LIMITATION: The device STG must have no dummies (this limitation is checked above.)\n" +
-            "        forall p in pre t s.t. p in PDEV_EXT { $p }\n" +
-            "        &\n" +
-            "         // Check if t is enabled in the composed STG (and thus in the environment STG).\n" +
-            "        ~@ sig t\n" +
-            "    }\n" +
-            "}\n";
-
-    // REACH expression for checking if these two pairs of signals can be implemented by a mutex
 
     private final WorkspaceEntry we;
     private final boolean checkConformation;
@@ -121,12 +68,23 @@ public class CheckTask implements Task<VerificationChainOutput> {
             exposeMutexGrants(devStg, grantPairs, originalMutexGrantTypes);
 
             // Load environment STG
+            File envStgFile = null;
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg != null) {
                 // Make sure that signal types of the environment STG match those of the device STG
                 StgUtils.restoreInterfaceSignals(envStg,
                         devStg.getSignalReferences(Signal.Type.INPUT),
                         devStg.getSignalReferences(Signal.Type.OUTPUT));
+
+                envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
+                Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(envStg, envStgFile, monitor);
+                if (!envExportResult.isSuccess()) {
+                    if (envExportResult.isCancel()) {
+                        return Result.cancel();
+                    }
+                    return Result.failure(new VerificationChainOutput(
+                            envExportResult, null, null, null, preparationParameters));
+                }
             }
 
             // Write device STG into a .g file
@@ -142,24 +100,112 @@ public class CheckTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.1);
 
+            // Generating system .g for conformation check (only if needed)
+            if ((envStg != null) && checkConformation) {
+                // Export environment STG (convert internal signals to dummies and keep track of renaming)
+                @SuppressWarnings("PMD.PrematureDeclaration")
+                Map<String, String> envSubstitutions = StgUtils.convertInternalSignalsToDummies(envStg);
+                File modEnvStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
+                Result<? extends ExportOutput> modEnvExportResult = StgUtils.exportStg(envStg, modEnvStgFile, monitor);
+                if (!modEnvExportResult.isSuccess()) {
+                    if (modEnvExportResult.isCancel()) {
+                        return Result.cancel();
+                    }
+                    return Result.failure(new VerificationChainOutput(
+                            modEnvExportResult, null, null, null, preparationParameters));
+                }
+                monitor.progressUpdate(0.2);
+
+                // Generating .g for the whole system (circuit and environment) without internal signals
+                Result<? extends PcompOutput> modPcompResult = PcompUtils.composeDevWithEnv(devStgFile, modEnvStgFile, directory, monitor,
+                        StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension,
+                        PcompTask.DETAIL_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + PcompTask.DETAIL_FILE_EXTENSION);
+
+                if (!modPcompResult.isSuccess()) {
+                    if (modPcompResult.isCancel()) {
+                        return Result.cancel();
+                    }
+                    return Result.failure(new VerificationChainOutput(
+                            devExportResult, modPcompResult, null, null, preparationParameters));
+                }
+                monitor.progressUpdate(0.3);
+
+                File modSysStgFile = modPcompResult.getPayload().getOutputFile();
+                Stg modSysStg = StgUtils.loadStg(modSysStgFile);
+                // Restore the original types of mutex grant in modified system STG (if needed)
+                if (!originalMutexGrantTypes.isEmpty()) {
+                    restoreMutexGrants(modSysStg, grantPairs, originalMutexGrantTypes);
+                    modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
+                    StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
+                }
+
+                CompositionData compositionData;
+                try {
+                    compositionData = new CompositionData(modPcompResult.getPayload().getDetailFile());
+                } catch (FileNotFoundException e) {
+                    return Result.exception(e);
+                }
+
+                // Apply substitutions to the composition data of the environment STG component
+                CompositionUtils.applyComponentSubstitutions(compositionData, modEnvStgFile, envSubstitutions);
+
+                // Insert shadow transitions into the composition STG for device outputs and internal signals
+                CompositionTransformer transformer = new CompositionTransformer(modSysStg, compositionData);
+                Collection<String> devOutputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
+                Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(devOutputSignals, devStgFile);
+
+                // Fill verification parameters with the inserted shadow transitions
+                Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(modSysStg, shadowTransitions);
+                @SuppressWarnings("PMD.PrematureDeclaration")
+                VerificationParameters conformationParameters = ReachUtils.getConformationParameters(shadowTransitionRefs);
+
+                modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + "-shadow" + stgFileExtension);
+                StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
+
+                File modUnfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + "-shadow" + PunfTask.PNML_FILE_EXTENSION);
+                PunfTask modPunfTask = new PunfTask(modSysStgFile, modUnfoldingFile, directory);
+                Result<? extends PunfOutput> modPunfResult = manager.execute(modPunfTask,
+                        "Unfolding .g", new SubtaskMonitor<Object>(monitor));
+
+                if (!modPunfResult.isSuccess()) {
+                    if (modPunfResult.isCancel()) {
+                        return Result.cancel();
+                    }
+                    return Result.failure(new VerificationChainOutput(
+                            devExportResult, modPcompResult, modPunfResult, null, preparationParameters));
+                }
+                monitor.progressUpdate(0.4);
+
+                MpsatTask conformationMpsatTask = new MpsatTask(modUnfoldingFile, modSysStgFile, conformationParameters, directory);
+                Result<? extends MpsatOutput>  conformationMpsatResult = manager.execute(
+                        conformationMpsatTask, "Running conformation check [MPSat]", new SubtaskMonitor<Object>(monitor));
+
+                Result<CompositionExportOutput> compositionExportResult = Result.success(new CompositionExportOutput(modSysStgFile, compositionData));
+
+                if (!conformationMpsatResult.isSuccess()) {
+                    if (conformationMpsatResult.isCancel()) {
+                        return Result.cancel();
+                    }
+                    return Result.failure(new VerificationChainOutput(
+                            compositionExportResult, modPcompResult, modPunfResult, conformationMpsatResult, conformationParameters));
+                }
+                monitor.progressUpdate(0.5);
+
+                if (conformationMpsatResult.getPayload().hasSolutions()) {
+                    return Result.success(new VerificationChainOutput(
+                            compositionExportResult, modPcompResult, modPunfResult, conformationMpsatResult, conformationParameters,
+                            "Circuit does not conform to the environment after the following trace(s):"));
+                }
+            }
+            monitor.progressUpdate(0.6);
+
             // Generating system .g for deadlock freeness and output persistency checks (only if needed)
             Result<? extends PcompOutput>  pcompResult = null;
-            File sysStgFile = null;
-            File detailFile = null;
             if (checkDeadlock || checkPersistency) {
+                File sysStgFile;
                 if (envStg == null) {
                     sysStgFile = devStgFile;
                 } else {
-                    File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
-                    Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(envStg, envStgFile, monitor);
-                    if (!envExportResult.isSuccess()) {
-                        if (envExportResult.isCancel()) {
-                            return Result.cancel();
-                        }
-                        return Result.failure(new VerificationChainOutput(
-                                envExportResult, null, null, null, preparationParameters));
-                    }
-
                     // Generating .g for the whole system (circuit and environment)
                     pcompResult = PcompUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
                     if (!pcompResult.isSuccess()) {
@@ -170,7 +216,6 @@ public class CheckTask implements Task<VerificationChainOutput> {
                                 devExportResult, pcompResult, null, null, preparationParameters));
                     }
                     sysStgFile = pcompResult.getPayload().getOutputFile();
-                    detailFile = pcompResult.getPayload().getDetailFile();
                 }
                 // Restore the original types of mutex grant in system STG (if needed)
                 if (!originalMutexGrantTypes.isEmpty()) {
@@ -179,65 +224,12 @@ public class CheckTask implements Task<VerificationChainOutput> {
                     sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
                     StgUtils.exportStg(sysStg, sysStgFile, monitor);
                 }
-            }
-            monitor.progressUpdate(0.2);
+                monitor.progressUpdate(0.2);
 
-            // Generating system .g for conformation check (only if needed)
-            Result<? extends PcompOutput>  modPcompResult = null;
-            File modSysStgFile = null;
-            File modDetailFile = null;
-            if ((envStg != null) && checkConformation) {
-                if ((sysStgFile != null) && envStg.getSignalReferences(Signal.Type.INTERNAL).isEmpty()) {
-                    modPcompResult = pcompResult;
-                    modSysStgFile = sysStgFile;
-                    modDetailFile = detailFile;
-                } else {
-                    // Convert internal signals of the environment STG to dummies
-                    StgUtils.convertInternalSignalsToDummies(envStg);
-                    File modEnvStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
-                    Result<? extends ExportOutput> modEnvExportResult = StgUtils.exportStg(envStg, modEnvStgFile, monitor);
-                    if (!modEnvExportResult.isSuccess()) {
-                        if (modEnvExportResult.isCancel()) {
-                            return Result.cancel();
-                        }
-                        return Result.failure(new VerificationChainOutput(
-                                modEnvExportResult, null, null, null, preparationParameters));
-                    }
-
-                    // Generating .g for the whole system (circuit and environment) without internal signals
-                    modPcompResult = PcompUtils.composeDevWithEnv(devStgFile, modEnvStgFile, directory, monitor,
-                            StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension,
-                            PcompTask.DETAIL_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + PcompTask.DETAIL_FILE_EXTENSION);
-
-                    if (!modPcompResult.isSuccess()) {
-                        if (modPcompResult.isCancel()) {
-                            return Result.cancel();
-                        }
-                        return Result.failure(new VerificationChainOutput(
-                                devExportResult, modPcompResult, null, null, preparationParameters));
-                    }
-                    modSysStgFile = modPcompResult.getPayload().getOutputFile();
-                    modDetailFile = modPcompResult.getPayload().getDetailFile();
-
-                    // Restore the original types of mutex grant in modified system STG (if needed)
-                    if (!originalMutexGrantTypes.isEmpty()) {
-                        Stg sysModStg = StgUtils.loadStg(modSysStgFile);
-                        restoreMutexGrants(sysModStg, grantPairs, originalMutexGrantTypes);
-                        modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
-                        StgUtils.exportStg(sysModStg, modSysStgFile, monitor);
-                    }
-                }
-            }
-            monitor.progressUpdate(0.3);
-
-            // Generate unfolding for deadlock freeness and output persistency checks (only if needed)
-            File unfoldingFile = null;
-            Result<? extends PunfOutput> punfResult = null;
-            if (checkDeadlock || checkPersistency) {
-                unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
+                File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
                 PunfTask punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
                 SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
-                punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
+                Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
 
                 if (!punfResult.isSuccess()) {
                     if (punfResult.isCancel()) {
@@ -246,108 +238,60 @@ public class CheckTask implements Task<VerificationChainOutput> {
                     return Result.failure(new VerificationChainOutput(
                             devExportResult, pcompResult, punfResult, null, preparationParameters));
                 }
-            }
 
-            // Generate unfolding for conformation checks (if needed)
-            File modUnfoldingFile = unfoldingFile;
-            Result<? extends PunfOutput> modPunfResult = punfResult;
-            if ((envStg != null) && checkConformation) {
-                if ((sysStgFile != modSysStgFile) || (modUnfoldingFile == null)) {
-                    modUnfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + PunfTask.PNML_FILE_EXTENSION);
-                    PunfTask punfModTask = new PunfTask(modSysStgFile, modUnfoldingFile, directory);
-                    SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<>(monitor);
-                    modPunfResult = manager.execute(punfModTask, "Unfolding .g", punfModMonitor);
+                // Check for deadlock (if requested)
+                if (checkDeadlock) {
+                    VerificationParameters deadlockParameters = ReachUtils.getDeadlockParameters();
+                    MpsatTask deadlockMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, deadlockParameters, directory);
+                    SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
+                    Result<? extends MpsatOutput> deadlockMpsatResult = manager.execute(
+                            deadlockMpsatTask, "Running deadlock check [MPSat]", mpsatMonitor);
 
-                    if (!modPunfResult.isSuccess()) {
-                        if (modPunfResult.isCancel()) {
+                    if (!deadlockMpsatResult.isSuccess()) {
+                        if (deadlockMpsatResult.isCancel()) {
                             return Result.cancel();
                         }
                         return Result.failure(new VerificationChainOutput(
-                                devExportResult, modPcompResult, modPunfResult, null, preparationParameters));
+                                devExportResult, pcompResult, punfResult, deadlockMpsatResult, deadlockParameters));
+                    }
+                    monitor.progressUpdate(0.7);
+
+                    if (deadlockMpsatResult.getPayload().hasSolutions()) {
+                        return Result.success(new VerificationChainOutput(
+                                devExportResult, pcompResult, punfResult, deadlockMpsatResult, deadlockParameters,
+                                "Circuit has a deadlock after the following trace(s):"));
                     }
                 }
-            }
-            monitor.progressUpdate(0.4);
+                monitor.progressUpdate(0.8);
 
-            // Check for conformation (only if requested and if the environment is specified)
-            if ((envStg != null) && checkConformation) {
-                CompositionData compositionData = new CompositionData(modDetailFile);
-                ComponentData devComponentData = compositionData.getComponentData(devStgFile);
-                Set<String> devPlaceNames = devComponentData.getDstPlaces();
-                VerificationParameters conformationParameters = getCircuitConformationParameters(devPlaceNames);
-                MpsatTask conformationMpsatTask = new MpsatTask(modUnfoldingFile, modSysStgFile, conformationParameters, directory);
-                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends MpsatOutput>  conformationMpsatResult = manager.execute(
-                        conformationMpsatTask, "Running conformation check [MPSat]", mpsatMonitor);
+                // Check for persistency (if requested)
+                if (checkPersistency) {
+                    VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(grantPairs);
+                    MpsatTask persistencyMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
+                    SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
+                    Result<? extends MpsatOutput> persistencyMpsatResult = manager.execute(
+                            persistencyMpsatTask, "Running output persistency check [MPSat]", mpsatMonitor);
 
-                if (!conformationMpsatResult.isSuccess()) {
-                    if (conformationMpsatResult.isCancel()) {
-                        return Result.cancel();
+                    if (!persistencyMpsatResult.isSuccess()) {
+                        if (persistencyMpsatResult.isCancel()) {
+                            return Result.cancel();
+                        }
+                        return Result.failure(new VerificationChainOutput(
+                                devExportResult, pcompResult, punfResult, persistencyMpsatResult, persistencyParameters));
                     }
-                    return Result.failure(new VerificationChainOutput(
-                            devExportResult, modPcompResult, modPunfResult, conformationMpsatResult, conformationParameters));
-                }
-                monitor.progressUpdate(0.5);
+                    monitor.progressUpdate(0.9);
 
-                if (conformationMpsatResult.getPayload().hasSolutions()) {
-                    return Result.success(new VerificationChainOutput(
-                            devExportResult, modPcompResult, modPunfResult, conformationMpsatResult, conformationParameters,
-                            "Circuit does not conform to the environment after the following trace(s):"));
-                }
-            }
-            monitor.progressUpdate(0.6);
-
-            // Check for deadlock (if requested)
-            if (checkDeadlock) {
-                VerificationParameters deadlockParameters = ReachUtils.getDeadlockParameters();
-                MpsatTask deadlockMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, deadlockParameters, directory);
-                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends MpsatOutput> deadlockMpsatResult = manager.execute(
-                        deadlockMpsatTask, "Running deadlock check [MPSat]", mpsatMonitor);
-
-                if (!deadlockMpsatResult.isSuccess()) {
-                    if (deadlockMpsatResult.isCancel()) {
-                        return Result.cancel();
+                    if (persistencyMpsatResult.getPayload().hasSolutions()) {
+                        return Result.success(new VerificationChainOutput(
+                                devExportResult, pcompResult, punfResult, persistencyMpsatResult, persistencyParameters,
+                                "Circuit is not output-persistent after the following trace(s):"));
                     }
-                    return Result.failure(new VerificationChainOutput(
-                            devExportResult, pcompResult, punfResult, deadlockMpsatResult, deadlockParameters));
                 }
-                monitor.progressUpdate(0.7);
-
-                if (deadlockMpsatResult.getPayload().hasSolutions()) {
-                    return Result.success(new VerificationChainOutput(
-                            devExportResult, pcompResult, punfResult, deadlockMpsatResult, deadlockParameters,
-                            "Circuit has a deadlock after the following trace(s):"));
-                }
+                monitor.progressUpdate(1.0);
             }
-            monitor.progressUpdate(0.8);
-
-            // Check for persistency (if requested)
-            if (checkPersistency) {
-                VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(grantPairs);
-                MpsatTask persistencyMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
-                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends MpsatOutput>  persistencyMpsatResult = manager.execute(
-                        persistencyMpsatTask, "Running output persistency check [MPSat]", mpsatMonitor);
-
-                if (!persistencyMpsatResult.isSuccess()) {
-                    if (persistencyMpsatResult.isCancel()) {
-                        return Result.cancel();
-                    }
-                    return Result.failure(new VerificationChainOutput(
-                            devExportResult, pcompResult, punfResult, persistencyMpsatResult, persistencyParameters));
-                }
-                monitor.progressUpdate(0.9);
-
-                if (persistencyMpsatResult.getPayload().hasSolutions()) {
-                    return Result.success(new VerificationChainOutput(
-                            devExportResult, pcompResult, punfResult, persistencyMpsatResult, persistencyParameters,
-                            "Circuit is not output-persistent after the following trace(s):"));
-                }
-            }
-            monitor.progressUpdate(1.0);
 
             // Success
+            Result<? extends PunfOutput>  punfResult = Result.success();
             Result<? extends MpsatOutput>  mpsatResult = Result.success();
             VerificationParameters completionParameters = ReachUtils.getToolchainCompletionParameters();
             String message = getSuccessMessage(envFile);
@@ -427,7 +371,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
         if (checkPersistency) {
             checkCount++;
         }
-        String message = "";
+        String message;
         boolean hasEnvironment = (environmentFile != null) && environmentFile.exists();
         if (hasEnvironment) {
             message = "Under the given environment (" + environmentFile.getName() + ")";
@@ -453,16 +397,6 @@ public class CheckTask implements Task<VerificationChainOutput> {
             return PropertyHelper.BULLET_PREFIX + message + "\n";
         }
         return message;
-    }
-
-    public static VerificationParameters getCircuitConformationParameters(Collection<String> devPlaceRefs) {
-        String str = devPlaceRefs.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
-        String reach = CIRCUIT_CONFORMATION_REACH.replace(DEV_PLACES_REPLACEMENT, str);
-        return new VerificationParameters("Conformation",
-                VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                reach, true);
     }
 
 }

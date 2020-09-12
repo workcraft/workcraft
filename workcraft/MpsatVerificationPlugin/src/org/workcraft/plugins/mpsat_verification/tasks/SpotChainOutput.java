@@ -21,7 +21,7 @@ public class SpotChainOutput extends ChainOutput {
             Result<? extends PcompOutput> pcompResult,
             Result<? extends PunfOutput> punfResult) {
 
-        super(exportResult, pcompResult, punfResult, null);
+        super(exportResult, pcompResult, punfResult);
         this.ltl2tgbaResult = ltl2tgbaResult;
     }
 
