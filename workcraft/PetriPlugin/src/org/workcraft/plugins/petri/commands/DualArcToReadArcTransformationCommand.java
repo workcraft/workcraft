@@ -32,7 +32,7 @@ public class DualArcToReadArcTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public Void execute(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final VisualModel model = we.getModelEntry().getVisualModel();
         HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = ConversionUtils.getSelectedOrAllDualArcs(model);
         if (!dualArcs.isEmpty()) {
@@ -40,7 +40,6 @@ public class DualArcToReadArcTransformationCommand extends AbstractTransformatio
             HashSet<VisualReadArc> readArcs = ConversionUtils.convertDualArcsToReadArcs(model, dualArcs);
             model.select(readArcs);
         }
-        return null;
     }
 
     @Override

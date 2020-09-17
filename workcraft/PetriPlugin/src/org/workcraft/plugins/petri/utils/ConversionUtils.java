@@ -41,6 +41,7 @@ public class ConversionUtils {
 
     public static HashSet<VisualReadArc> convertDualArcsToReadArcs(final VisualModel visualModel,
             HashSet<Pair<VisualConnection, VisualConnection>> dualArcs) {
+
         HashSet<VisualReadArc> readArcs = new HashSet<>(dualArcs.size());
         for (Pair<VisualConnection, VisualConnection> dualArc: dualArcs) {
             VisualConnection consumingArc = dualArc.getFirst();
