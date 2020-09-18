@@ -107,8 +107,6 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
     private BooleanFormula propagateInversion(BooleanFormula formula) {
         BooleanFormula result = null;
         if (formula != null) {
-//            BooleanWorker worker = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
-//            result = worker.not(formula.accept(new BooleanComplementTransformer(worker)));
             result = FormulaUtils.invert(formula.accept(new BooleanComplementTransformer(CleverBooleanWorker.getInstance())));
         }
         return result;

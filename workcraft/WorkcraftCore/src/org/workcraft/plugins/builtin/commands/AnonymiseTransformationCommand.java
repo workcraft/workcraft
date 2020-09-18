@@ -4,8 +4,8 @@ import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class AnonymiseTransformationCommand extends AbstractTransformationCommand {
 
@@ -23,7 +23,6 @@ public class AnonymiseTransformationCommand extends AbstractTransformationComman
     public Position getPosition() {
         return Position.BOTTOM;
     }
-
 
     @Override
     public Void execute(WorkspaceEntry we) {

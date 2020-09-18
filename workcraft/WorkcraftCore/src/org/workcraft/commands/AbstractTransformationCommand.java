@@ -29,18 +29,20 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public final void run(WorkspaceEntry we) {
+        // Transformations should run synchronously (blocking the editor) as they alter the
+        // model, therefore execute method (of ScriptableCommand interface) is called.
+        execute(we);
+    }
+
+    @Override
+    public Void execute(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<? extends VisualNode> nodes = collect(visualModel);
         if (!nodes.isEmpty()) {
             we.saveMemento();
             transform(visualModel, nodes);
         }
-    }
-
-    @Override
-    public Void execute(WorkspaceEntry we) {
-        run(we);
         return null;
     }
 

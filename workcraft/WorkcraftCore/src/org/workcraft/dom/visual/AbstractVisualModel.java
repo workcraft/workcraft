@@ -746,6 +746,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     }
 
     private PropertyDescriptor getNameProperty(VisualNode node) {
+        String name = getMathName(node);
         return new PropertyDeclaration<>(String.class, PROPERTY_NAME,
                 value -> {
                     if (Identifier.isValid(value)) {
@@ -755,7 +756,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
                                 value = Identifier.appendNamespaceSeparator(value);
                             }
                         }
-                        if (!value.equals(getMathName(node))) {
+                        if (!value.equals(name)) {
                             setMathName(node, value);
                             node.sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
                         }
@@ -764,7 +765,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
                                 + "The first character must be alphabetic or '_' and the following -- alphanumeric or '_'.");
                     }
                 },
-                () -> Identifier.truncateNamespaceSeparator(getMathName(node)));
+                () -> name == null ? null : Identifier.truncateNamespaceSeparator(name));
     }
 
 }

@@ -162,7 +162,8 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         TaskManager manager = framework.getTaskManager();
         CheckTask task = new CheckTask(we, checkConformation, false, checkPersistence);
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        manager.queue(task, description, monitor);
+        // FIXME: Execute synchronously (asynchronous queueing blocks when called from the main menu)
+        manager.execute(task, description, monitor);
         return monitor.waitForHandledResult();
     }
 
@@ -172,7 +173,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
             result.addAll(Hierarchy.getDescendantsOfType(model.getRoot(),
-                    VisualFunctionComponent.class, component -> component.getIsZeroDelay()));
+                    VisualFunctionComponent.class, VisualFunctionComponent::getIsZeroDelay));
 
             Collection<VisualNode> selection = model.getSelection();
             if (!selection.isEmpty()) {
@@ -182,7 +183,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
             for (VisualFunctionComponent component : result) {
                 forkCountMap.put(component, getForkCount(circuit, component));
             }
-            Collections.sort(result, Comparator.comparingInt(forkCountMap::get));
+            result.sort(Comparator.comparingInt(forkCountMap::get));
         }
         return result;
     }
