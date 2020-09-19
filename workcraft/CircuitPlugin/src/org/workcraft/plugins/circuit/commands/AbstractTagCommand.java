@@ -38,7 +38,13 @@ public abstract class AbstractTagCommand implements ScriptableCommand<Void> {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public final void run(WorkspaceEntry we) {
+        // Run synchronously (blocking the editor) as model is changed.
+        execute(we);
+    }
+
+    @Override
+    public final Void execute(WorkspaceEntry we) {
         we.captureMemento();
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         Collection<Contact> contacts = getFunction().apply(circuit);
@@ -56,11 +62,6 @@ public abstract class AbstractTagCommand implements ScriptableCommand<Void> {
             Class<GraphEditorTool> toolClass = getToolClass();
             toolbox.selectTool(toolbox.getToolInstance(toolClass));
         }
-    }
-
-    @Override
-    public Void execute(WorkspaceEntry we) {
-        run(we);
         return null;
     }
 

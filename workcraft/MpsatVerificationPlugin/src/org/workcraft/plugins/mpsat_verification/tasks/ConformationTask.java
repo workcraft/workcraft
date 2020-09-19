@@ -189,7 +189,6 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
-        // Store composition STG  -- redundant !!!
         File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
         VerificationParameters verificationParameters = payload.getVerificationParameters();
         MpsatTask mpsatTask = new MpsatTask(unfoldingFile, modSysStgFile, verificationParameters, directory);

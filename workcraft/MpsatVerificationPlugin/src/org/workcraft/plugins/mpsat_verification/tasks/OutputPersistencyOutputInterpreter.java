@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
@@ -37,7 +38,7 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
             Trace trace = solution.getMainTrace();
             LogUtils.logMessage("Violation trace: " + trace);
             if (data != null) {
-                trace = projectTrace(trace, data);
+                trace = CompositionUtils.projectTrace(trace, data);
                 LogUtils.logMessage("Projection trace: " + trace);
             }
             if (!PetriUtils.fireTrace(stg, trace)) {

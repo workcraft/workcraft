@@ -28,9 +28,17 @@ public abstract class AbstractInsertionCommand implements ScriptableCommand<Void
     }
 
     @Override
-    public Void execute(WorkspaceEntry we) {
-        run(we);
+    public final void run(WorkspaceEntry we) {
+        // Run synchronously (blocking the editor) as model is changed.
+        execute(we);
+    }
+
+    @Override
+    public final Void execute(WorkspaceEntry we) {
+        insert(we);
         return null;
     }
+
+    public abstract void insert(WorkspaceEntry we);
 
 }

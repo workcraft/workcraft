@@ -35,8 +35,8 @@ class OutputDeterminacyOutputInterpreter extends AbstractCompositionOutputInterp
             Trace compositionTrace = compositionSolution.getMainTrace();
             LogUtils.logMessage("Violation trace of the auto-composition: " + compositionTrace);
 
-            Trace devTrace = projectTrace(compositionTrace, devData);
-            Trace envTrace = projectTrace(compositionTrace, envData);
+            Trace devTrace = CompositionUtils.projectTrace(compositionTrace, devData);
+            Trace envTrace = CompositionUtils.projectTrace(compositionTrace, envData);
             LogUtils.logMessage("Projected pair of traces:\n    " + devTrace + "\n    " + envTrace);
 
             Set<Trace> compositionContinuations = compositionSolution.getContinuations();

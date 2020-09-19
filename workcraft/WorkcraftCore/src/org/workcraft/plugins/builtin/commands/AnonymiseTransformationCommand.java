@@ -2,8 +2,6 @@ package org.workcraft.plugins.builtin.commands;
 
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -25,16 +23,11 @@ public class AnonymiseTransformationCommand extends AbstractTransformationComman
     }
 
     @Override
-    public Void execute(WorkspaceEntry we) {
+    public void transform(WorkspaceEntry we) {
         we.saveMemento();
         MathModel model = WorkspaceUtils.getAs(we, MathModel.class);
         model.anonymise();
         we.setChanged(true);
-        return null;
-    }
-
-    @Override
-    public void transform(VisualModel model, VisualNode node) {
     }
 
 }

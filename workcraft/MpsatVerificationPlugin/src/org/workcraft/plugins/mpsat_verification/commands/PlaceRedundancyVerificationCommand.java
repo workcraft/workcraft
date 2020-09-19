@@ -98,11 +98,6 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
-        // No transformation applied.
-    }
-
-    @Override
     public void run(WorkspaceEntry we, Collection<String> data, ProgressMonitor monitor) {
         if (data.isEmpty()) {
             DialogUtils.showWarning("No places specified for redundancy check.");

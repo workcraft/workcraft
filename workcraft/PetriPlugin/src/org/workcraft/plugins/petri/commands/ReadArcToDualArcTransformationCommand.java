@@ -49,7 +49,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> readArcs = new HashSet<>();
         readArcs.addAll(ConversionUtils.getVisualReadArcs(model));
         Collection<VisualNode> selection = model.getSelection();
@@ -60,7 +60,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if (node instanceof VisualReadArc) {
             VisualReadArc readArc = (VisualReadArc) node;
             Pair<VisualConnection, VisualConnection> dualArc = ConversionUtils.converReadArcTotDualArc(model, readArc);

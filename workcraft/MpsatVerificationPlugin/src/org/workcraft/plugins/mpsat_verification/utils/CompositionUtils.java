@@ -37,6 +37,20 @@ public class CompositionUtils {
         }
     }
 
+    public static Trace projectTrace(Trace trace, ComponentData componentData) {
+        if ((trace == null) || trace.isEmpty() || (componentData == null)) {
+            return trace;
+        }
+        Trace result = new Trace();
+        for (String ref : trace) {
+            String srcRef = componentData.getSrcTransition(ref);
+            if (srcRef != null) {
+                result.add(srcRef);
+            }
+        }
+        return result;
+    }
+
     public static Map<String, Trace> getEnabledness(Collection<Trace> compositionContinuations, ComponentData componentData) {
         Map<String, Trace> result = new HashMap<>();
         for (Trace compositionContinuation : compositionContinuations) {

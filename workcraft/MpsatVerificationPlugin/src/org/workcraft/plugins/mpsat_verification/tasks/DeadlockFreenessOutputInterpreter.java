@@ -3,6 +3,7 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ReachabilityDialog;
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -57,7 +58,7 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
         for (Solution solution : solutions) {
             Trace trace = solution.getMainTrace();
             LogUtils.logMessage("Processing reported trace: " + trace);
-            Trace projectedTrace = projectTrace(trace, data);
+            Trace projectedTrace = CompositionUtils.projectTrace(trace, data);
             // Execute trace to potentially interesting state
             HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
             if (!PetriUtils.fireTrace(stg, projectedTrace)) {

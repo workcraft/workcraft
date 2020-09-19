@@ -9,7 +9,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class ResetActiveHighInsertionCommand extends AbstractInsertionCommand {
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public void insert(WorkspaceEntry we) {
         if (isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we)) {
             we.saveMemento();
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);

@@ -2,8 +2,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.traces.Solution;
 import org.workcraft.utils.DialogUtils;
@@ -80,12 +78,11 @@ public class MpsatTask implements Task<MpsatOutput> {
         if (result.isSuccess() && (output != null)) {
             int returnCode = output.getReturnCode();
             if ((returnCode == 0) || (returnCode == 1)) {
-                Stg stg = StgUtils.importStg(netFile);
                 try {
                     MpsatOutputReader outputReader = new MpsatOutputReader(outputFile);
                     if (outputReader.isSuccess()) {
                         List<Solution> solutions = outputReader.getSolutions();
-                        return Result.success(new MpsatOutput(output, verificationParameters, stg, solutions));
+                        return Result.success(new MpsatOutput(output, verificationParameters, netFile, solutions));
                     }
                     return Result.exception(outputReader.getMessage());
                 } catch (ParserConfigurationException | SAXException | IOException e) {

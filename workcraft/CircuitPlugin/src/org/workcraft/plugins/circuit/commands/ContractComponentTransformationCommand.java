@@ -60,7 +60,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> components = new HashSet<>();
         components.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitComponent.class));
         components.retainAll(model.getSelection());
@@ -68,7 +68,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualCircuitComponent)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualCircuitComponent component = (VisualCircuitComponent) node;

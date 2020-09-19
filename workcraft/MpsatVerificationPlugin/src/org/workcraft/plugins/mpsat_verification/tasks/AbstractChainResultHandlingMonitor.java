@@ -5,8 +5,6 @@ import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutputParser;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.ExternalProcessOutput;
@@ -81,9 +79,8 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
                 if ((cause == PunfOutputParser.Cause.INCONSISTENT) && isConsistencyCheckMode(chainOutput)) {
                     ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
                     PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
-                    Stg stg = StgUtils.importStg(punfOutput.getInputFile());
                     MpsatOutput mpsatFakeOutput = new MpsatOutput(new ExternalProcessOutput(0),
-                            ReachUtils.getConsistencyParameters(), stg, Collections.singletonList(solution));
+                            ReachUtils.getConsistencyParameters(), punfOutput.getInputFile(), Collections.singletonList(solution));
 
                     new ConsistencyOutputInterpreter(we, exportOutput, pcompOutput, mpsatFakeOutput, isInteractive()).interpret();
                 } else {

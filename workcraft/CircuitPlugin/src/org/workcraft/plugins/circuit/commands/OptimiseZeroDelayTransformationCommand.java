@@ -43,12 +43,12 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public Void execute(WorkspaceEntry we) {
+    public void transform(WorkspaceEntry we) {
         if (!checkPrerequisites(we)) {
-            return null;
+            return;
         }
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        Collection<VisualFunctionComponent> components = collect(circuit);
+        Collection<VisualFunctionComponent> components = collectNodes(circuit);
         boolean noSelection = circuit.getSelection().isEmpty();
         if (components.isEmpty()) {
             if (noSelection) {
@@ -56,7 +56,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
             } else {
                 DialogUtils.showError("No zero delay components were selected.");
             }
-            return null;
+            return;
         }
         boolean checkConformation = true;
         boolean checkPersistency = true;
@@ -67,18 +67,18 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
             String msg = "Environment STG is missing, so conformation cannot be checked during optimisation.\n\n" +
                     "Proceed checking output persistency only?";
             if (!DialogUtils.showConfirmWarning(msg, TITLE, true)) {
-                return null;
+                return;
             }
             checkConformation = false;
         } else {
             if (!VerificationUtils.checkInterfaceConstrains(we, true)) {
-                return null;
+                return;
             }
             if (!envStg.getDummyTransitions().isEmpty()) {
                 String msg = "Environment STG has dummies, so output persistency cannot be checked during optimisation.\n\n" +
                         "Proceed checking conformation only?";
                 if (!DialogUtils.showConfirmWarning(msg, TITLE, true)) {
-                    return null;
+                    return;
                 }
                 checkPersistency = false;
             }
@@ -86,7 +86,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         Boolean isGoodInitial = checkSpeedIndependence(we, description, checkConformation, checkPersistency);
         if (isGoodInitial == null) {
-            return null;
+            return;
         }
         if (!isGoodInitial) {
             String msg = (checkConformation && checkPersistency
@@ -94,7 +94,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
                     : checkConformation ? "Conformation" : "Output persistence")
                     + " must hold before optimising zero delay components.";
             DialogUtils.showError(msg);
-            return null;
+            return;
         }
         we.captureMemento();
         Collection<String> refs = new ArrayList<>();
@@ -106,7 +106,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
                 Boolean isGoodIteration = checkSpeedIndependence(we, descriptionIteration, checkConformation, checkPersistency);
                 if (isGoodIteration == null) {
                     we.cancelMemento();
-                    return null;
+                    return;
                 }
                 if (isGoodIteration) {
                     refs.add(ref);
@@ -134,7 +134,6 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
             }
             we.saveMemento();
         }
-        return null;
     }
 
     private void renameOptimisedComponents(Circuit mathModel, Collection<String> refs) {
@@ -168,7 +167,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public Collection<VisualFunctionComponent> collect(VisualModel model) {
+    public Collection<VisualFunctionComponent> collectNodes(VisualModel model) {
         List<VisualFunctionComponent> result = new ArrayList<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
@@ -198,11 +197,6 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
             }
         }
         return result;
-    }
-
-
-    @Override
-    public void transform(VisualModel model, VisualNode node) {
     }
 
 }

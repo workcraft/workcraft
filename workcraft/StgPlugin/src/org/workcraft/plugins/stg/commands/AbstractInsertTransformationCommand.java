@@ -52,7 +52,7 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> arcs = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
@@ -65,7 +65,7 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualConnection)) {
             VisualStg stg = (VisualStg) model;
             VisualConnection connection = (VisualConnection) node;

@@ -23,6 +23,13 @@ public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
 
     @Override
     public final void run(WorkspaceEntry we) {
+        // Layouts should run synchronously (blocking the editor) as they alter the
+        // model, therefore execute method (of ScriptableCommand interface) is called.
+        execute(we);
+    }
+
+    @Override
+    public final Void execute(WorkspaceEntry we) {
         we.saveMemento();
         VisualModel model = WorkspaceUtils.getAs(we, VisualModel.class);
         layout(model);
@@ -32,11 +39,6 @@ public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
             final GraphEditorPanel editor = mainWindow.getCurrentEditor();
             editor.zoomFit();
         }
-    }
-
-    @Override
-    public final Void execute(WorkspaceEntry we) {
-        run(we);
         return null;
     }
 

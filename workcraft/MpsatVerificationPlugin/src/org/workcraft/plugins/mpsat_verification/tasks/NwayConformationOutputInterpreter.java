@@ -117,7 +117,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
         for (Solution solution : solutions) {
             // Get unique projection trace
             Solution compositionSolution = MpsatUtils.fixSolutionToggleEvents(compositionStg, solution);
-            Trace componentTrace = projectTrace(compositionSolution.getMainTrace(), componentData);
+            Trace componentTrace = CompositionUtils.projectTrace(compositionSolution.getMainTrace(), componentData);
             String traceText = componentTrace.toString();
             if (!visitedTraces.contains(traceText)) {
                 visitedTraces.add(traceText);

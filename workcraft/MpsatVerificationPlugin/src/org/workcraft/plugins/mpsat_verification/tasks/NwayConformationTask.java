@@ -171,7 +171,6 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
-        // Store composition STG  -- redundant !!!
         File compositionStgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
         VerificationParameters verificationParameters = payload.getVerificationParameters();
         MpsatTask mpsatTask = new MpsatTask(unfoldingFile, compositionStgFile, verificationParameters, directory);

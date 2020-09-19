@@ -57,7 +57,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> drivers = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
@@ -85,7 +85,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualContact)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualContact driver = (VisualContact) node;

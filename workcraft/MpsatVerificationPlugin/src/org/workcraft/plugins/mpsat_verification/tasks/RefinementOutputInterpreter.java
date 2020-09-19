@@ -40,7 +40,7 @@ class RefinementOutputInterpreter extends AbstractCompositionOutputInterpreter {
         for (Solution solution : solutions) {
             // Get unique projection trace
             Solution compositionSolution = MpsatUtils.fixSolutionToggleEvents(compositionStg, solution);
-            Trace implementationTrace = projectTrace(compositionSolution.getMainTrace(), implementationData);
+            Trace implementationTrace = CompositionUtils.projectTrace(compositionSolution.getMainTrace(), implementationData);
             String traceText = implementationTrace.toString();
             if (!visitedTraces.contains(traceText)) {
                 visitedTraces.add(traceText);

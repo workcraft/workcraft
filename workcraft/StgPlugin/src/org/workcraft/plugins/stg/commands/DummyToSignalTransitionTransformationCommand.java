@@ -54,7 +54,7 @@ public class DummyToSignalTransitionTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> dummyTransitions = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
@@ -65,7 +65,7 @@ public class DummyToSignalTransitionTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualDummyTransition)) {
             VisualStg stg = (VisualStg) model;
             VisualDummyTransition dummyTransition = (VisualDummyTransition) node;

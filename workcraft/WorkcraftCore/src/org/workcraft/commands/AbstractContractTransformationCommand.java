@@ -12,7 +12,7 @@ public abstract class AbstractContractTransformationCommand extends AbstractTran
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         for (VisualNode pred : model.getPreset(node)) {
             for (VisualNode succ : model.getPostset(node)) {
                 try {

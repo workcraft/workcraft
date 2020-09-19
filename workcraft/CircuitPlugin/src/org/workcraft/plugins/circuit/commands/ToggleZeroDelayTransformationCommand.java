@@ -55,7 +55,7 @@ public class ToggleZeroDelayTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> components = new HashSet<>();
         Container root = model.getRoot();
         Collection<VisualFunctionComponent> inverters = Hierarchy.getDescendantsOfType(
@@ -69,7 +69,7 @@ public class ToggleZeroDelayTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionComponent)) {
             VisualFunctionComponent component = (VisualFunctionComponent) node;
             try {

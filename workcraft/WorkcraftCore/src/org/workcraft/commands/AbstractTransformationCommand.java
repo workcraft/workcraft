@@ -30,33 +30,37 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
 
     @Override
     public final void run(WorkspaceEntry we) {
-        // Transformations should run synchronously (blocking the editor) as they alter the
-        // model, therefore execute method (of ScriptableCommand interface) is called.
+        // Run synchronously (blocking the editor) as model is changed.
         execute(we);
     }
 
     @Override
-    public Void execute(WorkspaceEntry we) {
-        VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
-        Collection<? extends VisualNode> nodes = collect(visualModel);
-        if (!nodes.isEmpty()) {
-            we.saveMemento();
-            transform(visualModel, nodes);
-        }
+    public final Void execute(WorkspaceEntry we) {
+        transform(we);
         return null;
     }
 
-    public Collection<? extends VisualNode> collect(VisualModel model) {
-        return new HashSet<>(model.getSelection());
-    }
-
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
-        model.selectNone();
-        for (VisualNode node: nodes) {
-            transform(model, node);
+    public void transform(WorkspaceEntry we) {
+        VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
+        Collection<? extends VisualNode> nodes = collectNodes(visualModel);
+        if (!nodes.isEmpty()) {
+            we.saveMemento();
+            transformNodes(visualModel, nodes);
         }
     }
 
-    public abstract void transform(VisualModel model, VisualNode node);
+    public Collection<? extends VisualNode> collectNodes(VisualModel model) {
+        return new HashSet<>(model.getSelection());
+    }
+
+    public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
+        model.selectNone();
+        for (VisualNode node: nodes) {
+            transformNode(model, node);
+        }
+    }
+
+    public void transformNode(VisualModel model, VisualNode node) {
+    }
 
 }

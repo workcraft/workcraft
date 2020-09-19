@@ -28,10 +28,10 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
     }
 
     @Override
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
+    public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
         Map<Class<? extends VisualComponent>, Set<VisualComponent>> classComponents = new HashMap<>();
         Set<Class<? extends VisualComponent>> mergableClasses = getMergableClasses();
-        for (Class<? extends VisualComponent> mergableClass: mergableClasses) {
+        for (Class<? extends VisualComponent> mergableClass : mergableClasses) {
             Set<VisualComponent> components = new HashSet<>();
             for (Node component: nodes) {
                 if (mergableClass.isInstance(component)) {
@@ -49,11 +49,6 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
             }
         }
     }
-
-    @Override
-    public void transform(VisualModel model, VisualNode node) {
-    }
-
 
     public <T extends VisualComponent> T createMergedComponent(VisualModel model, Set<VisualComponent> components, Class<T> type) {
         T result = null;
@@ -75,7 +70,7 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
                 result = model.createVisualComponent(mathNode, type, vContainer);
                 int n = components.size();
                 result.setRootSpacePosition(new Point2D.Double(x / n, y / n));
-                result.mixStyle(components.toArray(new VisualComponent[components.size()]));
+                result.mixStyle(components.toArray(new VisualComponent[0]));
             }
         }
         return result;
@@ -103,7 +98,7 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
                             newConnection = model.connect(newComponent, second);
                         }
                     }
-                    if ((newConnection != null) && (connection instanceof VisualConnection)) {
+                    if (newConnection != null) {
                         newConnection.copyStyle(connection);
                         newConnection.copyShape(connection);
                     }

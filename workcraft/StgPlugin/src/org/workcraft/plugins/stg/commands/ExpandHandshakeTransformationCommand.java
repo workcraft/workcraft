@@ -63,7 +63,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> signalTransitions = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
@@ -74,12 +74,12 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
+    public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
         if (model instanceof VisualStg) {
             suffixPair = getSufixes();
             if (suffixPair != null) {
                 for (VisualNode node: nodes) {
-                    transform(model, node);
+                    transformNode(model, node);
                 }
             }
             suffixPair = null;
@@ -87,7 +87,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             VisualStg stg = (VisualStg) model;
             VisualSignalTransition transition = (VisualSignalTransition) node;

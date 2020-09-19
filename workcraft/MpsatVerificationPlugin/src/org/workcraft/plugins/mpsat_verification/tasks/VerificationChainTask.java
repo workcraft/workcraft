@@ -85,7 +85,6 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
-        // Store STG  -- redundant !!!
         File netFile = new File(directory, NET_FILE_NAME);
         MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
         Result<? extends MpsatOutput>  mpsatResult = Framework.getInstance().getTaskManager().execute(

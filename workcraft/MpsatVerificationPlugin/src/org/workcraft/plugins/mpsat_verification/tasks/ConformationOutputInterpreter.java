@@ -45,7 +45,7 @@ class ConformationOutputInterpreter extends AbstractCompositionOutputInterpreter
         for (Solution solution : solutions) {
             // Get unique projection trace
             Solution compositionSolution = MpsatUtils.fixSolutionToggleEvents(compositionStg, solution);
-            Trace devTrace = projectTrace(compositionSolution.getMainTrace(), devData);
+            Trace devTrace = CompositionUtils.projectTrace(compositionSolution.getMainTrace(), devData);
             String traceText = devTrace.toString();
             if (!visitedTraces.contains(traceText)) {
                 visitedTraces.add(traceText);

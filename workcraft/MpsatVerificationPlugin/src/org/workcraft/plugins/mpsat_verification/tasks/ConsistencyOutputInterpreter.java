@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -28,7 +29,7 @@ class ConsistencyOutputInterpreter extends ReachabilityOutputInterpreter {
         ComponentData data = getComponentData();
         for (Solution solution: solutions) {
             LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
-            Trace trace = projectTrace(solution.getMainTrace(), data);
+            Trace trace = CompositionUtils.projectTrace(solution.getMainTrace(), data);
             int size = trace.size();
             if (size <= 0) {
                 LogUtils.logMessage("No consistency violation detected");
