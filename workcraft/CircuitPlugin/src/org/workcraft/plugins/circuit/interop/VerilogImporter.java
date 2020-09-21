@@ -733,22 +733,21 @@ public class VerilogImporter implements Importer {
         component.setModule(module.name);
         circuit.add(component);
         reparentAndRenameComponent(circuit, component, instance.name);
-        addMutexPin(circuit, component, module.r1, instance.r1, wires);
+        FunctionContact r1Contact = addMutexPin(circuit, component, module.r1, instance.r1, wires);
         FunctionContact g1Contact = addMutexPin(circuit, component, module.g1, instance.g1, wires);
-        addMutexPin(circuit, component, module.r2, instance.r2, wires);
+        FunctionContact r2Contact = addMutexPin(circuit, component, module.r2, instance.r2, wires);
         FunctionContact g2Contact = addMutexPin(circuit, component, module.g2, instance.g2, wires);
 
-        String r1Name = module.r1.name;
-        String g1Name = module.g1.name;
-        String r2Name = module.r2.name;
-        String g2Name = module.g2.name;
-        String g1Set = MutexUtils.getGrantSet(r1Name, g2Name, r2Name);
-        String g1Reset = MutexUtils.getGrantReset(r1Name);
-        String g2Set = MutexUtils.getGrantSet(r2Name, g1Name, r1Name);
-        String g2Reset = MutexUtils.getGrantReset(r2Name);
+        BooleanFormula g1Set = MutexUtils.getGrantSet(r1Contact, g2Contact, r2Contact);
+        g1Contact.setSetFunctionQuiet(g1Set);
 
-        MutexUtils.setMutexFunctions(circuit, component, g1Contact, g1Set, g1Reset);
-        MutexUtils.setMutexFunctions(circuit, component, g2Contact, g2Set, g2Reset);
+        BooleanFormula g1Reset = MutexUtils.getGrantReset(r1Contact);
+        g1Contact.setResetFunctionQuiet(g1Reset);
+
+        BooleanFormula g2Set = MutexUtils.getGrantSet(r2Contact, g1Contact, r1Contact);
+        g2Contact.setSetFunctionQuiet(g2Set);
+        BooleanFormula g2Reset = MutexUtils.getGrantReset(r2Contact);
+        g2Contact.setResetFunctionQuiet(g2Reset);
 
         setMutexGrant(circuit, instance.g1, wires);
         setMutexGrant(circuit, instance.g2, wires);
@@ -764,8 +763,6 @@ public class VerilogImporter implements Importer {
                 port.setIOType(IOType.INPUT);
                 break;
             case INTERNAL:
-                port.setIOType(IOType.OUTPUT);
-                break;
             case OUTPUT:
                 port.setIOType(IOType.OUTPUT);
                 break;

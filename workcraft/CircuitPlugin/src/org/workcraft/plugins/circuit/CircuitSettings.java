@@ -67,6 +67,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Gate library
     private static final String keyGateLibrary = prefix + ".gateLibrary";
     private static final String keyWaitData = prefix + ".waitData";
+    private static final String keyWait0Data = prefix + ".wait0Data";
     private static final String keyMutexData = prefix + ".mutexData";
     // Import/export
     private static final String keyExportSubstitutionLibrary = prefix + ".exportSubstitutionLibrary";
@@ -105,6 +106,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Gate library
     private static final String defaultGateLibrary = BackendUtils.getLibraryPath("workcraft.lib");
     private static final String defaultWaitData = "WAIT (sig, (ctrl, san))";
+    private static final String defaultWait0Data = "WAIT0 (sig, (ctrl, san))";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
     // Import/export
     private static final String defaultExportSubstitutionLibrary = "";
@@ -143,6 +145,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Gate library
     private static String gateLibrary = defaultGateLibrary;
     private static String waitData = defaultWaitData;
+    private static String wait0Data = defaultWait0Data;
     private static String mutexData = defaultMutexData;
     // Import/export
     private static String exportSubstitutionLibrary = defaultExportSubstitutionLibrary;
@@ -227,6 +230,17 @@ public class CircuitSettings extends AbstractModelSettings {
                     }
                 },
                 CircuitSettings::getWaitData));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                "WAIT0 name, dirty input and clean handshake",
+                value -> {
+                    if (parseWaitData(value) != null) {
+                        setWait0Data(value);
+                    } else {
+                        errorDescriptionFormat("WAIT0", defaultWait0Data);
+                    }
+                },
+                CircuitSettings::getWait0Data));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "MUTEX name and request-grant pairs",
@@ -381,6 +395,7 @@ public class CircuitSettings extends AbstractModelSettings {
         // Gate library
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
         setWaitData(config.getString(keyWaitData, defaultWaitData));
+        setWait0Data(config.getString(keyWait0Data, defaultWait0Data));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
         // Import/export
         setExportSubstitutionLibrary(config.getString(keyExportSubstitutionLibrary, defaultExportSubstitutionLibrary));
@@ -419,6 +434,7 @@ public class CircuitSettings extends AbstractModelSettings {
         // Gate library
         config.set(keyGateLibrary, getGateLibrary());
         config.set(keyWaitData, getWaitData());
+        config.set(keyWait0Data, getWait0Data());
         config.set(keyMutexData, getMutexData());
         // Import/export
         config.set(keyExportSubstitutionLibrary, getExportSubstitutionLibrary());
@@ -533,6 +549,18 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static Wait parseWaitData() {
         return parseWaitData(getWaitData());
+    }
+
+    public static String getWait0Data() {
+        return wait0Data;
+    }
+
+    public static void setWait0Data(String value) {
+        wait0Data = value;
+    }
+
+    public static Wait parseWait0Data() {
+        return parseWaitData(getWait0Data());
     }
 
     public static String getMutexData() {
@@ -774,20 +802,13 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static Pair<String, String> parsePortPinPair(String value) {
-        String portName = null;
-        String pinName = null;
         if ((value != null) && !value.isEmpty()) {
             String[] split = value.replaceAll("\\s", "").split("/");
-            if (split.length > 0) {
-                portName = split[0];
-            }
-            if (split.length > 1) {
-                pinName = split[1];
-            } else {
-                pinName = portName;
-            }
+            String portName = (split.length > 0) ? split[0] : null;
+            String pinName = (split.length > 1) ? split[1] : portName;
+            return Pair.of(portName, pinName);
         }
-        return Pair.of(portName, pinName);
+        return null;
     }
 
 }
