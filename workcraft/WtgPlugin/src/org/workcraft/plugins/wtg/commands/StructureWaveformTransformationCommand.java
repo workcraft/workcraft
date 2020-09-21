@@ -43,7 +43,7 @@ public class StructureWaveformTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> waveforms = new HashSet<>();
         if (model instanceof VisualWtg) {
             VisualWtg wtg = (VisualWtg) model;
@@ -62,7 +62,7 @@ public class StructureWaveformTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualWtg) && (node instanceof VisualWaveform)) {
             restructureWaveform((VisualWtg) model, (VisualWaveform) node);
         }

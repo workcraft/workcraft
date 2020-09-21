@@ -2,8 +2,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.traces.Solution;
 import org.workcraft.utils.DialogUtils;
@@ -16,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MpsatTask implements Task<MpsatOutput> {
@@ -47,9 +46,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         command.add(toolName);
 
         // Built-in arguments
-        for (String arg : verificationParameters.getMpsatArguments(directory)) {
-            command.add(arg);
-        }
+        command.addAll(Arrays.asList(verificationParameters.getMpsatArguments(directory)));
 
         // Extra arguments (should go before the file parameters)
         String extraArgs = MpsatVerificationSettings.getArgs();
@@ -81,12 +78,11 @@ public class MpsatTask implements Task<MpsatOutput> {
         if (result.isSuccess() && (output != null)) {
             int returnCode = output.getReturnCode();
             if ((returnCode == 0) || (returnCode == 1)) {
-                Stg stg = StgUtils.importStg(netFile);
                 try {
                     MpsatOutputReader outputReader = new MpsatOutputReader(outputFile);
-                    List<Solution> solutions = outputReader.getSolutions();
                     if (outputReader.isSuccess()) {
-                        return Result.success(new MpsatOutput(output, stg, solutions, verificationParameters));
+                        List<Solution> solutions = outputReader.getSolutions();
+                        return Result.success(new MpsatOutput(output, verificationParameters, netFile, solutions));
                     }
                     return Result.exception(outputReader.getMessage());
                 } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -94,7 +90,7 @@ public class MpsatTask implements Task<MpsatOutput> {
                 }
 
             }
-            return Result.failure(new MpsatOutput(output, null, null, verificationParameters));
+            return Result.failure(new MpsatOutput(output, verificationParameters));
         }
 
         if (result.isCancel()) {

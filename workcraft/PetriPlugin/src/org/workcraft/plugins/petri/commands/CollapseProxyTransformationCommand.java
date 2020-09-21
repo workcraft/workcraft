@@ -48,7 +48,7 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> replicas = new HashSet<>();
         // Collect selected (or all) replicas
         replicas.addAll(ConversionUtils.getVisualReplicaPlaces(model));
@@ -73,7 +73,7 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if (node instanceof VisualReplicaPlace) {
             VisualReplicaPlace replicaPlace = (VisualReplicaPlace) node;
             ConversionUtils.collapseReplicaPlace(model, replicaPlace);

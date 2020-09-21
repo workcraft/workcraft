@@ -63,21 +63,20 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public Void execute(WorkspaceEntry we) {
+    public void transform(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
-        Collection<VisualNode> nodes = collect(visualModel);
+        Collection<VisualNode> nodes = collectNodes(visualModel);
         if (nodes.size() > 1) {
             DialogUtils.showError("One transition can be contracted at a time.");
         } else if (!nodes.isEmpty()) {
             we.saveMemento();
-            transform(visualModel, nodes);
+            transformNodes(visualModel, nodes);
             visualModel.selectNone();
         }
-        return null;
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> transitions = new HashSet<>();
         transitions.addAll(ConversionUtils.getVisualTransitions(model));
         transitions.retainAll(model.getSelection());
@@ -85,7 +84,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if (node instanceof VisualTransition) {
             PetriModel mathModel = (PetriModel) model.getMathModel();
             VisualTransition transition = (VisualTransition) node;

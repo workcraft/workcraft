@@ -16,7 +16,6 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
-import java.util.List;
 
 public class CycleFreenessVerificationCommand extends AbstractVerificationCommand
         implements ScriptableCommand<Boolean> {
@@ -57,7 +56,7 @@ public class CycleFreenessVerificationCommand extends AbstractVerificationComman
                 final Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
                 toolbox.selectTool(toolbox.getToolInstance(CycleAnalyserTool.class));
             }
-            List<String> loopedComponentRefs = ReferenceHelper.getReferenceList(circuit, cycledComponents);
+            Collection<String> loopedComponentRefs = ReferenceHelper.getReferenceList(circuit, cycledComponents);
             String msg = "The circuit has unbroken cycles.\n" +
                     TextUtils.wrapMessageWithItems("Problematic components", loopedComponentRefs);
 

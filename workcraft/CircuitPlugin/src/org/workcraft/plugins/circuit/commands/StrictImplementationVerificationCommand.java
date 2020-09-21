@@ -23,7 +23,6 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -100,8 +99,8 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
 
         // Make sure that input signals of the circuit are also inputs in the environment STG
-        ArrayList<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
-        ArrayList<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
+        Collection<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
+        Collection<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
         StgUtils.restoreInterfaceSignals(envStg, circuitInputSignals, circuitOutputSignals);
 
         // Check that the set of circuit input signals is a subset of STG input signals.

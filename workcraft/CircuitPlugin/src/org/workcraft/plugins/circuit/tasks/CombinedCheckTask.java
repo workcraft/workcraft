@@ -80,7 +80,7 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
             monitor.progressUpdate(0.10);
 
             // Generating system .g for custom property check (only if needed)
-            File sysStgFile = null;
+            File sysStgFile;
             Result<? extends PcompOutput>  pcompResult = null;
             if (envStg == null) {
                 sysStgFile = devStgFile;

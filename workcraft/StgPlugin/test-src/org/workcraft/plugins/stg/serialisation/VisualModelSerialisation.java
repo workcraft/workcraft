@@ -54,4 +54,5 @@ public class VisualModelSerialisation {
 
         SerialisationTestingUtils.compareNodes(visualstg.getRoot(), visualResult.model.getRoot());
     }
+
 }

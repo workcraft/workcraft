@@ -67,7 +67,7 @@ public class PetriToFsmConversionCommand extends AbstractConversionCommand {
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        return null; // !!!
+        return null; // Conversion is performed by Petrify backend
     }
 
 }

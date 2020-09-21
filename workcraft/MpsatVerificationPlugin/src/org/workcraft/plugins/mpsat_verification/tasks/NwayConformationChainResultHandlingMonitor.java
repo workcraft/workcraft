@@ -24,8 +24,10 @@ public class NwayConformationChainResultHandlingMonitor extends AbstractChainRes
         VerificationChainOutput chainOutput = chainResult.getPayload();
         Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
         ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
+
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
         PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
+
         Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
         MpsatOutput mpsatOutput = (mpsatResult == null) ? null : mpsatResult.getPayload();
 

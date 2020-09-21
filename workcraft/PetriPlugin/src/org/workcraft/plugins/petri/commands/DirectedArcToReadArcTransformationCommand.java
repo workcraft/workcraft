@@ -48,7 +48,7 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> arcs = new HashSet<>();
         arcs.addAll(ConversionUtils.getVisualConsumingArcs(model));
         arcs.addAll(ConversionUtils.getVisualProducingArcs(model));
@@ -58,7 +58,7 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         // Check that the arc was not removed because of a dual arc
         if ((node instanceof VisualConnection) && (node.getParent() != null)) {
             VisualConnection connection = (VisualConnection) node;

@@ -21,7 +21,7 @@ public abstract class AbstractConversionCommand extends  org.workcraft.commands.
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        return null; // !!!
+        return null; //Conversion to be performed by Petrify backend
     }
 
     public ArrayList<String> getArgs() {

@@ -1,12 +1,11 @@
 package org.workcraft.utils;
 
-import java.util.Collections;
 import java.util.List;
 
 public class SortUtils {
 
     public static void sortNatural(List<String> list) {
-        Collections.sort(list, (s1, s2) -> compareNatural(s1, s2));
+        list.sort(SortUtils::compareNatural);
     }
 
     public static int compareNatural(String s1, String s2) {
@@ -26,13 +25,13 @@ public class SortUtils {
         while ((i1 < len1) && (i2 < len2)) {
             char c1 = s1.charAt(i1);
             char c2 = s2.charAt(i2);
-            int b = 0;
+            int b;
             if (Character.isDigit(c1) && Character.isDigit(c2)) {
                 String d1 = getNumericalPart(s1, i1);
                 String d2 = getNumericalPart(s2, i2);
                 i1 += d1.length();
                 i2 += d2.length();
-                b = Integer.compare(Integer.valueOf(d1), Integer.valueOf(d2));
+                b = Integer.compare(Integer.parseInt(d1), Integer.parseInt(d2));
             } else {
                 b = Character.compare(c1, c2);
                 i1++;
@@ -46,15 +45,15 @@ public class SortUtils {
     }
 
     private static String getNumericalPart(String s, int index) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (int i = index; i < s.length();  i++) {
             char c = s.charAt(i);
             if (!Character.isDigit(c)) {
                 break;
             }
-            result += c;
+            result.append(c);
         }
-        return result;
+        return result.toString();
     }
 
 }

@@ -57,7 +57,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         }
 
         BooleanFormula resetFunction = outputContact.getResetFunction();
-        if ((setFunction != null) && (resetFunction != null)) {
+        if (resetFunction != null) {
             LogUtils.logWarning("Gate " + str + " cannot be split as it has both set and reset functions defined");
             return;
         }

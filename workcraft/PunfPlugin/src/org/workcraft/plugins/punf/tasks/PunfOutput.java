@@ -6,11 +6,17 @@ import java.io.File;
 
 public class PunfOutput extends ExternalProcessOutput {
 
+    private final File inputFile;
     private final File outputFile;
 
-    public PunfOutput(ExternalProcessOutput output, File outputFile) {
+    public PunfOutput(ExternalProcessOutput output, File inputFile, File outputFile) {
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
+        this.inputFile = inputFile;
         this.outputFile = outputFile;
+    }
+
+    public File getInputFile() {
+        return inputFile;
     }
 
     public File getOutputFile() {

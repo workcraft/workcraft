@@ -50,7 +50,7 @@ public class PunfTask implements Task<PunfOutput> {
 
         ExternalProcessOutput output = result.getPayload();
         if ((result.isSuccess()) && (output != null)) {
-            PunfOutput punfOutput = new PunfOutput(output, outputFile);
+            PunfOutput punfOutput = new PunfOutput(output, inputFile, outputFile);
             int returnCode = output.getReturnCode();
             if ((returnCode == 0) || (returnCode == 1)) {
                 return Result.success(punfOutput);

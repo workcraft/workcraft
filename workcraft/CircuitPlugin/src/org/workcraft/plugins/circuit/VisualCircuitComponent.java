@@ -103,7 +103,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
                 list.add(vc);
             }
         }
-        Collections.sort(list, (vc1, vc2) -> {
+        list.sort((vc1, vc2) -> {
             if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
                 return Double.compare(vc1.getX(), vc2.getX());
             } else {
@@ -446,7 +446,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
             Point2D p1 = vc.getPosition();
             Point2D p2 = getContactLinePosition(vc);
-            if ((p1 != null) && (p2 != null)) {
+            if (p2 != null) {
                 Graphics2D g = r.getGraphics();
                 Decoration d = r.getDecoration();
                 Color colorisation = d.getColorisation();

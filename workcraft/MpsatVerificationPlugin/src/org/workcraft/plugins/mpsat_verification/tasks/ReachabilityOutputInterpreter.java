@@ -3,6 +3,7 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ReachabilityDialog;
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
@@ -18,10 +19,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutput, Boolean> {
 
@@ -61,10 +60,9 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
         ComponentData data = getComponentData();
-        Map<String, String> substitutions = getSubstitutions();
-        for (Solution solution: solutions) {
-            Trace mainTrace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
-            Trace branchTrace = getProjectedTrace(solution.getBranchTrace(), data, substitutions);
+        for (Solution solution : solutions) {
+            Trace mainTrace = CompositionUtils.projectTrace(solution.getMainTrace(), data);
+            Trace branchTrace = CompositionUtils.projectTrace(solution.getBranchTrace(), data);
             String comment = solution.getComment();
             Solution processedSolution = new Solution(mainTrace, branchTrace, comment);
             result.add(processedSolution);
@@ -72,53 +70,10 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         return result;
     }
 
-    public Trace getProjectedTrace(Trace trace, ComponentData data, Map<String, String> substitutions) {
-        if ((trace == null) || trace.isEmpty() || (data == null)) {
-            return trace;
-        }
-        Trace result = new Trace();
-        for (String ref : trace) {
-            String srcRef = data.getSrcTransition(ref);
-            if (srcRef != null) {
-                result.add(srcRef);
-            }
-        }
-        return getSubstitutedTrace(result, substitutions);
-    }
-
-    public Trace getSubstitutedTrace(Trace trace, Map<String, String> substitutions) {
-        if ((trace == null) || trace.isEmpty() || (substitutions == null)) {
-            return trace;
-        }
-        Trace result = new Trace();
-        for (String ref : trace) {
-            result.add(substitutions.getOrDefault(ref, ref));
-        }
-        return result;
-    }
-
     public StgModel getStg() {
-        // If the property is verified on a composition STG, then use the
-        // corresponding component STG; otherwise use input STG of MPSat task.
-        StgModel stg = null;
         ComponentData data = getComponentData();
-        if (data != null) {
-            File file = new File(data.getFileName());
-            if ((file != null) && file.exists()) {
-                stg = StgUtils.importStg(file);
-            }
-        } else {
-            stg = getOutput().getInputStg();
-        }
-        return stg;
-    }
-
-    public Map<String, String> getSubstitutions() {
-        if (getExportOutput() instanceof SubExportOutput) {
-            SubExportOutput exportOutput = (SubExportOutput) getExportOutput();
-            return exportOutput.getSubstitutions();
-        }
-        return new HashMap<>();
+        File file = (data != null) ? new File(data.getFileName()) : getOutput().getStgFile();
+        return StgUtils.importStg(file);
     }
 
     public ComponentData getComponentData() {
@@ -127,6 +82,9 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     }
 
     public CompositionData getCompositionData() {
+        if (getExportOutput() instanceof CompositionExportOutput) {
+            return ((CompositionExportOutput) getExportOutput()).getCompositionData();
+        }
         if (compositionData == null) {
             if (getPcompOutput() != null) {
                 File detailFile = getPcompOutput().getDetailFile();

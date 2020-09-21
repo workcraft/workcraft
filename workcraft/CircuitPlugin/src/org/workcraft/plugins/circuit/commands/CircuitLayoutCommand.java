@@ -229,12 +229,12 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         circuit.selectNone();
         // Dissolve joints
         DissolveJointTransformationCommand splitJointsCommand = new DissolveJointTransformationCommand();
-        Collection<VisualNode> joints = splitJointsCommand.collect(circuit);
-        splitJointsCommand.transform(circuit, joints);
+        Collection<VisualNode> joints = splitJointsCommand.collectNodes(circuit);
+        splitJointsCommand.transformNodes(circuit, joints);
         // Straighten connections
         StraightenConnectionTransformationCommand straightenConnectionsCommand = new StraightenConnectionTransformationCommand();
-        Collection<VisualNode> connections = straightenConnectionsCommand.collect(circuit);
-        straightenConnectionsCommand.transform(circuit, connections);
+        Collection<VisualNode> connections = straightenConnectionsCommand.collectNodes(circuit);
+        straightenConnectionsCommand.transformNodes(circuit, connections);
     }
 
     private void routeSelfLoops(VisualCircuit circuit) {

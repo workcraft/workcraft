@@ -61,7 +61,7 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> connections = new HashSet<>();
         connections.addAll(ConversionUtils.getVisualProducingArcs(model));
         connections.addAll(ConversionUtils.getVisualConsumingArcs(model));
@@ -70,7 +70,7 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if (node instanceof VisualConnection) {
             VisualConnection connection = ConversionUtils.replicateConnectedPlace(model, (VisualConnection) node);
             if (connection != null) {

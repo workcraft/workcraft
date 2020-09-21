@@ -20,15 +20,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class MpsatOutputReader {
 
     private static final String SOLUTION_ELEMENT = "solution";
     private static final String TRACE_ELEMENT = "trace";
     private static final String STEP_ELEMENT = "step";
+    private static final String CONTINUATION_ELEMENT = "continuation";
 
     private static final String EXECUTION_SUCCESSFUL_ATTRIBUTE = "execution_successful";
     private static final String MESSAGE_ATTRIBUTE = "message";
@@ -64,25 +63,29 @@ public class MpsatOutputReader {
         Trace mainTrace = null;
         Trace branchTrace = null;
         int index = 0;
+        Collection<Trace> continuations = new ArrayList<>();
         for (Element element : XmlUtils.getChildElements(TRACE_ELEMENT, root)) {
             if (index == 0) {
-                mainTrace = readTrace(element);
+                mainTrace = readSteps(element);
+                for (Element continuationElement : XmlUtils.getChildElements(CONTINUATION_ELEMENT, element)) {
+                    continuations.add(readSteps(continuationElement));
+                }
             } else {
-                branchTrace = readTrace(element);
+                branchTrace = readSteps(element);
                 break;
             }
             index++;
         }
         String message = root.getAttribute(MESSAGE_ATTRIBUTE);
-        return new Solution(mainTrace, branchTrace, message);
+        return new Solution(mainTrace, branchTrace, message, continuations);
     }
 
-    private Trace readTrace(Element root) {
-        Trace trace = new Trace();
-        for (Element element : XmlUtils.getChildElements(STEP_ELEMENT, root)) {
-            trace.add(element.getAttribute(TRANSITION_ATTRIBUTE));
+    private Trace readSteps(Element parent) {
+        Trace result = new Trace();
+        for (Element element : XmlUtils.getChildElements(STEP_ELEMENT, parent)) {
+            result.add(element.getAttribute(TRANSITION_ATTRIBUTE));
         }
-        return trace;
+        return result;
     }
 
     public List<Solution> getSolutions() {

@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
@@ -29,24 +30,20 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
     public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
 
-        Map<String, String> substitutions = getSubstitutions();
         ComponentData data = getComponentData();
         StgModel stg = getStg();
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
 
-        for (Solution solution: solutions) {
-            if ((solution == null) || (stg == null)) {
-                result.add(solution);
-            }
+        for (Solution solution : solutions) {
             Trace trace = solution.getMainTrace();
-            LogUtils.logMessage("Violation trace: " + trace.toString());
+            LogUtils.logMessage("Violation trace: " + trace);
             if (data != null) {
-                trace = getProjectedTrace(trace, data, substitutions);
-                LogUtils.logMessage("Projection trace: " + trace.toString());
+                trace = CompositionUtils.projectTrace(trace, data);
+                LogUtils.logMessage("Projection trace: " + trace);
             }
             if (!PetriUtils.fireTrace(stg, trace)) {
                 PetriUtils.setMarking(stg, marking);
-                throw new RuntimeException("Cannot execute trace: " + trace.toString());
+                throw new RuntimeException("Cannot execute trace: " + trace);
             }
             // Check if any local signal gets disabled by firing other signal event
             HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);

@@ -47,7 +47,7 @@ public class ExplicitPlaceTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> connections = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
@@ -61,7 +61,7 @@ public class ExplicitPlaceTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualImplicitPlaceArc)) {
             VisualStg stg = (VisualStg) model;
             VisualImplicitPlaceArc implicitArc = (VisualImplicitPlaceArc) node;

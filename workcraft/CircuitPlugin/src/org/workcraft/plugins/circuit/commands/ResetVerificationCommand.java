@@ -16,7 +16,7 @@ import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Set;
 
 public class ResetVerificationCommand extends AbstractVerificationCommand
@@ -63,7 +63,7 @@ public class ResetVerificationCommand extends AbstractVerificationCommand
                 final Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
                 toolbox.selectTool(toolbox.getToolInstance(InitialisationAnalyserTool.class));
             }
-            List<String> refs = ReferenceHelper.getReferenceList(circuit, problematicContacts);
+            Collection<String> refs = ReferenceHelper.getReferenceList(circuit, problematicContacts);
             String msg = "The circuit cannot be initialised via forced inputs.\n" +
                     TextUtils.wrapMessageWithItems("Problematic signal", refs);
 

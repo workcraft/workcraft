@@ -2,12 +2,18 @@ package org.workcraft.traces;
 
 import org.workcraft.utils.TraceUtils;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 public class Solution {
 
     private final Trace mainTrace;
     private final Trace branchTrace;
     private String comment;
     private int loopPosition = -1;
+    private final Set<Trace> continuations = new HashSet<>();
 
     public Solution(Trace mainTrace) {
         this(mainTrace, null);
@@ -18,9 +24,16 @@ public class Solution {
     }
 
     public Solution(Trace mainTrace, Trace branchTrace, String comment) {
+        this(mainTrace, branchTrace, comment, null);
+    }
+
+    public Solution(Trace mainTrace, Trace branchTrace, String comment, Collection<Trace> continuations) {
         this.mainTrace = mainTrace;
         this.branchTrace = branchTrace;
         this.comment = comment;
+        if (continuations != null) {
+            this.continuations.addAll(continuations);
+        }
     }
 
     public Trace getMainTrace() {
@@ -60,6 +73,22 @@ public class Solution {
 
     public boolean hasLoop() {
         return getLoopPosition() >= 0;
+    }
+
+    public void addContinuation(Trace continuation) {
+        continuations.add(continuation);
+    }
+
+    public void removeContinuation(Trace continuation) {
+        continuations.remove(continuation);
+    }
+
+    public void clearContinuations() {
+        continuations.clear();
+    }
+
+    public Set<Trace> getContinuations() {
+        return Collections.unmodifiableSet(continuations);
     }
 
     @Override

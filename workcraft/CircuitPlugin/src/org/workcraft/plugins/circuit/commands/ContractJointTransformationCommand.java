@@ -62,7 +62,7 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> joints = new HashSet<>();
         joints.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualJoint.class));
         Collection<VisualNode> selection = model.getSelection();
@@ -77,7 +77,7 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualJoint)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualJoint joint = (VisualJoint) node;

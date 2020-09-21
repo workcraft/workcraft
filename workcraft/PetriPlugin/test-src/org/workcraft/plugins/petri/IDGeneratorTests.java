@@ -53,4 +53,5 @@ public class IDGeneratorTests {
         Assertions.assertEquals(0, generator.getNextID());
         Assertions.assertEquals(1, generator.getNextID());
     }
+
 }

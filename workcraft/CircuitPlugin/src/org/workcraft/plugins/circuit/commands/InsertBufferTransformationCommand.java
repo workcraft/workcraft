@@ -49,7 +49,7 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> result = new HashSet<>();
         result.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitConnection.class));
         result.retainAll(model.getSelection());
@@ -57,7 +57,7 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualCircuitConnection)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualCircuitConnection connection = (VisualCircuitConnection) node;

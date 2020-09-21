@@ -17,7 +17,7 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -90,8 +90,8 @@ public final class VerificationUtils {
         }
         // Restore signal types in the environment STG
         if (envStg != null) {
-            ArrayList<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
-            ArrayList<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
+            Collection<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
+            Collection<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
             StgUtils.restoreInterfaceSignals(envStg, circuitInputSignals, circuitOutputSignals);
         }
         // Check the circuit for hanging contacts

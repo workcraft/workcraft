@@ -11,6 +11,7 @@ import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.*;
@@ -22,7 +23,7 @@ import java.util.Collection;
 
 public class MpsatUtils {
 
-    public static  String getToolchainDescription(String title) {
+    public static String getToolchainDescription(String title) {
         String result = "MPSat tool chain";
         if ((title != null) && !title.isEmpty()) {
             result += " (" + title + ")";
@@ -74,25 +75,45 @@ public class MpsatUtils {
         }
     }
 
-    public static  Trace fixTraceToggleEvents(StgModel stg, Trace trace) {
+    public static Solution fixSolutionToggleEvents(StgModel stg, Solution solution) {
+        Trace mainTrace = fixTraceToggleEvents(stg, solution.getMainTrace());
+        Trace branchTrace = fixTraceToggleEvents(stg, solution.getBranchTrace());
+        Solution result = new Solution(mainTrace, branchTrace, solution.getComment());
+        for (Trace continuation : solution.getContinuations()) {
+            result.addContinuation(fixTraceToggleEvents(stg, continuation));
+        }
+        return result;
+    }
+
+    public static Trace fixTraceToggleEvents(StgModel stg, Trace trace) {
+        if ((trace == null) || trace.isEmpty()) {
+            return trace;
+        }
         Trace result = new Trace();
         for (String ref : trace) {
-            if (stg.getNodeByReference(ref) != null) {
-                result.add(ref);
-            } else {
-                Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
-                if (r != null) {
-                    String newRef = r.getFirst() + r.getSecond();
-                    if (r.getThird() != null) {
-                        newRef += "/" + r.getThird();
-                    }
-                    if (stg.getNodeByReference(newRef) != null) {
-                        result.add(newRef);
-                    }
-                }
+            String fixedRef = fixToggleEvent(stg, ref);
+            if (fixedRef != null) {
+                result.add(fixedRef);
             }
         }
         return result;
+    }
+
+    private static String fixToggleEvent(StgModel stg, String ref) {
+        if (stg.getNodeByReference(ref) != null) {
+            return ref;
+        }
+        Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
+        if (r != null) {
+            String fixedRef = r.getFirst() + r.getSecond();
+            if (r.getThird() != null) {
+                fixedRef += "/" + r.getThird();
+            }
+            if (stg.getNodeByReference(fixedRef) != null) {
+                return fixedRef;
+            }
+        }
+        return null;
     }
 
 }

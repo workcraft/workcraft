@@ -10,7 +10,6 @@ import org.workcraft.types.Pair;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ReachUtils {
@@ -221,7 +220,7 @@ public class ReachUtils {
             "    }\n" +
             "}\n";
 
-    public static VerificationParameters getConformationParameters(Set<String> shadowTransitionNames) {
+    public static VerificationParameters getConformationParameters(Collection<String> shadowTransitionNames) {
         String reach = getConformationReach(shadowTransitionNames);
         return new VerificationParameters("Conformation",
                 VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
@@ -230,7 +229,7 @@ public class ReachUtils {
                 reach, true);
     }
 
-    public static VerificationParameters getNwayConformationParameters(Set<String> shadowTransitionNames) {
+    public static VerificationParameters getNwayConformationParameters(Collection<String> shadowTransitionNames) {
         String reach = getConformationReach(shadowTransitionNames);
         return new VerificationParameters("N-way conformation",
                 VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
@@ -239,7 +238,7 @@ public class ReachUtils {
                 reach, true);
     }
 
-    private static String getConformationReach(Set<String> shadowTransitionNames) {
+    private static String getConformationReach(Collection<String> shadowTransitionNames) {
         String str = shadowTransitionNames.stream()
                 .map(ref -> "\"" + ref + "\", ")
                 .collect(Collectors.joining());

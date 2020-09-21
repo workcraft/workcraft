@@ -87,7 +87,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> contacts = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
@@ -105,7 +105,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionContact)) {
             FunctionContact contact = ((VisualFunctionContact) node).getReferencedComponent();
             if (contact.isOutput()) {

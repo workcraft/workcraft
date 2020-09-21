@@ -1,19 +1,5 @@
 package org.workcraft.plugins.pcomp;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Set;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -21,7 +7,22 @@ import org.w3c.dom.NodeList;
 import org.workcraft.utils.XmlUtils;
 import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Set;
+
 public class CompositionData {
+
+    private static final String STG_ELEMENT_NAME = "STG";
+    private static final String FILE_ELEMENT_NAME = "file";
+    private static final String PLACES_ELEMENT_NAME = "places";
+    private static final String TRANSITIONS_ELEMENT_NAME = "transitions";
+
 
     private final LinkedHashMap<String, ComponentData> fileToComponent = new LinkedHashMap<>();
 
@@ -44,14 +45,15 @@ public class CompositionData {
         NodeList components = root.getChildNodes();
         for (int i = 0; i < components.getLength(); i++) {
             Node item = components.item(i);
-            if (!(item instanceof Element)) continue;
-            Element element = (Element) item;
-            if ("STG".equals(element.getTagName())) {
-                Element fileElement = XmlUtils.getChildElement("file", element);
-                Element placesElement = XmlUtils.getChildElement("places", element);
-                Element transitionsElement = XmlUtils.getChildElement("transitions", element);
-                ComponentData componentData = new ComponentData(fileElement, placesElement, transitionsElement);
-                fileToComponent.put(componentData.getFileName(), componentData);
+            if (item instanceof Element) {
+                Element element = (Element) item;
+                if (STG_ELEMENT_NAME.equals(element.getTagName())) {
+                    Element fileElement = XmlUtils.getChildElement(FILE_ELEMENT_NAME, element);
+                    Element placesElement = XmlUtils.getChildElement(PLACES_ELEMENT_NAME, element);
+                    Element transitionsElement = XmlUtils.getChildElement(TRANSITIONS_ELEMENT_NAME, element);
+                    ComponentData componentData = new ComponentData(fileElement, placesElement, transitionsElement);
+                    fileToComponent.put(componentData.getFileName(), componentData);
+                }
             }
         }
     }
@@ -66,7 +68,7 @@ public class CompositionData {
 
     public ComponentData getComponentData(int index) {
         ArrayList<ComponentData> components = new ArrayList<>(fileToComponent.values());
-        return components.get(index);
+        return (index >= components.size()) ? null : components.get(index);
     }
 
     public Set<String> getFileNames() {

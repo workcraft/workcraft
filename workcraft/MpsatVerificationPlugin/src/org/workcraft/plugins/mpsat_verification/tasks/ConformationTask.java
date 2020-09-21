@@ -1,11 +1,14 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.pcomp.utils.PcompUtils;
+import org.workcraft.plugins.pcomp.tasks.PcompParameters;
+import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
@@ -23,10 +26,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ConformationTask implements Task<VerificationChainOutput> {
 
@@ -34,7 +37,6 @@ public class ConformationTask implements Task<VerificationChainOutput> {
     private static final String DEV_STG_FILE_NAME = StgUtils.DEVICE_FILE_PREFIX + STG_FILE_EXTENSION;
     private static final String ENV_STG_FILE_NAME = StgUtils.ENVIRONMENT_FILE_PREFIX + STG_FILE_EXTENSION;
     private static final String MOD_SYS_STG_FILE_NAME = StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + STG_FILE_EXTENSION;
-    private static final String MOD_UNFOLDING_FILE_NAME = StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + PunfTask.PNML_FILE_EXTENSION;
 
     private final WorkspaceEntry we;
     private final File envFile;
@@ -46,19 +48,22 @@ public class ConformationTask implements Task<VerificationChainOutput> {
 
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
-        File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(we.getTitle()));
-        Chain<VerificationChainOutput> chain = new Chain<>(this::init, monitor);
-        chain.andOnSuccess(payload -> exportDevStg(payload, monitor, directory), 0.1);
-        chain.andOnSuccess(payload -> exportEnvStg(payload, monitor, directory), 0.2);
-        chain.andOnSuccess(payload -> composeSysStg(payload, monitor, directory), 0.4);
-        chain.andOnSuccess(payload -> exportShadowSysStg(payload, monitor, directory), 0.6);
-        chain.andOnSuccess(payload -> unfoldSysStg(payload, monitor, directory), 0.8);
-        chain.andOnSuccess(payload -> verifyProperty(payload, monitor, directory), 1.0);
-        chain.andThen(() -> FileUtils.deleteOnExitRecursively(directory));
-        return chain.process();
+        Result<? extends VerificationChainOutput> result = checkTrivialCases();
+        if (result == null) {
+            File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(we.getTitle()));
+            Chain<VerificationChainOutput> chain = new Chain<>(this::init, monitor);
+            chain.andOnSuccess(payload -> exportInterfaces(payload, monitor, directory), 0.1);
+            chain.andOnSuccess(payload -> composeInterfaces(payload, monitor, directory), 0.2);
+            chain.andOnSuccess(payload -> exportComposition(payload, monitor, directory), 0.3);
+            chain.andOnSuccess(payload -> unfoldComposition(payload, monitor, directory), 0.5);
+            chain.andOnSuccess(payload -> verifyProperty(payload, monitor, directory), 1.0);
+            chain.andThen(() -> FileUtils.deleteOnExitRecursively(directory));
+            result = chain.process();
+        }
+        return result;
     }
 
-    private Result<? extends VerificationChainOutput> init() {
+    private Result<? extends VerificationChainOutput> checkTrivialCases() {
         if (!WorkspaceUtils.isApplicable(we, StgModel.class)) {
             return Result.exception("Incorrect model type");
         }
@@ -67,27 +72,15 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             return Result.exception("Environment STG is undefined");
         }
 
+        return null;
+    }
+
+    private Result<? extends VerificationChainOutput> init() {
         VerificationParameters verificationParameters = ReachUtils.getToolchainPreparationParameters();
         return Result.success(new VerificationChainOutput().applyVerificationParameters(verificationParameters));
     }
 
-    private Result<? extends VerificationChainOutput> exportDevStg(VerificationChainOutput payload,
-            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
-
-        // Clone STG before converting its internal signals to dummies
-        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
-        Stg devStg = WorkspaceUtils.getAs(me, Stg.class);
-
-        // Convert internal signals of the device STG to dummies and keep track of renaming
-        Map<String, String> devSubstitutions = StgUtils.convertInternalSignalsToDummies(devStg);
-
-        File devStgFile = new File(directory, DEV_STG_FILE_NAME);
-        Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(devStg, devStgFile, monitor);
-        Result<SubExportOutput> exportResult = new Result<>(new SubExportOutput(devStgFile, devSubstitutions));
-        return new Result<>(devExportResult.getOutcome(), payload.applyExportResult(exportResult));
-    }
-
-    private Result<? extends VerificationChainOutput> exportEnvStg(VerificationChainOutput payload,
+    private Result<? extends VerificationChainOutput> exportInterfaces(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         Stg envStg = StgUtils.loadStg(envFile);
@@ -95,33 +88,58 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             return Result.exception("Cannot load environment STG from file '" + envFile.getAbsolutePath() + "'");
         }
 
+        // Clone device STG as its internal signals will be converted to dummies
+        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
+        Stg devStg = WorkspaceUtils.getAs(me, Stg.class);
+
         // Make sure that signal types of the environment STG match those of the device STG
-        Stg devStg = StgUtils.importStg(new File(directory, DEV_STG_FILE_NAME));
-        StgUtils.restoreInterfaceSignals(envStg,
-                devStg.getSignalReferences(Signal.Type.INPUT),
-                devStg.getSignalReferences(Signal.Type.OUTPUT));
+        Set<String> devInputs = devStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> devOutputs = devStg.getSignalReferences(Signal.Type.OUTPUT);
+        StgUtils.restoreInterfaceSignals(envStg, devInputs, devOutputs);
 
-        // Convert internal signals of the environment STG to dummies
-        StgUtils.convertInternalSignalsToDummies(envStg);
-
+        // Export environment STG (convert internal signals to dummies and keep track of renaming)
+        @SuppressWarnings("PMD.PrematureDeclaration")
+        Map<String, String> envSubstitutions = StgUtils.convertInternalSignalsToDummies(envStg);
         File envStgFile = new File(directory, ENV_STG_FILE_NAME);
         Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(envStg, envStgFile, monitor);
-        return new Result<>(envExportResult.getOutcome(), payload);
+        if (!envExportResult.isSuccess()) {
+            return new Result<>(envExportResult.getOutcome(), payload);
+        }
+
+        // Export device STG (convert internal signals to dummies and keep track of renaming)
+        @SuppressWarnings("PMD.PrematureDeclaration")
+        Map<String, String> devSubstitutions = StgUtils.convertInternalSignalsToDummies(devStg);
+        File devStgFile = new File(directory, DEV_STG_FILE_NAME);
+        Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(devStg, devStgFile, monitor);
+        if (!devExportResult.isSuccess()) {
+            return new Result<>(devExportResult.getOutcome(), payload);
+        }
+
+        ExtendedExportOutput extendedExportOutput = new ExtendedExportOutput();
+        extendedExportOutput.add(envStgFile, envSubstitutions);
+        extendedExportOutput.add(devStgFile, devSubstitutions);
+        Result<ExtendedExportOutput> extendedExportResult = Result.success(extendedExportOutput);
+        return Result.success(payload.applyExportResult(extendedExportResult));
     }
 
-    private Result<? extends VerificationChainOutput> composeSysStg(VerificationChainOutput payload,
+    private Result<? extends VerificationChainOutput> composeInterfaces(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
-        // Generating composition STG for the whole system (device and environment)
         File devStgFile = new File(directory, DEV_STG_FILE_NAME);
         File envStgFile = new File(directory, ENV_STG_FILE_NAME);
-        Result<? extends PcompOutput> pcompResult = PcompUtils.composeDevWithEnv(
-                devStgFile, envStgFile, directory, monitor);
+        PcompParameters pcompParameters = new PcompParameters(
+                PcompParameters.SharedSignalMode.OUTPUT, true, false);
+
+        // Note: device STG must go first, as this order is used in the analysis of violation traces
+        PcompTask task = new PcompTask(Arrays.asList(devStgFile, envStgFile), pcompParameters, directory);
+
+        Result<? extends PcompOutput> pcompResult = Framework.getInstance().getTaskManager().execute(
+                task, "Running parallel composition [PComp]", new SubtaskMonitor<>(monitor));
 
         return new Result<>(pcompResult.getOutcome(), payload.applyPcompResult(pcompResult));
     }
 
-    private Result<? extends VerificationChainOutput> exportShadowSysStg(VerificationChainOutput payload,
+    private Result<? extends VerificationChainOutput> exportComposition(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         PcompOutput pcompOutput = payload.getPcompResult().getPayload();
@@ -132,28 +150,35 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             return Result.exception(e);
         }
 
-        // Insert shadow transitions into the composed STG
+        // Apply substitutions to the composition data of the STG components
+        CompositionUtils.applyExportSubstitutions(compositionData, payload.getExportResult().getPayload());
+
+        // Insert shadow transitions into the composition STG for device outputs and internal signals
+        File devStgFile = new File(directory, DEV_STG_FILE_NAME);
         Stg sysStg = StgUtils.importStg(pcompOutput.getOutputFile());
         CompositionTransformer transformer = new CompositionTransformer(sysStg, compositionData);
-        File devStgFile = new File(directory, DEV_STG_FILE_NAME);
-        Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(devStgFile);
+        StgModel devStg = WorkspaceUtils.getAs(we, StgModel.class);
+        Set<String> devOutputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
+        Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(devOutputSignals, devStgFile);
+
+        // Fill verification parameters with the inserted shadow transitions
+        Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(sysStg, shadowTransitions);
+        VerificationParameters verificationParameters = ReachUtils.getConformationParameters(shadowTransitionRefs);
 
         File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
-        Result<? extends ExportOutput> modSysExportResult = StgUtils.exportStg(sysStg, modSysStgFile, monitor);
-        Set<String> shadowTransitionRefs = shadowTransitions.stream()
-                .map(sysStg::getNodeReference)
-                .collect(Collectors.toSet());
+        Result<? extends ExportOutput> exportResult = StgUtils.exportStg(sysStg, modSysStgFile, monitor);
+        CompositionExportOutput sysExportOutput = new CompositionExportOutput(modSysStgFile, compositionData);
 
-        VerificationParameters verificationParameters = ReachUtils.getConformationParameters(shadowTransitionRefs);
-        return new Result<>(modSysExportResult.getOutcome(), payload.applyVerificationParameters(verificationParameters));
+        return new Result<>(exportResult.getOutcome(), payload
+                .applyExportResult(Result.success(sysExportOutput))
+                .applyVerificationParameters(verificationParameters));
     }
 
-    private Result<? extends VerificationChainOutput> unfoldSysStg(VerificationChainOutput payload,
+    private Result<? extends VerificationChainOutput> unfoldComposition(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
-        File unfoldingFile = new File(directory, MOD_UNFOLDING_FILE_NAME);
-        PunfTask punfTask = new PunfTask(modSysStgFile, unfoldingFile, directory);
+        PunfTask punfTask = new PunfTask(modSysStgFile, directory);
         Result<? extends PunfOutput> punfResult = Framework.getInstance().getTaskManager().execute(
                 punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
 
@@ -164,21 +189,19 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
         File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
-        // Store system STG WITHOUT shadow transitions -- this is important for interpretation of violation traces
-        File sysStgFile = payload.getPcompResult().getPayload().getOutputFile();
+        File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
         VerificationParameters verificationParameters = payload.getVerificationParameters();
-        MpsatTask mpsatTask = new MpsatTask(unfoldingFile, sysStgFile, verificationParameters, directory);
+        MpsatTask mpsatTask = new MpsatTask(unfoldingFile, modSysStgFile, verificationParameters, directory);
         Result<? extends MpsatOutput>  mpsatResult = Framework.getInstance().getTaskManager().execute(
                 mpsatTask, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
 
-        String message = null;
         if (mpsatResult.isSuccess()) {
-            message = mpsatResult.getPayload().hasSolutions()
+            payload = payload.applyMessage(mpsatResult.getPayload().hasSolutions()
                     ? "This model does not conform to the environment."
-                    : "The model conforms to its environment (" + envFile.getName() + ").";
+                    : "The model conforms to its environment (" + envFile.getName() + ").");
         }
 
-        return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult).applyMessage(message));
+        return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult));
     }
 
 }

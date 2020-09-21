@@ -44,7 +44,7 @@ public class TextPresetDialog extends PresetDialog<String> {
     }
 
     private JPanel createTextPanel() {
-        codePanel = new CodePanel(4);
+        codePanel = new CodePanel(11);
         JPanel panel = new JPanel(GuiUtils.createBorderLayout());
         panel.add(codePanel, BorderLayout.CENTER);
         return panel;

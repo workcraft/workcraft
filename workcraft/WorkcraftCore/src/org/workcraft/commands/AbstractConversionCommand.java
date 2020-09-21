@@ -25,7 +25,8 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Wor
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public final void run(WorkspaceEntry we) {
+        // Run synchronously (blocking the editor). Execution must be fast.
         execute(we);
     }
 

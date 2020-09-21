@@ -377,6 +377,7 @@ public class TransformationCommandTests {
         stg.select(intsigToggle);
         contractTransitionCommand.execute(we);
 
+        framework.closeWork(we);
         Assertions.assertEquals(1, stg.getVisualPlaces().size());
         Assertions.assertEquals(4, stg.getVisualSignalTransitions().size());
         Assertions.assertEquals(0, stg.getVisualDummyTransitions().size());

@@ -46,10 +46,11 @@ public class PunfLtlxTask implements Task<PunfOutput> {
         ExternalProcessOutput output = result.getPayload();
         if (result.isSuccess() && (result.getOutcome() != null)) {
             int returnCode = output.getReturnCode();
+            PunfOutput punfOutput = new PunfOutput(output, inputFile, outputFile);
             if ((returnCode == 0) || (returnCode == 1)) {
-                return Result.success(new PunfOutput(output, outputFile));
+                return Result.success(punfOutput);
             }
-            return Result.failure(new PunfOutput(output, outputFile));
+            return Result.failure(punfOutput);
         }
 
         if (result.isCancel()) {

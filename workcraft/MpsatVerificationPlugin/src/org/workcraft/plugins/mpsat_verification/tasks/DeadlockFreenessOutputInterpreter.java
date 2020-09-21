@@ -3,6 +3,7 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ReachabilityDialog;
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -21,7 +22,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
 
@@ -54,16 +54,16 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
 
         StgModel stg = getStg();
         ComponentData data = getComponentData();
-        Map<String, String> substitutions = getSubstitutions();
 
         for (Solution solution : solutions) {
-            LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
-            Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
+            Trace trace = solution.getMainTrace();
+            LogUtils.logMessage("Processing reported trace: " + trace);
+            Trace projectedTrace = CompositionUtils.projectTrace(trace, data);
             // Execute trace to potentially interesting state
             HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
-            if (!PetriUtils.fireTrace(stg, trace)) {
+            if (!PetriUtils.fireTrace(stg, projectedTrace)) {
                 PetriUtils.setMarking(stg, marking);
-                throw new RuntimeException("Cannot execute projected trace: " + trace.toString());
+                throw new RuntimeException("Cannot execute projected trace: " + projectedTrace);
             }
             // Check if any output can be fired that is not enabled in the composition
             boolean isConformantTrace = true;
@@ -77,7 +77,7 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
                 }
             }
             if (isConformantTrace) {
-                result.add(new Solution(trace));
+                result.add(new Solution(projectedTrace));
             }
             PetriUtils.setMarking(stg, marking);
         }

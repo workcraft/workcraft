@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -13,7 +14,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 class ConsistencyOutputInterpreter extends ReachabilityOutputInterpreter {
 
@@ -27,10 +27,9 @@ class ConsistencyOutputInterpreter extends ReachabilityOutputInterpreter {
     public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
         ComponentData data = getComponentData();
-        Map<String, String> substitutions = getSubstitutions();
         for (Solution solution: solutions) {
             LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
-            Trace trace = getProjectedTrace(solution.getMainTrace(), data, substitutions);
+            Trace trace = CompositionUtils.projectTrace(solution.getMainTrace(), data);
             int size = trace.size();
             if (size <= 0) {
                 LogUtils.logMessage("No consistency violation detected");

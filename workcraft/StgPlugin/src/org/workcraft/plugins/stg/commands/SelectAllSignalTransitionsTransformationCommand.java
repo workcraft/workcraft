@@ -1,16 +1,16 @@
 package org.workcraft.plugins.stg.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -53,7 +53,7 @@ public class SelectAllSignalTransitionsTransformationCommand extends AbstractTra
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> signalTransitions = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
@@ -64,7 +64,7 @@ public class SelectAllSignalTransitionsTransformationCommand extends AbstractTra
     }
 
     @Override
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
+    public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             HashSet<String> signals = new HashSet<>();
@@ -82,10 +82,6 @@ public class SelectAllSignalTransitionsTransformationCommand extends AbstractTra
                 }
             }
         }
-    }
-
-    @Override
-    public void transform(VisualModel model, VisualNode node) {
     }
 
 }

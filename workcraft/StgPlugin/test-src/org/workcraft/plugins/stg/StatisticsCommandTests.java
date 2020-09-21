@@ -56,6 +56,7 @@ public class StatisticsCommandTests {
                         + "\n    * Pure -  true"
                         + "\n");
     }
+
     @Test
     public void testBuckStgStatisticsCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
@@ -92,6 +93,7 @@ public class StatisticsCommandTests {
                         + "\n    * Pure -  true"
                         + "\n");
     }
+
     @Test
     public void testVmeStgStatisticsCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");

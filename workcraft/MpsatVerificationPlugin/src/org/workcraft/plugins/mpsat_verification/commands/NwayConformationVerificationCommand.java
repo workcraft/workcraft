@@ -3,7 +3,6 @@ package org.workcraft.plugins.mpsat_verification.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat_verification.gui.NwayConformationDialog;
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationTask;
@@ -13,13 +12,12 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class NwayConformationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
@@ -47,19 +45,15 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
 
     @Override
     public void run(WorkspaceEntry we) {
-        List<WorkspaceEntry> wes = new ArrayList<>();
         Framework framework = Framework.getInstance();
         Workspace workspace = framework.getWorkspace();
-
         MainWindow mainWindow = framework.getMainWindow();
         NwayConformationDialog dialog = new NwayConformationDialog(mainWindow);
         if (dialog.reveal()) {
-            Set<Path<String>> paths = dialog.getSourcePaths();
-            if (paths != null) {
-                for (Path<String> path : paths) {
-                    wes.add(workspace.getWork(path));
-                }
-            }
+            List<WorkspaceEntry> wes = dialog.getSourcePaths().stream()
+                    .map(workspace::getWork)
+                    .sorted((we1, we2) -> SortUtils.compareNatural(we1.getTitle(), we2.getTitle()))
+                    .collect(Collectors.toList());
 
             NwayConformationChainResultHandlingMonitor monitor = new NwayConformationChainResultHandlingMonitor(wes);
             run(we, wes, monitor);
@@ -75,7 +69,7 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
 
         NwayConformationTask task = new NwayConformationTask(wes);
         TaskManager manager = Framework.getInstance().getTaskManager();
-        String titles = wes.stream().map(w -> w.getTitle()).collect(Collectors.joining(", "));
+        String titles = wes.stream().map(WorkspaceEntry::getTitle).collect(Collectors.joining(", "));
         String description = MpsatUtils.getToolchainDescription(titles);
         manager.queue(task, description, monitor);
     }

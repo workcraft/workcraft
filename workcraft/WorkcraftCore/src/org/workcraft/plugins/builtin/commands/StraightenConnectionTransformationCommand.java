@@ -62,7 +62,7 @@ public class StraightenConnectionTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> connections = new HashSet<>();
         connections.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class));
         Collection<? extends VisualNode> selection = model.getSelection();
@@ -77,7 +77,7 @@ public class StraightenConnectionTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
             connection.setConnectionType(ConnectionType.BEZIER);

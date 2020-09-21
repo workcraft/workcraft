@@ -62,7 +62,7 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> joints = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
@@ -80,7 +80,7 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualJoint)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualJoint joint = (VisualJoint) node;

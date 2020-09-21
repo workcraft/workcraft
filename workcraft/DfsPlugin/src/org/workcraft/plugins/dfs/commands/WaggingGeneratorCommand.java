@@ -35,6 +35,12 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
 
     @Override
     public final void run(WorkspaceEntry we) {
+        // Run synchronously (blocking the editor) as model is changed.
+        execute(we);
+    }
+
+    @Override
+    public final Void execute(WorkspaceEntry we) {
         if (checkPrerequisites(we)) {
             VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             int count = getWayCount();
@@ -46,11 +52,6 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
                 generator.run();
             }
         }
-    }
-
-    @Override
-    public final Void execute(WorkspaceEntry we) {
-        run(we);
         return null;
     }
 

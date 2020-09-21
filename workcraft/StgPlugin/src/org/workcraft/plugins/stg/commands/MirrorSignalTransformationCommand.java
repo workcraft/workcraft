@@ -50,7 +50,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public Collection<VisualNode> collect(VisualModel model) {
+    public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> signalTransitions = new HashSet<>();
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
@@ -64,7 +64,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public void transform(VisualModel model, Collection<? extends VisualNode> nodes) {
+    public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
         if (model instanceof VisualStg) {
             VisualStg visualStg = (VisualStg) model;
             HashSet<String> processedSignals = new HashSet<>();
@@ -75,7 +75,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
                     SignalTransition transition = visualTransition.getReferencedComponent();
                     String signalRef = stg.getSignalReference(transition);
                     if (!processedSignals.contains(signalRef)) {
-                        transform(visualStg, visualTransition);
+                        transformNode(visualStg, visualTransition);
                         processedSignals.add(signalRef);
                     }
                 }
@@ -84,7 +84,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public void transform(VisualModel model, VisualNode node) {
+    public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             SignalTransition signalTransition = ((VisualSignalTransition) node).getReferencedComponent();
             Signal.Type signalType = signalTransition.getSignalType();

@@ -14,7 +14,7 @@ public class ScanInsertionCommand extends AbstractInsertionCommand {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public void insert(WorkspaceEntry we) {
         we.saveMemento();
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         try {

@@ -10,17 +10,14 @@ public class ChainOutput {
     private final Result<? extends ExportOutput> exportResult;
     private final Result<? extends PcompOutput> pcompResult;
     private final Result<? extends PunfOutput> punfResult;
-    private final String message;
 
     public ChainOutput(Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
-            Result<? extends PunfOutput> punfResult,
-            String message) {
+            Result<? extends PunfOutput> punfResult) {
 
         this.exportResult = exportResult;
         this.pcompResult = pcompResult;
         this.punfResult = punfResult;
-        this.message = message;
     }
 
     public Result<? extends ExportOutput> getExportResult() {
@@ -33,10 +30,6 @@ public class ChainOutput {
 
     public Result<? extends PunfOutput> getPunfResult() {
         return punfResult;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }
