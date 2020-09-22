@@ -21,8 +21,10 @@ import java.util.Collection;
 public class FunctionComponent extends CircuitComponent {
 
     public static final String PROPERTY_IS_ZERO_DELAY = "Zero delay";
+    public static final String PROPERTY_ARBITRATION_PRIMITIVE = "Arbitration";
 
     private boolean isZeroDelay;
+    private boolean isArbitrationPrimitive;
 
     private final class CircuitHierarchySupervisor extends HierarchySupervisor {
         @Override
@@ -59,6 +61,17 @@ public class FunctionComponent extends CircuitComponent {
 
     public boolean getIsZeroDelay() {
         return isZeroDelay;
+    }
+
+    public void setIsArbitrationPrimitive(boolean value) {
+        if (isArbitrationPrimitive != value) {
+            isArbitrationPrimitive = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_ARBITRATION_PRIMITIVE));
+        }
+    }
+
+    public boolean getIsArbitrationPrimitive() {
+        return isArbitrationPrimitive;
     }
 
     public Collection<FunctionContact> getFunctionContacts() {

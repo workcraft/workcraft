@@ -367,6 +367,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         Wait module = CircuitSettings.parseWaitData();
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+            component.setIsArbitrationPrimitive(true);
 
             VisualFunctionContact sigContact = component.createContact(IOType.INPUT);
             circuit.setMathName(sigContact, module.sig.name);
@@ -394,6 +395,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         Wait module = CircuitSettings.parseWait0Data();
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+            component.setIsArbitrationPrimitive(true);
 
             VisualFunctionContact sigContact = component.createContact(IOType.INPUT);
             circuit.setMathName(sigContact, module.sig.name);
@@ -421,6 +423,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         Mutex module = CircuitSettings.parseMutexData();
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+            component.setIsArbitrationPrimitive(true);
 
             VisualFunctionContact r1Contact = component.createContact(IOType.INPUT);
             circuit.setMathName(r1Contact, module.r1.name);

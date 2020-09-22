@@ -35,16 +35,9 @@ public class BoundingBoxHelper {
     }
 
     public static Rectangle2D expand(Rectangle2D rect, double x, double y) {
-        Rectangle2D result = null;
-        if (rect != null) {
-            result = new Rectangle2D.Double();
-            result.setRect(rect);
-            x /= 2.0f;
-            y /= 2.0f;
-            result.add(rect.getMinX() - x, rect.getMinY() - y);
-            result.add(rect.getMaxX() + x, rect.getMaxY() + y);
-        }
-        return result;
+        double dx = x / 2.0;
+        double dy = y / 2.0;
+        return expand(rect, dx, dy, dx, dy);
     }
 
     public static Rectangle2D expand(Rectangle2D rect, double dxMin, double dyMin, double dxMax, double dyMax) {

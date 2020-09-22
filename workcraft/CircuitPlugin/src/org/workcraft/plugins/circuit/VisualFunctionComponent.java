@@ -51,6 +51,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 FunctionComponent.PROPERTY_IS_ZERO_DELAY,
                 this::setIsZeroDelay, this::getIsZeroDelay));
+
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
+                FunctionComponent.PROPERTY_ARBITRATION_PRIMITIVE,
+                this::setIsArbitrationPrimitive, this::getIsArbitrationPrimitive));
     }
 
     @Override
@@ -81,6 +85,18 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     public void setIsZeroDelay(boolean value) {
         if (getReferencedComponent() != null) {
             getReferencedComponent().setIsZeroDelay(value);
+        }
+    }
+
+    @NoAutoSerialisation
+    public boolean getIsArbitrationPrimitive() {
+        return (getReferencedComponent() != null) && getReferencedComponent().getIsArbitrationPrimitive();
+    }
+
+    @NoAutoSerialisation
+    public void setIsArbitrationPrimitive(boolean value) {
+        if (getReferencedComponent() != null) {
+            getReferencedComponent().setIsArbitrationPrimitive(value);
         }
     }
 
@@ -417,7 +433,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         if ((inputPos != null) && (outputPos != null)) {
             float[] pattern = {0.1f, 0.1f};
             g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
-                        BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+                    BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 
             g.setColor(GateRenderer.foreground);
             at.transform(inputPos, inputPos);
@@ -425,6 +441,22 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             Line2D line = new Line2D.Double(inputPos, outputPos);
             g.draw(line);
         }
+    }
+
+    private void drawArbitrationSymbol(Graphics2D g) {
+        g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
+        g.setColor(GateRenderer.foreground);
+
+        Path2D shape = new Path2D.Double();
+        double d = 0.2;
+        shape.moveTo(d, -d);
+        shape.lineTo(-d, 0.0);
+        shape.lineTo(d, d);
+
+        g.draw(shape);
+
+        Arc2D arc = new Arc2D.Double(-d, -d, 1.5 * d, 2.0 * d, -50, 100, Arc2D.OPEN);
+        g.draw(arc);
     }
 
     @Override
@@ -460,6 +492,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
             // External decorations
             d.decorate(g);
+        }
+        if (getIsArbitrationPrimitive()) {
+            drawArbitrationSymbol(r.getGraphics());
         }
     }
 
