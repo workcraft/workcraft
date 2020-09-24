@@ -29,7 +29,7 @@ import java.util.List;
 public class BinateImplementationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableCommand<Boolean> {
 
-    private class BinateData {
+    private static class BinateData {
         public final FunctionContact contact;
         public final BooleanFormula formula;
         public final BooleanVariable variable;
@@ -77,13 +77,17 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         Collection<BinateData> binateItems = getBinateData(circuit);
         List<VerificationParameters> settingsList = new ArrayList<>();
-        LogUtils.logInfo("Verifying binate consensus for functions:");
+        boolean isFirstItem = true;
         for (BinateData binateItem : binateItems) {
+            if (isFirstItem) {
+                LogUtils.logInfo("Verifying binate consensus for functions:");
+            }
+            isFirstItem = false;
             String signal = CircuitUtils.getSignalReference(circuit, binateItem.contact);
             settingsList.add(getBinateImplementationReachSettings(signal, binateItem.formula, binateItem.variable));
-            LogUtils.logMessage("  " + signal
-                    + " = " + StringGenerator.toString(binateItem.formula)
-                    + "   [binate in " + binateItem.variable.getLabel() + "]");
+            String formulaStr = StringGenerator.toString(binateItem.formula);
+            String variableLabel = binateItem.variable.getLabel();
+            LogUtils.logMessage("  " + signal + " = " + formulaStr + "   [binate in " + variableLabel + "]");
         }
 
         TaskManager manager = Framework.getInstance().getTaskManager();
@@ -118,16 +122,16 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
     private VerificationParameters getBinateImplementationReachSettings(String signal, BooleanFormula formula, BooleanVariable variable) {
         BooleanFormula insensitivityFormula = new Iff(FormulaUtils.replaceOne(formula, variable), FormulaUtils.replaceZero(formula, variable));
 
-        FreeVariable positiveVar = new FreeVariable("@" + variable.getLabel());
+        String varName = variable.getLabel();
+        FreeVariable positiveVar = new FreeVariable("@" + varName);
         BooleanFormula splitVarFormula = FormulaUtils.replaceBinateVariable(formula, variable, positiveVar);
         BooleanFormula derivativeFormula = FormulaUtils.derive(splitVarFormula, positiveVar);
 
-        String reach = "@S\"" + variable.getLabel() + "\" &\n"
+        String reach = "@S\"" + varName + "\" &\n"
                 + "(" + StringGenerator.toString(insensitivityFormula, StringGenerator.Style.REACH) + ") &\n"
                 + "(" + StringGenerator.toString(derivativeFormula, StringGenerator.Style.REACH) + ")";
 
-        String s = signal + " = " + StringGenerator.toString(formula);
-        return new VerificationParameters("Binate consensus for " + s,
+        return new VerificationParameters("Binate consensus for " + signal + " in " + varName,
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
