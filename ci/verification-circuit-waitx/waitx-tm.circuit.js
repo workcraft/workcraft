@@ -6,5 +6,6 @@ write(
     "Output persistency: " + checkCircuitOutputPersistency(work) + "\n" +
     "Binate function implementation: " + checkCircuitBinateImplementation(work) + "\n" +
     "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n" +
+    "Refinement: " + checkCircuitRefinement(work) + "\n" +
     "", "waitx-tm.circuit.result");
 exit();

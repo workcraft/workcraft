@@ -7,12 +7,14 @@ import org.workcraft.interop.Format;
 import org.workcraft.plugins.mpsat_verification.tasks.RefinementTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -29,11 +31,6 @@ public class RefinementVerificationCommand extends org.workcraft.commands.Abstra
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, StgModel.class);
-    }
-
-    @Override
-    public int getPriority() {
-        return 2;
     }
 
     @Override
@@ -55,13 +52,21 @@ public class RefinementVerificationCommand extends org.workcraft.commands.Abstra
 
     @Override
     public void run(WorkspaceEntry we, File data, ProgressMonitor monitor) {
+        // Clone implementation STG as its internal signals will need to be converted to dummies
+        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
+        Stg stg = WorkspaceUtils.getAs(me, Stg.class);
+
         TaskManager manager = Framework.getInstance().getTaskManager();
-        Task task = new RefinementTask(we, data, getAllowConcurrencyReduction());
+        RefinementTask task = new RefinementTask(we, stg, data, getAllowConcurrencyReduction(), getAssumeInputReceptiveness());
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
     }
 
     public boolean getAllowConcurrencyReduction() {
+        return false;
+    }
+
+    public boolean getAssumeInputReceptiveness() {
         return false;
     }
 

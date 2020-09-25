@@ -198,6 +198,8 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
         localSignals.addAll(sysStg.getSignalReferences(Signal.Type.INTERNAL));
         File devStgFile = new File(directory, DEV_STG_FILE_NAME);
         Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(localSignals, devStgFile);
+        // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
+        transformer.insertShadowEnablerPlace(shadowTransitions);
 
         // Fill verification parameters with the inserted shadow transitions
         Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(sysStg, shadowTransitions);

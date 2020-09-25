@@ -239,7 +239,7 @@ public class StgUtils {
         HashMap<String, Boolean> result = new HashMap<>();
         // Try to figure out signal states from ZERO and ONE places of circuit STG.
         Set<String> signalRefs = stg.getSignalReferences();
-        for (String signalRef: signalRefs) {
+        for (String signalRef : signalRefs) {
             Node zeroNode = stg.getNodeByReference(SignalStg.appendLowSuffix(signalRef));
             Node oneNode = stg.getNodeByReference(SignalStg.appendHighSuffix(signalRef));
             if (!(zeroNode instanceof StgPlace) || !(oneNode instanceof StgPlace)) {
@@ -353,9 +353,12 @@ public class StgUtils {
     public static Color getTypeColor(Signal.Type type) {
         if (type != null) {
             switch (type) {
-            case INPUT: return SignalCommonSettings.getInputColor();
-            case OUTPUT: return SignalCommonSettings.getOutputColor();
-            case INTERNAL: return SignalCommonSettings.getInternalColor();
+            case INPUT:
+                return SignalCommonSettings.getInputColor();
+            case OUTPUT:
+                return SignalCommonSettings.getOutputColor();
+            case INTERNAL:
+                return SignalCommonSettings.getInternalColor();
             }
         }
         return SignalCommonSettings.getDummyColor();
@@ -366,6 +369,21 @@ public class StgUtils {
         for (String signal : signals) {
             for (SignalTransition.Direction direction : SignalTransition.Direction.values()) {
                 result.add(signal + direction);
+            }
+        }
+        return result;
+    }
+
+    public static Collection<String> getSignalsWithToggleTransitions(Stg stg) {
+        return getSignalsWithToggleTransitions(stg, null);
+    }
+
+    public static Collection<String> getSignalsWithToggleTransitions(Stg stg, Signal.Type type) {
+        Set<String> result = new HashSet<>();
+        for (SignalTransition st: stg.getSignalTransitions(type)) {
+            if (st.getDirection() == SignalTransition.Direction.TOGGLE) {
+                String signalRef = stg.getSignalReference(st);
+                result.add(signalRef);
             }
         }
         return result;

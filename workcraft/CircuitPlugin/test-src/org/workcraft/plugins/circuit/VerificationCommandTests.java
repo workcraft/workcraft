@@ -34,7 +34,8 @@ public class VerificationCommandTests {
                 true,  // deadlock freeness
                 true,  // output persistency
                 true,   // strict implementation
-                true  // binate implementation
+                true,  // binate implementation
+                null // refinement
         );
     }
 
@@ -46,7 +47,8 @@ public class VerificationCommandTests {
                 true,  // deadlock freeness
                 false, // output persistency
                 null,   // strict implementation
-                true  // binate implementation
+                true,  // binate implementation
+                null // refinement
         );
     }
 
@@ -58,7 +60,8 @@ public class VerificationCommandTests {
                 true,  // deadlock freeness
                 true,  // output persistency
                 true,   // strict implementation
-                true  // binate implementation
+                true,  // binate implementation
+                true // refinement
         );
     }
 
@@ -70,7 +73,8 @@ public class VerificationCommandTests {
                 true,  // deadlock freeness
                 true,  // output persistency
                 null,   // strict implementation
-                true  // binate implementation
+                true,  // binate implementation
+                true // refinement
         );
     }
 
@@ -82,7 +86,8 @@ public class VerificationCommandTests {
                 true,  // deadlock freeness
                 true,  // output persistency
                 null,  // strict implementation
-                false  // binate implementation
+                false,  // binate implementation
+                true // refinement
         );
     }
 
@@ -94,7 +99,8 @@ public class VerificationCommandTests {
                 true,  // deadlock freeness
                 false,  // output persistency
                 null,  // strict implementation
-                true  // binate implementation
+                true,  // binate implementation
+                false // refinement
         );
     }
 
@@ -106,7 +112,8 @@ public class VerificationCommandTests {
                 true,  // deadlock freeness
                 true,  // output persistency
                 true,  // strict implementation
-                false  // binate implementation
+                false,  // binate implementation
+                true // refinement
         );
     }
 
@@ -118,13 +125,14 @@ public class VerificationCommandTests {
                 true,  // deadlock freeness
                 true,  // output persistency
                 true,  // strict implementation
-                true  // binate implementation
+                true,  // binate implementation
+                true // refinement
         );
     }
 
     private void testVerificationCommands(String workName,
             Boolean conformation, Boolean deadlockFreeness, Boolean outputPersistency,
-            Boolean strictImplementation, Boolean binateImplementation) throws DeserialisationException {
+            Boolean strictImplementation, Boolean binateImplementation, Boolean refinement) throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -141,11 +149,14 @@ public class VerificationCommandTests {
         OutputPersistencyVerificationCommand outputPersistencyCommand = new OutputPersistencyVerificationCommand();
         Assertions.assertEquals(outputPersistency, outputPersistencyCommand.execute(we));
 
+        BinateImplementationVerificationCommand binateImplementationCommand = new BinateImplementationVerificationCommand();
+        Assertions.assertEquals(binateImplementation, binateImplementationCommand.execute(we));
+
         StrictImplementationVerificationCommand strictImplementationCommand = new StrictImplementationVerificationCommand();
         Assertions.assertEquals(strictImplementation, strictImplementationCommand.execute(we));
 
-        BinateImplementationVerificationCommand binateImplementationCommand = new BinateImplementationVerificationCommand();
-        Assertions.assertEquals(binateImplementation, binateImplementationCommand.execute(we));
+        RefinementVerificationCommand refinementCommand = new RefinementVerificationCommand();
+        Assertions.assertEquals(refinement, refinementCommand.execute(we));
 
         framework.closeWork(we);
     }

@@ -4,6 +4,7 @@ Conformation: true
 Output persistency: true
 Binate function implementation: false
 Strict implementation: null
+Refinement: true
 Mutual exclusion of 'dsr' and 'dsw' (Signal assertion): true
 Mutual exclusion of 'dsr' and 'dsw' (REACH assertion): true
 Mutual exclusion of 'dsr' and 'dsw' (SPOT assertion): true

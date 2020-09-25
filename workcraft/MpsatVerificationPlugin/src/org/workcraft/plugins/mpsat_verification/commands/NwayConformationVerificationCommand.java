@@ -34,11 +34,6 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
     }
 
     @Override
-    public int getPriority() {
-        return 3;
-    }
-
-    @Override
     public Position getPosition() {
         return Position.BOTTOM_MIDDLE;
     }

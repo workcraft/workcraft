@@ -160,6 +160,8 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         StgModel devStg = WorkspaceUtils.getAs(we, StgModel.class);
         Set<String> devOutputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
         Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(devOutputSignals, devStgFile);
+        // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
+        transformer.insertShadowEnablerPlace(shadowTransitions);
 
         // Fill verification parameters with the inserted shadow transitions
         Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(sysStg, shadowTransitions);

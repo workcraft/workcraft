@@ -6,6 +6,7 @@ write(
     "Output persistency: " + checkCircuitOutputPersistency(work) + "\n" +
     "Binate function implementation: " + checkCircuitBinateImplementation(work) + "\n" +
     "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n" +
+    "Refinement: " + checkCircuitRefinement(work) + "\n" +
     "Mutual exclusion of 'dsr' and 'dsw' (Signal assertion): " + checkCircuitSignalAssertion(work, "!dsr || !dsw") + "\n" +
     "Mutual exclusion of 'dsr' and 'dsw' (REACH assertion): " + checkCircuitReachAssertion(work, "$S\"dsr\" & $S\"dsw\"") + "\n" +
     "Mutual exclusion of 'dsr' and 'dsw' (SPOT assertion): " + checkCircuitSpotAssertion(work, "G((!\"dsr\") | (!\"dsw\"))") + "\n" +

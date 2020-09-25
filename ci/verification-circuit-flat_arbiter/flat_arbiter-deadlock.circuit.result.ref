@@ -4,3 +4,4 @@ Conformation: true
 Output persistency: true
 Binate function implementation: true
 Strict implementation: null
+Refinement: false

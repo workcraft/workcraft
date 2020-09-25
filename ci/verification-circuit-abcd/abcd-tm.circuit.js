@@ -6,5 +6,6 @@ write(
     "Output persistency: " + checkCircuitOutputPersistency(work) + "\n" +
     "Binate function implementation: " + checkCircuitBinateImplementation(work) + "\n" +
     "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n" +
+    "Refinement: " + checkCircuitRefinement(work) + "\n" +
     "", "abcd-tm.circuit.result");
 exit();
