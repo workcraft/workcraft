@@ -46,8 +46,8 @@ public class CircuitSettings extends AbstractModelSettings {
 
     private static final Pattern GATE2_DATA_PATTERN = Pattern.compile("(\\w+)\\((\\w+),(\\w+)\\)");
     private static final int GATE_NAME_GROUP = 1;
-    private static final int GATE_PIN1_GROUP = 2;
-    private static final int GATE_PIN2_GROUP = 3;
+    private static final int GATE_INPUT_GROUP = 2;
+    private static final int GATE_OUTPUT_GROUP = 3;
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
@@ -759,8 +759,8 @@ public class CircuitSettings extends AbstractModelSettings {
         Matcher matcher = GATE2_DATA_PATTERN.matcher(value.replaceAll("\\s", ""));
         if (matcher.find()) {
             String name = matcher.group(GATE_NAME_GROUP);
-            String input = matcher.group(GATE_PIN1_GROUP);
-            String output = matcher.group(GATE_PIN2_GROUP);
+            String input = matcher.group(GATE_INPUT_GROUP);
+            String output = matcher.group(GATE_OUTPUT_GROUP);
             return new UnaryGateInterface(name, input, output);
         }
         return null;

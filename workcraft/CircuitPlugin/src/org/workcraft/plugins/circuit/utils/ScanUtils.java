@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -42,8 +43,13 @@ public class ScanUtils {
         }
         UnaryGateInterface testableGateInterface = result.isInverter() ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
         result.getReferencedComponent().setModule(testableGateInterface.name);
-        circuit.setMathName(result.getFirstVisualInput(), testableGateInterface.input);
-        circuit.setMathName(result.getFirstVisualOutput(), testableGateInterface.output);
+
+        VisualFunctionContact inputContact = result.getFirstVisualInput();
+        VisualFunctionContact outputContact = result.getFirstVisualOutput();
+        // Temporary rename gate output, so there is no name clash on renaming gate input
+        circuit.setMathName(outputContact, Identifier.makeInternal(testableGateInterface.output));
+        circuit.setMathName(inputContact, testableGateInterface.input);
+        circuit.setMathName(outputContact, testableGateInterface.output);
         result.getGateOutput().getReferencedComponent().setPathBreaker(true);
         return result;
     }
