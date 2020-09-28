@@ -53,6 +53,9 @@ public class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getWaitData()),
                 framework.getConfigVar(prefix + ".waitData", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getWait0Data()),
+                framework.getConfigVar(prefix + ".wait0Data", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getMutexData()),
                 framework.getConfigVar(prefix + ".mutexData", false));
 

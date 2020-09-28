@@ -30,14 +30,19 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
         MpsatOutput violationMpsatOutput = getViolationMpsatOutput(chainResult);
 
         if (violationMpsatOutput == null) {
-            StringBuilder msg = new StringBuilder("The following checks passed:");
+            // No solution found in any of the MPSat tasks
+            StringBuilder msg = new StringBuilder();
             for (VerificationParameters verificationParameters : chainOutput.getVerificationParametersList()) {
                 msg.append("\n * ").append(verificationParameters.getDescription());
             }
-            // No solution found in any of the MPSat tasks
             if (vacuousMutexImplementability) {
                 // Add trivial mutex implementability result if no mutex places found
                 msg.append("\n * Mutex implementability (vacuously)");
+            }
+            if (msg.length() == 0) {
+                msg.append(chainOutput.getMessage());
+            } else {
+                msg.insert(0, "The following checks passed:");
             }
 
             if (isInteractive()) {

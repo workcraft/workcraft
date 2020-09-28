@@ -1,50 +1,38 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.formula.And;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.formula.Not;
+import org.workcraft.formula.Or;
+import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgSettings;
 
 public class MutexUtils {
 
-    private static final String SET_SUFFIX = Character.toString((char) 0x2191);
-    private static final String RESET_SUFFIX = Character.toString((char) 0x2193);
+    public static BooleanFormula getGrantSet(VisualFunctionContact reqContact,
+            VisualFunctionContact otherGrantContact, VisualFunctionContact otherReqContact) {
 
-    public static String getGrantSetReset(String grantName, String set, String reset) {
-        return grantName + SET_SUFFIX + " = " + set + " ; " + grantName + RESET_SUFFIX + " = " + reset;
+        return getGrantSet(reqContact.getReferencedComponent(),
+                otherGrantContact.getReferencedComponent(), otherReqContact.getReferencedComponent());
     }
 
-    public static String getGrantSet(String reqName, String otherGrantName, String otherReqName) {
-        String result = reqName + " * " + otherGrantName + "'";
+    public static BooleanFormula getGrantSet(BooleanFormula reqContact,
+            BooleanFormula otherGrantContact, BooleanFormula otherReqContact) {
+
+        BooleanFormula result = new And(reqContact, new Not(otherGrantContact));
         if (StgSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
-            result += " + " + reqName + " * " + otherReqName + "'";
+            result = new Or(result, new And(reqContact, new Not(otherReqContact)));
         }
         return result;
     }
 
-    public static String getGrantReset(String reqName) {
-        return reqName + "'";
+    public static BooleanFormula getGrantReset(VisualFunctionContact reqContact) {
+        return getGrantReset(reqContact.getReferencedComponent());
     }
 
-    public static void setMutexFunctions(VisualCircuit circuit, VisualFunctionComponent component,
-            VisualFunctionContact grantContact, String setString, String resetString) {
-
-        setMutexFunctions(circuit.getMathModel(), component.getReferencedComponent(),
-                grantContact.getReferencedComponent(), setString, resetString);
-    }
-
-    public static void setMutexFunctions(Circuit circuit, FunctionComponent component,
-            FunctionContact grantContact, String setString, String resetString) {
-
-        try {
-            BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setString);
-            grantContact.setSetFunctionQuiet(setFormula);
-
-            BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, resetString);
-            grantContact.setResetFunctionQuiet(resetFormula);
-        } catch (org.workcraft.formula.jj.ParseException e) {
-            throw new RuntimeException(e);
-        }
+    public static BooleanFormula getGrantReset(BooleanFormula reqContact) {
+        return new Not(reqContact);
     }
 
 }

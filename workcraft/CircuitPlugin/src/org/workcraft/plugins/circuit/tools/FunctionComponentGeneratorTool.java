@@ -6,7 +6,9 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.formula.And;
 import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.Not;
 import org.workcraft.gui.controls.IntRangeSlider;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
@@ -44,7 +46,7 @@ import java.util.stream.Collectors;
 public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
     private final JRadioButton allTypeFilter = new JRadioButton("all");
-    private final JRadioButton combTypeFilter = new JRadioButton("com");
+    private final JRadioButton combTypeFilter = new JRadioButton("comb");
     private final JRadioButton seqTypeFilter = new JRadioButton("seq");
     private final JRadioButton arbTypeFilter = new JRadioButton("arb");
     private final IntRangeSlider pinsFilter = new IntRangeSlider();
@@ -74,7 +76,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     static class LibraryItem {
         private final String name;
         private final Type type;
-        private int pinCount;
+        private final int pinCount;
         private final Instantiator instantiator;
 
         enum Type {
@@ -101,7 +103,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         }
     }
 
-    class LibraryList extends JList<LibraryItem> {
+    static class LibraryList extends JList<LibraryItem> {
 
         LibraryList(List<LibraryItem> items) {
             super(new Vector<>(items));
@@ -226,6 +228,12 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         typeFilterGroup.add(seqTypeFilter);
         typeFilterGroup.add(arbTypeFilter);
 
+        allTypeFilter.setToolTipText("All components");
+        combTypeFilter.setToolTipText("Combinational gates");
+        seqTypeFilter.setToolTipText("Sequential elements");
+        arbTypeFilter.setToolTipText("Arbitration primitives");
+
+
         allTypeFilter.addActionListener(event -> updateLibraryList(editor));
         combTypeFilter.addActionListener(event -> updateLibraryList(editor));
         seqTypeFilter.addActionListener(event -> updateLibraryList(editor));
@@ -349,72 +357,101 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             }
         }
         libraryItems.add(createWaitItem());
+        libraryItems.add(createWait0Item());
         libraryItems.add(createMutexItem());
-        Collections.sort(libraryItems, Comparator.comparing(LibraryItem::toString));
+        libraryItems.sort(Comparator.comparing(LibraryItem::toString));
         return libraryItems;
     }
 
     private LibraryItem createWaitItem() {
         Wait module = CircuitSettings.parseWaitData();
-        String name = module.name;
-        String sigName = module.sig.name;
-        String ctrlName = module.ctrl.name;
-        String sanName = module.san.name;
-
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+            component.getReferencedComponent().setIsArbitrationPrimitive(true);
 
             VisualFunctionContact sigContact = component.createContact(IOType.INPUT);
-            circuit.setMathName(sigContact, sigName);
+            circuit.setMathName(sigContact, module.sig.name);
             sigContact.setPosition(new Point2D.Double(-1.5, 0.0));
 
             VisualFunctionContact ctrlContact = component.createContact(IOType.INPUT);
-            circuit.setMathName(ctrlContact, ctrlName);
+            circuit.setMathName(ctrlContact, module.ctrl.name);
             ctrlContact.setDirection(VisualContact.Direction.EAST);
             ctrlContact.setPosition(new Point2D.Double(1.5, 0.5));
 
             VisualFunctionContact sanContact = component.createContact(IOType.OUTPUT);
-            circuit.setMathName(sanContact, sanName);
+            circuit.setMathName(sanContact, module.san.name);
             sanContact.setPosition(new Point2D.Double(1.5, -0.5));
 
-            BooleanFormula setFormula = ctrlContact.getReferencedComponent();
+            BooleanFormula setFormula = new And(ctrlContact.getReferencedComponent(), sigContact.getReferencedComponent());
             sanContact.getReferencedComponent().setSetFunctionQuiet(setFormula);
+
+            BooleanFormula resetFormula = new Not(ctrlContact.getReferencedComponent());
+            sanContact.getReferencedComponent().setResetFunctionQuiet(resetFormula);
         };
-        return new LibraryItem(name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator);
+        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator);
+    }
+
+    private LibraryItem createWait0Item() {
+        Wait module = CircuitSettings.parseWait0Data();
+        Instantiator instantiator = (circuit, component) -> {
+            component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+            component.getReferencedComponent().setIsArbitrationPrimitive(true);
+
+            VisualFunctionContact sigContact = component.createContact(IOType.INPUT);
+            circuit.setMathName(sigContact, module.sig.name);
+            sigContact.setPosition(new Point2D.Double(-1.5, 0.0));
+
+            VisualFunctionContact ctrlContact = component.createContact(IOType.INPUT);
+            circuit.setMathName(ctrlContact, module.ctrl.name);
+            ctrlContact.setDirection(VisualContact.Direction.EAST);
+            ctrlContact.setPosition(new Point2D.Double(1.5, 0.5));
+
+            VisualFunctionContact sanContact = component.createContact(IOType.OUTPUT);
+            circuit.setMathName(sanContact, module.san.name);
+            sanContact.setPosition(new Point2D.Double(1.5, -0.5));
+
+            BooleanFormula setFormula = new And(ctrlContact.getReferencedComponent(), new Not(sigContact.getReferencedComponent()));
+            sanContact.getReferencedComponent().setSetFunctionQuiet(setFormula);
+
+            BooleanFormula resetFormula = new Not(ctrlContact.getReferencedComponent());
+            sanContact.getReferencedComponent().setResetFunctionQuiet(resetFormula);
+        };
+        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator);
     }
 
     private LibraryItem createMutexItem() {
         Mutex module = CircuitSettings.parseMutexData();
-        String r1Name = module.r1.name;
-        String g1Name = module.g1.name;
-        String r2Name = module.r2.name;
-        String g2Name = module.g2.name;
-        String g1Set = MutexUtils.getGrantSet(r1Name, g2Name, r2Name);
-        String g1Reset = MutexUtils.getGrantReset(r1Name);
-        String g2Set = MutexUtils.getGrantSet(r2Name, g1Name, r1Name);
-        String g2Reset = MutexUtils.getGrantReset(r2Name);
-
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+            component.getReferencedComponent().setIsArbitrationPrimitive(true);
 
             VisualFunctionContact r1Contact = component.createContact(IOType.INPUT);
-            circuit.setMathName(r1Contact, r1Name);
+            circuit.setMathName(r1Contact, module.r1.name);
             r1Contact.setPosition(new Point2D.Double(-1.5, -1.0));
 
             VisualFunctionContact g1Contact = component.createContact(IOType.OUTPUT);
-            circuit.setMathName(g1Contact, g1Name);
+            circuit.setMathName(g1Contact, module.g1.name);
             g1Contact.setPosition(new Point2D.Double(1.5, -1.0));
 
             VisualFunctionContact r2Contact = component.createContact(IOType.INPUT);
-            circuit.setMathName(r2Contact, r2Name);
+            circuit.setMathName(r2Contact, module.r2.name);
             r2Contact.setPosition(new Point2D.Double(-1.5, 1.0));
 
             VisualFunctionContact g2Contact = component.createContact(IOType.OUTPUT);
-            circuit.setMathName(g2Contact, g2Name);
+            circuit.setMathName(g2Contact, module.g2.name);
             g2Contact.setPosition(new Point2D.Double(1.5, 1.0));
 
-            MutexUtils.setMutexFunctions(circuit, component, g1Contact, g1Set, g1Reset);
-            MutexUtils.setMutexFunctions(circuit, component, g2Contact, g2Set, g2Reset);
+            BooleanFormula g1SetFormula = MutexUtils.getGrantSet(r1Contact, g2Contact, r2Contact);
+            g1Contact.getReferencedComponent().setSetFunctionQuiet(g1SetFormula);
+
+            BooleanFormula g1ResetFormula = MutexUtils.getGrantReset(r1Contact);
+            g1Contact.getReferencedComponent().setResetFunctionQuiet(g1ResetFormula);
+
+            BooleanFormula g2SetFormula = MutexUtils.getGrantSet(r2Contact, g1Contact, r1Contact);
+            g2Contact.getReferencedComponent().setSetFunctionQuiet(g2SetFormula);
+
+            BooleanFormula g2ResetFormula = MutexUtils.getGrantReset(r2Contact);
+            g2Contact.getReferencedComponent().setResetFunctionQuiet(g2ResetFormula);
         };
         return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
     }

@@ -1,0 +1,7 @@
+Refinement checks:
+  * CSC strict:  true
+  * CSC relaxed: true
+  * CR strict:   false
+  * CR relaxed:  true
+  * TA strict:   false
+  * TA relaxed:  false

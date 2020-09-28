@@ -166,7 +166,7 @@ public class TextUtils {
         return text + wrapItems(items, length);
     }
 
-    public static String makePlural(String word) {
+    private static String makePlural(String word) {
         if (word.endsWith("y") && !word.endsWith("ay") && !word.endsWith("ey")
                 && !word.endsWith("iy") && !word.endsWith("oy") && !word.endsWith("uy")) {
 

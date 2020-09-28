@@ -16,14 +16,11 @@ import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.WorkUtils;
-import org.workcraft.utils.WorkspaceUtils;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -71,13 +68,19 @@ public class RefinementTask implements Task<VerificationChainOutput> {
     private static final String COMPOSITION_SHADOW_STG_FILE_NAME = "composition-shadow" + STG_FILE_EXTENSION;
 
     private final WorkspaceEntry we;
+    private final Stg implementationStg;
     private final File specificationFile;
     private final boolean allowConcurrencyReduction;
+    private final boolean assumeInputReceptiveness;
 
-    public RefinementTask(WorkspaceEntry we, File specificationFile, boolean allowConcurrencyReduction) {
+    public RefinementTask(WorkspaceEntry we, Stg implementationStg, File specificationFile,
+            boolean allowConcurrencyReduction, boolean assumeInputReceptiveness) {
+
         this.we = we;
+        this.implementationStg = implementationStg;
         this.specificationFile = specificationFile;
         this.allowConcurrencyReduction = allowConcurrencyReduction;
+        this.assumeInputReceptiveness = assumeInputReceptiveness;
     }
 
     @Override
@@ -98,10 +101,6 @@ public class RefinementTask implements Task<VerificationChainOutput> {
     }
 
     private Result<? extends VerificationChainOutput> checkTrivialCases() {
-        if (!WorkspaceUtils.isApplicable(we, StgModel.class)) {
-            return Result.exception("Incorrect model type");
-        }
-
         if (specificationFile == null) {
             return Result.exception("Specification STG is undefined");
         }
@@ -112,7 +111,6 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         }
 
         // Make sure that signal types of the specification STG match those of the implementation STG
-        Stg implementationStg = WorkspaceUtils.getAs(we, Stg.class);
         Set<String> implementationInputs = implementationStg.getSignalReferences(Signal.Type.INPUT);
         Set<String> implementationOutputs = implementationStg.getSignalReferences(Signal.Type.OUTPUT);
         StgUtils.restoreInterfaceSignals(specificationStg, implementationInputs, implementationOutputs);
@@ -127,6 +125,32 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             return Result.success(new VerificationChainOutput()
                     .applyVerificationParameters(TRIVIAL_VIOLATION_PARAMETERS)
                     .applyMessage("Refinement is violated because\nimplementation outputs differ from specification"));
+        }
+
+        Collection<String> implementationToggleOutputs = StgUtils.getSignalsWithToggleTransitions(implementationStg, Signal.Type.OUTPUT);
+        if (!implementationToggleOutputs.isEmpty()) {
+            return Result.exception(TextUtils.wrapMessageWithItems(
+                    "Refinement cannot be checked for implementation STG with toggle outputs transitions.\n" +
+                            "Problematic signal", implementationToggleOutputs));
+        }
+
+        if (!allowConcurrencyReduction) {
+            Collection<String> specificationToggleOutputs = StgUtils.getSignalsWithToggleTransitions(specificationStg, Signal.Type.OUTPUT);
+            if (!specificationToggleOutputs.isEmpty()) {
+                return Result.exception(TextUtils.wrapMessageWithItems(
+                        "Refinement cannot be checked for specification STG with toggle output transitions.\n" +
+                                "Problematic signal", specificationToggleOutputs));
+            }
+        }
+
+        if (!assumeInputReceptiveness) {
+            Collection<String> specificationToggleInputs = StgUtils.getSignalsWithToggleTransitions(specificationStg, Signal.Type.INPUT);
+            specificationToggleInputs.retainAll(implementationInputs);
+            if (!specificationToggleInputs.isEmpty()) {
+                return Result.exception(TextUtils.wrapMessageWithItems(
+                        "Refinement cannot be checked for specification STG with toggle input transitions.\n" +
+                                "Problematic signal", specificationToggleInputs));
+            }
         }
 
         return null;
@@ -144,10 +168,6 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         if (specificationStg == null) {
             return Result.exception("Cannot load specification STG from file '" + specificationFile.getAbsolutePath() + "'");
         }
-
-        // Clone implementation STG as its internal signals will need to be converted to dummies
-        ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
-        Stg implementationStg = WorkspaceUtils.getAs(me, Stg.class);
 
         // Make sure that signal types of the specification STG match those of the implementation STG
         Set<String> implementationInputs = implementationStg.getSignalReferences(Signal.Type.INPUT);
@@ -173,7 +193,9 @@ public class RefinementTask implements Task<VerificationChainOutput> {
 
         // Export implementation STG (convert internal signals to dummies and keep track of renaming)
         @SuppressWarnings("PMD.PrematureDeclaration")
-        Map<String, String> implementationSubstitutions = StgUtils.convertInternalSignalsToDummies(implementationStg);
+        Map<String, String> implementationSubstitutions = allowConcurrencyReduction ? Collections.emptyMap()
+                : StgUtils.convertInternalSignalsToDummies(implementationStg);
+
         File implementationStgFile = new File(directory, IMPLEMENTATION_STG_FILE_NAME);
         Result<? extends ExportOutput> implementationExportResult = StgUtils.exportStg(implementationStg, implementationStgFile, monitor);
         if (!implementationExportResult.isSuccess()) {
@@ -227,14 +249,18 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         Stg compositionStg = StgUtils.importStg(pcompOutput.getOutputFile());
         CompositionTransformer transformer = new CompositionTransformer(compositionStg, compositionData);
         Set<SignalTransition> shadowTransitions = new HashSet<>();
-        // - all inputs of specification STG known to implementation STG
-        shadowTransitions.addAll(transformer.insetShadowTransitions(inputSignals, specificationStgFile));
+        // - all outputs of implementation STG
+        shadowTransitions.addAll(transformer.insetShadowTransitions(outputSignals, implementationStgFile));
         if (!allowConcurrencyReduction) {
             // - all outputs of specification (for strict refinement only, without concurrency reduction)
             shadowTransitions.addAll(transformer.insetShadowTransitions(outputSignals, specificationStgFile));
         }
-        // - all outputs of implementation STG
-        shadowTransitions.addAll(transformer.insetShadowTransitions(outputSignals, implementationStgFile));
+        if (!assumeInputReceptiveness) {
+            // - all inputs of specification STG known to implementation STG
+            shadowTransitions.addAll(transformer.insetShadowTransitions(inputSignals, specificationStgFile));
+        }
+        // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
+        transformer.insertShadowEnablerPlace(shadowTransitions);
 
         // Apply substitutions to the composition data of the STG components
         CompositionUtils.applyExportSubstitutions(compositionData, payload.getExportResult().getPayload());

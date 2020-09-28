@@ -231,7 +231,7 @@ public class StgNameManager extends DefaultNameManager {
         return result;
     }
 
-    private void setDeaultSignalTransitionNameIfUnnamed(final SignalTransition st) {
+    private void setDefaultSignalTransitionNameIfUnnamed(final SignalTransition st) {
         if (!instancedNameManager.contains(st)) {
             String prefix = getPrefix(st);
             Integer count = getPrefixCount(prefix);
@@ -272,7 +272,7 @@ public class StgNameManager extends DefaultNameManager {
         if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
             // Skip implicit places.
         } else if (node instanceof SignalTransition) {
-            setDeaultSignalTransitionNameIfUnnamed((SignalTransition) node);
+            setDefaultSignalTransitionNameIfUnnamed((SignalTransition) node);
         } else if (node instanceof DummyTransition) {
             setDefaultDummyTransitionNameIfUnnamed((DummyTransition) node);
         } else {

@@ -2,19 +2,20 @@ package org.workcraft.plugins.atacs.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.plugins.atacs.AtacsSettings;
-import org.workcraft.plugins.atacs.tasks.SynthesisResultHandlingMonitor;
 import org.workcraft.plugins.atacs.tasks.AtacsTask;
+import org.workcraft.plugins.atacs.tasks.SynthesisResultHandlingMonitor;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.MutexUtils;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.HashSet;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,10 +48,12 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
 
     private SynthesisResultHandlingMonitor queueSynthesis(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        HashSet<String> signalRefs = getSignalsWithToggleTransitions(stg);
+        Collection<String> signalRefs = StgUtils.getSignalsWithToggleTransitions(stg);
         if (!signalRefs.isEmpty()) {
-            DialogUtils.showError("ATACS cannot synthesise STGs with toggle transitions. Problematic signals: "
-                    + String.join(", ", signalRefs));
+            DialogUtils.showError(TextUtils.wrapMessageWithItems(
+                    "ATACS cannot synthesise STGs with toggle transitions. Problematic signal",
+                    signalRefs));
+
             return null;
         }
         LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
@@ -67,17 +70,6 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
 
         taskManager.queue(task, "ATACS logic synthesis", monitor);
         return monitor;
-    }
-
-    private HashSet<String> getSignalsWithToggleTransitions(Stg stg) {
-        HashSet<String> result = new HashSet<>();
-        for (SignalTransition st: stg.getSignalTransitions()) {
-            if (st.getDirection() == SignalTransition.Direction.TOGGLE) {
-                String signalRef = stg.getSignalReference(st);
-                result.add(signalRef);
-            }
-        }
-        return result;
     }
 
     public boolean boxSequentialComponents() {

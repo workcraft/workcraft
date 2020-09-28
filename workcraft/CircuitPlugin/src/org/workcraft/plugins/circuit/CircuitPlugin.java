@@ -94,6 +94,9 @@ public class CircuitPlugin implements Plugin {
                 "check the Circuit 'work' for strict implementation of its signals according to the environment");
         ScriptableCommandUtils.registerCommand(BinateImplementationVerificationCommand.class, "checkCircuitBinateImplementation",
                 "check the Circuit 'work' for correct implementation of its binate functions");
+        ScriptableCommandUtils.registerCommand(RefinementVerificationCommand.class, "checkCircuitRefinement",
+                "check the Circuit 'work' is a refinement of its environment STG");
+
         ScriptableCommandUtils.registerDataCommand(ReachAssertionVerificationCommand.class, "checkCircuitReachAssertion",
                 "check the Circuit 'work' for REACH assertion 'data'");
         ScriptableCommandUtils.registerDataCommand(SignalAssertionVerificationCommand.class, "checkCircuitSignalAssertion",

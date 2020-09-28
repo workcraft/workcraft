@@ -12,9 +12,4 @@ public class RelaxedRefinementVerificationCommand extends RefinementVerification
         return true;
     }
 
-    @Override
-    public int getPriority() {
-        return 1;
-    }
-
 }

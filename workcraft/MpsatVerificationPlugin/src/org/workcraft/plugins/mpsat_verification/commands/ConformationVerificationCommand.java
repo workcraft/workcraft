@@ -31,11 +31,6 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
     }
 
     @Override
-    public int getPriority() {
-        return 4;
-    }
-
-    @Override
     public Position getPosition() {
         return Position.BOTTOM_MIDDLE;
     }

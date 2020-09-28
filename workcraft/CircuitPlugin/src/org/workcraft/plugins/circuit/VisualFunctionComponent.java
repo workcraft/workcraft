@@ -417,7 +417,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         if ((inputPos != null) && (outputPos != null)) {
             float[] pattern = {0.1f, 0.1f};
             g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
-                        BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+                    BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 
             g.setColor(GateRenderer.foreground);
             at.transform(inputPos, inputPos);

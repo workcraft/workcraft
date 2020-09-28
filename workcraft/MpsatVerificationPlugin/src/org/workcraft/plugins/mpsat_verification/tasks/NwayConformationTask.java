@@ -138,6 +138,8 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             File componentStgFile = getComponentStgFile(directory, we);
             shadowTransitions.addAll(transformer.insetShadowTransitions(componentOutputSignals, componentStgFile));
         }
+        // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
+        transformer.insertShadowEnablerPlace(shadowTransitions);
 
         // Fill verification parameters with the inserted shadow transitions
         Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(compositionStg, shadowTransitions);
