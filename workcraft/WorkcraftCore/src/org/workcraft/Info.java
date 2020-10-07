@@ -1,9 +1,9 @@
 package org.workcraft;
 
-import java.util.Calendar;
-
 import org.workcraft.Version.Status;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
+
+import java.util.Calendar;
 
 public class Info {
 
@@ -20,20 +20,6 @@ public class Info {
     private static final String organisation = "Newcastle University";
     private static final String homepage = "https://workcraft.org/";
     private static final String email = "support@workcraft.org";
-
-    public static final String OPTION_DIR = "-dir:";
-    public static final String OPTION_EXEC = "-exec:";
-    public static final String OPTION_NOGUI = "-nogui";
-    public static final String OPTION_NOCONFIG = "-noconfig";
-    public static final String OPTION_VERSION = "-version";
-    public static final String OPTION_HELP = "-help";
-    private static final String help = "Usage:  java --classpath <CORE_AND_PLUGINS> org.workcraft.Console [OPTIONS]\n" +
-            "    " + OPTION_DIR + "<PATH>\t - pass working directory\n" +
-            "    " + OPTION_EXEC + "<SCRIPT> - JavaScript file or one-liner to execute on startup\n" +
-            "    " + OPTION_NOGUI + "\t - run in console mode\n" +
-            "    " + OPTION_NOCONFIG + "\t - use default settings without overwriting user config\n" +
-            "    " + OPTION_VERSION + "\t - report the version information and exit\n" +
-            "    " + OPTION_HELP + "\t - display this help message and exit\n";
 
     public static Version getVersion() {
         return version;
@@ -83,10 +69,6 @@ public class Info {
 
     public static String getEmail() {
         return email;
-    }
-
-    public static String getHelp() {
-        return help;
     }
 
     public static String getGeneratedByText(String prefix, String suffix) {

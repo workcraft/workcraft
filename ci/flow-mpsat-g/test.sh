@@ -1,4 +1,4 @@
-args="-missing"
+args="_missing"
 for path in ${test_dir}/*.g; do
     [[ -f $path ]] || continue
     g_file="$(basename ${path})"

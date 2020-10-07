@@ -332,4 +332,15 @@ public class FileUtils {
         return result;
     }
 
+    public static File getFileByAbsoluteOrRelativePath(String path, File directory) {
+        File file = null;
+        if (path != null) {
+            file = new File(path);
+            if (!file.isAbsolute()) {
+                file = new File(directory, path);
+            }
+        }
+        return file;
+    }
+
 }
