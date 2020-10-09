@@ -519,7 +519,7 @@ public final class Framework {
         return inGuiMode;
     }
 
-    public void setArgs(List<String> args) {
+    public void setArgs(Collection<String> args) {
         SetArgs setargs = new SetArgs();
         setargs.setArgs(args.toArray());
         contextFactory.call(setargs);
@@ -855,18 +855,7 @@ public final class Framework {
     }
 
     public File getFileByAbsoluteOrRelativePath(String path) {
-        File file = null;
-        if (path != null) {
-            file = new File(path);
-            if (!file.isAbsolute()) {
-                file = new File(getWorkingDirectory(), path);
-            }
-        }
-        return file;
-    }
-
-    public void setWorkingDirectory(String path) {
-        setWorkingDirectory(new File(path));
+        return FileUtils.getFileByAbsoluteOrRelativePath(path, getWorkingDirectory());
     }
 
     public void setWorkingDirectory(File dir) {
@@ -875,7 +864,8 @@ public final class Framework {
 
     public File getWorkingDirectory() {
         if (workingDirectory == null) {
-            setWorkingDirectory(System.getProperty("user.dir"));
+            String path = System.getProperty("user.dir");
+            setWorkingDirectory(path == null ? null : new File(path));
         }
         return workingDirectory;
     }

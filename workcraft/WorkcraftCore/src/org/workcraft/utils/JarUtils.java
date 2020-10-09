@@ -2,20 +2,19 @@ package org.workcraft.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class JarUtils {
 
-    public static Set<String> getResourcePaths(String path)
-            throws URISyntaxException, IOException {
+    public static final String FILE_PROTOCOL = "file";
+    public static final String JAR_PROTOCOL = "jar";
 
+    public static Set<String> getResourcePaths(String path) throws IOException {
         HashMap<String, URL> resourceToDirMap = new HashMap<>();
         if (!path.endsWith("/")) {
             path += "/";
@@ -24,7 +23,7 @@ public class JarUtils {
         Enumeration<URL> dirUrls = classLoader.getResources(path);
         while (dirUrls.hasMoreElements()) {
             URL dirUrl = dirUrls.nextElement();
-            for (String resource: getResourcePaths(path, dirUrl)) {
+            for (String resource : getResourcePaths(path, dirUrl)) {
                 if (resourceToDirMap.containsKey(resource)) {
                     LogUtils.logError("Skipping resource '" + resource + "' from '" + dirUrl
                             + "' as it is already present in '" + resourceToDirMap.get(resource) + "'");
@@ -35,17 +34,14 @@ public class JarUtils {
         return new HashSet<>(resourceToDirMap.keySet());
     }
 
-    private static Set<String> getResourcePaths(String path, URL dirUrl)
-            throws URISyntaxException, IOException {
-
+    private static Set<String> getResourcePaths(String path, URL dirUrl) throws IOException {
         HashSet<String> result = new HashSet<>();
         String protocol = dirUrl.getProtocol();
-        if ("file".equals(protocol)) {
-            File dir = new File(dirUrl.toURI());
-            for (String fileName: dir.list()) {
+        if (FILE_PROTOCOL.equals(protocol)) {
+            for (String fileName : getDirectoryContent(dirUrl)) {
                 result.add(path + fileName);
             }
-        } else if ("jar".equals(protocol)) {
+        } else if (JAR_PROTOCOL.equals(protocol)) {
             String dirPath = dirUrl.getPath();
             String jarPath = dirPath.substring(5, dirPath.indexOf("!"));
             JarFile jarFile = new JarFile(jarPath);
@@ -57,6 +53,25 @@ public class JarUtils {
                 }
             }
             jarFile.close();
+        }
+        return result;
+    }
+
+    private static Set<String> getDirectoryContent(URL dirUrl) {
+        Set<String> result = new HashSet<>();
+        URI uri = null;
+        try {
+            uri = dirUrl.toURI();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
+        if (uri != null) {
+            File dir = new File(uri);
+            String[] content = dir.list();
+            if (content != null) {
+                result.addAll(Arrays.asList(content));
+            }
         }
         return result;
     }
