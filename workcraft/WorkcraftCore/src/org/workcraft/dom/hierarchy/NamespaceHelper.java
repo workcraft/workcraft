@@ -116,6 +116,12 @@ public class NamespaceHelper {
         return mathTargetContainer;
     }
 
+    public static void copyPageStructure(VisualModel srcModel, VisualModel dstModel) {
+        Container dstContainer = dstModel.getRoot();
+        Container srcContainer = srcModel.getRoot();
+        copyPageStructure(srcModel, srcContainer, dstModel, dstContainer);
+    }
+
     private static void copyPageStructure(VisualModel srcModel, Container srcContainer,
             VisualModel dstModel, Container dstContainer) {
 
@@ -146,13 +152,25 @@ public class NamespaceHelper {
         }
     }
 
-    public static void copyPageStructure(VisualModel srcModel, VisualModel dstModel) {
-        Container dstContainer = dstModel.getRoot();
-        Container srcContainer = srcModel.getRoot();
-        copyPageStructure(srcModel, srcContainer, dstModel, dstContainer);
+    public static void removeEmptyPages(VisualModel model) {
+        boolean progress;
+        do {
+            progress = false;
+            for (VisualPage page: Hierarchy.getDescendantsOfType(model.getRoot(), VisualPage.class)) {
+                if (page.getChildren().isEmpty()) {
+                    Container container = Hierarchy.getNearestContainer(page);
+                    model.setCurrentLevel(container);
+                    model.select(page);
+                    model.deleteSelection();
+                    progress = true;
+                }
+            }
+        } while (progress);
+        model.selectNone();
+        model.setCurrentLevel(model.getRoot());
     }
 
-    public  static HashMap<String, Container> getRefToPageMapping(VisualModel model) {
+    public static HashMap<String, Container> getRefToPageMapping(VisualModel model) {
         HashMap<String, Container> result = new HashMap<>();
         Container root = model.getRoot();
         result.put("", root);

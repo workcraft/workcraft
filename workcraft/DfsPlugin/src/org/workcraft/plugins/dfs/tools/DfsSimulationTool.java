@@ -26,6 +26,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public class DfsSimulationTool extends StgSimulationTool {
@@ -68,70 +70,74 @@ public class DfsSimulationTool extends StgSimulationTool {
         }
         editor.getWorkspaceEntry().saveMemento();
         VisualDfs dfs = (VisualDfs) editor.getModel();
-        for (VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
-            String refC = DfsToStgConverter.nameC + dfs.getMathReference(l) + DfsToStgConverter.name1;
-            Node nodeC = getUnderlyingStg().getNodeByReference(refC);
-            if ((nodeC instanceof Place) && savedState.containsKey(nodeC)) {
-                boolean computed = savedState.get(nodeC) > 0;
-                l.getReferencedComponent().setComputed(computed);
+        for (VisualLogic node : dfs.getVisualLogics()) {
+            String c1Ref = DfsToStgConverter.getLogicStgNodeReference(dfs.getMathReference(node), true);
+            Node c1Node = getUnderlyingStg().getNodeByReference(c1Ref);
+            if ((c1Node instanceof Place) && savedState.containsKey(c1Node)) {
+                boolean computed = savedState.get(c1Node) > 0;
+                node.getReferencedComponent().setComputed(computed);
             }
         }
-        for (VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
-            String refM = DfsToStgConverter.nameM + dfs.getMathReference(r) + DfsToStgConverter.name1;
-            Node nodeM = getUnderlyingStg().getNodeByReference(refM);
-            if ((nodeM instanceof Place) && savedState.containsKey(nodeM)) {
-                boolean marked = savedState.get(nodeM) > 0;
-                r.getReferencedComponent().setMarked(marked);
-                copyTokenColor(r, nodeM);
+        for (VisualRegister node : dfs.getVisualRegisters()) {
+            String m1Ref = DfsToStgConverter.getRegisterStgNodeReference(dfs.getMathReference(node), true);
+            Node m1Node = getUnderlyingStg().getNodeByReference(m1Ref);
+            if ((m1Node instanceof Place) && savedState.containsKey(m1Node)) {
+                boolean marked = savedState.get(m1Node) > 0;
+                node.getReferencedComponent().setMarked(marked);
+                copyTokenColor(node, m1Node);
             }
         }
-        for (VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
-            String refFwC = DfsToStgConverter.nameFwC + dfs.getMathReference(l) + DfsToStgConverter.name1;
-            Node nodeFwC = getUnderlyingStg().getNodeByReference(refFwC);
-            if ((nodeFwC instanceof Place) && savedState.containsKey(nodeFwC)) {
-                boolean forwardComputed = savedState.get(nodeFwC) > 0;
-                l.getReferencedComponent().setForwardComputed(forwardComputed);
+        for (VisualCounterflowLogic node : dfs.getVisualCounterflowLogics()) {
+            String fwC1Ref = DfsToStgConverter.getCounterflowLogicStgNodeReference(dfs.getMathReference(node), true, true);
+            Node fwC1Node = getUnderlyingStg().getNodeByReference(fwC1Ref);
+            if ((fwC1Node instanceof Place) && savedState.containsKey(fwC1Node)) {
+                boolean forwardComputed = savedState.get(fwC1Node) > 0;
+                node.getReferencedComponent().setForwardComputed(forwardComputed);
             }
-            String refBwC = DfsToStgConverter.nameBwC + dfs.getMathReference(l) + DfsToStgConverter.name1;
-            Node nodeBwC = getUnderlyingStg().getNodeByReference(refBwC);
-            if ((nodeBwC instanceof Place) && savedState.containsKey(nodeBwC)) {
-                boolean backwardComputed = savedState.get(nodeBwC) > 0;
-                l.getReferencedComponent().setBackwardComputed(backwardComputed);
-            }
-        }
-        for (VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
-            String refOrM = DfsToStgConverter.nameOrM + dfs.getMathReference(r) + DfsToStgConverter.name1;
-            Node nodeOrM = getUnderlyingStg().getNodeByReference(refOrM);
-            if ((nodeOrM instanceof Place) && savedState.containsKey(nodeOrM)) {
-                boolean orMarked = savedState.get(nodeOrM) > 0;
-                r.getReferencedComponent().setOrMarked(orMarked);
-                copyTokenColor(r, nodeOrM);
-            }
-            String refAndM = DfsToStgConverter.nameAndM + dfs.getMathReference(r) + DfsToStgConverter.name1;
-            Node nodeAndM = getUnderlyingStg().getNodeByReference(refAndM);
-            if ((nodeAndM instanceof Place) && savedState.containsKey(nodeAndM)) {
-                boolean andMarked = savedState.get(nodeAndM) > 0;
-                r.getReferencedComponent().setAndMarked(andMarked);
-                copyTokenColor(r, nodeAndM);
+            String bwC1Ref = DfsToStgConverter.getCounterflowLogicStgNodeReference(dfs.getMathReference(node), false, true);
+            Node bwC1Node = getUnderlyingStg().getNodeByReference(bwC1Ref);
+            if ((bwC1Node instanceof Place) && savedState.containsKey(bwC1Node)) {
+                boolean backwardComputed = savedState.get(bwC1Node) > 0;
+                node.getReferencedComponent().setBackwardComputed(backwardComputed);
             }
         }
-        for (VisualBinaryRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualBinaryRegister.class)) {
-            r.getReferencedComponent().setMarking(Marking.EMPTY);
-            String refTrueM = DfsToStgConverter.nameTrueM + dfs.getMathReference(r) + DfsToStgConverter.name1;
-            Node nodeTrueM = getUnderlyingStg().getNodeByReference(refTrueM);
-            if ((nodeTrueM instanceof Place) && savedState.containsKey(nodeTrueM)) {
-                if (savedState.get(nodeTrueM) > 0) {
-                    r.getReferencedComponent().setMarking(Marking.TRUE_TOKEN);
+        for (VisualCounterflowRegister node : dfs.getVisualCounterflowRegisters()) {
+            String orM1Ref = DfsToStgConverter.getCounterflowRegisterStgNodeReference(dfs.getMathReference(node), true, true);
+            Node orM1Node = getUnderlyingStg().getNodeByReference(orM1Ref);
+            if ((orM1Node instanceof Place) && savedState.containsKey(orM1Node)) {
+                boolean orMarked = savedState.get(orM1Node) > 0;
+                node.getReferencedComponent().setOrMarked(orMarked);
+                copyTokenColor(node, orM1Node);
+            }
+            String andM1Ref = DfsToStgConverter.getCounterflowRegisterStgNodeReference(dfs.getMathReference(node), false, true);
+            Node andM1Node = getUnderlyingStg().getNodeByReference(andM1Ref);
+            if ((andM1Node instanceof Place) && savedState.containsKey(andM1Node)) {
+                boolean andMarked = savedState.get(andM1Node) > 0;
+                node.getReferencedComponent().setAndMarked(andMarked);
+                copyTokenColor(node, andM1Node);
+            }
+        }
+        Collection<VisualBinaryRegister> binaryRegisters = new HashSet<>();
+        binaryRegisters.addAll(dfs.getVisualControlRegisters());
+        binaryRegisters.addAll(dfs.getVisualPushRegisters());
+        binaryRegisters.addAll(dfs.getVisualPopRegisters());
+        for (VisualBinaryRegister node :  binaryRegisters) {
+            node.getReferencedComponent().setMarking(Marking.EMPTY);
+            String trueM1Ref = DfsToStgConverter.getBinaryRegisterStgNodeReference(dfs.getMathReference(node), true, true);
+            Node trueM1Node = getUnderlyingStg().getNodeByReference(trueM1Ref);
+            if ((trueM1Node instanceof Place) && savedState.containsKey(trueM1Node)) {
+                if (savedState.get(trueM1Node) > 0) {
+                    node.getReferencedComponent().setMarking(Marking.TRUE_TOKEN);
                 }
-                copyTokenColor(r, nodeTrueM);
+                copyTokenColor(node, trueM1Node);
             }
-            String refFalseM = DfsToStgConverter.nameFalseM + dfs.getMathReference(r) + DfsToStgConverter.name1;
-            Node nodeFalseM = getUnderlyingStg().getNodeByReference(refFalseM);
-            if ((nodeFalseM instanceof Place) && savedState.containsKey(nodeFalseM)) {
-                if (savedState.get(nodeFalseM) > 0) {
-                    r.getReferencedComponent().setMarking(Marking.FALSE_TOKEN);
+            String falseM1Ref = DfsToStgConverter.getBinaryRegisterStgNodeReference(dfs.getMathReference(node), false, true);
+            Node falseM1Node = getUnderlyingStg().getNodeByReference(falseM1Ref);
+            if ((falseM1Node instanceof Place) && savedState.containsKey(falseM1Node)) {
+                if (savedState.get(falseM1Node) > 0) {
+                    node.getReferencedComponent().setMarking(Marking.FALSE_TOKEN);
                 }
-                copyTokenColor(r, nodeFalseM);
+                copyTokenColor(node, falseM1Node);
             }
         }
     }
@@ -149,39 +155,39 @@ public class DfsSimulationTool extends StgSimulationTool {
                 Point2D posLocal = rootToLocalTransform.transform(e.getPosition(), null);
                 Point2D posNode = ((VisualTransformableNode) deepestNode).getParentToLocalTransform().transform(posLocal, null);
                 if (deepestNode instanceof VisualCounterflowLogic) {
-                    CounterflowLogicStg lstg = converter.getCounterflowLogicStg((VisualCounterflowLogic) deepestNode);
+                    CounterflowLogicStg nodeStg = converter.getCounterflowLogicStg((VisualCounterflowLogic) deepestNode);
                     if (posNode.getY() < 0) {
-                        transition = getExcitedTransitionOfCollection(lstg.getForwardTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getForwardTransitions());
                     } else {
-                        transition = getExcitedTransitionOfCollection(lstg.getBackwardTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getBackwardTransitions());
                     }
                 } else if (deepestNode instanceof VisualCounterflowRegister) {
-                    CounterflowRegisterStg rstg = converter.getCounterflowRegisterStg((VisualCounterflowRegister) deepestNode);
+                    CounterflowRegisterStg nodeStg = converter.getCounterflowRegisterStg((VisualCounterflowRegister) deepestNode);
                     if (posNode.getY() < 0) {
-                        transition = getExcitedTransitionOfCollection(rstg.getOrTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getOrTransitions());
                     } else {
-                        transition = getExcitedTransitionOfCollection(rstg.getAndTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getAndTransitions());
                     }
                 } else if (deepestNode instanceof VisualControlRegister) {
-                    BinaryRegisterStg rstg = converter.getControlRegisterStg((VisualControlRegister) deepestNode);
+                    BinaryRegisterStg nodeStg = converter.getControlRegisterStg((VisualControlRegister) deepestNode);
                     if (posNode.getY() < 0) {
-                        transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getTrueTransitions());
                     } else {
-                        transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getFalseTransitions());
                     }
                 } else if (deepestNode instanceof VisualPushRegister) {
-                    BinaryRegisterStg rstg = converter.getPushRegisterStg((VisualPushRegister) deepestNode);
+                    BinaryRegisterStg nodeStg = converter.getPushRegisterStg((VisualPushRegister) deepestNode);
                     if (posNode.getY() < 0) {
-                        transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getTrueTransitions());
                     } else {
-                        transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getFalseTransitions());
                     }
                 } else if (deepestNode instanceof VisualPopRegister) {
-                    BinaryRegisterStg rstg = converter.getPopRegisterStg((VisualPopRegister) deepestNode);
+                    BinaryRegisterStg nodeStg = converter.getPopRegisterStg((VisualPopRegister) deepestNode);
                     if (posNode.getY() < 0) {
-                        transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getTrueTransitions());
                     } else {
-                        transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+                        transition = getExcitedTransitionOfCollection(nodeStg.getFalseTransitions());
                     }
                 }
             }
@@ -211,7 +217,7 @@ public class DfsSimulationTool extends StgSimulationTool {
                 final boolean isSuggested = isExcited && converter.isRelated(node, transition);
 
                 if (node instanceof VisualLogic) {
-                    final LogicStg lstg = converter.getLogicStg((VisualLogic) node);
+                    final LogicStg nodeStg = converter.getLogicStg((VisualLogic) node);
 
                     return new LogicDecoration() {
                         @Override
@@ -226,13 +232,13 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isComputed() {
-                            return lstg.c0.getReferencedComponent().getTokens() == 0;
+                            return nodeStg.c0.getReferencedComponent().getTokens() == 0;
                         }
                     };
                 }
 
                 if (node instanceof VisualRegister) {
-                    final RegisterStg rstg = converter.getRegisterStg((VisualRegister) node);
+                    final RegisterStg nodeStg = converter.getRegisterStg((VisualRegister) node);
 
                     return new RegisterDecoration() {
                         @Override
@@ -247,23 +253,23 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isMarked() {
-                            return rstg.m0.getReferencedComponent().getTokens() == 0;
+                            return nodeStg.m0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isExcited() {
-                            return getExcitedTransitionOfCollection(Arrays.asList(rstg.mR, rstg.mF)) != null;
+                            return getExcitedTransitionOfCollection(Arrays.asList(nodeStg.mR, nodeStg.mF)) != null;
                         }
 
                         @Override
                         public Color getTokenColor() {
-                            return rstg.m1.getTokenColor();
+                            return nodeStg.m1.getTokenColor();
                         }
                     };
                 }
 
                 if (node instanceof VisualCounterflowLogic) {
-                    final CounterflowLogicStg lstg = converter.getCounterflowLogicStg((VisualCounterflowLogic) node);
+                    final CounterflowLogicStg nodeStg = converter.getCounterflowLogicStg((VisualCounterflowLogic) node);
 
                     return new CounterflowLogicDecoration() {
                         @Override
@@ -278,28 +284,28 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isForwardComputed() {
-                            return lstg.fwC0.getReferencedComponent().getTokens() == 0;
+                            return nodeStg.fwC0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isBackwardComputed() {
-                            return lstg.bwC0.getReferencedComponent().getTokens() == 0;
+                            return nodeStg.bwC0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isForwardComputedExcited() {
-                            return getExcitedTransitionOfCollection(lstg.getForwardTransitions()) != null;
+                            return getExcitedTransitionOfCollection(nodeStg.getForwardTransitions()) != null;
                         }
 
                         @Override
                         public boolean isBackwardComputedExcited() {
-                            return getExcitedTransitionOfCollection(lstg.getBackwardTransitions()) != null;
+                            return getExcitedTransitionOfCollection(nodeStg.getBackwardTransitions()) != null;
                         }
                     };
                 }
 
                 if (node instanceof VisualCounterflowRegister) {
-                    final CounterflowRegisterStg rstg = converter.getCounterflowRegisterStg((VisualCounterflowRegister) node);
+                    final CounterflowRegisterStg nodeStg = converter.getCounterflowRegisterStg((VisualCounterflowRegister) node);
 
                     return new CounterflowRegisterDecoration() {
                         @Override
@@ -314,53 +320,53 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isForwardExcited() {
-                            return getExcitedTransitionOfCollection(rstg.getForwardTransitions()) != null;
+                            return getExcitedTransitionOfCollection(nodeStg.getForwardTransitions()) != null;
                         }
 
                         @Override
                         public boolean isBackwardExcited() {
-                            return getExcitedTransitionOfCollection(rstg.getBackwardTransitions()) != null;
+                            return getExcitedTransitionOfCollection(nodeStg.getBackwardTransitions()) != null;
                         }
 
                         @Override
                         public boolean isOrMarked() {
-                            return rstg.orM0.getReferencedComponent().getTokens() == 0;
+                            return nodeStg.orM0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isAndMarked() {
-                            return rstg.andM0.getReferencedComponent().getTokens() == 0;
+                            return nodeStg.andM0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isOrExcited() {
-                            return getExcitedTransitionOfCollection(rstg.getOrTransitions()) != null;
+                            return getExcitedTransitionOfCollection(nodeStg.getOrTransitions()) != null;
                         }
 
                         @Override
                         public boolean isAndExcited() {
-                            return getExcitedTransitionOfCollection(rstg.getAndTransitions()) != null;
+                            return getExcitedTransitionOfCollection(nodeStg.getAndTransitions()) != null;
                         }
 
                         @Override
                         public Color getTokenColor() {
-                            return rstg.orM1.getTokenColor();
+                            return nodeStg.orM1.getTokenColor();
                         }
                     };
                 }
 
                 if (node instanceof VisualControlRegister || node instanceof VisualPushRegister || node instanceof VisualPopRegister) {
-                    BinaryRegisterStg tmp = null;
+                    BinaryRegisterStg tmpStg = null;
                     if (node instanceof VisualControlRegister) {
-                        tmp = converter.getControlRegisterStg((VisualControlRegister) node);
+                        tmpStg = converter.getControlRegisterStg((VisualControlRegister) node);
                     }
                     if (node instanceof VisualPushRegister) {
-                        tmp = converter.getPushRegisterStg((VisualPushRegister) node);
+                        tmpStg = converter.getPushRegisterStg((VisualPushRegister) node);
                     }
                     if (node instanceof VisualPopRegister) {
-                        tmp = converter.getPopRegisterStg((VisualPopRegister) node);
+                        tmpStg = converter.getPopRegisterStg((VisualPopRegister) node);
                     }
-                    final BinaryRegisterStg rstg = tmp;
+                    final BinaryRegisterStg nodeStg = tmpStg;
 
                     return new BinaryRegisterDecoration() {
                         @Override
@@ -375,27 +381,27 @@ public class DfsSimulationTool extends StgSimulationTool {
 
                         @Override
                         public boolean isTrueMarked() {
-                            return rstg.tM0.getReferencedComponent().getTokens() == 0;
+                            return nodeStg.tM0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isTrueExcited() {
-                            return getExcitedTransitionOfCollection(rstg.getTrueTransitions()) != null;
+                            return getExcitedTransitionOfCollection(nodeStg.getTrueTransitions()) != null;
                         }
 
                         @Override
                         public boolean isFalseMarked() {
-                            return rstg.fM0.getReferencedComponent().getTokens() == 0;
+                            return nodeStg.fM0.getReferencedComponent().getTokens() == 0;
                         }
 
                         @Override
                         public boolean isFalseExcited() {
-                            return getExcitedTransitionOfCollection(rstg.getFalseTransitions()) != null;
+                            return getExcitedTransitionOfCollection(nodeStg.getFalseTransitions()) != null;
                         }
 
                         @Override
                         public Color getTokenColor() {
-                            return rstg.m1.getTokenColor();
+                            return nodeStg.m1.getTokenColor();
                         }
                     };
                 }
