@@ -2,16 +2,15 @@ package org.workcraft.plugins.dfs.stg;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dfs.ControlRegister.SynchronisationType;
 import org.workcraft.plugins.dfs.*;
 import org.workcraft.plugins.dfs.DfsSettings.Palette;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.StgSettings;
-import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.AbstractToStgConverter;
 import org.workcraft.plugins.stg.converters.NodeStg;
 import org.workcraft.shared.ColorGenerator;
@@ -23,26 +22,25 @@ import java.util.*;
 
 public class DfsToStgConverter extends AbstractToStgConverter {
 
-    public static final String nameC       = "C_";
-    public static final String nameFwC     = "fwC_";
-    public static final String nameBwC     = "bwC_";
-    public static final String nameM       = "M_";
-    public static final String nameOrM     = "orM_";
-    public static final String nameAndM    = "andM_";
-    public static final String nameTrueM   = "trueM_";
-    public static final String nameFalseM  = "falseM_";
-    public static final String name0       = StgSettings.getLowLevelSuffix();
-    public static final String name1       = StgSettings.getHighLevelSuffix();
-    public static final String labelC      = "C(";
-    public static final String labelFwC    = "fwC(";
-    public static final String labelBwC    = "bwC(";
-    public static final String labelM      = "M(";
-    public static final String labelOrM    = "orM(";
-    public static final String labelAndM   = "andM(";
-    public static final String labelTrueM  = "trueM(";
-    public static final String labelFalseM = "falseM(";
-    public static final String label0      = ")=0";
-    public static final String label1      = ")=1";
+    private static final String C_NAME_PREFIX            = "C_";
+    private static final String FW_C_NAME_PREFIX         = "fwC_";
+    private static final String BW_C_NAME_PREFIX         = "bwC_";
+    private static final String M_NAME_PREFIX            = "M_";
+    private static final String OR_M_NAME_PREFIX         = "orM_";
+    private static final String AND_M_NAME_PREFIX        = "andM_";
+    private static final String TRUE_M_NAME_PREFIX       = "trueM_";
+    private static final String FALSE_M_NAME_PREFIX      = "falseM_";
+
+    private static final String C_LABEL_PREFIX          = "C(";
+    private static final String FW_C_LABEL_PREFIX       = "fwC(";
+    private static final String BW_C_LABEL_PREFIX       = "bwC(";
+    private static final String M_LABEL_PREFIX          = "M(";
+    private static final String OR_M_LABEL_PREFIX       = "orM(";
+    private static final String AND_M_LABEL_PREFIX      = "andM(";
+    private static final String TRUE_M_LABEL_PREFIX     = "trueM(";
+    private static final String FALSE_M_LABEL_PREFIX    = "falseM(";
+    private static final String LOW_LEVEL_LABEL_SUFFIX  = ")=0";
+    private static final String HIGH_LEVEL_LABEL_SUFFIX = ")=1";
 
     private Map<VisualLogic, LogicStg> logicMap;
     private Map<VisualRegister, RegisterStg> registerMap;
@@ -68,71 +66,76 @@ public class DfsToStgConverter extends AbstractToStgConverter {
 
     @Override
     public void convert() {
+        VisualDfs dfs = getDfsModel();
+        VisualStg stg = getStgModel();
+        NamespaceHelper.copyPageStructure(dfs, stg);
         try {
-            for (VisualLogic l: getDfsModel().getVisualLogics()) {
-                LogicStg lstg = generateLogicStg(l);
-                groupComponentStg(lstg);
-                putLogicStg(l, lstg);
+            // Nodes
+            for (VisualLogic node : dfs.getVisualLogics()) {
+                LogicStg nodeStg = generateLogicStg(node);
+                groupComponentStg(nodeStg);
+                putLogicStg(node, nodeStg);
             }
-            for (VisualRegister r: getDfsModel().getVisualRegisters()) {
-                RegisterStg rstg = generateRegisterSTG(r);
-                groupComponentStg(rstg);
-                putRegisterStg(r, rstg);
-            }
-
-            for (VisualCounterflowLogic l: getDfsModel().getVisualCounterflowLogics()) {
-                CounterflowLogicStg lstg = generateCounterflowLogicStg(l);
-                groupComponentStg(lstg);
-                putCounterflowLogicStg(l, lstg);
-            }
-            for (VisualCounterflowRegister r: getDfsModel().getVisualCounterflowRegisters()) {
-                CounterflowRegisterStg rstg = generateCounterflowRegisterSTG(r);
-                groupComponentStg(rstg);
-                putCounterflowRegisterStg(r, rstg);
+            for (VisualRegister node : dfs.getVisualRegisters()) {
+                RegisterStg nodeStg = generateRegisterStg(node);
+                groupComponentStg(nodeStg);
+                putRegisterStg(node, nodeStg);
             }
 
-            for (VisualControlRegister r: getDfsModel().getVisualControlRegisters()) {
-                BinaryRegisterStg rstg = generateControlRegisterStg(r);
-                groupComponentStg(rstg);
-                putControlRegisterStg(r, rstg);
+            for (VisualCounterflowLogic node : dfs.getVisualCounterflowLogics()) {
+                CounterflowLogicStg nodeStg = generateCounterflowLogicStg(node);
+                groupComponentStg(nodeStg);
+                putCounterflowLogicStg(node, nodeStg);
             }
-            for (VisualPushRegister r: getDfsModel().getVisualPushRegisters()) {
-                BinaryRegisterStg rstg = generatePushRegisterStg(r);
-                groupComponentStg(rstg);
-                putPushRegisterStg(r, rstg);
-            }
-            for (VisualPopRegister r: getDfsModel().getVisualPopRegisters()) {
-                BinaryRegisterStg rstg = generatePopRegisterStg(r);
-                groupComponentStg(rstg);
-                putPopRegisterStg(r, rstg);
+            for (VisualCounterflowRegister node : dfs.getVisualCounterflowRegisters()) {
+                CounterflowRegisterStg nodeStg = generateCounterflowRegisterSTG(node);
+                groupComponentStg(nodeStg);
+                putCounterflowRegisterStg(node, nodeStg);
             }
 
-            for (VisualLogic l: getDfsModel().getVisualLogics()) {
-                connectLogicStg(l);
+            for (VisualControlRegister node : dfs.getVisualControlRegisters()) {
+                BinaryRegisterStg nodeStg = generateControlRegisterStg(node);
+                groupComponentStg(nodeStg);
+                putControlRegisterStg(node, nodeStg);
             }
-            for (VisualRegister r: getDfsModel().getVisualRegisters()) {
-                connectRegisterStg(r);
+            for (VisualPushRegister node : dfs.getVisualPushRegisters()) {
+                BinaryRegisterStg nodeStg = generatePushRegisterStg(node);
+                groupComponentStg(nodeStg);
+                putPushRegisterStg(node, nodeStg);
+            }
+            for (VisualPopRegister node : dfs.getVisualPopRegisters()) {
+                BinaryRegisterStg nodeStg = generatePopRegisterStg(node);
+                groupComponentStg(nodeStg);
+                putPopRegisterStg(node, nodeStg);
+            }
+            // Connections
+            for (VisualLogic node : dfs.getVisualLogics()) {
+                connectLogicStg(node);
+            }
+            for (VisualRegister node : dfs.getVisualRegisters()) {
+                connectRegisterStg(node);
             }
 
-            for (VisualCounterflowLogic l: getDfsModel().getVisualCounterflowLogics()) {
-                connectCounterflowLogicStg(l);
+            for (VisualCounterflowLogic node : dfs.getVisualCounterflowLogics()) {
+                connectCounterflowLogicStg(node);
             }
-            for (VisualCounterflowRegister r: getDfsModel().getVisualCounterflowRegisters()) {
-                connectCounterflowRegisterStg(r);
+            for (VisualCounterflowRegister node : dfs.getVisualCounterflowRegisters()) {
+                connectCounterflowRegisterStg(node);
             }
 
-            for (VisualControlRegister r: getDfsModel().getVisualControlRegisters()) {
-                connectControlRegisterStg(r);
+            for (VisualControlRegister node : dfs.getVisualControlRegisters()) {
+                connectControlRegisterStg(node);
             }
-            for (VisualPushRegister r: getDfsModel().getVisualPushRegisters()) {
-                connectPushRegisterStg(r);
+            for (VisualPushRegister node : dfs.getVisualPushRegisters()) {
+                connectPushRegisterStg(node);
             }
-            for (VisualPopRegister r: getDfsModel().getVisualPopRegisters()) {
-                connectPopRegisterStg(r);
+            for (VisualPopRegister node : dfs.getVisualPopRegisters()) {
+                connectPopRegisterStg(node);
             }
         } catch (InvalidConnectionException e) {
             throw new RuntimeException(e);
         }
+        NamespaceHelper.removeEmptyPages(stg);
     }
 
     private ColorGenerator createColorGenerator(boolean required) {
@@ -153,101 +156,106 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         return result;
     }
 
-    private LogicStg generateLogicStg(VisualLogic l) throws InvalidConnectionException {
-        String name = getDfsModel().getName(l);
-        Point2D pos = getComponentPosition(l);
+    private LogicStg generateLogicStg(VisualLogic node) throws InvalidConnectionException {
+        VisualDfs dfs = getDfsModel();
+        VisualStg stg = getStgModel();
+
+        String nodeRef = dfs.getMathReference(node);
+        String parentRef = NamespaceHelper.getParentReference(nodeRef);
+        String nodeName = NamespaceHelper.getReferenceName(nodeRef);
+        VisualPage container = stg.getVisualComponentByMathReference(parentRef, VisualPage.class);
+
+        Point2D pos = getComponentPosition(node);
         double x = pos.getX();
         double y = pos.getY();
-        Collection<Node> nodes = new LinkedList<>();
         Signal.Type type = Signal.Type.INTERNAL;
-        ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(l).size() == 0);
+        ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
 
-        VisualPlace c0 = getStgModel().createVisualPlace(nameC + name + name0);
-        c0.setLabel(labelC + name + label0);
+        VisualPlace c0 = stg.createVisualPlace(getLogicStgNodeReference(nodeName, false), container);
+        c0.setLabel(C_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
         c0.setLabelPositioning(Positioning.BOTTOM);
-        if (!l.getReferencedComponent().isComputed()) {
+        if (!node.getReferencedComponent().isComputed()) {
             c0.getReferencedComponent().setTokens(1);
         }
-        c0.setForegroundColor(l.getForegroundColor());
-        c0.setFillColor(l.getFillColor());
+        c0.setForegroundColor(node.getForegroundColor());
+        c0.setFillColor(node.getFillColor());
         setPosition(c0, x + 2.0, y + 1.0);
-        nodes.add(c0);
 
-        VisualPlace c1 = getStgModel().createVisualPlace(nameC + name + name1);
-        c1.setLabel(labelC + name + label1);
+        VisualPlace c1 = stg.createVisualPlace(getLogicStgNodeReference(nodeName, true), container);
+        c1.setLabel(C_LABEL_PREFIX + nodeName + HIGH_LEVEL_LABEL_SUFFIX);
         c1.setLabelPositioning(Positioning.TOP);
-        if (l.getReferencedComponent().isComputed()) {
+        if (node.getReferencedComponent().isComputed()) {
             c1.getReferencedComponent().setTokens(1);
         }
-        c1.setForegroundColor(l.getForegroundColor());
-        c1.setFillColor(l.getFillColor());
+        c1.setForegroundColor(node.getForegroundColor());
+        c1.setFillColor(node.getFillColor());
         setPosition(c1, x + 2.0, y - 1.0);
-        nodes.add(c1);
 
         Set<Node> preset = new HashSet<>();
-        preset.addAll(getDfsModel().getPreset(l, VisualLogic.class));
-        preset.addAll(getDfsModel().getPreset(l, VisualRegister.class));
-        preset.addAll(getDfsModel().getPreset(l, VisualControlRegister.class));
-        preset.addAll(getDfsModel().getPreset(l, VisualPushRegister.class));
-        preset.addAll(getDfsModel().getPreset(l, VisualPopRegister.class));
+        preset.addAll(dfs.getPreset(node, VisualLogic.class));
+        preset.addAll(dfs.getPreset(node, VisualRegister.class));
+        preset.addAll(dfs.getPreset(node, VisualControlRegister.class));
+        preset.addAll(dfs.getPreset(node, VisualPushRegister.class));
+        preset.addAll(dfs.getPreset(node, VisualPopRegister.class));
         if (preset.isEmpty()) {
-            preset.add(l);
+            preset.add(node);
         }
         Map<Node, VisualSignalTransition> cRs = new HashMap<>();
         Map<Node, VisualSignalTransition> cFs = new HashMap<>();
         VisualSignalTransition cR = null;
         VisualSignalTransition cF = null;
         double dy = 0.0;
-        for (Node n: preset) {
-            if (cR == null || l.getReferencedComponent().isEarlyEvaluation()) {
-                cR = getStgModel().createVisualSignalTransition(nameC + name, type, SignalTransition.Direction.PLUS);
+        for (Node predNode : preset) {
+            String signalName = getLogicStgNodeReference(nodeName, null);
+            if (cR == null || node.getReferencedComponent().isEarlyEvaluation()) {
+                cR = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.PLUS, container);
+
                 cR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(c0, cR, false);
                 createProducingArc(cR, c1, true);
                 setPosition(cR, x - 2.0, y + 1.0 + dy);
-                nodes.add(cR);
             }
-            cRs.put(n, cR);
+            cRs.put(predNode, cR);
             if (cF == null) {
-                cF = getStgModel().createVisualSignalTransition(nameC + name, type, SignalTransition.Direction.MINUS);
+                cF = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.MINUS, container);
+
                 createConsumingArc(c1, cF, false);
                 createProducingArc(cF, c0, false);
                 setPosition(cF, x - 2.0, y - 1.0 - dy);
-                nodes.add(cF);
             }
-            cFs.put(n, cF);
+            cFs.put(predNode, cF);
             dy += 1.0;
         }
-
         return new LogicStg(c0, c1, cRs, cFs);
     }
 
-    private void connectLogicStg(VisualLogic l) throws InvalidConnectionException {
-        LogicStg lstg = getLogicStg(l);
-        for (VisualLogic n: getDfsModel().getPreset(l, VisualLogic.class)) {
-            LogicStg nstg = getLogicStg(n);
-            createReadArc(nstg.c1, lstg.cRs.get(n), true);
-            createReadArc(nstg.c0, lstg.cFs.get(n), false);
+    private void connectLogicStg(VisualLogic node) throws InvalidConnectionException {
+        LogicStg nodeStg = getLogicStg(node);
+        VisualDfs dfs = getDfsModel();
+        for (VisualLogic predNode : dfs.getPreset(node, VisualLogic.class)) {
+            LogicStg predNodeStg = getLogicStg(predNode);
+            createReadArc(predNodeStg.c1, nodeStg.cRs.get(predNode), true);
+            createReadArc(predNodeStg.c0, nodeStg.cFs.get(predNode), false);
         }
-        for (VisualRegister n: getDfsModel().getPreset(l, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.m1, lstg.cRs.get(n), true);
-            createReadArc(nstg.m0, lstg.cFs.get(n), false);
+        for (VisualRegister predNode : dfs.getPreset(node, VisualRegister.class)) {
+            RegisterStg predNodeStg = getRegisterStg(predNode);
+            createReadArc(predNodeStg.m1, nodeStg.cRs.get(predNode), true);
+            createReadArc(predNodeStg.m0, nodeStg.cFs.get(predNode), false);
         }
-        for (VisualControlRegister n: getDfsModel().getPreset(l, VisualControlRegister.class)) {
-            BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.m1, lstg.cRs.get(n), true);
-            createReadArc(nstg.m0, lstg.cFs.get(n), false);
+        for (VisualControlRegister predNode : dfs.getPreset(node, VisualControlRegister.class)) {
+            BinaryRegisterStg predNodeStg = getControlRegisterStg(predNode);
+            createReadArc(predNodeStg.m1, nodeStg.cRs.get(predNode), true);
+            createReadArc(predNodeStg.m0, nodeStg.cFs.get(predNode), false);
         }
-        for (VisualPushRegister n: getDfsModel().getPreset(l, VisualPushRegister.class)) {
-            BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.tM1, lstg.cRs.get(n), true);
-            createReadArc(nstg.tM0, lstg.cFs.get(n), false);
+        for (VisualPushRegister predNode : dfs.getPreset(node, VisualPushRegister.class)) {
+            BinaryRegisterStg predNodeStg = getPushRegisterStg(predNode);
+            createReadArc(predNodeStg.tM1, nodeStg.cRs.get(predNode), true);
+            createReadArc(predNodeStg.tM0, nodeStg.cFs.get(predNode), false);
         }
-        for (VisualPopRegister n: getDfsModel().getPreset(l, VisualPopRegister.class)) {
-            BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArc(nstg.m1, lstg.cRs.get(n), true);
-            createReadArc(nstg.m0, lstg.cFs.get(n), false);
+        for (VisualPopRegister predNode : dfs.getPreset(node, VisualPopRegister.class)) {
+            BinaryRegisterStg predNodeStg = getPopRegisterStg(predNode);
+            createReadArc(predNodeStg.m1, nodeStg.cRs.get(predNode), true);
+            createReadArc(predNodeStg.m0, nodeStg.cFs.get(predNode), false);
         }
     }
 
@@ -262,120 +270,122 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         logicMap.put(logic, stg);
     }
 
-    private RegisterStg generateRegisterSTG(VisualRegister r) throws InvalidConnectionException {
-        String name = getDfsModel().getName(r);
-        Point2D pos = getComponentPosition(r);
+    private RegisterStg generateRegisterStg(VisualRegister node) throws InvalidConnectionException {
+        VisualDfs dfs = getDfsModel();
+        VisualStg stg = getStgModel();
+
+        String nodeRef = dfs.getMathReference(node);
+        String parentRef = NamespaceHelper.getParentReference(nodeRef);
+        String nodeName = NamespaceHelper.getReferenceName(nodeRef);
+        VisualPage container = stg.getVisualComponentByMathReference(parentRef, VisualPage.class);
+
+        Point2D pos = getComponentPosition(node);
         double x = pos.getX();
         double y = pos.getY();
-        Collection<Node> nodes = new LinkedList<>();
         Signal.Type type = Signal.Type.INTERNAL;
-        if (getDfsModel().getPreset(r).size() == 0) {
+        if (dfs.getPreset(node).size() == 0) {
             type = Signal.Type.INPUT;
-        } else if (getDfsModel().getPostset(r).size() == 0) {
+        } else if (dfs.getPostset(node).size() == 0) {
             type = Signal.Type.OUTPUT;
         }
-        ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
+        ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
 
-        VisualPlace m0 = getStgModel().createVisualPlace(nameM + name + name0);
-        m0.setLabel(labelM + name + label0);
+        VisualPlace m0 = stg.createVisualPlace(getRegisterStgNodeReference(nodeName, false), container);
+        m0.setLabel(M_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
         m0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedComponent().isMarked()) {
+        if (!node.getReferencedComponent().isMarked()) {
             m0.getReferencedComponent().setTokens(1);
         }
-        m0.setForegroundColor(r.getForegroundColor());
-        m0.setFillColor(r.getFillColor());
+        m0.setForegroundColor(node.getForegroundColor());
+        m0.setFillColor(node.getFillColor());
         setPosition(m0, x + 2.0, y + 1.0);
-        nodes.add(m0);
 
-        VisualPlace m1 = getStgModel().createVisualPlace(nameM + name + name1);
-        m1.setLabel(labelM + name + label1);
+        VisualPlace m1 = stg.createVisualPlace(getRegisterStgNodeReference(nodeName, true), container);
+        m1.setLabel(M_LABEL_PREFIX + nodeName + HIGH_LEVEL_LABEL_SUFFIX);
         m1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedComponent().isMarked()) {
+        if (node.getReferencedComponent().isMarked()) {
             m1.getReferencedComponent().setTokens(1);
         }
-        m1.setTokenColor(r.getTokenColor());
+        m1.setTokenColor(node.getTokenColor());
         setPosition(m1, x + 2.0, y - 1.0);
-        nodes.add(m1);
 
-        VisualSignalTransition mR = getStgModel().createVisualSignalTransition(nameM + name, type,
-                SignalTransition.Direction.PLUS);
+        String signalName = getRegisterStgNodeReference(nodeName, null);
+        VisualSignalTransition mR = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.PLUS, container);
         mR.setTokenColorGenerator(tokenColorGenerator);
         createConsumingArc(m0, mR, false);
         createProducingArc(mR, m1, true);
         setPosition(mR, x - 2.0, y + 1.0);
-        nodes.add(mR);
 
-        VisualSignalTransition mF = getStgModel().createVisualSignalTransition(nameM + name, type,
-                SignalTransition.Direction.MINUS);
+        VisualSignalTransition mF = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.MINUS, container);
         createConsumingArc(m1, mF, false);
         createProducingArc(mF, m0, false);
         setPosition(mF, x - 2.0, y - 1.0);
-        nodes.add(mF);
 
         return new RegisterStg(m0, m1, mR, mF);
     }
 
-    private void connectRegisterStg(VisualRegister r) throws InvalidConnectionException {
-        RegisterStg rstg = getRegisterStg(r);
-        // preset
-        for (VisualLogic n: getDfsModel().getPreset(r, VisualLogic.class)) {
-            LogicStg nstg = getLogicStg(n);
-            createReadArc(nstg.c1, rstg.mR, true);
-            createReadArc(nstg.c0, rstg.mF, false);
+    private void connectRegisterStg(VisualRegister node) throws InvalidConnectionException {
+        VisualDfs dfs = getDfsModel();
+        RegisterStg nodeStg = getRegisterStg(node);
+        // Preset
+        for (VisualLogic predNode : dfs.getPreset(node, VisualLogic.class)) {
+            LogicStg predNodeStg = getLogicStg(predNode);
+            createReadArc(predNodeStg.c1, nodeStg.mR, true);
+            createReadArc(predNodeStg.c0, nodeStg.mF, false);
         }
         // R-preset
-        for (VisualRegister n: getDfsModel().getRPreset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.m1, rstg.mR, true);
-            createReadArc(nstg.m0, rstg.mF, false);
+        for (VisualRegister rPredNode : dfs.getRPreset(node, VisualRegister.class)) {
+            RegisterStg rPredNodeStg = getRegisterStg(rPredNode);
+            createReadArc(rPredNodeStg.m1, nodeStg.mR, true);
+            createReadArc(rPredNodeStg.m0, nodeStg.mF, false);
         }
-        for (VisualCounterflowRegister n: getDfsModel().getRPreset(r, VisualCounterflowRegister.class)) {
-            CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
-            createReadArc(nstg.orM1, rstg.mR, true);
-            createReadArc(nstg.orM0, rstg.mF, false);
-            createReadArc(nstg.andM1, rstg.mF, false);
-            createReadArc(nstg.andM0, rstg.mR, false);
+        for (VisualCounterflowRegister rPredNode : dfs.getRPreset(node, VisualCounterflowRegister.class)) {
+            CounterflowRegisterStg rPredNodeStg = getCounterflowRegisterStg(rPredNode);
+            createReadArc(rPredNodeStg.orM1, nodeStg.mR, true);
+            createReadArc(rPredNodeStg.orM0, nodeStg.mF, false);
+            createReadArc(rPredNodeStg.andM1, nodeStg.mF, false);
+            createReadArc(rPredNodeStg.andM0, nodeStg.mR, false);
         }
-        for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
-            BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.m1, rstg.mR, true);
-            createReadArc(nstg.m0, rstg.mF, false);
+        for (VisualControlRegister rPredNode : dfs.getRPreset(node, VisualControlRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getControlRegisterStg(rPredNode);
+            createReadArc(rPredNodeStg.m1, nodeStg.mR, true);
+            createReadArc(rPredNodeStg.m0, nodeStg.mF, false);
         }
-        for (VisualPushRegister n: getDfsModel().getRPreset(r, VisualPushRegister.class)) {
-            BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.tM1, rstg.mR, true);
-            createReadArc(nstg.tM0, rstg.mF, false);
+        for (VisualPushRegister rPredNode : dfs.getRPreset(node, VisualPushRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getPushRegisterStg(rPredNode);
+            createReadArc(rPredNodeStg.tM1, nodeStg.mR, true);
+            createReadArc(rPredNodeStg.tM0, nodeStg.mF, false);
         }
-        for (VisualPopRegister n: getDfsModel().getRPreset(r, VisualPopRegister.class)) {
-            BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArc(nstg.m1, rstg.mR, true);
-            createReadArc(nstg.m0, rstg.mF, false);
+        for (VisualPopRegister rPredNode : dfs.getRPreset(node, VisualPopRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getPopRegisterStg(rPredNode);
+            createReadArc(rPredNodeStg.m1, nodeStg.mR, true);
+            createReadArc(rPredNodeStg.m0, nodeStg.mF, false);
         }
         // R-postset
-        for (VisualRegister n: getDfsModel().getRPostset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.m1, rstg.mF, false);
-            createReadArc(nstg.m0, rstg.mR, false);
+        for (VisualRegister rSuccNode : dfs.getRPostset(node, VisualRegister.class)) {
+            RegisterStg rSuccNodeStg = getRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.mF, false);
+            createReadArc(rSuccNodeStg.m0, nodeStg.mR, false);
         }
-        for (VisualCounterflowRegister n: getDfsModel().getRPostset(r, VisualCounterflowRegister.class)) {
-            CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
-            createReadArc(nstg.andM1, rstg.mF, false);
-            createReadArc(nstg.andM0, rstg.mR, false);
+        for (VisualCounterflowRegister rSuccNode : dfs.getRPostset(node, VisualCounterflowRegister.class)) {
+            CounterflowRegisterStg rSuccNodeStg = getCounterflowRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.andM1, nodeStg.mF, false);
+            createReadArc(rSuccNodeStg.andM0, nodeStg.mR, false);
         }
-        for (VisualControlRegister n: getDfsModel().getRPostset(r, VisualControlRegister.class)) {
-            BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.m1, rstg.mF, false);
-            createReadArc(nstg.m0, rstg.mR, false);
+        for (VisualControlRegister rSuccNode : dfs.getRPostset(node, VisualControlRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getControlRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.mF, false);
+            createReadArc(rSuccNodeStg.m0, nodeStg.mR, false);
         }
-        for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
-            BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.m1, rstg.mF, false);
-            createReadArc(nstg.m0, rstg.mR, false);
+        for (VisualPushRegister rSuccNode : dfs.getRPostset(node, VisualPushRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getPushRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.mF, false);
+            createReadArc(rSuccNodeStg.m0, nodeStg.mR, false);
         }
-        for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
-            BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArc(nstg.tM1, rstg.mF, false);
-            createReadArc(nstg.tM0, rstg.mR, false);
+        for (VisualPopRegister rSuccNode : dfs.getRPostset(node, VisualPopRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getPopRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.tM1, nodeStg.mF, false);
+            createReadArc(rSuccNodeStg.tM0, nodeStg.mR, false);
         }
     }
 
@@ -390,781 +400,784 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         registerMap.put(register, stg);
     }
 
-    private CounterflowLogicStg generateCounterflowLogicStg(VisualCounterflowLogic l) throws InvalidConnectionException {
-        String name = getDfsModel().getName(l);
-        Point2D pos = getComponentPosition(l);
+    private CounterflowLogicStg generateCounterflowLogicStg(VisualCounterflowLogic node)
+            throws InvalidConnectionException {
+
+        VisualDfs dfs = getDfsModel();
+        VisualStg stg = getStgModel();
+
+        String nodeRef = dfs.getMathReference(node);
+        String parentRef = NamespaceHelper.getParentReference(nodeRef);
+        String nodeName = NamespaceHelper.getReferenceName(nodeRef);
+        VisualPage container = stg.getVisualComponentByMathReference(parentRef, VisualPage.class);
+
+        Point2D pos = getComponentPosition(node);
         double x = pos.getX();
         double y = pos.getY();
-        Collection<Node> nodes = new LinkedList<>();
         Signal.Type type = Signal.Type.INTERNAL;
-        ColorGenerator presetTokenColorGenerator = createColorGenerator(getDfsModel().getPreset(l).size() == 0);
-        ColorGenerator postsetTokenColorGenerator = createColorGenerator(getDfsModel().getPostset(l).size() == 0);
+        ColorGenerator presetTokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
+        ColorGenerator postsetTokenColorGenerator = createColorGenerator(dfs.getPostset(node).size() == 0);
 
-        VisualPlace fwC0 = getStgModel().createVisualPlace(nameFwC + name + name0);
-        fwC0.setLabel(labelFwC + name + label0);
+        String fwC0Name = getCounterflowLogicStgNodeReference(nodeName, true, false);
+        VisualPlace fwC0 = stg.createVisualPlace(fwC0Name, container);
+        fwC0.setLabel(FW_C_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
         fwC0.setLabelPositioning(Positioning.BOTTOM);
-        if (!l.getReferencedComponent().isForwardComputed()) {
+        if (!node.getReferencedComponent().isForwardComputed()) {
             fwC0.getReferencedComponent().setTokens(1);
         }
-        fwC0.setForegroundColor(l.getForegroundColor());
-        fwC0.setFillColor(l.getFillColor());
+        fwC0.setForegroundColor(node.getForegroundColor());
+        fwC0.setFillColor(node.getFillColor());
         setPosition(fwC0, x + 2.0, y - 2.0);
-        nodes.add(fwC0);
 
-        VisualPlace fwC1 = getStgModel().createVisualPlace(nameFwC + name + name1);
-        fwC1.setLabel(labelFwC + name + label1);
+        String fwC1Name = getCounterflowLogicStgNodeReference(nodeName, true, true);
+        VisualPlace fwC1 = stg.createVisualPlace(fwC1Name, container);
+        fwC1.setLabel(FW_C_LABEL_PREFIX + nodeName + HIGH_LEVEL_LABEL_SUFFIX);
         fwC1.setLabelPositioning(Positioning.TOP);
-        if (l.getReferencedComponent().isForwardComputed()) {
+        if (node.getReferencedComponent().isForwardComputed()) {
             fwC1.getReferencedComponent().setTokens(1);
         }
-        fwC1.setForegroundColor(l.getForegroundColor());
-        fwC1.setFillColor(l.getFillColor());
+        fwC1.setForegroundColor(node.getForegroundColor());
+        fwC1.setFillColor(node.getFillColor());
         setPosition(fwC1, x + 2.0, y - 4.0);
-        nodes.add(fwC1);
 
         Set<Node> preset = new HashSet<>();
-        preset.addAll(getDfsModel().getPreset(l, VisualCounterflowLogic.class));
-        preset.addAll(getDfsModel().getPreset(l, VisualCounterflowRegister.class));
+        preset.addAll(dfs.getPreset(node, VisualCounterflowLogic.class));
+        preset.addAll(dfs.getPreset(node, VisualCounterflowRegister.class));
         if (preset.isEmpty()) {
-            preset.add(l);
+            preset.add(node);
         }
         Map<Node, VisualSignalTransition> fwCRs = new HashMap<>();
         Map<Node, VisualSignalTransition> fwCFs = new HashMap<>();
         VisualSignalTransition fwCR = null;
         VisualSignalTransition fwCF = null;
         double dy = 0.0;
-        for (Node n: preset) {
-            if (fwCR == null || l.getReferencedComponent().isForwardEarlyEvaluation()) {
-                fwCR = getStgModel().createVisualSignalTransition(nameFwC + name, type,
-                        SignalTransition.Direction.PLUS);
+        for (Node predNode : preset) {
+            if (fwCR == null || node.getReferencedComponent().isForwardEarlyEvaluation()) {
+                fwCR = stg.createVisualSignalTransition(FW_C_NAME_PREFIX + nodeName,
+                        type, SignalTransition.Direction.PLUS, container);
                 fwCR.setTokenColorGenerator(presetTokenColorGenerator);
                 createConsumingArc(fwC0, fwCR, false);
                 createProducingArc(fwCR, fwC1, true);
                 setPosition(fwCR, x - 2.0, y - 2.0 + dy);
-                nodes.add(fwCR);
             }
-            fwCRs.put(n, fwCR);
+            fwCRs.put(predNode, fwCR);
             if (fwCF == null) {
-                fwCF = getStgModel().createVisualSignalTransition(nameFwC + name, type,
-                        SignalTransition.Direction.MINUS);
+                fwCF = stg.createVisualSignalTransition(FW_C_NAME_PREFIX + nodeName,
+                        type, SignalTransition.Direction.MINUS, container);
                 createConsumingArc(fwC1, fwCF, false);
                 createProducingArc(fwCF, fwC0, false);
                 setPosition(fwCF, x - 2.0, y - 4.0 - dy);
-                nodes.add(fwCF);
             }
-            fwCFs.put(n, fwCF);
+            fwCFs.put(predNode, fwCF);
             dy += 1.0;
         }
 
-        VisualPlace bwC0 = getStgModel().createVisualPlace(nameBwC + name + name0);
-        bwC0.setLabel(labelBwC + name + label0);
+        String bwC0Name = getCounterflowLogicStgNodeReference(nodeName, false, false);
+        VisualPlace bwC0 = stg.createVisualPlace(bwC0Name, container);
+        bwC0.setLabel(BW_C_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
         bwC0.setLabelPositioning(Positioning.BOTTOM);
-        if (!l.getReferencedComponent().isBackwardComputed()) {
+        if (!node.getReferencedComponent().isBackwardComputed()) {
             bwC0.getReferencedComponent().setTokens(1);
         }
-        bwC0.setForegroundColor(l.getForegroundColor());
-        bwC0.setFillColor(l.getFillColor());
+        bwC0.setForegroundColor(node.getForegroundColor());
+        bwC0.setFillColor(node.getFillColor());
         setPosition(bwC0, x + 2.0, y + 4.0);
-        nodes.add(bwC0);
 
-        VisualPlace bwC1 = getStgModel().createVisualPlace(nameBwC + name + name1);
-        bwC1.setLabel(labelBwC + name + label1);
+        String bwC1Name = getCounterflowLogicStgNodeReference(nodeName, false, true);
+        VisualPlace bwC1 = stg.createVisualPlace(bwC1Name, container);
+        bwC1.setLabel(BW_C_LABEL_PREFIX + nodeName + HIGH_LEVEL_LABEL_SUFFIX);
         bwC1.setLabelPositioning(Positioning.TOP);
-        if (l.getReferencedComponent().isBackwardComputed()) {
+        if (node.getReferencedComponent().isBackwardComputed()) {
             bwC1.getReferencedComponent().setTokens(1);
         }
-        bwC1.setForegroundColor(l.getForegroundColor());
-        bwC1.setFillColor(l.getFillColor());
+        bwC1.setForegroundColor(node.getForegroundColor());
+        bwC1.setFillColor(node.getFillColor());
         setPosition(bwC1, x + 2.0, y + 2.0);
-        nodes.add(bwC1);
 
         Set<Node> postset = new HashSet<>();
-        postset.addAll(getDfsModel().getPostset(l, VisualCounterflowLogic.class));
-        postset.addAll(getDfsModel().getPostset(l, VisualCounterflowRegister.class));
+        postset.addAll(dfs.getPostset(node, VisualCounterflowLogic.class));
+        postset.addAll(dfs.getPostset(node, VisualCounterflowRegister.class));
         if (postset.isEmpty()) {
-            postset.add(l);
+            postset.add(node);
         }
         Map<Node, VisualSignalTransition> bwCRs = new HashMap<>();
         Map<Node, VisualSignalTransition> bwCFs = new HashMap<>();
         VisualSignalTransition bwCR = null;
         VisualSignalTransition bwCF = null;
         dy = 0.0;
-        for (Node n: postset) {
-            if (bwCR == null || l.getReferencedComponent().isBackwardEarlyEvaluation()) {
-                bwCR = getStgModel().createVisualSignalTransition(nameBwC + name, type,
-                        SignalTransition.Direction.PLUS);
+        for (Node predNode : postset) {
+            String signalName = getCounterflowLogicStgNodeReference(nodeName, false, null);
+            if (bwCR == null || node.getReferencedComponent().isBackwardEarlyEvaluation()) {
+                bwCR = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.PLUS, container);
                 bwCR.setTokenColorGenerator(postsetTokenColorGenerator);
                 createConsumingArc(bwC0, bwCR, false);
                 createProducingArc(bwCR, bwC1, false);
                 setPosition(bwCR, x - 2.0, y + 4.0 + dy);
-                nodes.add(bwCR);
             }
-            bwCRs.put(n, bwCR);
+            bwCRs.put(predNode, bwCR);
             if (bwCF == null) {
-                bwCF = getStgModel().createVisualSignalTransition(nameBwC + name, type,
-                        SignalTransition.Direction.MINUS);
+                bwCF = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.MINUS, container);
                 createConsumingArc(bwC1, bwCF, false);
                 createProducingArc(bwCF, bwC0, false);
                 setPosition(bwCF, x - 2.0, y + 2.0 - dy);
-                nodes.add(bwCF);
             }
-            bwCFs.put(n, bwCF);
+            bwCFs.put(predNode, bwCF);
             dy += 1.0;
         }
 
         return new CounterflowLogicStg(fwC0, fwC1, fwCRs, fwCFs, bwC0, bwC1, bwCRs, bwCFs);
     }
 
-    private void connectCounterflowLogicStg(VisualCounterflowLogic l) throws InvalidConnectionException {
-        CounterflowLogicStg lstg = getCounterflowLogicStg(l);
-        // preset
-        for (VisualCounterflowLogic n: getDfsModel().getPreset(l, VisualCounterflowLogic.class)) {
-            CounterflowLogicStg nstg = getCounterflowLogicStg(n);
-            createReadArc(nstg.fwC1, lstg.fwCRs.get(n), true);
-            createReadArc(nstg.fwC0, lstg.fwCFs.get(n), false);
+    private void connectCounterflowLogicStg(VisualCounterflowLogic node) throws InvalidConnectionException {
+        VisualDfs dfs = getDfsModel();
+        CounterflowLogicStg nodeStg = getCounterflowLogicStg(node);
+        // Preset
+        for (VisualCounterflowLogic predNode : dfs.getPreset(node, VisualCounterflowLogic.class)) {
+            CounterflowLogicStg predNodeStg = getCounterflowLogicStg(predNode);
+            createReadArc(predNodeStg.fwC1, nodeStg.fwCRs.get(predNode), true);
+            createReadArc(predNodeStg.fwC0, nodeStg.fwCFs.get(predNode), false);
         }
-        for (VisualCounterflowRegister n: getDfsModel().getPreset(l, VisualCounterflowRegister.class)) {
-            CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
-            createReadArc(nstg.orM1, lstg.fwCRs.get(n), true);
-            createReadArc(nstg.orM0, lstg.fwCFs.get(n), false);
+        for (VisualCounterflowRegister predNode : dfs.getPreset(node, VisualCounterflowRegister.class)) {
+            CounterflowRegisterStg predNodeStg = getCounterflowRegisterStg(predNode);
+            createReadArc(predNodeStg.orM1, nodeStg.fwCRs.get(predNode), true);
+            createReadArc(predNodeStg.orM0, nodeStg.fwCFs.get(predNode), false);
         }
-        // postset
-        for (VisualCounterflowLogic n: getDfsModel().getPostset(l, VisualCounterflowLogic.class)) {
-            CounterflowLogicStg nstg = getCounterflowLogicStg(n);
-            createReadArc(nstg.bwC1, lstg.bwCRs.get(n), false);
-            createReadArc(nstg.bwC0, lstg.bwCFs.get(n), false);
+        // Postset
+        for (VisualCounterflowLogic predNode : dfs.getPostset(node, VisualCounterflowLogic.class)) {
+            CounterflowLogicStg predNodeStg = getCounterflowLogicStg(predNode);
+            createReadArc(predNodeStg.bwC1, nodeStg.bwCRs.get(predNode), false);
+            createReadArc(predNodeStg.bwC0, nodeStg.bwCFs.get(predNode), false);
         }
-        for (VisualCounterflowRegister n: getDfsModel().getPostset(l, VisualCounterflowRegister.class)) {
-            CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
-            createReadArc(nstg.orM1, lstg.bwCRs.get(n), false);
-            createReadArc(nstg.orM0, lstg.bwCFs.get(n), false);
+        for (VisualCounterflowRegister predNode : dfs.getPostset(node, VisualCounterflowRegister.class)) {
+            CounterflowRegisterStg predNodeStg = getCounterflowRegisterStg(predNode);
+            createReadArc(predNodeStg.orM1, nodeStg.bwCRs.get(predNode), false);
+            createReadArc(predNodeStg.orM0, nodeStg.bwCFs.get(predNode), false);
         }
     }
 
-    public CounterflowLogicStg getCounterflowLogicStg(VisualCounterflowLogic logic) {
-        return (counterflowLogicMap == null) ? null : counterflowLogicMap.get(logic);
+    public CounterflowLogicStg getCounterflowLogicStg(VisualCounterflowLogic node) {
+        return (counterflowLogicMap == null) ? null : counterflowLogicMap.get(node);
     }
 
-    public void putCounterflowLogicStg(VisualCounterflowLogic logic, CounterflowLogicStg stg) {
+    public void putCounterflowLogicStg(VisualCounterflowLogic node, CounterflowLogicStg nodeStg) {
         if (counterflowLogicMap == null) {
             counterflowLogicMap = new HashMap<>();
         }
-        counterflowLogicMap.put(logic, stg);
+        counterflowLogicMap.put(node, nodeStg);
     }
 
-    private CounterflowRegisterStg generateCounterflowRegisterSTG(VisualCounterflowRegister r) throws InvalidConnectionException {
-        String name = getDfsModel().getName(r);
-        Point2D pos = getComponentPosition(r);
+    private CounterflowRegisterStg generateCounterflowRegisterSTG(VisualCounterflowRegister node)
+            throws InvalidConnectionException {
+
+        VisualDfs dfs = getDfsModel();
+        VisualStg stg = getStgModel();
+
+        String nodeRef = dfs.getMathReference(node);
+        String parentRef = NamespaceHelper.getParentReference(nodeRef);
+        String nodeName = NamespaceHelper.getReferenceName(nodeRef);
+        VisualPage container = stg.getVisualComponentByMathReference(parentRef, VisualPage.class);
+
+        Point2D pos = getComponentPosition(node);
         double x = pos.getX();
         double y = pos.getY();
-        Collection<Node> nodes = new LinkedList<>();
         Signal.Type type = Signal.Type.INTERNAL;
-        if (getDfsModel().getPreset(r).size() == 0 || getDfsModel().getPostset(r).size() == 0) {
+        if (dfs.getPreset(node).size() == 0 || dfs.getPostset(node).size() == 0) {
             type = Signal.Type.INPUT;
         }
-        ColorGenerator presetTokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
-        ColorGenerator postsetTokenColorGenerator = createColorGenerator(getDfsModel().getPostset(r).size() == 0);
+        ColorGenerator presetTokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
+        ColorGenerator postsetTokenColorGenerator = createColorGenerator(dfs.getPostset(node).size() == 0);
 
-        VisualPlace orM0 = getStgModel().createVisualPlace(nameOrM + name + name0);
-        orM0.setLabel(labelOrM + name + label0);
+        VisualPlace orM0 = stg.createVisualPlace(getCounterflowRegisterStgNodeReference(nodeName, true, false), container);
+        orM0.setLabel(OR_M_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
         orM0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedComponent().isOrMarked()) {
+        if (!node.getReferencedComponent().isOrMarked()) {
             orM0.getReferencedComponent().setTokens(1);
         }
-        orM0.setForegroundColor(r.getForegroundColor());
-        orM0.setFillColor(r.getFillColor());
+        orM0.setForegroundColor(node.getForegroundColor());
+        orM0.setFillColor(node.getFillColor());
         setPosition(orM0, x + 2.0, y - 2.0);
-        nodes.add(orM0);
 
-        VisualPlace orM1 = getStgModel().createVisualPlace(nameOrM + name + name1);
-        orM1.setLabel(labelOrM + name + label1);
+        VisualPlace orM1 = stg.createVisualPlace(getCounterflowRegisterStgNodeReference(nodeName, true, true), container);
+        orM1.setLabel(OR_M_LABEL_PREFIX + nodeName + HIGH_LEVEL_LABEL_SUFFIX);
         orM1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedComponent().isOrMarked()) {
+        if (node.getReferencedComponent().isOrMarked()) {
             orM1.getReferencedComponent().setTokens(1);
         }
-        orM1.setForegroundColor(r.getForegroundColor());
-        orM1.setFillColor(r.getFillColor());
+        orM1.setForegroundColor(node.getForegroundColor());
+        orM1.setFillColor(node.getFillColor());
         setPosition(orM1, x + 2.0, y - 4.0);
-        nodes.add(orM1);
 
-        VisualSignalTransition orMRfw = getStgModel().createVisualSignalTransition(nameOrM + name, type,
-                SignalTransition.Direction.PLUS);
+        String orSignalName = getCounterflowRegisterStgNodeReference(nodeName, true, null);
+        VisualSignalTransition orMRfw = stg.createVisualSignalTransition(orSignalName, type, SignalTransition.Direction.PLUS, container);
         orMRfw.setTokenColorGenerator(presetTokenColorGenerator);
         createConsumingArc(orM0, orMRfw, false);
         createProducingArc(orMRfw, orM1, true);
         setPosition(orMRfw, x - 2.0, y - 2.5);
-        nodes.add(orMRfw);
 
-        VisualSignalTransition orMRbw = getStgModel().createVisualSignalTransition(nameOrM + name, type,
-                SignalTransition.Direction.PLUS);
+        VisualSignalTransition orMRbw = stg.createVisualSignalTransition(orSignalName, type, SignalTransition.Direction.PLUS, container);
         orMRbw.setTokenColorGenerator(postsetTokenColorGenerator);
         createConsumingArc(orM0, orMRbw, false);
         createProducingArc(orMRbw, orM1, true);
         setPosition(orMRbw, x - 2.0, y - 1.5);
-        nodes.add(orMRbw);
 
-        VisualSignalTransition orMFfw = getStgModel().createVisualSignalTransition(nameOrM + name, type,
-                SignalTransition.Direction.MINUS);
+        VisualSignalTransition orMFfw = stg.createVisualSignalTransition(orSignalName, type, SignalTransition.Direction.MINUS, container);
         createConsumingArc(orM1, orMFfw, false);
         createProducingArc(orMFfw, orM0, false);
         setPosition(orMFfw, x - 2.0, y - 4.5);
-        nodes.add(orMFfw);
 
-        VisualSignalTransition orMFbw = getStgModel().createVisualSignalTransition(nameOrM + name, type,
-                SignalTransition.Direction.MINUS);
+        VisualSignalTransition orMFbw = stg.createVisualSignalTransition(orSignalName, type, SignalTransition.Direction.MINUS, container);
         createConsumingArc(orM1, orMFbw, false);
         createProducingArc(orMFbw, orM0, false);
         setPosition(orMFbw, x - 2.0, y - 3.5);
-        nodes.add(orMFbw);
 
-        VisualPlace andM0 = getStgModel().createVisualPlace(nameAndM + name + name0);
-        andM0.setLabel(labelAndM + name + label0);
+        VisualPlace andM0 = stg.createVisualPlace(getCounterflowRegisterStgNodeReference(nodeName, false, false), container);
+        andM0.setLabel(AND_M_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
         andM0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedComponent().isAndMarked()) {
+        if (!node.getReferencedComponent().isAndMarked()) {
             andM0.getReferencedComponent().setTokens(1);
         }
-        andM0.setForegroundColor(r.getForegroundColor());
-        andM0.setFillColor(r.getFillColor());
+        andM0.setForegroundColor(node.getForegroundColor());
+        andM0.setFillColor(node.getFillColor());
         setPosition(andM0, x + 2.0, y + 4.0);
-        nodes.add(andM0);
 
-        VisualPlace andM1 = getStgModel().createVisualPlace(nameAndM + name + name1);
-        andM1.setLabel(labelAndM + name + label1);
+        VisualPlace andM1 = stg.createVisualPlace(getCounterflowRegisterStgNodeReference(nodeName, false, true), container);
+        andM1.setLabel(AND_M_LABEL_PREFIX + nodeName + HIGH_LEVEL_LABEL_SUFFIX);
         andM1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedComponent().isAndMarked()) {
+        if (node.getReferencedComponent().isAndMarked()) {
             andM1.getReferencedComponent().setTokens(1);
         }
-        andM1.setForegroundColor(r.getForegroundColor());
-        andM1.setFillColor(r.getFillColor());
+        andM1.setForegroundColor(node.getForegroundColor());
+        andM1.setFillColor(node.getFillColor());
         setPosition(andM1, x + 2.0, y + 2.0);
-        nodes.add(andM1);
 
-        VisualSignalTransition andMR = getStgModel().createVisualSignalTransition(nameAndM + name, type,
-                SignalTransition.Direction.PLUS);
+        String andSignalName = getCounterflowRegisterStgNodeReference(nodeName, false, null);
+        VisualSignalTransition andMR = stg.createVisualSignalTransition(andSignalName, type, SignalTransition.Direction.PLUS, container);
         createConsumingArc(andM0, andMR, false);
         createProducingArc(andMR, andM1, false);
         setPosition(andMR, x - 2.0, y + 4.0);
-        nodes.add(andMR);
 
-        VisualSignalTransition andMF = getStgModel().createVisualSignalTransition(nameAndM + name, type,
-                SignalTransition.Direction.MINUS);
+        VisualSignalTransition andMF = stg.createVisualSignalTransition(andSignalName, type, SignalTransition.Direction.MINUS, container);
         createConsumingArc(andM1, andMF, false);
         createProducingArc(andMF, andM0, false);
         setPosition(andMF, x - 2.0, y + 2.0);
-        nodes.add(andMF);
 
         return new CounterflowRegisterStg(orM0, orM1, orMRfw, orMRbw, orMFfw, orMFbw, andM0, andM1, andMR, andMF);
     }
 
-    private void connectCounterflowRegisterStg(VisualCounterflowRegister r) throws InvalidConnectionException {
-        CounterflowRegisterStg rstg = getCounterflowRegisterStg(r);
+    private void connectCounterflowRegisterStg(VisualCounterflowRegister node) throws InvalidConnectionException {
+        VisualDfs dfs = getDfsModel();
+        CounterflowRegisterStg nodeStg = getCounterflowRegisterStg(node);
 
-        for (VisualRegister n: getDfsModel().getPreset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.m1, rstg.orMRfw, true);
-            createReadArc(nstg.m1, rstg.andMR, false);
-            createReadArc(nstg.m0, rstg.orMFfw, false);
-            createReadArc(nstg.m0, rstg.andMF, false);
+        for (VisualRegister predNode : dfs.getPreset(node, VisualRegister.class)) {
+            RegisterStg predNodeStg = getRegisterStg(predNode);
+            createReadArc(predNodeStg.m1, nodeStg.orMRfw, true);
+            createReadArc(predNodeStg.m1, nodeStg.andMR, false);
+            createReadArc(predNodeStg.m0, nodeStg.orMFfw, false);
+            createReadArc(predNodeStg.m0, nodeStg.andMF, false);
         }
-        for (VisualRegister n: getDfsModel().getPostset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.m1, rstg.orMRbw, true);
-            createReadArc(nstg.m1, rstg.andMR, false);
-            createReadArc(nstg.m0, rstg.orMFbw, false);
-            createReadArc(nstg.m0, rstg.andMF, false);
-        }
-
-        for (VisualCounterflowLogic n: getDfsModel().getPreset(r, VisualCounterflowLogic.class)) {
-            CounterflowLogicStg nstg = getCounterflowLogicStg(n);
-            createReadArc(nstg.fwC1, rstg.orMRfw, true);
-            createReadArc(nstg.fwC0, rstg.orMFfw, false);
-            createReadArc(nstg.fwC1, rstg.andMR, false);
-            createReadArc(nstg.fwC0, rstg.andMF, false);
-        }
-        for (VisualCounterflowLogic n: getDfsModel().getPostset(r, VisualCounterflowLogic.class)) {
-            CounterflowLogicStg nstg = getCounterflowLogicStg(n);
-            createReadArc(nstg.bwC1, rstg.orMRbw, true);
-            createReadArc(nstg.bwC0, rstg.orMFbw, false);
-            createReadArc(nstg.bwC1, rstg.andMR, false);
-            createReadArc(nstg.bwC0, rstg.andMF, false);
+        for (VisualRegister succNode : dfs.getPostset(node, VisualRegister.class)) {
+            RegisterStg succNodeStg = getRegisterStg(succNode);
+            createReadArc(succNodeStg.m1, nodeStg.orMRbw, true);
+            createReadArc(succNodeStg.m1, nodeStg.andMR, false);
+            createReadArc(succNodeStg.m0, nodeStg.orMFbw, false);
+            createReadArc(succNodeStg.m0, nodeStg.andMF, false);
         }
 
-        for (VisualCounterflowRegister n: getDfsModel().getPreset(r, VisualCounterflowRegister.class)) {
-            CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
-            createReadArc(nstg.orM1, rstg.orMRfw, true);
-            createReadArc(nstg.orM0, rstg.orMFfw, false);
+        for (VisualCounterflowLogic predNode : dfs.getPreset(node, VisualCounterflowLogic.class)) {
+            CounterflowLogicStg predNodeStg = getCounterflowLogicStg(predNode);
+            createReadArc(predNodeStg.fwC1, nodeStg.orMRfw, true);
+            createReadArc(predNodeStg.fwC0, nodeStg.orMFfw, false);
+            createReadArc(predNodeStg.fwC1, nodeStg.andMR, false);
+            createReadArc(predNodeStg.fwC0, nodeStg.andMF, false);
         }
-        for (VisualCounterflowRegister n: getDfsModel().getPostset(r, VisualCounterflowRegister.class)) {
-            CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
-            createReadArc(nstg.orM1, rstg.orMRbw, true);
-            createReadArc(nstg.orM0, rstg.orMFbw, false);
+        for (VisualCounterflowLogic succNode : dfs.getPostset(node, VisualCounterflowLogic.class)) {
+            CounterflowLogicStg succNodeStg = getCounterflowLogicStg(succNode);
+            createReadArc(succNodeStg.bwC1, nodeStg.orMRbw, true);
+            createReadArc(succNodeStg.bwC0, nodeStg.orMFbw, false);
+            createReadArc(succNodeStg.bwC1, nodeStg.andMR, false);
+            createReadArc(succNodeStg.bwC0, nodeStg.andMF, false);
+        }
+
+        for (VisualCounterflowRegister predNode : dfs.getPreset(node, VisualCounterflowRegister.class)) {
+            CounterflowRegisterStg predNodeStg = getCounterflowRegisterStg(predNode);
+            createReadArc(predNodeStg.orM1, nodeStg.orMRfw, true);
+            createReadArc(predNodeStg.orM0, nodeStg.orMFfw, false);
+        }
+        for (VisualCounterflowRegister succNode : dfs.getPostset(node, VisualCounterflowRegister.class)) {
+            CounterflowRegisterStg succNodeStg = getCounterflowRegisterStg(succNode);
+            createReadArc(succNodeStg.orM1, nodeStg.orMRbw, true);
+            createReadArc(succNodeStg.orM0, nodeStg.orMFbw, false);
         }
 
         Set<VisualCounterflowRegister> rSet = new HashSet<>();
-        rSet.add(r);
-        rSet.addAll(getDfsModel().getRPreset(r, VisualCounterflowRegister.class));
-        rSet.addAll(getDfsModel().getRPostset(r, VisualCounterflowRegister.class));
-        for (VisualCounterflowRegister n: rSet) {
-            CounterflowRegisterStg nstg = getCounterflowRegisterStg(n);
-            createReadArc(nstg.orM1, rstg.andMR, true);
-            createReadArc(nstg.orM0, rstg.andMF, false);
-            createReadArc(nstg.andM1, rstg.orMFfw, false);
-            createReadArc(nstg.andM1, rstg.orMFbw, false);
-            createReadArc(nstg.andM0, rstg.orMRfw, false);
-            createReadArc(nstg.andM0, rstg.orMRbw, false);
+        rSet.add(node);
+        rSet.addAll(dfs.getRPreset(node, VisualCounterflowRegister.class));
+        rSet.addAll(dfs.getRPostset(node, VisualCounterflowRegister.class));
+        for (VisualCounterflowRegister rNode : rSet) {
+            CounterflowRegisterStg rNodeStg = getCounterflowRegisterStg(rNode);
+            createReadArc(rNodeStg.orM1, nodeStg.andMR, true);
+            createReadArc(rNodeStg.orM0, nodeStg.andMF, false);
+            createReadArc(rNodeStg.andM1, nodeStg.orMFfw, false);
+            createReadArc(rNodeStg.andM1, nodeStg.orMFbw, false);
+            createReadArc(rNodeStg.andM0, nodeStg.orMRfw, false);
+            createReadArc(rNodeStg.andM0, nodeStg.orMRbw, false);
         }
     }
 
-    public CounterflowRegisterStg getCounterflowRegisterStg(VisualCounterflowRegister register) {
-        return (counterflowRegisterMap == null) ? null : counterflowRegisterMap.get(register);
+    public CounterflowRegisterStg getCounterflowRegisterStg(VisualCounterflowRegister node) {
+        return (counterflowRegisterMap == null) ? null : counterflowRegisterMap.get(node);
     }
 
-    public void putCounterflowRegisterStg(VisualCounterflowRegister register, CounterflowRegisterStg stg) {
+    public void putCounterflowRegisterStg(VisualCounterflowRegister node, CounterflowRegisterStg nodeStg) {
         if (counterflowRegisterMap == null) {
             counterflowRegisterMap = new HashMap<>();
         }
-        counterflowRegisterMap.put(register, stg);
+        counterflowRegisterMap.put(node, nodeStg);
     }
 
-    private BinaryRegisterStg generateBinaryRegisterSTG(VisualBinaryRegister r,
-            boolean andSync, boolean orSync) throws InvalidConnectionException {
-        Collection<Node> nodes = new LinkedList<>();
-        String name = getDfsModel().getName(r);
-        Point2D pos = getComponentPosition(r);
+    private BinaryRegisterStg generateBinaryRegisterSTG(VisualBinaryRegister node, boolean andSync, boolean orSync)
+            throws InvalidConnectionException {
+
+        VisualDfs dfs = getDfsModel();
+        VisualStg stg = getStgModel();
+
+        String nodeRef = dfs.getMathReference(node);
+        String parentRef = NamespaceHelper.getParentReference(nodeRef);
+        String nodeName = NamespaceHelper.getReferenceName(nodeRef);
+        VisualPage container = stg.getVisualComponentByMathReference(parentRef, VisualPage.class);
+
+        Point2D pos = getComponentPosition(node);
         double x = pos.getX();
         double y = pos.getY();
         Signal.Type type = Signal.Type.INTERNAL;
-        if (getDfsModel().getPreset(r, VisualControlRegister.class).size() == 0) {
+        if (dfs.getPreset(node, VisualControlRegister.class).size() == 0) {
             type = Signal.Type.INPUT;
-        } else if (getDfsModel().getPostset(r).size() == 0) {
+        } else if (dfs.getPostset(node).size() == 0) {
             type = Signal.Type.OUTPUT;
         }
-        ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
+        ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
 
-        VisualPlace m0 = getStgModel().createVisualPlace(nameM + name + name0);
-        m0.setLabel(labelM + name + label0);
+        VisualPlace m0 = stg.createVisualPlace(getBinaryRegisterStgNodeReference(nodeName, null, false), container);
+        m0.setLabel(M_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
         m0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedComponent().isTrueMarked() && !r.getReferencedComponent().isFalseMarked()) {
+        if (!node.getReferencedComponent().isTrueMarked() && !node.getReferencedComponent().isFalseMarked()) {
             m0.getReferencedComponent().setTokens(1);
         }
-        m0.setForegroundColor(r.getForegroundColor());
-        m0.setFillColor(r.getFillColor());
+        m0.setForegroundColor(node.getForegroundColor());
+        m0.setFillColor(node.getFillColor());
         setPosition(m0, x - 4.0, y + 1.0);
-        nodes.add(m0);
 
-        VisualPlace m1 = getStgModel().createVisualPlace(nameM + name + name1);
-        m1.setLabel(labelM + name + label1);
+        VisualPlace m1 = stg.createVisualPlace(getBinaryRegisterStgNodeReference(nodeName, null, true), container);
+        m1.setLabel(M_LABEL_PREFIX + nodeName + HIGH_LEVEL_LABEL_SUFFIX);
         m1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedComponent().isTrueMarked() || r.getReferencedComponent().isFalseMarked()) {
+        if (node.getReferencedComponent().isTrueMarked() || node.getReferencedComponent().isFalseMarked()) {
             m1.getReferencedComponent().setTokens(1);
         }
-        m1.setForegroundColor(r.getForegroundColor());
-        m1.setFillColor(r.getFillColor());
+        m1.setForegroundColor(node.getForegroundColor());
+        m1.setFillColor(node.getFillColor());
         setPosition(m1, x - 4.0, y - 1.0);
-        nodes.add(m1);
 
-        VisualPlace tM0 = getStgModel().createVisualPlace(nameTrueM + name + name0);
-        tM0.setLabel(labelTrueM + name + label0);
+        VisualPlace tM0 = stg.createVisualPlace(getBinaryRegisterStgNodeReference(nodeName, true, false), container);
+        tM0.setLabel(TRUE_M_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
         tM0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedComponent().isTrueMarked()) {
+        if (!node.getReferencedComponent().isTrueMarked()) {
             tM0.getReferencedComponent().setTokens(1);
         }
-        tM0.setForegroundColor(r.getForegroundColor());
-        tM0.setFillColor(r.getFillColor());
+        tM0.setForegroundColor(node.getForegroundColor());
+        tM0.setFillColor(node.getFillColor());
         setPosition(tM0, x + 4.0, y - 2.0);
-        nodes.add(tM0);
 
-        VisualPlace tM1 = getStgModel().createVisualPlace(nameTrueM + name + name1);
-        tM1.setLabel(labelTrueM + name + label1);
+        VisualPlace tM1 = stg.createVisualPlace(getBinaryRegisterStgNodeReference(nodeName, true, true), container);
+        tM1.setLabel(TRUE_M_LABEL_PREFIX + nodeName + HIGH_LEVEL_LABEL_SUFFIX);
         tM1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedComponent().isTrueMarked()) {
+        if (node.getReferencedComponent().isTrueMarked()) {
             tM1.getReferencedComponent().setTokens(1);
         }
-        tM1.setForegroundColor(r.getForegroundColor());
-        tM1.setFillColor(r.getFillColor());
+        tM1.setForegroundColor(node.getForegroundColor());
+        tM1.setFillColor(node.getFillColor());
         setPosition(tM1, x + 4.0, y - 4.0);
-        nodes.add(tM1);
 
-        Set<Node> preset = new HashSet<>();
-        preset.addAll(getDfsModel().getRPreset(r, VisualControlRegister.class));
+        Set<Node> preset = new HashSet<>(dfs.getRPreset(node, VisualControlRegister.class));
         if (preset.isEmpty()) {
-            preset.add(r);
+            preset.add(node);
         }
 
         Map<Node, VisualSignalTransition> tMRs = new HashMap<>();
         VisualSignalTransition tMR = null;
         double dy = 0.0;
-        for (Node n: preset) {
+        String trueSignalName = getBinaryRegisterStgNodeReference(nodeName, true, null);
+        for (Node predNode : preset) {
             if (tMR == null || orSync) {
-                tMR = getStgModel().createVisualSignalTransition(nameTrueM + name, type,
-                        SignalTransition.Direction.PLUS);
+                tMR = stg.createVisualSignalTransition(trueSignalName, type, SignalTransition.Direction.PLUS, container);
                 tMR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(tM0, tMR, false);
                 createProducingArc(tMR, tM1, true);
                 createConsumingArc(m0, tMR, false);
                 createProducingArc(tMR, m1, true);
                 setPosition(tMR, x, y - 2.0 + dy);
-                nodes.add(tMR);
             }
-            tMRs.put(n, tMR);
+            tMRs.put(predNode, tMR);
             dy += 1.0;
         }
-        VisualSignalTransition tMF = getStgModel().createVisualSignalTransition(nameTrueM + name, type,
-                SignalTransition.Direction.MINUS);
+        VisualSignalTransition tMF = stg.createVisualSignalTransition(trueSignalName, type, SignalTransition.Direction.MINUS, container);
         createConsumingArc(tM1, tMF, false);
         createProducingArc(tMF, tM0, false);
         createConsumingArc(m1, tMF, false);
         createProducingArc(tMF, m0, false);
         setPosition(tMF, x, y - 4.0 - dy);
-        nodes.add(tMF);
 
-        VisualPlace fM0 = getStgModel().createVisualPlace(nameFalseM + name + name0);
-        fM0.setLabel(labelFalseM + name + label0);
+        VisualPlace fM0 = stg.createVisualPlace(getBinaryRegisterStgNodeReference(nodeName, false, false), container);
+        fM0.setLabel(FALSE_M_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
         fM0.setLabelPositioning(Positioning.BOTTOM);
-        if (!r.getReferencedComponent().isFalseMarked()) {
+        if (!node.getReferencedComponent().isFalseMarked()) {
             fM0.getReferencedComponent().setTokens(1);
         }
-        fM0.setForegroundColor(r.getForegroundColor());
-        fM0.setFillColor(r.getFillColor());
+        fM0.setForegroundColor(node.getForegroundColor());
+        fM0.setFillColor(node.getFillColor());
         setPosition(fM0, x + 4.0, y + 4.0);
-        nodes.add(fM0);
 
-        VisualPlace fM1 = getStgModel().createVisualPlace(nameFalseM + name + name1);
-        fM1.setLabel(labelFalseM + name + label1);
+        VisualPlace fM1 = stg.createVisualPlace(getBinaryRegisterStgNodeReference(nodeName, false, true), container);
+        fM1.setLabel(FALSE_M_LABEL_PREFIX + nodeName + HIGH_LEVEL_LABEL_SUFFIX);
         fM1.setLabelPositioning(Positioning.TOP);
-        if (r.getReferencedComponent().isFalseMarked()) {
+        if (node.getReferencedComponent().isFalseMarked()) {
             fM1.getReferencedComponent().setTokens(1);
         }
-        fM1.setForegroundColor(r.getForegroundColor());
-        fM1.setFillColor(r.getFillColor());
+        fM1.setForegroundColor(node.getForegroundColor());
+        fM1.setFillColor(node.getFillColor());
         setPosition(fM1, x + 4.0, y + 2.0);
-        nodes.add(fM1);
 
         Map<Node, VisualSignalTransition> fMRs = new HashMap<>();
         VisualSignalTransition fMR = null;
         dy = 0.0;
-        for (Node n: preset) {
+        String falseSignalName = FALSE_M_NAME_PREFIX + nodeName;
+        for (Node predNode : preset) {
             if (fMR == null || andSync) {
-                fMR = getStgModel().createVisualSignalTransition(nameFalseM + name, type,
-                        SignalTransition.Direction.PLUS);
+                fMR = stg.createVisualSignalTransition(falseSignalName, type, SignalTransition.Direction.PLUS, container);
                 fMR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(fM0, fMR, false);
                 createProducingArc(fMR, fM1, true);
                 createConsumingArc(m0, fMR, false);
                 createProducingArc(fMR, m1, true);
                 setPosition(fMR, x, y + 4.0 + dy);
-                nodes.add(fMR);
             }
-            fMRs.put(n, fMR);
+            fMRs.put(predNode, fMR);
             dy += 1.0;
         }
-        VisualSignalTransition fMF = getStgModel().createVisualSignalTransition(nameFalseM + name, type,
-                SignalTransition.Direction.MINUS);
+        VisualSignalTransition fMF = stg.createVisualSignalTransition(falseSignalName, type, SignalTransition.Direction.MINUS, container);
         createConsumingArc(fM1, fMF, false);
         createProducingArc(fMF, fM0, false);
         createConsumingArc(m1, fMF, false);
         createProducingArc(fMF, m0, false);
         setPosition(fMF, x, y + 2.0 - dy);
-        nodes.add(fMF);
 
-        // mutual exclusion
+        // Mutual exclusion
         createReadArcs(tM0, fMRs.values(), false);
         createReadArcs(fM0, tMRs.values(), false);
 
         return new BinaryRegisterStg(m0, m1, tM0, tM1, tMRs, tMF, fM0, fM1, fMRs, fMF);
     }
 
-    private BinaryRegisterStg generateControlRegisterStg(VisualControlRegister r) throws InvalidConnectionException {
-        boolean andSync = r.getReferencedComponent().getSynchronisationType() == SynchronisationType.AND;
-        boolean orSync = r.getReferencedComponent().getSynchronisationType() == SynchronisationType.OR;
-        return generateBinaryRegisterSTG(r, andSync, orSync);
+    private BinaryRegisterStg generateControlRegisterStg(VisualControlRegister node)
+            throws InvalidConnectionException {
+
+        boolean andSync = node.getReferencedComponent().getSynchronisationType() == SynchronisationType.AND;
+        boolean orSync = node.getReferencedComponent().getSynchronisationType() == SynchronisationType.OR;
+        return generateBinaryRegisterSTG(node, andSync, orSync);
     }
 
-    private void connectControlRegisterStg(VisualControlRegister r) throws InvalidConnectionException {
-        BinaryRegisterStg rstg = getControlRegisterStg(r);
-        // preset
-        for (VisualLogic n: getDfsModel().getPreset(r, VisualLogic.class)) {
-            LogicStg nstg = getLogicStg(n);
-            createReadArcs(nstg.c1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.c1, rstg.fMRs.values(), true);
-            createReadArc(nstg.c0, rstg.tMF, false);
-            createReadArc(nstg.c0, rstg.fMF, false);
+    private void connectControlRegisterStg(VisualControlRegister node) throws InvalidConnectionException {
+        VisualDfs dfs = getDfsModel();
+        BinaryRegisterStg nodeStg = getControlRegisterStg(node);
+        // Preset
+        for (VisualLogic predNode : dfs.getPreset(node, VisualLogic.class)) {
+            LogicStg predNodeStg = getLogicStg(predNode);
+            createReadArcs(predNodeStg.c1, nodeStg.tMRs.values(), true);
+            createReadArcs(predNodeStg.c1, nodeStg.fMRs.values(), true);
+            createReadArc(predNodeStg.c0, nodeStg.tMF, false);
+            createReadArc(predNodeStg.c0, nodeStg.fMF, false);
         }
         // R-preset
-        for (VisualRegister n: getDfsModel().getRPreset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.m1, rstg.fMRs.values(), true);
-            createReadArc(nstg.m0, rstg.tMF, false);
-            createReadArc(nstg.m0, rstg.fMF, false);
+        for (VisualRegister rPredNode : dfs.getRPreset(node, VisualRegister.class)) {
+            RegisterStg rPredNodeStg = getRegisterStg(rPredNode);
+            createReadArcs(rPredNodeStg.m1, nodeStg.tMRs.values(), true);
+            createReadArcs(rPredNodeStg.m1, nodeStg.fMRs.values(), true);
+            createReadArc(rPredNodeStg.m0, nodeStg.tMF, false);
+            createReadArc(rPredNodeStg.m0, nodeStg.fMF, false);
         }
-        Collection<VisualControlRegister> crPreset = getDfsModel().getRPreset(r, VisualControlRegister.class);
-        for (VisualControlRegister n: crPreset) {
-            BinaryRegisterStg nstg = getControlRegisterStg(n);
-            Connection connection = getDfsModel().getConnection(n, r);
-            if (connection instanceof VisualControlConnection
+        Collection<VisualControlRegister> crPreset = dfs.getRPreset(node, VisualControlRegister.class);
+        for (VisualControlRegister rPredNode : crPreset) {
+            BinaryRegisterStg rPredNodeStg = getControlRegisterStg(rPredNode);
+            Connection connection = dfs.getConnection(rPredNode, node);
+            if ((connection instanceof VisualControlConnection)
                     && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
-                createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
-                createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
+
+                createReadArc(rPredNodeStg.tM1, nodeStg.fMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.fM1, nodeStg.tMRs.get(rPredNode), true);
             } else {
-                createReadArc(nstg.tM1, rstg.tMRs.get(n), true);
-                createReadArc(nstg.fM1, rstg.fMRs.get(n), true);
+                createReadArc(rPredNodeStg.tM1, nodeStg.tMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.fM1, nodeStg.fMRs.get(rPredNode), true);
             }
-            if (r.getReferencedComponent().getSynchronisationType() != SynchronisationType.PLAIN) {
-                for (VisualControlRegister m: crPreset) {
-                    if (m == n) continue;
-                    BinaryRegisterStg mstg = getControlRegisterStg(m);
-                    if (r.getReferencedComponent().getSynchronisationType() == SynchronisationType.OR) {
-                        createReadArc(mstg.m1, rstg.tMRs.get(n), true);
+            if (node.getReferencedComponent().getSynchronisationType() != SynchronisationType.PLAIN) {
+                for (VisualControlRegister sPredNode : crPreset) {
+                    if (sPredNode == rPredNode) continue;
+                    BinaryRegisterStg sPredNodeStg = getControlRegisterStg(sPredNode);
+                    if (node.getReferencedComponent().getSynchronisationType() == SynchronisationType.OR) {
+                        createReadArc(sPredNodeStg.m1, nodeStg.tMRs.get(rPredNode), true);
                     }
-                    if (r.getReferencedComponent().getSynchronisationType() == SynchronisationType.AND) {
-                        createReadArc(mstg.m1, rstg.fMRs.get(n), true);
+                    if (node.getReferencedComponent().getSynchronisationType() == SynchronisationType.AND) {
+                        createReadArc(sPredNodeStg.m1, nodeStg.fMRs.get(rPredNode), true);
                     }
                 }
             }
-            createReadArc(nstg.m0, rstg.tMF, false);
-            createReadArc(nstg.m0, rstg.fMF, false);
+            createReadArc(rPredNodeStg.m0, nodeStg.tMF, false);
+            createReadArc(rPredNodeStg.m0, nodeStg.fMF, false);
         }
-        for (VisualPushRegister n: getDfsModel().getRPreset(r, VisualPushRegister.class)) {
-            BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArcs(nstg.tM1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.tM1, rstg.fMRs.values(), true);
-            createReadArc(nstg.tM0, rstg.tMF, false);
-            createReadArc(nstg.tM0, rstg.fMF, false);
+        for (VisualPushRegister rPredNode : dfs.getRPreset(node, VisualPushRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getPushRegisterStg(rPredNode);
+            createReadArcs(rPredNodeStg.tM1, nodeStg.tMRs.values(), true);
+            createReadArcs(rPredNodeStg.tM1, nodeStg.fMRs.values(), true);
+            createReadArc(rPredNodeStg.tM0, nodeStg.tMF, false);
+            createReadArc(rPredNodeStg.tM0, nodeStg.fMF, false);
         }
-        for (VisualPopRegister n: getDfsModel().getRPreset(r, VisualPopRegister.class)) {
-            BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.m1, rstg.fMRs.values(), true);
-            createReadArc(nstg.m0, rstg.tMF, false);
-            createReadArc(nstg.m0, rstg.fMF, false);
+        for (VisualPopRegister rPredNode : dfs.getRPreset(node, VisualPopRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getPopRegisterStg(rPredNode);
+            createReadArcs(rPredNodeStg.m1, nodeStg.tMRs.values(), true);
+            createReadArcs(rPredNodeStg.m1, nodeStg.fMRs.values(), true);
+            createReadArc(rPredNodeStg.m0, nodeStg.tMF, false);
+            createReadArc(rPredNodeStg.m0, nodeStg.fMF, false);
         }
         // R-postset
-        for (VisualRegister n: getDfsModel().getRPostset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.m1, rstg.tMF, false);
-            createReadArc(nstg.m1, rstg.fMF, false);
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
+        for (VisualRegister rSuccNode : dfs.getRPostset(node, VisualRegister.class)) {
+            RegisterStg rSuccNodeStg = getRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.tMF, false);
+            createReadArc(rSuccNodeStg.m1, nodeStg.fMF, false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.fMRs.values(), false);
         }
-        for (VisualControlRegister n: getDfsModel().getRPostset(r, VisualControlRegister.class)) {
-            BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.m1, rstg.tMF, false);
-            createReadArc(nstg.m1, rstg.fMF, false);
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
+        for (VisualControlRegister rSuccNode : dfs.getRPostset(node, VisualControlRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getControlRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.tMF, false);
+            createReadArc(rSuccNodeStg.m1, nodeStg.fMF, false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.fMRs.values(), false);
         }
-        for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
-            BinaryRegisterStg nstg = getPushRegisterStg(n);
-            Connection connection = getDfsModel().getConnection(r, n);
-            if (connection instanceof VisualControlConnection
+        for (VisualPushRegister rSuccNode : dfs.getRPostset(node, VisualPushRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getPushRegisterStg(rSuccNode);
+            Connection connection = dfs.getConnection(node, rSuccNode);
+            if ((connection instanceof VisualControlConnection)
                     && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
-                createReadArc(nstg.tM1, rstg.fMF, false);
-                createReadArc(nstg.fM1, rstg.tMF, false);
+
+                createReadArc(rSuccNodeStg.tM1, nodeStg.fMF, false);
+                createReadArc(rSuccNodeStg.fM1, nodeStg.tMF, false);
             } else {
-                createReadArc(nstg.tM1, rstg.tMF, false);
-                createReadArc(nstg.fM1, rstg.fMF, false);
+                createReadArc(rSuccNodeStg.tM1, nodeStg.tMF, false);
+                createReadArc(rSuccNodeStg.fM1, nodeStg.fMF, false);
             }
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.fMRs.values(), false);
         }
-        for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
-            BinaryRegisterStg nstg = getPopRegisterStg(n);
-            Connection connection = getDfsModel().getConnection(r, n);
-            if (connection instanceof VisualControlConnection
+        for (VisualPopRegister rSuccNode : dfs.getRPostset(node, VisualPopRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getPopRegisterStg(rSuccNode);
+            Connection connection = dfs.getConnection(node, rSuccNode);
+            if ((connection instanceof VisualControlConnection)
                     && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
-                createReadArc(nstg.tM1, rstg.fMF, false);
-                createReadArc(nstg.fM1, rstg.tMF, false);
+
+                createReadArc(rSuccNodeStg.tM1, nodeStg.fMF, false);
+                createReadArc(rSuccNodeStg.fM1, nodeStg.tMF, false);
             } else {
-                createReadArc(nstg.tM1, rstg.tMF, false);
-                createReadArc(nstg.fM1, rstg.fMF, false);
+                createReadArc(rSuccNodeStg.tM1, nodeStg.tMF, false);
+                createReadArc(rSuccNodeStg.fM1, nodeStg.fMF, false);
             }
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.fMRs.values(), false);
         }
     }
 
-    public BinaryRegisterStg getControlRegisterStg(VisualControlRegister register) {
-        return (controlRegisterMap == null) ? null : controlRegisterMap.get(register);
+    public BinaryRegisterStg getControlRegisterStg(VisualControlRegister node) {
+        return (controlRegisterMap == null) ? null : controlRegisterMap.get(node);
     }
 
-    public void putControlRegisterStg(VisualControlRegister register, BinaryRegisterStg stg) {
+    public void putControlRegisterStg(VisualControlRegister node, BinaryRegisterStg nodeStg) {
         if (controlRegisterMap == null) {
             controlRegisterMap = new HashMap<>();
         }
-        controlRegisterMap.put(register, stg);
+        controlRegisterMap.put(node, nodeStg);
     }
 
-    private BinaryRegisterStg generatePushRegisterStg(VisualPushRegister r) throws InvalidConnectionException {
-        return generateBinaryRegisterSTG(r, false, false);
+    private BinaryRegisterStg generatePushRegisterStg(VisualPushRegister node) throws InvalidConnectionException {
+        return generateBinaryRegisterSTG(node, false, false);
     }
 
-    private void connectPushRegisterStg(VisualPushRegister r) throws InvalidConnectionException {
-        BinaryRegisterStg rstg = getPushRegisterStg(r);
-        // preset
-        for (VisualLogic n: getDfsModel().getPreset(r, VisualLogic.class)) {
-            LogicStg nstg = getLogicStg(n);
-            createReadArcs(nstg.c1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.c1, rstg.fMRs.values(), true);
-            createReadArc(nstg.c0, rstg.tMF, false);
-            createReadArc(nstg.c0, rstg.fMF, false);
+    private void connectPushRegisterStg(VisualPushRegister node) throws InvalidConnectionException {
+        VisualDfs dfs = getDfsModel();
+        BinaryRegisterStg nodeStg = getPushRegisterStg(node);
+        // Preset
+        for (VisualLogic predNode : dfs.getPreset(node, VisualLogic.class)) {
+            LogicStg predNodeStg = getLogicStg(predNode);
+            createReadArcs(predNodeStg.c1, nodeStg.tMRs.values(), true);
+            createReadArcs(predNodeStg.c1, nodeStg.fMRs.values(), true);
+            createReadArc(predNodeStg.c0, nodeStg.tMF, false);
+            createReadArc(predNodeStg.c0, nodeStg.fMF, false);
         }
         // R-preset
-        for (VisualRegister n: getDfsModel().getRPreset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.m1, rstg.fMRs.values(), true);
-            createReadArc(nstg.m0, rstg.tMF, false);
-            createReadArc(nstg.m0, rstg.fMF, false);
+        for (VisualRegister rPredNode : dfs.getRPreset(node, VisualRegister.class)) {
+            RegisterStg rPredNodeStg = getRegisterStg(rPredNode);
+            createReadArcs(rPredNodeStg.m1, nodeStg.tMRs.values(), true);
+            createReadArcs(rPredNodeStg.m1, nodeStg.fMRs.values(), true);
+            createReadArc(rPredNodeStg.m0, nodeStg.tMF, false);
+            createReadArc(rPredNodeStg.m0, nodeStg.fMF, false);
         }
-        for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
-            BinaryRegisterStg nstg = getControlRegisterStg(n);
-            Connection connection = getDfsModel().getConnection(n, r);
-            if (connection instanceof VisualControlConnection
+        for (VisualControlRegister rPredNode : dfs.getRPreset(node, VisualControlRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getControlRegisterStg(rPredNode);
+            Connection connection = dfs.getConnection(rPredNode, node);
+            if ((connection instanceof VisualControlConnection)
                     && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
-                createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
-                createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
-                createReadArc(nstg.tM0, rstg.fMF, false);
-                createReadArc(nstg.fM0, rstg.tMF, false);
+
+                createReadArc(rPredNodeStg.tM1, nodeStg.fMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.fM1, nodeStg.tMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.tM0, nodeStg.fMF, false);
+                createReadArc(rPredNodeStg.fM0, nodeStg.tMF, false);
             } else {
-                createReadArc(nstg.tM1, rstg.tMRs.get(n), true);
-                createReadArc(nstg.fM1, rstg.fMRs.get(n), true);
-                createReadArc(nstg.tM0, rstg.tMF, false);
-                createReadArc(nstg.fM0, rstg.fMF, false);
+                createReadArc(rPredNodeStg.tM1, nodeStg.tMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.fM1, nodeStg.fMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.tM0, nodeStg.tMF, false);
+                createReadArc(rPredNodeStg.fM0, nodeStg.fMF, false);
             }
         }
-        for (VisualPushRegister n: getDfsModel().getRPreset(r, VisualPushRegister.class)) {
-            BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArcs(nstg.tM1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.tM1, rstg.fMRs.values(), true);
-            createReadArc(nstg.tM0, rstg.tMF, false);
-            createReadArc(nstg.tM0, rstg.fMF, false);
+        for (VisualPushRegister rPredNode : dfs.getRPreset(node, VisualPushRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getPushRegisterStg(rPredNode);
+            createReadArcs(rPredNodeStg.tM1, nodeStg.tMRs.values(), true);
+            createReadArcs(rPredNodeStg.tM1, nodeStg.fMRs.values(), true);
+            createReadArc(rPredNodeStg.tM0, nodeStg.tMF, false);
+            createReadArc(rPredNodeStg.tM0, nodeStg.fMF, false);
         }
-        for (VisualPopRegister n: getDfsModel().getRPreset(r, VisualPopRegister.class)) {
-            BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
-            createReadArcs(nstg.m1, rstg.fMRs.values(), true);
-            createReadArc(nstg.m0, rstg.tMF, false);
-            createReadArc(nstg.m0, rstg.fMF, false);
+        for (VisualPopRegister rPredNode : dfs.getRPreset(node, VisualPopRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getPopRegisterStg(rPredNode);
+            createReadArcs(rPredNodeStg.m1, nodeStg.tMRs.values(), true);
+            createReadArcs(rPredNodeStg.m1, nodeStg.fMRs.values(), true);
+            createReadArc(rPredNodeStg.m0, nodeStg.tMF, false);
+            createReadArc(rPredNodeStg.m0, nodeStg.fMF, false);
         }
         // R-postset
-        for (VisualRegister n: getDfsModel().getRPostset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.m1, rstg.tMF, false); // register m1 in R-postset is read only by tMF
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false); // register m0 in R-postset is read only by tMR
+        for (VisualRegister rSuccNode : dfs.getRPostset(node, VisualRegister.class)) {
+            RegisterStg rSuccNodeStg = getRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.tMF, false); // register m1 in R-postset is read only by tMF
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false); // register m0 in R-postset is read only by tMR
         }
-        for (VisualControlRegister n: getDfsModel().getRPostset(r, VisualControlRegister.class)) {
-            BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.m1, rstg.tMF, false);
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
+        for (VisualControlRegister rSuccNode : dfs.getRPostset(node, VisualControlRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getControlRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.tMF, false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false);
         }
-        for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
-            BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.m1, rstg.tMF, false);
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
+        for (VisualPushRegister rSuccNode : dfs.getRPostset(node, VisualPushRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getPushRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.tMF, false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false);
         }
-        for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
-            BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArc(nstg.tM1, rstg.tMF, false); // pop tM1 in R-postset is read only by tMF
-            createReadArcs(nstg.tM0, rstg.tMRs.values(), false); // pop tM0 in R-postset is read only by tMR
+        for (VisualPopRegister rSuccNode : dfs.getRPostset(node, VisualPopRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getPopRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.tM1, nodeStg.tMF, false); // pop tM1 in R-postset is read only by tMF
+            createReadArcs(rSuccNodeStg.tM0, nodeStg.tMRs.values(), false); // pop tM0 in R-postset is read only by tMR
         }
     }
 
-    public BinaryRegisterStg getPushRegisterStg(VisualPushRegister register) {
-        return (pushRegisterMap == null) ? null : pushRegisterMap.get(register);
+    public BinaryRegisterStg getPushRegisterStg(VisualPushRegister node) {
+        return (pushRegisterMap == null) ? null : pushRegisterMap.get(node);
     }
 
-    public void putPushRegisterStg(VisualPushRegister register, BinaryRegisterStg stg) {
+    public void putPushRegisterStg(VisualPushRegister node, BinaryRegisterStg nodeStg) {
         if (pushRegisterMap == null) {
             pushRegisterMap = new HashMap<>();
         }
-        pushRegisterMap.put(register, stg);
+        pushRegisterMap.put(node, nodeStg);
     }
 
-    private BinaryRegisterStg generatePopRegisterStg(VisualPopRegister r) throws InvalidConnectionException {
-        return generateBinaryRegisterSTG(r, false, false);
+    private BinaryRegisterStg generatePopRegisterStg(VisualPopRegister node) throws InvalidConnectionException {
+        return generateBinaryRegisterSTG(node, false, false);
     }
 
-    private void connectPopRegisterStg(VisualPopRegister r) throws InvalidConnectionException {
-        BinaryRegisterStg rstg = getPopRegisterStg(r);
-        // preset
-        for (VisualLogic n: getDfsModel().getPreset(r, VisualLogic.class)) {
-            LogicStg nstg = getLogicStg(n);
-            createReadArcs(nstg.c1, rstg.tMRs.values(), true);
-            createReadArc(nstg.c0, rstg.tMF, false);
+    private void connectPopRegisterStg(VisualPopRegister node) throws InvalidConnectionException {
+        VisualDfs dfs = getDfsModel();
+        BinaryRegisterStg nodeStg = getPopRegisterStg(node);
+        // Preset
+        for (VisualLogic predNode : dfs.getPreset(node, VisualLogic.class)) {
+            LogicStg predNodeStg = getLogicStg(predNode);
+            createReadArcs(predNodeStg.c1, nodeStg.tMRs.values(), true);
+            createReadArc(predNodeStg.c0, nodeStg.tMF, false);
         }
         // R-preset
-        for (VisualRegister n: getDfsModel().getRPreset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
-            createReadArc(nstg.m0, rstg.tMF, false);
+        for (VisualRegister rPredNode : dfs.getRPreset(node, VisualRegister.class)) {
+            RegisterStg rPredNodeStg = getRegisterStg(rPredNode);
+            createReadArcs(rPredNodeStg.m1, nodeStg.tMRs.values(), true);
+            createReadArc(rPredNodeStg.m0, nodeStg.tMF, false);
         }
-        for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
-            BinaryRegisterStg nstg = getControlRegisterStg(n);
-            Connection connection = getDfsModel().getConnection(n, r);
-            if (connection instanceof VisualControlConnection
+        for (VisualControlRegister rPredNode : dfs.getRPreset(node, VisualControlRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getControlRegisterStg(rPredNode);
+            Connection connection = dfs.getConnection(rPredNode, node);
+            if ((connection instanceof VisualControlConnection)
                     && ((VisualControlConnection) connection).getReferencedConnection().isInverting()) {
-                createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
-                createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
-                createReadArc(nstg.tM0, rstg.fMF, false);
-                createReadArc(nstg.fM0, rstg.tMF, false);
+
+                createReadArc(rPredNodeStg.tM1, nodeStg.fMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.fM1, nodeStg.tMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.tM0, nodeStg.fMF, false);
+                createReadArc(rPredNodeStg.fM0, nodeStg.tMF, false);
             } else {
-                createReadArc(nstg.tM1, rstg.tMRs.get(n), true);
-                createReadArc(nstg.fM1, rstg.fMRs.get(n), true);
-                createReadArc(nstg.tM0, rstg.tMF, false);
-                createReadArc(nstg.fM0, rstg.fMF, false);
+                createReadArc(rPredNodeStg.tM1, nodeStg.tMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.fM1, nodeStg.fMRs.get(rPredNode), true);
+                createReadArc(rPredNodeStg.tM0, nodeStg.tMF, false);
+                createReadArc(rPredNodeStg.fM0, nodeStg.fMF, false);
             }
         }
-        for (VisualPushRegister n: getDfsModel().getRPreset(r, VisualPushRegister.class)) {
-            BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArcs(nstg.tM1, rstg.tMRs.values(), true);
-            createReadArc(nstg.tM0, rstg.tMF, false);
+        for (VisualPushRegister rPredNode : dfs.getRPreset(node, VisualPushRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getPushRegisterStg(rPredNode);
+            createReadArcs(rPredNodeStg.tM1, nodeStg.tMRs.values(), true);
+            createReadArc(rPredNodeStg.tM0, nodeStg.tMF, false);
         }
-        for (VisualPopRegister n: getDfsModel().getRPreset(r, VisualPopRegister.class)) {
-            BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArcs(nstg.m1, rstg.tMRs.values(), true);
-            createReadArc(nstg.m0, rstg.tMF, false);
+        for (VisualPopRegister rPredNode : dfs.getRPreset(node, VisualPopRegister.class)) {
+            BinaryRegisterStg rPredNodeStg = getPopRegisterStg(rPredNode);
+            createReadArcs(rPredNodeStg.m1, nodeStg.tMRs.values(), true);
+            createReadArc(rPredNodeStg.m0, nodeStg.tMF, false);
         }
         // R-postset
-        for (VisualRegister n: getDfsModel().getRPostset(r, VisualRegister.class)) {
-            RegisterStg nstg = getRegisterStg(n);
-            createReadArc(nstg.m1, rstg.tMF, false);
-            createReadArc(nstg.m1, rstg.fMF, false);
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
+        for (VisualRegister rSuccNode : dfs.getRPostset(node, VisualRegister.class)) {
+            RegisterStg rSuccNodeStg = getRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.tMF, false);
+            createReadArc(rSuccNodeStg.m1, nodeStg.fMF, false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.fMRs.values(), false);
         }
-        for (VisualControlRegister n: getDfsModel().getRPostset(r, VisualControlRegister.class)) {
-            BinaryRegisterStg nstg = getControlRegisterStg(n);
-            createReadArc(nstg.m1, rstg.tMF, false);
-            createReadArc(nstg.m1, rstg.fMF, false);
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
+        for (VisualControlRegister rSuccNode : dfs.getRPostset(node, VisualControlRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getControlRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.tMF, false);
+            createReadArc(rSuccNodeStg.m1, nodeStg.fMF, false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.fMRs.values(), false);
         }
-        for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
-            BinaryRegisterStg nstg = getPushRegisterStg(n);
-            createReadArc(nstg.m1, rstg.tMF, false);
-            createReadArc(nstg.m1, rstg.fMF, false);
-            createReadArcs(nstg.m0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.m0, rstg.fMRs.values(), false);
+        for (VisualPushRegister rSuccNode : dfs.getRPostset(node, VisualPushRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getPushRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.m1, nodeStg.tMF, false);
+            createReadArc(rSuccNodeStg.m1, nodeStg.fMF, false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.tMRs.values(), false);
+            createReadArcs(rSuccNodeStg.m0, nodeStg.fMRs.values(), false);
         }
-        for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
-            BinaryRegisterStg nstg = getPopRegisterStg(n);
-            createReadArc(nstg.tM1, rstg.tMF, false);
-            createReadArc(nstg.tM1, rstg.fMF, false);
-            createReadArcs(nstg.tM0, rstg.tMRs.values(), false);
-            createReadArcs(nstg.tM0, rstg.fMRs.values(), false);
+        for (VisualPopRegister rSuccNode : dfs.getRPostset(node, VisualPopRegister.class)) {
+            BinaryRegisterStg rSuccNodeStg = getPopRegisterStg(rSuccNode);
+            createReadArc(rSuccNodeStg.tM1, nodeStg.tMF, false);
+            createReadArc(rSuccNodeStg.tM1, nodeStg.fMF, false);
+            createReadArcs(rSuccNodeStg.tM0, nodeStg.tMRs.values(), false);
+            createReadArcs(rSuccNodeStg.tM0, nodeStg.fMRs.values(), false);
         }
     }
 
-    public BinaryRegisterStg getPopRegisterStg(VisualPopRegister register) {
-        return (popRegisterMap == null) ? null : popRegisterMap.get(register);
+    public BinaryRegisterStg getPopRegisterStg(VisualPopRegister node) {
+        return (popRegisterMap == null) ? null : popRegisterMap.get(node);
     }
 
-    public void putPopRegisterStg(VisualPopRegister register, BinaryRegisterStg stg) {
+    public void putPopRegisterStg(VisualPopRegister node, BinaryRegisterStg nodeStg) {
         if (popRegisterMap == null) {
             popRegisterMap = new HashMap<>();
         }
-        popRegisterMap.put(register, stg);
+        popRegisterMap.put(node, nodeStg);
     }
 
     public boolean isRelated(Node highLevelNode, Node node) {
@@ -1185,6 +1198,36 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             nodeStg = getPopRegisterStg((VisualPopRegister) highLevelNode);
         }
         return (nodeStg != null) && nodeStg.contains(node);
+    }
+
+    public static String getLogicStgNodeReference(String ref, Boolean level) {
+        return getStgNodeReference(ref, C_NAME_PREFIX, level);
+    }
+
+    public static String getRegisterStgNodeReference(String ref, Boolean level) {
+        return getStgNodeReference(ref, M_NAME_PREFIX, level);
+    }
+
+    public static String getCounterflowLogicStgNodeReference(String ref, Boolean forward, Boolean level) {
+        String prefix = forward ? FW_C_NAME_PREFIX : BW_C_NAME_PREFIX;
+        return getStgNodeReference(ref, prefix, level);
+    }
+
+    public static String getCounterflowRegisterStgNodeReference(String ref, boolean or, Boolean level) {
+        String prefix = or ? OR_M_NAME_PREFIX : AND_M_NAME_PREFIX;
+        return getStgNodeReference(ref, prefix, level);
+    }
+
+    public static String getBinaryRegisterStgNodeReference(String ref, Boolean value, Boolean level) {
+        String prefix = value == null ? M_NAME_PREFIX : value ? TRUE_M_NAME_PREFIX : FALSE_M_NAME_PREFIX;
+        return getStgNodeReference(ref, prefix, level);
+    }
+
+    private static String getStgNodeReference(String ref, String prefix, Boolean level) {
+        String suffix = level == null ? "" : level ? StgSettings.getHighLevelSuffix() : StgSettings.getLowLevelSuffix();
+        String parentRef = NamespaceHelper.getParentReference(ref);
+        String name = NamespaceHelper.getReferenceName(ref);
+        return NamespaceHelper.getReference(parentRef, prefix + name + suffix);
     }
 
 }

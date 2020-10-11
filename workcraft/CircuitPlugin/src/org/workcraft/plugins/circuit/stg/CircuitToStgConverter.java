@@ -541,11 +541,14 @@ public class CircuitToStgConverter {
             direction = direction.flip();
         }
         switch (direction) {
-        case WEST: return new Point2D.Double(6.0, 0.0);
-        case EAST: return new Point2D.Double(-6.0, 0.0);
-        case NORTH: return new Point2D.Double(6.0, 0.0);
-        case SOUTH: return new Point2D.Double(-6.0, 0.0);
-        default: return new Point2D.Double(0.0, 0.0);
+        case WEST:
+        case NORTH:
+            return new Point2D.Double(6.0, 0.0);
+        case EAST:
+        case SOUTH:
+            return new Point2D.Double(-6.0, 0.0);
+        default:
+            return new Point2D.Double(0.0, 0.0);
         }
     }
 
@@ -567,21 +570,7 @@ public class CircuitToStgConverter {
     }
 
     private void cleanupPages() {
-        boolean progress = false;
-        do {
-            progress = false;
-            for (VisualPage page: Hierarchy.getDescendantsOfType(stg.getRoot(), VisualPage.class)) {
-                if (page.getChildren().isEmpty()) {
-                    Container container = Hierarchy.getNearestContainer(page);
-                    stg.setCurrentLevel(container);
-                    stg.select(page);
-                    stg.deleteSelection();
-                    progress = true;
-                }
-            }
-        } while (progress);
-        stg.selectNone();
-        stg.setCurrentLevel(stg.getRoot());
+        NamespaceHelper.removeEmptyPages(stg);
     }
 
 }

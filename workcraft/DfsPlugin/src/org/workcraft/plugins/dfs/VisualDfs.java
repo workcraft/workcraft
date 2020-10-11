@@ -20,7 +20,6 @@ import org.workcraft.plugins.dfs.tools.DfsSimulationTool;
 import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 @DisplayName("Dataflow Structure")
@@ -37,7 +36,7 @@ public class VisualDfs extends AbstractVisualModel {
 
     @Override
     public void registerGraphEditorTools() {
-        addGraphEditorTool(new SelectionTool(true, false, true, true));
+        addGraphEditorTool(new SelectionTool());
         addGraphEditorTool(new CommentGeneratorTool());
         addGraphEditorTool(new ConnectionTool());
         addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Logic.class)));
@@ -57,51 +56,27 @@ public class VisualDfs extends AbstractVisualModel {
     }
 
     @Override
-    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection)
+            throws InvalidConnectionException {
+
         validateConnection(first, second);
         VisualComponent c1 = (VisualComponent) first;
         VisualComponent c2 = (VisualComponent) second;
         MathNode ref1 = c1.getReferencedComponent();
         MathNode ref2 = c2.getReferencedComponent();
-        VisualConnection ret = null;
+        VisualConnection result;
         if (first instanceof VisualControlRegister) {
             if (mConnection == null) {
                 mConnection = getMathModel().controlConnect(ref1, ref2);
             }
-            ret = new VisualControlConnection((ControlConnection) mConnection, c1, c2);
+            result = new VisualControlConnection((ControlConnection) mConnection, c1, c2);
         } else {
             if (mConnection == null) {
                 mConnection = getMathModel().connect(ref1, ref2);
             }
-            ret = new VisualConnection(mConnection, c1, c2);
+            result = new VisualConnection(mConnection, c1, c2);
         }
-        if (ret != null) {
-            Hierarchy.getNearestContainer(c1, c2).add(ret);
-        }
-        return ret;
-    }
-
-    public String getName(VisualComponent component) {
-        return getMathModel().getName(component.getReferencedComponent());
-    }
-
-    public Set<VisualNode> getRPreset(VisualNode node) {
-        Set<VisualNode> result = new HashSet<>();
-        result.addAll(getRPreset(node, VisualRegister.class));
-        result.addAll(getRPreset(node, VisualCounterflowRegister.class));
-        result.addAll(getRPreset(node, VisualControlRegister.class));
-        result.addAll(getRPreset(node, VisualPushRegister.class));
-        result.addAll(getRPreset(node, VisualPopRegister.class));
-        return result;
-    }
-
-    public Set<VisualNode> getRPostset(VisualNode node) {
-        Set<VisualNode> result = new HashSet<>();
-        result.addAll(getRPostset(node, VisualRegister.class));
-        result.addAll(getRPostset(node, VisualCounterflowRegister.class));
-        result.addAll(getRPostset(node, VisualControlRegister.class));
-        result.addAll(getRPostset(node, VisualPushRegister.class));
-        result.addAll(getRPostset(node, VisualPopRegister.class));
+        Hierarchy.getNearestContainer(c1, c2).add(result);
         return result;
     }
 
@@ -139,30 +114,6 @@ public class VisualDfs extends AbstractVisualModel {
 
     public Collection<VisualPopRegister> getVisualPopRegisters() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualPopRegister.class);
-    }
-
-    public Collection<VisualNode> getAllVisualLogics() {
-        Set<VisualNode> result = new HashSet<>();
-        result.addAll(getVisualLogics());
-        result.addAll(getVisualCounterflowLogics());
-        return result;
-    }
-
-    public Collection<VisualNode> getAllVisualRegisters() {
-        Set<VisualNode> result = new HashSet<>();
-        result.addAll(getVisualRegisters());
-        result.addAll(getVisualCounterflowRegisters());
-        result.addAll(getVisualControlRegisters());
-        result.addAll(getVisualPushRegisters());
-        result.addAll(getVisualPopRegisters());
-        return result;
-    }
-
-    public Collection<VisualNode> getAllVisualNodes() {
-        Set<VisualNode> result = new HashSet<>();
-        result.addAll(getAllVisualLogics());
-        result.addAll(getAllVisualRegisters());
-        return result;
     }
 
 }
