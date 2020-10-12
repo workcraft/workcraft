@@ -1,16 +1,16 @@
-package org.workcraft.plugins.policy.tools;
-
-import java.util.Map;
+package org.workcraft.plugins.policy.converters;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.policy.BundledTransition;
 import org.workcraft.plugins.policy.VisualPolicy;
+import org.workcraft.plugins.petri.converters.DefaultPetriConverter;
 
-public class PetriToPolicyConverter extends DefaultModelConverter<VisualPetri, VisualPolicy> {
+import java.util.Map;
+
+public class PetriToPolicyConverter extends DefaultPetriConverter<VisualPetri, VisualPolicy> {
 
     public PetriToPolicyConverter(VisualPetri srcModel, VisualPolicy dstModel) {
         super(srcModel, dstModel);

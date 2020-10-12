@@ -4,7 +4,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicy;
-import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
+import org.workcraft.plugins.policy.converters.PolicyToPetriConverter;
 
 import java.util.*;
 

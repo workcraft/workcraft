@@ -4,7 +4,7 @@ import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.petri.PetriDescriptor;
 import org.workcraft.plugins.policy.Policy;
 import org.workcraft.plugins.policy.VisualPolicy;
-import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
+import org.workcraft.plugins.policy.converters.PolicyToPetriConverter;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;

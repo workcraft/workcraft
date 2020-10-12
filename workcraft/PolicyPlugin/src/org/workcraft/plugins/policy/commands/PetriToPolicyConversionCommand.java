@@ -6,7 +6,7 @@ import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.policy.Policy;
 import org.workcraft.plugins.policy.PolicyDescriptor;
 import org.workcraft.plugins.policy.VisualPolicy;
-import org.workcraft.plugins.policy.tools.PetriToPolicyConverter;
+import org.workcraft.plugins.policy.converters.PetriToPolicyConverter;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
