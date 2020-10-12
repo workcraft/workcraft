@@ -21,6 +21,7 @@ import org.workcraft.plugins.policy.Bundle;
 import org.workcraft.plugins.policy.Policy;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicy;
+import org.workcraft.plugins.policy.converters.PolicyToPetriConverter;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;

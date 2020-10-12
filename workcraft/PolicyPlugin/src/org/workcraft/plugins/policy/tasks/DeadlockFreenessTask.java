@@ -10,7 +10,7 @@ import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.policy.VisualPolicy;
-import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
+import org.workcraft.plugins.policy.converters.PolicyToPetriConverter;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.interop.StgFormat;

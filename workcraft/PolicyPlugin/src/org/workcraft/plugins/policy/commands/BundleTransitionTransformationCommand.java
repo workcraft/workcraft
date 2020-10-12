@@ -5,7 +5,7 @@ import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.policy.VisualPolicy;
-import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
+import org.workcraft.plugins.policy.converters.PolicyToPetriConverter;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 

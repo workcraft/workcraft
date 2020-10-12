@@ -1,12 +1,12 @@
-package org.workcraft.plugins.policy.tools;
+package org.workcraft.plugins.policy.converters;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualReplica;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.petri.Petri;
-import org.workcraft.plugins.petri.VisualPetri;
-import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.policy.*;
 import org.workcraft.utils.Hierarchy;
 
@@ -32,12 +32,7 @@ public class PolicyToPetriConverter {
         transitionMap = convertTransitions();
         bundleMap = convertBundles();
         groupLocalities();
-        try {
-            connectTransitions();
-            connectBundles();
-        } catch (InvalidConnectionException e) {
-            //throw new RuntimeException(e);
-        }
+        convertConnections();
     }
 
     private void convertTitle() {
@@ -46,7 +41,7 @@ public class PolicyToPetriConverter {
 
     private Map<VisualPlace, VisualPlace> convertPlaces() {
         Map<VisualPlace, VisualPlace> result = new HashMap<>();
-        for (VisualPlace place : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualPlace.class)) {
+        for (VisualPlace place : policyNet.getVisualPlaces()) {
             String name = policyNet.getMathModel().getNodeReference(place.getReferencedComponent());
             VisualPlace newPlace = petriNet.createPlace(name, null);
             newPlace.copyPosition(place);
@@ -58,7 +53,7 @@ public class PolicyToPetriConverter {
 
     private Map<VisualBundledTransition, VisualTransition> convertTransitions() {
         Map<VisualBundledTransition, VisualTransition> result = new HashMap<>();
-        for (VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
+        for (VisualBundledTransition transition : policyNet.getVisualBundledTransitions()) {
             Collection<Bundle> bundles = policyNet.getMathModel().getBundlesOfTransition(transition.getReferencedComponent());
             if (bundles.isEmpty()) {
                 String name = policyNet.getMathModel().getNodeReference(transition.getReferencedComponent());
@@ -98,7 +93,7 @@ public class PolicyToPetriConverter {
     }
 
     private void groupLocalities() {
-        for (VisualLocality locality : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualLocality.class)) {
+        for (VisualLocality locality : policyNet.getVisualLocalities()) {
             HashSet<VisualNode> nodes = new HashSet<>();
             for (Node node: locality.getChildren()) {
                 if (node instanceof VisualBundledTransition) {
@@ -125,54 +120,72 @@ public class PolicyToPetriConverter {
         }
     }
 
-    private void connectTransitions() throws InvalidConnectionException {
-        for (VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
-            VisualTransition newTransition = transitionMap.get(transition);
-            if (newTransition != null) {
-                for (VisualNode node: policyNet.getPreset(transition)) {
-                    if (node instanceof VisualPlace) {
-                        VisualPlace newPlace = placeMap.get(node);
-                        if (newPlace != null) {
-                            petriNet.connect(newPlace, newTransition);
-                        }
-                    }
-                }
-                for (VisualNode node: policyNet.getPostset(transition)) {
-                    if (node instanceof VisualPlace) {
-                        VisualPlace newPlace = placeMap.get(node);
-                        if (newPlace != null) {
-                            petriNet.connect(newTransition, newPlace);
-                        }
-                    }
-                }
+    private void convertConnections() {
+        for (VisualConnection srcConnection : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualConnection.class)) {
+            try {
+                convertConnection(srcConnection);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
             }
         }
     }
 
-    private void connectBundles() throws InvalidConnectionException {
-        for (VisualBundle bundle : policyNet.getVisualBundles()) {
-            VisualTransition newTransition = bundleMap.get(bundle);
-            if (newTransition != null) {
-                for (VisualBundledTransition t: policyNet.getTransitionsOfBundle(bundle)) {
-                    for (Node node: policyNet.getPreset(t)) {
-                        if (node instanceof VisualPlace) {
-                            VisualPlace newPlace = placeMap.get(node);
-                            if (newPlace != null) {
-                                petriNet.connect(newPlace, newTransition);
-                            }
-                        }
-                    }
-                    for (Node node: policyNet.getPostset(t)) {
-                        if (node instanceof VisualPlace) {
-                            VisualPlace newPlace = placeMap.get(node);
-                            if (newPlace != null) {
-                                petriNet.connect(newTransition, newPlace);
-                            }
-                        }
-                    }
-                }
+    private void convertConnection(VisualConnection srcConnection) throws InvalidConnectionException {
+        Collection<VisualNode> dstFromNodes = getDstNodes(srcConnection.getFirst());
+        Collection<VisualNode> dstToNodes = getDstNodes(srcConnection.getSecond());
+        boolean isReadArc = srcConnection instanceof VisualReadArc;
+        Collection<VisualConnection> dstConnections = createDstConnections(dstFromNodes, dstToNodes, isReadArc);
+        for (VisualConnection dstConnection : dstConnections) {
+            dstConnection.copyStyle(srcConnection);
+            dstConnection.copyShape(srcConnection);
+        }
+    }
+
+    private Collection<VisualConnection> createDstConnections(Collection<VisualNode> dstFromNodes,
+            Collection<VisualNode> dstToNodes, boolean isReadArc) throws InvalidConnectionException {
+
+        Collection<VisualConnection> result = new HashSet<>();
+        for (VisualNode dstFromNode : dstFromNodes) {
+            for (VisualNode dstToNode : dstToNodes) {
+                VisualConnection dstConnection = isReadArc
+                        ? petriNet.connectUndirected(dstFromNode, dstToNode)
+                        : petriNet.connect(dstFromNode, dstToNode);
+
+                result.add(dstConnection);
             }
         }
+        return result;
+    }
+
+    private Collection<VisualNode> getDstNodes(VisualNode srcNode) {
+        Collection<VisualNode> result = new HashSet<>();
+        if (srcNode instanceof VisualPlace) {
+            VisualPlace dstPlace = placeMap.get(srcNode);
+            if (dstPlace != null) {
+                result.add(dstPlace);
+            }
+        }
+
+        if (srcNode instanceof VisualBundledTransition) {
+            VisualBundledTransition stcTransition = (VisualBundledTransition) srcNode;
+            Collection<VisualBundle> srcBundles = policyNet.getBundlesOfTransition(stcTransition);
+            for (VisualBundle srcBundle :srcBundles) {
+                VisualTransition dstTransition = bundleMap.get(srcBundle);
+                if (dstTransition != null) {
+                    result.add(dstTransition);
+                }
+            }
+            VisualTransition dstTransition = transitionMap.get(srcNode);
+            if (dstTransition != null) {
+                result.add(dstTransition);
+            }
+        }
+
+        if (srcNode instanceof VisualReplica) {
+            VisualComponent srcMasterNode = ((VisualReplica) srcNode).getMaster();
+            result.addAll(getDstNodes(srcMasterNode));
+        }
+        return result;
     }
 
     public VisualPolicy getPolicyNet() {
