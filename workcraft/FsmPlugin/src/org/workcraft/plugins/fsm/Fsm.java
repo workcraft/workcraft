@@ -5,7 +5,6 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.fsm.observers.InitialStateSupervisor;
@@ -104,29 +103,36 @@ public class Fsm extends AbstractMathModel {
         if (srcModel == null) {
             srcModel = this;
         }
-        HierarchyReferenceManager refManager = getReferenceManager();
-        NameManager nameManager = refManager.getNameManager(null);
+        reparentDependencies(srcModel, srcChildren);
+        return super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
+    }
+
+    public void reparentDependencies(Model srcModel, Collection<? extends MathNode> srcChildren) {
         for (MathNode srcNode: srcChildren) {
             if (srcNode instanceof Event) {
                 Event srcEvent = (Event) srcNode;
-                Symbol dstSymbol = null;
-                Symbol srcSymbol = srcEvent.getSymbol();
-                if (srcSymbol != null) {
-                    String symbolName = srcModel.getNodeReference(srcSymbol);
-                    Node dstNode = getNodeByReference(symbolName);
-                    if (dstNode instanceof Symbol) {
-                        dstSymbol = (Symbol) dstNode;
-                    } else {
-                        if (dstNode != null) {
-                            symbolName = nameManager.getDerivedName(null, symbolName);
-                        }
-                        dstSymbol = createSymbol(symbolName);
-                    }
-                }
+                Symbol dstSymbol = reparentSymbol(srcModel, srcEvent.getSymbol());
                 srcEvent.setSymbol(dstSymbol);
             }
         }
-        return super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
+    }
+
+    private Symbol reparentSymbol(Model srcModel, Symbol srcSymbol) {
+        Symbol dstSymbol = null;
+        if (srcSymbol != null) {
+            String symbolName = srcModel.getNodeReference(srcSymbol);
+            Node dstNode = getNodeByReference(symbolName);
+            if (dstNode instanceof Symbol) {
+                dstSymbol = (Symbol) dstNode;
+            } else {
+                if (dstNode != null) {
+                    NameManager nameManager = getReferenceManager().getNameManager(null);
+                    symbolName = nameManager.getDerivedName(null, symbolName);
+                }
+                dstSymbol = createSymbol(symbolName);
+            }
+        }
+        return dstSymbol;
     }
 
 }

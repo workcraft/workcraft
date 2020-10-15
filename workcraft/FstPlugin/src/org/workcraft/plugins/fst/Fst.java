@@ -1,7 +1,10 @@
 package org.workcraft.plugins.fst;
 
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
@@ -79,7 +82,36 @@ public class Fst extends Fsm {
     }
 
     public final Collection<SignalEvent> getSignalEvents(Signal signal) {
-        return Hierarchy.getDescendantsOfType(getRoot(), SignalEvent.class, event -> event.getSignal() == signal);
+        return Hierarchy.getDescendantsOfType(getRoot(), SignalEvent.class, event -> event.getSymbol() == signal);
+    }
+
+    @Override
+    public void reparentDependencies(Model srcModel, Collection<? extends MathNode> srcChildren) {
+        for (MathNode srcNode: srcChildren) {
+            if (srcNode instanceof SignalEvent) {
+                SignalEvent srcSignalEvent = (SignalEvent) srcNode;
+                Signal dstSignal = reparentSignal(srcModel, srcSignalEvent.getSymbol());
+                srcSignalEvent.setSymbol(dstSignal);
+            }
+        }
+    }
+
+    private Signal reparentSignal(Model srcModel, Signal srcSignal) {
+        Signal dstSignal = null;
+        if (srcSignal != null) {
+            String signalName = srcModel.getNodeReference(srcSignal);
+            Node dstNode = getNodeByReference(signalName);
+            if (dstNode instanceof Signal) {
+                dstSignal = (Signal) dstNode;
+            } else {
+                if (dstNode != null) {
+                    NameManager nameManager = getReferenceManager().getNameManager(null);
+                    signalName = nameManager.getDerivedName(null, signalName);
+                }
+                dstSignal = createSignal(signalName, srcSignal.getType());
+            }
+        }
+        return dstSignal;
     }
 
 }

@@ -81,11 +81,12 @@ public class VisualFst extends VisualFsm {
             properties.addAll(FstPropertyHelper.getSignalProperties(this));
         } else if (node instanceof VisualSignalEvent) {
             VisualSignalEvent signalEvent = (VisualSignalEvent) node;
-            Signal signal = signalEvent.getReferencedConnection().getSignal();
             properties.add(FstPropertyHelper.getEventSignalProperty(getMathModel(), signalEvent.getReferencedConnection()));
+
+            Signal signal = signalEvent.getReferencedConnection().getSymbol();
             properties.add(FstPropertyHelper.getSignalTypeProperty(signal, Signal.PROPERTY_TYPE));
             if (signal.hasDirection()) {
-                properties.add(FstPropertyHelper.getEventDrectionProperty(signalEvent.getReferencedConnection()));
+                properties.add(FstPropertyHelper.getEventDirectionProperty(signalEvent.getReferencedConnection()));
             }
             properties.removeByName(Event.PROPERTY_SYMBOL);
         }

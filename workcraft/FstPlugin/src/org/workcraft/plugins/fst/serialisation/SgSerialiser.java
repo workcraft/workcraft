@@ -48,15 +48,15 @@ public class SgSerialiser implements ModelSerialiser {
         return SgFormat.getInstance().getUuid();
     }
 
-    private String getSrialisedNodeName(Fsm fsm, Node node) {
+    private String getSerialisedNodeName(Fsm fsm, Node node) {
         return fsm.getNodeReference(node);
     }
 
-    private String getSrialisedEventName(Fsm fsm, Event event) {
+    private String getSerialisedEventName(Fsm fsm, Event event) {
         String result = null;
         if (event instanceof SignalEvent) {
             SignalEvent signalEvent = (SignalEvent) event;
-            Signal signal = signalEvent.getSignal();
+            Signal signal = signalEvent.getSymbol();
             result = fsm.getNodeReference(signal);
             if (signal.hasDirection()) {
                 result += signalEvent.getDirection();
@@ -75,7 +75,7 @@ public class SgSerialiser implements ModelSerialiser {
     private void writeSignalHeader(PrintWriter out, Fst fst, Signal.Type type) {
         HashSet<String> names = new HashSet<>();
         for (Signal signal: fst.getSignals(type)) {
-            String name = getSrialisedNodeName(fst, signal);
+            String name = getSerialisedNodeName(fst, signal);
             names.add(name);
         }
         if (!names.isEmpty()) {
@@ -103,7 +103,7 @@ public class SgSerialiser implements ModelSerialiser {
     private void writeSymbolHeader(PrintWriter out, Fsm fsm) {
         HashSet<String> names = new HashSet<>();
         for (Event event: fsm.getEvents()) {
-            String name = getSrialisedEventName(fsm, event);
+            String name = getSerialisedEventName(fsm, event);
             names.add(name);
         }
         if (!names.isEmpty()) {
@@ -120,9 +120,9 @@ public class SgSerialiser implements ModelSerialiser {
             State firstState = (State) event.getFirst();
             State secondState = (State) event.getSecond();
             if ((firstState != null) && (secondState != null)) {
-                String eventName = getSrialisedEventName(fsm, event);
-                String firstStateName = getSrialisedNodeName(fsm, firstState);
-                String secondStateName = getSrialisedNodeName(fsm, secondState);
+                String eventName = getSerialisedEventName(fsm, event);
+                String firstStateName = getSerialisedNodeName(fsm, firstState);
+                String secondStateName = getSerialisedNodeName(fsm, secondState);
                 out.write(firstStateName + " " + eventName + " " + secondStateName + "\n");
             }
         }
@@ -130,7 +130,7 @@ public class SgSerialiser implements ModelSerialiser {
 
     private void writeMarking(PrintWriter out, Fsm fsm, State state) {
         if (state != null) {
-            String stateStr = getSrialisedNodeName(fsm, state);
+            String stateStr = getSerialisedNodeName(fsm, state);
             out.write(".marking {" + stateStr + "}\n");
         }
     }

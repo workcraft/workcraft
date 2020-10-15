@@ -1,12 +1,7 @@
 package org.workcraft.plugins.fsm.observers;
 
 import org.workcraft.dom.Node;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.NodesAddingEvent;
-import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateSupervisor;
+import org.workcraft.observation.*;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.utils.Hierarchy;
@@ -34,14 +29,14 @@ public class InitialStateSupervisor extends StateSupervisor {
     @Override
     public void handleHierarchyEvent(HierarchyEvent e) {
         if (e instanceof NodesDeletingEvent) {
-            for (Node node: e.getAffectedNodes()) {
+            for (Node node : e.getAffectedNodes()) {
                 if (node instanceof State) {
                     // Move the initial property to another state on state removal
                     handleStateRemoval((State) node);
                 }
             }
         } else if (e instanceof NodesAddingEvent) {
-            for (Node node: e.getAffectedNodes()) {
+            for (Node node : e.getAffectedNodes()) {
                 if (node instanceof State) {
                     // Make pasted states non-initial
                     ((State) node).setInitialQuiet(false);
@@ -51,25 +46,23 @@ public class InitialStateSupervisor extends StateSupervisor {
     }
 
     private void handleInitialStateChange(State state) {
-        for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
-            if (!s.equals(state)) {
-                if (state.isInitial()) {
-                    s.setInitialQuiet(false);
-                } else {
-                    s.setInitialQuiet(true);
-                    break;
-                }
+        for (State otherState : Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
+            if (otherState == state) continue;
+            if (state.isInitial()) {
+                otherState.setInitialQuiet(false);
+            } else {
+                otherState.setInitialQuiet(true);
+                break;
             }
         }
     }
 
     private void handleStateRemoval(State state) {
         if (state.isInitial()) {
-            for (State s: fsm.getStates()) {
-                if (!s.equals(state)) {
-                    s.setInitial(true);
-                    break;
-                }
+            for (State otherState : fsm.getStates()) {
+                if (otherState == state) continue;
+                otherState.setInitial(true);
+                break;
             }
         }
     }

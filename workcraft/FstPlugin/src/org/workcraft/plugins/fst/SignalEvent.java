@@ -49,8 +49,9 @@ public class SignalEvent extends Event {
         }
     }
 
-    public Signal getSignal() {
-        return (Signal) getSymbol();
+    @Override
+    public Signal getSymbol() {
+        return (Signal) super.getSymbol();
     }
 
 }
