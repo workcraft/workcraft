@@ -50,7 +50,7 @@ public class FstToStgConverter {
         for (Entry<VisualSignalEvent, VisualNamedTransition> entry: eventToTransitionMap.entrySet()) {
             VisualSignalEvent signalEvent = entry.getKey();
             VisualNamedTransition transition = entry.getValue();
-            Signal signal = signalEvent.getReferencedConnection().getSignal();
+            Signal signal = signalEvent.getReferencedConnection().getSymbol();
             String dstName = dstModel.getMathName(transition);
             String srcName = srcModel.getMathName(signal);
             if (signal.hasDirection()) {
@@ -98,7 +98,7 @@ public class FstToStgConverter {
         Map<VisualSignalEvent, VisualNamedTransition> result = new HashMap<>();
         for (VisualSignalEvent signalEvent : srcModel.getVisualSignalEvents()) {
             VisualNamedTransition transition = null;
-            Signal signal = signalEvent.getReferencedConnection().getSignal();
+            Signal signal = signalEvent.getReferencedConnection().getSymbol();
             String name = srcModel.getMathName(signal);
             if (signal.hasDirection()) {
                 Signal.Type srcType = signal.getType();

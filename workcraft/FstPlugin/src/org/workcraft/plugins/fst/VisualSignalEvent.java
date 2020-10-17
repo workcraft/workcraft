@@ -1,14 +1,14 @@
 package org.workcraft.plugins.fst;
 
-import java.awt.Color;
-
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
-import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.fst.utils.FstUtils;
+
+import java.awt.*;
 
 public class VisualSignalEvent extends VisualEvent {
 
@@ -27,7 +27,7 @@ public class VisualSignalEvent extends VisualEvent {
 
     @Override
     public Color getLabelColor() {
-        Signal signal = getReferencedSignal();
+        Signal signal = getReferencedConnection().getSymbol();
         if (signal != null) {
             return FstUtils.getTypeColor(signal.getType());
         }
@@ -39,14 +39,11 @@ public class VisualSignalEvent extends VisualEvent {
         return (SignalEvent) super.getReferencedConnection();
     }
 
-    private Signal getReferencedSignal() {
-        return getReferencedConnection().getSignal();
-    }
-
     @Override
     public String getLabel(DrawRequest r) {
         String result = super.getLabel(r);
-        if (getReferencedSignal().hasDirection()) {
+        Signal signal = getReferencedConnection().getSymbol();
+        if ((signal != null) && signal.hasDirection()) {
             if (SignalCommonSettings.getShowToggle() || (getReferencedConnection().getDirection() != Direction.TOGGLE)) {
                 result += getReferencedConnection().getDirection();
             }

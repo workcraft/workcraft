@@ -91,7 +91,7 @@ public class FstPropertyHelper {
                         if (node instanceof Signal) {
                             signal = (Signal) node;
                         } else {
-                            Signal oldSignal = signalEvent.getSignal();
+                            Signal oldSignal = signalEvent.getSymbol();
                             Signal.Type type = oldSignal.getType();
                             signal = fst.createSignal(value, type);
                         }
@@ -101,26 +101,20 @@ public class FstPropertyHelper {
                     }
                 },
                 () -> {
-                    Signal signal = signalEvent.getSignal();
-                    if (signal != null) {
-                        return fst.getName(signal);
-                    }
-                    return null;
+                    Signal signal = signalEvent.getSymbol();
+                    return signal == null ? null : fst.getName(signal);
                 })
                 .setCombinable().setTemplatable();
     }
 
     public static PropertyDescriptor getSignalTypeProperty(Signal signal, String description) {
         return new PropertyDeclaration<>(Signal.Type.class, description,
-                value -> signal.setType(value), () -> signal.getType())
-                .setCombinable().setTemplatable();
+                signal::setType, signal::getType).setCombinable().setTemplatable();
     }
 
-    public static PropertyDescriptor getEventDrectionProperty(SignalEvent signalEvent) {
+    public static PropertyDescriptor getEventDirectionProperty(SignalEvent signalEvent) {
         return new PropertyDeclaration<>(SignalEvent.Direction.class, SignalEvent.PROPERTY_DIRECTION,
-                value -> signalEvent.setDirection(value),
-                () -> signalEvent.getDirection())
-                .setCombinable().setTemplatable();
+                signalEvent::setDirection, signalEvent::getDirection).setCombinable().setTemplatable();
     }
 
 }

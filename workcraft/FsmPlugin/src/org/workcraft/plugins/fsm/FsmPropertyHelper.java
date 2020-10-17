@@ -61,11 +61,7 @@ public class FsmPropertyHelper {
                 },
                 () -> {
                     Symbol symbol = event.getSymbol();
-                    String symbolName = "";
-                    if (symbol != null) {
-                        symbolName = fsm.getName(symbol);
-                    }
-                    return symbolName;
+                    return symbol == null ? "" : fsm.getName(symbol);
                 })
                 .setCombinable().setTemplatable();
     }

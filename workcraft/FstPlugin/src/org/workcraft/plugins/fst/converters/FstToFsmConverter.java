@@ -1,22 +1,12 @@
 package org.workcraft.plugins.fst.converters;
 
-import java.util.Map;
-
+import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.converters.DefaultModelConverter;
-import org.workcraft.plugins.fsm.Event;
-import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.State;
-import org.workcraft.plugins.fsm.Symbol;
-import org.workcraft.plugins.fsm.VisualEvent;
-import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.plugins.fsm.VisualState;
-import org.workcraft.plugins.fst.Fst;
-import org.workcraft.plugins.fst.Signal;
-import org.workcraft.plugins.fst.SignalEvent;
-import org.workcraft.plugins.fst.VisualFst;
-import org.workcraft.plugins.fst.VisualSignalEvent;
+import org.workcraft.plugins.fsm.*;
+import org.workcraft.plugins.fst.*;
+
+import java.util.Map;
 
 public class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualFsm> {
 
@@ -35,15 +25,25 @@ public class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualFs
     public VisualConnection convertConnection(VisualConnection srcConnection) {
         VisualConnection dstConnection = super.convertConnection(srcConnection);
         if ((srcConnection instanceof VisualSignalEvent) && (dstConnection instanceof VisualEvent)) {
-            Fst fst = (Fst) getSrcModel().getMathModel();
+            Fst fst = getSrcModel().getMathModel();
             SignalEvent srcSignalEvent = (SignalEvent) srcConnection.getReferencedConnection();
-            Signal srcSignal = srcSignalEvent.getSignal();
-            String name = fst.getName(srcSignal);
+            Signal srcSignal = srcSignalEvent.getSymbol();
+            String directionSuffix = "";
             if (srcSignal.hasDirection()) {
-                name += srcSignalEvent.getDirection();
-                name = name.replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
+                switch (srcSignalEvent.getDirection()) {
+                case PLUS:
+                    directionSuffix = "_PLUS";
+                    break;
+                case MINUS:
+                    directionSuffix = "_MINUS";
+                    break;
+                case TOGGLE:
+                    directionSuffix = "_TOGGLE";
+                    break;
+                }
             }
-            Fsm fsm = (Fsm) getDstModel().getMathModel();
+            String name = fst.getName(srcSignal) + directionSuffix;
+            Fsm fsm = getDstModel().getMathModel();
             Event dstEvent = (Event) dstConnection.getReferencedConnection();
             Symbol symbol = fsm.getOrCreateSymbol(name);
             dstEvent.setSymbol(symbol);

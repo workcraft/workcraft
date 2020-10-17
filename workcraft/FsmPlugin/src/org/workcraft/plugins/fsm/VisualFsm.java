@@ -93,19 +93,16 @@ public class VisualFsm extends AbstractVisualModel {
     @Override
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
-        Fsm mathFsm = getMathModel();
         if (node == null) {
             properties.add(PropertyHelper.createSeparatorProperty("Symbols"));
-            List<Symbol> symbols = new ArrayList<>(mathFsm.getSymbols());
-            symbols.sort((s1, s2) -> SortUtils.compareNatural(
-                    mathFsm.getNodeReference(s1), mathFsm.getNodeReference(s2)));
-
+            List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols());
+            symbols.sort((s1, s2) -> SortUtils.compareNatural(getMathReference(s1), getMathReference(s2)));
             for (final Symbol symbol : symbols) {
                 properties.add(FsmPropertyHelper.getSymbolProperty(this, symbol));
             }
         } else if (node instanceof VisualEvent) {
-            Event event = ((VisualEvent) node).getReferencedConnection();
-            properties.add(FsmPropertyHelper.getEventSymbolProperty(mathFsm, event));
+            VisualEvent event = (VisualEvent) node;
+            properties.add(FsmPropertyHelper.getEventSymbolProperty(getMathModel(), event.getReferencedConnection()));
         }
         return properties;
     }
