@@ -17,9 +17,9 @@ pluginManagement {
 gradle.ext.javaVersion = '1.8'
 
 // Code quality and coverage tools (Checkstyle, PMD, Jacoco)
-gradle.ext.checkstyleVersion = '8.35'
-gradle.ext.pmdVersion = '6.26.0'
-gradle.ext.jacocoVersion = '0.8.5'
+gradle.ext.checkstyleVersion = '8.36.2'
+gradle.ext.pmdVersion = '6.28.0'
+gradle.ext.jacocoVersion = '0.8.6'
 
 
 /*
@@ -27,7 +27,7 @@ gradle.ext.jacocoVersion = '0.8.5'
  */
 
 // Unit testing
-gradle.ext.junit = 'org.junit.jupiter:junit-jupiter-engine:5.6.2'
+gradle.ext.junit = 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 
 // JavaCC parser generator
 gradle.ext.javacc = 'net.java.dev.javacc:javacc:7.0.9'
