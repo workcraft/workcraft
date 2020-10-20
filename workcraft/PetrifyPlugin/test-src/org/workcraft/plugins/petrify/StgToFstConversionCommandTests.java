@@ -9,6 +9,7 @@ import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.petrify.commands.StgToBinaryFstConversionCommand;
+import org.workcraft.plugins.petrify.commands.StgToFstConversionCommand;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.BackendUtils;
@@ -32,13 +33,20 @@ public class StgToFstConversionCommandTests {
     }
 
     @Test
-    public void vmeStgToFstConversion() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
-        testStgToFstConversionCommand(workName, new String[] {"011101_csc", "011001_csc", "101001_csc"});
+    public void unsafeStgToFstConversion() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "unsafe.stg.work");
+        testStgToFstConversionCommand(workName, 13, 19,  null);
     }
 
-    private void testStgToFstConversionCommand(String workName, String[] conflictStateSuffixes)
-            throws DeserialisationException {
+    @Test
+    public void vmeStgToBinaryFstConversion() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testStgToFstConversionCommand(workName, 24, 33,
+                new String[] {"011101_csc", "011001_csc", "101001_csc"});
+    }
+
+    private void testStgToFstConversionCommand(String workName, int expectedStateCount, int expectedEventCount,
+            String[] conflictStateSuffixes) throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -50,10 +58,17 @@ public class StgToFstConversionCommandTests {
         Set<String> srcInternals = srcStg.getSignalReferences(Signal.Type.INTERNAL);
         Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
 
-        StgToBinaryFstConversionCommand command = new StgToBinaryFstConversionCommand();
+        StgToFstConversionCommand command = (conflictStateSuffixes == null)
+                ? new StgToFstConversionCommand()
+                : new StgToBinaryFstConversionCommand();
+
         WorkspaceEntry dstWe = command.execute(srcWe);
 
         Fst dstFst = WorkspaceUtils.getAs(dstWe, Fst.class);
+
+        Assertions.assertEquals(expectedStateCount, dstFst.getStates().size());
+        Assertions.assertEquals(expectedEventCount, dstFst.getEvents().size());
+
         Set<String> dstInputs = new HashSet<>();
         Set<String> dstInternals = new HashSet<>();
         Set<String> dstOutputs = new HashSet<>();
@@ -78,21 +93,20 @@ public class StgToFstConversionCommandTests {
         Assertions.assertEquals(srcInternals, dstInternals);
         Assertions.assertEquals(srcOutputs, dstOutputs);
 
-        // Check the color of conflicting states
-        HashMap<String, Color> conflictColorMap = new HashMap<>();
-        VisualFst fst = WorkspaceUtils.getAs(dstWe, VisualFst.class);
-        for (String conflictStateSuffix: conflictStateSuffixes) {
-            for (VisualState state: fst.getVisualStates()) {
+        // Check the color of conflicting states (in case of binary-encoded FST)
+        if (conflictStateSuffixes != null) {
+            HashMap<String, Color> conflictColorMap = new HashMap<>();
+            VisualFst fst = WorkspaceUtils.getAs(dstWe, VisualFst.class);
+            for (VisualState state : fst.getVisualStates()) {
                 String stateName = fst.getMathReference(state);
-                if (!stateName.endsWith(conflictStateSuffix)) continue;
-                Color conflictColor = conflictColorMap.get(conflictStateSuffix);
-                if (conflictColor != null) {
-                    Assertions.assertEquals(conflictColor, state.getFillColor());
-                } else {
-                    conflictColor = state.getFillColor();
-                    Assertions.assertNotEquals(Color.WHITE, conflictColor);
-                    conflictColorMap.put(conflictStateSuffix, conflictColor);
+                Color stateColor = state.getFillColor();
+                Color conflictColor = Color.WHITE;
+                for (String conflictStateSuffix : conflictStateSuffixes) {
+                    if (!stateName.endsWith(conflictStateSuffix)) continue;
+                    conflictColor = conflictColorMap.computeIfAbsent(conflictStateSuffix, s -> stateColor);
+                    break;
                 }
+                Assertions.assertEquals(conflictColor, stateColor);
             }
         }
     }

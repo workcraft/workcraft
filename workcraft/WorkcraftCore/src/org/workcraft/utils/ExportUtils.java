@@ -41,7 +41,7 @@ public class ExportUtils {
         return null;
     }
 
-    public static void exportToFile(Model model, File file, Format format, PluginManager pm)
+    public static void exportToFile(Model model, File file, Format format)
             throws IOException, ModelValidationException, SerialisationException {
 
         Exporter exporter = chooseBestExporter(model, format);

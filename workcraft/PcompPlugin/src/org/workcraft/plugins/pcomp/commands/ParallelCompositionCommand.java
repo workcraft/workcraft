@@ -6,7 +6,6 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.pcomp.gui.ParallelCompositionDialog;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
@@ -121,8 +120,7 @@ public class ParallelCompositionCommand
             StgFormat stgFormat = StgFormat.getInstance();
             String stgFileExtension = stgFormat.getExtension();
             File file = FileUtils.createTempFile(prefix, stgFileExtension, directory);
-            PluginManager pluginManager = Framework.getInstance().getPluginManager();
-            ExportUtils.exportToFile(model, file, stgFormat, pluginManager);
+            ExportUtils.exportToFile(model, file, stgFormat);
             return file;
         } catch (IOException | ModelValidationException | SerialisationException e) {
             throw new RuntimeException(e);

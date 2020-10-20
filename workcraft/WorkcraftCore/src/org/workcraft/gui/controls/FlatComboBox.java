@@ -64,9 +64,27 @@ public class FlatComboBox extends JComboBox {
         super.paintComponent(g);
         if (isOpaque()) {
             g.setColor(PANEL_BACKGROUND);
-            Dimension d = getSize();
-            g.fillRect(0, 0, d.width, d.height);
+            Rectangle rect = getValueRectangle();
+            g.fillRect(rect.x, rect.y, rect.width, rect.height);
         }
+    }
+
+    public Rectangle getValueRectangle() {
+        Dimension d = getSize();
+        AbstractButton arrowButton = getArrowButton();
+        if (arrowButton != null) {
+            d.width -= arrowButton.getWidth();
+        }
+        return new Rectangle(d);
+    }
+
+    public AbstractButton getArrowButton() {
+        for (Component component : getComponents()) {
+            if (component instanceof AbstractButton) {
+                return (AbstractButton) component;
+            }
+        }
+        return null;
     }
 
 }

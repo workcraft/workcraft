@@ -228,7 +228,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     }
 
     public static void setBackgroundColor(Color value) {
-        backgroundColor = value;
+        backgroundColor = new Color(value.getRGB(), false);
     }
 
     public static void setGridVisibility(boolean value) {

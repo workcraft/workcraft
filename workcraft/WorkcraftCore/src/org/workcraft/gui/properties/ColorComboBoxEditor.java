@@ -5,6 +5,7 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
+import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.event.EventListenerList;
@@ -78,7 +79,12 @@ class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
     }
 
     private final EventListenerList listenerList = new EventListenerList();
-    private final JButton button = new JButton("");
+    private final JButton button = new JButton("") {
+        @Override
+        public void paint(Graphics g) {
+            GuiUtils.paintBackgroundColor(g, getVisibleRect(), getBackground());
+        }
+    };
 
     ColorComboBoxEditor(Color color) {
         button.setBackground(color);

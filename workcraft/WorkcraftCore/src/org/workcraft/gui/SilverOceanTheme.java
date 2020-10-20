@@ -43,7 +43,7 @@ public class SilverOceanTheme extends OceanTheme {
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setRenderingHints(rh);
-                float s = SizeHelper.getMinimalStrockWidth();
+                float s = SizeHelper.getMinimalStrokeWidth();
                 g2.setStroke(new BasicStroke(s));
             }
             g.setColor(Color.WHITE);
@@ -86,7 +86,7 @@ public class SilverOceanTheme extends OceanTheme {
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setRenderingHints(rh);
-                float s = SizeHelper.getMinimalStrockWidth();
+                float s = SizeHelper.getMinimalStrokeWidth();
                 g2.setStroke(new BasicStroke(s));
             }
             g.setColor(Color.WHITE);

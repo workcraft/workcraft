@@ -148,7 +148,7 @@ public class PropertyEditorTable extends JTable {
 
                 Font font = label.getFont();
                 PropertyDescriptor descriptor = model.getDeclaration(row);
-                if ((descriptor.getValue() == null) && descriptor.isCombinable()) {
+                if ((descriptor != null) && (descriptor.getValue() == null) && descriptor.isCombinable()) {
                     label.setFont(font.deriveFont(Font.BOLD));
                 }
 

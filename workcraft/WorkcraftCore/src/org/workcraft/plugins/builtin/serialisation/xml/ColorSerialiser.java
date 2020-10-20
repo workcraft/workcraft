@@ -15,7 +15,7 @@ public class ColorSerialiser implements BasicXMLSerialiser<Color> {
 
     @Override
     public void serialise(Element element, Color color) {
-        if (color.getAlpha() == 0xff) {
+        if (ColorUtils.isOpaque(color)) {
             element.setAttribute("rgb", ColorUtils.getHexRGB(color));
         } else {
             element.setAttribute("argb", ColorUtils.getHexARGB(color));

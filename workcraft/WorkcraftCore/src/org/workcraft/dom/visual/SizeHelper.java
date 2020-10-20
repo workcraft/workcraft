@@ -70,7 +70,7 @@ public class SizeHelper {
         return (int) Math.round(9.0 * getColorChooserSwatchSize() / 7.0);
     }
 
-    public static float getMinimalStrockWidth() {
+    public static float getMinimalStrokeWidth() {
         return (float) (0.1 * getBaseSize());
     }
 
@@ -114,6 +114,10 @@ public class SizeHelper {
     public static Insets getTreeCheckboxMargin() {
         int gap = (int) Math.round(0.2 * getBaseSize());
         return new Insets(0, 0, 0, gap);
+    }
+
+    public static int getCheckPatternSize() {
+        return (int) Math.round(0.4 * getBaseSize());
     }
 
 }
