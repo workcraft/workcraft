@@ -31,7 +31,7 @@ public class SerialiserUtils {
     private static final String KEYWORD_CAPACITY = ".capacity";
     private static final String KEYWORD_END = ".end";
 
-    public enum Style { STG, LPN };
+    public enum Style { STG, LPN }
 
     public static void writeModel(Model model, OutputStream out, Style style, boolean needsInitialState) {
         if (!(model instanceof PetriModel)) {
@@ -121,7 +121,7 @@ public class SerialiserUtils {
         return false;
     }
 
-    private static String getReference(Model model, Node node, boolean needInstanceNumbers) {
+    private static String getReference(MathModel model, Node node, boolean needInstanceNumbers) {
         String result = model.getNodeReference(node);
         if (needInstanceNumbers && (model instanceof StgModel) && (node instanceof NamedTransition)) {
             NamedTransition nt = (NamedTransition) node;
@@ -144,25 +144,25 @@ public class SerialiserUtils {
         }
     }
 
-    private static Iterable<Node> sortNodes(Collection<? extends Node> nodes, final Model model) {
-        ArrayList<Node> list = new ArrayList<>(nodes);
-        Collections.sort(list, Comparator.comparing(model::getNodeReference));
-        return list;
+    private static Iterable<MathNode> sortNodes(Collection<? extends MathNode> nodes, final MathModel model) {
+        List<MathNode> result = new ArrayList<>(nodes);
+        result.sort(Comparator.comparing(model::getNodeReference));
+        return result;
     }
 
-    private static void writeGraphEntry(PrintWriter out, Model model, Node node, boolean needInstanceNumbers) {
+    private static void writeGraphEntry(PrintWriter out, MathModel model, MathNode node, boolean needInstanceNumbers) {
         if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
             return;
         }
         String nodeRef = getReference(model, node, needInstanceNumbers);
         out.write(nodeRef);
-        Set<Node> postset = model.getPostset(node);
-        for (Node succNode : sortNodes(postset, model)) {
+        Set<MathNode> postset = model.getPostset(node);
+        for (MathNode succNode : sortNodes(postset, model)) {
             String succNodeRef = getReference(model, succNode, needInstanceNumbers);
             if (succNode instanceof StgPlace) {
                 StgPlace succPlace = (StgPlace) succNode;
                 if (succPlace.isImplicit()) {
-                    Collection<Node> succPostset = model.getPostset(succNode);
+                    Collection<MathNode> succPostset = model.getPostset(succNode);
                     if (succPostset.size() > 1) {
                         throw new FormatException("Implicit place cannot have more than one node in postset");
                     }
@@ -189,14 +189,14 @@ public class SerialiserUtils {
 
     private static void writeStg(PrintWriter out, StgModel stg, boolean needInstanceNumbers) {
         out.write(KEYWORD_GRAPH + "\n");
-        for (Node n : sortNodes(stg.getSignalTransitions(), stg)) {
-            writeGraphEntry(out, stg, n, needInstanceNumbers);
+        for (MathNode node : sortNodes(stg.getSignalTransitions(), stg)) {
+            writeGraphEntry(out, stg, node, needInstanceNumbers);
         }
-        for (Node n : sortNodes(stg.getDummyTransitions(), stg)) {
-            writeGraphEntry(out, stg, n, needInstanceNumbers);
+        for (MathNode node : sortNodes(stg.getDummyTransitions(), stg)) {
+            writeGraphEntry(out, stg, node, needInstanceNumbers);
         }
-        for (Node n : sortNodes(stg.getPlaces(), stg)) {
-            writeGraphEntry(out, stg, n, needInstanceNumbers);
+        for (MathNode node : sortNodes(stg.getPlaces(), stg)) {
+            writeGraphEntry(out, stg, node, needInstanceNumbers);
         }
         writeMarking(out, stg, stg.getPlaces(), needInstanceNumbers);
     }
@@ -247,7 +247,7 @@ public class SerialiserUtils {
         for (Place p : places) {
             if (p.getCapacity() != 1) {
                 String placeRef = getReference(model, p, needInstanceNumbers);
-                capacity.append(" " + placeRef + "=" + p.getCapacity());
+                capacity.append(" ").append(placeRef).append("=").append(p.getCapacity());
             }
         }
         if (capacity.length() > 0) {
