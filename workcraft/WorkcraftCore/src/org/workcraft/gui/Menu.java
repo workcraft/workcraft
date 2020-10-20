@@ -445,9 +445,6 @@ public class Menu extends JMenuBar {
         boolean hasVisualModelExporter = false;
         for (Exporter exporter : exporters) {
             if (exporter.isCompatible(model)) {
-                if (!hasVisualModelExporter) {
-                    addTextSeparator(menu, "Visual model");
-                }
                 addMenuItem(menu, exporter, we);
                 hasVisualModelExporter = true;
             }
@@ -456,19 +453,14 @@ public class Menu extends JMenuBar {
         boolean hasMathModelExporter = false;
         for (Exporter exporter : exporters) {
             if (exporter.isCompatible(model.getMathModel())) {
-                if (!hasMathModelExporter) {
-                    addTextSeparator(menu, "Math model");
+                if (hasVisualModelExporter && !hasMathModelExporter) {
+                    menu.addSeparator();
                 }
                 addMenuItem(menu, exporter, we);
                 hasMathModelExporter = true;
             }
         }
         menu.revalidate();
-    }
-
-    private static void addTextSeparator(JMenu menu, String text) {
-        menu.add(new JLabel(text));
-        menu.addSeparator();
     }
 
     private static void addMenuItem(JMenu menu, Exporter exporter, WorkspaceEntry we) {

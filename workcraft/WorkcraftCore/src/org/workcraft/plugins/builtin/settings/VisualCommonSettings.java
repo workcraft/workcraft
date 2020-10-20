@@ -36,6 +36,7 @@ public class VisualCommonSettings extends AbstractCommonSettings {
     private static final String keyConnectionBubbleSize = prefix + ".connectionBubbleSize";
     private static final String keyConnectionColor = prefix + ".connectionColor";
     private static final String keyUseSubscript = prefix + ".useSubscript";
+    private static final String keyPngBackgroundColor = prefix + ".pngBackgroundColor";
 
     private static final double defaultFontSize = 10.0;
     private static final double defaultNodeSize = 1.0;
@@ -59,6 +60,7 @@ public class VisualCommonSettings extends AbstractCommonSettings {
     private static final double defaultConnectionBubbleSize = 0.2;
     private static final Color defaultConnectionColor = Color.BLACK;
     private static final boolean defaultUseSubscript = false;
+    private static final Color defaultPngBackgroundColor = new Color(0, 0, 0, 0);
 
     private static double fontSize = defaultFontSize;
     private static double nodeSize = defaultNodeSize;
@@ -82,6 +84,7 @@ public class VisualCommonSettings extends AbstractCommonSettings {
     private static double connectionBubbleSize = defaultConnectionBubbleSize;
     private static Color connectionColor = defaultConnectionColor;
     private static boolean useSubscript = defaultUseSubscript;
+    private static Color usePngBackgroundColor = defaultPngBackgroundColor;
 
     static {
         properties.add(new PropertyDeclaration<>(Double.class,
@@ -193,6 +196,11 @@ public class VisualCommonSettings extends AbstractCommonSettings {
                 "In Boolean expressions render text after \'_\' as subscript",
                 VisualCommonSettings::setUseSubscript,
                 VisualCommonSettings::getUseSubscript));
+
+        properties.add(new PropertyDeclaration<>(Color.class,
+                "Background color for PNG export",
+                VisualCommonSettings::setPngBackgroundColor,
+                VisualCommonSettings::getPngBackgroundColor));
     }
 
     @Override
@@ -224,6 +232,7 @@ public class VisualCommonSettings extends AbstractCommonSettings {
         setConnectionBubbleSize(config.getDouble(keyConnectionBubbleSize, defaultConnectionBubbleSize));
         setConnectionColor(config.getColor(keyConnectionColor, defaultConnectionColor));
         setUseSubscript(config.getBoolean(keyUseSubscript, defaultUseSubscript));
+        setPngBackgroundColor(config.getColor(keyPngBackgroundColor, defaultPngBackgroundColor));
     }
 
     @Override
@@ -250,6 +259,7 @@ public class VisualCommonSettings extends AbstractCommonSettings {
         config.setDouble(keyConnectionBubbleSize, getConnectionBubbleSize());
         config.setColor(keyConnectionColor, getConnectionColor());
         config.setBoolean(keyUseSubscript, getUseSubscript());
+        config.setColor(keyPngBackgroundColor, getPngBackgroundColor());
     }
 
     @Override
@@ -431,6 +441,14 @@ public class VisualCommonSettings extends AbstractCommonSettings {
 
     public static void setUseSubscript(boolean value) {
         useSubscript = value;
+    }
+
+    public static Color getPngBackgroundColor() {
+        return usePngBackgroundColor;
+    }
+
+    public static void setPngBackgroundColor(Color value) {
+        usePngBackgroundColor = value;
     }
 
 }

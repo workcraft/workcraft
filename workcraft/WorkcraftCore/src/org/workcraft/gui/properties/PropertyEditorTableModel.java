@@ -59,17 +59,24 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         }
     }
 
+    private boolean isRowInRange(int row) {
+        return (row >= 0) && (row < getRowCount());
+    }
+
     @Override
     public boolean isCellEditable(int row, int col) {
-        return (col > 0) && declarations[row].isEditable();
+        return (col > 0) && isRowInRange(row) && declarations[row].isEditable();
     }
 
     public PropertyDescriptor getDeclaration(int row) {
-        return (declarations == null) ? null : declarations[row];
+        return isRowInRange(row) ? declarations[row] : null;
     }
 
     @Override
     public Object getValueAt(int row, int col) {
+        if (!isRowInRange(row)) {
+            return "#OUT_OF_RANGE";
+        }
         if (col == 0) {
             return declarations[row].getName();
         }
@@ -92,11 +99,11 @@ public class PropertyEditorTableModel extends AbstractTableModel {
 
     @Override
     public void setValueAt(Object value, int row, int col) {
-        PropertyDescriptor desc = declarations[row];
+        PropertyDescriptor declaration = declarations[row];
         if (rowClasses[row] != null) {
             value = rowClasses[row].fromCellEditorValue(value);
         }
-        desc.setValue(value);
+        declaration.setValue(value);
     }
 
 }

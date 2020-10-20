@@ -1057,12 +1057,16 @@ public class MainWindow extends JFrame {
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         if (dialog.reveal()) {
-            menu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
+            if (editorInFocus != null) {
+                menu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
+            }
             for (WorkspaceEntry we: weWindowsMap.keySet()) {
                 refreshWorkspaceEntryTitle(we, false);
             }
             DockingUtils.updateHeaders(defaultDockingPort);
-            globalToolbar.refreshToggles();
+            if (globalToolbar != null) {
+                globalToolbar.refreshToggles();
+            }
         }
     }
 

@@ -245,6 +245,9 @@ public class CommonSettingsTest {
 
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getUseSubscript()),
                 framework.getConfigVar(prefix + ".useSubscript", false));
+
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getPngBackgroundColor()),
+                framework.getConfigVar(prefix + ".pngBackgroundColor", false));
     }
 
 }
