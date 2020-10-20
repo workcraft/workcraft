@@ -3,6 +3,7 @@ package org.workcraft;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import org.workcraft.utils.ColorUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -124,16 +125,18 @@ public class Config {
     }
 
     public static String toString(Color value) {
-        return String.format("#%x", value.getRGB() & 0xffffff);
+        return ColorUtils.isOpaque(value) ? ColorUtils.getHexRGB(value) : ColorUtils.getHexARGB(value);
     }
 
     public Color getColor(String key, Color defaultValue) {
         String s = get(key);
-        if (s == null || s.charAt(0) != '#') {
+        if ((s == null) || (s.charAt(0) != '#')) {
             return defaultValue;
         }
         try {
-            return new Color(Integer.parseInt(s.substring(1), 16), false);
+            int rgba = Integer.parseInt(s.substring(1), 16);
+            boolean hasAlpha = s.length() > 7;
+            return new Color(rgba, hasAlpha);
         } catch (NumberFormatException e) {
             return defaultValue;
         }

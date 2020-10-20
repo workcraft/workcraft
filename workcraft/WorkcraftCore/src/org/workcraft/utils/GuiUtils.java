@@ -331,4 +331,32 @@ public class GuiUtils {
         return null;
     }
 
+    public static void paintBackgroundColor(Graphics g, Rectangle rect, Color color) {
+        if (!ColorUtils.isOpaque(color)) {
+            paintCheckedPattern(g, rect);
+        }
+        g.setColor(color);
+        g.fillRect(rect.x, rect.y, rect.width, rect.height);
+    }
+
+    public static void paintCheckedPattern(Graphics g, Rectangle rect) {
+        g.setClip(rect);
+        g.setColor(Color.WHITE);
+        g.fillRect(rect.x, rect.y, rect.width, rect.height);
+        g.setColor(Color.GRAY);
+        int size = SizeHelper.getCheckPatternSize();
+        int doubleSize = 2 * size;
+        int x = 0;
+        while (x < rect.width) {
+            int y = 0;
+            while (y < rect.height) {
+                g.fillRect(x, y, size, size);
+                g.fillRect(x + size, y + size, size, size);
+                y += doubleSize;
+            }
+            x += doubleSize;
+        }
+        g.setClip(null);
+    }
+
 }

@@ -101,7 +101,7 @@ public class LogCommonSettings extends AbstractCommonSettings {
     }
 
     public static void setTextColor(Color value) {
-        textColor = value;
+        textColor = new Color(value.getRGB(), false);
     }
 
     public static Color getInfoBackground() {
@@ -109,7 +109,7 @@ public class LogCommonSettings extends AbstractCommonSettings {
     }
 
     public static void setInfoBackground(Color value) {
-        infoBackground = value;
+        infoBackground = new Color(value.getRGB(), false);
     }
 
     public static Color getWarningBackground() {
@@ -117,7 +117,7 @@ public class LogCommonSettings extends AbstractCommonSettings {
     }
 
     public static void setWarningBackground(Color value) {
-        warningBackground = value;
+        warningBackground = new Color(value.getRGB(), false);
     }
 
     public static Color getErrorBackground() {
@@ -125,7 +125,7 @@ public class LogCommonSettings extends AbstractCommonSettings {
     }
 
     public static void setErrorBackground(Color value) {
-        errorBackground = value;
+        errorBackground = new Color(value.getRGB(), false);
     }
 
     public static Color getStdoutBackground() {
@@ -133,7 +133,7 @@ public class LogCommonSettings extends AbstractCommonSettings {
     }
 
     public static void setStdoutBackground(Color value) {
-        stdoutBackground = value;
+        stdoutBackground = new Color(value.getRGB(), false);
     }
 
     public static Color getStderrBackground() {
@@ -141,7 +141,7 @@ public class LogCommonSettings extends AbstractCommonSettings {
     }
 
     public static void setStderrBackground(Color value) {
-        stderrBackground = value;
+        stderrBackground = new Color(value.getRGB(), false);
     }
 
 }

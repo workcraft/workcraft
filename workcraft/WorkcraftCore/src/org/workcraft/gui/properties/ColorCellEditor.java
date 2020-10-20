@@ -15,7 +15,7 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
     private final Color[] colors = {
             Color.BLACK, Color.DARK_GRAY, Color.GRAY, Color.LIGHT_GRAY, Color.WHITE,
             Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.YELLOW, Color.MAGENTA,
-            Color.ORANGE, Color.PINK,
+            Color.ORANGE, Color.PINK, new Color(0, 0, 0, 0),
             };
 
     public ColorCellEditor() {

@@ -1,23 +1,27 @@
 package org.workcraft.gui.properties;
 
+import org.workcraft.utils.GuiUtils;
+
 import javax.swing.*;
 import java.awt.*;
 
-class ColorComboBoxRenderer implements ListCellRenderer {
+class ColorComboBoxRenderer extends DefaultListCellRenderer {
 
-    private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+    @Override
+    public void paint(Graphics g) {
+        GuiUtils.paintBackgroundColor(g, new Rectangle(getSize()), getBackground());
+    }
 
     @Override
     public Component getListCellRendererComponent(JList list, Object value, int index,
             boolean isSelected, boolean cellHasFocus) {
 
-        Component renderer = defaultRenderer.getListCellRendererComponent(
-                list, " ", index, isSelected, cellHasFocus);
+        super.getListCellRendererComponent(list, " ", index, isSelected, cellHasFocus);
 
         if (value instanceof Color) {
-            renderer.setBackground((Color) value);
+            setBackground((Color) value);
         }
-        return renderer;
+        return this;
     }
 
 }
