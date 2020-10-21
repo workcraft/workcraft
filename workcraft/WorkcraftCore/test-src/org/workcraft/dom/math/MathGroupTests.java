@@ -2,14 +2,13 @@ package org.workcraft.dom.math;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
 
 public class MathGroupTests {
 
-    class MockNode extends MathNode {
+    static class MockNode extends MathNode {
     }
 
     private boolean receivedAddNotification1 = false;
@@ -24,21 +23,18 @@ public class MathGroupTests {
     public void observationTest() {
         MathGroup group = new MathGroup();
 
-        group.addObserver(new HierarchyObserver() {
-            @Override
-            public void notify(HierarchyEvent e) {
-                if (e instanceof NodesAddedEvent) {
-                    if (e.getAffectedNodes().iterator().next() == n1) {
-                        receivedAddNotification1 = true;
-                    } else if (e.getAffectedNodes().iterator().next() == n2) {
-                        receivedAddNotification2 = true;
-                    }
-                } else if (e instanceof NodesDeletedEvent) {
-                    if (e.getAffectedNodes().iterator().next() == n1) {
-                        receivedRemoveNotification1 = true;
-                    } else if (e.getAffectedNodes().iterator().next() == n2) {
-                        receivedRemoveNotification2 = true;
-                    }
+        group.addObserver((HierarchyObserver) e -> {
+            if (e instanceof NodesAddedEvent) {
+                if (e.getAffectedNodes().iterator().next() == n1) {
+                    receivedAddNotification1 = true;
+                } else if (e.getAffectedNodes().iterator().next() == n2) {
+                    receivedAddNotification2 = true;
+                }
+            } else if (e instanceof NodesDeletedEvent) {
+                if (e.getAffectedNodes().iterator().next() == n1) {
+                    receivedRemoveNotification1 = true;
+                } else if (e.getAffectedNodes().iterator().next() == n2) {
+                    receivedRemoveNotification2 = true;
                 }
             }
         });

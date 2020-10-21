@@ -519,7 +519,7 @@ public class MainWindow extends JFrame {
         boolean visible = true;
         String visibleVal = framework.getConfigVar(keyVisibility, false);
         if (visibleVal != null) {
-            visible = Boolean.valueOf(visibleVal);
+            visible = Boolean.parseBoolean(visibleVal);
         }
         setToolbarVisibility(toolbar, visible);
 
@@ -567,7 +567,7 @@ public class MainWindow extends JFrame {
         String widthStr = framework.getConfigVar(CONFIG_WINDOW_WIDTH, false);
         String heightStr = framework.getConfigVar(CONFIG_WINDOW_HEIGHT, false);
 
-        boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
+        boolean maximised = (maximisedStr == null) || Boolean.parseBoolean(maximisedStr);
         setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
 
         DisplayMode mode = getDisplayMode();
@@ -606,7 +606,7 @@ public class MainWindow extends JFrame {
         }
         ModelDescriptor md = dialog.getSelectedModel();
         if (md == null) {
-            DialogUtils.showError("Math model is not defined for '" + md.getDisplayName() + "'.");
+            DialogUtils.showError("Model type is not selected.");
             return;
         }
         try {
@@ -958,9 +958,7 @@ public class MainWindow extends JFrame {
     public void closeEditorWindows() {
         LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<>();
         for (WorkspaceEntry we: weWindowsMap.keySet()) {
-            for (DockableWindow window: weWindowsMap.get(we)) {
-                windowsToClose.add(window);
-            }
+            windowsToClose.addAll(weWindowsMap.get(we));
         }
         for (DockableWindow dockableWindow: windowsToClose) {
             if (DockingManager.isMaximized(dockableWindow)) {
@@ -1077,7 +1075,8 @@ public class MainWindow extends JFrame {
             try {
                 final Framework framework = Framework.getInstance();
                 framework.shutdownGUI();
-                new File(Framework.UILAYOUT_FILE_PATH).delete();
+                File file = new File(Framework.UILAYOUT_FILE_PATH);
+                file.delete();
                 framework.startGUI();
             } catch (OperationCancelledException e) {
             }
