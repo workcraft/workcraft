@@ -19,6 +19,7 @@ import org.workcraft.plugins.dtd.tools.SignalGeneratorTool;
 import org.workcraft.plugins.dtd.utils.DtdUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.ModelUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -73,6 +74,14 @@ public class VisualDtd extends AbstractVisualModel {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
 
+        if (first instanceof VisualExitEvent) {
+            throw new InvalidConnectionException("Cannot start connection at entry event.");
+        }
+
+        if (second instanceof VisualEntryEvent) {
+            throw new InvalidConnectionException("Cannot end connection at exit event.");
+        }
+
         if (getConnection(first, second) != null) {
             throw new InvalidConnectionException("Connection already exists.");
         }
@@ -80,13 +89,16 @@ public class VisualDtd extends AbstractVisualModel {
         if ((first instanceof VisualSignal) || (second instanceof VisualSignal)) {
             throw new InvalidConnectionException("Invalid connection.");
         }
-
+        if ((first instanceof VisualEvent) && (second instanceof VisualEvent)) {
+            VisualEvent firstEvent = (VisualEvent) first;
+            VisualEvent secondEvent = (VisualEvent) second;
+            if (ModelUtils.hasPath(this, secondEvent, firstEvent)) {
+                throw new InvalidConnectionException("Loops are not allowed.");
+            }
+        }
         if ((first instanceof VisualTransitionEvent) && (second instanceof VisualTransitionEvent)) {
             VisualTransitionEvent firstTransition = (VisualTransitionEvent) first;
             VisualTransitionEvent secondTransition = (VisualTransitionEvent) second;
-            if (isTransitionReachableFromTransition(secondTransition, firstTransition)) {
-                throw new InvalidConnectionException("Cannot connect transitions in a loop.");
-            }
             if (firstTransition.getParent() == secondTransition.getParent()) {
                 if ((firstTransition.getDirection() == TransitionEvent.Direction.STABILISE)
                         && (secondTransition.getDirection() != TransitionEvent.Direction.DESTABILISE)) {
@@ -147,29 +159,6 @@ public class VisualDtd extends AbstractVisualModel {
                 throw new InvalidConnectionException("Cannot relate transition and exit of different signals.");
             }
         }
-    }
-
-    private boolean isTransitionReachableFromTransition(VisualTransitionEvent fromTransition, VisualTransitionEvent toTransition) {
-        Set<VisualTransitionEvent> visited = new HashSet<>();
-        Queue<VisualTransitionEvent> toVisit = new LinkedList<>();
-        visited.add(fromTransition);
-        toVisit.add(fromTransition);
-        while (!toVisit.isEmpty()) {
-            VisualTransitionEvent transitionEvent = toVisit.poll();
-            for (Node node : getPostset(transitionEvent)) {
-                if (node instanceof VisualTransitionEvent) {
-                    VisualTransitionEvent successorEvent = (VisualTransitionEvent) node;
-                    if (successorEvent == toTransition) {
-                        return true;
-                    }
-                    if (!visited.contains(successorEvent)) {
-                        visited.add(successorEvent);
-                        toVisit.add(successorEvent);
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     @Override
@@ -257,7 +246,7 @@ public class VisualDtd extends AbstractVisualModel {
                     nodesX.putIfAbsent(nextEvent, Math.max(nextEvent.getX(), newX));
 
                     Integer dependencies = nodeDependencies.computeIfPresent(nextEvent, (k, v) -> v - 1);
-                    if (dependencies == 0) {
+                    if ((dependencies != null) && (dependencies == 0)) {
                         toVisit.add(nextEvent);
                     }
                 }
@@ -277,6 +266,19 @@ public class VisualDtd extends AbstractVisualModel {
             }
             rightmostEvent = false;
         }
+    }
+
+    public Collection<VisualConnection> getVisualConnections() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class);
+    }
+
+    public Collection<VisualLevelConnection> getVisualLevelConnections() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualLevelConnection.class);
+    }
+
+    public Collection<VisualConnection> getVisualCausalityConnections() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class,
+                arg -> !(arg instanceof VisualLevelConnection));
     }
 
     public Collection<VisualSignal> getVisualSignals(Container container) {

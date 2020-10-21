@@ -2,8 +2,6 @@ package org.workcraft.dom.visual;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.utils.Hierarchy;
 
@@ -20,17 +18,12 @@ public class VisualNodeTests {
     public void testTransformChangeNotify() {
         final SquareNode node = new SquareNode(null, new Rectangle2D.Double(0, 0, 1, 1));
         final Boolean[] hit = {false};
-        node.addObserver(new StateObserver() {
-            @Override
-            public void notify(StateEvent e) {
-                if (e instanceof TransformChangedEvent) {
-                    if (e.getSender() == node) {
-                        hit[0] = true;
-                    }
-
-                }
+        node.addObserver(e -> {
+            if ((e instanceof TransformChangedEvent) && (e.getSender() == node)) {
+                hit[0] = true;
             }
         });
+
         Assertions.assertFalse(hit[0], "already hit o_O");
         node.setX(8);
         Assertions.assertTrue(hit[0], "not hit");
@@ -134,10 +127,10 @@ public class VisualNodeTests {
     private void ensureShiftX(AffineTransform transform, double i) {
         double[] matrix = new double[6];
         transform.getMatrix(matrix);
-        asserArrayEquals(new double[]{1, 0, 0, 1, i, 0}, matrix);
+        assertArrayClose(new double[]{1, 0, 0, 1, i, 0}, matrix);
     }
 
-    private void asserArrayEquals(double[] expected, double[] actual) {
+    private void assertArrayClose(double[] expected, double[] actual) {
         Assertions.assertEquals(expected.length, actual.length);
         for (int i = 0; i < expected.length; i++) {
             assertClose(expected[i], actual[i]);
@@ -146,7 +139,8 @@ public class VisualNodeTests {
 
     private void assertClose(double expected, double actual) {
         double eps = 1e-6;
-        Assertions.assertTrue(expected - eps <= actual && expected + eps >= actual, "Expected: " + expected + ", actual: " + actual);
+        Assertions.assertTrue((expected - eps <= actual) && (expected + eps >= actual),
+                "Expected: " + expected + ", actual: " + actual);
     }
 
 }
