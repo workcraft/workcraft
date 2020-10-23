@@ -79,6 +79,8 @@ public abstract class AbstractModelConverter<S extends VisualModel, T extends Vi
         refToDstPage.putAll(tmp);
         for (VisualPage srcPage: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), VisualPage.class)) {
             VisualPage dstPage = convertPage(srcPage);
+            positionNode(srcPage, dstPage);
+            copyStyle(srcPage, dstPage);
             putSrcToDstNode(srcPage, dstPage);
         }
     }
@@ -88,6 +90,8 @@ public abstract class AbstractModelConverter<S extends VisualModel, T extends Vi
             Class<? extends VisualComponent> srcVisualComponentClass = getVisualComponentClass(srcMathNodeClass);
             for (VisualComponent srcComponent: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), srcVisualComponentClass)) {
                 VisualComponent dstComponent = convertComponent(srcComponent);
+                positionNode(srcComponent, dstComponent);
+                copyStyle(srcComponent, dstComponent);
                 putSrcToDstNode(srcComponent, dstComponent);
             }
         }
@@ -97,6 +101,8 @@ public abstract class AbstractModelConverter<S extends VisualModel, T extends Vi
         for (Class<? extends VisualReplica> srcVisualReplicaClass: getReplicaClassMap().keySet()) {
             for (VisualReplica srcReplica: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), srcVisualReplicaClass)) {
                 VisualReplica dstReplica = convertReplica(srcReplica);
+                positionNode(srcReplica, dstReplica);
+                copyStyle(srcReplica, dstReplica);
                 putSrcToDstNode(srcReplica, dstReplica);
             }
         }
@@ -105,6 +111,8 @@ public abstract class AbstractModelConverter<S extends VisualModel, T extends Vi
     private void convertConnections() {
         for (VisualConnection srcConnection : Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), VisualConnection.class)) {
             VisualConnection dstConnection = convertConnection(srcConnection);
+            shapeConnection(srcConnection, dstConnection);
+            copyStyle(srcConnection, dstConnection);
             putSrcToDstNode(srcConnection, dstConnection);
         }
     }
@@ -112,6 +120,8 @@ public abstract class AbstractModelConverter<S extends VisualModel, T extends Vi
     private void convertGroups() {
         for (VisualGroup srcGroup: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), VisualGroup.class)) {
             VisualGroup dstGroup = convertGroup(srcGroup);
+            positionNode(srcGroup, dstGroup);
+            copyStyle(srcGroup, dstGroup);
             putSrcToDstNode(srcGroup, dstGroup);
         }
     }

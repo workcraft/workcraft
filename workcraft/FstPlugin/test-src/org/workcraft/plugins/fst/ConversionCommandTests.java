@@ -57,13 +57,13 @@ public class ConversionCommandTests {
         Assertions.assertEquals(src.getEvents().size(), fsm.getEvents().size());
 
         FsmToFstConversionCommand fsmToFstConversionCommand = new FsmToFstConversionCommand();
-        WorkspaceEntry fstWe = fsmToFstConversionCommand.execute(srcWe);
+        WorkspaceEntry fstWe = fsmToFstConversionCommand.execute(fsmWe);
         Fst fst = WorkspaceUtils.getAs(fstWe, Fst.class);
 
         Assertions.assertEquals(src.getStates().size(), fst.getStates().size());
         Assertions.assertEquals(src.getEvents().size(), fst.getEvents().size());
         Assertions.assertEquals(0, getSignalCount(fst));
-        Assertions.assertEquals(getSignalCount(src), fst.getSignals(Signal.Type.DUMMY).size());
+        Assertions.assertEquals(2 * getSignalCount(src), fst.getSignals(Signal.Type.DUMMY).size());
 
         framework.closeWork(srcWe);
         framework.closeWork(stgWe);

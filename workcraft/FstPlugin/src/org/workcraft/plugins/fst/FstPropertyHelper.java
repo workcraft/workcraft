@@ -7,7 +7,9 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.properties.TextAction;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fst.utils.FstUtils;
 import org.workcraft.utils.SortUtils;
 
@@ -46,7 +48,7 @@ public class FstPropertyHelper {
         return result;
     }
 
-    public static PropertyDescriptor getSignalProperty(VisualFst fst, Signal signal) {
+    private static PropertyDescriptor getSignalProperty(VisualFst fst, Signal signal) {
         String signalName = fst.getMathName(signal);
         Signal.Type type = signal.getType();
         Color color = FstUtils.getTypeColor(type);
@@ -75,10 +77,14 @@ public class FstPropertyHelper {
                             event.setSymbol(existingSignal);
                         }
                     } else {
-                        throw new FormatException("Node '" + value + "' already exists and it is not a signal.");
+                        throw new FormatException("Node '" + newName + "' already exists and it is not a signal.");
+                    }
+                    for (SignalEvent event : events) {
+                        event.sendNotification(new PropertyChangedEvent(event, Event.PROPERTY_SYMBOL));
                     }
                 },
-                () -> new TextAction(signalName).setLeftAction(leftAction).setRightAction(rightAction).setForeground(color)
+                () -> new TextAction(signalName).setLeftAction(leftAction)
+                        .setRightAction(rightAction).setForeground(color)
         ).setSpan();
     }
 

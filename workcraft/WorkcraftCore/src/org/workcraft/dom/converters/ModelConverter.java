@@ -5,6 +5,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
+import java.awt.geom.Point2D;
 import java.util.Map;
 
 public interface ModelConverter<S extends VisualModel, T extends VisualModel> {
@@ -28,5 +29,18 @@ public interface ModelConverter<S extends VisualModel, T extends VisualModel> {
     VisualReplica convertReplica(VisualReplica srcReplica);
     VisualGroup convertGroup(VisualGroup srcGroup);
     VisualConnection convertConnection(VisualConnection srcConnection);
+
+    void positionNode(VisualTransformableNode srcNode, VisualTransformableNode dstNode);
+    void shapeConnection(VisualConnection srcConnection, VisualConnection dstConnection);
+    void copyStyle(Stylable srcStylable, Stylable dstStylable);
+
+    default Point2D getScale() {
+        return new Point2D.Double(1.0, 1.0);
+    }
+
+    default Point2D scalePosition(Point2D p) {
+        Point2D scale = getScale();
+        return new Point2D.Double(p.getX() * scale.getX(), p.getY() * scale.getY());
+    }
 
 }

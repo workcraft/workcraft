@@ -2,9 +2,11 @@ package org.workcraft.plugins.fst.converters;
 
 import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.Stylable;
 import org.workcraft.plugins.fsm.*;
-import org.workcraft.plugins.fst.*;
+import org.workcraft.plugins.fst.Signal;
+import org.workcraft.plugins.fst.VisualFst;
+import org.workcraft.plugins.fst.VisualSignalEvent;
 
 import java.util.Map;
 
@@ -22,15 +24,14 @@ public class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualFs
     }
 
     @Override
-    public VisualConnection convertConnection(VisualConnection srcConnection) {
-        VisualConnection dstConnection = super.convertConnection(srcConnection);
-        if ((srcConnection instanceof VisualSignalEvent) && (dstConnection instanceof VisualEvent)) {
-            Fst fst = getSrcModel().getMathModel();
-            SignalEvent srcSignalEvent = (SignalEvent) srcConnection.getReferencedConnection();
-            Signal srcSignal = srcSignalEvent.getSymbol();
+    public void copyStyle(Stylable srcStylable, Stylable dstStylable) {
+        if ((srcStylable instanceof VisualSignalEvent) && (dstStylable instanceof VisualEvent)) {
+            VisualSignalEvent srcSignalEvent = (VisualSignalEvent) srcStylable;
+            VisualEvent dstEvent = (VisualEvent) dstStylable;
+            Signal srcSignal = srcSignalEvent.getReferencedConnection().getSymbol();
             String directionSuffix = "";
             if (srcSignal.hasDirection()) {
-                switch (srcSignalEvent.getDirection()) {
+                switch (srcSignalEvent.getReferencedConnection().getDirection()) {
                 case PLUS:
                     directionSuffix = "_PLUS";
                     break;
@@ -42,13 +43,12 @@ public class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualFs
                     break;
                 }
             }
-            String name = fst.getName(srcSignal) + directionSuffix;
-            Fsm fsm = getDstModel().getMathModel();
-            Event dstEvent = (Event) dstConnection.getReferencedConnection();
-            Symbol symbol = fsm.getOrCreateSymbol(name);
-            dstEvent.setSymbol(symbol);
+            String signalName = getSrcModel().getMathName(srcSignal) + directionSuffix;
+            Symbol symbol = getDstModel().getMathModel().getOrCreateSymbol(signalName);
+            dstEvent.getReferencedConnection().setSymbol(symbol);
+        } else {
+            super.copyStyle(srcStylable, dstStylable);
         }
-        return dstConnection;
     }
 
     @Override

@@ -18,11 +18,8 @@ import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.fsm.observers.FirstStateSupervisor;
 import org.workcraft.plugins.fsm.tools.FsmSimulationTool;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.SortUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 @DisplayName("Finite State Machine")
 public class VisualFsm extends AbstractVisualModel {
@@ -95,11 +92,7 @@ public class VisualFsm extends AbstractVisualModel {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
             properties.add(PropertyHelper.createSeparatorProperty("Symbols"));
-            List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols());
-            symbols.sort((s1, s2) -> SortUtils.compareNatural(getMathReference(s1), getMathReference(s2)));
-            for (final Symbol symbol : symbols) {
-                properties.add(FsmPropertyHelper.getSymbolProperty(this, symbol));
-            }
+            properties.addAll(FsmPropertyHelper.getSymbolProperties(this));
         } else if (node instanceof VisualEvent) {
             VisualEvent event = (VisualEvent) node;
             properties.add(FsmPropertyHelper.getEventSymbolProperty(getMathModel(), event.getReferencedConnection()));

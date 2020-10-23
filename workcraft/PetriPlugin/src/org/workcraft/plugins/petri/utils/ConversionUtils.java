@@ -4,14 +4,11 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.*;
-import org.workcraft.dom.visual.connections.ConnectionGraphic;
-import org.workcraft.dom.visual.connections.ControlPoint;
-import org.workcraft.dom.visual.connections.Polyline;
-import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.*;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.*;
-import org.workcraft.utils.Hierarchy;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -186,13 +183,15 @@ public class ConversionUtils {
                     first = copyReplicaPlace(visualModel, (VisualReplicaPlace) first);
                 }
                 visualModel.remove(readArc);
+
                 consumingArc = visualModel.connect(first, second);
                 consumingArc.copyStyle(readArc);
-                consumingArc.setDefaultArrow();
+                ConnectionUtils.setDefaultStyle(consumingArc);
                 consumingArc.copyShape(readArc);
+
                 producingArc = visualModel.connect(second, first);
                 producingArc.copyStyle(readArc);
-                producingArc.setDefaultArrow();
+                ConnectionUtils.setDefaultStyle(producingArc);
                 producingArc.copyShape(readArc);
                 producingArc.inverseShape();
             } catch (InvalidConnectionException e) {
