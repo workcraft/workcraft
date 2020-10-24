@@ -1,6 +1,7 @@
 convertCircuitToStg(work) - convert the Circuit 'work' into a new STG work
 convertCircuitToStgWithEnvironment(work) - convert the Circuit 'work' and its environment into a new STG work
 convertDfsToStg(work) - convert the DFS 'work' into a new STG work
+convertDtdToStg(work) - convert the DTD 'work' into a new STG work
 convertFsmToFst(work) - convert the FSM 'work' into a new FST work
 convertFsmToGraph(work) - convert the FSM 'work' into a new Graph work
 convertFsmToPetri(work) - convert the FSM 'work' into a new Petri net work

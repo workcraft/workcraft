@@ -535,29 +535,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     public void copyShape(Shapable src) {
         if (src instanceof VisualConnection) {
             VisualConnection srcConnection = (VisualConnection) src;
-            setConnectionType(srcConnection.getConnectionType());
-            ConnectionGraphic srcGraphic = srcConnection.getGraphic();
-
-            if (srcGraphic instanceof Polyline) {
-                Polyline polyline = (Polyline) getGraphic();
-                polyline.resetControlPoints();
-                for (ControlPoint srcControlPoint: srcGraphic.getControlPoints()) {
-                    polyline.addControlPoint(srcControlPoint.getPosition());
-                }
-            } else if (srcGraphic instanceof Bezier) {
-                Bezier bezier = (Bezier) getGraphic();
-                BezierControlPoint[] srcControlPoints = ((Bezier) srcGraphic).getBezierControlPoints();
-                BezierControlPoint[] dstControlPoints = bezier.getBezierControlPoints();
-                dstControlPoints[0].setPosition(srcControlPoints[0].getPosition());
-                dstControlPoints[1].setPosition(srcControlPoints[1].getPosition());
-            }
+            ConnectionUtils.copyShape(srcConnection, this);
         }
-    }
-
-    public void setDefaultArrow() {
-        setArrow(true);
-        setArrowLength(VisualCommonSettings.getConnectionArrowLength());
-        setArrowWidth(VisualCommonSettings.getConnectionArrowWidth());
     }
 
     public Set<Point2D> getIntersections(Rectangle2D rect) {

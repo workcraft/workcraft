@@ -245,7 +245,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
     public void copyPosition(Movable src) {
         if (src instanceof VisualTransformableNode) {
             VisualTransformableNode srcNode = (VisualTransformableNode) src;
-            setPosition(srcNode.getPosition());
+            setRootSpacePosition(srcNode.getRootSpacePosition());
         }
     }
 

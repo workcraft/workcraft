@@ -7,10 +7,12 @@ import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.utils.Hierarchy;
 
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -54,8 +56,6 @@ public class DefaultModelConverter<S extends VisualModel, T extends VisualModel>
         Container dstContainer = getRefToDstPage(ref);
         if (dstContainer instanceof VisualPage) {
             dstPage = (VisualPage) dstContainer;
-            dstPage.copyPosition(srcPage);
-            dstPage.copyStyle(srcPage);
         }
         return dstPage;
     }
@@ -79,8 +79,6 @@ public class DefaultModelConverter<S extends VisualModel, T extends VisualModel>
                     MathNode dstMathNode = dstMathModel.createNode(dstName, mathContainer, dstMathNodeClass);
 
                     dstComponent = getDstModel().createVisualComponent(dstMathNode, dstVisualComponentClass, container);
-                    dstComponent.copyPosition(srcComponent);
-                    dstComponent.copyStyle(srcComponent);
                 }
             }
         }
@@ -110,8 +108,6 @@ public class DefaultModelConverter<S extends VisualModel, T extends VisualModel>
             }
 
             dstReplica = getDstModel().createVisualReplica(dstMasterComponent, dstVisualReplicaClass, dstContainer);
-            dstReplica.copyPosition(srcReplica);
-            dstReplica.copyStyle(srcReplica);
         }
         return dstReplica;
     }
@@ -126,8 +122,6 @@ public class DefaultModelConverter<S extends VisualModel, T extends VisualModel>
         if ((dstFirst != null) && (dstSecond != null)) {
             try {
                 dstConnection = getDstModel().connect(dstFirst, dstSecond);
-                dstConnection.copyStyle(srcConnection);
-                dstConnection.copyShape(srcConnection);
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }
@@ -154,11 +148,31 @@ public class DefaultModelConverter<S extends VisualModel, T extends VisualModel>
             getDstModel().addToSelection(dstSelection);
             dstGroup = getDstModel().groupSelection();
             getDstModel().selectNone();
-            dstGroup.copyPosition(srcGroup);
-            dstGroup.copyStyle(srcGroup);
         }
         return dstGroup;
 
+    }
+
+    @Override
+    public void positionNode(VisualTransformableNode srcNode, VisualTransformableNode dstNode) {
+        if ((srcNode != null) && (dstNode != null)) {
+            Point2D p = scalePosition(srcNode.getRootSpacePosition());
+            dstNode.setRootSpacePosition(p);
+        }
+    }
+
+    @Override
+    public void shapeConnection(VisualConnection srcConnection, VisualConnection dstConnection) {
+        if ((srcConnection != null) && (dstConnection != null)) {
+            ConnectionUtils.copyShape(srcConnection, dstConnection, getScale());
+        }
+    }
+
+    @Override
+    public void copyStyle(Stylable srcStylable, Stylable dstStylable) {
+        if (dstStylable != null) {
+            dstStylable.copyStyle(srcStylable);
+        }
     }
 
 }

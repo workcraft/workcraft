@@ -7,6 +7,7 @@ import org.workcraft.utils.TextUtils;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ReferenceHelper {
@@ -23,6 +24,10 @@ public class ReferenceHelper {
 
     public static List<String> getReferenceList(final Model model, Collection<? extends Node> nodes) {
         return nodes.stream().map(model::getNodeReference).collect(Collectors.toList());
+    }
+
+    public static Set<String> getReferenceSet(final Model model, Collection<? extends Node> nodes) {
+        return nodes.stream().map(model::getNodeReference).collect(Collectors.toSet());
     }
 
 }

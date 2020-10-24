@@ -159,7 +159,6 @@ public class VisualEvent extends VisualConnection {
         super.copyStyle(src);
         if (src instanceof VisualEvent) {
             VisualEvent srcEvent = (VisualEvent) src;
-            getReferencedConnection().setSymbol(srcEvent.getReferencedConnection().getSymbol());
             setLabelColor(srcEvent.getLabelColor());
         }
     }

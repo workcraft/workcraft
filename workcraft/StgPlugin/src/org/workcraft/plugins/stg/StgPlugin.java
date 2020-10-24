@@ -78,6 +78,8 @@ public class StgPlugin implements Plugin {
                 "convert the Petri net 'work' into a new STG work");
         ScriptableCommandUtils.registerCommand(StgToPetriConversionCommand.class, "convertStgToPetri",
                 "convert the STG 'work' into a new Petri net work");
+        ScriptableCommandUtils.registerCommand(DtdToStgConversionCommand.class, "convertDtdToStg",
+                "convert the DTD 'work' into a new STG work");
 
         ScriptableCommandUtils.registerCommand(StgStatisticsCommand.class, "statStg",
                 "advanced complexity estimates for the STG 'work'");
