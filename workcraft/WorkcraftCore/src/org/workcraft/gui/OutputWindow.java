@@ -28,7 +28,7 @@ public class OutputWindow extends LogPanel {
             if (systemOut != null) {
                 systemOut.write(b);
             }
-            print(new String(b));
+            displayInEventDispatchThread(new String(b));
         }
 
         @Override
@@ -36,12 +36,16 @@ public class OutputWindow extends LogPanel {
             if (systemOut != null) {
                 systemOut.write(b, off, len);
             }
-            print(new String(b, off, len));
+            displayInEventDispatchThread(new String(b, off, len));
         }
 
-        private void print(String text) {
-            Color highlightColor = null;
+        private void displayInEventDispatchThread(String text) {
+            SwingUtilities.invokeLater(() -> displayThreadUnsafe(text));
+        }
+
+        private void displayThreadUnsafe(String text) {
             LogType type = oldType;
+            Color highlightColor = null;
             if (LogUtils.isInfoText(text)) {
                 type = LogType.INFO;
                 highlightColor = LogCommonSettings.getInfoBackground();
