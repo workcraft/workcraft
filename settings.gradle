@@ -4,7 +4,7 @@ pluginManagement {
         id 'ca.coglinc.javacc' version '2.4.0'
         id 'com.github.kt3k.coveralls' version '2.10.2'
         id 'de.aaschmid.cpd' version '3.1'
-        id 'com.github.jk1.dependency-license-report' version '1.14'
+        id 'com.github.jk1.dependency-license-report' version '1.16'
     }
 }
 
