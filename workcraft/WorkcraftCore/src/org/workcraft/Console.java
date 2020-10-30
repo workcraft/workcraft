@@ -11,7 +11,9 @@ import org.workcraft.utils.JarUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.FileFilters;
 
+import javax.swing.*;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -75,11 +77,21 @@ public class Console {
 
         execScriptParameter(options.getScript(), options.getPaths());
 
+        // Wait for external requests via socket port
         if (port != null) {
             new Thread(() -> processExternalRequests(port)).start();
         }
 
-        processUserInput();
+        // Process user input until shutdown
+        while (true) {
+            if (framework.isShutdownRequested()) {
+                processShutdownRequest();
+            } else if (framework.isInGuiMode()) {
+                processGuiWait();
+            } else {
+                processNonguiInput();
+            }
+        }
     }
 
     private static boolean reuseRunningInstance(int port, File directory, Collection<String> paths) {
@@ -162,45 +174,47 @@ public class Console {
     }
 
     @SuppressWarnings("PMD.DoNotCallSystemExit")
-    private static void processUserInput() {
-        Framework framework = Framework.getInstance();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
-        while (true) {
-            if (framework.isShutdownRequested()) {
+    private static void processShutdownRequest() {
+        try {
+            SwingUtilities.invokeAndWait(() -> {
                 try {
-                    framework.shutdownGUI();
+                    Framework.getInstance().shutdownGUI();
+                    LogUtils.logMessage("Shutting down...");
+                    System.exit(0);
                 } catch (OperationCancelledException e) {
-                    framework.abortShutdown();
+                    Framework.getInstance().abortShutdown();
                 }
-                if (!framework.isShutdownRequested()) {
-                    continue;
-                }
-                LogUtils.logMessage("Shutting down...");
-                System.exit(0);
-            }
+            });
+        } catch (InterruptedException | InvocationTargetException e) {
+            System.err.println(e.getMessage());
+        }
+    }
 
-            if (framework.isInGuiMode()) {
-                try {
-                    Thread.sleep(100);
-                } catch (InterruptedException e) {
-                }
-            } else {
-                System.out.print("js>");
-                try {
-                    String line = reader.readLine();
-                    Object result = framework.execJavaScript(line);
-                    Context.enter();
-                    String out = Context.toString(result);
-                    Context.exit();
-                    if (!"undefined".equals(out)) {
-                        System.out.println(out);
-                    }
-                } catch (WrappedException e) {
-                    System.err.println(e.getWrappedException().getMessage());
-                } catch (IOException | RhinoException e) {
-                    System.err.println(e.getMessage());
-                }
+    private static void processGuiWait() {
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    private static void processNonguiInput() {
+        System.out.print("js>");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+        try {
+            String line = reader.readLine();
+            Object result = Framework.getInstance().execJavaScript(line);
+            Context.enter();
+            String out = Context.toString(result);
+            Context.exit();
+            if (!"undefined".equals(out)) {
+                System.out.println(out);
             }
+        } catch (org.mozilla.javascript.WrappedException e) {
+            Throwable we = e.getWrappedException();
+            System.err.println(we.getClass().getName() + " " + we.getMessage());
+        } catch (IOException | org.mozilla.javascript.RhinoException e) {
+            System.err.println(e.getMessage());
         }
     }
 

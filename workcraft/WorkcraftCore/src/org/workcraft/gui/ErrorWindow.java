@@ -22,10 +22,28 @@ public class ErrorWindow extends LogPanel implements ComponentListener {
             this.target = target;
         }
 
-        public void puts(String s) {
-            SwingUtilities.invokeLater(() -> highlightTab());
-            target.append(s);
-            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
+        @Override
+        public void write(byte[] b) throws IOException {
+            if (systemErr != null) {
+                systemErr.write(b);
+            }
+            displayInEventDispatchThread(new String(b));
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) {
+            if (systemErr != null) {
+                systemErr.write(b, off, len);
+            }
+            displayInEventDispatchThread(new String(b, off, len));
+        }
+
+        private void displayInEventDispatchThread(String s) {
+            SwingUtilities.invokeLater(() -> {
+                target.append(s);
+                target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
+                highlightTab();
+            });
         }
 
         private void highlightTab() {
@@ -45,24 +63,6 @@ public class ErrorWindow extends LogPanel implements ComponentListener {
                     tabbedPane.addChangeListener(this);
                 }
             }
-        }
-
-        @Override
-        public void write(byte[] b) throws IOException {
-            if (systemErr != null) {
-                systemErr.write(b);
-            }
-            String s = new String(b);
-            puts(s);
-        }
-
-        @Override
-        public void write(byte[] b, int off, int len) {
-            if (systemErr != null) {
-                systemErr.write(b, off, len);
-            }
-            String s = new String(b, off, len);
-            puts(s);
         }
 
         @Override
