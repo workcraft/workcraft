@@ -1,10 +1,9 @@
 package org.workcraft.gui.tools;
 
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.generators.NodeGenerator;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -22,8 +21,6 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     private final NodeGenerator generator;
     private final boolean topLevelOnly;
 
-    private VisualNode lastGeneratedNode = null;
-    private String warningMessage = null;
     private Container currentLevel = null;
 
     public NodeGeneratorTool(NodeGenerator generator) {
@@ -66,8 +63,6 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     }
 
     private void resetState(GraphEditor editor) {
-        lastGeneratedNode = null;
-        warningMessage = null;
         editor.getModel().selectNone();
     }
 
@@ -112,45 +107,63 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
 
     @Override
     public void mouseMoved(GraphEditorMouseEvent e) {
-        if (lastGeneratedNode != null) {
-            if (!lastGeneratedNode.hitTest(e.getPosition())) {
-                resetState(e.getEditor());
-                e.getEditor().repaint();
-            }
+        GraphEditor editor = e.getEditor();
+        Point2D position = e.getPosition();
+        VisualModel model = e.getModel();
+        Point2D snapPosition = editor.snap(position, null);
+        VisualNode node = HitMan.hitFirstInCurrentLevel(snapPosition, model);
+        if (node == null) {
+            hideIssue(editor);
+        } else {
+            showIssue(editor, getIssueText(node));
         }
     }
 
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
-        GraphEditor editor = e.getEditor();
-        if (lastGeneratedNode != null) {
-            warningMessage = "Move the mouse outside this node before creating a new node.";
-            editor.repaint();
-        } else {
-            try {
-                if (e.getButton() == MouseEvent.BUTTON1) {
-                    editor.getWorkspaceEntry().saveMemento();
-                    VisualModel model = e.getModel();
-                    Point2D snapPosition = editor.snap(e.getPosition(), null);
-                    lastGeneratedNode = generateNode(model, snapPosition);
-                    lastGeneratedNode.copyStyle(getTemplateNode());
-                }
-            } catch (NodeCreationException e1) {
-                throw new RuntimeException(e1);
+        if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() == 1)) {
+            GraphEditor editor = e.getEditor();
+            Point2D position = e.getPosition();
+            VisualModel model = e.getModel();
+            Point2D snapPosition = editor.snap(position, null);
+            VisualNode node = HitMan.hitFirstInCurrentLevel(snapPosition, model);
+            if (node == null) {
+                editor.getWorkspaceEntry().saveMemento();
+                VisualNode visualNode = generateNode(model, snapPosition);
+                visualNode.copyStyle(getTemplateNode());
+            } else {
+                Toolkit.getDefaultToolkit().beep();
             }
         }
     }
 
-    public VisualNode generateNode(VisualModel model, Point2D position) throws NodeCreationException {
-        return generator.generate(model, position);
+    private String getIssueText(VisualNode node) {
+        if (node instanceof VisualConnection) {
+            return "Creating node on top of a connection is not allowed.";
+        }
+        if (node instanceof VisualPage) {
+            return "Creating node on top of a page is not allowed.";
+        }
+        if (node instanceof VisualGroup) {
+            return "Creating node on top of a group is not allowed.";
+        }
+        return "Creating node on top of another node is not allowed.";
+    }
+
+    public VisualNode generateNode(VisualModel model, Point2D position) {
+        try {
+            return generator.generate(model, position);
+        } catch (NodeCreationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public boolean keyPressed(GraphEditorKeyEvent event) {
         GraphEditor editor = event.getEditor();
         if (editor instanceof GraphEditorPanel) {
-            Cursor cursor = getCursor(event);
-            ((GraphEditorPanel) editor).setCursor(cursor);
+            GraphEditorPanel editorPanel = (GraphEditorPanel) editor;
+            editorPanel.setCursor(getCursor(event));
         }
         return false;
     }
@@ -159,8 +172,8 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     public boolean keyReleased(GraphEditorKeyEvent event) {
         GraphEditor editor = event.getEditor();
         if (editor instanceof GraphEditorPanel) {
-            Cursor cursor = getCursor(event);
-            ((GraphEditorPanel) editor).setCursor(cursor);
+            GraphEditorPanel editorPanel = (GraphEditorPanel) editor;
+            editorPanel.setCursor(getCursor(event));
         }
         return false;
     }
@@ -170,33 +183,21 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-        if (warningMessage != null) {
-            GuiUtils.drawEditorMessage(editor, g, Color.RED, warningMessage);
-        } else {
-            super.drawInScreenSpace(editor, g);
-        }
-    }
-
-    @Override
     public String getHintText(final GraphEditor editor) {
         return generator.getText();
     }
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                VisualModel model = editor.getModel();
-                if (node == model.getCurrentLevel()) {
-                    return Decoration.Empty.INSTANCE;
-                }
-                if (node == model.getRoot()) {
-                    return Decoration.Shaded.INSTANCE;
-                }
-                return null;
+        return node -> {
+            VisualModel model = editor.getModel();
+            if (node == model.getCurrentLevel()) {
+                return Decoration.Empty.INSTANCE;
             }
+            if (node == model.getRoot()) {
+                return Decoration.Shaded.INSTANCE;
+            }
+            return null;
         };
     }
 
