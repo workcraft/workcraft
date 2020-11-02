@@ -14,8 +14,11 @@ public class CircuitConnectionTool extends ConnectionTool {
 
     @Override
     public boolean isConnectable(Node node) {
-        return (node instanceof VisualContact)
-                || (node instanceof VisualJoint)
+        if (node instanceof VisualContact) {
+            VisualContact contact = (VisualContact) node;
+            return (firstNode == null) == contact.isDriver();
+        }
+        return (node instanceof VisualJoint)
                 || (node instanceof VisualCircuitComponent)
                 || (node instanceof VisualCircuitConnection);
     }
