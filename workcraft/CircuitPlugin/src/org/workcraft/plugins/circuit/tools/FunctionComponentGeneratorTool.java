@@ -4,8 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.formula.And;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.Not;
@@ -176,7 +174,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public VisualNode generateNode(VisualModel model, Point2D position) throws NodeCreationException {
+    public VisualFunctionComponent generateNode(VisualModel model, Point2D position) {
         VisualFunctionComponent component = (VisualFunctionComponent) super.generateNode(model, position);
         if (libraryItem != null) {
             libraryItem.instantiator.accept((VisualCircuit) model, component);

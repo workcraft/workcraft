@@ -109,8 +109,8 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     }
 
     @Override
-    public void flashIssue(final GraphEditor editor, String message) {
-        issueText = message;
+    public void flashIssue(final GraphEditor editor, String text) {
+        issueText = text;
         editor.repaint();
         if (issueTimer == null) {
             issueTimer = new Timer(EditorCommonSettings.getFlashInterval(), event -> {

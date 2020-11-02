@@ -35,8 +35,8 @@ import java.util.*;
 
 public class SelectionTool extends AbstractGraphEditorTool {
 
-    public enum DrugState { NONE, MOVE, SELECT };
-    public enum SelectionMode { NONE, ADD, REMOVE, REPLACE };
+    public enum DrugState { NONE, MOVE, SELECT }
+    public enum SelectionMode { NONE, ADD, REMOVE, REPLACE }
 
     private DrugState dragState = DrugState.NONE;
     private boolean ignoreMouseButton1 = false;
@@ -55,18 +55,18 @@ public class SelectionTool extends AbstractGraphEditorTool {
     private VisualNode currentNode = null;
     private Collection<VisualNode> currentNodes = null;
 
-    private boolean enableGroupping = true;
-    private boolean enablePaging = true;
-    private boolean enableFlipping = true;
-    private boolean enableRotating = true;
+    private final boolean enableGrouping;
+    private final boolean enablePaging;
+    private final boolean enableFlipping;
+    private final boolean enableRotating;
 
     public SelectionTool() {
         this(true, true, true, true);
     }
 
-    public SelectionTool(boolean enableGroupping, boolean enablePaging, boolean enableFlipping, boolean enableRotating) {
+    public SelectionTool(boolean enableGrouping, boolean enablePaging, boolean enableFlipping, boolean enableRotating) {
         super();
-        this.enableGroupping = enableGroupping;
+        this.enableGrouping = enableGrouping;
         this.enablePaging = enablePaging;
         this.enableFlipping = enableFlipping;
         this.enableRotating = enableRotating;
@@ -96,7 +96,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
         super.updateControlsToolbar(toolbar, editor);
 
-        if (enableGroupping) {
+        if (enableGrouping) {
             JButton groupButton = GuiUtils.createIconButton(
                     GuiUtils.createIconFromSVG("images/selection-group.svg"),
                     "Group selection (" + DesktopApi.getMenuKeyName() + "-G)");
@@ -118,7 +118,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             toolbar.add(groupPageButton);
         }
 
-        if (enableGroupping || enablePaging) {
+        if (enableGrouping || enablePaging) {
             JButton ungroupButton = GuiUtils.createIconButton(
                     GuiUtils.createIconFromSVG("images/selection-ungroup.svg"),
                     "Ungroup selection (" + DesktopApi.getMenuKeyName() + "+Shift-G)");
@@ -282,7 +282,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 } else {
                     Collection<VisualNode> nodes = e.isExtendKeyDown()
                             ? getNodeWithAdjacentConnections(model, node)
-                            : Arrays.asList(new VisualNode[] {node});
+                            : Collections.singleton(node);
 
                     if (e.isShiftKeyDown()) {
                         model.addToSelection(nodes);
@@ -298,7 +298,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     public Collection<VisualNode> getNodeWithAdjacentConnections(VisualModel model, VisualNode node) {
-        ArrayList<VisualNode> result = new ArrayList<>();
+        Set<VisualNode> result = new HashSet<>();
         result.add(node);
         result.addAll(model.getConnections(node));
         return result;
@@ -374,7 +374,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 currentNode = node;
                 currentNodes = e.isExtendKeyDown()
                         ? getNodeWithAdjacentConnections(model, node)
-                        : Arrays.asList(new VisualNode[] {node});
+                        : Collections.singleton(node);
                 editor.repaint();
             }
         }
@@ -415,7 +415,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         VisualModel model = editor.getModel();
         if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
             Point2D startPos = e.getStartPosition();
-            Node hitNode = HitMan.hitFirstInCurrentLevel(startPos, model);
+            VisualNode hitNode = HitMan.hitFirstInCurrentLevel(startPos, model);
 
             if (hitNode == null) {
                 // If hit nothing then start region selection
@@ -434,24 +434,21 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 } else {
                     selected.addAll(model.getSelection());
                 }
-            } else if (((e.getKeyModifiers() == 0) || e.isShiftKeyDown()) && (hitNode instanceof VisualNode)) {
+            } else if ((e.getKeyModifiers() == 0) || e.isShiftKeyDown()) {
                 // If mouse down either without modifiers or with Ctrl/Menu being pressed and hit something then begin move-drag
                 dragState = DrugState.MOVE;
-                VisualNode node = (VisualNode) hitNode;
-                if ((node != null) && !model.getSelection().contains(node)) {
-                    model.select(node);
+                if (!model.getSelection().contains(hitNode)) {
+                    model.select(hitNode);
                 }
-                AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(node);
+                AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(hitNode);
                 moveOffset = new Point2D.Double(0.0, 0.0);
-                startPos = TransformHelper.transform(node, localToRootTransform).getCenter();
-                snaps = editor.getSnaps(node);
+                startPos = TransformHelper.transform(hitNode, localToRootTransform).getCenter();
+                snaps = editor.getSnaps(hitNode);
                 Point2D snapPos = editor.snap(startPos, snaps);
                 snapOffset = new Point2D.Double(snapPos.getX() - startPos.getX(), snapPos.getY() - startPos.getY());
                 // Initial move of the selection - beforeSelectionModification is needed
                 beforeSelectionModification(editor);
                 VisualModelTransformer.translateSelection(model, snapOffset.getX(), snapOffset.getY());
-            } else {
-                // Do nothing if pressed on a node with modifiers
             }
         }
     }
@@ -528,8 +525,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (enablePaging && e.isAltKeyDown() && !e.isMenuKeyDown()) {
-            switch (e.getKeyCode()) {
-            case KeyEvent.VK_G:
+            if (e.getKeyCode() == KeyEvent.VK_G) {
                 if (e.isShiftKeyDown()) {
                     ungroupSelection(editor);
                 } else {
@@ -539,9 +535,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
         }
 
-        if (enableGroupping && e.isMenuKeyDown() && !e.isAltKeyDown()) {
-            switch (e.getKeyCode()) {
-            case KeyEvent.VK_G:
+        if (enableGrouping && e.isMenuKeyDown() && !e.isAltKeyDown()) {
+            if (e.getKeyCode() == KeyEvent.VK_G) {
                 if (e.isShiftKeyDown()) {
                     ungroupSelection(editor);
                 } else {
@@ -552,8 +547,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (e.isMenuKeyDown() && !e.isAltKeyDown()) {
-            switch (e.getKeyCode()) {
-            case KeyEvent.VK_V:
+            if (e.getKeyCode() == KeyEvent.VK_V) {
                 Point2D pastePosition = TransformHelper.snapP5(currentMousePosition);
                 editor.getWorkspaceEntry().setPastePosition(pastePosition);
                 return true;
@@ -572,7 +566,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     @Override
     public boolean keyReleased(GraphEditorKeyEvent e) {
         if (!e.isExtendKeyDown()) {
-            currentNodes = Arrays.asList(new VisualNode[] {currentNode});
+            currentNodes = Collections.singleton(currentNode);
             e.getEditor().repaint();
         }
         return super.keyReleased(e);
@@ -612,36 +606,32 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-
-            @Override
-            public Decoration getDecoration(Node node) {
-                if ((currentNodes != null) && currentNodes.contains(node)) {
-                    return Decoration.Highlighted.INSTANCE;
-                }
-
-                VisualModel model = editor.getModel();
-                if (node == model.getCurrentLevel()) {
-                    return Decoration.Empty.INSTANCE;
-                }
-
-                if (node == model.getRoot()) {
-                    return Decoration.Shaded.INSTANCE;
-                }
-                /*
-                 * r & !c & s | !r & (c | s) <=> (!r & c) | (!c & s)
-                 * where
-                 *   r = (selectionMode == SelectionState.REMOVE)
-                 *   c = selected.contains(node)
-                 *   s = model.getSelection().contains(node)
-                 */
-                if (((selectionMode != SelectionMode.REMOVE) && selected.contains(node))
-                        || (!selected.contains(node) && model.getSelection().contains(node))) {
-                    return Decoration.Selected.INSTANCE;
-                }
-
-                return null;
+        return node -> {
+            if ((currentNodes != null) && currentNodes.contains(node)) {
+                return Decoration.Highlighted.INSTANCE;
             }
+
+            VisualModel model = editor.getModel();
+            if (node == model.getCurrentLevel()) {
+                return Decoration.Empty.INSTANCE;
+            }
+
+            if (node == model.getRoot()) {
+                return Decoration.Shaded.INSTANCE;
+            }
+            /*
+             * r & !c & s | !r & (c | s) <=> (!r & c) | (!c & s)
+             * where
+             *   r = (selectionMode == SelectionState.REMOVE)
+             *   c = selected.contains(node)
+             *   s = model.getSelection().contains(node)
+             */
+            if (((selectionMode != SelectionMode.REMOVE) && selected.contains(node))
+                    || (!selected.contains(node) && model.getSelection().contains(node))) {
+                return Decoration.Selected.INSTANCE;
+            }
+
+            return null;
         };
     }
 
