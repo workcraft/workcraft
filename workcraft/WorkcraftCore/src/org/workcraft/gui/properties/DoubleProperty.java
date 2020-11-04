@@ -1,11 +1,11 @@
 package org.workcraft.gui.properties;
 
 import org.workcraft.gui.controls.FlatCellRenderer;
-
-import java.util.IllegalFormatException;
+import org.workcraft.utils.ParseUtils;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
+import java.util.IllegalFormatException;
 
 public class DoubleProperty implements PropertyClass<Double, String> {
 
@@ -21,12 +21,7 @@ public class DoubleProperty implements PropertyClass<Double, String> {
 
     @Override
     public Double fromCellEditorValue(String editorComponentValue) {
-        try {
-            String s = editorComponentValue;
-            return Double.parseDouble(s.replace(",", "."));
-        } catch (NumberFormatException e) {
-            return 0.0;
-        }
+        return ParseUtils.parseDouble(editorComponentValue.replace(",", "."), 0.0);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.workcraft.gui.properties;
 
 import org.workcraft.gui.controls.FlatCellRenderer;
+import org.workcraft.utils.ParseUtils;
 
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
@@ -20,11 +21,7 @@ public class IntegerProperty implements PropertyClass<Integer, String> {
 
     @Override
     public Integer fromCellEditorValue(String editorComponentValue) {
-        try {
-            return Integer.parseInt(editorComponentValue);
-        } catch (NumberFormatException e) {
-            return 0;
-        }
+        return ParseUtils.parseInt(editorComponentValue, 0);
     }
 
     @Override

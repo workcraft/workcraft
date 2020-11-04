@@ -23,44 +23,25 @@ import java.util.List;
 
 public class XmlUtils {
 
+    private static String getAttribute(Element element, String attributeName) {
+        return (element == null) || !element.hasAttribute(attributeName) ? null : element.getAttribute(attributeName);
+    }
+
     public static String readTextAttribute(Element element, String attributeName, String defaultValue) {
-        if ((element == null) || !element.hasAttribute(attributeName)) {
-            return defaultValue;
-        }
-        return element.getAttribute(attributeName);
+        String attribute = getAttribute(element, attributeName);
+        return attribute == null ? defaultValue : attribute;
     }
 
     public static int readIntAttribute(Element element, String attributeName, int defaultValue) {
-        if ((element == null) || !element.hasAttribute(attributeName)) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(element.getAttribute(attributeName));
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+        return ParseUtils.parseInt(getAttribute(element, attributeName), defaultValue);
     }
 
-    public static boolean readBooleanAttribute(Element element, String attributeName,
-            boolean defaultValue) {
-
-        if ((element == null) || !element.hasAttribute(attributeName)) {
-            return defaultValue;
-        }
-        return Boolean.parseBoolean(element.getAttribute(attributeName));
+    public static boolean readBooleanAttribute(Element element, String attributeName, boolean defaultValue) {
+        return ParseUtils.parseBoolean(getAttribute(element, attributeName), defaultValue);
     }
 
-    public static <T extends Enum<T>> T readEnumAttribute(Element element, String attributeName,
-            Class<T> enumType, T defaultValue) {
-
-        if ((element == null) || !element.hasAttribute(attributeName)) {
-            return defaultValue;
-        }
-        try {
-            return Enum.valueOf(enumType, element.getAttribute(attributeName));
-        } catch (IllegalArgumentException e) {
-            return defaultValue;
-        }
+    public static <T extends Enum<T>> T readEnumAttribute(Element element, String attributeName, Class<T> enumType, T defaultValue) {
+        return ParseUtils.parseEnum(getAttribute(element, attributeName), enumType, defaultValue);
     }
 
     public static List<Element> getChildElements(String elementName, Element parent) {
