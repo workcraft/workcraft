@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableDataCommand;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.mpsat_verification.tasks.RefinementTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
@@ -12,6 +11,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -40,10 +40,9 @@ public class RefinementVerificationCommand extends org.workcraft.commands.Abstra
 
     @Override
     public void run(WorkspaceEntry we) {
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         Format format = StgFormat.getInstance();
-        JFileChooser fc = mainWindow.createOpenDialog("Select specification STG file", false, true, format);
-        if (fc.showDialog(mainWindow, "OK") == JFileChooser.APPROVE_OPTION) {
+        JFileChooser fc = DialogUtils.createFileOpener("Select specification STG file", true, format);
+        if (DialogUtils.showFileOpener(fc)) {
             File data = fc.getSelectedFile();
             VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
             run(we, data, monitor);

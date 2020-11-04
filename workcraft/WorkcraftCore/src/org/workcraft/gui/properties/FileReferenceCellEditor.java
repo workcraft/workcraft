@@ -3,6 +3,8 @@ package org.workcraft.gui.properties;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -11,7 +13,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.io.IOException;
 
 @SuppressWarnings("serial")
 public class FileReferenceCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
@@ -86,8 +87,8 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
     }
 
     private void chooseAction() {
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        JFileChooser fc = mainWindow.createOpenDialog("Select work file", false, true, null);
+        JFileChooser fc = DialogUtils.createFileOpener("Select work file", true, null);
+
         File file = null;
         if (fileReference != null) {
             file = fileReference.getFile();
@@ -101,14 +102,14 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
                 fc.setSelectedFile(file);
             }
         }
-        if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
+
+        if (DialogUtils.showFileOpener(fc)) {
+            file = fc.getSelectedFile();
             if (fileReference == null) {
                 fileReference = new FileReference();
             }
-            try {
-                fileReference.setPath(fc.getSelectedFile().getCanonicalPath());
-            } catch (IOException e) {
-            }
+            String path = FileUtils.getFullPath(file);
+            fileReference.setPath(path);
             update();
         }
     }

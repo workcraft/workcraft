@@ -60,19 +60,19 @@ public class IncludesDialog extends JDialog {
     }
 
     private void addAction() {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-        chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
-        chooser.setCurrentDirectory(lastDirUsed);
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File f = chooser.getSelectedFile();
+        JFileChooser fc = new JFileChooser();
+        fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        fc.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
+        fc.setCurrentDirectory(lastDirUsed);
+        if (DialogUtils.showFileOpener(fc)) {
+            File file = fc.getSelectedFile();
             try {
-                if (!f.exists()) {
+                if (!file.exists()) {
                     throw new FileNotFoundException();
                 }
-                includeListModel.addElement(f.getAbsolutePath());
-            } catch (FileNotFoundException e1) {
-                DialogUtils.showError(e1.getMessage());
+                includeListModel.addElement(file.getAbsolutePath());
+            } catch (FileNotFoundException e) {
+                DialogUtils.showError(e.getMessage());
             }
         }
     }

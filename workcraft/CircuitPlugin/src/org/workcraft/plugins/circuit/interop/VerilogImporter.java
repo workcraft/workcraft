@@ -38,9 +38,6 @@ import java.util.*;
 
 public class VerilogImporter implements Importer {
 
-    private static final String MSG_CANCELED_BY_USER = "Import operation cancelled by user.";
-    private static final String MSG_CLASH_OF_FILE_NAMES = "Clash of file names.";
-
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
 
@@ -126,7 +123,7 @@ public class VerilogImporter implements Importer {
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         ImportVerilogDialog dialog = new ImportVerilogDialog(mainWindow, verilogModules);
         if (!dialog.reveal()) {
-            throw new OperationCancelledException(MSG_CANCELED_BY_USER);
+            throw new OperationCancelledException();
         }
         VerilogModule topVerilogModule = dialog.getTopModule();
         File dir = dialog.getDirectory();
@@ -138,7 +135,7 @@ public class VerilogImporter implements Importer {
                     + String.join("\n", badSaveFilePaths) + "\nOverwrite?";
 
             if (!DialogUtils.showConfirmWarning(msg, "Import hierarchical Verilog", false)) {
-                throw new OperationCancelledException(MSG_CANCELED_BY_USER);
+                throw new OperationCancelledException();
             }
         }
         return createCircuitHierarchy(topVerilogModule, descendantModules, dir);
@@ -157,7 +154,7 @@ public class VerilogImporter implements Importer {
                     + String.join("\n", badSaveFilePaths);
 
             LogUtils.logError(msg);
-            throw new DeserialisationException(MSG_CLASH_OF_FILE_NAMES);
+            throw new DeserialisationException("Clash of file names.");
         }
         return createCircuitHierarchy(topVerilogModule, descendantModules, dir);
     }

@@ -6,15 +6,11 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.NoExporterException;
-import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.workspace.FileFilters;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,37 +74,6 @@ public class ExportUtils {
                 file.delete();
             }
         }
-    }
-
-    public static String getValidSavePath(JFileChooser fc, Format format) throws OperationCancelledException {
-        String path = null;
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        while (true) {
-            if (fc.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
-                path = fc.getSelectedFile().getPath();
-                if (format == null) {
-                    if (!FileFilters.isWorkPath(path)) {
-                        path += FileFilters.DOCUMENT_EXTENSION;
-                    }
-                } else {
-                    String extension = format.getExtension();
-                    if (!path.endsWith(extension)) {
-                        path += extension;
-                    }
-                }
-                File f = new File(path);
-                if (!f.exists()) {
-                    break;
-                }
-                String msg = "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?";
-                if (DialogUtils.showConfirmWarning(msg, "Save work", false)) {
-                    break;
-                }
-            } else {
-                throw new OperationCancelledException("Save operation cancelled by user.");
-            }
-        }
-        return path;
     }
 
     public static String asIdentifier(String title) {

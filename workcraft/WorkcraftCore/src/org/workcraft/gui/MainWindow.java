@@ -51,6 +51,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import javax.swing.plaf.MenuBarUI;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -77,8 +78,8 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_TOOLBAR_CONTROL_VISIBILITY = "toolbar.tool.visibility";
     private static final String CONFIG_TOOLBAR_CONTROL_POSITION = "toolbar.tool.position";
 
-    private static final int MIN_WIDTH = 800;
-    private static final int MIN_HEIGHT = 450;
+    private static final int DEFAULT_WIDTH = 800;
+    private static final int DEFAULT_HEIGHT = 450;
 
     public static final String TITLE_WORKCRAFT = "Workcraft";
     public static final String TITLE_OUTPUT = "Output";
@@ -108,14 +109,14 @@ public class MainWindow extends JFrame {
     private ToolControlsWindow toolControlsWindow;
     private WorkspaceWindow workspaceWindow;
 
-    private final ListMap<WorkspaceEntry, DockableWindow> weWindowsMap = new ListMap<>();
-    private final LinkedList<DockableWindow> utilityWindows = new LinkedList<>();
 
     private GraphEditorPanel editorInFocus;
     private Menu menu;
     private ToolBar globalToolbar;
     private JToolBar modelToolbar;
     private JToolBar controlToolbar;
+
+    private final ListMap<WorkspaceEntry, DockableWindow> weWindowsMap = new ListMap<>();
 
     public MainWindow() {
         super();
@@ -142,7 +143,7 @@ public class MainWindow extends JFrame {
 
         propertyEditorWindow = new PropertyEditorWindow();
         toolControlsWindow = new ToolControlsWindow();
-        setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
+        setMinimumSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
     }
 
     public GraphEditorPanel createEditorWindow(final WorkspaceEntry we) {
@@ -156,7 +157,6 @@ public class MainWindow extends JFrame {
 
             DockingManager.close(documentPlaceholder);
             DockingManager.unregisterDockable(documentPlaceholder);
-            utilityWindows.remove(documentPlaceholder);
         } else {
             Collection<DockableWindow> editorWindows = weWindowsMap.values();
             DockingUtils.unmaximise(editorWindows);
@@ -178,12 +178,10 @@ public class MainWindow extends JFrame {
             DockingManager.close(dockableWindow);
         }
         menu.registerUtilityWindow(dockableWindow);
-        utilityWindows.add(dockableWindow);
     }
 
     public void startup() {
         MainWindowIconManager.apply(this);
-        JDialog.setDefaultLookAndFeelDecorated(true);
         setTitle(TITLE_WORKCRAFT);
 
         // Create main menu
@@ -193,7 +191,8 @@ public class MainWindow extends JFrame {
         menu.updateRecentMenu();
 
         // Tweak look-and-feel
-        SilverOceanTheme.enable();
+        JDialog.setDefaultLookAndFeelDecorated(true);
+        MetalLookAndFeel.setCurrentTheme(new SilverOceanTheme());
         LookAndFeelHelper.setDefaultLookAndFeel();
         SwingUtilities.updateComponentTreeUI(this);
         if (DesktopApi.getOs().isMac()) {
@@ -228,7 +227,6 @@ public class MainWindow extends JFrame {
         setVisible(true);
         DockingUtils.updateHeaders(defaultDockingPort);
         DockingManager.display(outputDockable);
-        utilityWindows.add(documentPlaceholder);
         setWorkActionsEnableness(false);
         updateDockableWindowVisibility();
 
@@ -296,7 +294,7 @@ public class MainWindow extends JFrame {
     private void closeDockableEditorWindow(DockableWindow editorWindow, GraphEditorPanel editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         try {
-            saveWorkBeforeClose(we);
+            saveChangedOrCancel(we);
             // Un-maximise the editor window
             if (DockingManager.isMaximized(editorWindow)) {
                 toggleDockableWindowMaximized(editorWindow);
@@ -322,7 +320,6 @@ public class MainWindow extends JFrame {
             if (weWindowsMap.isEmpty()) {
                 DockingManager.registerDockable(documentPlaceholder);
                 DockingManager.dock(documentPlaceholder, editorWindow, DockingConstants.CENTER_REGION);
-                utilityWindows.add(documentPlaceholder);
                 setWorkActionsEnableness(false);
                 modelToolbar.removeAll();
                 controlToolbar.removeAll();
@@ -340,22 +337,22 @@ public class MainWindow extends JFrame {
         }
     }
 
-    private void saveWorkBeforeClose(WorkspaceEntry we) throws OperationCancelledException {
+    private void saveChangedOrCancel(WorkspaceEntry we) throws OperationCancelledException {
         if (we.isChanged()) {
             requestFocus(we);
             String title = we.getTitle();
-            int result = JOptionPane.showConfirmDialog(this,
+            int returnValue = JOptionPane.showConfirmDialog(this,
                     "Document '" + title + "' has unsaved changes.\n" + "Save before closing?",
                     "Close work", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-            switch (result) {
+            switch (returnValue) {
             case JOptionPane.YES_OPTION:
-                saveWork(we);
+                saveWorkOrCancel(we);
                 break;
             case JOptionPane.NO_OPTION:
                 break;
             default:
-                throw new OperationCancelledException("Operation cancelled by user.");
+                throw new OperationCancelledException();
             }
         }
     }
@@ -383,10 +380,6 @@ public class MainWindow extends JFrame {
         } else {
             closeDockableWindow(window);
         }
-    }
-
-    public DisplayMode getDisplayMode() {
-        return getGraphicsConfiguration().getDevice().getDisplayMode();
     }
 
     private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
@@ -418,8 +411,8 @@ public class MainWindow extends JFrame {
         // Configure perspective manager (should go after docking manager for correctly restoring window position).
         PerspectiveManager.setRestoreFloatingOnLoad(true);
         File file = new File(Framework.UILAYOUT_FILE_PATH);
-        PersistenceHandler persister = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
-        PerspectiveManager.setPersistenceHandler(persister);
+        PersistenceHandler persistenceHandler = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
+        PerspectiveManager.setPersistenceHandler(persistenceHandler);
 
         try {
             DockingManager.loadLayoutModel();
@@ -470,7 +463,7 @@ public class MainWindow extends JFrame {
     public void shutdown() throws OperationCancelledException {
         closeEditorWindows();
         if (!weWindowsMap.isEmpty()) {
-            throw new OperationCancelledException("Operation cancelled by user.");
+            throw new OperationCancelledException();
         }
 
         Workspace workspace = Framework.getInstance().getWorkspace();
@@ -486,7 +479,7 @@ public class MainWindow extends JFrame {
             case JOptionPane.NO_OPTION:
                 break;
             default:
-                throw new OperationCancelledException("Operation cancelled by user.");
+                throw new OperationCancelledException();
             }
         }
         saveWindowGeometryToConfig();
@@ -564,26 +557,15 @@ public class MainWindow extends JFrame {
     public void loadWindowGeometryFromConfig() {
         final Framework framework = Framework.getInstance();
         String maximisedStr = framework.getConfigVar(CONFIG_WINDOW_MAXIMISED, false);
-        String widthStr = framework.getConfigVar(CONFIG_WINDOW_WIDTH, false);
-        String heightStr = framework.getConfigVar(CONFIG_WINDOW_HEIGHT, false);
-
-        boolean maximised = (maximisedStr == null) || Boolean.parseBoolean(maximisedStr);
+        boolean maximised = ParseUtils.parseBoolean(maximisedStr, false);
         setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
 
-        DisplayMode mode = getDisplayMode();
-        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
-        int width = mode.getWidth() - insets.right - insets.left;
-        int height = mode.getHeight() - insets.top - insets.bottom;
-        if ((widthStr != null) && (heightStr != null)) {
-            width = Integer.parseInt(widthStr);
-            if (width < MIN_WIDTH) {
-                width = MIN_WIDTH;
-            }
-            height = Integer.parseInt(heightStr);
-            if (height < MIN_HEIGHT) {
-                height = MIN_HEIGHT;
-            }
-        }
+        String widthStr = framework.getConfigVar(CONFIG_WINDOW_WIDTH, false);
+        int width = ParseUtils.parseInt(widthStr, DEFAULT_WIDTH);
+
+        String heightStr = framework.getConfigVar(CONFIG_WINDOW_HEIGHT, false);
+        int height = ParseUtils.parseInt(heightStr, DEFAULT_HEIGHT);
+
         setSize(width, height);
     }
 
@@ -595,34 +577,33 @@ public class MainWindow extends JFrame {
         framework.setConfigVar(CONFIG_WINDOW_HEIGHT, Integer.toString(getHeight()), false);
     }
 
-    public void createWork() throws OperationCancelledException {
+    public void createWork() {
         createWork(Path.empty());
     }
 
-    public void createWork(Path<String> directory) throws OperationCancelledException {
+    public void createWork(Path<String> directory) {
         CreateWorkDialog dialog = new CreateWorkDialog(this);
-        if (!dialog.reveal()) {
-            throw new OperationCancelledException("Create operation cancelled by user.");
-        }
-        ModelDescriptor md = dialog.getSelectedModel();
-        if (md == null) {
-            DialogUtils.showError("Model type is not selected.");
-            return;
-        }
-        try {
-            VisualModelDescriptor vmd = md.getVisualModelDescriptor();
-            if (vmd == null) {
-                DialogUtils.showError("Visual model is not defined for '" + md.getDisplayName() + "'.");
+        if (dialog.reveal()) {
+            ModelDescriptor md = dialog.getSelectedModel();
+            if (md == null) {
+                DialogUtils.showError("Model type is not selected.");
                 return;
             }
-            MathModel mathModel = md.createMathModel();
-            VisualModel visualModel = vmd.create(mathModel);
-            ModelEntry me = new ModelEntry(md, visualModel);
-            final Framework framework = Framework.getInstance();
-            WorkspaceEntry we = framework.createWork(me, directory, null);
-            we.setChanged(false);
-        } catch (VisualModelInstantiationException e) {
-            DialogUtils.showError(e.getMessage());
+            try {
+                VisualModelDescriptor vmd = md.getVisualModelDescriptor();
+                if (vmd == null) {
+                    DialogUtils.showError("Visual model is not defined for '" + md.getDisplayName() + "'.");
+                    return;
+                }
+                MathModel mathModel = md.createMathModel();
+                VisualModel visualModel = vmd.create(mathModel);
+                ModelEntry me = new ModelEntry(md, visualModel);
+                final Framework framework = Framework.getInstance();
+                WorkspaceEntry we = framework.createWork(me, directory, null);
+                we.setChanged(false);
+            } catch (VisualModelInstantiationException e) {
+                DialogUtils.showError(e.getMessage());
+            }
         }
     }
 
@@ -667,52 +648,10 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public JFileChooser createOpenDialog(String title, boolean multiSelection, boolean allowWorkFiles, Format format) {
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogType(JFileChooser.OPEN_DIALOG);
-        fc.setDialogTitle(title);
-        boolean allowAllFileFilter = true;
-        if (allowWorkFiles) {
-            fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-            allowAllFileFilter = false;
-        }
-        if (format != null) {
-            fc.addChoosableFileFilter(new FormatFileFilter(format));
-            allowAllFileFilter = false;
-        }
-        GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
-        fc.setCurrentDirectory(Framework.getInstance().getLastDirectory());
-        fc.setAcceptAllFileFilterUsed(allowAllFileFilter);
-        fc.setMultiSelectionEnabled(multiSelection);
-        return fc;
-    }
-
-    public JFileChooser createSaveDialog(String title, File file, Format format) {
-        JFileChooser fc = new JFileChooser();
-        fc.setDialogType(JFileChooser.SAVE_DIALOG);
-        fc.setDialogTitle(title);
-        GuiUtils.sizeFileChooserToScreen(fc, getDisplayMode());
-        // Set file name
-        fc.setSelectedFile(file);
-        // Set working directory
-        if (file.exists()) {
-            fc.setCurrentDirectory(file.getParentFile());
-        } else {
-            fc.setCurrentDirectory(Framework.getInstance().getLastDirectory());
-        }
-        // Set file filters
-        fc.setAcceptAllFileFilterUsed(false);
-        if (format == null) {
-            fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-        } else {
-            fc.setFileFilter(new FormatFileFilter(format));
-        }
-        return fc;
-    }
-
-    public void openWork() throws OperationCancelledException {
-        JFileChooser fc = createOpenDialog("Open work file(s)", true, true, null);
-        if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
+    public void openWork() {
+        JFileChooser fc = DialogUtils.createFileOpener("Open work file(s)", true, null);
+        fc.setMultiSelectionEnabled(true);
+        if (DialogUtils.showFileOpener(fc)) {
             final HashSet<WorkspaceEntry> newWorkspaceEntries = new HashSet<>();
             for (File file : fc.getSelectedFiles()) {
                 File workFile = file;
@@ -728,8 +667,8 @@ public class MainWindow extends JFrame {
             // FIXME: Go through the newly open works and update their zoom,
             // in case tabs appeared and changed the viewport size.
             SwingUtilities.invokeLater(() -> {
-                for (WorkspaceEntry we: newWorkspaceEntries) {
-                    for (DockableWindow window: weWindowsMap.get(we)) {
+                for (WorkspaceEntry we : newWorkspaceEntries) {
+                    for (DockableWindow window : weWindowsMap.get(we)) {
                         GraphEditor editor = getGraphEditorPanel(window);
                         if (editor != null) {
                             editor.zoomFit();
@@ -737,8 +676,6 @@ public class MainWindow extends JFrame {
                     }
                 }
             });
-        } else {
-            throw new OperationCancelledException("Open operation cancelled by user.");
         }
     }
 
@@ -759,10 +696,11 @@ public class MainWindow extends JFrame {
         return we;
     }
 
-    public void mergeWork() throws OperationCancelledException {
-        JFileChooser fc = createOpenDialog("Merge work file(s)", true, true, null);
-        if (fc.showDialog(this, "Merge") == JFileChooser.APPROVE_OPTION) {
-            for (File file: fc.getSelectedFiles()) {
+    public void mergeWork() {
+        JFileChooser fc = DialogUtils.createFileOpener("Merge work file(s)", true, null);
+        fc.setMultiSelectionEnabled(true);
+        if (DialogUtils.showFileOpener(fc)) {
+            for (File file : fc.getSelectedFiles()) {
                 File workFile = file;
                 String path = file.getPath();
                 if (!FileFilters.isWorkPath(path)) {
@@ -770,8 +708,6 @@ public class MainWindow extends JFrame {
                 }
                 mergeWork(workFile);
             }
-        } else {
-            throw new OperationCancelledException("Merge operation cancelled by user.");
         }
     }
 
@@ -789,7 +725,7 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void saveWork() throws OperationCancelledException {
+    public void saveWork() {
         if (editorInFocus != null) {
             saveWork(editorInFocus.getWorkspaceEntry());
         } else {
@@ -797,7 +733,23 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void saveWorkAs() throws OperationCancelledException {
+    public void saveWork(WorkspaceEntry we) {
+        try {
+            saveWorkOrCancel(we);
+        } catch (OperationCancelledException e) {
+        }
+    }
+    public void saveWorkOrCancel(WorkspaceEntry we) throws OperationCancelledException {
+        Workspace workspace = Framework.getInstance().getWorkspace();
+        File file = workspace.getFile(we);
+        if ((file != null) && file.exists()) {
+            saveWork(we, file);
+        } else {
+            saveWorkAsOrCancel(we);
+        }
+    }
+
+    public void saveWorkAs() {
         if (editorInFocus != null) {
             saveWorkAs(editorInFocus.getWorkspaceEntry());
         } else {
@@ -805,48 +757,45 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void saveWork(WorkspaceEntry we) throws OperationCancelledException {
-        Workspace workspace = Framework.getInstance().getWorkspace();
-        File file = workspace.getFile(we);
-        if ((file == null) || !file.exists()) {
-            saveWorkAs(we);
-        } else {
-            saveWork(we, file.getPath());
+    public void saveWorkAs(WorkspaceEntry we) {
+        try {
+            saveWorkAsOrCancel(we);
+        } catch (OperationCancelledException e) {
         }
     }
 
-    public void saveWorkAs(WorkspaceEntry we) throws OperationCancelledException {
+    public void saveWorkAsOrCancel(WorkspaceEntry we) throws OperationCancelledException {
         Workspace workspace = Framework.getInstance().getWorkspace();
         File file = workspace.getFile(we);
         if (file == null) {
             file = new File(we.getFileName());
         }
-        JFileChooser fc = createSaveDialog("Save work as", file, null);
-        String path = ExportUtils.getValidSavePath(fc, null);
-        saveWork(we, path);
+        JFileChooser fc = DialogUtils.createFileSaver("Save work as", file, null);
+        file = DialogUtils.chooseValidSaveFileOrCancel(fc, null);
+        saveWork(we, file);
     }
 
-    private void saveWork(WorkspaceEntry we, String path) {
+    private void saveWork(WorkspaceEntry we, File file) {
         if (we.getModelEntry() == null) {
             throw new RuntimeException(
                     "Cannot save workspace entry - it does not have an associated Workcraft model.");
         }
         Framework framework = Framework.getInstance();
         try {
-            framework.saveWork(we, path);
+            framework.saveWork(we, file);
+            framework.setLastDirectory(file);
+            framework.pushRecentFilePath(file);
+            menu.updateRecentMenu();
         } catch (SerialisationException e) {
             DialogUtils.showError(e.getMessage());
         }
-        File file = framework.getWorkspace().getFile(we);
-        framework.setLastDirectory(file);
-        framework.pushRecentFilePath(file);
-        menu.updateRecentMenu();
     }
 
     public void importFrom(Importer importer) {
         Format format = importer.getFormat();
-        JFileChooser fc = createOpenDialog("Import model(s)", true, false, format);
-        if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
+        JFileChooser fc = DialogUtils.createFileOpener("Import model(s)", false, format);
+        fc.setMultiSelectionEnabled(true);
+        if (DialogUtils.showFileOpener(fc)) {
             for (File file : fc.getSelectedFiles()) {
                 importFrom(importer, file);
             }
@@ -877,17 +826,16 @@ public class MainWindow extends JFrame {
         Format format = exporter.getFormat();
         String title = "Export as " + format.getDescription();
         File file = new File(we.getFileName());
-        JFileChooser fc = createSaveDialog(title, file, format);
+        JFileChooser fc = DialogUtils.createFileSaver(title, file, format);
         try {
+            file = DialogUtils.chooseValidSaveFileOrCancel(fc, format);
             Model model = we.getModelEntry().getModel();
-            String path = ExportUtils.getValidSavePath(fc, format);
-            ExportTask exportTask = new ExportTask(exporter, model, new File(path));
-            final Framework framework = Framework.getInstance();
-            final TaskManager taskManager = framework.getTaskManager();
+            ExportTask exportTask = new ExportTask(exporter, model, file);
+            final TaskManager taskManager = Framework.getInstance().getTaskManager();
             String description = "Exporting " + title;
             final TaskFailureNotifier monitor = new TaskFailureNotifier(description);
             taskManager.queue(exportTask, description, monitor);
-            framework.setLastDirectory(fc.getCurrentDirectory());
+            Framework.getInstance().setLastDirectory(fc.getCurrentDirectory());
         } catch (OperationCancelledException e) {
         }
     }

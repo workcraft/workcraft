@@ -1,7 +1,5 @@
 package org.workcraft.presets;
 
-import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 
@@ -183,11 +181,8 @@ public class PresetManagerPanel<T> extends JPanel {
             if (file != null) {
                 file = null;
             } else {
-                MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                JFileChooser fc = mainWindow.createOpenDialog("Choose file",
-                        false, false, null);
-
-                if (fc.showDialog(mainWindow, "Select") == JFileChooser.APPROVE_OPTION) {
+                JFileChooser fc = DialogUtils.createFileOpener("Select file", false, null);
+                if (DialogUtils.showFileOpener(fc)) {
                     file = fc.getSelectedFile();
                 }
             }

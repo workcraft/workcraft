@@ -1,7 +1,6 @@
 package org.workcraft.gui.workspace;
 
 import org.workcraft.Framework;
-import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.actions.Action;
 
 public class WorkspaceWindowActions {
@@ -13,20 +12,10 @@ public class WorkspaceWindowActions {
             () -> Framework.getInstance().getMainWindow().getWorkspaceView().openWorkspace());
 
     public static final Action SAVE_WORKSPACE_ACTION = new Action("Save workspace",
-            () -> {
-                try {
-                    Framework.getInstance().getMainWindow().getWorkspaceView().saveWorkspace();
-                } catch (OperationCancelledException e) {
-                }
-            });
+            () -> Framework.getInstance().getMainWindow().getWorkspaceView().saveWorkspace());
 
     public static final Action SAVE_WORKSPACE_AS_ACTION = new Action("Save workspace as...",
-            () -> {
-                try {
-                    Framework.getInstance().getMainWindow().getWorkspaceView().saveWorkspaceAs();
-                } catch (OperationCancelledException e) {
-                }
-            });
+            () -> Framework.getInstance().getMainWindow().getWorkspaceView().saveWorkspaceAs());
 
     public static final Action NEW_WORKSPACE_AS_ACTION = new Action("New workspace",
             () -> Framework.getInstance().getMainWindow().getWorkspaceView().newWorkspace());

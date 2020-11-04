@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit.interop;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.gui.properties.Properties;
 import org.workcraft.gui.properties.PropertyDeclaration;
@@ -10,6 +9,7 @@ import org.workcraft.gui.properties.PropertyEditorTable;
 import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.FileFilters;
 
@@ -51,7 +51,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         }
     }
 
-    class ModuleComboBoxRenderer implements ListCellRenderer {
+    static class ModuleComboBoxRenderer implements ListCellRenderer {
         private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
         private final Map<VerilogModule, String> moduleToTextMap = new HashMap<>();
 
@@ -140,21 +140,20 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
     }
 
     private JPanel createDirectoryPanel() {
-        Framework framework = Framework.getInstance();
-        dir = framework.getLastDirectory();
+        dir = Framework.getInstance().getLastDirectory();
         JTextField dirText = new JTextField(dir.getPath());
         JPanel dirPanel = GuiUtils.createLabeledComponent(dirText, "Save directory:");
         JButton dirSelectButton = new JButton("Browse...");
         dirPanel.add(dirSelectButton, BorderLayout.EAST);
 
-        MainWindow mainWindow = framework.getMainWindow();
         dirSelectButton.addActionListener(l -> {
-            JFileChooser fc = mainWindow.createOpenDialog("Select save directory", false, false, null);
+            JFileChooser fc = DialogUtils.createFileOpener("Select save directory", false, null);
             fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
             fc.setCurrentDirectory(dir);
-            if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
+            if (DialogUtils.showFileOpener(fc)) {
                 dir = fc.getSelectedFile();
-                dirText.setText(dir.getPath());
+                String path = FileUtils.getFullPath(dir);
+                dirText.setText(path);
             }
         });
         return dirPanel;

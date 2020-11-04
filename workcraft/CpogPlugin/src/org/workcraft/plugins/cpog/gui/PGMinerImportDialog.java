@@ -72,16 +72,16 @@ public class PGMinerImportDialog extends JDialog {
     }
 
     private void selectAction() {
-        JFileChooser chooser = new JFileChooser();
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File file = chooser.getSelectedFile();
+        JFileChooser fc = new JFileChooser();
+        if (DialogUtils.showFileOpener(fc)) {
+            File file = fc.getSelectedFile();
             try {
                 if (!file.exists()) {
                     throw new FileNotFoundException();
                 }
                 filePath.setText(file.getAbsolutePath());
-            } catch (FileNotFoundException e1) {
-                DialogUtils.showError(e1.getMessage());
+            } catch (FileNotFoundException e) {
+                DialogUtils.showError(e.getMessage());
             }
         }
     }

@@ -1,7 +1,6 @@
 package org.workcraft.gui.properties;
 
-import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
+import org.workcraft.utils.DialogUtils;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -52,8 +51,8 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
     }
 
     private void chooseFile() {
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        JFileChooser fc = mainWindow.createOpenDialog("Select file", false, false, null);
+        JFileChooser fc = DialogUtils.createFileOpener("Select file", false, null);
+
         if (file != null) {
             File dir = file.getParentFile();
             if ((dir != null) && dir.exists()) {
@@ -63,7 +62,8 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
                 fc.setSelectedFile(file);
             }
         }
-        if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
+
+        if (DialogUtils.showFileOpener(fc)) {
             file = fc.getSelectedFile();
         }
     }

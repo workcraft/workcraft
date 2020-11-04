@@ -7,7 +7,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
@@ -19,7 +18,7 @@ import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.CycleUtils;
 import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.ExportUtils;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -158,17 +157,15 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private void writeConstraints(final GraphEditor editor) {
-        Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
         File file = new File(editor.getWorkspaceEntry().getFileName());
         PathbreakConstraintExporter exporter = new PathbreakConstraintExporter();
         Format format = exporter.getFormat();
-        JFileChooser fc = mainWindow.createSaveDialog("Save path breaker SDC constraints", file, format);
+        JFileChooser fc = DialogUtils.createFileSaver("Save path breaker SDC constraints", file, format);
         try {
-            String path = ExportUtils.getValidSavePath(fc, format);
+            file = DialogUtils.chooseValidSaveFileOrCancel(fc, format);
             Circuit circuit = WorkspaceUtils.getAs(editor.getWorkspaceEntry(), Circuit.class);
-            exporter.export(circuit, new File(path));
-            framework.setLastDirectory(fc.getCurrentDirectory());
+            exporter.export(circuit, file);
+            Framework.getInstance().setLastDirectory(fc.getCurrentDirectory());
         } catch (OperationCancelledException e) {
         }
     }
