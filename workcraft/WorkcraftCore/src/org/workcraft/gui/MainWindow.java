@@ -40,6 +40,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.tasks.ExportTask;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.types.ListMap;
@@ -1013,6 +1014,9 @@ public class MainWindow extends JFrame {
             if (globalToolbar != null) {
                 globalToolbar.refreshToggles();
             }
+            boolean isDefaultLafStyle = EditorCommonSettings.getDialogStyle().isDefaultLafStyle();
+            JDialog.setDefaultLookAndFeelDecorated(isDefaultLafStyle);
+            SwingUtilities.updateComponentTreeUI(this);
         }
     }
 

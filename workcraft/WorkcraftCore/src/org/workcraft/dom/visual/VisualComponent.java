@@ -8,7 +8,6 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.ColorUtils;
 
@@ -310,7 +309,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
         MathNode mathNode = getReferencedComponent();
-        if ((this instanceof Replica) || EditorCommonSettings.getShowAbsolutePaths()) {
+        if ((this instanceof Replica) || VisualCommonSettings.getShowAbsolutePaths()) {
             name = mathModel.getNodeReference(mathNode);
         } else {
             name = mathModel.getName(mathNode);
