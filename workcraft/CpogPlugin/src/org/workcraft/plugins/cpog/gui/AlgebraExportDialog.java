@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cpog.gui;
 
 import org.workcraft.Framework;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
@@ -79,10 +80,10 @@ public class AlgebraExportDialog extends JDialog {
     }
 
     private void selectFileAction() {
-        JFileChooser chooser = new JFileChooser();
-        if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File f = chooser.getSelectedFile();
-            filePath.setText(f.getAbsolutePath());
+        JFileChooser fc = new JFileChooser();
+        if (DialogUtils.showFileSaver(fc)) {
+            File file = fc.getSelectedFile();
+            filePath.setText(file.getAbsolutePath());
         }
     }
 

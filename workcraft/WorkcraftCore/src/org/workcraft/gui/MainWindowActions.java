@@ -36,44 +36,22 @@ public class MainWindowActions {
     }
 
     public static final Action CREATE_WORK_ACTION = new Action("Create work...",
-            () -> {
-                try {
-                    Framework.getInstance().getMainWindow().createWork();
-                } catch (OperationCancelledException e) {
-                }
-            }, KeyStroke.getKeyStroke(KeyEvent.VK_N, DesktopApi.getMenuKeyMask()));
+            () -> Framework.getInstance().getMainWindow().createWork(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_N, DesktopApi.getMenuKeyMask()));
 
     public static final Action OPEN_WORK_ACTION = new Action("Open work...",
-            () -> {
-                try {
-                    Framework.getInstance().getMainWindow().openWork();
-                } catch (OperationCancelledException e) {
-                }
-            }, KeyStroke.getKeyStroke(KeyEvent.VK_O, DesktopApi.getMenuKeyMask()));
+            () -> Framework.getInstance().getMainWindow().openWork(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_O, DesktopApi.getMenuKeyMask()));
 
     public static final Action MERGE_WORK_ACTION = new Action("Merge work...",
-            () -> {
-                try {
-                    Framework.getInstance().getMainWindow().mergeWork();
-                } catch (OperationCancelledException e) {
-                }
-            });
+            () -> Framework.getInstance().getMainWindow().mergeWork());
 
     public static final Action SAVE_WORK_ACTION = new Action("Save work",
-            () -> {
-                try {
-                    Framework.getInstance().getMainWindow().saveWork();
-                } catch (OperationCancelledException e) {
-                }
-            }, KeyStroke.getKeyStroke(KeyEvent.VK_S, DesktopApi.getMenuKeyMask()));
+            () -> Framework.getInstance().getMainWindow().saveWork(),
+            KeyStroke.getKeyStroke(KeyEvent.VK_S, DesktopApi.getMenuKeyMask()));
 
     public static final Action SAVE_WORK_AS_ACTION = new Action("Save work as...",
-            () -> {
-                try {
-                    Framework.getInstance().getMainWindow().saveWorkAs();
-                } catch (OperationCancelledException e) {
-                }
-            });
+            () -> Framework.getInstance().getMainWindow().saveWorkAs());
 
     public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action("Close active work",
             () -> Framework.getInstance().getMainWindow().closeActiveEditor(),

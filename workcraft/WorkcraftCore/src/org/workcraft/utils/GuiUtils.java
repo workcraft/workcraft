@@ -55,15 +55,6 @@ public class GuiUtils {
         }
     }
 
-    public static void sizeFileChooserToScreen(JFileChooser fc, DisplayMode mode) {
-        int minWidth = (int) Math.round(0.2 * mode.getWidth());
-        int minHeight = (int) Math.round(0.2 * mode.getHeight());
-        fc.setMinimumSize(new Dimension(minWidth, minHeight));
-        int preferredWidth = (int) Math.round(0.5 * mode.getWidth());
-        int preferredHeight = (int) Math.round(0.5 * mode.getHeight());
-        fc.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
-    }
-
     public static void drawEditorMessage(GraphEditor editor, Graphics2D g, Color color, String message) {
         if (message != null) {
             g.setFont(UIManager.getFont("Button.font"));
@@ -97,7 +88,7 @@ public class GuiUtils {
         return new ImageIcon(res);
     }
 
-    public static ImageIcon createIconFromSVG(String path, int height, int width, Color background) {
+    public static ImageIcon createIconFromSVG(String path, int width, int height, Color background) {
         try {
             System.setProperty("org.apache.batik.warn_destination", "false");
             Document document;
@@ -142,7 +133,6 @@ public class GuiUtils {
             return new ImageIcon(bufferedImage);
         } catch (Throwable e) {
             System.err.println("Failed to load SVG file " + path);
-            System.err.println(e);
             return null;
         }
     }
@@ -172,8 +162,8 @@ public class GuiUtils {
         int crossWidth = (int) Math.round(0.08 * iconSize);
         int crossGap = (int) Math.round(0.05 * iconSize);
         int iconOffset = crossLength + crossGap + crossWidth + crossGap;
-        Image coursorImage = new BufferedImage(iconSize + iconOffset, iconSize + iconOffset, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = coursorImage.getGraphics();
+        Image cursorImage = new BufferedImage(iconSize + iconOffset, iconSize + iconOffset, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = cursorImage.getGraphics();
         Image iconImage = icon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH);
         g.drawImage(iconImage, iconOffset, iconOffset, null);
         int posClose = crossLength + crossGap;
@@ -186,7 +176,7 @@ public class GuiUtils {
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         int offset = posClose + (int) Math.round(0.5 * crossWidth);
         Point hotSpot = new Point(offset, offset);
-        return toolkit.createCustomCursor(coursorImage, hotSpot, name);
+        return toolkit.createCustomCursor(cursorImage, hotSpot, name);
     }
 
     public static JButton createIconButton(Icon icon, String toolTip) {

@@ -50,6 +50,7 @@ public final class Framework {
     public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
 
     private static final String FRAMEWORK_VARIABLE = "framework";
+    private static final String MAIN_WINDOW_VARIABLE = "mainWindow";
     private static final String WORKSPACE_ENTRY_VARIABLE = "workspaceEntry";
     private static final String MODEL_ENTRY_VARIABLE = "modelEntry";
     private static final String MATH_MODEL_VARIABLE = "mathModel";
@@ -63,6 +64,7 @@ public final class Framework {
             Pattern.compile("\\s*function\\s+(\\w+)\\s*\\((.*)\\).*");
     private static final int JAVASCRIPT_FUNCTION_NAME_GROUP = 1;
     private static final int JAVASCRIPT_FUNCTION_PARAMS_GROUP = 2;
+
 
     private static Framework instance = null;
     private File lastDirectory = null;
@@ -461,8 +463,8 @@ public final class Framework {
 
         contextFactory.call(cx -> {
             Object guiScriptable = Context.javaToJS(mainWindow, systemScope);
-            ScriptableObject.putProperty(systemScope, "mainWindow", guiScriptable);
-            systemScope.setAttributes("mainWindow", ScriptableObject.READONLY);
+            ScriptableObject.putProperty(systemScope, MAIN_WINDOW_VARIABLE, guiScriptable);
+            systemScope.setAttributes(MAIN_WINDOW_VARIABLE, ScriptableObject.READONLY);
             return null;
         });
 
@@ -477,7 +479,7 @@ public final class Framework {
             inGuiMode = false;
 
             contextFactory.call(cx -> {
-                ScriptableObject.deleteProperty(systemScope, "mainWindow");
+                ScriptableObject.deleteProperty(systemScope, MAIN_WINDOW_VARIABLE);
                 return null;
             });
         }
@@ -783,8 +785,8 @@ public final class Framework {
     }
 
     private void loadRecentFilesFromConfig() {
-        String lastDirectoryName = getConfigVar(CONFIG_RECENT_LAST_DIRECTORY, false);
-        File lastDirectory = (lastDirectoryName == null) ? null : new File(lastDirectoryName);
+        String lastDirectoryPath = getConfigVar(CONFIG_RECENT_LAST_DIRECTORY, false);
+        File lastDirectory = (lastDirectoryPath == null) ? null : new File(lastDirectoryPath);
         setLastDirectory(lastDirectory);
         for (int i = 0; i < EditorCommonSettings.getRecentCount(); i++) {
             String entry = getConfigVar(CONFIG_RECENT_FILE + i, false);
@@ -793,8 +795,8 @@ public final class Framework {
     }
 
     private void saveRecentFilesToConfig() {
-        if (getLastDirectory() != null) {
-            String lastDirectoryPath = getLastDirectory().getAbsolutePath();
+        String lastDirectoryPath = FileUtils.getFullPath(getLastDirectory());
+        if (lastDirectoryPath != null) {
             setConfigVar(CONFIG_RECENT_LAST_DIRECTORY, lastDirectoryPath, false);
         }
         int recentCount = EditorCommonSettings.getRecentCount();

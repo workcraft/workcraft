@@ -2,7 +2,6 @@ package org.workcraft.plugins.wtg;
 
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
@@ -123,13 +122,8 @@ public class WtgPropertyHelper {
         for (GraphEditorTool tool : visualWtg.getGraphEditorTools()) {
             if (tool instanceof SignalGeneratorTool) {
                 Point2D position = newSignalPosition(visualWaveform);
-                VisualSignal newSignal;
-                try {
-                    newSignal = (VisualSignal)
-                            ((SignalGeneratorTool) tool).generateNode(visualWtg, position);
-                } catch (NodeCreationException e1) {
-                    throw new RuntimeException(e1);
-                }
+                SignalGeneratorTool signalGeneratorTool = (SignalGeneratorTool) tool;
+                VisualSignal newSignal = signalGeneratorTool.generateNode(visualWtg, position);
                 Signal signal = newSignal.getReferencedComponent();
                 visualWtg.getMathModel().setName(signal, signalName);
                 signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));

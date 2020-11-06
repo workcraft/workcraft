@@ -34,10 +34,11 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     protected boolean directedArcs = true;
     protected boolean allLevels = true;
 
-    private Point2D currentPoint = null;
+    protected VisualNode firstNode = null;
     protected VisualNode currentNode = null;
+
     private Point2D firstPoint = null;
-    private VisualNode firstNode = null;
+    private Point2D currentPoint = null;
     private Point2D lastPoint = null;
     private LinkedList<Point2D> controlPoints = new LinkedList<>();
     private boolean mouseLeftFirstNode = false;
@@ -172,8 +173,9 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     @Override
     public void mouseMoved(GraphEditorMouseEvent e) {
         currentPoint = getCurrentPoint(e);
-        updateCurrentNode(e.getEditor());
-        e.getEditor().repaint();
+        GraphEditor editor = e.getEditor();
+        updateCurrentNode(editor);
+        editor.repaint();
     }
 
     private Point2D getCurrentPoint(GraphEditorMouseEvent e) {
@@ -298,7 +300,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
                     ConnectionHelper.addControlPoints(connection, controlPoints);
                 }
             }
-        } catch (InvalidConnectionException exeption) {
+        } catch (InvalidConnectionException exception) {
             Toolkit.getDefaultToolkit().beep();
         }
         return connection;

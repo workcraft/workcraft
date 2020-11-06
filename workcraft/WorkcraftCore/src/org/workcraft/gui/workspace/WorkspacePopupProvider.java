@@ -5,8 +5,8 @@ import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering.Position;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.gui.Menu;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.Menu;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.CommandUtils;
@@ -49,12 +49,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             miLink.addActionListener(event -> workspaceWindow.addToWorkspace(path));
             popup.add(miLink);
             final JMenuItem miCreateWork = new JMenuItem("Create work...");
-            miCreateWork.addActionListener(event -> {
-                try {
-                    framework.getMainWindow().createWork(path);
-                } catch (OperationCancelledException e) {
-                }
-            });
+            miCreateWork.addActionListener(event -> mainWindow.createWork(path));
             popup.add(miCreateWork);
             final JMenuItem miCreateFolder = new JMenuItem("Create folder...");
             miCreateFolder.addActionListener(event -> {
@@ -115,21 +110,11 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     popup.add(miOpenEditor);
 
                     JMenuItem miSave = new JMenuItem("Save");
-                    miSave.addActionListener(event -> {
-                        try {
-                            mainWindow.saveWork(we);
-                        } catch (OperationCancelledException e) {
-                        }
-                    });
+                    miSave.addActionListener(event -> mainWindow.saveWork(we));
                     popup.add(miSave);
 
                     JMenuItem miSaveAs = new JMenuItem("Save as...");
-                    miSaveAs.addActionListener(event -> {
-                        try {
-                            mainWindow.saveWorkAs(we);
-                        } catch (OperationCancelledException e) {
-                        }
-                    });
+                    miSaveAs.addActionListener(event -> mainWindow.saveWorkAs(we));
                     popup.add(miSaveAs);
 
                     JMenuItem miClose = new JMenuItem("Close");

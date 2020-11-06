@@ -3,7 +3,6 @@ package org.workcraft.plugins.dtd.tools;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.GraphEditor;
@@ -23,7 +22,7 @@ public class SignalGeneratorTool extends NodeGeneratorTool {
     public SignalGeneratorTool() {
         super(new DefaultNodeGenerator(Signal.class) {
             @Override
-            public VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException {
+            public VisualSignal generate(VisualModel model, Point2D where) throws NodeCreationException {
                 VisualSignal signal = (VisualSignal) super.generate(model, where);
                 VisualDtd dtd = (VisualDtd) model;
                 dtd.createSignalEntryAndExit(signal);
@@ -77,6 +76,11 @@ public class SignalGeneratorTool extends NodeGeneratorTool {
     @Override
     public String getHintText(final GraphEditor editor) {
         return "Click to create an output signal (hold Shift for input signal).";
+    }
+
+    @Override
+    public VisualSignal generateNode(VisualModel model, Point2D position) {
+        return (VisualSignal) super.generateNode(model, position);
     }
 
 }

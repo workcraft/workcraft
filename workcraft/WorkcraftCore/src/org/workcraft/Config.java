@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.utils.ColorUtils;
+import org.workcraft.utils.ParseUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -65,15 +66,7 @@ public class Config {
     }
 
     public int getInt(String key, int defaultValue) {
-        String s = get(key);
-        if (s == null) {
-            return defaultValue;
-        }
-        try {
-            return Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+        return ParseUtils.parseInt(get(key), defaultValue);
     }
 
     public <T extends Enum<T>> void setEnum(String key, T value) {
@@ -87,15 +80,7 @@ public class Config {
     }
 
     public <T extends Enum<T>> T getEnum(String key, Class<T> enumType, T defaultValue) {
-        String s = get(key);
-        if (s == null) {
-            return defaultValue;
-        }
-        try {
-            return Enum.valueOf(enumType, s);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+        return ParseUtils.parseEnum(get(key), enumType, defaultValue);
     }
 
     public void setDouble(String key, double value) {
@@ -107,15 +92,7 @@ public class Config {
     }
 
     public double getDouble(String key, double defaultValue) {
-        String s = get(key);
-        if (s == null) {
-            return defaultValue;
-        }
-        try {
-            return Double.parseDouble(s);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+        return ParseUtils.parseDouble(get(key), defaultValue);
     }
 
     public void setColor(String key, Color value) {
@@ -129,17 +106,7 @@ public class Config {
     }
 
     public Color getColor(String key, Color defaultValue) {
-        String s = get(key);
-        if ((s == null) || (s.charAt(0) != '#')) {
-            return defaultValue;
-        }
-        try {
-            int rgba = Integer.parseInt(s.substring(1), 16);
-            boolean hasAlpha = s.length() > 7;
-            return new Color(rgba, hasAlpha);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
+        return ParseUtils.parseColor(get(key), defaultValue);
     }
 
     public void setBoolean(String key, boolean value) {
@@ -151,12 +118,7 @@ public class Config {
     }
 
     public boolean getBoolean(String key, boolean defaultValue) {
-        String s = get(key);
-        if (s == null) {
-            return defaultValue;
-        } else {
-            return Boolean.parseBoolean(s);
-        }
+        return ParseUtils.parseBoolean(get(key), defaultValue);
     }
 
     public void set(String key, String value) {

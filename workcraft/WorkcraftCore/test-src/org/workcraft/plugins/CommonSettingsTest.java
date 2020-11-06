@@ -66,9 +66,30 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonEditorSettings";
 
+        // GUI
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getFontSize()),
+                framework.getConfigVar(prefix + ".fontSize", false));
+
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getTitleStyle()),
+                framework.getConfigVar(prefix + ".titleStyle", false));
+
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getDialogStyle()),
+                framework.getConfigVar(prefix + ".dialogStyle", false));
+
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getRecentCount()),
+                framework.getConfigVar(prefix + ".recentCount", false));
+
+        // Canvas
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getRedrawInterval()),
+                framework.getConfigVar(prefix + ".redrawInterval", false));
+
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getBackgroundColor()),
                 framework.getConfigVar(prefix + ".backgroundColor", false));
 
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getPngBackgroundColor()),
+                framework.getConfigVar(prefix + ".pngBackgroundColor", false));
+
+        // Grid
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getGridVisibility()),
                 framework.getConfigVar(prefix + ".gridVisibility", false));
 
@@ -84,6 +105,7 @@ public class CommonSettingsTest {
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getRulerVisibility()),
                 framework.getConfigVar(prefix + ".rulerVisibility", false));
 
+        // Hints
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getHintVisibility()),
                 framework.getConfigVar(prefix + ".hintVisibility", false));
 
@@ -99,23 +121,12 @@ public class CommonSettingsTest {
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getFlashInterval()),
                 framework.getConfigVar(prefix + ".flashInterval", false));
 
-        Assertions.assertEquals(Config.toString(EditorCommonSettings.getRecentCount()),
-                framework.getConfigVar(prefix + ".recentCount", false));
-
-        Assertions.assertEquals(Config.toString(EditorCommonSettings.getTitleStyle()),
-                framework.getConfigVar(prefix + ".titleStyle", false));
-
-        Assertions.assertEquals(Config.toString(EditorCommonSettings.getShowAbsolutePaths()),
-                framework.getConfigVar(prefix + ".showAbsolutePaths", false));
-
+        // Layout
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getOpenNonvisual()),
                 framework.getConfigVar(prefix + ".openNonvisual", false));
 
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getLargeModelSize()),
                 framework.getConfigVar(prefix + ".largeModelSize", false));
-
-        Assertions.assertEquals(Config.toString(EditorCommonSettings.getRedrawInterval()),
-                framework.getConfigVar(prefix + ".redrawInterval", false));
     }
 
     @Test
@@ -180,9 +191,7 @@ public class CommonSettingsTest {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonVisualSettings";
 
-        Assertions.assertEquals(Config.toString(VisualCommonSettings.getFontSize()),
-                framework.getConfigVar(prefix + ".fontSize", false));
-
+        // Node
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getNodeSize()),
                 framework.getConfigVar(prefix + ".nodeSize", false));
 
@@ -195,12 +204,7 @@ public class CommonSettingsTest {
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getFillColor()),
                 framework.getConfigVar(prefix + ".fillColor", false));
 
-        Assertions.assertEquals(Config.toString(VisualCommonSettings.getPivotSize()),
-                framework.getConfigVar(prefix + ".pivotSize", false));
-
-        Assertions.assertEquals(Config.toString(VisualCommonSettings.getPivotWidth()),
-                framework.getConfigVar(prefix + ".pivotWidth", false));
-
+        // Label
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getLineSpacing()),
                 framework.getConfigVar(prefix + ".lineSpacing", false));
 
@@ -216,6 +220,7 @@ public class CommonSettingsTest {
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getLabelFontSize()),
                 framework.getConfigVar(prefix + ".labelFontSize", false));
 
+        // Name
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getNameVisibility()),
                 framework.getConfigVar(prefix + ".nameVisibility", false));
 
@@ -228,6 +233,10 @@ public class CommonSettingsTest {
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getNameFontSize()),
                 framework.getConfigVar(prefix + ".nameFontSize", false));
 
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getShowAbsolutePaths()),
+                framework.getConfigVar(prefix + ".showAbsolutePaths", false));
+
+        // Connection
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getConnectionLineWidth()),
                 framework.getConfigVar(prefix + ".connectionLineWidth", false));
 
@@ -243,11 +252,16 @@ public class CommonSettingsTest {
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getConnectionColor()),
                 framework.getConfigVar(prefix + ".connectionColor", false));
 
+        // Pivot
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getPivotSize()),
+                framework.getConfigVar(prefix + ".pivotSize", false));
+
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getPivotWidth()),
+                framework.getConfigVar(prefix + ".pivotWidth", false));
+
+        // Expression
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getUseSubscript()),
                 framework.getConfigVar(prefix + ".useSubscript", false));
-
-        Assertions.assertEquals(Config.toString(VisualCommonSettings.getPngBackgroundColor()),
-                framework.getConfigVar(prefix + ".pngBackgroundColor", false));
     }
 
 }

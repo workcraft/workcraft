@@ -124,29 +124,29 @@ public class WriterDialog extends JDialog {
     }
 
     private void openFileAction() {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
-        chooser.setCurrentDirectory(lastDirUsed);
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File f = chooser.getSelectedFile();
+        JFileChooser fc = new JFileChooser();
+        fc.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
+        fc.setCurrentDirectory(lastDirUsed);
+        if (DialogUtils.showFileOpener(fc)) {
+            File file = fc.getSelectedFile();
             try {
-                if (!f.exists()) {
+                if (!file.exists()) {
                     throw new FileNotFoundException();
                 }
-                conceptsText.setText(readFile(f));
+                conceptsText.setText(readFile(file));
                 updateLastDirUsed();
-            } catch (FileNotFoundException e1) {
-                DialogUtils.showError(e1.getMessage());
+            } catch (FileNotFoundException e) {
+                DialogUtils.showError(e.getMessage());
             }
         }
     }
 
     private void saveFileAction() {
-        JFileChooser chooser = new JFileChooser();
-        chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
-        chooser.setCurrentDirectory(lastDirUsed);
-        if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-            File file = chooser.getSelectedFile();
+        JFileChooser fc = new JFileChooser();
+        fc.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
+        fc.setCurrentDirectory(lastDirUsed);
+        if (DialogUtils.showFileSaver(fc)) {
+            File file = fc.getSelectedFile();
             if (!file.getName().endsWith(".hs")) {
                 file = new File(file.getAbsolutePath() + ".hs");
             }

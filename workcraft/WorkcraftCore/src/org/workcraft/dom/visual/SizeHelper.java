@@ -1,6 +1,6 @@
 package org.workcraft.dom.visual;
 
-import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 
 import java.awt.*;
 
@@ -15,7 +15,7 @@ public class SizeHelper {
     }
 
     public static double getBaseSize() {
-        return VisualCommonSettings.getFontSize() * getScreenDpi() / 72.0;
+        return EditorCommonSettings.getFontSize() * getScreenDpi() / 72.0;
     }
 
     public static int getBaseFontSize() {

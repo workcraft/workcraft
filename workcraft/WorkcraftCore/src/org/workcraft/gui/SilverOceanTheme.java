@@ -6,7 +6,6 @@ import org.workcraft.utils.DesktopApi;
 import javax.swing.*;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
-import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -18,7 +17,7 @@ public class SilverOceanTheme extends OceanTheme {
 
     private static final double ICON_SCALE_THRESHOLD = 0.2;
 
-    private final class CheckBoxIcon implements Icon {
+    private static final class CheckBoxIcon implements Icon {
         @Override
         public int getIconWidth() {
             // For symmetry the icon is better to have odd width
@@ -61,7 +60,7 @@ public class SilverOceanTheme extends OceanTheme {
         }
     }
 
-    private final class RadioButtonIcon implements Icon {
+    private static final class RadioButtonIcon implements Icon {
         @Override
         public int getIconWidth() {
             // For symmetry the icon is better to have odd width
@@ -103,10 +102,6 @@ public class SilverOceanTheme extends OceanTheme {
                 g.fillOval(x + dx, y + dy, w - 2 * dx, h - 2 * dy);
             }
         }
-    }
-
-    public static void enable() {
-        MetalLookAndFeel.setCurrentTheme(new SilverOceanTheme());
     }
 
     @Override

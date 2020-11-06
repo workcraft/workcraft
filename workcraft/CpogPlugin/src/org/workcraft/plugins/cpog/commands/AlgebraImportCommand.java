@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -20,12 +21,12 @@ public class AlgebraImportCommand extends AbstractAlgebraCommand {
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         we.captureMemento();
-        JFileChooser chooser = new JFileChooser();
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+        JFileChooser fc = new JFileChooser();
+        if (DialogUtils.showFileOpener(fc)) {
             final MainWindow mainWindow = framework.getMainWindow();
             final Toolbox toolbox = mainWindow.getCurrentToolbox();
             final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-            File file = chooser.getSelectedFile();
+            File file = fc.getSelectedFile();
             if (tool.insertCpogFromFile(file)) {
                 we.saveMemento();
             } else {
