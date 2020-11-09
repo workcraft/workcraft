@@ -54,7 +54,7 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
         return result;
     }
 
-    private Result<? extends CombinedChainOutput> checkTrivialCases() {
+    public Result<? extends CombinedChainOutput> checkTrivialCases() {
         // The model should be a Petri net (not necessarily an STG)
         if (!WorkspaceUtils.isApplicable(we, PetriModel.class)) {
             return Result.exception("Incorrect model type");

@@ -43,7 +43,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
         return result;
     }
 
-    private Result<? extends VerificationChainOutput> checkTrivialCases() {
+    public Result<? extends VerificationChainOutput> checkTrivialCases() {
         // The model should be a Petri net (not necessarily an STG)
         if (!WorkspaceUtils.isApplicable(we, PetriModel.class)) {
             return Result.exception("Incorrect model type");

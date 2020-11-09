@@ -8,8 +8,8 @@ import org.workcraft.plugins.mpsat_verification.gui.HandshakeWizardDialog;
 import org.workcraft.plugins.mpsat_verification.presets.HandshakeDataSerialiser;
 import org.workcraft.plugins.mpsat_verification.presets.HandshakeParameters;
 import org.workcraft.plugins.mpsat_verification.presets.HandshakePresetManager;
-import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
-import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainTask;
+import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.tasks.HandshakeChainTask;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.PresetManager;
@@ -56,7 +56,7 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
         HandshakeWizardDialog dialog = new HandshakeWizardDialog(mainWindow, presetManager);
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+            CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, true);
             run(we, preservedData, monitor);
         }
     }
@@ -64,9 +64,7 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
     @Override
     public void run(WorkspaceEntry we, HandshakeParameters data, ProgressMonitor monitor) {
         TaskManager manager = Framework.getInstance().getTaskManager();
-        VerificationChainTask task = new VerificationChainTask(we,
-                data == null ? null : data.getVerificationParameters());
-
+        HandshakeChainTask task = new HandshakeChainTask(we, data);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
     }
@@ -95,7 +93,7 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
 
     @Override
     public Boolean execute(WorkspaceEntry we, HandshakeParameters data) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, false);
         run(we, data, monitor);
         return monitor.waitForHandledResult();
     }
