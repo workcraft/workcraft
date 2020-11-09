@@ -3,18 +3,10 @@ package org.workcraft.plugins.mpsat_verification.presets;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class HandshakeParameters {
-
-    public enum Type {
-        PASSIVE,
-        ACTIVE;
-    }
 
     public enum State {
         REQ0ACK0(false, false),
@@ -137,7 +129,6 @@ public class HandshakeParameters {
             "    ~active & (CHECK_WITHDRAW_ENABLED & req & ack & ~en_req_withdraw | CHECK_ASSERT_ENABLED & ~req & ~ack & ~en_req_assert)\n" +
             "}\n";
 
-    private final Type type;
     private final Set<String> reqs;
     private final Set<String> acks;
     private final boolean checkAssertion;
@@ -150,23 +141,18 @@ public class HandshakeParameters {
     }
 
     public HandshakeParameters(Collection<String> reqs, Collection<String> acks) {
-        this(Type.PASSIVE, reqs, acks, true, true, State.REQ0ACK0, false);
+        this(reqs, acks, true, true, State.REQ0ACK0, false);
     }
 
-    public HandshakeParameters(Type type, Collection<String> reqs, Collection<String> acks,
+    public HandshakeParameters(Collection<String> reqs, Collection<String> acks,
             boolean checkAssertion, boolean checkWithdrawal, State state, boolean allowInversion) {
 
-        this.type = type;
         this.reqs = new HashSet<>(reqs);
         this.acks = new HashSet<>(acks);
         this.checkAssertion = checkAssertion;
         this.checkWithdrawal = checkWithdrawal;
         this.state = state;
         this.allowInversion = allowInversion;
-    }
-
-    public Type getType() {
-        return type;
     }
 
     public Set<String> getReqs() {
@@ -193,11 +179,14 @@ public class HandshakeParameters {
         return allowInversion;
     }
 
-    public VerificationParameters getVerificationParameters() {
+    public List<VerificationParameters> getVerificationParametersList() {
+        return Collections.singletonList(getVerificationParameters());
+    }
 
+    public VerificationParameters getVerificationParameters() {
         String reach = HANDSHAKE_REACH
-                .replace(REQ_NAMES_REPLACEMENT, getQuotedSelectedItems(getReqs()))
-                .replace(ACK_NAMES_REPLACEMENT, getQuotedSelectedItems(getAcks()))
+                .replace(REQ_NAMES_REPLACEMENT, getQuotedItemsAsString(getReqs()))
+                .replace(ACK_NAMES_REPLACEMENT, getQuotedItemsAsString(getAcks()))
                 .replace(CHECK_ASSERT_ENABLED_REPLACEMENT, ReachUtils.getBooleanAsString(isCheckAssertion()))
                 .replace(CHECK_WITHDRAW_ENABLED_REPLACEMENT, ReachUtils.getBooleanAsString(isCheckWithdrawal()))
                 .replace(REQ_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isReqAsserted()))
@@ -211,8 +200,8 @@ public class HandshakeParameters {
                 reach, true);
     }
 
-    private String getQuotedSelectedItems(Collection<String> list) {
-        return list.stream()
+    private String getQuotedItemsAsString(Collection<String> refs) {
+        return refs.stream()
                 .map(ref -> "\"" + ref + "\"")
                 .collect(Collectors.joining(", "));
     }

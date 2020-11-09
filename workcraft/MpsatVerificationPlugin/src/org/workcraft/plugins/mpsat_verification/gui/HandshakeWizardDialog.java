@@ -254,10 +254,17 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         DataMapper<HandshakeParameters> guiMapper = new DataMapper<HandshakeParameters>() {
             @Override
             public void applyDataToControls(HandshakeParameters data) {
-                passiveRadioButton.setSelected(data.getType() == HandshakeParameters.Type.PASSIVE);
-                activeRadioButton.setSelected(data.getType() == HandshakeParameters.Type.ACTIVE);
-                selectSignals(getReqList(), data.getReqs());
-                selectSignals(getAckList(), data.getAcks());
+                Stg stg = getUserData().getStg();
+                Set<String> inputSignals = stg.getSignalReferences(Signal.Type.INPUT);
+                Set<String> outputSignals = stg.getSignalReferences(Signal.Type.OUTPUT);
+                Set<String> reqs = data.getReqs();
+                Set<String> acks = data.getAcks();
+                boolean isPassive = inputSignals.contains(reqs) && outputSignals.containsAll(acks);
+                boolean isActive = inputSignals.contains(acks) && outputSignals.containsAll(reqs);
+                passiveRadioButton.setSelected(isPassive);
+                activeRadioButton.setSelected(isActive);
+                selectSignals(getReqList(), reqs);
+                selectSignals(getAckList(), acks);
                 checkAssertEnabledCheckbox.setSelected(data.isCheckAssertion());
                 checkWithdrawEnabledCheckbox.setSelected(data.isCheckWithdrawal());
                 stateReq0Ack0Radio.setSelected(data.getState() == HandshakeParameters.State.REQ0ACK0);
@@ -292,14 +299,6 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
     @Override
     public HandshakeParameters getPresetData() {
-        HandshakeParameters.Type type = null;
-        if (passiveRadioButton.isSelected()) {
-            type = HandshakeParameters.Type.PASSIVE;
-        }
-        if (activeRadioButton.isSelected()) {
-            type = HandshakeParameters.Type.ACTIVE;
-        }
-
         Collection<String> reqs = getReqList().getSelectedValuesList();
         Collection<String> acks = getAckList().getSelectedValuesList();
 
@@ -317,8 +316,9 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
             state = HandshakeParameters.State.REQ0ACK1;
         }
 
-        return new HandshakeParameters(type, reqs, acks,
-                checkAssertEnabledCheckbox.isSelected(), checkWithdrawEnabledCheckbox.isSelected(),
+        return new HandshakeParameters(reqs, acks,
+                checkAssertEnabledCheckbox.isSelected(),
+                checkWithdrawEnabledCheckbox.isSelected(),
                 state, allowInversionCheckbox.isSelected());
     }
 
