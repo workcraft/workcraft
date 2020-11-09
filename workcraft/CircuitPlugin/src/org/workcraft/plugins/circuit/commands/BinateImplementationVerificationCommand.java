@@ -76,7 +76,7 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
         }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         Collection<BinateData> binateItems = getBinateData(circuit);
-        List<VerificationParameters> settingsList = new ArrayList<>();
+        List<VerificationParameters> verificationParametersList = new ArrayList<>();
         boolean isFirstItem = true;
         for (BinateData binateItem : binateItems) {
             if (isFirstItem) {
@@ -84,14 +84,19 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
             }
             isFirstItem = false;
             String signal = CircuitUtils.getSignalReference(circuit, binateItem.contact);
-            settingsList.add(getBinateImplementationReachSettings(signal, binateItem.formula, binateItem.variable));
+            VerificationParameters verificationParameters = getBinateImplementationReachSettings(
+                    signal, binateItem.formula, binateItem.variable);
+
+            verificationParametersList.add(verificationParameters);
             String formulaStr = StringGenerator.toString(binateItem.formula);
             String variableLabel = binateItem.variable.getLabel();
             LogUtils.logMessage("  " + signal + " = " + formulaStr + "   [binate in " + variableLabel + "]");
         }
 
         TaskManager manager = Framework.getInstance().getTaskManager();
-        CombinedCheckTask task = new CombinedCheckTask(we, settingsList, "Binate consensus vacuously holds");
+        CombinedCheckTask task = new CombinedCheckTask(we, verificationParametersList,
+                "Binate consensus vacuously holds");
+
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
     }
@@ -119,8 +124,12 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
         return result;
     }
 
-    private VerificationParameters getBinateImplementationReachSettings(String signal, BooleanFormula formula, BooleanVariable variable) {
-        BooleanFormula insensitivityFormula = new Iff(FormulaUtils.replaceOne(formula, variable), FormulaUtils.replaceZero(formula, variable));
+    private VerificationParameters getBinateImplementationReachSettings(String signal, BooleanFormula formula,
+            BooleanVariable variable) {
+
+        BooleanFormula insensitivityFormula = new Iff(
+                FormulaUtils.replaceOne(formula, variable),
+                FormulaUtils.replaceZero(formula, variable));
 
         String varName = variable.getLabel();
         FreeVariable positiveVar = new FreeVariable("@" + varName);
