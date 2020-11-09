@@ -27,20 +27,26 @@ public class FavoriteCommonSettings extends AbstractCommonSettings {
 
     public FavoriteCommonSettings() {
         // Property initialisation must be in constructor, and only once.
-        // This is because plugins need to be loaded first, therefor static block cannot be used.
+        // This is because plugins need to be loaded first, therefore static block cannot be used.
         if (properties.isEmpty()) {
             properties.add(new PropertyDeclaration<>(Boolean.class,
                     "Filter favorite model types in New work dialog",
                     FavoriteCommonSettings::setFilterFavorites,
                     FavoriteCommonSettings::getFilterFavorites));
 
+
             PluginManager pm = Framework.getInstance().getPluginManager();
-            for (ModelDescriptor descriptor : pm.getSortedModelDescriptors()) {
-                String displayName = descriptor.getDisplayName();
-                properties.add(new PropertyDeclaration<>(Boolean.class,
-                        PropertyHelper.BULLET_PREFIX + displayName,
-                        value -> setIsFavorite(displayName, value),
-                        () -> getIsFavorite(displayName)));
+            List<ModelDescriptor> sortedModelDescriptors = pm.getSortedModelDescriptors();
+            if (!sortedModelDescriptors.isEmpty()) {
+                properties.add(PropertyHelper.createSeparatorProperty("Favorite model types"));
+
+                for (ModelDescriptor descriptor : sortedModelDescriptors) {
+                    String displayName = descriptor.getDisplayName();
+                    properties.add(new PropertyDeclaration<>(Boolean.class,
+                            PropertyHelper.BULLET_PREFIX + displayName,
+                            value -> setIsFavorite(displayName, value),
+                            () -> getIsFavorite(displayName)));
+                }
             }
         }
     }
