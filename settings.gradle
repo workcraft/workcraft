@@ -14,7 +14,9 @@ pluginManagement {
  */
 
 // Java version for source code and target bytecode compatibility
-gradle.ext.javaVersion = '1.8'
+gradle.ext.javaSourceVersion = JavaVersion.VERSION_1_8
+gradle.ext.javaTargetVersion = JavaVersion.VERSION_1_8
+gradle.ext.javaReleaseVersion = 8  /* Must be integer, e.g. 8 for JDK8*/
 
 // Code quality and coverage tools (Checkstyle, PMD, Jacoco)
 gradle.ext.checkstyleVersion = '8.36.2'
