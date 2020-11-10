@@ -55,7 +55,7 @@ public class HandshakeVerificationCommandTests {
         Assertions.assertFalse(command.execute(we, command.deserialiseData(
                 "<settings><req name=\"a12\"/><ack name=\"r1\"/><ack name=\"r2\"/></settings>")));
 
-        Assertions.assertNull(command.execute(we, command.deserialiseData(
+        Assertions.assertFalse(command.execute(we, command.deserialiseData(
                 "<settings state=\"REQ1ACK0\" allow-inversion=\"false\"><req name=\"a12\"/><ack name=\"r1\"/><ack name=\"r2\"/></settings>")));
 
         Assertions.assertTrue(command.execute(we, command.deserialiseData(

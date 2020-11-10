@@ -1,13 +1,14 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.List;
@@ -27,59 +28,79 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
     @Override
     public Boolean handleSuccess(Result<? extends CombinedChainOutput> chainResult) {
         CombinedChainOutput chainOutput = chainResult.getPayload();
-        MpsatOutput violationMpsatOutput = getViolationMpsatOutput(chainResult);
+        List<Result<? extends MpsatOutput>> mpsatResultList = chainOutput.getMpsatResultList();
 
-        if (violationMpsatOutput == null) {
-            // No solution found in any of the MPSat tasks
-            StringBuilder msg = new StringBuilder();
-            for (VerificationParameters verificationParameters : chainOutput.getVerificationParametersList()) {
-                msg.append("\n * ").append(verificationParameters.getDescription());
+        MpsatOutput violationMpsatOutput = null;
+        VerificationParameters violationVerificationParameters = null;
+        if (mpsatResultList == null) {
+            List<VerificationParameters> verificationParametersList = chainOutput.getVerificationParametersList();
+            if (verificationParametersList.size() == 1) {
+                // Property violated for a trivial case (therefore no mpsatResult, but a single verificationParameters)
+                violationVerificationParameters = verificationParametersList.iterator().next();
             }
-            if (vacuousMutexImplementability) {
-                // Add trivial mutex implementability result if no mutex places found
-                msg.append("\n * Mutex implementability (vacuously)");
+        } else {
+            violationMpsatOutput = getViolationMpsatOutput(mpsatResultList);
+            if (violationMpsatOutput == null) {
+                displayChecksPassedMessage(chainOutput);
+                return true;
             }
-            if (msg.length() == 0) {
-                msg.append(chainOutput.getMessage());
-            } else {
-                msg.insert(0, "The following checks passed:");
-            }
-
-            if (isInteractive()) {
-                DialogUtils.showInfo(msg.toString());
-            } else {
-                LogUtils.logInfo(msg.toString());
-            }
-            return true;
+            violationVerificationParameters = violationMpsatOutput.getVerificationParameters();
         }
 
-        Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
+        Result<? extends ExportOutput> exportResult = chainOutput.getExportResult();
         ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
 
-        Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
+        Result<? extends PcompOutput> pcompResult = chainOutput.getPcompResult();
         PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
 
-        VerificationParameters violationVerificationParameters = violationMpsatOutput.getVerificationParameters();
-
-        String message = (chainOutput == null) ? null : chainOutput.getMessage();
+        String message = chainOutput.getMessage();
 
         return new VerificationOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                 violationMpsatOutput, violationVerificationParameters, message,
                 isInteractive()).interpret();
     }
 
-    public static MpsatOutput getViolationMpsatOutput(Result<? extends CombinedChainOutput> chainResult) {
-        if ((chainResult != null) && (chainResult.isSuccess())) {
-            return getViolationMpsatOutput(chainResult.getPayload());
+    private void displayChecksPassedMessage(CombinedChainOutput chainOutput) {
+        StringBuilder msg = new StringBuilder();
+        String chainOutputMessage = chainOutput.getMessage();
+        if (chainOutputMessage != null) {
+            msg.append(chainOutputMessage);
+        } else {
+            List<VerificationParameters> verificationParametersList = chainOutput.getVerificationParametersList();
+            for (VerificationParameters verificationParameters : verificationParametersList) {
+                msg.append("\n").append(PropertyHelper.BULLET_PREFIX).append(verificationParameters.getDescription());
+            }
+            if (vacuousMutexImplementability) {
+                // Add trivial mutex implementability result if no mutex places found
+                msg.append("\n").append(PropertyHelper.BULLET_PREFIX).append("Mutex implementability (vacuously)");
+            }
+            if (msg.length() == 0) {
+                msg.append("All checks passed.");
+            } else {
+                msg.insert(0, "The following checks passed:");
+            }
+        }
+        if (isInteractive()) {
+            DialogUtils.showInfo(msg.toString(), OutcomeUtils.TITLE);
+        } else {
+            LogUtils.logInfo(msg.toString());
+        }
+    }
+
+    public static MpsatOutput getViolationMpsatOutput(CombinedChainOutput chainOutput) {
+        List<Result<? extends MpsatOutput>> mpsatResultList = chainOutput.getMpsatResultList();
+        if (mpsatResultList != null) {
+            return getViolationMpsatOutput(mpsatResultList);
         }
         return null;
     }
 
-    public static MpsatOutput getViolationMpsatOutput(CombinedChainOutput chainOutput) {
-        for (Result<? extends MpsatOutput> mpsatResult : chainOutput.getMpsatResultList()) {
+    private static MpsatOutput getViolationMpsatOutput(List<Result<? extends MpsatOutput>> mpsatResultList) {
+        for (Result<? extends MpsatOutput> mpsatResult : mpsatResultList) {
             if (mpsatResult != null) {
                 MpsatOutput mpsatOutput = mpsatResult.getPayload();
-                if (TraceUtils.hasTraces(mpsatOutput.getSolutions())) {
+                boolean inversePredicate = mpsatOutput.getVerificationParameters().isInversePredicate();
+                if (mpsatOutput.hasSolutions() == inversePredicate) {
                     return mpsatOutput;
                 }
             }

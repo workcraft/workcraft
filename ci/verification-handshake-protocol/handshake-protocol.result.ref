@@ -6,5 +6,5 @@ Handshake protocol checks:
   * {r} {a}: true
   * {r1 r2} {a12}: true
   * {a12} {r1 r2}: false
-  * {a12} {r1 r2}, REQ1ACK0, allow-inversion=false: null
+  * {a12} {r1 r2}, REQ1ACK0, allow-inversion=false: false
   * {a12} -> {r1 r2}, REQ1ACK0, allow-inversion=true: true

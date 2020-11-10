@@ -112,7 +112,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
                     break;
                 }
 
-                if (data.getInversePredicate()) {
+                if (data.isInversePredicate()) {
                     unsatisfiableRadioButton.setSelected(true);
                 } else {
                     satisfiableRadioButton.setSelected(true);

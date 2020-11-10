@@ -72,7 +72,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         }
     }
 
-    class ListCellRenderer extends DefaultListCellRenderer {
+    static class ListCellRenderer extends DefaultListCellRenderer {
 
         private final Color color;
 
@@ -90,7 +90,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         }
     }
 
-    class SignalList extends JList<String> {
+    static class SignalList extends JList<String> {
 
         SignalList(Collection<String> signals, Color color) {
             super(new Vector<>(signals));
@@ -212,6 +212,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         });
         passiveRadioButton.setSelected(true);
 
+
         result.add(typePanel, BorderLayout.NORTH);
         result.add(signalPanel, BorderLayout.CENTER);
         result.add(optionsPanel, BorderLayout.SOUTH);
@@ -259,10 +260,12 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
                 Set<String> outputSignals = stg.getSignalReferences(Signal.Type.OUTPUT);
                 Set<String> reqs = data.getReqs();
                 Set<String> acks = data.getAcks();
-                boolean isPassive = inputSignals.contains(reqs) && outputSignals.containsAll(acks);
-                boolean isActive = inputSignals.contains(acks) && outputSignals.containsAll(reqs);
-                passiveRadioButton.setSelected(isPassive);
-                activeRadioButton.setSelected(isActive);
+                boolean isActive = outputSignals.containsAll(reqs) && inputSignals.containsAll(acks);
+                if (isActive) {
+                    activeRadioButton.setSelected(true);
+                } else {
+                    passiveRadioButton.setSelected(true);
+                }
                 selectSignals(getReqList(), reqs);
                 selectSignals(getAckList(), acks);
                 checkAssertEnabledCheckbox.setSelected(data.isCheckAssertion());

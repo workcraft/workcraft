@@ -57,10 +57,10 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
     public Result<? extends CombinedChainOutput> checkTrivialCases() {
         // The model should be a Petri net (not necessarily an STG)
         if (!WorkspaceUtils.isApplicable(we, PetriModel.class)) {
-            return Result.exception("Incorrect model type");
+            return Result.exception("Incorrect model type.");
         }
         if (verificationParametersList == null) {
-            return Result.exception("Verification parameters undefined");
+            return Result.exception("Verification parameters undefined.");
         }
         return null;
     }
@@ -102,7 +102,10 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
                     mpsatTask, "Running verification [MPSat]", new SubtaskMonitor<>(monitor));
 
             mpsatResultList.add(mpsatResult);
-            if (!mpsatResult.isSuccess()) {
+
+            // Return results at the first failure or property violation
+            boolean inversePredicate = verificationParameters.isInversePredicate();
+            if (!mpsatResult.isSuccess() || (mpsatResult.getPayload().hasSolutions() == inversePredicate)) {
                 return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResultList(mpsatResultList));
             }
         }

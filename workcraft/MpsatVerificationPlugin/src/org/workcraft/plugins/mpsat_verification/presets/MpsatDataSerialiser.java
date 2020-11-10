@@ -44,7 +44,7 @@ public class MpsatDataSerialiser implements DataSerialiser<VerificationParameter
                 defaultVerificationParameters.getSolutionMode());
 
         boolean inversePredicate = XmlUtils.readBooleanAttribute(settingsElement,
-                SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, defaultVerificationParameters.getInversePredicate());
+                SETTINGS_INVERSE_PREDICATE_ATTRIBUTE, defaultVerificationParameters.isInversePredicate());
 
         Element lastElement = settingsElement == null ? parent : settingsElement;
         Element reachElement = XmlUtils.getChildElement(REACH_ELEMENT, lastElement);
@@ -74,7 +74,7 @@ public class MpsatDataSerialiser implements DataSerialiser<VerificationParameter
                 verificationParameters.getSolutionMode().name());
 
         settingsElement.setAttribute(SETTINGS_INVERSE_PREDICATE_ATTRIBUTE,
-                Boolean.toString(verificationParameters.getInversePredicate()));
+                Boolean.toString(verificationParameters.isInversePredicate()));
 
         settingsElement.setTextContent(verificationParameters.getExpression());
     }

@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 public class HandshakeParameters {
 
+    public static final String VIOLATION_PREFIX = "Handshake protocol is violated: ";
+
     public enum State {
         REQ0ACK0(false, false),
         REQ1ACK0(true, false),
@@ -49,34 +51,59 @@ public class HandshakeParameters {
     private static final String ACK_INITIALLY_ASSERTED_REPLACEMENT =
             "/* insert acknowledgment initial assertion state here */"; // true or false
 
-    private static final String ALLOW_INVERSIONS_REPLACEMENT =
-            "/* insert inversion permission flag here */"; // true or false
-
-    private static final String HANDSHAKE_REACH =
-            "// Checks whether the given request(s) and acknowledgement(s) form a handshake;\n" +
-            "// optionally, one can allow inverting some of these signals and specify the initial phase of the handshake.\n" +
+    private static final String INITIAL_HANDSHAKE_REACH =
+            "// Handshake protocol initial state check.\n" +
             "let\n" +
             "    // Non-empty set of request signal names.\n" +
             "    REQ_NAMES = {" + REQ_NAMES_REPLACEMENT + "},\n" +
             "    // Non-empty set of acknowledgement signal names.\n" +
             "    ACK_NAMES = {" + ACK_NAMES_REPLACEMENT + "},\n" +
-            "    // If true then check assertion/withdrawal receptiveness.\n" +
-            "    CHECK_ASSERT_ENABLED = " + CHECK_ASSERT_ENABLED_REPLACEMENT + ",\n" +
-            "    CHECK_WITHDRAW_ENABLED = " + CHECK_WITHDRAW_ENABLED_REPLACEMENT + ",\n" +
+            "    // The following two values specify the initial state of the handshake.\n" +
+            "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
+            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + "\n" +
+            "{\n" +
+            "    // Check that either inversions are allowed or the initial values of requests are equal to REQ_INITIALLY_ASSERTED.\n" +
+            "    exists nm in REQ_NAMES { is_init S nm ^ REQ_INITIALLY_ASSERTED }\n" +
+            "    |\n" +
+            "    // Check that either inversions are allowed or the initial values of acknowledgements are equal to ACK_INITIALLY_ASSERTED.\n" +
+            "    exists nm in ACK_NAMES { is_init S nm ^ ACK_INITIALLY_ASSERTED }\n" +
+            "}\n";
+
+    private static final String ONEHOT_HANDSHAKE_REACH =
+            "// Handshake protocol one-hotness check.\n" +
+            "let\n" +
+            "    // Non-empty set of request signal names.\n" +
+            "    REQ_NAMES = {" + REQ_NAMES_REPLACEMENT + "},\n" +
+            "    // Non-empty set of acknowledgement signal names.\n" +
+            "    ACK_NAMES = {" + ACK_NAMES_REPLACEMENT + "},\n" +
+            "    // The following two values specify the initial state of the handshake.\n" +
+            "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
+            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + "\n" +
+            "{\n" +
+            "    // Check that the requests are 1-hot (correcting for the polarity and initial state of handshake).\n" +
+            "    threshold nm in REQ_NAMES { $S nm ^ (is_init S nm ^ REQ_INITIALLY_ASSERTED) }\n" +
+            "    |\n" +
+            "    // Check that the acknowledgement are 1-hot (correcting for the polarity and initial state of handshake).\n" +
+            "    threshold nm in ACK_NAMES { $S nm ^ (is_init S nm ^ ACK_INITIALLY_ASSERTED) }\n" +
+            "}\n";
+
+
+    private static final String ORDERING_HANDSHAKE_REACH =
+            "// Handshake protocol ordering check.\n" +
+            "let\n" +
+            "    // Non-empty set of request signal names.\n" +
+            "    REQ_NAMES = {" + REQ_NAMES_REPLACEMENT + "},\n" +
+            "    // Non-empty set of acknowledgement signal names.\n" +
+            "    ACK_NAMES = {" + ACK_NAMES_REPLACEMENT + "},\n" +
             "    // The following two values specify the initial state of the handshake.\n" +
             "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
             "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "    // If true then arbitrary inversions of signals are allowed.\n" +
-            "    ALLOW_INVERSIONS = " + ALLOW_INVERSIONS_REPLACEMENT + ",\n" +
             "\n" +
             "    // Auxiliary calculated set of requests.\n" +
             "    reqs = gather nm in REQ_NAMES { S nm },\n" +
             "    // Auxiliary calculated set of acknowledgements.\n" +
             "    acks = gather nm in ACK_NAMES { S nm },\n" +
             "\n" +
-            "    // Handshake is active if the request is an output;\n" +
-            "    // if there are several requests, they must all be of the same type.\n" +
-            "    active = exists s in reqs { is_output s },\n" +
             "    // Some request is asserted (correcting for the polarity and initial state of handshake).\n" +
             "    req = exists s in reqs { $s ^ (is_init s ^ REQ_INITIALLY_ASSERTED) },\n" +
             "    // Some acknowledgement is asserted (correcting for the polarity and initial state of handshake).\n" +
@@ -91,26 +118,6 @@ public class HandshakeParameters {
             "    en_ack_withdraw = exists e in ev acks s.t. (is_init sig e ^ ACK_INITIALLY_ASSERTED) ? is_plus e : is_minus e { @e },\n" +
             "    en_ack = en_ack_assert | en_ack_withdraw\n" +
             "{\n" +
-            "    // Check that all requests are of the same type.\n" +
-            "    exists s in reqs { ~(active ? is_output s : is_input s) } ?\n" +
-            "    fail \"The requests must be of the same type (either inputs or outputs)\" :\n" +
-            "    // Check that all acknowledgement have the type opposite to that of requests.\n" +
-            "    exists s in acks { ~(active ? is_input s : is_output s) } ?\n" +
-            "    fail \"The acknowledgements must be of the opposite type (either inputs or outputs) to requests\" :\n" +
-            "\n" +
-            "    // Check that either inversions are allowed or the initial values of requests are equal to REQ_INITIALLY_ASSERTED.\n" +
-            "    ~ALLOW_INVERSIONS & exists s in reqs { is_init s ^ REQ_INITIALLY_ASSERTED } ?\n" +
-            "    fail \"The initial values of some request(s) are wrong and inversions are not allowed\" :\n" +
-            "    // Check that either inversions are allowed or the initial values of acknowledgements are equal to ACK_INITIALLY_ASSERTED.\n" +
-            "    ~ALLOW_INVERSIONS & exists s in acks { is_init s ^ ACK_INITIALLY_ASSERTED } ?\n" +
-            "    fail \"The initial values of some acknowledgement(s) are wrong and inversions are not allowed\" :\n" +
-            "\n" +
-            "    // Check that the requests are 1-hot (correcting for the polarity and initial state of handshake).\n" +
-            "    threshold s in reqs { $s ^ (is_init s ^ REQ_INITIALLY_ASSERTED) }\n" +
-            "    |\n" +
-            "    // Check that the acknowledgement are 1-hot (correcting for the polarity and initial state of handshake).\n" +
-            "    threshold s in acks { $s ^ (is_init s ^ ACK_INITIALLY_ASSERTED) }\n" +
-            "    |\n" +
             "    // Check that the handshake progresses as expected, i.e. signals are not enabled unexpectedly.\n" +
             "    ~req & ~ack & (en_req_withdraw | en_ack)\n" +
             "    |\n" +
@@ -119,7 +126,43 @@ public class HandshakeParameters {
             "     req &  ack & (en_req_assert | en_ack)\n" +
             "    |\n" +
             "    ~req &  ack & (en_req | en_ack_assert)\n" +
-            "    |\n" +
+            "}\n";
+
+    private static final String RECEPTIVENESS_HANDSHAKE_REACH =
+            "// Handshake protocol receptiveness check\n" +
+            "let\n" +
+            "    // Non-empty set of request signal names.\n" +
+            "    REQ_NAMES = {" + REQ_NAMES_REPLACEMENT + "},\n" +
+            "    // Non-empty set of acknowledgement signal names.\n" +
+            "    ACK_NAMES = {" + ACK_NAMES_REPLACEMENT + "},\n" +
+            "    // If true then check assertion/withdrawal receptiveness.\n" +
+            "    CHECK_ASSERT_ENABLED = " + CHECK_ASSERT_ENABLED_REPLACEMENT + ",\n" +
+            "    CHECK_WITHDRAW_ENABLED = " + CHECK_WITHDRAW_ENABLED_REPLACEMENT + ",\n" +
+            "    // The following two values specify the initial state of the handshake.\n" +
+            "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
+            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
+            "\n" +
+            "    // Auxiliary calculated set of requests.\n" +
+            "    reqs = gather nm in REQ_NAMES { S nm },\n" +
+            "    // Auxiliary calculated set of acknowledgements.\n" +
+            "    acks = gather nm in ACK_NAMES { S nm },\n" +
+            "\n" +
+            "    // Handshake is active if the request is an output;\n" +
+            "    // if there are several requests, they must all be of the same type.\n" +
+            "    active = exists s in reqs { is_output s },\n" +
+            "\n" +
+            "    // Some request is asserted (correcting for the polarity and initial state of handshake).\n" +
+            "    req = exists s in reqs { $s ^ (is_init s ^ REQ_INITIALLY_ASSERTED) },\n" +
+            "    // Some acknowledgement is asserted (correcting for the polarity and initial state of handshake).\n" +
+            "    ack = exists s in acks { $s ^ (is_init s ^ ACK_INITIALLY_ASSERTED) },\n" +
+            "\n" +
+            "    // Request assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).\n" +
+            "    en_req_assert = exists e in ev reqs s.t. (is_init sig e ^ REQ_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },\n" +
+            "    en_req_withdraw = exists e in ev reqs s.t. (is_init sig e ^ REQ_INITIALLY_ASSERTED)  ? is_plus e : is_minus e { @e },\n" +
+            "    // Acknowledgement assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).\n" +
+            "    en_ack_assert = exists e in ev acks s.t. (is_init sig e ^ ACK_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },\n" +
+            "    en_ack_withdraw = exists e in ev acks s.t. (is_init sig e ^ ACK_INITIALLY_ASSERTED) ? is_plus e : is_minus e { @e }\n" +
+            "{\n" +
             "    // If the handshake is active, check that the appropriate acknowledgement edge\n" +
             "    // is enabled after request changes, unless this check is disabled.\n" +
             "    active & (CHECK_ASSERT_ENABLED & req & ~ack & ~en_ack_assert | CHECK_WITHDRAW_ENABLED & ~req & ack & ~en_ack_withdraw)\n" +
@@ -180,24 +223,98 @@ public class HandshakeParameters {
     }
 
     public List<VerificationParameters> getVerificationParametersList() {
-        return Collections.singletonList(getVerificationParameters());
+        List<VerificationParameters> result = new ArrayList<>();
+        if (!isAllowInversion()) {
+            result.add(getInitialVerificationParameters());
+        }
+        result.add(getOnehotVerificationParameters());
+        result.add(getOrderingVerificationParameters());
+        result.add(getReceptivenessVerificationParameters());
+        return result;
     }
 
-    public VerificationParameters getVerificationParameters() {
-        String reach = HANDSHAKE_REACH
+    private VerificationParameters getInitialVerificationParameters() {
+        String reach = INITIAL_HANDSHAKE_REACH
+                .replace(REQ_NAMES_REPLACEMENT, getQuotedItemsAsString(getReqs()))
+                .replace(ACK_NAMES_REPLACEMENT, getQuotedItemsAsString(getAcks()))
+                .replace(REQ_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isReqAsserted()))
+                .replace(ACK_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isAckAsserted()));
+
+        return new VerificationParameters("Handshake initial state",
+                VerificationMode.STG_REACHABILITY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reach, true) {
+
+            @Override
+            public String getPropertyCheckMessage(boolean propertyHolds) {
+                return propertyHolds ? super.getPropertyCheckMessage(true) : VIOLATION_PREFIX
+                        + "Wrong initial values of some requests or acknowledgements and inversions are forbidden.";
+            }
+        };
+    }
+
+    private VerificationParameters getOnehotVerificationParameters() {
+        String reach = ONEHOT_HANDSHAKE_REACH
+                .replace(REQ_NAMES_REPLACEMENT, getQuotedItemsAsString(getReqs()))
+                .replace(ACK_NAMES_REPLACEMENT, getQuotedItemsAsString(getAcks()))
+                .replace(REQ_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isReqAsserted()))
+                .replace(ACK_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isAckAsserted()));
+
+        return new VerificationParameters("Handshake one-hotness",
+                VerificationMode.STG_REACHABILITY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reach, true) {
+
+            @Override
+            public String getPropertyCheckMessage(boolean propertyHolds) {
+                return propertyHolds ? super.getPropertyCheckMessage(true) : VIOLATION_PREFIX
+                        + "Requests and acknowledgements must be 1-hot (after correcting for polarity and initial state of handshake).";
+            }
+        };
+    }
+
+    private VerificationParameters getOrderingVerificationParameters() {
+        String reach = ORDERING_HANDSHAKE_REACH
+                .replace(REQ_NAMES_REPLACEMENT, getQuotedItemsAsString(getReqs()))
+                .replace(ACK_NAMES_REPLACEMENT, getQuotedItemsAsString(getAcks()))
+                .replace(REQ_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isReqAsserted()))
+                .replace(ACK_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isAckAsserted()));
+
+        return new VerificationParameters("Handshake ordering",
+                VerificationMode.STG_REACHABILITY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reach, true) {
+
+            @Override
+            public String getPropertyCheckMessage(boolean propertyHolds) {
+                return propertyHolds ? super.getPropertyCheckMessage(true) : VIOLATION_PREFIX
+                        + "Wrong ordering of signal edges.";
+            }
+        };
+    }
+    private VerificationParameters getReceptivenessVerificationParameters() {
+        String reach = RECEPTIVENESS_HANDSHAKE_REACH
                 .replace(REQ_NAMES_REPLACEMENT, getQuotedItemsAsString(getReqs()))
                 .replace(ACK_NAMES_REPLACEMENT, getQuotedItemsAsString(getAcks()))
                 .replace(CHECK_ASSERT_ENABLED_REPLACEMENT, ReachUtils.getBooleanAsString(isCheckAssertion()))
                 .replace(CHECK_WITHDRAW_ENABLED_REPLACEMENT, ReachUtils.getBooleanAsString(isCheckWithdrawal()))
                 .replace(REQ_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isReqAsserted()))
-                .replace(ACK_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isAckAsserted()))
-                .replace(ALLOW_INVERSIONS_REPLACEMENT, ReachUtils.getBooleanAsString(isAllowInversion()));
+                .replace(ACK_INITIALLY_ASSERTED_REPLACEMENT, ReachUtils.getBooleanAsString(getState().isAckAsserted()));
 
-        return new VerificationParameters("Handshake protocol",
+        return new VerificationParameters("Handshake receptiveness",
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reach, true);
+                reach, true) {
+            @Override
+            public String getPropertyCheckMessage(boolean propertyHolds) {
+                return propertyHolds ? super.getPropertyCheckMessage(true) : VIOLATION_PREFIX
+                        + "Receptiveness does not hold.";
+            }
+        };
     }
 
     private String getQuotedItemsAsString(Collection<String> refs) {
