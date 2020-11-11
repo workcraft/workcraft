@@ -16,8 +16,8 @@ subprojects {
     }
 
     apply plugin: 'java'
-    sourceCompatibility = gradle.javaVersion
-    targetCompatibility = gradle.javaVersion
+    sourceCompatibility = gradle.javaSourceVersion
+    targetCompatibility = gradle.javaTargetVersion
 
     sourceSets {
         main.java.srcDirs = ['src', 'src-gen']
@@ -29,6 +29,9 @@ subprojects {
     compileJava {
         options.encoding = 'UTF-8'
         options.compilerArgs << "-Xlint:deprecation"
+        if (JavaVersion.current().isJava9Compatible()) {
+            options.release = gradle.javaReleaseVersion
+        }
     }
 
     apply plugin: 'kotlin'
@@ -39,7 +42,7 @@ subprojects {
     }
 
     compileKotlin {
-        kotlinOptions.jvmTarget = gradle.javaVersion
+        kotlinOptions.jvmTarget = gradle.javaTargetVersion
     }
 
     apply plugin: 'ca.coglinc.javacc'
