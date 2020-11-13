@@ -9,9 +9,9 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditorTool;
-import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.observation.ObservableState;
 
 import java.awt.*;
@@ -67,6 +67,7 @@ public interface VisualModel extends Model<VisualNode, VisualConnection>, Observ
     Collection<VisualNode> hitBox(Point2D p1, Point2D p2);
     AbstractLayoutCommand getBestLayouter();
     Rectangle2D getBoundingBox();
+    Point2D getNodeSpacePosition(Point2D rootspacePosition, VisualTransformableNode node);
 
     void registerGraphEditorTools();
     void addGraphEditorTool(GraphEditorTool tool);
