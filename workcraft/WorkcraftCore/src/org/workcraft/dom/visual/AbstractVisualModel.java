@@ -28,6 +28,7 @@ import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
@@ -621,6 +622,15 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         p1 = transformToCurrentSpace(p1);
         p2 = transformToCurrentSpace(p2);
         return HitMan.hitBox(currentLevel, p1, p2);
+    }
+
+    @Override
+    public Point2D getNodeSpacePosition(Point2D rootspacePosition, VisualTransformableNode node) {
+        AffineTransform rootToParentTransform = TransformHelper.getTransform(getRoot(), node);
+        Point2D localPosition = rootToParentTransform.transform(rootspacePosition, null);
+
+        AffineTransform parentToNodeTransform = node.getParentToLocalTransform();
+        return parentToNodeTransform.transform(localPosition, null);
     }
 
     @Override

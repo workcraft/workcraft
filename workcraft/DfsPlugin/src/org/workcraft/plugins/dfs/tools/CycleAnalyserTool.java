@@ -1,7 +1,7 @@
 package org.workcraft.plugins.dfs.tools;
 
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.gui.controls.WrapHeaderRenderer;
 import org.workcraft.gui.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
@@ -29,10 +29,10 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     public static final String INFINITY_SYMBOL = Character.toString((char) 0x221E);
 
-    private static final int COLUMN_THROUGHPUT = 0;
-    private static final int COLUMN_TOKEN = 1;
-    private static final int COLUMN_DELAY = 2;
-    private static final int COLUMN_CYCLE = 3;
+    private static final int THROUGHPUT_COLUMN = 0;
+    private static final int TOKEN_COLUMN = 1;
+    private static final int DELAY_COLUMN = 2;
+    private static final int CYCLE_COLUMN = 3;
 
     private VisualDfs dfs;
     private ArrayList<Cycle> cycles;
@@ -56,8 +56,15 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         cycleTable = new JTable(new CycleTableModel());
         cycleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         TableColumnModel columnModel = cycleTable.getColumnModel();
-        TableColumn throughputColumn = columnModel.getColumn(COLUMN_THROUGHPUT);
+        TableColumn throughputColumn = columnModel.getColumn(THROUGHPUT_COLUMN);
         throughputColumn.setPreferredWidth(Math.round(throughputColumn.getPreferredWidth() * 1.6f));
+
+        WrapHeaderRenderer wrapHeaderRenderer = new WrapHeaderRenderer();
+        columnModel.getColumn(THROUGHPUT_COLUMN).setHeaderRenderer(wrapHeaderRenderer);
+        columnModel.getColumn(TOKEN_COLUMN).setHeaderRenderer(wrapHeaderRenderer);
+        columnModel.getColumn(DELAY_COLUMN).setHeaderRenderer(wrapHeaderRenderer);
+        columnModel.getColumn(CYCLE_COLUMN).setHeaderRenderer(wrapHeaderRenderer);
+
         cycleTable.setRowHeight(SizeHelper.getComponentHeightFromFont(cycleTable.getFont()));
         cycleTable.setDefaultRenderer(Object.class, new CycleTableCellRenderer());
         cycleTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
@@ -156,7 +163,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         cycleTable.clearSelection();
         selectedCycle = null;
         cycles = findCycles();
-        if ((cycles != null) && (cycleCountLabel != null)) {
+        if (cycleCountLabel != null) {
             cycleCountLabel.setText("Cycle count (out of " + cycles.size() + "):");
         }
     }
@@ -195,49 +202,46 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if (node instanceof VisualDelayComponent) {
-                    if (selectedCycle == null) {
-                        double delay = ((VisualDelayComponent) node).getReferencedComponent().getDelay();
-                        double range = maxDelay - minDelay;
-                        double offset = delay - minDelay;
-                        final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
-                        return new Decoration() {
-                            @Override
-                            public Color getColorisation() {
-                                return fgColor;
-                            }
-                            @Override
-                            public Color getBackground() {
-                                return null;
-                            }
-                        };
-                    } else if (selectedCycle.components.contains(node)) {
-                        double delay = selectedCycle.getEffectiveDelay((VisualDelayComponent) node);
-                        double range = selectedCycle.maxDelay - selectedCycle.minDelay;
-                        double offset = delay - selectedCycle.minDelay;
-                        int bgIintencity = 150;
-                        if (range > 0) {
-                            bgIintencity = (int) (bgIintencity + (255 - bgIintencity) * offset / range);
+        return node -> {
+            if (node instanceof VisualDelayComponent) {
+                if (selectedCycle == null) {
+                    double delay = ((VisualDelayComponent) node).getReferencedComponent().getDelay();
+                    double range = maxDelay - minDelay;
+                    double offset = delay - minDelay;
+                    final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
+                    return new Decoration() {
+                        @Override
+                        public Color getColorisation() {
+                            return fgColor;
                         }
-                        final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
-                        final Color bgColor = new Color(bgIintencity, 0, 0);
-                        return new Decoration() {
-                            @Override
-                            public Color getColorisation() {
-                                return fgColor;
-                            }
-                            @Override
-                            public Color getBackground() {
-                                return bgColor;
-                            }
-                        };
+                        @Override
+                        public Color getBackground() {
+                            return null;
+                        }
+                    };
+                } else if (selectedCycle.components.contains(node)) {
+                    double delay = selectedCycle.getEffectiveDelay((VisualDelayComponent) node);
+                    double range = selectedCycle.maxDelay - selectedCycle.minDelay;
+                    double offset = delay - selectedCycle.minDelay;
+                    int bgIintencity = 150;
+                    if (range > 0) {
+                        bgIintencity = (int) (bgIintencity + (255 - bgIintencity) * offset / range);
                     }
+                    final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
+                    final Color bgColor = new Color(bgIintencity, 0, 0);
+                    return new Decoration() {
+                        @Override
+                        public Color getColorisation() {
+                            return fgColor;
+                        }
+                        @Override
+                        public Color getBackground() {
+                            return bgColor;
+                        }
+                    };
                 }
-                return null;
             }
+            return null;
         };
     }
 
@@ -282,16 +286,16 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         public String getColumnName(int column) {
             String result;
             switch (column) {
-            case COLUMN_CYCLE:
+            case CYCLE_COLUMN:
                 result = "Cycle";
                 break;
-            case COLUMN_TOKEN:
-                result = "Tokens";
+            case TOKEN_COLUMN:
+                result = "Spread tokens";
                 break;
-            case COLUMN_DELAY:
+            case DELAY_COLUMN:
                 result = "Delay";
                 break;
-            case COLUMN_THROUGHPUT:
+            case THROUGHPUT_COLUMN:
                 result = "Throughput";
                 break;
             default:
@@ -315,20 +319,20 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             Cycle cycle = cycles.get(row);
             if (cycle != null) {
                 switch (col) {
-                case COLUMN_THROUGHPUT:
+                case THROUGHPUT_COLUMN:
                     if (cycle.totalDelay == 0) {
                         result = INFINITY_SYMBOL;
                     } else {
                         result = new DecimalFormat("#.###").format(cycle.throughput);
                     }
                     break;
-                case COLUMN_TOKEN:
+                case TOKEN_COLUMN:
                     result = cycle.tokenCount;
                     break;
-                case COLUMN_DELAY:
+                case DELAY_COLUMN:
                     result = new DecimalFormat("#.###").format(cycle.totalDelay);
                     break;
-                case COLUMN_CYCLE:
+                case CYCLE_COLUMN:
                     result = cycle.toString();
                     break;
                 default:
@@ -354,6 +358,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
+
             label.setBorder(GuiUtils.getTableCellBorder());
             if ((cycles != null) && (row >= 0) && (row < cycles.size())) {
                 label.setText(value.toString());

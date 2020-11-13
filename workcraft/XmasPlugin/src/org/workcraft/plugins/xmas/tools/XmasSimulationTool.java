@@ -2,7 +2,6 @@ package org.workcraft.plugins.xmas.tools;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -21,7 +20,6 @@ import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashSet;
@@ -73,15 +71,16 @@ public class XmasSimulationTool extends StgSimulationTool {
             transition = getExcitedTransition(converter.getClockStg().fallList);
         }
         if (e.getButton() == MouseEvent.BUTTON1) {
-            Point2D posRoot = e.getPosition();
-            Node deepestNode = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
+            Point2D rootspacePosition = e.getPosition();
+            VisualModel model = e.getModel();
+            Node deepestNode = HitMan.hitDeepest(rootspacePosition, model.getRoot(),
                     node -> node instanceof VisualTransformableNode);
 
             if (deepestNode instanceof VisualTransformableNode) {
-                AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), deepestNode);
-                Point2D posLocal = rootToLocalTransform.transform(posRoot, null);
-                Point2D posNode = ((VisualTransformableNode) deepestNode).getParentToLocalTransform().transform(posLocal, null);
-                transition = getClickedComponentTransition(deepestNode, posNode);
+                Point2D nodespacePosition = model.getNodeSpacePosition(rootspacePosition,
+                        (VisualTransformableNode) deepestNode);
+
+                transition = getClickedComponentTransition(deepestNode, nodespacePosition);
             }
         }
         if (transition != null) {
@@ -93,7 +92,7 @@ public class XmasSimulationTool extends StgSimulationTool {
         }
     }
 
-    private Transition getClickedComponentTransition(Node node, Point2D posNode) {
+    private Transition getClickedComponentTransition(Node node, Point2D nodespacePosition) {
         Transition result = null;
         if (node instanceof VisualXmasContact) {
             ContactStg contactStg = converter.getContactStg((VisualXmasContact) node);
@@ -111,15 +110,15 @@ public class XmasSimulationTool extends StgSimulationTool {
             VisualQueueComponent queue = (VisualQueueComponent) node;
             QueueStg queueStg = converter.getQueueStg(queue);
             int capacity = queue.getReferencedComponent().getCapacity();
-            int idx = (int) Math.floor(0.5 * capacity + posNode.getX() * queue.SLOT_WIDTH);
+            int idx = (int) Math.floor(0.5 * capacity + nodespacePosition.getX() * queue.SLOT_WIDTH);
             if (idx >= capacity) idx = capacity - 1;
             if (idx < 0) idx = 0;
             SlotStg slot = queueStg.slotList.get(idx);
             double headThreshold = 0.5 * queue.SLOT_HEIGHT - queue.HEAD_SIZE;
             double tailThreshold = 0.5 * queue.SLOT_HEIGHT - queue.TAIL_SIZE;
-            if (posNode.getY() < -headThreshold) {
+            if (nodespacePosition.getY() < -headThreshold) {
                 result = getExcitedTransition(slot.hd.rdy.getAllTransitions());
-            } else if (posNode.getY() > tailThreshold) {
+            } else if (nodespacePosition.getY() > tailThreshold) {
                 result = getExcitedTransition(slot.tl.rdy.getAllTransitions());
             } else {
                 result = getExcitedTransition(slot.mem.getAllTransitions());

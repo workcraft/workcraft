@@ -14,8 +14,8 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.ConnectionTool;
 import org.workcraft.gui.tools.NodeGeneratorTool;
-import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.dfs.tools.CycleAnalyserTool;
+import org.workcraft.plugins.dfs.tools.DfsSelectionTool;
 import org.workcraft.plugins.dfs.tools.DfsSimulationTool;
 import org.workcraft.utils.Hierarchy;
 
@@ -36,7 +36,7 @@ public class VisualDfs extends AbstractVisualModel {
 
     @Override
     public void registerGraphEditorTools() {
-        addGraphEditorTool(new SelectionTool());
+        addGraphEditorTool(new DfsSelectionTool());
         addGraphEditorTool(new CommentGeneratorTool());
         addGraphEditorTool(new ConnectionTool());
         addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Logic.class)));
