@@ -21,8 +21,8 @@ public class TraceUtilsTest {
 
     @Test
     public void serialiseSolutionTest() {
-        Assertions.assertNull(new Solution(null).toString());
-        Assertions.assertEquals("[empty]", new Solution(new Trace()).toString());
+        Assertions.assertEquals("[no trace]", new Solution(null).toString());
+        Assertions.assertEquals("[empty trace]", new Solution(new Trace()).toString());
         serialiseSolutionCheck(null, -1, null, -1, -1, null);
         serialiseSolutionCheck(Arrays.asList(""), 0, null, -1, -1, "");
         serialiseSolutionCheck(Arrays.asList("a", "b", "c"), 0, null, -1, -1, "a, b, c");
@@ -112,7 +112,7 @@ public class TraceUtilsTest {
         Assertions.assertEquals(0, trace.getPosition());
         Assertions.assertFalse(trace.canProgress());
 
-        Assertions.assertEquals("[empty]", trace.toString());
+        Assertions.assertEquals("[empty trace]", trace.toString());
     }
 
     @Test

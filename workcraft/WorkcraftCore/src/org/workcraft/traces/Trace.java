@@ -7,6 +7,8 @@ import java.util.ArrayList;
 @SuppressWarnings("serial")
 public class Trace extends ArrayList<String> {
 
+    private static final String EMPTY_TEXT = "[empty trace]";
+
     private int position = 0;
 
     public Trace() {
@@ -66,7 +68,7 @@ public class Trace extends ArrayList<String> {
 
     @Override
     public String toString() {
-        return isEmpty() ? TraceUtils.EMPTY_TEXT : TraceUtils.serialiseTrace(this);
+        return isEmpty() ? EMPTY_TEXT : TraceUtils.serialiseTrace(this);
     }
 
 }

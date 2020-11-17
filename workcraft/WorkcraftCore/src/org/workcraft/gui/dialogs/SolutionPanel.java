@@ -35,7 +35,7 @@ public class SolutionPanel extends JPanel {
         traceText.setMargin(SizeHelper.getTextMargin());
         String solutionString = solution.toString();
         traceText.setText(solutionString);
-        if (TraceUtils.EMPTY_TEXT.equals(solutionString)) {
+        if (solutionString.startsWith("[")) {
             traceText.setEnabled(false);
         } else {
             traceText.setEditable(false);
