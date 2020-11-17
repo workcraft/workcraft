@@ -9,6 +9,13 @@ transformCircuitSplitGate(work) - transform the Circuit 'work' by splitting sele
 transformCircuitToggleBubble(work) - transform the Circuit 'work' by toggling inversion of selected contacts and outputs of selected components
 transformCircuitToggleZeroDelay(work) - transform the Circuit 'work' by toggling zero delay of selected inverters and buffers
 transformDfsContractComponent(work) -  transform the DFS 'work' by contracting selected components
+transformDfsInsertControlRegister(work) - transform the DFS 'work' by inserting control register nodes into selected arcs
+transformDfsInsertCounterflowLogic(work) - transform the DFS 'work' by inserting counterflow logic nodes into selected arcs
+transformDfsInsertCounterflowRegister(work) - transform the DFS 'work' by inserting counterflow register nodes into selected arcs
+transformDfsInsertLogic(work) - transform the DFS 'work' by inserting logic nodes into selected arcs
+transformDfsInsertPopRegister(work) - transform the DFS 'work' by inserting pop register nodes into selected arcs
+transformDfsInsertPushRegister(work) - transform the DFS 'work' by inserting push register nodes into selected arcs
+transformDfsInsertRegister(work) - transform the DFS 'work' by inserting register nodes into selected arcs
 transformDfsMergeComponent(work) -  transform the DFS 'work' by merging selected components
 transformDfsWagging2Way(work) - transform the DFS 'work' by applying 2-way wagging to the selected pipeline section
 transformDfsWagging3Way(work) - transform the DFS 'work' by applying 3-way wagging to the selected pipeline section
