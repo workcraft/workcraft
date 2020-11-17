@@ -82,24 +82,24 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
             return;
         }
 
-        ArrayList<VerificationParameters> settingsList = new ArrayList<>();
-        settingsList.add(ReachUtils.getConsistencyParameters());
-        settingsList.add(ReachUtils.getDeadlockParameters());
+        ArrayList<VerificationParameters> verificationParametersList = new ArrayList<>();
+        verificationParametersList.add(ReachUtils.getConsistencyParameters());
+        verificationParametersList.add(ReachUtils.getDeadlockParameters());
         if (noDummies) {
-            settingsList.add(ReachUtils.getInputPropernessParameters());
+            verificationParametersList.add(ReachUtils.getInputPropernessParameters());
         }
 
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-        settingsList.addAll(ReachUtils.getMutexImplementabilityParameters(mutexes));
+        verificationParametersList.addAll(ReachUtils.getMutexImplementabilityParameters(mutexes));
         if (noDummies) {
             LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
-            settingsList.add(ReachUtils.getOutputPersistencyParameters(exceptions));
+            verificationParametersList.add(ReachUtils.getOutputPersistencyParameters(exceptions));
         }
 
         OutputDeterminacyTask extraTask = new OutputDeterminacyTask(we);
 
         TaskManager manager = Framework.getInstance().getTaskManager();
-        CombinedChainTask task = new CombinedChainTask(we, settingsList, extraTask);
+        CombinedChainTask task = new CombinedChainTask(we, verificationParametersList, extraTask);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         monitor.setVacuousMutexImplementability(mutexes.isEmpty());
 

@@ -72,7 +72,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         }
     }
 
-    class ListCellRenderer extends DefaultListCellRenderer {
+    static class ListCellRenderer extends DefaultListCellRenderer {
 
         private final Color color;
 
@@ -90,7 +90,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         }
     }
 
-    class SignalList extends JList<String> {
+    static class SignalList extends JList<String> {
 
         SignalList(Collection<String> signals, Color color) {
             super(new Vector<>(signals));
@@ -212,6 +212,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         });
         passiveRadioButton.setSelected(true);
 
+
         result.add(typePanel, BorderLayout.NORTH);
         result.add(signalPanel, BorderLayout.CENTER);
         result.add(optionsPanel, BorderLayout.SOUTH);
@@ -254,10 +255,19 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         DataMapper<HandshakeParameters> guiMapper = new DataMapper<HandshakeParameters>() {
             @Override
             public void applyDataToControls(HandshakeParameters data) {
-                passiveRadioButton.setSelected(data.getType() == HandshakeParameters.Type.PASSIVE);
-                activeRadioButton.setSelected(data.getType() == HandshakeParameters.Type.ACTIVE);
-                selectSignals(getReqList(), data.getReqs());
-                selectSignals(getAckList(), data.getAcks());
+                Stg stg = getUserData().getStg();
+                Set<String> inputSignals = stg.getSignalReferences(Signal.Type.INPUT);
+                Set<String> outputSignals = stg.getSignalReferences(Signal.Type.OUTPUT);
+                Set<String> reqs = data.getReqs();
+                Set<String> acks = data.getAcks();
+                boolean isActive = outputSignals.containsAll(reqs) && inputSignals.containsAll(acks);
+                if (isActive) {
+                    activeRadioButton.setSelected(true);
+                } else {
+                    passiveRadioButton.setSelected(true);
+                }
+                selectSignals(getReqList(), reqs);
+                selectSignals(getAckList(), acks);
                 checkAssertEnabledCheckbox.setSelected(data.isCheckAssertion());
                 checkWithdrawEnabledCheckbox.setSelected(data.isCheckWithdrawal());
                 stateReq0Ack0Radio.setSelected(data.getState() == HandshakeParameters.State.REQ0ACK0);
@@ -292,14 +302,6 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
     @Override
     public HandshakeParameters getPresetData() {
-        HandshakeParameters.Type type = null;
-        if (passiveRadioButton.isSelected()) {
-            type = HandshakeParameters.Type.PASSIVE;
-        }
-        if (activeRadioButton.isSelected()) {
-            type = HandshakeParameters.Type.ACTIVE;
-        }
-
         Collection<String> reqs = getReqList().getSelectedValuesList();
         Collection<String> acks = getAckList().getSelectedValuesList();
 
@@ -317,8 +319,9 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
             state = HandshakeParameters.State.REQ0ACK1;
         }
 
-        return new HandshakeParameters(type, reqs, acks,
-                checkAssertEnabledCheckbox.isSelected(), checkWithdrawEnabledCheckbox.isSelected(),
+        return new HandshakeParameters(reqs, acks,
+                checkAssertEnabledCheckbox.isSelected(),
+                checkWithdrawEnabledCheckbox.isSelected(),
                 state, allowInversionCheckbox.isSelected());
     }
 

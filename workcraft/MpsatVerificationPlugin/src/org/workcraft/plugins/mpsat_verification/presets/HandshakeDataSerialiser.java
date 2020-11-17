@@ -11,7 +11,6 @@ public class HandshakeDataSerialiser implements DataSerialiser<HandshakeParamete
 
     private static final String SETTINGS_ELEMENT = "settings";
     private static final String SETTINGS_NAME_ATTRIBUTE = "name";
-    private static final String SETTINGS_TYPE_ATTRIBUTE = "type";
     private static final String SETTINGS_REQ_ELEMENT = "req";
     private static final String SETTINGS_ACK_ELEMENT = "ack";
     private static final String SETTINGS_CHECK_ASSERTION_ATTRIBUTE = "check-assertion";
@@ -29,10 +28,6 @@ public class HandshakeDataSerialiser implements DataSerialiser<HandshakeParamete
         Collection<String> reqs = readSignals(settingsElement, SETTINGS_REQ_ELEMENT);
         Collection<String> acks = readSignals(settingsElement, SETTINGS_ACK_ELEMENT);
 
-        HandshakeParameters.Type type = XmlUtils.readEnumAttribute(settingsElement,
-                SETTINGS_TYPE_ATTRIBUTE, HandshakeParameters.Type.class,
-                defaultHandshakeParameters.getType());
-
         boolean checkAssert = XmlUtils.readBooleanAttribute(settingsElement,
                 SETTINGS_CHECK_ASSERTION_ATTRIBUTE, defaultHandshakeParameters.isCheckAssertion());
 
@@ -46,7 +41,7 @@ public class HandshakeDataSerialiser implements DataSerialiser<HandshakeParamete
         boolean allowInversion = XmlUtils.readBooleanAttribute(settingsElement,
                 SETTINGS_ALLOW_INVERSION_ATTRIBUTE, defaultHandshakeParameters.isAllowInversion());
 
-        return new HandshakeParameters(type, reqs, acks, checkAssert, checkWithdraw, state,
+        return new HandshakeParameters(reqs, acks, checkAssert, checkWithdraw, state,
                 allowInversion);
     }
 
@@ -63,8 +58,6 @@ public class HandshakeDataSerialiser implements DataSerialiser<HandshakeParamete
         Element settingsElement = XmlUtils.createChildElement(SETTINGS_ELEMENT, parent);
         writeSignals(settingsElement, handshakeParameters.getReqs(), SETTINGS_REQ_ELEMENT);
         writeSignals(settingsElement, handshakeParameters.getAcks(), SETTINGS_ACK_ELEMENT);
-
-        settingsElement.setAttribute(SETTINGS_TYPE_ATTRIBUTE, handshakeParameters.getType().name());
 
         settingsElement.setAttribute(SETTINGS_CHECK_ASSERTION_ATTRIBUTE,
                 Boolean.toString(handshakeParameters.isCheckAssertion()));

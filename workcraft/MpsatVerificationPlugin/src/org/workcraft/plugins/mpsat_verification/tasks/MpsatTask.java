@@ -19,7 +19,8 @@ import java.util.List;
 
 public class MpsatTask implements Task<MpsatOutput> {
 
-    public static final String OUTPUT_FILE_NAME = "solutions.xml";
+    private static final String SOLUTIONS_FILE_PREFIX = "solutions";
+    private static final String SOLUTIONS_FILE_EXTENSION = ".xml";
 
     private final File unfoldingFile;
     private final File netFile;
@@ -65,8 +66,10 @@ public class MpsatTask implements Task<MpsatOutput> {
         }
 
         // Output file
-        File outputFile = new File(directory, OUTPUT_FILE_NAME);
-        command.add(outputFile.getAbsolutePath());
+        File solutionsFile = verificationParameters.getDescriptiveFile(directory,
+                SOLUTIONS_FILE_PREFIX, SOLUTIONS_FILE_EXTENSION);
+
+        command.add(solutionsFile.getAbsolutePath());
 
         boolean printStdout = MpsatVerificationSettings.getPrintStdout();
         boolean printStderr = MpsatVerificationSettings.getPrintStderr();
@@ -79,7 +82,7 @@ public class MpsatTask implements Task<MpsatOutput> {
             int returnCode = output.getReturnCode();
             if ((returnCode == 0) || (returnCode == 1)) {
                 try {
-                    MpsatOutputReader outputReader = new MpsatOutputReader(outputFile);
+                    MpsatOutputReader outputReader = new MpsatOutputReader(solutionsFile);
                     if (outputReader.isSuccess()) {
                         List<Solution> solutions = outputReader.getSolutions();
                         return Result.success(new MpsatOutput(output, verificationParameters, netFile, solutions));

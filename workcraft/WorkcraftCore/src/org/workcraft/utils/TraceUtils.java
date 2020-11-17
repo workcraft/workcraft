@@ -9,12 +9,9 @@ import org.workcraft.traces.Trace;
 import org.workcraft.types.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class TraceUtils {
-
-    public static final String EMPTY_TEXT = "[empty]";
 
     private static final String EMPTY = "";
     private static final String SPACE = " ";
@@ -114,21 +111,6 @@ public class TraceUtils {
             }
         }
         return result;
-    }
-
-    public static boolean hasTraces(List<Solution> solutions) {
-        if (solutions != null) {
-            for (Solution solution : solutions) {
-                if (hasTraces(solution)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public static boolean hasTraces(Solution solution) {
-        return (solution != null) && solution.hasTrace();
     }
 
     public static void playSolution(WorkspaceEntry we, Solution solution) {

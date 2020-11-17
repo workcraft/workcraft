@@ -9,6 +9,8 @@ import java.util.Set;
 
 public class Solution {
 
+    private static final String EMPTY_TEXT = "[no trace]";
+
     private final Trace mainTrace;
     private final Trace branchTrace;
     private String comment;
@@ -94,7 +96,7 @@ public class Solution {
     @Override
     public String toString() {
         String result = TraceUtils.serialiseSolution(this);
-        return (result != null) && result.isEmpty() ? TraceUtils.EMPTY_TEXT : result;
+        return result == null ? EMPTY_TEXT : result.isEmpty() ? new Trace().toString() : result;
     }
 
 }

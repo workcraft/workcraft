@@ -44,10 +44,10 @@ public class HandshakeVerificationCommandTests {
         Assertions.assertFalse(command.execute(we, command.deserialiseData("{a12} {r1 r2}")));
 
         Assertions.assertFalse(command.execute(we, command.deserialiseData(
-                "<settings type=\"PASSIVE\"><req name=\"a\"/><ack name=\"r\"/></settings>")));
+                "<settings><req name=\"a\"/><ack name=\"r\"/></settings>")));
 
         Assertions.assertTrue(command.execute(we, command.deserialiseData(
-                "<settings type=\"ACTIVE\"><req name=\"r\"/><ack name=\"a\"/></settings>")));
+                "<settings><req name=\"r\"/><ack name=\"a\"/></settings>")));
 
         Assertions.assertTrue(command.execute(we, command.deserialiseData(
                 "<settings><req name=\"r1\"/><req name=\"r2\"/><ack name=\"a12\"/></settings>")));
@@ -55,7 +55,7 @@ public class HandshakeVerificationCommandTests {
         Assertions.assertFalse(command.execute(we, command.deserialiseData(
                 "<settings><req name=\"a12\"/><ack name=\"r1\"/><ack name=\"r2\"/></settings>")));
 
-        Assertions.assertNull(command.execute(we, command.deserialiseData(
+        Assertions.assertFalse(command.execute(we, command.deserialiseData(
                 "<settings state=\"REQ1ACK0\" allow-inversion=\"false\"><req name=\"a12\"/><ack name=\"r1\"/><ack name=\"r2\"/></settings>")));
 
         Assertions.assertTrue(command.execute(we, command.deserialiseData(

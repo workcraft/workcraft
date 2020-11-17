@@ -16,7 +16,6 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.HashMap;
@@ -33,7 +32,7 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
 
     @Override
     public String extendMessage(String message) {
-        return "<html><br>&#160;" + message + " after the following trace(s):<br><br></html>";
+        return "<html><br>&#160;" + message + " after the following trace(s):<br></html>";
     }
 
     @Override
@@ -89,13 +88,13 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
         if (getOutput() == null) {
             return null;
         }
-        List<Solution> solutions = getOutput().getSolutions();
-        boolean propertyHolds = !TraceUtils.hasTraces(solutions);
+        boolean propertyHolds = !getOutput().hasSolutions();
         if (propertyHolds) {
             OutcomeUtils.showOutcome(true, "The system is deadlock-free", isInteractive());
         } else {
+            List<Solution> solutions = getOutput().getSolutions();
             List<Solution> processedSolutions = processSolutions(solutions);
-            if (!TraceUtils.hasTraces(processedSolutions)) {
+            if (processedSolutions.isEmpty()) {
                 OutcomeUtils.showOutcome(false,
                         "Deadlock freeness cannot be reliably verified because of conformation violation",
                         isInteractive());

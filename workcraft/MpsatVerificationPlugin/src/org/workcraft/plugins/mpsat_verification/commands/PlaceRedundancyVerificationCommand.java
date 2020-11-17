@@ -107,11 +107,18 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
 
         String str = data.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
         String reach = PLACE_REDUNDANCY_REACH.replace(PLACE_REDUNDANCY_NAMES_REPLACEMENT, str);
+
         VerificationParameters verificationParameters = new VerificationParameters("Place redundancy",
                 VerificationMode.REACHABILITY_REDUNDANCY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reach, true);
+                reach, true) {
+
+            @Override
+            public String getPropertyCheckMessage(boolean propertyHolds) {
+                return "The selected places are " + (propertyHolds ? "redundant." : "essential.");
+            }
+        };
 
         TaskManager manager = Framework.getInstance().getTaskManager();
         VerificationChainTask task = new VerificationChainTask(we, verificationParameters);

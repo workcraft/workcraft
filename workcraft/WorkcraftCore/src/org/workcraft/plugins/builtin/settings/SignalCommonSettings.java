@@ -61,7 +61,7 @@ public class SignalCommonSettings extends AbstractCommonSettings {
                 SignalCommonSettings::getShowToggle));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Show signal toggle",
+                "Group signals by type in model properties",
                 SignalCommonSettings::setGroupByType,
                 SignalCommonSettings::getGroupByType));
     }

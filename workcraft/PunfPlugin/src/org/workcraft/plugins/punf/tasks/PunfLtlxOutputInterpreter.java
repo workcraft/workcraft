@@ -62,7 +62,7 @@ public class PunfLtlxOutputInterpreter extends AbstractOutputInterpreter<PunfOut
             return null;
         }
         Solution solution = getSolution();
-        boolean propertyHolds = !TraceUtils.hasTraces(solution);
+        boolean propertyHolds = solution == null;
         String message = getMessage(propertyHolds);
         if (propertyHolds) {
             if (isInteractive()) {

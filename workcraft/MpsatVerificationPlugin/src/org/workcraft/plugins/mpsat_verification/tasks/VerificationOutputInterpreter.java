@@ -38,7 +38,7 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
             if ((message == null) && (verificationParameters.getDescription() != null)) {
                 message = verificationParameters.getDescription();
             }
-            boolean propertyHolds = verificationParameters.getInversePredicate();
+            boolean propertyHolds = verificationParameters.isInversePredicate();
             OutcomeUtils.showOutcome(propertyHolds, message, isInteractive());
             return propertyHolds;
 

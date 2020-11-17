@@ -13,14 +13,9 @@ class RedundancyOutputInterpreter extends ReachabilityOutputInterpreter {
     }
 
     @Override
-    public String getMessage(boolean propertyHolds) {
-        return "The selected places are " + (propertyHolds ? "redundant" : "essential");
-    }
-
-    @Override
     public String extendMessage(String message) {
-        String traceInfo = "&#160;Trace(s) leading to the witness state(s):<br><br>";
-        return "<html><br>&#160;" + message + "<br><br>" + traceInfo + "</html>";
+        String traceInfo = "Trace(s) leading to the witness state(s):";
+        return "<html><br>&#160;" + message + "<br><br>&#160;" + traceInfo + "<br></html>";
     }
 
 }

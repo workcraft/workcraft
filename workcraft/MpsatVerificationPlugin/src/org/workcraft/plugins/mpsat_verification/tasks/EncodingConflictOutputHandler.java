@@ -12,7 +12,6 @@ import org.workcraft.traces.Solution;
 import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
@@ -40,8 +39,7 @@ final class EncodingConflictOutputHandler extends AbstractOutputInterpreter<Mpsa
         if (getOutput() == null) {
             return null;
         }
-        List<Solution> solutions = getOutput().getSolutions();
-        boolean propertyHolds = !TraceUtils.hasTraces(solutions);
+        boolean propertyHolds = !getOutput().hasSolutions();
         if (propertyHolds) {
             String msg = "No encoding conflicts.";
             if (isInteractive()) {
@@ -50,6 +48,7 @@ final class EncodingConflictOutputHandler extends AbstractOutputInterpreter<Mpsa
                 LogUtils.logInfo(msg);
             }
         } else {
+            List<Solution> solutions = getOutput().getSolutions();
             ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));
             if (isInteractive()) {
                 Collections.sort(cores, (c1, c2) -> {

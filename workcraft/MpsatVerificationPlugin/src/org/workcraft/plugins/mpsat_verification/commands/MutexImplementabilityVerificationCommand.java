@@ -69,8 +69,8 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
         TaskManager manager = framework.getTaskManager();
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        List<VerificationParameters> settingsList = ReachUtils.getMutexImplementabilityParameters(mutexes);
-        CombinedChainTask task = new CombinedChainTask(we, settingsList);
+        List<VerificationParameters> verificationParametersList = ReachUtils.getMutexImplementabilityParameters(mutexes);
+        CombinedChainTask task = new CombinedChainTask(we, verificationParametersList);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
     }

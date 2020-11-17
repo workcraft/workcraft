@@ -14,7 +14,6 @@ import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
-import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -99,18 +98,14 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     }
 
     public String getMessage(boolean propertyHolds) {
-        String propertyName = getOutput().getVerificationParameters().getDescription();
-        if ((propertyName == null) || propertyName.isEmpty()) {
-            propertyName = "Property";
-        }
-        return propertyName + (propertyHolds ? " holds." :  " is violated.");
+        return getOutput().getVerificationParameters().getPropertyCheckMessage(propertyHolds);
     }
 
     public String extendMessage(String message) {
-        boolean inversePredicate = getOutput().getVerificationParameters().getInversePredicate();
+        boolean inversePredicate = getOutput().getVerificationParameters().isInversePredicate();
         String traceCharacteristic = inversePredicate ? "problematic" : "sought";
         String traceInfo = "Trace(s) leading to the " + traceCharacteristic + " state(s):";
-        return "<html>" + message + "<br><br>" + traceInfo + "</html>";
+        return "<html>&#160;" + message + "<br><br>&#160;" + traceInfo + "<br></html>";
     }
 
     @Override
@@ -119,8 +114,8 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
             return null;
         }
         List<Solution> solutions = getOutput().getSolutions();
-        boolean predicateSatisfiable = TraceUtils.hasTraces(solutions);
-        boolean inversePredicate = getOutput().getVerificationParameters().getInversePredicate();
+        boolean predicateSatisfiable = getOutput().hasSolutions();
+        boolean inversePredicate = getOutput().getVerificationParameters().isInversePredicate();
         boolean propertyHolds = predicateSatisfiable != inversePredicate;
         String message = getMessage(propertyHolds);
         if (!predicateSatisfiable) {

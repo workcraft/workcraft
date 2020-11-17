@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class VerificationParameters {
 
     private static final String ASSERTION_FILE_PREFIX = "assertion";
-    private static final String ASSERTION_FILE_EXTENTION = ".txt";
+    private static final String ASSERTION_FILE_EXTENSION = ".txt";
 
     public enum SolutionMode {
         MINIMUM_COST("Minimal cost solution"),
@@ -63,6 +63,15 @@ public class VerificationParameters {
         return description;
     }
 
+    public String getPropertyCheckMessage(boolean propertyHolds) {
+        String propertyName = getDescription();
+        if ((propertyName == null) || propertyName.isEmpty()) {
+            propertyName = "Property";
+        }
+
+        return propertyName + (propertyHolds ? " holds." :  " is violated.");
+    }
+
     public VerificationMode getMode() {
         return mode;
     }
@@ -83,27 +92,17 @@ public class VerificationParameters {
         return expression;
     }
 
-    public boolean getInversePredicate() {
+    public boolean isInversePredicate() {
         return inversePredicate;
     }
 
     public String[] getMpsatArguments(File workingDirectory) {
-        ArrayList<String> args = new ArrayList<>();
-        args.addAll(getMode().getArguments());
+        ArrayList<String> args = new ArrayList<>(getMode().getArguments());
 
         String expression = getExpression();
         if (expression != null) {
             try {
-                File assertionFile = null;
-                if (workingDirectory == null) {
-                    assertionFile = FileUtils.createTempFile(ASSERTION_FILE_PREFIX, ASSERTION_FILE_EXTENTION);
-                    assertionFile.deleteOnExit();
-                } else {
-                    String prefix = description == null ? ASSERTION_FILE_PREFIX
-                            : ASSERTION_FILE_PREFIX + "-" + description.replaceAll("\\s", "_");
-
-                    assertionFile = new File(workingDirectory, prefix + ASSERTION_FILE_EXTENTION);
-                }
+                File assertionFile = getDescriptiveFile(workingDirectory, ASSERTION_FILE_PREFIX, ASSERTION_FILE_EXTENSION);
                 FileUtils.dumpString(assertionFile, expression);
                 if (MpsatVerificationSettings.getDebugReach()) {
                     LogUtils.logInfo("REACH expression to check");
@@ -136,6 +135,14 @@ public class VerificationParameters {
         }
 
         return args.toArray(new String[0]);
+    }
+
+    public File getDescriptiveFile(File directory, String prefix, String extension) {
+        return new File(directory, prefix + getDescriptiveSuffix() + extension);
+    }
+
+    private String getDescriptiveSuffix() {
+        return description == null ? "" : "-" + description.replaceAll("\\s", "_");
     }
 
 }
