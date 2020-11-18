@@ -1,13 +1,13 @@
 package org.workcraft.plugins.dfs;
 
-import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.Framework;
+import org.workcraft.Version;
+import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.Version;
-import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.plugins.dfs.commands.*;
 import org.workcraft.plugins.dfs.interop.VerilogExporter;
+import org.workcraft.utils.ScriptableCommandUtils;
 
 @SuppressWarnings("unused")
 public class DfsPlugin implements Plugin {
@@ -39,6 +39,21 @@ public class DfsPlugin implements Plugin {
                 "check the DFS 'work' for output persistency");
         ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkDfsCombined",
                 " combined check of the DFS 'work' for deadlock freeness and output persistency");
+
+        ScriptableCommandUtils.registerCommand(InsertLogicTransformationCommand.class, "transformDfsInsertLogic",
+                "transform the DFS 'work' by inserting logic nodes into selected arcs");
+        ScriptableCommandUtils.registerCommand(InsertRegisterTransformationCommand.class, "transformDfsInsertRegister",
+                "transform the DFS 'work' by inserting register nodes into selected arcs");
+        ScriptableCommandUtils.registerCommand(InsertControlRegisterTransformationCommand.class, "transformDfsInsertControlRegister",
+                "transform the DFS 'work' by inserting control register nodes into selected arcs");
+        ScriptableCommandUtils.registerCommand(InsertPushRegisterTransformationCommand.class, "transformDfsInsertPushRegister",
+                "transform the DFS 'work' by inserting push register nodes into selected arcs");
+        ScriptableCommandUtils.registerCommand(InsertPopRegisterTransformationCommand.class, "transformDfsInsertPopRegister",
+                "transform the DFS 'work' by inserting pop register nodes into selected arcs");
+        ScriptableCommandUtils.registerCommand(InsertCounterflowLogicTransformationCommand.class, "transformDfsInsertCounterflowLogic",
+                "transform the DFS 'work' by inserting counterflow logic nodes into selected arcs");
+        ScriptableCommandUtils.registerCommand(InsertCounterflowRegisterTransformationCommand.class, "transformDfsInsertCounterflowRegister",
+                "transform the DFS 'work' by inserting counterflow register nodes into selected arcs");
 
         ScriptableCommandUtils.registerCommand(MergeComponentTransformationCommand.class, "transformDfsMergeComponent",
                 " transform the DFS 'work' by merging selected components");
