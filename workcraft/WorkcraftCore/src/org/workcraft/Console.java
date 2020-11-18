@@ -149,7 +149,7 @@ public class Console {
         }
     }
 
-    @SuppressWarnings("PMD.DoNotCallSystemExit")
+    @SuppressWarnings("PMD.DoNotTerminateVM")
     private static void execScriptParameter(String script, Collection<String> paths) {
         if (script != null) {
             Framework framework = Framework.getInstance();
@@ -173,7 +173,7 @@ public class Console {
         }
     }
 
-    @SuppressWarnings("PMD.DoNotCallSystemExit")
+    @SuppressWarnings("PMD.DoNotTerminateVM")
     private static void processShutdownRequest() {
         try {
             SwingUtilities.invokeAndWait(() -> {
