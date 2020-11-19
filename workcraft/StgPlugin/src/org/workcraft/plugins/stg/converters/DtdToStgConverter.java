@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg.converters;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
@@ -12,10 +11,10 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.*;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.utils.LogUtils;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -97,69 +96,35 @@ public class DtdToStgConverter extends DefaultModelConverter<VisualDtd, VisualSt
     }
 
     private void createEntryStructure() {
-        Set<VisualTransitionEvent> firstTransitionEvents = new HashSet<>();
         Collection<VisualEntryEvent> entryEvents = getSrcModel().getVisualSignalEntries(null);
         for (VisualEntryEvent entryEvent : entryEvents) {
-            firstTransitionEvents.addAll(getSrcModel().getPostset(entryEvent, VisualTransitionEvent.class));
-        }
-        if (!firstTransitionEvents.isEmpty()) {
             VisualStgPlace entryPlace = getDstModel().createVisualPlace(null);
+            entryPlace.setRootSpacePosition(scalePosition(entryEvent.getRootSpacePosition()));
             entryPlace.getReferencedComponent().setTokens(1);
-            VisualDummyTransition entryDummy = getDstModel().createVisualDummyTransition(null);
-            try {
-                getDstModel().connect(entryPlace, entryDummy);
-            } catch (InvalidConnectionException e) {
-                e.printStackTrace();
-            }
-
-            Point2D entryPosition = MixUtils.middleRootspacePosition(entryEvents);
-            double offset = 2.0 * DtdSettings.getTransitionSeparation();
-            Point2D offsetEntryPosition = new Point2D.Double(entryPosition.getX() - offset, entryPosition.getY());
-            entryPlace.setRootSpacePosition(scalePosition(offsetEntryPosition));
-            entryDummy.setRootSpacePosition(scalePosition(entryPosition));
-
+            Set<VisualTransitionEvent> firstTransitionEvents = getSrcModel().getPostset(entryEvent, VisualTransitionEvent.class);
             for (VisualTransitionEvent transitionEvent : firstTransitionEvents) {
                 VisualNode dstNode = getSrcToDstNode(transitionEvent);
-                if (dstNode instanceof VisualSignalTransition) {
-                    try {
-                        getDstModel().connect(entryDummy, dstNode);
-                    } catch (InvalidConnectionException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    getDstModel().connect(entryPlace, dstNode);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarning(e.getMessage());
                 }
             }
         }
     }
 
     private void createExitStructure() {
-        Set<VisualTransitionEvent> lastTransitionEvents = new HashSet<>();
         Collection<VisualExitEvent> exitEvents = getSrcModel().getVisualSignalExits(null);
         for (VisualExitEvent exitEvent : exitEvents) {
-            lastTransitionEvents.addAll(getSrcModel().getPreset(exitEvent, VisualTransitionEvent.class));
-        }
-        if (!lastTransitionEvents.isEmpty()) {
             VisualStgPlace exitPlace = getDstModel().createVisualPlace(null);
-            VisualDummyTransition exitDummy = getDstModel().createVisualDummyTransition(null);
-            try {
-                getDstModel().connect(exitDummy, exitPlace);
-            } catch (InvalidConnectionException e) {
-                e.printStackTrace();
-            }
-
-            Point2D exitPosition = MixUtils.middleRootspacePosition(exitEvents);
-            double offset = 2.0 * DtdSettings.getTransitionSeparation();
-            Point2D offsetExitPosition = new Point2D.Double(exitPosition.getX() + offset, exitPosition.getY());
-            exitDummy.setRootSpacePosition(scalePosition(exitPosition));
-            exitPlace.setRootSpacePosition(scalePosition(offsetExitPosition));
-
+            exitPlace.setRootSpacePosition(scalePosition(exitEvent.getRootSpacePosition()));
+            Set<VisualTransitionEvent> lastTransitionEvents = getSrcModel().getPreset(exitEvent, VisualTransitionEvent.class);
             for (VisualTransitionEvent lastTransitionEvent : lastTransitionEvents) {
                 VisualNode dstNode = getSrcToDstNode(lastTransitionEvent);
-                if (dstNode instanceof VisualSignalTransition) {
-                    try {
-                        getDstModel().connect(dstNode, exitDummy);
-                    } catch (InvalidConnectionException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    getDstModel().connect(dstNode, exitPlace);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarning(e.getMessage());
                 }
             }
         }
