@@ -17,6 +17,8 @@ matrix:
     - os: osx
       osx_image: xcode11.3 # Java 14, macOS 10.14.6 (last with 32-bit support)
       env: TARGET=test
+    - os: windows
+      env: TARGET=test
 
 addons:
   apt:
