@@ -118,12 +118,15 @@ public class ConversionCommandTests {
         Assertions.assertNotEquals(srcInternalSignalRefs, dstInternalSignalRefs);
 
         int dstPlaceCount = dstStg.getVisualPlaces().size();
-        Assertions.assertEquals(2, dstPlaceCount);
+        Assertions.assertEquals(8, dstPlaceCount);
 
         int dstDummyTransitionCount = dstStg.getVisualDummyTransitions().size();
-        Assertions.assertEquals(2, dstDummyTransitionCount);
+        Assertions.assertEquals(0, dstDummyTransitionCount);
 
-        int srcEdgeCount = srcDtd.getVisualConnections().size();
+        int srcEdgeCount = srcDtd.getVisualConnections().size()
+                - srcDtd.getVisualSignalEntries(null).size()
+                - srcDtd.getVisualSignalExits(null).size();
+
         int dstImplicitPlaceCount = dstStg.getVisualImplicitPlaceArcs().size();
         Assertions.assertEquals(srcEdgeCount, dstImplicitPlaceCount);
 

@@ -11,6 +11,7 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.ModelUtils;
 
 import java.awt.*;
@@ -114,7 +115,7 @@ public class StgToDtdConverter {
 
     private void createEvents(Trace trace) {
         Map<MathNode, Set<SignalEvent>> nodeToCauseEventsMap = new HashMap<>();
-        double x = EVENT_OFFSET;
+        double x = 0;
         for (String transitionRef : trace) {
             MathNode node = stg.getNodeByReference(transitionRef);
             boolean processed = false;
@@ -163,6 +164,7 @@ public class StgToDtdConverter {
             try {
                 dtd.connect(predEvent.edge, curEvent.edge);
             } catch (InvalidConnectionException e) {
+                LogUtils.logWarning(e.getMessage());
             }
         }
     }
