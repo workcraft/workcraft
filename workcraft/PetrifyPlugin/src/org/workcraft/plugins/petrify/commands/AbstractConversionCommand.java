@@ -1,10 +1,14 @@
 package org.workcraft.plugins.petrify.commands;
 
+import org.workcraft.Framework;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.petri.PetriModel;
+import org.workcraft.plugins.petrify.tasks.TransformationResultHandlingMonitor;
+import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.MutexUtils;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -24,8 +28,10 @@ public abstract class AbstractConversionCommand extends  org.workcraft.commands.
         return null; //Conversion to be performed by Petrify backend
     }
 
-    public ArrayList<String> getArgs() {
-        return new ArrayList<>();
+    public ArrayList<String> getArgs(WorkspaceEntry we) {
+        ArrayList<String> args = new ArrayList<>();
+        args.add("-dead");
+        return args;
     }
 
     public boolean hasSignals(WorkspaceEntry we) {
@@ -39,6 +45,20 @@ public abstract class AbstractConversionCommand extends  org.workcraft.commands.
             mutexes = MutexUtils.getMutexes(stg);
         }
         return mutexes;
+    }
+
+    @Override
+    public WorkspaceEntry execute(WorkspaceEntry we) {
+        ArrayList<String> args = getArgs(we);
+        Collection<Mutex> mutexes = getMutexes(we);
+        TransformationTask task = new TransformationTask(we, args, mutexes);
+
+        boolean hasSignals = hasSignals(we);
+        TransformationResultHandlingMonitor monitor = new TransformationResultHandlingMonitor(we, !hasSignals, mutexes);
+
+        TaskManager taskManager = Framework.getInstance().getTaskManager();
+        taskManager.execute(task, "Petrify net synthesis", monitor);
+        return monitor.waitForHandledResult();
     }
 
 }
