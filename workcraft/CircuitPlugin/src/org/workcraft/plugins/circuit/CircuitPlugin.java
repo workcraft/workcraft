@@ -122,7 +122,7 @@ public class CircuitPlugin implements Plugin {
         ScriptableCommandUtils.registerCommand(ResetActiveHighInsertionCommand.class, "insertCircuitResetActiveHigh",
                 "insert active-high reset into the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(ResetVerificationCommand.class, "checkCircuitReset",
-                "check if the Circuit 'work' is correctly initialised via input ports");
+                "check if the Circuit 'work' is correctly initialised via currently forced input ports");
 
         // Path breaker attributes and Scan insertion
         ScriptableCommandUtils.registerCommand(PathBreakerSelfloopPinsTagCommand.class, "tagCircuitPathBreakerSelfloopPins",

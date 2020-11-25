@@ -22,9 +22,11 @@ import java.util.Set;
 public class ResetVerificationCommand extends AbstractVerificationCommand
         implements ScriptableCommand<Boolean> {
 
+    private static final String TITLE = "Verification result";
+
     @Override
     public String getDisplayName() {
-        return "Initialisation via forced primary inputs";
+        return "Initialisation via currently forced input ports";
     }
 
     @Override
@@ -54,22 +56,24 @@ public class ResetVerificationCommand extends AbstractVerificationCommand
                 problematicContacts.add(contact);
             }
         }
-        if (problematicContacts.isEmpty()) {
-            DialogUtils.showInfo("The circuit is fully initialised via forced inputs");
-            return true;
-        } else {
-            final Framework framework = Framework.getInstance();
-            if (framework.isInGuiMode()) {
-                final Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
-                toolbox.selectTool(toolbox.getToolInstance(InitialisationAnalyserTool.class));
-            }
-            Collection<String> refs = ReferenceHelper.getReferenceList(circuit, problematicContacts);
-            String msg = "The circuit cannot be initialised via forced inputs.\n" +
-                    TextUtils.wrapMessageWithItems("Problematic signal", refs);
 
-            DialogUtils.showError(msg);
-            return false;
+        if (problematicContacts.isEmpty()) {
+            DialogUtils.showInfo("The circuit is fully initialised via the currently forced input ports.", TITLE);
+            return true;
         }
+
+        Framework framework = Framework.getInstance();
+        if (framework.isInGuiMode()) {
+            Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
+            toolbox.selectTool(toolbox.getToolInstance(InitialisationAnalyserTool.class));
+        }
+
+        Collection<String> refs = ReferenceHelper.getReferenceList(circuit, problematicContacts);
+        String msg = "The currently forced input ports are insufficient to fully initialised the circuit.\n" +
+                TextUtils.wrapMessageWithItems("Problematic signal", refs);
+
+        DialogUtils.showError(msg, TITLE);
+        return false;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
