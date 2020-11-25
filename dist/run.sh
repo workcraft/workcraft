@@ -162,9 +162,11 @@ for platform in $platforms; do
     case $platform in
         windows)
             7z a -r ${dist_name}.zip $dist_rootdir >/dev/null
+            md5sum ${dist_name}.zip > ${dist_name}.zip.md5
             ;;
         linux | osx)
             tar -czf ${dist_name}.tar.gz $dist_rootdir
+            md5sum ${dist_name}.tar.gz > ${dist_name}.tar.gz.md5
             ;;
     esac
 
