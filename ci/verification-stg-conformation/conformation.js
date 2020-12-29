@@ -1,4 +1,4 @@
-work = load("cycle.stg.work");
+work = load("cycle-mutex.stg.work");
 
 write(
     "Conformation checks:\n" +

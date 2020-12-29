@@ -81,7 +81,9 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         }
 
         // Open STG if new signals are inserted BEFORE importing the Verilog.
-        handleStgSynthesisOutput(synthOutput);
+        if (PetrifySettings.getOpenSynthesisStg()) {
+            StgUtils.createStgWorkIfNewSignals(we, synthOutput.getStg());
+        }
 
         WorkspaceEntry result = handleVerilogSynthesisOutput(synthOutput);
 
@@ -112,13 +114,6 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
             result.add(matcher.group(1));
         }
         return result;
-    }
-
-    private WorkspaceEntry handleStgSynthesisOutput(SynthesisOutput synthOutput) {
-        if (PetrifySettings.getOpenSynthesisStg()) {
-            return StgUtils.createStgWorkIfNewSignals(we, synthOutput.getStg());
-        }
-        return null;
     }
 
     private WorkspaceEntry handleVerilogSynthesisOutput(SynthesisOutput synthOutput) {

@@ -28,7 +28,7 @@ public class ConformationVerificationCommandTests {
 
     @Test
     public void testCycleConformationVerification() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "cycle.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
         String envName = PackageUtils.getPackagePath(getClass(), "charge.stg.work");
         testConformationVerificationCommands(workName, envName, true);
     }

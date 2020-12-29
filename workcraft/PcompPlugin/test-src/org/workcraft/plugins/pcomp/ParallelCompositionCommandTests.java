@@ -37,7 +37,7 @@ public class ParallelCompositionCommandTests {
 
     @Test
     public void testCycleAndChargeComposition() {
-        String cycleWorkName = PackageUtils.getPackagePath(getClass(), "cycle.stg.work");
+        String cycleWorkName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
         String chargeWorkName = PackageUtils.getPackagePath(getClass(), "charge.stg.work");
 
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -62,8 +62,8 @@ public class ParallelCompositionCommandTests {
         Assertions.assertEquals(10, stg.getSignalTransitions(Signal.Type.OUTPUT).size());
 
         Set<String> internalRefs = stg.getSignalNames(Signal.Type.INTERNAL, null);
-        Assertions.assertEquals(new HashSet<>(Arrays.asList("chrg_req", "chrg_ack")), internalRefs);
-        Assertions.assertEquals(4, stg.getSignalTransitions(Signal.Type.INTERNAL).size());
+        Assertions.assertEquals(new HashSet<>(Arrays.asList("chrg_req", "chrg_ack", "me_r1", "me_r2")), internalRefs);
+        Assertions.assertEquals(8, stg.getSignalTransitions(Signal.Type.INTERNAL).size());
     }
 
 }
