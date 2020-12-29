@@ -109,7 +109,7 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
         }
         if (!mutexes.isEmpty()) {
             stg = StgUtils.loadStg(file);
-            MutexUtils.factoroutMutexs(stg, mutexes);
+            MutexUtils.factoroutMutexes(stg, mutexes);
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
             exportTask = new ExportTask(exporter, stg, file);
             exportResult = taskManager.execute(exportTask, "Exporting .lpn");

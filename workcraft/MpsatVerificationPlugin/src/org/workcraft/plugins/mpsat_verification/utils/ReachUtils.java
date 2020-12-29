@@ -229,15 +229,6 @@ public class ReachUtils {
                 reach, true);
     }
 
-    public static VerificationParameters getNwayConformationParameters(Collection<String> shadowTransitionNames) {
-        String reach = getConformationReach(shadowTransitionNames);
-        return new VerificationParameters("N-way conformation",
-                VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                reach, true);
-    }
-
     private static String getConformationReach(Collection<String> shadowTransitionNames) {
         String str = shadowTransitionNames.stream()
                 .map(ref -> "\"" + ref + "\", ")
@@ -322,6 +313,8 @@ public class ReachUtils {
             "    r1 & g1 & r2 & g2  // mutual exclusion of critical sections\n" +
             "}\n";
 
+    private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
+
     public static List<VerificationParameters> getMutexImplementabilityParameters(Collection<Mutex> mutexes) {
         return mutexes.stream().map(ReachUtils::getMutexImplementabilityParameters).collect(Collectors.toList());
     }
@@ -333,11 +326,21 @@ public class ReachUtils {
                 .replace(MUTEX_R2_REPLACEMENT, mutex.r2.name)
                 .replace(MUTEX_G2_REPLACEMENT, mutex.g2.name);
 
-        return new VerificationParameters("Mutex implementability for place '" + mutex.name + "'",
+        String description = "Mutex implementability for place '" + mutex.name + "' ("
+                + mutex.r1.name + RIGHT_ARROW_SYMBOL + mutex.g1.name + ", "
+                + mutex.r2.name + RIGHT_ARROW_SYMBOL + mutex.g2.name + ")";
+
+        return new VerificationParameters(description,
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reach, true);
+                reach, true) {
+
+            @Override
+            public String getDescriptiveSuffix() {
+                return "-Mutex_implementability-" + mutex.name;
+            }
+        };
     }
 
     private static String getMutexImplementabilityReach() {

@@ -126,7 +126,26 @@ public class VerificationCommandTests {
     public void testCycleVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle.stg.work");
         testVerificationCommands(workName,
-                false, // combined
+                null, // combined
+                true,  // consistency
+                true,  // deadlock freeness
+                true,  // input properness
+                null,  // output persistency
+                true,  // output determinacy
+                true,  // CSC
+                true,  // USC
+                true,  // DI interface
+                true,  // normalcy
+                null,  // mutex implementability (strict)
+                null  // mutex implementability (relaxed)
+        );
+    }
+
+    @Test
+    public void testCycleMutexVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
+        testVerificationCommands(workName,
+                true, // combined
                 true,  // consistency
                 true,  // deadlock freeness
                 true,  // input properness
@@ -135,8 +154,8 @@ public class VerificationCommandTests {
                 true,  // CSC
                 true,  // USC
                 true,  // DI interface
-                true,  // normalcy
-                false,  // mutex implementability (strict)
+                false,  // normalcy
+                true,  // mutex implementability (strict)
                 false  // mutex implementability (relaxed)
         );
     }
@@ -156,6 +175,7 @@ public class VerificationCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         CombinedVerificationCommand combinedCommand = new CombinedVerificationCommand();
+        StgSettings.setMutexProtocol(Mutex.Protocol.STRICT);
         Assertions.assertEquals(combined, combinedCommand.execute(we));
 
         ConsistencyVerificationCommand consistencyCommand = new ConsistencyVerificationCommand();
@@ -186,11 +206,11 @@ public class VerificationCommandTests {
         Assertions.assertEquals(normalcy, normalcyCommand.execute(we));
 
         MutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MutexImplementabilityVerificationCommand();
+        Assertions.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
+
         StgSettings.setMutexProtocol(Mutex.Protocol.RELAXED);
         Assertions.assertEquals(mutexImplementabilityRelaxed, mutexImplementabilityCommand.execute(we));
 
-        StgSettings.setMutexProtocol(Mutex.Protocol.STRICT);
-        Assertions.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
     }
 
 }

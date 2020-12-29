@@ -197,7 +197,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         }
         if (!mutexes.isEmpty()) {
             stg = StgUtils.loadStg(stgFile);
-            MutexUtils.factoroutMutexs(stg, mutexes);
+            MutexUtils.factoroutMutexes(stg, mutexes);
             stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
             exportTask = new ExportTask(stgExporter, stg, stgFile);
             exportResult = taskManager.execute(exportTask, "Exporting .g");

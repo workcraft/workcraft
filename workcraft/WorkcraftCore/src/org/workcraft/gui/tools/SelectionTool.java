@@ -276,6 +276,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                         AbstractInplaceEditor textEditor = new LabelInplaceEditor(editor, comment);
                         textEditor.edit(comment.getLabel(), comment.getLabelFont(),
                                 comment.getLabelOffset(), comment.getLabelAlignment(), true);
+
                         editor.forceRedraw();
                         return;
                     }

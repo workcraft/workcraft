@@ -141,7 +141,7 @@ public class VerificationParameters {
         return new File(directory, prefix + getDescriptiveSuffix() + extension);
     }
 
-    private String getDescriptiveSuffix() {
+    public String getDescriptiveSuffix() {
         return description == null ? "" : "-" + description.replaceAll("\\s", "_");
     }
 

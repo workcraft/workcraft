@@ -56,79 +56,118 @@ public class MutexUtils {
         return result;
     }
 
-    public static Mutex getMutex(Stg stg, StgPlace place) {
-        Set<MathNode> preset = stg.getPreset(place);
-        Set<MathNode> postset = stg.getPostset(place);
-        if ((preset.size() != 2) || (postset.size() != 2)) {
+    public static Mutex getMutex(Stg stg, StgPlace mutexPlace) {
+        Set<MathNode> postset = stg.getPostset(mutexPlace);
+        if (!postset.stream().allMatch(t -> t instanceof SignalTransition)) {
             return null;
         }
-        Iterator<MathNode> postsetIterator = postset.iterator();
-        Node succ1 = postsetIterator.next();
-        Node succ2 = postsetIterator.next();
-        if (!(succ1 instanceof SignalTransition) || !(succ2 instanceof SignalTransition)) {
-            return null;
-        }
-        SignalTransition tSucc1 = (SignalTransition) succ1;
-        SignalTransition tSucc2 = (SignalTransition) succ2;
-        if ((tSucc1.getSignalType() == Signal.Type.INPUT) || (tSucc2.getSignalType() == Signal.Type.INPUT)) {
-            return null;
-        }
-        Set<SignalTransition> triggers1 = getTriggers(stg, tSucc1, place);
-        Set<SignalTransition> triggers2 = getTriggers(stg, tSucc2, place);
-        if ((triggers1.size() != 1) || (triggers2.size() != 1)) {
-            return null;
-        }
-        SignalTransition trigger1 = triggers1.iterator().next();
-        SignalTransition trigger2 = triggers2.iterator().next();
 
-        String name = stg.getNodeReference(place);
-        Signal g1 = createSignalFromTransition(stg, tSucc1);
-        Signal g2 = createSignalFromTransition(stg, tSucc2);
-        Signal r1 = createSignalFromTransition(stg, trigger1);
-        Signal r2 = createSignalFromTransition(stg, trigger2);
-        return new Mutex(name, r1, g1, r2, g2);
+        Set<SignalTransition> grantTransitions = postset.stream()
+                .map(node -> (SignalTransition) node)
+                .collect(Collectors.toSet());
+
+        if (!grantTransitions.stream().allMatch(t -> isGoodMutexGrant(stg, t))) {
+            return null;
+        }
+
+        Set<Signal> grantSignals = grantTransitions.stream()
+                .map(t -> new Signal(stg.getSignalReference(t), t.getSignalType()))
+                .collect(Collectors.toSet());
+
+        if (grantSignals.size() != 2) {
+            return null;
+        }
+
+        Iterator<Signal> grantSignalIterator = grantSignals.iterator();
+        Signal g1Signal = grantSignalIterator.next();
+        Set<SignalTransition> g1Transitions = getTransitionsOfSignal(stg, grantTransitions, g1Signal.name);
+        Signal r1Signal = getRequestSignal(stg, g1Transitions, mutexPlace);
+
+        Signal g2Signal = grantSignalIterator.next();
+        Set<SignalTransition> g2Transitions = getTransitionsOfSignal(stg, grantTransitions, g2Signal.name);
+        Signal r2Signal = getRequestSignal(stg, g2Transitions, mutexPlace);
+
+        if ((r1Signal == null) || (r2Signal == null)) {
+            return null;
+        }
+
+        String name = stg.getNodeReference(mutexPlace);
+        return new Mutex(name, r1Signal, g1Signal, r2Signal, g2Signal);
     }
 
-    private static Signal createSignalFromTransition(Stg stg, SignalTransition transition) {
-        return new Signal(stg.getSignalReference(transition), transition.getSignalType());
+    private static Set<SignalTransition> getTransitionsOfSignal(Stg stg,
+            Collection<SignalTransition> transitions, String signal) {
+
+        return transitions.stream()
+                .filter(t -> signal.equals(stg.getSignalReference(t)))
+                .collect(Collectors.toSet());
     }
 
-    private static Set<SignalTransition> getTriggers(Stg stg, SignalTransition transition, StgPlace skipPlace) {
-        HashSet<SignalTransition> result = new HashSet<>();
-        for (MathNode predPlace: stg.getPreset(transition)) {
-            if (!(predPlace instanceof StgPlace) || (predPlace == skipPlace)) {
-                continue;
-            }
-            for (MathNode predTransition: stg.getPreset(predPlace)) {
-                if (!(predTransition instanceof SignalTransition) || stg.getPreset(predTransition).contains(predPlace)) {
+    private static Signal getRequestSignal(Stg stg, Collection<SignalTransition> grantTransitions,
+            StgPlace mutexPlace) {
+
+        Signal result = null;
+        for (SignalTransition grantTransition : grantTransitions) {
+            for (MathNode predPlace : stg.getPreset(grantTransition)) {
+                // Skip triggers via mutex place
+                if (predPlace == mutexPlace) {
                     continue;
                 }
-                result.add((SignalTransition) predTransition);
+                for (MathNode predTransition : stg.getPreset(predPlace)) {
+                    // Skip read-arc transitions
+                    if (stg.getPreset(predTransition).contains(predPlace)) {
+                        continue;
+                    }
+
+                    // Request must be rising edge
+                    if (!isGoodMutexRequest(stg, predTransition)) {
+                        return null;
+                    }
+                    SignalTransition requestTransition = (SignalTransition) predTransition;
+                    Signal requestSignal = new Signal(stg.getSignalReference(requestTransition),
+                            requestTransition.getSignalType());
+
+                    // All triggers must be of the same request signal
+                    if (result == null) {
+                        result = requestSignal;
+                    } else if (!result.equals(requestSignal)) {
+                        return null;
+                    }
+                }
             }
         }
         return result;
     }
 
-    public static void factoroutMutexs(StgModel model, Collection<Mutex> mutexes) {
+    private static boolean isGoodMutexRequest(Stg stg, MathNode transition) {
+        return stg.getDirection(transition) == SignalTransition.Direction.PLUS;
+    }
+
+    private static boolean isGoodMutexGrant(Stg stg, SignalTransition transition) {
+        return (stg.getDirection(transition) == SignalTransition.Direction.PLUS)
+                && (transition.getSignalType() != Signal.Type.INPUT);
+    }
+
+    public static void factoroutMutexes(StgModel model, Collection<Mutex> mutexes) {
         if ((model instanceof Stg) && (mutexes != null)) {
             Stg stg = (Stg) model;
             for (Mutex mutex: mutexes) {
                 LogUtils.logInfo("Factoring out " + mutex);
-                factoreoutMutexRequest(stg, mutex.r1);
-                factoreoutMutexGrant(stg, mutex.g1);
-                factoreoutMutexRequest(stg, mutex.r2);
-                factoreoutMutexGrant(stg, mutex.g2);
+                factoroutMutexRequest(stg, mutex.r1);
+                factoroutMutexGrant(stg, mutex.g1);
+                factoroutMutexRequest(stg, mutex.r2);
+                factoroutMutexGrant(stg, mutex.g2);
             }
         }
     }
 
-    private static void factoreoutMutexRequest(Stg stg, Signal signal) {
+    private static void factoroutMutexRequest(Stg stg, Signal signal) {
         if (signal.type == Signal.Type.INTERNAL) {
             stg.setSignalType(signal.name, Signal.Type.OUTPUT);
         }
     }
 
-    private static void factoreoutMutexGrant(Stg stg, Signal signal) {
+    private static void factoroutMutexGrant(Stg stg, Signal signal) {
         stg.setSignalType(signal.name, Signal.Type.INPUT);
     }
 

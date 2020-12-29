@@ -37,7 +37,7 @@ public class CscConflictResolutionCommandTests {
 
     @Test
     public void testCycleCscConflictResolution() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "cycle.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {});
     }
 

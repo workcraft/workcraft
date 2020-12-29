@@ -102,7 +102,9 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         }
 
         // Open STG if new signals are inserted BEFORE importing the Verilog.
-        handleStgSynthesisOutput(mpsatOutput);
+        if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
+            StgUtils.createStgWorkIfNewSignals(we, mpsatOutput.getStg());
+        }
 
         WorkspaceEntry result = handleVerilogSynthesisOutput(mpsatOutput, sequentialAssign, renderType);
 
@@ -112,13 +114,6 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         }
 
         return result;
-    }
-
-    private WorkspaceEntry handleStgSynthesisOutput(MpsatOutput mpsatOutput) {
-        if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
-            return StgUtils.createStgWorkIfNewSignals(we, mpsatOutput.getStg());
-        }
-        return null;
     }
 
     private WorkspaceEntry handleVerilogSynthesisOutput(MpsatOutput mpsatOutput,
