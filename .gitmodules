@@ -1,6 +1,3 @@
-[submodule "doc"]
-	path = dist/doc
-	url = https://github.com/workcraft/workcraft-doc
 [submodule "dist-template"]
 	path = dist/template
 	url = https://github.com/workcraft/workcraft-dist-template
