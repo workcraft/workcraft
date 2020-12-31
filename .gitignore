@@ -1,5 +1,6 @@
-# Private plugins
+# Private plugins and distribution templates
 /workcraft-*/
+/dist/template-*/
 
 # Gradle
 /.gradle/
