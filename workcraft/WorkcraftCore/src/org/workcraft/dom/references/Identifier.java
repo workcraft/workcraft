@@ -1,6 +1,7 @@
 package org.workcraft.dom.references;
 
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.exceptions.ArgumentException;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -23,6 +24,13 @@ public class Identifier {
         if (value == null) return false;
         final Matcher matcher = VALID_PATTERN.matcher(value);
         return matcher.find();
+    }
+
+    public static void validate(String value) {
+        if (!isValid(value)) {
+            throw new ArgumentException("'" + value + "' is not a valid C-style identifier.\n"
+                    + "The first character must be alphabetic or '_' and the following -- alphanumeric or '_'.");
+        }
     }
 
     public static final String makeInternal(String value) {
