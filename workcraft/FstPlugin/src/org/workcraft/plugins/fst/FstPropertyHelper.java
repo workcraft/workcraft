@@ -1,6 +1,7 @@
 package org.workcraft.plugins.fst;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.properties.PropertyDeclaration;
@@ -91,6 +92,7 @@ public class FstPropertyHelper {
     public static PropertyDescriptor getEventSignalProperty(Fst fst, SignalEvent signalEvent) {
         return new PropertyDeclaration<>(String.class, "Signal",
                 value -> {
+                    Identifier.validate(value);
                     Signal signal = null;
                     if (!value.isEmpty()) {
                         Node node = fst.getNodeByReference(value);

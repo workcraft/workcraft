@@ -42,10 +42,12 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
         }
         for (Class<? extends VisualComponent> mergableClass: mergableClasses) {
             Set<VisualComponent> components = classComponents.get(mergableClass);
-            VisualComponent mergedComponent = createMergedComponent(model, components, mergableClass);
-            replaceComponents(model, components, mergedComponent);
-            if (mergedComponent != null) {
-                model.addToSelection(mergedComponent);
+            if (components.size() > 1) {
+                VisualComponent mergedComponent = createMergedComponent(model, components, mergableClass);
+                replaceComponents(model, components, mergedComponent);
+                if (mergedComponent != null) {
+                    model.addToSelection(mergedComponent);
+                }
             }
         }
     }
@@ -76,36 +78,53 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
         return result;
     }
 
-    public void replaceComponents(VisualModel model, Set<VisualComponent> components, VisualComponent newComponent) {
-        for (VisualComponent component: components) {
-            for (VisualConnection connection: model.getConnections(component)) {
-                boolean isUndirected = connection instanceof Undirected;
-                VisualNode first = connection.getFirst();
-                VisualNode second = connection.getSecond();
-                try {
-                    VisualConnection newConnection = null;
-                    if ((first != component) && (second == component)) {
-                        if (isUndirected) {
-                            newConnection = model.connectUndirected(first, newComponent);
-                        } else {
-                            newConnection = model.connect(first, newComponent);
-                        }
-                    }
-                    if ((first == component) && (second != component)) {
-                        if (isUndirected) {
-                            newConnection = model.connectUndirected(newComponent, second);
-                        } else {
-                            newConnection = model.connect(newComponent, second);
-                        }
-                    }
-                    if (newConnection != null) {
-                        newConnection.copyStyle(connection);
-                        newConnection.copyShape(connection);
-                    }
-                } catch (InvalidConnectionException e) {
-                }
+    public void replaceComponents(VisualModel model, Set<VisualComponent> components,
+            VisualComponent newComponent) {
+
+        for (VisualComponent component : components) {
+            for (VisualConnection connection : model.getConnections(component)) {
+                createMergedConnection(model, connection, component, newComponent);
             }
             model.remove(component);
+        }
+    }
+
+    public VisualConnection createMergedConnection(VisualModel model, VisualConnection connection,
+            VisualComponent component, VisualComponent newComponent) {
+
+        boolean isUndirected = connection instanceof Undirected;
+        VisualNode first = connection.getFirst();
+        VisualNode second = connection.getSecond();
+        VisualConnection newConnection = null;
+        if ((first != component) && (second == component)) {
+            newConnection = createConnection(model, first, newComponent, isUndirected);
+        }
+        if ((first == component) && (second != component)) {
+            newConnection = createConnection(model, newComponent, second, isUndirected);
+        }
+        if ((first == component) && (second == component)) {
+            newConnection = createConnection(model, newComponent, newComponent, isUndirected);
+        }
+
+        if (newConnection != null) {
+            newConnection.copyStyle(connection);
+            if (newConnection.getFirst() == newConnection.getSecond()) {
+                newConnection.getGraphic().setDefaultControlPoints();
+            } else {
+                newConnection.copyShape(connection);
+            }
+        }
+        return newConnection;
+    }
+
+    private VisualConnection createConnection(VisualModel model, VisualNode first,
+            VisualNode second, boolean isUndirected) {
+
+        try {
+            return isUndirected ? model.connectUndirected(first, second)
+                    : model.connect(first, second);
+        } catch (InvalidConnectionException e) {
+            return null;
         }
     }
 

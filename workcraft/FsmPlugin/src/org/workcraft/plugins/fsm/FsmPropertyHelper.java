@@ -1,6 +1,7 @@
 package org.workcraft.plugins.fsm;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.properties.PropertyDeclaration;
@@ -62,6 +63,7 @@ public class FsmPropertyHelper {
     public static PropertyDescriptor getEventSymbolProperty(Fsm fsm, Event event) {
         return new PropertyDeclaration<>(String.class, Event.PROPERTY_SYMBOL,
                 value -> {
+                    Identifier.validate(value);
                     Symbol symbol = null;
                     if (!value.isEmpty()) {
                         Node node = fsm.getNodeByReference(value);

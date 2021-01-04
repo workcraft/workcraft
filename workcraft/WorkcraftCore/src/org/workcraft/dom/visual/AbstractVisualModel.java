@@ -12,7 +12,6 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.FlatReferenceManager;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.properties.ModelProperties;
@@ -759,20 +758,16 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         String name = getMathName(node);
         return new PropertyDeclaration<>(String.class, PROPERTY_NAME,
                 value -> {
-                    if (Identifier.isValid(value)) {
-                        if (node instanceof VisualComponent) {
-                            VisualComponent component = (VisualComponent) node;
-                            if (component.getReferencedComponent() instanceof NamespaceProvider) {
-                                value = Identifier.appendNamespaceSeparator(value);
-                            }
+                    Identifier.validate(value);
+                    if (node instanceof VisualComponent) {
+                        VisualComponent component = (VisualComponent) node;
+                        if (component.getReferencedComponent() instanceof NamespaceProvider) {
+                            value = Identifier.appendNamespaceSeparator(value);
                         }
-                        if (!value.equals(name)) {
-                            setMathName(node, value);
-                            node.sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
-                        }
-                    } else {
-                        throw new ArgumentException("'" + value + "' is not a valid C-style identifier.\n"
-                                + "The first character must be alphabetic or '_' and the following -- alphanumeric or '_'.");
+                    }
+                    if (!value.equals(name)) {
+                        setMathName(node, value);
+                        node.sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
                     }
                 },
                 () -> name == null ? null : Identifier.truncateNamespaceSeparator(name));
