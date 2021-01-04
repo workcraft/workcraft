@@ -109,6 +109,8 @@ public class SynthesisCommandsTests {
 
     @Test
     public void busCtrlStandardCelementSynthesis() {
+        // FIXME: Skip this test on Windows as petrify.exe produces significantly different circuit
+        Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
         String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
         testStandardCelementSynthesisCommand(workName, 4, 5);
     }

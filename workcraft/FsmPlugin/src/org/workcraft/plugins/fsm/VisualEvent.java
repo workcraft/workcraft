@@ -160,6 +160,7 @@ public class VisualEvent extends VisualConnection {
         if (src instanceof VisualEvent) {
             VisualEvent srcEvent = (VisualEvent) src;
             setLabelColor(srcEvent.getLabelColor());
+            // Note: symbol should not be copied as it may break compatibility for derived types
         }
     }
 
