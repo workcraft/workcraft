@@ -21,17 +21,7 @@ public class StandardCelementSynthesisCommand extends AbstractSynthesisCommand {
     }
 
     @Override
-    public boolean boxSequentialComponents() {
-        return false;
-    }
-
-    @Override
-    public boolean boxCombinationalComponents() {
-        return false;
-    }
-
-    @Override
-    public boolean sequentialAssign() {
+    public boolean celementAssign() {
         return true;
     }
 

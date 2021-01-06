@@ -31,16 +31,18 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
     private final WorkspaceEntry we;
     private final boolean boxSequentialComponents;
     private final boolean boxCombinationalComponents;
+    private final boolean celementAssign;
     private final boolean sequentialAssign;
     private final Collection<Mutex> mutexes;
 
     public SynthesisResultHandlingMonitor(WorkspaceEntry we,
             boolean boxSequentialComponents, boolean boxCombinationalComponents,
-            boolean sequentialAssign, Collection<Mutex> mutexes) {
+            boolean celementAssign, boolean sequentialAssign, Collection<Mutex> mutexes) {
 
         this.we = we;
         this.boxSequentialComponents = boxSequentialComponents;
         this.boxCombinationalComponents = boxCombinationalComponents;
+        this.celementAssign = celementAssign;
         this.sequentialAssign = sequentialAssign;
         this.mutexes = mutexes;
     }
@@ -66,7 +68,7 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         if (verilogModule == null) {
             return null;
         }
-        VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+        VerilogImporter verilogImporter = new VerilogImporter(celementAssign, sequentialAssign);
         Circuit circuit = verilogImporter.createCircuit(verilogModule, mutexes);
 
         removePortsForExposedInternalSignals(circuit);

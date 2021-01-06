@@ -47,8 +47,8 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
         TaskManager taskManager = framework.getTaskManager();
         SynthesisTask task = new SynthesisTask(we, getSynthesisParameter(), mutexes, technologyMapping());
         SynthesisResultHandlingMonitor monitor = new SynthesisResultHandlingMonitor(we, mutexes,
-                boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(),
-                technologyMapping());
+                boxSequentialComponents(), boxCombinationalComponents(),
+                celementAssign(), sequentialAssign(), technologyMapping());
 
         taskManager.queue(task, "Petrify logic synthesis", monitor);
         return monitor;
@@ -59,6 +59,10 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
     }
 
     public boolean boxCombinationalComponents() {
+        return false;
+    }
+
+    public boolean celementAssign() {
         return false;
     }
 
