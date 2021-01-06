@@ -40,17 +40,19 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
     private final Collection<Mutex> mutexes;
     private final boolean boxSequentialComponents;
     private final boolean boxCombinationalComponents;
+    private final boolean celementAssign;
     private final boolean sequentialAssign;
     private final boolean technologyMapping;
 
     public SynthesisResultHandlingMonitor(WorkspaceEntry we, Collection<Mutex> mutexes,
             boolean boxSequentialComponents, boolean boxCombinationalComponents,
-            boolean sequentialAssign, boolean technologyMapping) {
+            boolean celementAssign, boolean sequentialAssign, boolean technologyMapping) {
 
         this.we = we;
         this.mutexes = mutexes;
         this.boxSequentialComponents = boxSequentialComponents;
         this.boxCombinationalComponents = boxCombinationalComponents;
+        this.celementAssign = celementAssign;
         this.sequentialAssign = sequentialAssign;
         this.technologyMapping = technologyMapping;
     }
@@ -121,7 +123,7 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         if (verilogModule == null) {
             return null;
         }
-        VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+        VerilogImporter verilogImporter = new VerilogImporter(celementAssign, sequentialAssign);
         Circuit circuit = verilogImporter.createCircuit(verilogModule, mutexes);
         ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
         Framework framework = Framework.getInstance();

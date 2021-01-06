@@ -6,6 +6,7 @@ import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.workers.DumbBooleanWorker;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 
 public class FormulaUtilsTests {
@@ -17,23 +18,22 @@ public class FormulaUtilsTests {
         BooleanVariable cVar = new FreeVariable("c");
         BooleanVariable dVar = new FreeVariable("d");
 
-        BooleanFormula andFormula = buildAndFormula(aVar, bVar, cVar);
-        BooleanFormula expectedAndFormula = buildAndFormula(aVar, bVar, aVar);
+        BooleanFormula andFormula = createAnd(aVar, bVar, cVar);
+        BooleanFormula expectedAndFormula = createAnd(aVar, bVar, aVar);
         checkReplacement(andFormula, cVar, aVar, expectedAndFormula);
 
-        BooleanFormula muxFormula = buildMuxFormula(aVar, bVar, cVar);
-        BooleanFormula expectedMuxFormula = buildMuxFormula(aVar, bVar, dVar);
+        BooleanFormula majFormula = FormulaUtils.createMaj(aVar, bVar, cVar);
+        BooleanFormula expectedMajFormula = FormulaUtils.createMaj(aVar, bVar, dVar);
+        checkReplacement(majFormula, cVar, dVar, expectedMajFormula);
+
+        BooleanFormula muxFormula = FormulaUtils.createMux(aVar, bVar, cVar);
+        BooleanFormula expectedMuxFormula = FormulaUtils.createMux(aVar, bVar, dVar);
         checkReplacement(muxFormula, cVar, dVar, expectedMuxFormula);
     }
 
-    private BooleanFormula buildAndFormula(BooleanVariable... variables) {
+    private BooleanFormula createAnd(BooleanVariable... variables) {
         return FormulaUtils.createAnd(Arrays.asList(variables), DumbBooleanWorker.getInstance());
     }
-
-    private BooleanFormula buildMuxFormula(BooleanVariable aVar, BooleanVariable bVar, BooleanVariable sVar) {
-        return new Or(new And(aVar, sVar), new And(bVar, new Not(sVar)));
-    }
-
 
     private void checkReplacement(BooleanFormula formula, BooleanVariable variable, BooleanFormula replacement, BooleanFormula expectedFormula) {
         String formulaString = StringGenerator.toString(formula);
@@ -70,21 +70,26 @@ public class FormulaUtilsTests {
     public void testExtractVariables() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
-        BooleanVariable sVar = new FreeVariable("s");
+        BooleanVariable cVar = new FreeVariable("c");
 
-        BooleanFormula muxFormula = buildMuxFormula(aVar, bVar, sVar);
+        BooleanFormula majFormula = FormulaUtils.createMaj(aVar, bVar, cVar);
+        Assertions.assertEquals(6, FormulaUtils.countLiterals(majFormula));
+        Assertions.assertEquals(Arrays.asList(aVar, bVar, cVar), FormulaUtils.extractOrderedVariables(majFormula));
+        Assertions.assertEquals(Collections.emptySet(), FormulaUtils.extractNegatedVariables(majFormula));
+
+        BooleanFormula muxFormula = FormulaUtils.createMux(aVar, bVar, cVar);
         Assertions.assertEquals(4, FormulaUtils.countLiterals(muxFormula));
-        Assertions.assertEquals(Arrays.asList(aVar, sVar, bVar), FormulaUtils.extractOrderedVariables(muxFormula));
-        Assertions.assertEquals(new HashSet(Arrays.asList(sVar)), FormulaUtils.extractNegatedVariables(muxFormula));
+        Assertions.assertEquals(Arrays.asList(aVar, cVar, bVar), FormulaUtils.extractOrderedVariables(muxFormula));
+        Assertions.assertEquals(new HashSet(Arrays.asList(cVar)), FormulaUtils.extractNegatedVariables(muxFormula));
     }
 
     @Test
     public void testInvert() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
-        BooleanVariable sVar = new FreeVariable("s");
+        BooleanVariable cVar = new FreeVariable("c");
 
-        BooleanFormula muxFormula = buildMuxFormula(aVar, bVar, sVar);
+        BooleanFormula muxFormula = FormulaUtils.createMux(aVar, bVar, cVar);
         BooleanFormula expectedInvFormula = new Not(muxFormula);
         checkInvert(muxFormula, expectedInvFormula);
 

@@ -10,7 +10,10 @@ import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.*;
-import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.*;
+import org.workcraft.formula.bdd.BddManager;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
@@ -41,6 +44,7 @@ public class VerilogImporter implements Importer {
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
 
+    private final boolean celementAssign;
     private final boolean sequentialAssign;
 
     private Map<String, SubstitutionRule> substitutionRules = null;
@@ -68,10 +72,11 @@ public class VerilogImporter implements Importer {
 
     // Default constructor is required for PluginManager -- it is called via reflection.
     public VerilogImporter() {
-        this(false);
+        this(true, false);
     }
 
-    public VerilogImporter(boolean sequentialAssign) {
+    public VerilogImporter(boolean celementAssign, boolean sequentialAssign) {
+        this.celementAssign = celementAssign;
         this.sequentialAssign = sequentialAssign;
     }
 
@@ -310,7 +315,10 @@ public class VerilogImporter implements Importer {
         reparentAndRenameComponent(circuit, component, verilogAssign.name);
 
         AssignGate assignGate = null;
-        if (sequentialAssign && isSequentialAssign(verilogAssign)) {
+
+        if ((celementAssign && isCelementAssign(verilogAssign))
+                || (sequentialAssign && isSequentialAssign(verilogAssign))) {
+
             assignGate = createSequentialAssignGate(verilogAssign);
         } else {
             assignGate = createCombinationalAssignGate(verilogAssign);
@@ -349,10 +357,24 @@ public class VerilogImporter implements Importer {
     private boolean isSequentialAssign(VerilogAssign verilogAssign) {
         Expression expression = convertStringToExpression(verilogAssign.formula);
         LinkedList<Literal> literals = new LinkedList<>(expression.getLiterals());
-        for (Literal literal: literals) {
-            if (verilogAssign.name.equals(literal.name)) {
-                return true;
+        return literals.stream().anyMatch(literal -> verilogAssign.name.equals(literal.name));
+    }
+
+    private boolean isCelementAssign(VerilogAssign verilogAssign) {
+        try {
+            BooleanFormula formula = BooleanFormulaParser.parse(verilogAssign.formula);
+            List<BooleanVariable> variables = FormulaUtils.extractOrderedVariables(formula);
+            if (variables.size() != 3) {
+                return false;
             }
+            if (!variables.stream().anyMatch(var -> verilogAssign.name.equals(var.getLabel()))) {
+                return false;
+            }
+            BooleanVariable aVar = variables.get(0);
+            BooleanVariable bVar = variables.get(1);
+            BooleanVariable cVar = variables.get(2);
+            return new BddManager().equal(FormulaUtils.createMaj(aVar, bVar, cVar), formula);
+        } catch (ParseException e) {
         }
         return false;
     }

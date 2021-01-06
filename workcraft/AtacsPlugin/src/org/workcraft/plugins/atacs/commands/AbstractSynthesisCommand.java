@@ -65,8 +65,8 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
         TaskManager taskManager = framework.getTaskManager();
         AtacsTask task = new AtacsTask(we, getSynthesisParameter(), mutexes);
         SynthesisResultHandlingMonitor monitor = new SynthesisResultHandlingMonitor(we,
-                boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(),
-                mutexes);
+                boxSequentialComponents(), boxCombinationalComponents(),
+                celementAssign(), sequentialAssign(), mutexes);
 
         taskManager.queue(task, "ATACS logic synthesis", monitor);
         return monitor;
@@ -77,6 +77,10 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
     }
 
     public boolean boxCombinationalComponents() {
+        return false;
+    }
+
+    public boolean celementAssign() {
         return false;
     }
 

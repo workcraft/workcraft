@@ -61,16 +61,16 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
             return handleConflictResolutionOutput(mpsatOutput);
 
         case COMPLEX_GATE_IMPLEMENTATION:
-            return handleSynthesisOutput(mpsatOutput, false, RenderType.GATE, false);
+            return handleSynthesisOutput(mpsatOutput, false, false, RenderType.GATE, false);
 
         case GENERALISED_CELEMENT_IMPLEMENTATION:
-            return handleSynthesisOutput(mpsatOutput, true, RenderType.BOX, false);
+            return handleSynthesisOutput(mpsatOutput, false, true, RenderType.BOX, false);
 
         case STANDARD_CELEMENT_IMPLEMENTATION:
-            return handleSynthesisOutput(mpsatOutput, true, RenderType.GATE, false);
+            return handleSynthesisOutput(mpsatOutput, true, false, RenderType.GATE, false);
 
         case TECH_MAPPING:
-            return handleSynthesisOutput(mpsatOutput, false, RenderType.GATE, true);
+            return handleSynthesisOutput(mpsatOutput, false, false, RenderType.GATE, true);
 
         default:
             DialogUtils.showWarning(mpsatMode.name() + " is not supported by MPSat synthesis.");
@@ -92,7 +92,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         return Framework.getInstance().createWork(me, we.getFileName());
     }
 
-    private WorkspaceEntry handleSynthesisOutput(MpsatOutput mpsatOutput,
+    private WorkspaceEntry handleSynthesisOutput(MpsatOutput mpsatOutput, boolean celementAssign,
             boolean sequentialAssign, RenderType renderType, boolean technologyMapping) {
 
         final String log = mpsatOutput.getStdoutString();
@@ -106,7 +106,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
             StgUtils.createStgWorkIfNewSignals(we, mpsatOutput.getStg());
         }
 
-        WorkspaceEntry result = handleVerilogSynthesisOutput(mpsatOutput, sequentialAssign, renderType);
+        WorkspaceEntry result = handleVerilogSynthesisOutput(mpsatOutput, celementAssign, sequentialAssign, renderType);
 
         // Report unmapped signals AFTER importing the Verilog, so the circuit is visible.
         if (technologyMapping) {
@@ -117,13 +117,13 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
     }
 
     private WorkspaceEntry handleVerilogSynthesisOutput(MpsatOutput mpsatOutput,
-            boolean sequentialAssign, RenderType renderType) {
+            boolean celementAssign, boolean sequentialAssign, RenderType renderType) {
 
         VerilogModule verilogModule = mpsatOutput.getVerilogModule();
         if (verilogModule == null) {
             return null;
         }
-        VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+        VerilogImporter verilogImporter = new VerilogImporter(celementAssign, sequentialAssign);
         Circuit circuit = verilogImporter.createCircuit(verilogModule, mutexes);
         ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
         Framework framework = Framework.getInstance();
