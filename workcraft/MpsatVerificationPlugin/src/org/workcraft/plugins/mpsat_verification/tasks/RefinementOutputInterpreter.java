@@ -56,13 +56,12 @@ class RefinementOutputInterpreter extends AbstractCompositionOutputInterpreter {
 
                 Set<String> unexpectedlyEnabledSignals = new HashSet<>(implementationEnabledness.keySet());
                 unexpectedlyEnabledSignals.removeAll(specificationEnabledness.keySet());
-                result.addAll(CompositionUtils.extendTraceToViolations(implementationTrace, implementationEnabledness,
-                        unexpectedlyEnabledSignals, "Unexpected enabling of signal"));
+                result.addAll(CompositionUtils.getEnabledViolatorSolutions(implementationTrace, unexpectedlyEnabledSignals,
+                        implementationEnabledness));
 
                 Set<String> unexpectedlyDisabledSignals = new HashSet<>(specificationEnabledness.keySet());
                 unexpectedlyDisabledSignals.removeAll(implementationEnabledness.keySet());
-                result.addAll(CompositionUtils.extendTraceToViolations(implementationTrace, Collections.emptyMap(),
-                        unexpectedlyDisabledSignals, "Unexpected disabling of signal"));
+                result.addAll(CompositionUtils.getDisabledViolatorSolutions(implementationTrace, unexpectedlyDisabledSignals));
             }
         }
         return result;

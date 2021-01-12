@@ -45,8 +45,8 @@ class OutputDeterminacyOutputInterpreter extends AbstractCompositionOutputInterp
             Set<String> nondeterministicEnabledSignals = new HashSet<>(devEnabledness.keySet());
             nondeterministicEnabledSignals.removeAll(envEnabledness.keySet());
 
-            result.addAll(CompositionUtils.extendTraceToViolations(devTrace, devEnabledness,
-                    nondeterministicEnabledSignals, "Non-deterministic enabling of signal"));
+            result.addAll(CompositionUtils.getExtendedViolatorSolutions(devTrace, nondeterministicEnabledSignals,
+                    devEnabledness, "Non-deterministic enabling of signal"));
         }
         return result;
     }

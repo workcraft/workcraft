@@ -62,8 +62,8 @@ class ConformationOutputInterpreter extends AbstractCompositionOutputInterpreter
                 Set<String> unexpectedlyEnabledOutputEvents = new HashSet<>(outputEvents);
                 unexpectedlyEnabledOutputEvents.retainAll(devEnabledness.keySet());
                 unexpectedlyEnabledOutputEvents.removeAll(envEnabledness.keySet());
-                result.addAll(CompositionUtils.extendTraceToViolations(devTrace, devEnabledness,
-                        unexpectedlyEnabledOutputEvents, "Unexpected enabling of signal"));
+                result.addAll(CompositionUtils.getEnabledViolatorSolutions(devTrace, unexpectedlyEnabledOutputEvents,
+                        devEnabledness));
             }
         }
         return result;

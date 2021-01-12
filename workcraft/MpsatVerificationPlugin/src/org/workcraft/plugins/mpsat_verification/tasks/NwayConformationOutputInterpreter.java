@@ -137,8 +137,8 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
                 Set<String> unexpectedlyEnabledOutputEvents = StgUtils.getAllEvents(outputSignals);
                 unexpectedlyEnabledOutputEvents.retainAll(componentEnabledness.keySet());
                 unexpectedlyEnabledOutputEvents.retainAll(disabledInputEvents);
-                result.addAll(CompositionUtils.extendTraceToViolations(componentTrace, componentEnabledness,
-                        unexpectedlyEnabledOutputEvents, "Unexpected enabling of signal"));
+                result.addAll(CompositionUtils.getEnabledViolatorSolutions(componentTrace, unexpectedlyEnabledOutputEvents,
+                        componentEnabledness));
             }
         }
         return result;

@@ -82,16 +82,36 @@ public class CompositionUtils {
         return result;
     }
 
-    public static List<Solution> extendTraceToViolations(Trace trace, Map<String, Trace> enabledness,
-            Set<String> violationEvents, String message) {
+    public static List<Solution> getDisabledViolatorSolutions(Trace trace, Set<String> disabledViolators) {
+        return getViolatorSolutions(trace, disabledViolators, "Unexpected disabling of signal");
+    }
+
+    public static List<Solution> getViolatorSolutions(Trace trace, Set<String> violator, String message) {
+        List<Solution> result = new LinkedList<>();
+        if (!violator.isEmpty()) {
+            LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, violator));
+            String comment = TextUtils.wrapMessageWithItems(message, violator);
+            result.add(new Solution(trace, null, comment));
+        }
+        return result;
+    }
+
+    public static List<Solution> getEnabledViolatorSolutions(Trace trace, Set<String> enabledViolators,
+            Map<String, Trace> enabledness) {
+
+        return getExtendedViolatorSolutions(trace, enabledViolators, enabledness, "Unexpected enabling of signal");
+    }
+
+    public static List<Solution> getExtendedViolatorSolutions(Trace trace, Set<String> violators,
+            Map<String, Trace> enabledness, String message) {
 
         List<Solution> result = new LinkedList<>();
-        if (!violationEvents.isEmpty()) {
-            LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, violationEvents));
+        if (!violators.isEmpty()) {
+            LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, violators));
         }
 
         Map<Trace, Set<String>> continuationToEventsMap = new HashMap<>();
-        for (String event : violationEvents) {
+        for (String event : violators) {
             Trace continuation = enabledness.get(event);
             if (continuation != null) {
                 Set<String> events = continuationToEventsMap.computeIfAbsent(continuation, HashSet::new);
