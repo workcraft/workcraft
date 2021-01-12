@@ -63,9 +63,9 @@ public class FsmPropertyHelper {
     public static PropertyDescriptor getEventSymbolProperty(Fsm fsm, Event event) {
         return new PropertyDeclaration<>(String.class, Event.PROPERTY_SYMBOL,
                 value -> {
-                    Identifier.validate(value);
                     Symbol symbol = null;
                     if (!value.isEmpty()) {
+                        Identifier.validate(value);
                         Node node = fsm.getNodeByReference(value);
                         if (node instanceof Symbol) {
                             symbol = (Symbol) node;
