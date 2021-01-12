@@ -35,7 +35,8 @@ public class Variable extends MathNode implements Comparable<Variable>, BooleanV
     }
 
     public void setLabel(String value) {
-        if (label != value) {
+        if (value == null) value = "";
+        if (!value.equals(label)) {
             label = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
         }
