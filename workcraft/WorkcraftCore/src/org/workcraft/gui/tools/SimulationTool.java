@@ -55,9 +55,9 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     private static final ImageIcon ICON_COPY_STATE = GuiUtils.createIconFromSVG("images/simulation-trace-copy.svg");
     private static final ImageIcon ICON_PASTE_STATE = GuiUtils.createIconFromSVG("images/simulation-trace-paste.svg");
     private static final ImageIcon ICON_MERGE_TRACE = GuiUtils.createIconFromSVG("images/simulation-trace-merge.svg");
-    private static final ImageIcon ICON_SAVE_INITIL_STATE = GuiUtils.createIconFromSVG("images/simulation-marking-save.svg");
+    private static final ImageIcon ICON_SAVE_INITIAL_STATE = GuiUtils.createIconFromSVG("images/simulation-marking-save.svg");
 
-    private static final String HINT_TIMING_DIAGRAM = "Generate trace timing digram";
+    private static final String HINT_TIMING_DIAGRAM = "Generate trace timing diagram";
     private static final String HINT_COPY_STATE = "Copy trace to clipboard";
     private static final String HINT_PASTE_STATE = "Paste trace from clipboard";
     private static final String HINT_MERGE_TRACE = "Merge branch into trace";
@@ -125,7 +125,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         JButton copyStateButton = GuiUtils.createIconButton(ICON_COPY_STATE, HINT_COPY_STATE);
         JButton pasteStateButton = GuiUtils.createIconButton(ICON_PASTE_STATE, HINT_PASTE_STATE);
         JButton mergeTraceButton = GuiUtils.createIconButton(ICON_MERGE_TRACE, HINT_MERGE_TRACE);
-        JButton saveInitStateButton = GuiUtils.createIconButton(ICON_SAVE_INITIL_STATE, HINT_SAVE_INITIAL_STATE);
+        JButton saveInitStateButton = GuiUtils.createIconButton(ICON_SAVE_INITIAL_STATE, HINT_SAVE_INITIAL_STATE);
 
         JPanel simulationControl = new JPanel();
         simulationControl.add(playButton);
@@ -589,7 +589,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return (int) (BASE_SPEED * Math.pow(INCREMENT_SPEED, power));
     }
 
-    @SuppressWarnings("serial")
     private final class TraceTableCellRendererImplementation implements TableCellRenderer {
         private final JLabel label = new JLabel() {
             @Override
@@ -635,7 +634,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         }
     }
 
-    @SuppressWarnings("serial")
     private class TraceTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
@@ -686,8 +684,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return super.keyPressed(e);
     }
 
-    public void executeTransition(final GraphEditor editor, Node candidate) {
-        if (candidate == null) return;
+    public void executeTransition(final GraphEditor editor, Node candidateNode) {
+        if (candidateNode == null) return;
 
         String ref = null;
         // If clicked on the trace event, do the step forward.
@@ -701,7 +699,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         MathModel mathModel = getUnderlyingModel().getMathModel();
         if ((mathModel != null) && (ref != null)) {
             Node node = mathModel.getNodeByReference(ref);
-            if (node == candidate) {
+            if (node == candidateNode) {
                 step(editor);
                 return;
             }
@@ -709,7 +707,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         while (branchTrace.getPosition() < branchTrace.size()) {
             branchTrace.removeCurrent();
         }
-        branchTrace.add(mathModel.getNodeReference(candidate));
+        if (mathModel != null) {
+            String candidateRef = mathModel.getNodeReference(candidateNode);
+            if (candidateRef != null) {
+                branchTrace.add(candidateRef);
+            }
+        }
         step(editor);
         scrollTraceToBottom();
     }
@@ -853,20 +856,18 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     public boolean isContainerExcited(Container container) {
         if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
-        boolean ret = false;
-        for (Node node: container.getChildren()) {
+        boolean result = false;
+        for (Node node : container.getChildren()) {
             if (node instanceof VisualComponent) {
                 VisualComponent component = (VisualComponent) node;
-                ret = ret || isEnabledNode(component.getReferencedComponent());
+                result = isEnabledNode(component.getReferencedComponent());
+            } else if (node instanceof Container) {
+                result = isContainerExcited((Container) node);
             }
-
-            if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container) node);
-            }
-            if (ret) break;
+            if (result) break;
         }
-        excitedContainers.put(container, ret);
-        return ret;
+        excitedContainers.put(container, result);
+        return result;
     }
 
     public boolean isConnectionExcited(VisualConnection connection) {
