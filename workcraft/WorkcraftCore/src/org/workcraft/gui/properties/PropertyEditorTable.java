@@ -41,7 +41,7 @@ public class PropertyEditorTable extends JTable {
         propertyClasses.put(ActionList.class, new ActionListProperty());
 
         PluginManager pm = Framework.getInstance().getPluginManager();
-        for (PropertyClassProvider p : pm.getPropertieProviders()) {
+        for (PropertyClassProvider p : pm.getPropertyProviders()) {
             propertyClasses.put(p.getPropertyType(), p.getPropertyGui());
         }
     }

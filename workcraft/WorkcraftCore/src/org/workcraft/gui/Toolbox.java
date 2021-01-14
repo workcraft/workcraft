@@ -67,19 +67,17 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         VisualModel model = editor.getModel();
         boolean isDefault = true;
         // Tools associated with the model
-        for (GraphEditorTool tool: model.getGraphEditorTools()) {
+        for (GraphEditorTool tool : model.getGraphEditorTools()) {
             addTool(tool, isDefault);
             isDefault = false;
         }
         // Tools registered via PluginManager
-        for (GraphEditorTool tool : pm.getGraphEditorTools()) {
+        for (GraphEditorTool tool : pm.getGraphEditorTools(false)) {
             if (tool.isApplicableTo(we)) {
                 addTool(tool, isDefault);
             }
         }
         // Select default tool
-        //selectedTool = defaultTool;
-        //setToolButtonSelection(selectedTool, true);
         selectTool(defaultTool);
     }
 
@@ -143,12 +141,12 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
     @SuppressWarnings("unchecked")
     public <T extends GraphEditorTool> T getToolInstance(Class<T> cls) {
-        for (GraphEditorTool tool: tools) {
+        for (GraphEditorTool tool : tools) {
             if (cls == tool.getClass()) {
                 return (T) tool;
             }
         }
-        for (GraphEditorTool tool: tools) {
+        for (GraphEditorTool tool : tools) {
             if (cls.isInstance(tool)) {
                 return (T) tool;
             }

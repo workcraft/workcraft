@@ -100,20 +100,21 @@ public class PluginManager implements PluginProvider {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interf) {
-        return (Collection<PluginInfo<? extends T>>) (Collection<?>) Collections.unmodifiableCollection(plugins.get(interf));
+    public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> cls) {
+        return (Collection<PluginInfo<? extends T>>) (Collection<?>)
+                Collections.unmodifiableCollection(plugins.get(cls));
     }
 
     public List<ModelDescriptor> getSortedModelDescriptors() {
         return getPlugins(ModelDescriptor.class).stream()
-                .map(plugin -> plugin.getSingleton())
-                .sorted(Comparator.comparing(o -> o.getDisplayName()))
+                .map(PluginInfo::getSingleton)
+                .sorted(Comparator.comparing(ModelDescriptor::getDisplayName))
                 .collect(Collectors.toList());
     }
 
     public List<Settings> getSortedSettings() {
         return getPlugins(Settings.class).stream()
-                .map(plugin -> plugin.getSingleton())
+                .map(PluginInfo::getSingleton)
                 .sorted((o1, o2) -> {
                     if (o1 == o2) return 0;
                     if (o1 == null) return -1;
@@ -136,40 +137,40 @@ public class PluginManager implements PluginProvider {
 
     public List<Importer> getSortedImporters() {
         return getPlugins(Importer.class).stream()
-                .map(plugin -> plugin.getSingleton())
+                .map(PluginInfo::getSingleton)
                 .sorted(Comparator.comparing(o -> o.getFormat().getDescription()))
                 .collect(Collectors.toList());
     }
 
     public List<Exporter> getSortedExporters() {
         return getPlugins(Exporter.class).stream()
-                .map(plugin -> plugin.getSingleton())
+                .map(PluginInfo::getSingleton)
                 .sorted(Comparator.comparing(o -> o.getFormat().getDescription()))
                 .collect(Collectors.toList());
     }
 
     public List<FileHandler> getSortedFileHandlers() {
         return getPlugins(FileHandler.class).stream()
-                .map(plugin -> plugin.getSingleton())
-                .sorted(Comparator.comparing(o -> o.getDisplayName()))
+                .map(PluginInfo::getSingleton)
+                .sorted(Comparator.comparing(FileHandler::getDisplayName))
                 .collect(Collectors.toList());
     }
 
-    public List<PropertyClassProvider> getPropertieProviders() {
+    public List<PropertyClassProvider> getPropertyProviders() {
         return getPlugins(PropertyClassProvider.class).stream()
-                .map(plugin -> plugin.getSingleton())
+                .map(PluginInfo::getSingleton)
                 .collect(Collectors.toList());
     }
 
     public List<Command> getCommands() {
         return getPlugins(Command.class).stream()
-                .map(plugin -> plugin.getSingleton())
+                .map(PluginInfo::getSingleton)
                 .collect(Collectors.toList());
     }
 
-    public List<GraphEditorTool> getGraphEditorTools() {
+    public List<GraphEditorTool> getGraphEditorTools(boolean singleton) {
         return getPlugins(GraphEditorTool.class).stream()
-                .map(plugin -> plugin.getSingleton())
+                .map(singleton ? PluginInfo::getSingleton : PluginInfo::newInstance)
                 .collect(Collectors.toList());
     }
 
@@ -209,12 +210,12 @@ public class PluginManager implements PluginProvider {
         registerClass(Command.class, cls);
     }
 
-    public void registerGlobalTool(Class<? extends GraphEditorTool> cls) {
+    public void registerGraphEditorTool(Class<? extends GraphEditorTool> cls) {
         registerClass(GraphEditorTool.class, cls);
     }
 
-    private <T> void registerClass(Class<T> interf, final Class<? extends T> cls) {
-        registerClass(interf, () -> {
+    private <T> void registerClass(Class<T> type, final Class<? extends T> cls) {
+        registerClass(type, () -> {
             try {
                 return cls.getDeclaredConstructor().newInstance();
             } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -241,12 +242,12 @@ public class PluginManager implements PluginProvider {
         registerClass(FileHandler.class, initialiser);
     }
 
-    private <T> void registerClass(Class<T> interf, Initialiser<? extends T> initialiser) {
-        if (!interf.isInterface()) {
-            throw new RuntimeException("'interf' argument must be an interface");
+    private <T> void registerClass(Class<T> cls, Initialiser<? extends T> initialiser) {
+        if (!cls.isInterface()) {
+            throw new RuntimeException("'cls' argument must be an interface");
         }
         final PluginInfo<T> pluginInfo = new PluginInstanceHolder<>(initialiser);
-        plugins.put(interf, pluginInfo);
+        plugins.put(cls, pluginInfo);
     }
 
 }
