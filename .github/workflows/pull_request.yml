@@ -1,0 +1,94 @@
+name: Pull request test
+
+on: [push, pull_request]
+
+jobs:
+
+  linux:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-18.04, ubuntu-16.04]
+        java-version: [8, 11]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Setup JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java-version }}
+
+      - name: Checkstyle
+        run: ./gradlew checkstyle
+
+      - name: PMD
+        run: ./gradlew pmd
+
+      - name: Assemble
+        run: ./gradlew assemble
+
+      - name: Install clasp
+        run: sudo apt-get install clasp
+
+      - name: Unit tests
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: ./gradlew test
+
+  osx:
+    strategy:
+      matrix:
+        os: [macos-latest]
+        java-version: [11]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Setup JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java-version }}
+
+      - name: Assemble
+        run: ./gradlew assemble
+
+      - name: Install clasp
+        run: brew install clasp
+
+      - name: Unit tests
+        run: ./gradlew test
+
+  windows:
+    strategy:
+      matrix:
+        os: [windows-latest]
+        java-version: [8, 11]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+
+      - name: Setup JDK ${{ matrix.java-version }}
+        uses: actions/setup-java@v1
+        with:
+          java-version: ${{ matrix.java-version }}
+
+      - name: Assemble
+        run: ./gradlew assemble
+
+      - name: Unit tests
+        run: ./gradlew test
