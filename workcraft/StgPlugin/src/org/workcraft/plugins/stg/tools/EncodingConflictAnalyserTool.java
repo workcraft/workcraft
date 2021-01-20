@@ -2,6 +2,7 @@ package org.workcraft.plugins.stg.tools;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
@@ -61,6 +62,8 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             }
         });
         coresTable = new JTable(new CoreTableModel());
+        coresTable.getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
+        coresTable.getTableHeader().setReorderingAllowed(false);
         coresTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         coresTable.getColumnModel().getColumn(COLUMN_COLOR).setMaxWidth(50);
         coresTable.setRowHeight(SizeHelper.getComponentHeightFromFont(coresTable.getFont()));
@@ -290,19 +293,14 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
         @Override
         public String getColumnName(int column) {
-            String result;
             switch (column) {
             case COLUMN_COLOR:
-                result = "Color";
-                break;
+                return "<html><b>Color</b></html>";
             case COLUMN_CORE:
-                result = "Core";
-                break;
+                return "<html><b>Core</b></html>";
             default:
-                result = "";
-                break;
+                return  "";
             }
-            return result;
         }
 
         @Override
@@ -348,6 +346,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
+
             JLabel result = null;
             label.setBorder(GuiUtils.getTableCellBorder());
             if (density != null) {
