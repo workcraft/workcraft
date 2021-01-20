@@ -1,5 +1,3 @@
-name: Pull request test
-
 on: [push, pull_request]
 
 jobs:
