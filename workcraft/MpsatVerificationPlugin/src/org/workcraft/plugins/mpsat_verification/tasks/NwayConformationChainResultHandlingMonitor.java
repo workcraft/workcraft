@@ -10,7 +10,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NwayConformationChainResultHandlingMonitor extends AbstractChainResultHandlingMonitor<VerificationChainOutput> {
+public class NwayConformationChainResultHandlingMonitor
+        extends AbstractChainResultHandlingMonitor<VerificationChainOutput> {
 
     private final ArrayList<WorkspaceEntry> wes = new ArrayList<>();
 
@@ -31,8 +32,13 @@ public class NwayConformationChainResultHandlingMonitor extends AbstractChainRes
         Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
         MpsatOutput mpsatOutput = (mpsatResult == null) ? null : mpsatResult.getPayload();
 
-        return new NwayConformationOutputInterpreter(wes, exportOutput, pcompOutput,
-                mpsatOutput, isInteractive()).interpret();
+        return getInterpreter(exportOutput, pcompOutput, mpsatOutput).interpret();
+    }
+
+    public ConformationOutputInterpreter getInterpreter(ExportOutput exportOutput, PcompOutput pcompOutput,
+            MpsatOutput mpsatOutput) {
+
+        return new NwayConformationOutputInterpreter(wes, exportOutput, pcompOutput, mpsatOutput, isInteractive());
     }
 
     @Override

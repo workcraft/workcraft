@@ -25,28 +25,6 @@ public class PluginManager implements PluginProvider {
 
     private final ListMap<Class<?>, PluginInfo<?>> plugins = new ListMap<>();
 
-    public static class PluginInstanceHolder<T> implements PluginInfo<T> {
-        private final Initialiser<? extends T> initialiser;
-        private T instance;
-
-        public PluginInstanceHolder(Initialiser<? extends T> initialiser) {
-            this.initialiser = initialiser;
-        }
-
-        @Override
-        public T newInstance() {
-            return initialiser.create();
-        }
-
-        @Override
-        public T getSingleton() {
-            if (instance == null) {
-                instance = newInstance();
-            }
-            return instance;
-        }
-    }
-
     public void initPlugins() throws PluginInstantiationException {
         LogUtils.logMessage("Initialising plugins...");
         plugins.clear();
@@ -55,7 +33,7 @@ public class PluginManager implements PluginProvider {
             LegacyPluginInfo info = new LegacyPluginInfo(cls);
             for (String interfaceName : info.getInterfaces()) {
                 try {
-                    plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<>(info));
+                    plugins.put(Class.forName(interfaceName), new PluginInfo<>(info, true));
                 } catch (ClassNotFoundException e) {
                     LogUtils.logWarning("Skipping class '" + info.getClassName() + "' that"
                             + " implements unknown interface '" + interfaceName + "'.");
@@ -65,7 +43,7 @@ public class PluginManager implements PluginProvider {
 
         for (PluginInfo<? extends Plugin> info : getPlugins(Plugin.class)) {
             try {
-                final Plugin plugin = info.newInstance();
+                final Plugin plugin = info.getInstance();
                 try {
                     LogUtils.logMessage("  Loading plugin: " + plugin.getDescription());
                     plugin.init();
@@ -107,14 +85,14 @@ public class PluginManager implements PluginProvider {
 
     public List<ModelDescriptor> getSortedModelDescriptors() {
         return getPlugins(ModelDescriptor.class).stream()
-                .map(PluginInfo::getSingleton)
+                .map(PluginInfo::getInstance)
                 .sorted(Comparator.comparing(ModelDescriptor::getDisplayName))
                 .collect(Collectors.toList());
     }
 
     public List<Settings> getSortedSettings() {
         return getPlugins(Settings.class).stream()
-                .map(PluginInfo::getSingleton)
+                .map(PluginInfo::getInstance)
                 .sorted((o1, o2) -> {
                     if (o1 == o2) return 0;
                     if (o1 == null) return -1;
@@ -137,84 +115,84 @@ public class PluginManager implements PluginProvider {
 
     public List<Importer> getSortedImporters() {
         return getPlugins(Importer.class).stream()
-                .map(PluginInfo::getSingleton)
+                .map(PluginInfo::getInstance)
                 .sorted(Comparator.comparing(o -> o.getFormat().getDescription()))
                 .collect(Collectors.toList());
     }
 
     public List<Exporter> getSortedExporters() {
         return getPlugins(Exporter.class).stream()
-                .map(PluginInfo::getSingleton)
+                .map(PluginInfo::getInstance)
                 .sorted(Comparator.comparing(o -> o.getFormat().getDescription()))
                 .collect(Collectors.toList());
     }
 
     public List<FileHandler> getSortedFileHandlers() {
         return getPlugins(FileHandler.class).stream()
-                .map(PluginInfo::getSingleton)
+                .map(PluginInfo::getInstance)
                 .sorted(Comparator.comparing(FileHandler::getDisplayName))
                 .collect(Collectors.toList());
     }
 
     public List<PropertyClassProvider> getPropertyProviders() {
         return getPlugins(PropertyClassProvider.class).stream()
-                .map(PluginInfo::getSingleton)
+                .map(PluginInfo::getInstance)
                 .collect(Collectors.toList());
     }
 
     public List<Command> getCommands() {
         return getPlugins(Command.class).stream()
-                .map(PluginInfo::getSingleton)
+                .map(PluginInfo::getInstance)
                 .collect(Collectors.toList());
     }
 
-    public List<GraphEditorTool> getGraphEditorTools(boolean singleton) {
+    public List<GraphEditorTool> getGraphEditorTools() {
         return getPlugins(GraphEditorTool.class).stream()
-                .map(singleton ? PluginInfo::getSingleton : PluginInfo::newInstance)
+                .map(PluginInfo::getInstance)
                 .collect(Collectors.toList());
     }
 
     public void registerModelDescriptor(Class<? extends ModelDescriptor> cls) {
-        registerClass(ModelDescriptor.class, cls);
+        registerClass(ModelDescriptor.class, cls, true);
     }
 
     public void registerSettings(Class<? extends Settings> cls) {
-        registerClass(Settings.class, cls);
+        registerClass(Settings.class, cls, true);
     }
 
     public void registerXmlSerialiser(Class<? extends XMLSerialiser> cls) {
-        registerClass(XMLSerialiser.class, cls);
+        registerClass(XMLSerialiser.class, cls, true);
     }
 
     public void registerXmlDeserialiser(Class<? extends XMLDeserialiser> cls) {
-        registerClass(XMLDeserialiser.class, cls);
+        registerClass(XMLDeserialiser.class, cls, true);
     }
 
     public void registerImporter(Class<? extends Importer> cls) {
-        registerClass(Importer.class, cls);
+        registerClass(Importer.class, cls, true);
     }
 
     public void registerExporter(Class<? extends Exporter> cls) {
-        registerClass(Exporter.class, cls);
+        registerClass(Exporter.class, cls, true);
     }
 
     public void registerFileHandler(Class<? extends FileHandler> cls) {
-        registerClass(FileHandler.class, cls);
+        registerClass(FileHandler.class, cls, true);
     }
 
     public void registerProperty(Class<? extends PropertyClassProvider> cls) {
-        registerClass(PropertyClassProvider.class, cls);
+        registerClass(PropertyClassProvider.class, cls, true);
     }
 
     public void registerCommand(Class<? extends Command> cls) {
-        registerClass(Command.class, cls);
+        registerClass(Command.class, cls, true);
     }
 
-    public void registerGraphEditorTool(Class<? extends GraphEditorTool> cls) {
-        registerClass(GraphEditorTool.class, cls);
+    public void registerGraphEditorTool(Class<? extends GraphEditorTool> cls, boolean singleton) {
+        registerClass(GraphEditorTool.class, cls, singleton);
     }
 
-    private <T> void registerClass(Class<T> type, final Class<? extends T> cls) {
+    private <T> void registerClass(Class<T> type, final Class<? extends T> cls, boolean singleton) {
         registerClass(type, () -> {
             try {
                 return cls.getDeclaredConstructor().newInstance();
@@ -227,26 +205,26 @@ public class PluginManager implements PluginProvider {
                 }
                 throw new RuntimeException(e);
             }
-        });
+        }, singleton);
     }
 
     public void registerModelSerialiser(Initialiser<? extends ModelSerialiser> initialiser) {
-        registerClass(ModelSerialiser.class, initialiser);
+        registerClass(ModelSerialiser.class, initialiser, true);
     }
 
     public void registerModelDeserialiser(Initialiser<? extends ModelDeserialiser> initialiser) {
-        registerClass(ModelDeserialiser.class, initialiser);
+        registerClass(ModelDeserialiser.class, initialiser, true);
     }
 
     public void registerFileHandler(Initialiser<? extends FileHandler> initialiser) {
-        registerClass(FileHandler.class, initialiser);
+        registerClass(FileHandler.class, initialiser, true);
     }
 
-    private <T> void registerClass(Class<T> cls, Initialiser<? extends T> initialiser) {
+    private <T> void registerClass(Class<T> cls, Initialiser<? extends T> initialiser, boolean singleton) {
         if (!cls.isInterface()) {
             throw new RuntimeException("'cls' argument must be an interface");
         }
-        final PluginInfo<T> pluginInfo = new PluginInstanceHolder<>(initialiser);
+        final PluginInfo<T> pluginInfo = new PluginInfo<>(initialiser, singleton);
         plugins.put(cls, pluginInfo);
     }
 

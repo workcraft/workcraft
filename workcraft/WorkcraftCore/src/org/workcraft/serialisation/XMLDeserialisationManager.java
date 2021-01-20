@@ -39,7 +39,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
 
     public void processPlugins(PluginProvider pp) {
         for (PluginInfo<? extends XMLDeserialiser> info : pp.getPlugins(XMLDeserialiser.class)) {
-            registerDeserialiser(info.newInstance());
+            registerDeserialiser(info.getInstance());
         }
     }
 

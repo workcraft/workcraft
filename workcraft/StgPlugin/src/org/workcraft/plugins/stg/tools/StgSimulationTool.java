@@ -79,7 +79,6 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     }
 
-    @SuppressWarnings("serial")
     private final class StateTable extends JTable {
         StateTable(final StateTableModel model) {
             super(model);
@@ -120,8 +119,8 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
     }
 
-    @SuppressWarnings("serial")
     private final class StateTableModel extends AbstractTableModel {
+
         @Override
         public int getColumnCount() {
             return 4;
@@ -206,7 +205,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     private final class SignalDataRenderer implements TableCellRenderer {
-        @SuppressWarnings("serial")
+
         private final JLabel label = new JLabel() {
             @Override
             public void paint(final Graphics g) {
@@ -246,8 +245,8 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
     }
 
-    @SuppressWarnings("serial")
     public class StateTableRowTransferHandler extends TransferHandler {
+
         private final DataFlavor localObjectFlavor = new ActivationDataFlavor(Integer.class, "Integer Row Index");
         private final JTable table;
 
@@ -310,7 +309,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     private final class TraceTableCellRendererImplementation implements TableCellRenderer {
-        @SuppressWarnings("serial")
+
         private final JLabel label = new JLabel() {
             @Override
             public void paint(final Graphics g) {
@@ -348,7 +347,9 @@ public class StgSimulationTool extends PetriSimulationTool {
                 String ref = pair.getSecond();
                 final Node node = getUnderlyingStg().getNodeByReference(ref);
                 String colorCode = ColorUtils.getHexRGB(getNodeColor(node));
-                label.setText("<html><span style='color: " + GRAY_CODE + "'>" + prefix + "</span><span style='color: " + colorCode + "'>" + ref + "</span></html>");
+                label.setText("<html><span style='color: " + GRAY_CODE + "'>" + prefix + "</span>" +
+                        "<span style='color: " + colorCode + "'>" + ref + "</span></html>");
+
                 if (isActive(row, column)) {
                     label.setBackground(table.getSelectionBackground());
                 } else {

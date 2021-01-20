@@ -16,9 +16,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
-class ConformationOutputInterpreter extends AbstractCompositionOutputInterpreter {
+public class ConformationOutputInterpreter extends AbstractCompositionOutputInterpreter {
 
-    ConformationOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
+    public ConformationOutputInterpreter(WorkspaceEntry we, ExportOutput exportOutput,
             PcompOutput pcompOutput, MpsatOutput mpsatOutput, boolean interactive) {
 
         super(we, exportOutput, pcompOutput, mpsatOutput, interactive);
