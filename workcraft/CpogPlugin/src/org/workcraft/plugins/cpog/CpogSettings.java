@@ -5,6 +5,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.utils.BackendUtils;
+import org.workcraft.utils.DesktopApi;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -43,8 +44,8 @@ public class CpogSettings extends AbstractModelSettings {
     private static final String defaultAbcTool = BackendUtils.getToolPath("Abc", "abc");
     private static final String defaultPgminerCommand = BackendUtils.getToolPath("PGMiner", "pgminer");
     private static final SatSolver defaultSatSolver = SatSolver.CLASP;
-    private static final String defaultClaspCommand = "clasp";
-    private static final String defaultMinisatCommand = "minisat";
+    private static final String defaultClaspCommand = DesktopApi.getOs().isWindows() ? "tools\\clasp\\clasp.exe" : "clasp";
+    private static final String defaultMinisatCommand = DesktopApi.getOs().isWindows() ? "tools\\minisat\\minisat.exe" : "minisat";
 
     private static String scencoCommand = defaultScencoCommand;
     private static String espressoCommand = defaultEspressoCommand;

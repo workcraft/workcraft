@@ -5,12 +5,18 @@ import org.junit.jupiter.api.Disabled;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.onehot.CnfGeneratingOptimiser;
+import org.workcraft.utils.BackendUtils;
+import org.workcraft.utils.DesktopApi;
 
 @Disabled // This only works with MINISAT solver which is not supported in Travis OSX
 public class CnfSolverTests extends SolverTests {
 
     @BeforeAll
     public static void setSatSolver() {
+        if (DesktopApi.getOs().isWindows()) {
+            CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
+            CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));
+        }
         CpogSettings.setSatSolver(CpogSettings.SatSolver.MINISAT);
     }
 
