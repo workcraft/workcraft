@@ -18,6 +18,11 @@ import org.workcraft.utils.PackageUtils;
 public class SynthesisCommandsTests {
 
     @BeforeAll
+    public static void skipOnMac() {
+        Assumptions.assumeFalse(DesktopApi.getOs().isMac());
+    }
+
+    @BeforeAll
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();

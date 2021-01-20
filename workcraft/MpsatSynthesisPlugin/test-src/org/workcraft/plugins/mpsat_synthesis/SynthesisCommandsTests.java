@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_synthesis;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
@@ -12,9 +13,15 @@ import org.workcraft.plugins.mpsat_synthesis.commands.StandardCelementSynthesisC
 import org.workcraft.plugins.mpsat_synthesis.commands.TechnologyMappingSynthesisCommand;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.utils.BackendUtils;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
 
 public class SynthesisCommandsTests {
+
+    @BeforeAll
+    public static void skipOnMac() {
+        Assumptions.assumeFalse(DesktopApi.getOs().isMac());
+    }
 
     @BeforeAll
     public static void init() {
