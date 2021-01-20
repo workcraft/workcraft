@@ -50,8 +50,7 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
                     .sorted((we1, we2) -> SortUtils.compareNatural(we1.getTitle(), we2.getTitle()))
                     .collect(Collectors.toList());
 
-            NwayConformationChainResultHandlingMonitor monitor = new NwayConformationChainResultHandlingMonitor(wes);
-            run(we, wes, monitor);
+            run(we, wes, getMonitor(wes));
         }
     }
 
@@ -76,9 +75,13 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
 
     @Override
     public Boolean execute(WorkspaceEntry we, List<WorkspaceEntry> wes) {
-        NwayConformationChainResultHandlingMonitor monitor = new NwayConformationChainResultHandlingMonitor(wes);
+        NwayConformationChainResultHandlingMonitor monitor = getMonitor(wes);
         run(we, wes, monitor);
         return monitor.waitForHandledResult();
+    }
+
+    public NwayConformationChainResultHandlingMonitor getMonitor(List<WorkspaceEntry> wes) {
+        return new NwayConformationChainResultHandlingMonitor(wes);
     }
 
 }
