@@ -36,8 +36,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
 
     public void processPlugins(PluginProvider pp) {
         for (PluginInfo<? extends XMLSerialiser> info : pp.getPlugins(XMLSerialiser.class)) {
-            final XMLSerialiser newInstance = info.newInstance();
-            registerSerialiser(newInstance);
+            registerSerialiser(info.getInstance());
         }
     }
 

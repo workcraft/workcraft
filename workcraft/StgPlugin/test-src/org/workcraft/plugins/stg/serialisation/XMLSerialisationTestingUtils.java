@@ -2,7 +2,10 @@ package org.workcraft.plugins.stg.serialisation;
 
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.*;
+import org.workcraft.plugins.Initialiser;
+import org.workcraft.plugins.LegacyPluginInfo;
+import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.PluginProvider;
 import org.workcraft.plugins.builtin.serialisation.xml.*;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -25,7 +28,7 @@ public class XMLSerialisationTestingUtils {
             Initialiser<Object>[] legacy = getLegacyPlugins(interfaceType);
             ArrayList<PluginInfo<? extends T>> result = new ArrayList<>();
             for (Initialiser<Object> l : legacy) {
-                result.add(new PluginManager.PluginInstanceHolder<T>((Initialiser<? extends T>) l));
+                result.add(new PluginInfo<T>((Initialiser<? extends T>) l, true));
             }
             return result;
         }

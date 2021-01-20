@@ -72,7 +72,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
             isDefault = false;
         }
         // Tools registered via PluginManager
-        for (GraphEditorTool tool : pm.getGraphEditorTools(false)) {
+        for (GraphEditorTool tool : pm.getGraphEditorTools()) {
             if (tool.isApplicableTo(we)) {
                 addTool(tool, isDefault);
             }
