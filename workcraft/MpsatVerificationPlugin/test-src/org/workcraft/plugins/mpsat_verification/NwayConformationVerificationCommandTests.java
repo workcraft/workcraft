@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat_verification;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
@@ -8,6 +9,7 @@ import org.workcraft.plugins.mpsat_verification.commands.NwayConformationVerific
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.utils.BackendUtils;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
 
 import java.net.URL;
@@ -15,6 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NwayConformationVerificationCommandTests {
+
+    @BeforeAll
+    public static void skipOnMac() {
+        Assumptions.assumeFalse(DesktopApi.getOs().isMac());
+    }
 
     @BeforeAll
     public static void init() {

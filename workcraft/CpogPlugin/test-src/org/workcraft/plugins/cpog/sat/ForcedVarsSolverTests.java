@@ -9,6 +9,8 @@ import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.plugins.cpog.encoding.onehot.OneHotNumberProvider;
+import org.workcraft.utils.BackendUtils;
+import org.workcraft.utils.DesktopApi;
 
 @Disabled // This only works with MINISAT solver which is not supported in Travis OSX
 public class ForcedVarsSolverTests {
@@ -59,6 +61,10 @@ public class ForcedVarsSolverTests {
 
     @BeforeAll
     public static void setSatSolver() {
+        if (DesktopApi.getOs().isWindows()) {
+            CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
+            CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));
+        }
         CpogSettings.setSatSolver(CpogSettings.SatSolver.MINISAT);
     }
 

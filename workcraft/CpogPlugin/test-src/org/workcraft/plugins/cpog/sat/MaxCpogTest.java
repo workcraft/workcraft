@@ -1,7 +1,6 @@
 package org.workcraft.plugins.cpog.sat;
 
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.formula.BooleanFormula;
@@ -9,6 +8,7 @@ import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.plugins.cpog.encoding.onehot.OneHotIntBooleanFormula;
 import org.workcraft.plugins.cpog.encoding.onehot.OneHotNumberProvider;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
 public class MaxCpogTest {
@@ -16,12 +16,11 @@ public class MaxCpogTest {
     private static final String[] cpog = {"-0001", "00011", "11111", "10111", "1z1ZZ"};
 
     @BeforeAll
-    public static void skipOnWindows() {
-        Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
-    }
-
-    @BeforeAll
     public static void setSatSolver() {
+        if (DesktopApi.getOs().isWindows()) {
+            CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
+            CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));
+        }
         CpogSettings.setSatSolver(CpogSettings.SatSolver.CLASP);
     }
 

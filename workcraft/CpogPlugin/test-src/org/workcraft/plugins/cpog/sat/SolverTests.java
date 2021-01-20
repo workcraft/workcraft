@@ -1,8 +1,12 @@
 package org.workcraft.plugins.cpog.sat;
 
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.Encoding;
+import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
 public abstract class SolverTests {
@@ -17,12 +21,11 @@ public abstract class SolverTests {
     }
 
     @BeforeAll
-    public static void skipOnWindows() {
-        Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
-    }
-
-    @BeforeAll
     public static void setSatSolver() {
+        if (DesktopApi.getOs().isWindows()) {
+            CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
+            CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));
+        }
         CpogSettings.setSatSolver(CpogSettings.SatSolver.MINISAT);
     }
 
