@@ -19,6 +19,7 @@ stdcCircuitWork = synthStandardCelementMpsat(cscStgWork);
 stdcStat = statCircuit(stdcCircuitWork);
 write(stdcStat, "mpsat-vme-stdc.circuit.stat");
 
+// Note: this implementation varies in Windows and Linux
 tmCircuitWork = synthTechnologyMappingMpsat(cscStgWork);
 tmStat = statCircuit(tmCircuitWork);
 write(tmStat, "mpsat-vme-tm.circuit.stat");
