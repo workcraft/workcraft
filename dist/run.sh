@@ -22,7 +22,8 @@ Usage: $script_name [PLATFORMS] [-e SUFFIX] [-t TAG] [-f] [-h]
   PLATFORMS           distribution platforms [$PLATFORMS] (all by default)
   -e, --extra SUFFIX  suffix for extra plugin and template directory (none by default)
   -t, --tag TAG       user-defined tag (git tag is used by default)
-  -f, --force         force removal of output directory
+  -f, --force         replace previously built distribution
+  -p, --pack          create archive file
   -h, --help          print this help
 EOF
 }
@@ -104,6 +105,7 @@ plugins="$PLUGINS"
 templates="$TEMPLATE"
 tag="$(git describe --tags --always)"
 force=false
+pack=false
 
 # Process parameters
 while [ "$#" -gt 0 ]; do
@@ -126,6 +128,10 @@ while [ "$#" -gt 0 ]; do
             force=true
             shift
             ;;
+        -p | --pack)
+            pack=true
+            shift
+            ;;
         *)
             platforms="$platforms $1"
             shift
@@ -138,8 +144,8 @@ if [ -z "$platforms" ]; then
     platforms="$PLATFORMS"
 fi
 
-# Change to Workcraft root directory (follow symlinks if necessary)
-cd "$(dirname "$(readlink -f $0)")/.."
+# Change to Workcraft root directory
+cd "$(dirname "$0")/.."
 
 for platform in $platforms; do
     dist_name="workcraft-${tag}${flavor}-${platform}"
@@ -178,25 +184,28 @@ for platform in $platforms; do
         done
     done
 
-    # Source outro scripts
     echo "  * Executing outro scripts..."
     for template in $templates; do
         source_if_present "$DIR/$template/$PLATFORM_COMMON-$SCRIPT_OUTRO"
         source_if_present "$DIR/$template/$platform-$SCRIPT_OUTRO"
     done
 
-    # Adjust file permissions and create archive file
-    echo "  * Creating distribution archive..."
+    echo "  * Adjusting file attributes..."
     adjust_permissions "$platform_path"
-    cd $platform_path
-    case $platform in
-        $PLATFORM_WINDOWS)
-            7z a -r ${dist_name}.zip $workcraft >/dev/null
-            ;;
-        $PLATFORM_LINUX | $PLATFORM_OSX)
-            tar -czf ${dist_name}.tar.gz $workcraft
-            ;;
-    esac
+    echo $pack
 
-    cd ../../..
+    if $pack; then
+        echo "  * Creating distribution archive..."
+        cd $platform_path
+        case $platform in
+            $PLATFORM_WINDOWS)
+                7z a -r ${dist_name}.zip $workcraft >/dev/null
+                ;;
+            $PLATFORM_LINUX | $PLATFORM_OSX)
+                tar -czf ${dist_name}.tar.gz $workcraft
+                ;;
+        esac
+        cd ../../..
+    fi
+
 done
