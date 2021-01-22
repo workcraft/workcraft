@@ -7,13 +7,13 @@ jobs:
   linux:
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-18.04, ubuntu-16.04]
+        os: [ubuntu-20.04, ubuntu-18.04]
         java-version: [8, 11]
 
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout
+      - name: Checkout sources
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
@@ -23,22 +23,27 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
 
-      - name: Checkstyle
+      - name: Run Checkstyle
         run: ./gradlew checkstyle
 
-      - name: PMD
+      - name: Run PMD checks
         run: ./gradlew pmd
 
-      - name: Assemble
+      - name: Assemble Workcraft
         run: ./gradlew assemble
 
       - name: Install clasp
         run: sudo apt-get install clasp
 
-      - name: Unit tests
+      - name: Run unit tests
         uses: GabrielBB/xvfb-action@v1
         with:
           run: ./gradlew test
+
+      - name: Run integration tests
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: ./ci/run.sh
 
   osx:
     strategy:
@@ -49,7 +54,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout
+      - name: Checkout sources
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
@@ -59,14 +64,19 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
 
-      - name: Assemble
+      - name: Assemble Workcraft
         run: ./gradlew assemble
 
       - name: Install clasp
         run: brew install clasp
 
-      - name: Unit tests
+      - name: Run unit tests
         run: ./gradlew test
+
+      - name: Run integration tests (without 32-bit backends)
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: ./ci/run.sh exec help workspace ci/export-* ci/import-* ci/property-* ci/statistics-*
 
   windows:
     strategy:
@@ -77,7 +87,7 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-      - name: Checkout
+      - name: Checkout sources
         uses: actions/checkout@v2
         with:
           submodules: 'recursive'
@@ -87,8 +97,12 @@ jobs:
         with:
           java-version: ${{ matrix.java-version }}
 
-      - name: Assemble
+      - name: Assemble Workcraft
         run: ./gradlew assemble
 
-      - name: Unit tests
+      - name: Run unit tests
         run: ./gradlew test
+
+      - name: Run integration tests
+        run: ./ci/run.sh
+        shell: bash
