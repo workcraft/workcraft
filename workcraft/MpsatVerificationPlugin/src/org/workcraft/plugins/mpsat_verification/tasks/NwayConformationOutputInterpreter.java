@@ -4,7 +4,10 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ReachabilityDialog;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.utils.CompositionEnabledness;
+import org.workcraft.plugins.mpsat_verification.projection.Enabledness;
+import org.workcraft.plugins.mpsat_verification.projection.ProjectionBuilder;
+import org.workcraft.plugins.mpsat_verification.projection.ProjectionEvent;
+import org.workcraft.plugins.mpsat_verification.projection.ProjectionTrace;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
@@ -59,15 +62,6 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
     @Override
     public void reportSolutions(String message, List<Solution> solutions) {
-        if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.BRIEF) {
-            writeBrief(solutions);
-        }
-        if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.TABLE) {
-            writeTables(solutions);
-        }
-        if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.LIST) {
-            writeLists(solutions);
-        }
         Framework framework = Framework.getInstance();
         if (isInteractive() && framework.isInGuiMode()) {
             MainWindow mainWindow = framework.getMainWindow();
@@ -82,6 +76,18 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
                     solutionsDialog.reveal();
                 }
             }
+        }
+    }
+
+    public void logSolutions(List<Solution> solutions) {
+        if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.BRIEF) {
+            writeBrief(solutions);
+        }
+        if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.TABLE) {
+            writeTables(solutions);
+        }
+        if (MpsatVerificationSettings.getConformationReportStyle() == ConformationReportStyle.LIST) {
+            writeLists(solutions);
         }
     }
 
@@ -110,9 +116,9 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
                     LogUtils.logMessage("Projection to '" + title + "': " + traceText);
                 }
 
-                CompositionEnabledness ce = new CompositionEnabledness(compositionSolution, getCompositionData(), wes);
-                Set<String> unexpectedlyEnabledOutputEvents = ce.getUnexpectedlyEnabledOutputEvents(we);
-                Map<String, Trace> componentEnabledness = ce.getComponentEnabledness(we);
+                ProjectionBuilder projectionBuilder = new ProjectionBuilder(compositionSolution, getCompositionData(), wes);
+                Set<String> unexpectedlyEnabledOutputEvents = projectionBuilder.getUnexpectedlyEnabledOutputEvents(we);
+                Enabledness componentEnabledness = projectionBuilder.getComponentEnabledness(we);
                 result.addAll(CompositionUtils.getEnabledViolatorSolutions(componentTrace,
                         unexpectedlyEnabledOutputEvents, componentEnabledness));
             }
@@ -143,25 +149,28 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
     }
 
     private void writeTableBody(Solution solution, String indent) {
-        CompositionEnabledness ce = new CompositionEnabledness(solution, getCompositionData(), wes);
-        Trace projectedEvents = ce.calcCompositionViolationTrace();
-        Map<WorkspaceEntry, List<CompositionEnabledness.Tag>> componentTagTraceMap = ce.calcComponentTagTraces();
+        ProjectionBuilder projectionBuilder = new ProjectionBuilder(solution, getCompositionData(), wes);
+        Trace compositionViolationTrace = projectionBuilder.calcCompositionViolationTrace();
+        Map<WorkspaceEntry, ProjectionTrace> componentProjectionTraceMap = projectionBuilder.calcComponentProjectionTraces();
 
-        for (int i = 0; i < projectedEvents.size(); i++) {
+        for (int i = 0; i < compositionViolationTrace.size(); i++) {
             StringBuilder line = new StringBuilder(indent);
             for (WorkspaceEntry we : wes) {
-                List<CompositionEnabledness.Tag> tagTrace = componentTagTraceMap.get(we);
-                CompositionEnabledness.Tag tag = i < tagTrace.size() ? tagTrace.get(i) : CompositionEnabledness.Tag.NONE;
+                ProjectionTrace projectionTrace = componentProjectionTraceMap.get(we);
+                ProjectionEvent.Tag tag = i < projectionTrace.size()
+                        ? projectionTrace.get(i).tag
+                        : ProjectionEvent.Tag.NONE;
+
                 line.append(convertTagToString(tag)).append(" ");
             }
-            line.append(" ").append(projectedEvents.get(i));
+            line.append(" ").append(compositionViolationTrace.get(i));
             LogUtils.logMessage(line.toString());
         }
     }
 
     private void writeTableLegend(String indent) {
         StringBuilder msg = new StringBuilder();
-        for (CompositionEnabledness.Tag tag : CompositionEnabledness.Tag.values()) {
+        for (ProjectionEvent.Tag tag : ProjectionEvent.Tag.values()) {
             String tagLabel = convertTagToString(tag);
             String tagDescription = tag.toString();
             if ((tagLabel != null) && (tagDescription != null)) {
@@ -183,9 +192,9 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
     }
 
     private void writeList(Solution solution, String indent) {
-        CompositionEnabledness ce = new CompositionEnabledness(solution, getCompositionData(), wes);
-        Trace projectedEvents = ce.calcCompositionViolationTrace();
-        Map<WorkspaceEntry, List<CompositionEnabledness.Tag>> componentTagTraceMap = ce.calcComponentTagTraces();
+        ProjectionBuilder projectionBuilder = new ProjectionBuilder(solution, getCompositionData(), wes);
+        Trace projectedEvents = projectionBuilder.calcCompositionViolationTrace();
+        Map<WorkspaceEntry, ProjectionTrace> componentProjectionTraceMap = projectionBuilder.calcComponentProjectionTraces();
 
         int maxLen = projectedEvents.stream().mapToInt(String::length).max().orElse(0);
         for (int i = 0; i < projectedEvents.size(); i++) {
@@ -193,20 +202,22 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
             List<String> outputRefs = new ArrayList<>();
             List<String> internalRefs = new ArrayList<>();
             for (WorkspaceEntry we : wes) {
-                List<CompositionEnabledness.Tag> tagList = componentTagTraceMap.get(we);
+                ProjectionTrace projectionTrace = componentProjectionTraceMap.get(we);
                 String title = we.getTitle();
-                if (i < tagList.size()) {
-                    CompositionEnabledness.Tag tag = tagList.get(i);
-                    if (tag == CompositionEnabledness.Tag.OUTPUT) {
+                if (i < projectionTrace.size()) {
+                    ProjectionEvent projectionEvent = projectionTrace.get(i);
+                    if (projectionEvent.tag == ProjectionEvent.Tag.OUTPUT) {
                         outputRefs.add(title);
                     }
-                    if (tag == CompositionEnabledness.Tag.INPUT) {
+                    if (projectionEvent.tag == ProjectionEvent.Tag.INPUT) {
                         inputRefs.add(title);
                     }
-                    if ((tag == CompositionEnabledness.Tag.INTERNAL) || (tag == CompositionEnabledness.Tag.DUMMY)) {
+                    if ((projectionEvent.tag == ProjectionEvent.Tag.INTERNAL)
+                            || (projectionEvent.tag == ProjectionEvent.Tag.DUMMY)) {
+
                         internalRefs.add(title);
                     }
-                    if (tag == CompositionEnabledness.Tag.VIOLATION) {
+                    if (projectionEvent.tag == ProjectionEvent.Tag.VIOLATION) {
                         inputRefs.add(title + " (unexpected)");
                     }
                 }
@@ -224,7 +235,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
         }
     }
 
-    private String convertTagToString(CompositionEnabledness.Tag tag) {
+    private String convertTagToString(ProjectionEvent.Tag tag) {
         switch (tag) {
         case INPUT: return "i";
         case OUTPUT: return "o";
@@ -248,6 +259,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
             OutcomeUtils.showOutcome(true, message, isInteractive());
         } else {
             OutcomeUtils.logOutcome(false, message);
+            logSolutions(solutions);
             reportSolutions(extendMessage(message), solutions);
         }
         return propertyHolds;

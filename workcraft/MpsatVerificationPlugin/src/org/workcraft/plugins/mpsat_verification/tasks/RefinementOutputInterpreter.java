@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.mpsat_verification.projection.Enabledness;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -51,8 +52,8 @@ class RefinementOutputInterpreter extends AbstractCompositionOutputInterpreter {
                 }
 
                 Set<Trace> compositionContinuations = compositionSolution.getContinuations();
-                Map<String, Trace> implementationEnabledness = CompositionUtils.getEnabledness(compositionContinuations, implementationData);
-                Map<String, Trace> specificationEnabledness = CompositionUtils.getEnabledness(compositionContinuations, specificationData);
+                Enabledness implementationEnabledness = CompositionUtils.getEnabledness(compositionContinuations, implementationData);
+                Enabledness specificationEnabledness = CompositionUtils.getEnabledness(compositionContinuations, specificationData);
 
                 Set<String> unexpectedlyEnabledSignals = new HashSet<>(implementationEnabledness.keySet());
                 unexpectedlyEnabledSignals.removeAll(specificationEnabledness.keySet());
