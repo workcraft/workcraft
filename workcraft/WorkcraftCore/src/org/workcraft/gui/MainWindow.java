@@ -63,7 +63,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.*;
 
-@SuppressWarnings("serial")
 public class MainWindow extends JFrame {
 
     private static final String FLEXDOCK_WORKSPACE = "defaultWorkspace";
@@ -168,7 +167,7 @@ public class MainWindow extends JFrame {
         editorWindow.addTabListener(new EditorWindowDockableListener(editor));
         weWindowsMap.put(we, editorWindow);
         requestFocus(editor);
-        setWorkActionsEnableness(true);
+        setWorkActionsEnabledness(true);
         editor.zoomFit();
         return editor;
     }
@@ -192,10 +191,7 @@ public class MainWindow extends JFrame {
         menu.updateRecentMenu();
 
         // Tweak look-and-feel
-        JDialog.setDefaultLookAndFeelDecorated(true);
-        MetalLookAndFeel.setCurrentTheme(new SilverOceanTheme());
-        LookAndFeelHelper.setDefaultLookAndFeel();
-        SwingUtilities.updateComponentTreeUI(this);
+        updateLookAndFeel();
         if (DesktopApi.getOs().isMac()) {
             // Menu UI needs to be restored for OSX (global menu Look-and-Feel)
             menu.setUI(menuUI);
@@ -228,7 +224,7 @@ public class MainWindow extends JFrame {
         setVisible(true);
         DockingUtils.updateHeaders(defaultDockingPort);
         DockingManager.display(outputDockable);
-        setWorkActionsEnableness(false);
+        setWorkActionsEnabledness(false);
         updateDockableWindowVisibility();
 
         new Thread(() -> {
@@ -241,7 +237,15 @@ public class MainWindow extends JFrame {
         }).start();
     }
 
-    private void setWorkActionsEnableness(boolean enable) {
+    private void updateLookAndFeel() {
+        boolean isDefaultLafStyle = EditorCommonSettings.getDialogStyle().isDefaultLafStyle();
+        JDialog.setDefaultLookAndFeelDecorated(isDefaultLafStyle);
+        MetalLookAndFeel.setCurrentTheme(new SilverOceanTheme());
+        LookAndFeelHelper.setDefaultLookAndFeel();
+        SwingUtilities.updateComponentTreeUI(this);
+    }
+
+    private void setWorkActionsEnabledness(boolean enable) {
         menu.setExportMenuState(enable);
         MainWindowActions.MERGE_WORK_ACTION.setEnabled(enable);
         MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(enable);
@@ -321,7 +325,7 @@ public class MainWindow extends JFrame {
             if (weWindowsMap.isEmpty()) {
                 DockingManager.registerDockable(documentPlaceholder);
                 DockingManager.dock(documentPlaceholder, editorWindow, DockingConstants.CENTER_REGION);
-                setWorkActionsEnableness(false);
+                setWorkActionsEnabledness(false);
                 modelToolbar.removeAll();
                 controlToolbar.removeAll();
                 propertyEditorWindow.clear();
@@ -638,8 +642,8 @@ public class MainWindow extends JFrame {
     }
 
     public void updateDockableWindowVisibility() {
-        // To preserve the layout, first display both the property editor
-        // and the tool controls. Only after that close the one of them (if empty).
+        // In order to preserve the layout, display both the Property
+        // editor and the Tool controls, and then close the empty one.
         displayDockableWindow(propertyEditorDockable);
         displayDockableWindow(toolControlsDockable);
         if (toolControlsWindow.isEmpty()) {
@@ -841,14 +845,18 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
-        for (DockableWindow window: weWindowsMap.get(we)) {
-            String title = we.getTitleAndModel();
-            window.setTitle(title);
+    public void refreshWorkspaceEntryTitle(WorkspaceEntry we) {
+        refreshWorkspaceEntryTitles(Collections.singleton(we));
+    }
+
+    public void refreshWorkspaceEntryTitles(Collection<WorkspaceEntry> wes) {
+        for (WorkspaceEntry we : wes) {
+            for (DockableWindow window : weWindowsMap.get(we)) {
+                String title = we.getTitleAndModel();
+                window.setTitle(title);
+            }
         }
-        if (updateHeaders) {
-            DockingUtils.updateHeaders(defaultDockingPort);
-        }
+        DockingUtils.updateHeaders(defaultDockingPort);
     }
 
     public void setPropertyEditorTitle(String title) {
@@ -1007,16 +1015,11 @@ public class MainWindow extends JFrame {
             if (editorInFocus != null) {
                 menu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
             }
-            for (WorkspaceEntry we: weWindowsMap.keySet()) {
-                refreshWorkspaceEntryTitle(we, false);
-            }
-            DockingUtils.updateHeaders(defaultDockingPort);
+            refreshWorkspaceEntryTitles(weWindowsMap.keySet());
             if (globalToolbar != null) {
                 globalToolbar.refreshToggles();
             }
-            boolean isDefaultLafStyle = EditorCommonSettings.getDialogStyle().isDefaultLafStyle();
-            JDialog.setDefaultLookAndFeelDecorated(isDefaultLafStyle);
-            SwingUtilities.updateComponentTreeUI(this);
+            updateLookAndFeel();
         }
     }
 

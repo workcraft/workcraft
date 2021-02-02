@@ -117,15 +117,15 @@ public class TraceUtils {
         final Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
             GraphEditorPanel editor = framework.getMainWindow().getEditor(we);
-            final Toolbox toolbox = editor.getToolBox();
-            final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
+            Toolbox toolbox = editor.getToolBox();
+            SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
             toolbox.selectTool(tool);
             tool.setTraces(solution.getMainTrace(), solution.getBranchTrace(), solution.getLoopPosition(), editor);
             String comment = solution.getComment();
             if ((comment != null) && !comment.isEmpty()) {
                 String traceText = solution.getMainTrace().toString();
                 // Remove HTML tags before printing the message
-                String message = comment.replaceAll("\\<.*?>", EMPTY) + " after trace: " + traceText;
+                String message = comment.replaceAll("<.*?>", "") + " after trace: " + traceText;
                 LogUtils.logWarning(message);
             }
         }

@@ -7,10 +7,7 @@ import org.workcraft.gui.actions.Action;
 import javax.swing.*;
 import java.awt.*;
 
-@SuppressWarnings("serial")
 public class DockableTab extends JPanel {
-
-    public static final int MAX_TITLE_LENGTH = 50;
 
     public DockableTab(DockableWindow dockableWindow) {
         super();
@@ -23,19 +20,11 @@ public class DockableTab extends JPanel {
         buttonsPanel.setOpaque(false);
         buttonsPanel.setFocusable(false);
 
-        String title = dockableWindow.getTabText();
-        String trimmedTitle;
-        if (title.length() > MAX_TITLE_LENGTH) {
-            int i1 = MAX_TITLE_LENGTH / 2;
-            int i2 = title.length() - (MAX_TITLE_LENGTH - i1);
-            trimmedTitle = title.substring(0, i1) + "..." + title.substring(i2);
-        } else {
-            trimmedTitle = title;
-        }
-
-        JLabel label = new JLabel(trimmedTitle);
+        JLabel label = new JLabel(dockableWindow.getTabText());
         label.setFocusable(false);
         label.setOpaque(false);
+        Font font = label.getFont();
+        label.setFont(font.deriveFont(font.getStyle() | Font.BOLD));
 
         ContentPanel contentPanel = dockableWindow.getComponent();
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
