@@ -11,6 +11,7 @@ import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,8 +78,8 @@ public class PunfLtlxOutputInterpreter extends AbstractOutputInterpreter<PunfOut
                 MainWindow mainWindow = framework.getMainWindow();
                 String traceInfo = "Violation trace in <i>PREFIX</i>{<i>LOOP</i>} form:";
                 String extendedMessage = "<html>" + message + "<br><br>" + traceInfo + "</html>";
-                ReachabilityDialog solutionsDialog = new ReachabilityDialog(
-                        mainWindow, getWorkspaceEntry(), TITLE, extendedMessage, solution);
+                ReachabilityDialog solutionsDialog = new ReachabilityDialog(mainWindow, getWorkspaceEntry(),
+                        TITLE, extendedMessage, Collections.singletonList(solution));
 
                 solutionsDialog.reveal();
             }
