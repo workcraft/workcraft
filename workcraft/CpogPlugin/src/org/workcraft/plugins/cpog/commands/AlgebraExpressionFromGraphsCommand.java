@@ -3,7 +3,6 @@ package org.workcraft.plugins.cpog.commands;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.AlgebraExportDialog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
@@ -35,8 +34,7 @@ public class AlgebraExpressionFromGraphsCommand extends AbstractAlgebraCommand {
         }
 
         final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        final GraphEditorPanel editor = mainWindow.getCurrentEditor();
-        final Toolbox toolbox = editor.getToolBox();
+        final Toolbox toolbox = mainWindow.getToolbox(we);
         final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
         AlgebraExportDialog dialog = new AlgebraExportDialog();
         if (dialog.reveal()) {
