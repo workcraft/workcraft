@@ -7,6 +7,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.controls.FlatHeaderRenderer;
+import org.workcraft.gui.controls.SpeedSlider;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
@@ -25,8 +26,8 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -72,7 +73,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     protected JScrollPane statePane;
     protected JTable traceTable;
 
-    private JSlider speedSlider;
+    private SpeedSlider speedSlider;
     private JButton playButton;
     private JButton backwardButton;
     private JButton forwardButton;
@@ -82,10 +83,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     // cache of "excited" containers (the ones containing the excited simulation elements)
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
-
-    private static final int SLIDER_RANGE = 10;
-    private static final double BASE_SPEED = 300;
-    private static final double INCREMENT_SPEED = 10;
 
     protected Map<? extends Node, Integer> initialState;
     public HashMap<? extends Node, Integer> savedState;
@@ -115,11 +112,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         recordButton = GuiUtils.createIconButton(ICON_RECORD, HINT_RECORD);
         ejectButton = GuiUtils.createIconButton(ICON_EJECT, HINT_EJECT);
 
-        speedSlider = new JSlider(-SLIDER_RANGE, SLIDER_RANGE, 0);
-        speedSlider.setToolTipText("Simulation playback speed");
-        speedSlider.setMajorTickSpacing(SLIDER_RANGE);
-        speedSlider.setMinorTickSpacing(1);
-        speedSlider.setPaintTicks(true);
+        speedSlider = new SpeedSlider();
 
         JButton generateGraphButton = GuiUtils.createIconButton(ICON_TIMING_DIAGRAM, HINT_TIMING_DIAGRAM);
         JButton copyStateButton = GuiUtils.createIconButton(ICON_COPY_STATE, HINT_COPY_STATE);
@@ -179,8 +172,9 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         speedSlider.addChangeListener(e -> {
             if (timer != null) {
                 timer.stop();
-                timer.setInitialDelay(getAnimationDelay());
-                timer.setDelay(getAnimationDelay());
+                int delay = speedSlider.getDelay();
+                timer.setInitialDelay(delay);
+                timer.setDelay(delay);
                 timer.start();
             }
             updateState(editor);
@@ -189,7 +183,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         recordButton.addActionListener(event -> {
             if (timer == null) {
-                timer = new Timer(getAnimationDelay(), event1 -> randomStep(editor));
+                timer = new Timer(speedSlider.getDelay(), event1 -> randomStep(editor));
                 timer.start();
                 random = true;
             } else if (random) {
@@ -205,7 +199,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         playButton.addActionListener(event -> {
             if (timer == null) {
-                timer = new Timer(getAnimationDelay(), event1 -> step(editor));
+                timer = new Timer(speedSlider.getDelay(), event1 -> step(editor));
                 timer.start();
                 random = false;
             } else if (!random) {
@@ -259,53 +253,37 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             editor.requestFocus();
         });
 
-        traceTable.addMouseListener(new MouseListener() {
+        traceTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int col = traceTable.getSelectedColumn();
                 int row = traceTable.getSelectedRow();
                 if (col == 0) {
                     if (row < mainTrace.size()) {
-                        boolean work = true;
-                        while (work && (branchTrace.getPosition() > 0)) {
-                            work = quietStepBack();
+                        boolean hasProgress = true;
+                        while (hasProgress && (branchTrace.getPosition() > 0)) {
+                            hasProgress = quietStepBack();
                         }
-                        while (work && (mainTrace.getPosition() > row)) {
-                            work = quietStepBack();
+                        while (hasProgress && (mainTrace.getPosition() > row)) {
+                            hasProgress = quietStepBack();
                         }
-                        while (work && (mainTrace.getPosition() < row)) {
-                            work = quietStep();
+                        while (hasProgress && (mainTrace.getPosition() < row)) {
+                            hasProgress = quietStep();
                         }
                     }
                 } else {
                     if ((row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
-                        boolean work = true;
-                        while (work && (mainTrace.getPosition() + branchTrace.getPosition() > row)) {
-                            work = quietStepBack();
+                        boolean hasProgress = true;
+                        while (hasProgress && (mainTrace.getPosition() + branchTrace.getPosition() > row)) {
+                            hasProgress = quietStepBack();
                         }
-                        while (work && (mainTrace.getPosition() + branchTrace.getPosition() < row)) {
-                            work = quietStep();
+                        while (hasProgress && (mainTrace.getPosition() + branchTrace.getPosition() < row)) {
+                            hasProgress = quietStep();
                         }
                     }
                 }
                 updateState(editor);
                 editor.requestFocus();
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent arg0) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent arg0) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent arg0) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent arg0) {
             }
         });
 
@@ -381,12 +359,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
                 playButton.setToolTipText(HINT_PLAY);
                 recordButton.setIcon(ICON_STOP);
                 recordButton.setToolTipText(HINT_STOP);
-                timer.setDelay(getAnimationDelay());
+                timer.setDelay(speedSlider.getDelay());
             } else if (branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress())) {
                 playButton.setIcon(ICON_PAUSE);
                 playButton.setToolTipText(HINT_PAUSE);
                 recordButton.setIcon(ICON_RECORD);
-                timer.setDelay(getAnimationDelay());
+                timer.setDelay(speedSlider.getDelay());
             } else {
                 playButton.setIcon(ICON_PLAY);
                 playButton.setToolTipText(HINT_PLAY);
@@ -582,11 +560,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             mainTrace.setPosition(combinedTrace.getPosition());
         }
         updateState(editor);
-    }
-
-    private int getAnimationDelay() {
-        double power = (double) -speedSlider.getValue() / SLIDER_RANGE;
-        return (int) (BASE_SPEED * Math.pow(INCREMENT_SPEED, power));
     }
 
     private final class TraceTableCellRendererImplementation implements TableCellRenderer {
