@@ -22,7 +22,7 @@ import java.util.LinkedHashMap;
 
 public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
-    class ToolTracker {
+    static class ToolTracker {
         private final ArrayList<GraphEditorTool> tools = new ArrayList<>();
         private int nextIndex = 0;
 
@@ -158,12 +158,16 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         final T tool = getToolInstance(cls);
         if (tool != null) {
             selectTool(tool);
-            return (T) tool;
+            return tool;
         }
         return null;
     }
 
     public void selectTool(GraphEditorTool tool) {
+        selectTool(tool, true);
+    }
+
+    public void selectTool(GraphEditorTool tool, boolean update) {
         if ((tool == null) || tool.checkPrerequisites(editor)) {
             if (selectedTool != null) {
                 ToolTracker oldTracker = hotkeyMap.get(selectedTool.getHotKeyCode());
@@ -191,8 +195,10 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
                 editor.updateToolsView();
             }
             // Update visibility of Property editor and Tool controls.
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            mainWindow.updateDockableWindowVisibility();
+            if (update) {
+                MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                mainWindow.updateDockableWindowVisibility();
+            }
         }
     }
 

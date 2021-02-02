@@ -3,25 +3,26 @@ package org.workcraft.gui.dialogs;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.traces.Solution;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
-@SuppressWarnings("serial")
 public class ReachabilityDialog extends JDialog {
 
     public ReachabilityDialog(Window owner, WorkspaceEntry we, String title,
-            String message, Solution solution) {
-        this(owner, we, title, message, Collections.singletonList(solution));
+            String message, List<Solution> solutions) {
+
+        this(owner, title, message, solutions, solution -> TraceUtils.playSolution(we, solution));
     }
 
-    public ReachabilityDialog(Window owner, WorkspaceEntry we, String title,
-            String message, List<Solution> solutions) {
+    public ReachabilityDialog(Window owner, String title, String message,
+            List<Solution> solutions, Consumer<Solution> playSolutionAction) {
 
         JLabel messageLabel = new JLabel(message);
         messageLabel.setBorder(GuiUtils.getGapBorder());
@@ -31,7 +32,10 @@ public class ReachabilityDialog extends JDialog {
 
         solutionsPanel.setBorder(GuiUtils.getEmptyBorder());
         for (Solution solution : solutions) {
-            SolutionPanel solutionPanel = new SolutionPanel(we, solution, event -> setVisible(false));
+            SolutionPanel solutionPanel = new SolutionPanel(solution,
+                    event -> playSolutionAction.accept(solution),
+                    event -> closeAction());
+
             solutionsPanel.add(solutionPanel);
         }
 

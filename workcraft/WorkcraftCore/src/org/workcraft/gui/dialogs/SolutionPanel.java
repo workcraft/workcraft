@@ -6,20 +6,17 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.TraceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
-@SuppressWarnings("serial")
 public class SolutionPanel extends JPanel {
 
     private static final int MIN_COLUMN_COUNT = 20;
     private static final int MAX_COLUMN_COUNT = 60;
 
-    public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
+    public SolutionPanel(final Solution solution, final ActionListener playAction, final ActionListener closeAction) {
         setBorder(GuiUtils.getEmptyBorder());
         setLayout(GuiUtils.createTableLayout(
                 new double[]{TableLayout.FILL, TableLayout.PREFERRED},
@@ -50,8 +47,8 @@ public class SolutionPanel extends JPanel {
 
         JButton playButton = new JButton("Play");
         playButton.addActionListener(event -> {
-            TraceUtils.playSolution(we, solution);
             closeAction.actionPerformed(null);
+            playAction.actionPerformed(null);
         });
 
         buttonsPanel.add(playButton);

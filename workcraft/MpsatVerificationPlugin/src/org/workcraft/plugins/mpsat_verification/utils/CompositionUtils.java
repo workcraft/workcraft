@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.utils;
 
+import org.workcraft.plugins.mpsat_verification.projection.Enabledness;
 import org.workcraft.plugins.mpsat_verification.tasks.ExtendedExportOutput;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
@@ -51,8 +52,8 @@ public class CompositionUtils {
         return result;
     }
 
-    public static Map<String, Trace> getEnabledness(Collection<Trace> compositionContinuations, ComponentData componentData) {
-        Map<String, Trace> result = new HashMap<>();
+    public static Enabledness getEnabledness(Collection<Trace> compositionContinuations, ComponentData componentData) {
+        Enabledness result = new Enabledness();
         for (Trace compositionContinuation : compositionContinuations) {
             Trace projectedContinuation = projectContinuation(compositionContinuation, componentData);
             if ((projectedContinuation != null) && !projectedContinuation.isEmpty()) {
@@ -97,13 +98,13 @@ public class CompositionUtils {
     }
 
     public static List<Solution> getEnabledViolatorSolutions(Trace trace, Set<String> enabledViolators,
-            Map<String, Trace> enabledness) {
+            Enabledness enabledness) {
 
         return getExtendedViolatorSolutions(trace, enabledViolators, enabledness, "Unexpected enabling of signal");
     }
 
     public static List<Solution> getExtendedViolatorSolutions(Trace trace, Set<String> violators,
-            Map<String, Trace> enabledness, String message) {
+            Enabledness enabledness, String message) {
 
         List<Solution> result = new LinkedList<>();
         if (!violators.isEmpty()) {

@@ -1,6 +1,7 @@
-package org.workcraft.plugins.mpsat_verification.utils;
+package org.workcraft.plugins.mpsat_verification.projection;
 
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.petri.Transition;
@@ -21,36 +22,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
-public class CompositionEnabledness {
-
-    public enum Tag {
-        INPUT("input"),
-        OUTPUT("output"),
-        INTERNAL("internal"),
-        DUMMY("dummy"),
-        VIOLATION("violation"),
-        NONE(null);
-
-        private final String name;
-
-        Tag(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
+public class ProjectionBuilder {
 
     private final Solution compositionSolution;
     private final CompositionData compositionData;
     private final List<WorkspaceEntry> wes;
-    private final Map<WorkspaceEntry, Map<String, Trace>> componentEnablednessMap;
+    private final Map<WorkspaceEntry, Enabledness> componentEnablednessMap;
     private final Pair<String, Trace> violation;
     private final Map<WorkspaceEntry, Trace> componentViolationTracesMap;
 
-    public CompositionEnabledness(Solution compositionSolution, CompositionData compositionData, List<WorkspaceEntry> wes) {
+    public ProjectionBuilder(Solution compositionSolution, CompositionData compositionData, List<WorkspaceEntry> wes) {
         this.compositionSolution = compositionSolution;
         this.compositionData = compositionData;
         this.wes = wes;
@@ -59,21 +40,21 @@ public class CompositionEnabledness {
         componentViolationTracesMap = calcComponentViolationTraces();
     }
 
-    private Map<WorkspaceEntry, Map<String, Trace>> calcWorkEnablednessMap() {
-        Map<WorkspaceEntry, Map<String, Trace>> result = new HashMap<>();
+    private Map<WorkspaceEntry, Enabledness> calcWorkEnablednessMap() {
+        Map<WorkspaceEntry, Enabledness> result = new HashMap<>();
         Set<Trace> compositionContinuations = compositionSolution.getContinuations();
         for (WorkspaceEntry we : wes) {
             ComponentData componentData = getComponentData(we);
-            Map<String, Trace> enabledness = CompositionUtils.getEnabledness(compositionContinuations, componentData);
+            Enabledness enabledness = CompositionUtils.getEnabledness(compositionContinuations, componentData);
             result.put(we, enabledness);
         }
         return result;
     }
 
     private Pair<String, Trace> calcViolation() {
-        Map<String, Trace> violationEnabledness = new HashMap<>();
+        Enabledness violationEnabledness = new Enabledness();
         for (WorkspaceEntry we : wes) {
-            Map<String, Trace> enabledness = getComponentEnabledness(we);
+            Enabledness enabledness = getComponentEnabledness(we);
             for (String violationOutputEvent : getUnexpectedlyEnabledOutputEvents(we)) {
                 Trace trace = enabledness.get(violationOutputEvent);
                 violationEnabledness.put(violationOutputEvent, trace);
@@ -94,7 +75,7 @@ public class CompositionEnabledness {
         Set<String> outputSignals = stg.getSignalReferences(Signal.Type.OUTPUT);
         result.addAll(StgUtils.getAllEvents(outputSignals));
 
-        Map<String, Trace> enabledness = getComponentEnabledness(we);
+        Enabledness enabledness = getComponentEnabledness(we);
         result.retainAll(enabledness.keySet());
 
         result.retainAll(getDisabledInputEvents());
@@ -102,11 +83,11 @@ public class CompositionEnabledness {
         return result;
     }
 
-    public String getViolationEvent() {
+    private String getViolationEvent() {
         return violation.getFirst();
     }
 
-    public Trace getViolationTrace() {
+    private Trace getViolationTrace() {
         return violation.getSecond();
     }
 
@@ -118,7 +99,7 @@ public class CompositionEnabledness {
         return WorkspaceUtils.getAs(we, StgModel.class);
     }
 
-    public Map<String, Trace> getComponentEnabledness(WorkspaceEntry we) {
+    public Enabledness getComponentEnabledness(WorkspaceEntry we) {
         return componentEnablednessMap.get(we);
     }
 
@@ -129,7 +110,7 @@ public class CompositionEnabledness {
     private Set<String> getDisabledInputEvents() {
         Set<String> result = new HashSet<>();
         for (WorkspaceEntry we : wes) {
-            Map<String, Trace> enabledness = getComponentEnabledness(we);
+            Enabledness enabledness = getComponentEnabledness(we);
 
             StgModel stg = getComponentStg(we);
             Set<String> inputSignals = stg.getSignalReferences(Signal.Type.INPUT);
@@ -183,23 +164,23 @@ public class CompositionEnabledness {
         return result;
     }
 
-    public Map<WorkspaceEntry, List<Tag>> calcComponentTagTraces() {
+    public Map<WorkspaceEntry, ProjectionTrace> calcComponentProjectionTraces() {
 
-        Map<WorkspaceEntry, List<Tag>> result = new HashMap<>();
+        Map<WorkspaceEntry, ProjectionTrace> result = new HashMap<>();
         for (WorkspaceEntry we : wes) {
-            List<Tag> tagTrace = calcComponentTagTrace(we);
-            result.put(we, tagTrace);
+            ProjectionTrace projectionTrace = calcComponentProjectionTrace(we);
+            result.put(we, projectionTrace);
         }
         return result;
     }
 
-    private List<Tag> calcComponentTagTrace(WorkspaceEntry we) {
-        List<Tag> result = new ArrayList<>();
+    private ProjectionTrace calcComponentProjectionTrace(WorkspaceEntry we) {
+        ProjectionTrace result = new ProjectionTrace();
         StgModel stg = getComponentStg(we);
         Trace trace = getComponentViolationTrace(we);
         for (String ref : trace) {
-            Tag tag = getNodeTag(stg, ref);
-            result.add(tag);
+            ProjectionEvent.Tag tag = getNodeTag(stg, ref);
+            result.add(new ProjectionEvent(tag, ref));
         }
 
         String violationEvent = getViolationEvent();
@@ -208,52 +189,52 @@ public class CompositionEnabledness {
             if (r != null) {
                 String signal = r.getFirst();
                 Set<String> outputs = stg.getSignalReferences(Signal.Type.OUTPUT);
-                Tag tag = Tag.NONE;
                 if (outputs.contains(signal)) {
-                    tag = Tag.OUTPUT;
+                    result.add(new ProjectionEvent(ProjectionEvent.Tag.OUTPUT, violationEvent));
+                } else if (stg.getSignalReferences(Signal.Type.INPUT).contains(signal)) {
+                    SignalTransition.Direction direction = r.getSecond();
+                    ProjectionEvent.Tag tag = getInputEventTag(we, trace, signal, direction);
+                    result.add(new ProjectionEvent(tag, violationEvent));
                 } else {
-                    Set<String> inputs = stg.getSignalReferences(Signal.Type.INPUT);
-                    if (inputs.contains(signal)) {
-                        SignalTransition.Direction direction = r.getSecond();
-                        tag = getInputEventTag(we, trace, signal, direction);
-                    }
+                    result.add(new ProjectionEvent(ProjectionEvent.Tag.NONE, null));
                 }
-                result.add(tag);
             }
         }
         return result;
     }
 
-    private Tag getNodeTag(StgModel stg, String ref) {
+    private ProjectionEvent.Tag getNodeTag(StgModel stg, String ref) {
         if (ref != null) {
             MathNode node = stg.getNodeByReference(ref);
             if (node instanceof DummyTransition) {
-                return Tag.DUMMY;
+                return ProjectionEvent.Tag.DUMMY;
             } else if (node instanceof SignalTransition) {
                 switch (((SignalTransition) node).getSignalType()) {
-                case INPUT: return Tag.INPUT;
-                case OUTPUT: return Tag.OUTPUT;
-                case INTERNAL: return Tag.INTERNAL;
+                case INPUT: return ProjectionEvent.Tag.INPUT;
+                case OUTPUT: return ProjectionEvent.Tag.OUTPUT;
+                case INTERNAL: return ProjectionEvent.Tag.INTERNAL;
                 }
             }
         }
-        return Tag.NONE;
+        return ProjectionEvent.Tag.NONE;
     }
 
-    private Tag getInputEventTag(WorkspaceEntry we, Trace componentTrace, String signal, SignalTransition.Direction direction) {
+    private ProjectionEvent.Tag getInputEventTag(WorkspaceEntry we, Trace componentTrace,
+            String signal, SignalTransition.Direction direction) {
+
         StgModel cloneStg = WorkspaceUtils.getAs(WorkUtils.cloneModel(we.getModelEntry()), StgModel.class);
         if (PetriUtils.fireTrace(cloneStg, componentTrace)) {
             for (Transition t : PetriUtils.getEnabledTransitions(cloneStg)) {
                 if (t instanceof SignalTransition) {
                     SignalTransition st = (SignalTransition) t;
                     if (signal.equals(st.getSignalName()) && (st.getDirection() == direction)) {
-                        return Tag.INPUT;
+                        return ProjectionEvent.Tag.INPUT;
                     }
                 }
             }
-            return Tag.VIOLATION;
+            return ProjectionEvent.Tag.VIOLATION;
         }
-        return Tag.NONE;
+        return ProjectionEvent.Tag.NONE;
     }
 
 }

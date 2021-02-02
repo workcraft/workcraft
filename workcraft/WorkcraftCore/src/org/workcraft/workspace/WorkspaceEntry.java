@@ -40,6 +40,7 @@ public class WorkspaceEntry implements ObservableState {
     private VisualNode defaultNode = null;
 
     private Point2D pastePosition = null;
+    private String details = null;
 
     public void setChanged(boolean changed) {
         if (this.changed != changed) {
@@ -52,7 +53,7 @@ public class WorkspaceEntry implements ObservableState {
             workspace.fireEntryChanged(this);
             MainWindow mainWindow = framework.getMainWindow();
             if (mainWindow != null) {
-                mainWindow.refreshWorkspaceEntryTitle(this, true);
+                mainWindow.refreshWorkspaceEntryTitle(this);
             }
         }
     }
@@ -138,6 +139,18 @@ public class WorkspaceEntry implements ObservableState {
         return result;
     }
 
+    public void setDetails(String value) {
+        details = value;
+    }
+
+    public void clearDetails() {
+        setDetails(null);
+    }
+
+    public String getDetails() {
+        return details == null ? "" : " : " + details;
+    }
+
     public String getTitleAndModel() {
         String prefix = isChanged() ? "*" : "";
         String suffix = "";
@@ -155,7 +168,7 @@ public class WorkspaceEntry implements ObservableState {
                 break;
             }
         }
-        return prefix + getTitle() + suffix;
+        return "<html>" + prefix + getTitle() + getDetails() + suffix + "</html>";
     }
 
     public String getFileName() {

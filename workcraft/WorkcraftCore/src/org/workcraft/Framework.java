@@ -735,7 +735,7 @@ public final class Framework {
 
         we.setChanged(false);
         if (mainWindow != null) {
-            mainWindow.refreshWorkspaceEntryTitle(we, true);
+            mainWindow.refreshWorkspaceEntryTitle(we);
         }
     }
 

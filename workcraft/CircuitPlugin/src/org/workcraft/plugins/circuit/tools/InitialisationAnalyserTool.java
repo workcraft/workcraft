@@ -17,6 +17,7 @@ import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -29,7 +30,7 @@ import java.util.function.Function;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> forcedTable = new BasicTable("<html><b>Force init pins</b></html>");
+    private final BasicTable<String> forcedTable = new BasicTable<>("<html><b>Force init pins</b></html>");
     private InitialisationState initState = null;
 
     @Override
@@ -63,11 +64,8 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private String getHtmlPinLegend(String key, String description) {
-        String keyFormat = "<span style=\"color: #%06x\">" + key + "</span>";
-        int highValue = CircuitSettings.getActiveWireColor().getRGB() & 0xffffff;
-        String highKey = String.format(keyFormat, highValue);
-        int lowValue = CircuitSettings.getInactiveWireColor().getRGB() & 0xffffff;
-        String lowKey = String.format(keyFormat, lowValue);
+        String highKey = TextUtils.getHtmlSpanColor(key, CircuitSettings.getActiveWireColor());
+        String lowKey = TextUtils.getHtmlSpanColor(key, CircuitSettings.getInactiveWireColor());
         return highKey + " / " + lowKey + " " + description;
     }
 
@@ -75,32 +73,32 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         JButton tagForceInitInputPortsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-input_ports.svg"),
                 "Force init all input ports (environment responsibility)");
-        tagForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitInputPorts(c)));
+        tagForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitInputPorts));
 
         JButton tagForceInitNecessaryPinsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-problematic_pins.svg"),
                 "Force init output pins with problematic initial state");
-        tagForceInitNecessaryPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitProblematicPins(c)));
+        tagForceInitNecessaryPinsButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitProblematicPins));
 
         JButton tagForceInitSequentialPinsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_pins.svg"),
                 "Force init output pins of sequential gates");
-        tagForceInitSequentialPinsButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitSequentialPins(c)));
+        tagForceInitSequentialPinsButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitSequentialPins));
 
         JButton tagForceInitAutoAppendButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_append.svg"),
                 "Auto-append force init pins as necessary to complete initialisation");
-        tagForceInitAutoAppendButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitAutoAppend(c)));
+        tagForceInitAutoAppendButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitAutoAppend));
 
         JButton tagForceInitAutoDiscardButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_discard.svg"),
                 "Auto-discard force init pins that are redundant for initialisation");
-        tagForceInitAutoDiscardButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitAutoDiscard(c)));
+        tagForceInitAutoDiscardButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitAutoDiscard));
 
         JButton tagForceInitClearAllButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-initialisation-clear_all.svg"),
                 "Clear all force init ports and pins");
-        tagForceInitClearAllButton.addActionListener(l -> changeForceInit(editor, c -> ResetUtils.tagForceInitClearAll(c)));
+        tagForceInitClearAllButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitClearAll));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(tagForceInitInputPortsButton);
@@ -205,7 +203,6 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private void updateState(final GraphEditor editor) {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         List<String> forcedPins = new ArrayList<>();
-        forcedPins.clear();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver() && contact.getForcedInit()) {
                 String pinRef = circuit.getNodeReference(contact);
@@ -247,29 +244,26 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                MathNode mathNode = null;
-                if (node instanceof VisualComponent) {
-                    mathNode = ((VisualComponent) node).getReferencedComponent();
-                } else if (node instanceof VisualConnection) {
-                    mathNode = ((VisualConnection) node).getReferencedConnection();
-                }
-
-                if (mathNode != null) {
-                    if (mathNode instanceof FunctionComponent) {
-                        return getComponentDecoration((FunctionComponent) mathNode);
-                    } else if (mathNode instanceof Contact) {
-                        Circuit circuit = (Circuit) editor.getModel().getMathModel();
-                        Contact driver = CircuitUtils.findDriver(circuit, mathNode, false);
-                        return getContactDecoration(driver);
-                    } else {
-                        return getConnectionDecoration(mathNode);
-                    }
-                }
-                return (mathNode instanceof Contact) ? StateDecoration.Empty.INSTANCE : null;
+        return node -> {
+            MathNode mathNode = null;
+            if (node instanceof VisualComponent) {
+                mathNode = ((VisualComponent) node).getReferencedComponent();
+            } else if (node instanceof VisualConnection) {
+                mathNode = ((VisualConnection) node).getReferencedConnection();
             }
+
+            if (mathNode != null) {
+                if (mathNode instanceof FunctionComponent) {
+                    return getComponentDecoration((FunctionComponent) mathNode);
+                } else if (mathNode instanceof Contact) {
+                    Circuit circuit = (Circuit) editor.getModel().getMathModel();
+                    Contact driver = CircuitUtils.findDriver(circuit, mathNode, false);
+                    return getContactDecoration(driver);
+                } else {
+                    return getConnectionDecoration(mathNode);
+                }
+            }
+            return null;
         };
     }
 

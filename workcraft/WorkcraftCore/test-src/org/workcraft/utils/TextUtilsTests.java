@@ -3,6 +3,7 @@ package org.workcraft.utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.awt.*;
 import java.util.Arrays;
 
 public class TextUtilsTests {
@@ -125,6 +126,22 @@ public class TextUtilsTests {
         String text = "(a < b) & (c > d) = \"true\"";
         Assertions.assertEquals("(a &lt; b) &amp; (c &gt; d) = &quot;true&quot;",
                 TextUtils.escapeHtml(text));
+    }
+
+    @Test
+    public void getHtmlSpan() {
+        String text = "abc123";
+        Color foregroundColor = new Color(0x12, 0x34, 0x56);
+        Color backgroundColor = new Color(0xab, 0xcd, 0xef);
+
+        Assertions.assertEquals("<span style=\"color: #123456; background-color: #abcdef\">" + text + "</span>",
+                TextUtils.getHtmlSpan(text, foregroundColor, backgroundColor));
+
+        Assertions.assertEquals(TextUtils.getHtmlSpanColor(text, foregroundColor),
+                TextUtils.getHtmlSpan(text, foregroundColor, null));
+
+        Assertions.assertEquals(TextUtils.getHtmlSpanHighlight(text, backgroundColor),
+                TextUtils.getHtmlSpan(text, null, backgroundColor));
     }
 
     @Test

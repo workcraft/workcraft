@@ -2,6 +2,7 @@ package org.workcraft.presets;
 
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +49,7 @@ public class PresetManagerPanel<T> extends JPanel {
             String suffix = "";
             if (file != null) {
                 String decoratedFileName = file.exists() ? file.getName()
-                        : "<span style=\"color: #ff0000\">" + file.getName() + "</span>";
+                        : TextUtils.getHtmlSpanColor(file.getName(), Color.RED);
 
                 suffix =  EXTERNAL_SUFFIX + "<i>" + decoratedFileName + "</i>";
             }

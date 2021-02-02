@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.mpsat_verification.projection.Enabledness;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -56,8 +57,8 @@ public class ConformationOutputInterpreter extends AbstractCompositionOutputInte
                 }
 
                 Set<Trace> compositionContinuations = compositionSolution.getContinuations();
-                Map<String, Trace> devEnabledness = CompositionUtils.getEnabledness(compositionContinuations, devData);
-                Map<String, Trace> envEnabledness = CompositionUtils.getEnabledness(compositionContinuations, envData);
+                Enabledness devEnabledness = CompositionUtils.getEnabledness(compositionContinuations, devData);
+                Enabledness envEnabledness = CompositionUtils.getEnabledness(compositionContinuations, envData);
 
                 Set<String> unexpectedlyEnabledOutputEvents = new HashSet<>(outputEvents);
                 unexpectedlyEnabledOutputEvents.retainAll(devEnabledness.keySet());
