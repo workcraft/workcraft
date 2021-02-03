@@ -33,9 +33,19 @@ public class PunfOutputParser {
      * It is equivalent to \u000D\u000A\u000A\u000B\u000C\u000D\u0085\u2028\u2029].
      */
 
-    private static final Pattern INCONSISTENT_PATTERN = Pattern.compile(
-            "Error: the STG is inconsistent, signal (.*); trace:\\R" +
-            "(.*)\\R",
+    private static final Pattern INCONSISTENT_ALTERNATE_PATTERN = Pattern.compile(
+            "Error: the STG is inconsistent, signal (.*); its rising and falling edges do not alternate in trace:\\R" +
+                    "(.*)\\R",
+            Pattern.UNIX_LINES);
+
+    private static final Pattern INCONSISTENT_CONFLICT_PATTERN = Pattern.compile(
+            "Error: the STG is inconsistent, signal (.*); its initial value cannot be assigned due to traces:\\R" +
+                    "(.*)\\R(.*)\\R",
+            Pattern.UNIX_LINES);
+
+    private static final Pattern INCONSISTENT_INITIAL_PATTERN = Pattern.compile(
+            "Error: the STG is inconsistent, signal (.*); it is declared with the initial value (.*) conflicting with the trace:\\R" +
+                    "(.*)\\R",
             Pattern.UNIX_LINES);
 
     private static final Pattern NOT_SAFE_PATTERN = Pattern.compile(
@@ -49,20 +59,32 @@ public class PunfOutputParser {
 
     public PunfOutputParser(PunfOutput output) {
         String stderr = output == null ? "" : output.getStderrString();
-        Matcher matcherInconsistent = INCONSISTENT_PATTERN.matcher(stderr);
-        Matcher matcherNotSafe = NOT_SAFE_PATTERN.matcher(stderr);
-        Matcher matcherEmptyPreset = EMPTY_PRESET_PATTERN.matcher(stderr);
-        if (matcherInconsistent.find()) {
-            Solution solution = new Solution(getTrace(matcherInconsistent.group(2)));
-            solution.setComment("Signal '" + matcherInconsistent.group(1) + "' is inconsistent");
+        Matcher inconsistentAlternateMatcher = INCONSISTENT_ALTERNATE_PATTERN.matcher(stderr);
+        Matcher inconsistentConflictMatcher = INCONSISTENT_CONFLICT_PATTERN.matcher(stderr);
+        Matcher inconsistentInitialMatcher = INCONSISTENT_INITIAL_PATTERN.matcher(stderr);
+        Matcher notSafeMatcher = NOT_SAFE_PATTERN.matcher(stderr);
+        Matcher emptyPresetMatcher = EMPTY_PRESET_PATTERN.matcher(stderr);
+        if (inconsistentAlternateMatcher.find()) {
+            Solution solution = new Solution(getTrace(inconsistentAlternateMatcher.group(2)));
+            solution.setComment("Rising and falling edges of signal '" + inconsistentAlternateMatcher.group(1) + "' do not alternate in trace");
             outcome = Pair.of(solution, Cause.INCONSISTENT);
-        } else if (matcherNotSafe.find()) {
-            Solution solution = new Solution(getTrace(matcherNotSafe.group(2)));
-            solution.setComment("Place '" + matcherNotSafe.group(1) + "' is unsafe");
+        } else if (inconsistentConflictMatcher.find()) {
+            Trace mainTrace = getTrace(inconsistentConflictMatcher.group(2));
+            Trace branchTrace = getTrace(inconsistentConflictMatcher.group(3));
+            Solution solution = new Solution(mainTrace, branchTrace);
+            solution.setComment("Initial value of signal '" + inconsistentConflictMatcher.group(1) + "' cannot be assigned due to conflicting traces");
+            outcome = Pair.of(solution, Cause.INCONSISTENT);
+        } else if (inconsistentInitialMatcher.find()) {
+            Solution solution = new Solution(getTrace(inconsistentInitialMatcher.group(3)));
+            solution.setComment("Initial value of signal '" + inconsistentInitialMatcher.group(1) + "' conflicts with trace");
+            outcome = Pair.of(solution, Cause.INCONSISTENT);
+        } else if (notSafeMatcher.find()) {
+            Solution solution = new Solution(getTrace(notSafeMatcher.group(2)));
+            solution.setComment("Place '" + notSafeMatcher.group(1) + "' is unsafe");
             outcome = Pair.of(solution, Cause.NOT_SAFE);
-        } else if (matcherEmptyPreset.find()) {
+        } else if (emptyPresetMatcher.find()) {
             Solution solution = new Solution(new Trace());
-            solution.setComment("Transition(s) with empty preset: " + matcherEmptyPreset.group(2));
+            solution.setComment("Transition(s) with empty preset: " + emptyPresetMatcher.group(2));
             outcome = Pair.of(solution, Cause.EMPTY_PRESET);
         } else {
             outcome = null;

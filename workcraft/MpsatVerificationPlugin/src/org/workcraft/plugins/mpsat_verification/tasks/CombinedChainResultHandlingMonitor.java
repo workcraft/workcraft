@@ -117,6 +117,10 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
         }
         return false;
     }
+    @Override
+    public boolean canProcessSolution() {
+        return true;
+    }
 
     @Override
     public Result<? extends MpsatOutput> getFailedMpsatResult(CombinedChainOutput chainOutput) {

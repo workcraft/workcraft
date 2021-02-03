@@ -42,6 +42,11 @@ public class VerificationChainResultHandlingMonitor extends AbstractChainResultH
     }
 
     @Override
+    public boolean canProcessSolution() {
+        return true;
+    }
+
+    @Override
     public Result<? extends MpsatOutput> getFailedMpsatResult(VerificationChainOutput chainOutput) {
         Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
         if ((mpsatResult != null) && (mpsatResult.isFailure())) {

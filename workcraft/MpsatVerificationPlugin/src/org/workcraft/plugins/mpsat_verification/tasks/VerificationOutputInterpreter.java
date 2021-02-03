@@ -46,6 +46,7 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
         case ASSERTION:
         case REACHABILITY:
         case STG_REACHABILITY:
+        case STG_REACHABILITY_CONSISTENCY:
             return new ReachabilityOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();
 
@@ -55,10 +56,6 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
 
         case DEADLOCK:
             return new DeadlockFreenessOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case STG_REACHABILITY_CONSISTENCY:
-            return new ConsistencyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();
 
         case STG_REACHABILITY_OUTPUT_PERSISTENCY:
