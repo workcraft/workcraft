@@ -4,6 +4,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.dialogs.ExceptionDialog;
@@ -32,7 +33,8 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     public PetriModel getUnderlyingPetri() {
-        return (PetriModel) getUnderlyingModel().getMathModel();
+        VisualModel underlyingModel = getUnderlyingModel();
+        return underlyingModel == null ? null : (PetriModel) underlyingModel.getMathModel();
     }
 
     @Override

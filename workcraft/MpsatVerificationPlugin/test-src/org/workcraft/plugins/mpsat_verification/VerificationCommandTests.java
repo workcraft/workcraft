@@ -167,6 +167,25 @@ public class VerificationCommandTests {
         );
     }
 
+    @Test
+    public void testInconsistentVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "consistency_violation-no_alternation.stg.work");
+        testVerificationCommands(workName,
+                false, // combined
+                false,  // consistency
+                null,  // deadlock freeness
+                null,  // input properness
+                null,  // output persistency
+                true,  // output determinacy
+                null,  // CSC
+                null,  // USC
+                null,  // DI interface
+                null,  // normalcy
+                null,  // mutex implementability (strict)
+                null  // mutex implementability (relaxed)
+        );
+    }
+
     private void testVerificationCommands(String workName, Boolean combined,
             Boolean consistency, Boolean deadlockFreeness,
             Boolean inputProperness, Boolean outputPersistency, Boolean outputDeterminacy,

@@ -2,7 +2,6 @@ package org.workcraft.gui.tools;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -669,9 +668,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         if (!branchTrace.isEmpty() && (branchTrace.getPosition() < branchTrace.size())) {
             ref = branchTrace.get(branchTrace.getPosition());
         }
-        MathModel mathModel = getUnderlyingModel().getMathModel();
-        if ((mathModel != null) && (ref != null)) {
-            Node node = mathModel.getNodeByReference(ref);
+        if ((underlyingModel != null) && (ref != null)) {
+            Node node = underlyingModel.getMathModel().getNodeByReference(ref);
             if (node == candidateNode) {
                 step(editor);
                 return;
@@ -680,8 +678,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         while (branchTrace.getPosition() < branchTrace.size()) {
             branchTrace.removeCurrent();
         }
-        if (mathModel != null) {
-            String candidateRef = mathModel.getNodeReference(candidateNode);
+        if (underlyingModel != null) {
+            String candidateRef = underlyingModel.getMathModel().getNodeReference(candidateNode);
             if (candidateRef != null) {
                 branchTrace.add(candidateRef);
             }
@@ -755,9 +753,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             ref = mainTrace.getCurrent();
         }
         MathNode result = null;
-        MathModel mathModel = getUnderlyingModel().getMathModel();
-        if ((mathModel != null) && (ref != null)) {
-            result = mathModel.getNodeByReference(ref);
+        if ((underlyingModel != null) && (ref != null)) {
+            result = underlyingModel.getMathModel().getNodeByReference(ref);
         }
         return result;
     }

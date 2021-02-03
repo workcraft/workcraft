@@ -39,7 +39,7 @@ class ConsistencyOutputInterpreter extends ReachabilityOutputInterpreter {
                 if (r == null) continue;
                 String signalRef = r.getFirst();
                 String comment = "Signal '" + signalRef + "' is inconsistent";
-                LogUtils.logWarning(comment + " after trace: " + trace);
+                LogUtils.logWarning(comment + ": " + trace);
                 Solution processedSolution = new Solution(trace, null, comment);
                 result.add(processedSolution);
             }

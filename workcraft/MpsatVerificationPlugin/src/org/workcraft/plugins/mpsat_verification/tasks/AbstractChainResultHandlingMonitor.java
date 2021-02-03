@@ -20,7 +20,6 @@ import java.util.Collections;
 public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> extends AbstractResultHandlingMonitor<T, Boolean> {
 
     private static final String CANNOT_VERIFY_PREFIX = "Cannot build unfolding prefix";
-    private static final String AFTER_THE_TRACE_SUFFIX = " after the following trace:\n";
     private static final String ASK_SIMULATE_SUFFIX = "\n\nSimulate the problematic trace?";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
@@ -47,9 +46,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
         }
 
         if (result.isFailure()) {
-            if (!handlePartialFailure(result)) {
-                handleFailure(result);
-            }
+            return handleFailure(result);
         }
 
         return null;
@@ -57,17 +54,13 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
 
     public abstract Boolean handleSuccess(Result<? extends T> chainResult);
 
-    private boolean handlePartialFailure(Result<? extends T> chainResult) {
+    private Boolean handleFailure(Result<? extends T> chainResult) {
         T chainOutput = chainResult.getPayload();
         Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
-        if ((exportResult != null) && (exportResult.isFailure())) {
-            return false;
-        }
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
-        if ((pcompResult != null) && (pcompResult.isFailure())) {
-            return false;
-        }
         Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
+
+        // Handle partial failure while building unfolding prefix (e.g. consistency and safeness violations)
         if ((punfResult != null) && (punfResult.isFailure())) {
             PunfOutput punfOutput = punfResult.getPayload();
             PunfOutputParser punfOutputParser = new PunfOutputParser(punfOutput);
@@ -79,56 +72,49 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
                 if ((cause == PunfOutputParser.Cause.INCONSISTENT) && isConsistencyCheckMode(chainOutput)) {
                     ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
                     PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
+
                     MpsatOutput mpsatFakeOutput = new MpsatOutput(new ExternalProcessOutput(0),
                             ReachUtils.getConsistencyParameters(), punfOutput.getInputFile(), Collections.singletonList(solution));
 
-                    new ConsistencyOutputInterpreter(we, exportOutput, pcompOutput, mpsatFakeOutput, isInteractive()).interpret();
+                    return new ConsistencyOutputInterpreter(we, exportOutput, pcompOutput,
+                            mpsatFakeOutput, isInteractive()).interpret();
                 } else {
                     String comment = solution.getComment();
                     String message = CANNOT_VERIFY_PREFIX;
                     switch (cause) {
                     case INCONSISTENT:
                         message += " for the inconsistent STG.\n\n";
-                        message += comment + AFTER_THE_TRACE_SUFFIX;
+                        message += comment + ":\n";
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message)) {
-                            TraceUtils.playSolution(we, solution);
+                            TraceUtils.playSolution(we, solution, "");
                         }
-                        break;
+                        return null;
                     case NOT_SAFE:
                         message += " for the unsafe net.\n\n";
-                        message += comment + AFTER_THE_TRACE_SUFFIX;
+                        message += comment + " after trace:\n";
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message)) {
-                            TraceUtils.playSolution(we, solution);
+                            TraceUtils.playSolution(we, solution, " after trace");
                         }
-                        break;
+                        return null;
                     case EMPTY_PRESET:
                         message += " for the malformed net.\n\n";
                         message += comment;
                         DialogUtils.showError(message);
-                        break;
+                        return null;
                     }
                 }
-                return true;
             }
         }
-        return false;
-    }
 
-    public abstract boolean isConsistencyCheckMode(T chainOutput);
-
-    private void handleFailure(Result<? extends T> chainResult) {
+        // Handle complete failure of the toolchain
         String errorMessage = "MPSat verification failed.";
         Throwable genericCause = chainResult.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
             errorMessage += ERROR_CAUSE_PREFIX + genericCause.getMessage();
         } else {
-            T chainOutput = chainResult.getPayload();
-            Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
-            Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
-            Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             Result<? extends MpsatOutput> mpsatResult = getFailedMpsatResult(chainOutput);
             if ((exportResult != null) && (exportResult.isFailure())) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
@@ -177,7 +163,10 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
             }
         }
         DialogUtils.showError(errorMessage);
+        return null;
     }
+
+    public abstract boolean isConsistencyCheckMode(T chainOutput);
 
     public abstract Result<? extends MpsatOutput> getFailedMpsatResult(T chainOutput);
 

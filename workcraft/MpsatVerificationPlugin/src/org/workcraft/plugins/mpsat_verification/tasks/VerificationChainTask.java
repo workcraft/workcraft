@@ -78,7 +78,9 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
         Result<? extends PunfOutput> punfResult = Framework.getInstance().getTaskManager().execute(
                 punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
 
-        return new Result<>(punfResult.getOutcome(), payload.applyPunfResult(punfResult));
+        // Add verification parameters in case Punf detects consistency violation
+        return new Result<>(punfResult.getOutcome(), payload.applyPunfResult(punfResult)
+                .applyVerificationParameters(verificationParameters));
     }
 
     private Result<? extends VerificationChainOutput> verifyProperty(VerificationChainOutput payload,
@@ -90,8 +92,7 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
         Result<? extends MpsatOutput>  mpsatResult = Framework.getInstance().getTaskManager().execute(
                 mpsatTask, "Running verification [MPSat]", new SubtaskMonitor<>(monitor));
 
-        return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult)
-                .applyVerificationParameters(verificationParameters));
+        return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult));
     }
 
 }

@@ -105,27 +105,35 @@ public class TraceUtils {
         // Position
         if (parts.length > 1) {
             try {
-                int position = Integer.valueOf(parts[0]);
+                int position = Integer.parseInt(parts[0]);
                 result.setPosition(position);
-            } catch (Exception e) {
+            } catch (NumberFormatException  e) {
+                throw new RuntimeException(e);
             }
         }
         return result;
     }
 
-    public static void playSolution(WorkspaceEntry we, Solution solution) {
+    public static void playSolution(WorkspaceEntry we, Solution solution, String suffix) {
         final Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
             GraphEditorPanel editor = framework.getMainWindow().getEditor(we);
             Toolbox toolbox = editor.getToolBox();
             SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
             toolbox.selectTool(tool);
-            tool.setTraces(solution.getMainTrace(), solution.getBranchTrace(), solution.getLoopPosition(), editor);
+
+            Trace mainTrace = solution.getMainTrace();
+            Trace branchTrace = solution.getBranchTrace();
+            tool.setTraces(mainTrace, branchTrace, solution.getLoopPosition(), editor);
+
             String comment = solution.getComment();
             if ((comment != null) && !comment.isEmpty()) {
-                String traceText = solution.getMainTrace().toString();
+                String traceText = "\n" + mainTrace;
+                if (branchTrace != null) {
+                    traceText += "\n" + branchTrace;
+                }
                 // Remove HTML tags before printing the message
-                String message = comment.replaceAll("<.*?>", "") + " after trace: " + traceText;
+                String message = comment.replaceAll("<.*?>", "") + suffix + ": " + traceText;
                 LogUtils.logWarning(message);
             }
         }
