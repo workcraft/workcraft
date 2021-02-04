@@ -295,9 +295,9 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         public String getColumnName(int column) {
             switch (column) {
             case COLUMN_COLOR:
-                return "<html><b>Color</b></html>";
+                return "Color";
             case COLUMN_CORE:
-                return "<html><b>Core</b></html>";
+                return "Core";
             default:
                 return  "";
             }

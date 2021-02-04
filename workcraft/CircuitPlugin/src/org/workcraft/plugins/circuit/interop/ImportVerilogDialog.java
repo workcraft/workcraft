@@ -85,7 +85,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         topModuleCombo.setRenderer(new ModuleComboBoxRenderer(createModuleToTextMap(modules)));
 
         PropertyEditorTable descendantModulesTable = new PropertyEditorTable(
-                "<html><b>Hierarchy module</b></html>", "<html><b>File name</b></html>");
+                "Hierarchy module", "File name");
 
         Map<VerilogModule, ModuleFileProperties> moduleToPropertiesMap = createModuleToPropertyMap(modules);
         // First add action listener, then populate the ComboBox

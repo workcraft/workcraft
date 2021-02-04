@@ -614,7 +614,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         @Override
         public String getColumnName(int column) {
-            return (column == 0) ? "<html><b>Trace</b></html>" : "<html><b>Branch</b></html>";
+            return (column == 0) ? "Trace" : "Branch";
         }
 
         @Override

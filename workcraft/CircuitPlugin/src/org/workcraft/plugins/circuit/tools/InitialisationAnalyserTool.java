@@ -30,7 +30,7 @@ import java.util.function.Function;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> forcedTable = new BasicTable<>("<html><b>Force init pins</b></html>");
+    private final BasicTable<String> forcedTable = new BasicTable<>("Force init pins");
     private InitialisationState initState = null;
 
     @Override

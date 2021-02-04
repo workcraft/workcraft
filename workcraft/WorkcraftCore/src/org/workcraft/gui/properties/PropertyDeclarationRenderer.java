@@ -1,4 +1,4 @@
-package org.workcraft.gui.controls;
+package org.workcraft.gui.properties;
 
 import org.workcraft.utils.GuiUtils;
 
@@ -7,7 +7,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import java.awt.*;
 
-public class FlatHeaderRenderer extends DefaultTableCellRenderer {
+public class PropertyDeclarationRenderer extends DefaultTableCellRenderer {
 
     private final JLabel label = new JLabel() {
         @Override
@@ -18,10 +18,13 @@ public class FlatHeaderRenderer extends DefaultTableCellRenderer {
         }
     };
 
-    public FlatHeaderRenderer() {
-        label.setBorder(GuiUtils.getTableHeaderBorder());
-        label.setHorizontalAlignment(CENTER);
-        label.setFont(label.getFont().deriveFont(Font.BOLD));
+    public PropertyDeclarationRenderer(PropertyDescriptor descriptor) {
+        label.setBorder(GuiUtils.getTableCellBorder());
+        label.setHorizontalAlignment(LEADING);
+
+        if ((descriptor != null) && (descriptor.getValue() == null) && descriptor.isCombinable()) {
+            label.setFont(label.getFont().deriveFont(Font.BOLD));
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.workcraft.gui.tools;
 
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.gui.controls.FlatHeaderRenderer;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -17,6 +18,7 @@ public class BasicTable<T> extends JTable {
         setRowSelectionAllowed(false);
         setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
         setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+        getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
         if (title == null) {
             setTableHeader(null);
         }
