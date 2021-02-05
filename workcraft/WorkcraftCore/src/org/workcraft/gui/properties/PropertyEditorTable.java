@@ -7,7 +7,6 @@ import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -123,46 +122,7 @@ public class PropertyEditorTable extends JTable {
 
     @Override
     public TableCellRenderer getCellRenderer(int row, int col) {
-        if (col > 0) {
-            return cellRenderers[row];
-        }
-
-        return new TableCellRenderer() {
-
-            private final JLabel label = new JLabel() {
-                @Override
-                public void paint(Graphics g) {
-                    g.setColor(getBackground());
-                    g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-                    super.paint(g);
-                }
-            };
-
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value,
-                    boolean isSelected, boolean hasFocus, int row, int column) {
-
-                String text = (value == null) ? "" : value.toString();
-                label.setText(text);
-                label.setBorder(GuiUtils.getTableCellBorder());
-
-                Font font = label.getFont();
-                PropertyDescriptor descriptor = model.getDeclaration(row);
-                if ((descriptor != null) && (descriptor.getValue() == null) && descriptor.isCombinable()) {
-                    label.setFont(font.deriveFont(Font.BOLD));
-                }
-
-                int availableWidth = table.getColumnModel().getColumn(column).getWidth();
-                availableWidth -= table.getIntercellSpacing().getWidth();
-                Insets borderInsets = label.getBorder().getBorderInsets(label);
-                availableWidth -= borderInsets.left + borderInsets.right;
-                FontMetrics fontMetrics = getFontMetrics(font);
-                if (fontMetrics.stringWidth(text) > availableWidth) {
-                    label.setToolTipText(text);
-                }
-                return label;
-            }
-        };
+        return (col > 0) ? cellRenderers[row] : new PropertyDeclarationRenderer(model.getDeclaration(row));
     }
 
     @Override

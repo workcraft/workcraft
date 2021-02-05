@@ -130,13 +130,13 @@ public class StgSimulationTool extends PetriSimulationTool {
         public String getColumnName(final int column) {
             switch (column) {
             case COLUMN_SIGNAL:
-                return "<html><b>Signal</b></html>";
+                return "Signal";
             case COLUMN_STATE:
-                return "<html><b>State</b></html>";
+                return "State";
             case COLUMN_VISIBLE:
-                return "<html><b>Visible</b></html>";
+                return "Visible";
             case COLUMN_COLOR:
-                return "<html><b>Color</b></html>";
+                return "Color";
             default:
                 return null;
             }
@@ -195,7 +195,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             }
         }
 
-        public void reorder(final int from, final int to) {
+        public void reorderRows(final int from, final int to) {
             if ((from >= 0) && (from < signals.size()) && (to >= 0) && (to < signals.size()) && (from != to)) {
                 final String name = signals.remove(from);
                 signals.add(to, name);
@@ -256,15 +256,14 @@ public class StgSimulationTool extends PetriSimulationTool {
 
         @Override
         protected Transferable createTransferable(final JComponent c) {
-            assert c == table;
             return new DataHandler(table.getSelectedRow(), localObjectFlavor.getMimeType());
         }
 
         @Override
         public boolean canImport(final TransferHandler.TransferSupport info) {
-            final boolean b = (info.getComponent() == table) && info.isDrop() && info.isDataFlavorSupported(localObjectFlavor);
-            table.setCursor(b ? DragSource.DefaultMoveDrop : DragSource.DefaultMoveNoDrop);
-            return b;
+            boolean result = (info.getComponent() == table) && info.isDrop() && info.isDataFlavorSupported(localObjectFlavor);
+            table.setCursor(result ? DragSource.DefaultMoveDrop : DragSource.DefaultMoveNoDrop);
+            return result;
         }
 
         @Override
@@ -276,21 +275,21 @@ public class StgSimulationTool extends PetriSimulationTool {
         public boolean importData(final TransferHandler.TransferSupport info) {
             final JTable target = (JTable) info.getComponent();
             final JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
-            int rowTo = dl.getRow();
-            final int max = table.getModel().getRowCount();
-            if ((rowTo < 0) || (rowTo > max)) {
-                rowTo = max;
+            int toRow = dl.getRow();
+            final int lastRow = table.getModel().getRowCount();
+            if ((toRow < 0) || (toRow > lastRow)) {
+                toRow = lastRow;
             }
             target.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             try {
-                final int rowFrom = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
-                if (rowTo > rowFrom) {
-                    rowTo--;
+                final int fromRow = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
+                if (toRow > fromRow) {
+                    toRow--;
                 }
-                if ((rowFrom != -1) && (rowFrom != rowTo)) {
+                if ((fromRow != -1) && (fromRow != toRow)) {
                     final StateTableModel stateTableModel = (StateTableModel) table.getModel();
-                    stateTableModel.reorder(rowFrom, rowTo);
-                    target.getSelectionModel().addSelectionInterval(rowTo, rowTo);
+                    stateTableModel.reorderRows(fromRow, toRow);
+                    target.getSelectionModel().addSelectionInterval(toRow, toRow);
                     return true;
                 }
             } catch (final Exception e) {

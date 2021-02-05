@@ -34,7 +34,7 @@ import java.util.function.Function;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> breakerTable = new BasicTable("<html><b>Path breakers</b></html>");
+    private final BasicTable<String> breakerTable = new BasicTable("Path breakers");
     private Set<Contact> cycleContacts;
     private Set<FunctionComponent> cycleComponents;
     private JPanel panel;

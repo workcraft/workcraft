@@ -17,6 +17,7 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.TableColumn;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
@@ -347,6 +348,18 @@ public class GuiUtils {
             x += doubleSize;
         }
         g.setClip(null);
+    }
+
+    public static int getLabelTextWidth(JLabel label) {
+        FontMetrics fontMetrics = label.getFontMetrics(label.getFont());
+        Insets borderInsets = label.getBorder().getBorderInsets(label);
+        return fontMetrics.stringWidth(label.getText()) + borderInsets.left + borderInsets.right;
+    }
+
+    public static double getTableColumnTextWidth(JTable table, int col) {
+        TableColumn column = table.getColumnModel().getColumn(col);
+        Dimension spacing = table.getIntercellSpacing();
+        return column.getWidth() - spacing.getWidth();
     }
 
 }
