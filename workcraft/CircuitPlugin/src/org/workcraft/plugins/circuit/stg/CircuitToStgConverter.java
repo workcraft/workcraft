@@ -95,7 +95,7 @@ public class CircuitToStgConverter {
         return result;
     }
 
-    public Pair<SignalStg, Boolean> getSignalStgAndInvertion(VisualNode node) {
+    public Pair<SignalStg, Boolean> getSignalStgAndInversion(VisualNode node) {
         Pair<SignalStg, Boolean> result = null;
         Pair<VisualContact, Boolean> driverAndInvert = nodeToDriverMap.get(node);
         SignalStg signal = null;
