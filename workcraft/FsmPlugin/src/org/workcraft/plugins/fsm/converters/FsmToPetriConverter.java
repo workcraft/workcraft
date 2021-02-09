@@ -1,34 +1,31 @@
 package org.workcraft.plugins.fsm.converters;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.Symbol;
-import org.workcraft.plugins.fsm.VisualEvent;
-import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.plugins.fsm.VisualState;
+import org.workcraft.plugins.fsm.*;
+import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.Hierarchy;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 public class FsmToPetriConverter {
+
     private final VisualFsm srcModel;
     private final VisualPetri dstModel;
-
     private final Map<VisualState, VisualPlace> stateToPlaceMap;
     private final Map<VisualEvent, VisualTransition> eventToTransitionMap;
     private final Map<String, String> refToSymbolMap;
 
-    public FsmToPetriConverter(VisualFsm srcModel, VisualPetri dstModel) {
+    public FsmToPetriConverter(VisualFsm srcModel) {
         this.srcModel = srcModel;
-        this.dstModel = dstModel;
+        this.dstModel = new VisualPetri(new Petri());
         stateToPlaceMap = convertStates();
         eventToTransitionMap = convertEvents();
         refToSymbolMap = cacheLabels();

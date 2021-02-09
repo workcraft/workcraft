@@ -7,10 +7,12 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.serialisation.NoAutoSerialisation;
 
 import java.awt.*;
@@ -19,15 +21,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class VisualImplicitPlaceArc extends VisualConnection {
+
+    private static final double TOKEN_SIZE = VisualCommonSettings.getNodeSize() / 1.9;
+    private static final double TOKEN_SEPARATION = VisualCommonSettings.getStrokeWidth() / 8;
+    private static final double TOKEN_SPACE = VisualCommonSettings.getNodeSize() - 2.0 * VisualCommonSettings.getStrokeWidth();
+
     private StgPlace implicitPlace;
     private MathConnection refCon1;
     private MathConnection refCon2;
-
-    private static double tokenSpace = 0.8;
-    private static double singleTokenSize = tokenSpace / 1.9;
-    private static double multipleTokenSeparation = 0.0125;
-
-    protected Color tokenColor = VisualCommonSettings.getBorderColor();
+    private Color tokenColor = VisualCommonSettings.getBorderColor();
 
     public VisualImplicitPlaceArc() {
         super();
@@ -75,11 +77,18 @@ public class VisualImplicitPlaceArc extends VisualConnection {
     @Override
     public void draw(DrawRequest r) {
         super.draw(r);
-        int tokens = implicitPlace.getTokens();
+        Decoration d = r.getDecoration();
+        int tokenCount = implicitPlace.getTokens();
+        Color tokenColor = getTokenColor();
+        if (d instanceof PlaceDecoration) {
+            tokenCount = ((PlaceDecoration) d).getTokens();
+            tokenColor = ((PlaceDecoration) d).getTokenColor();
+        }
+
         Point2D p = getMiddleSegmentCenterPoint();
         Graphics2D g = r.getGraphics();
         g.translate(p.getX(), p.getY());
-        VisualPlace.drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, tokenSpace, tokenColor);
+        VisualPlace.drawTokens(r, tokenCount, TOKEN_SIZE, TOKEN_SEPARATION, TOKEN_SPACE, tokenColor);
     }
 
     @NoAutoSerialisation

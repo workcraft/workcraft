@@ -2,6 +2,7 @@ package org.workcraft.gui.tools;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -35,35 +36,33 @@ import java.util.Map;
 
 public abstract class SimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
 
-    private static final ImageIcon ICON_PLAY = GuiUtils.createIconFromSVG("images/simulation-play.svg");
-    private static final ImageIcon ICON_PAUSE = GuiUtils.createIconFromSVG("images/simulation-pause.svg");
-    private static final ImageIcon ICON_BACKWARD = GuiUtils.createIconFromSVG("images/simulation-backward.svg");
-    private static final ImageIcon ICON_FORWARD = GuiUtils.createIconFromSVG("images/simulation-forward.svg");
-    private static final ImageIcon ICON_RECORD = GuiUtils.createIconFromSVG("images/simulation-record.svg");
-    private static final ImageIcon ICON_STOP = GuiUtils.createIconFromSVG("images/simulation-stop.svg");
-    private static final ImageIcon ICON_EJECT = GuiUtils.createIconFromSVG("images/simulation-eject.svg");
+    private static final ImageIcon PLAY_ICON = GuiUtils.createIconFromSVG("images/simulation-play.svg");
+    private static final ImageIcon PAUSE_ICON = GuiUtils.createIconFromSVG("images/simulation-pause.svg");
+    private static final ImageIcon BACKWARD_ICON = GuiUtils.createIconFromSVG("images/simulation-backward.svg");
+    private static final ImageIcon FORWARD_ICON = GuiUtils.createIconFromSVG("images/simulation-forward.svg");
+    private static final ImageIcon RECORD_ICON = GuiUtils.createIconFromSVG("images/simulation-record.svg");
+    private static final ImageIcon STOP_ICON = GuiUtils.createIconFromSVG("images/simulation-stop.svg");
+    private static final ImageIcon EJECT_ICON = GuiUtils.createIconFromSVG("images/simulation-eject.svg");
+    private static final ImageIcon TIMING_DIAGRAM_ICON = GuiUtils.createIconFromSVG("images/simulation-trace-graph.svg");
+    private static final ImageIcon COPY_STATE_ICON = GuiUtils.createIconFromSVG("images/simulation-trace-copy.svg");
+    private static final ImageIcon PASTE_STATE_ICON = GuiUtils.createIconFromSVG("images/simulation-trace-paste.svg");
+    private static final ImageIcon MERGE_TRACE_ICON = GuiUtils.createIconFromSVG("images/simulation-trace-merge.svg");
+    private static final ImageIcon SAVE_INITIAL_STATE_ICON = GuiUtils.createIconFromSVG("images/simulation-marking-save.svg");
 
-    private static final String HINT_PLAY = "Play through the trace";
-    private static final String HINT_PAUSE = "Pause trace playback";
-    private static final String HINT_BACKWARD = "Step backward ([)";
-    private static final String HINT_FORWARD = "Step forward (])";
-    private static final String HINT_RECORD = "Generate a random trace";
-    private static final String HINT_STOP = "Stop trace generation";
-    private static final String HINT_EJECT = "Reset the trace";
+    private static final String PLAY_HINT = "Play through the trace";
+    private static final String PAUSE_HINT = "Pause trace playback";
+    private static final String BACKWARD_HINT = "Step backward ([)";
+    private static final String FORWARD_HINT = "Step forward (])";
+    private static final String RECORD_HINT = "Generate a random trace";
+    private static final String STOP_HINT = "Stop trace generation";
+    private static final String EJECT_HINT = "Reset the trace";
+    private static final String TIMING_DIAGRAM_HINT = "Generate trace timing diagram";
+    private static final String COPY_STATE_HINT = "Copy trace to clipboard";
+    private static final String PASTE_STATE_HINT = "Paste trace from clipboard";
+    private static final String MERGE_TRACE_HINT = "Merge branch into trace";
+    private static final String SAVE_INITIAL_STATE_HINT = "Save current state as initial";
 
-    private static final ImageIcon ICON_TIMING_DIAGRAM = GuiUtils.createIconFromSVG("images/simulation-trace-graph.svg");
-    private static final ImageIcon ICON_COPY_STATE = GuiUtils.createIconFromSVG("images/simulation-trace-copy.svg");
-    private static final ImageIcon ICON_PASTE_STATE = GuiUtils.createIconFromSVG("images/simulation-trace-paste.svg");
-    private static final ImageIcon ICON_MERGE_TRACE = GuiUtils.createIconFromSVG("images/simulation-trace-merge.svg");
-    private static final ImageIcon ICON_SAVE_INITIAL_STATE = GuiUtils.createIconFromSVG("images/simulation-marking-save.svg");
-
-    private static final String HINT_TIMING_DIAGRAM = "Generate trace timing diagram";
-    private static final String HINT_COPY_STATE = "Copy trace to clipboard";
-    private static final String HINT_PASTE_STATE = "Paste trace from clipboard";
-    private static final String HINT_MERGE_TRACE = "Merge branch into trace";
-    private static final String HINT_SAVE_INITIAL_STATE = "Save current state as initial";
-
-    private VisualModel underlyingModel;
+    private MathModel underlyingModel;
 
     protected JPanel controlPanel;
     protected JPanel infoPanel;
@@ -83,8 +82,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     // cache of "excited" containers (the ones containing the excited simulation elements)
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
 
-    protected Map<? extends Node, Integer> initialState;
-    public HashMap<? extends Node, Integer> savedState;
+    protected Map<? extends MathNode, Integer> initialState;
+    public HashMap<? extends MathNode, Integer> savedState;
     protected final Trace mainTrace = new Trace();
     protected final Trace branchTrace = new Trace();
     private  int loopPosition = -1;
@@ -105,19 +104,19 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             return panel;
         }
 
-        playButton = GuiUtils.createIconButton(ICON_PLAY, HINT_PLAY);
-        backwardButton = GuiUtils.createIconButton(ICON_BACKWARD, HINT_BACKWARD);
-        forwardButton = GuiUtils.createIconButton(ICON_FORWARD, HINT_FORWARD);
-        recordButton = GuiUtils.createIconButton(ICON_RECORD, HINT_RECORD);
-        ejectButton = GuiUtils.createIconButton(ICON_EJECT, HINT_EJECT);
+        playButton = GuiUtils.createIconButton(PLAY_ICON, PLAY_HINT);
+        backwardButton = GuiUtils.createIconButton(BACKWARD_ICON, BACKWARD_HINT);
+        forwardButton = GuiUtils.createIconButton(FORWARD_ICON, FORWARD_HINT);
+        recordButton = GuiUtils.createIconButton(RECORD_ICON, RECORD_HINT);
+        ejectButton = GuiUtils.createIconButton(EJECT_ICON, EJECT_HINT);
 
         speedSlider = new SpeedSlider();
 
-        JButton generateGraphButton = GuiUtils.createIconButton(ICON_TIMING_DIAGRAM, HINT_TIMING_DIAGRAM);
-        JButton copyStateButton = GuiUtils.createIconButton(ICON_COPY_STATE, HINT_COPY_STATE);
-        JButton pasteStateButton = GuiUtils.createIconButton(ICON_PASTE_STATE, HINT_PASTE_STATE);
-        JButton mergeTraceButton = GuiUtils.createIconButton(ICON_MERGE_TRACE, HINT_MERGE_TRACE);
-        JButton saveInitStateButton = GuiUtils.createIconButton(ICON_SAVE_INITIAL_STATE, HINT_SAVE_INITIAL_STATE);
+        JButton generateGraphButton = GuiUtils.createIconButton(TIMING_DIAGRAM_ICON, TIMING_DIAGRAM_HINT);
+        JButton copyStateButton = GuiUtils.createIconButton(COPY_STATE_ICON, COPY_STATE_HINT);
+        JButton pasteStateButton = GuiUtils.createIconButton(PASTE_STATE_ICON, PASTE_STATE_HINT);
+        JButton mergeTraceButton = GuiUtils.createIconButton(MERGE_TRACE_ICON, MERGE_TRACE_HINT);
+        JButton saveInitStateButton = GuiUtils.createIconButton(SAVE_INITIAL_STATE_ICON, SAVE_INITIAL_STATE_HINT);
 
         JPanel simulationControl = new JPanel();
         simulationControl.add(playButton);
@@ -182,7 +181,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         recordButton.addActionListener(event -> {
             if (timer == null) {
-                timer = new Timer(speedSlider.getDelay(), event1 -> randomStep(editor));
+                timer = new Timer(speedSlider.getDelay(), event1 -> stepRandom(editor));
                 timer.start();
                 random = true;
             } else if (random) {
@@ -198,7 +197,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         playButton.addActionListener(event -> {
             if (timer == null) {
-                timer = new Timer(speedSlider.getDelay(), event1 -> step(editor));
+                timer = new Timer(speedSlider.getDelay(), event1 -> stepForward(editor));
                 timer.start();
                 random = false;
             } else if (!random) {
@@ -218,12 +217,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         });
 
         backwardButton.addActionListener(event -> {
-            stepBack(editor);
+            stepBackward(editor);
             editor.requestFocus();
         });
 
         forwardButton.addActionListener(event -> {
-            step(editor);
+            stepForward(editor);
             editor.requestFocus();
         });
 
@@ -248,7 +247,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         });
 
         saveInitStateButton.addActionListener(event -> {
-            savedState = readModelState();
+            savedState = readUnderlyingModelState();
             editor.requestFocus();
         });
 
@@ -261,23 +260,23 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
                     if (row < mainTrace.size()) {
                         boolean hasProgress = true;
                         while (hasProgress && (branchTrace.getPosition() > 0)) {
-                            hasProgress = quietStepBack();
+                            hasProgress = quietStepBackward();
                         }
                         while (hasProgress && (mainTrace.getPosition() > row)) {
-                            hasProgress = quietStepBack();
+                            hasProgress = quietStepBackward();
                         }
                         while (hasProgress && (mainTrace.getPosition() < row)) {
-                            hasProgress = quietStep();
+                            hasProgress = quietStepForward();
                         }
                     }
                 } else {
                     if ((row >= mainTrace.getPosition()) && (row < mainTrace.getPosition() + branchTrace.size())) {
                         boolean hasProgress = true;
                         while (hasProgress && (mainTrace.getPosition() + branchTrace.getPosition() > row)) {
-                            hasProgress = quietStepBack();
+                            hasProgress = quietStepBackward();
                         }
                         while (hasProgress && (mainTrace.getPosition() + branchTrace.getPosition() < row)) {
-                            hasProgress = quietStep();
+                            hasProgress = quietStepForward();
                         }
                     }
                 }
@@ -302,9 +301,10 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     @Override
     public void activated(final GraphEditor editor) {
         super.activated(editor);
-        generateUnderlyingModel(editor.getModel());
-        editor.getWorkspaceEntry().captureMemento();
-        initialState = readModelState();
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        generateUnderlyingModel(we);
+        we.captureMemento();
+        initialState = readUnderlyingModelState();
         setStatePaneVisibility(false);
         resetTraces(editor);
     }
@@ -330,45 +330,46 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         we.setCanCopy(false);
     }
 
-    public void generateUnderlyingModel(VisualModel model) {
-        setUnderlyingModel(model);
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        underlyingModel = we.getModelEntry().getMathModel();
     }
 
-    public void setUnderlyingModel(VisualModel model) {
-        this.underlyingModel = model;
-    }
-
-    public VisualModel getUnderlyingModel() {
+    public MathModel getUnderlyingModel() {
         return underlyingModel;
     }
 
+    public MathNode getUnderlyingNode(String ref) {
+        MathModel underlyingModel = getUnderlyingModel();
+        return (ref == null) || (underlyingModel == null) ? null : underlyingModel.getNodeByReference(ref);
+    }
+
     public boolean isActivated() {
-        return underlyingModel != null;
+        return getUnderlyingModel() != null;
     }
 
     public void updateState(final GraphEditor editor) {
         if (timer == null) {
-            playButton.setIcon(ICON_PLAY);
-            playButton.setToolTipText(HINT_PLAY);
-            recordButton.setIcon(ICON_RECORD);
-            recordButton.setToolTipText(HINT_RECORD);
+            playButton.setIcon(PLAY_ICON);
+            playButton.setToolTipText(PLAY_HINT);
+            recordButton.setIcon(RECORD_ICON);
+            recordButton.setToolTipText(RECORD_HINT);
         } else {
             if (random) {
-                playButton.setIcon(ICON_PLAY);
-                playButton.setToolTipText(HINT_PLAY);
-                recordButton.setIcon(ICON_STOP);
-                recordButton.setToolTipText(HINT_STOP);
+                playButton.setIcon(PLAY_ICON);
+                playButton.setToolTipText(PLAY_HINT);
+                recordButton.setIcon(STOP_ICON);
+                recordButton.setToolTipText(STOP_HINT);
                 timer.setDelay(speedSlider.getDelay());
             } else if (branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress())) {
-                playButton.setIcon(ICON_PAUSE);
-                playButton.setToolTipText(HINT_PAUSE);
-                recordButton.setIcon(ICON_RECORD);
+                playButton.setIcon(PAUSE_ICON);
+                playButton.setToolTipText(PAUSE_HINT);
+                recordButton.setIcon(RECORD_ICON);
                 timer.setDelay(speedSlider.getDelay());
             } else {
-                playButton.setIcon(ICON_PLAY);
-                playButton.setToolTipText(HINT_PLAY);
-                recordButton.setIcon(ICON_RECORD);
-                recordButton.setToolTipText(HINT_RECORD);
+                playButton.setIcon(PLAY_ICON);
+                playButton.setToolTipText(PLAY_HINT);
+                recordButton.setIcon(RECORD_ICON);
+                recordButton.setToolTipText(RECORD_HINT);
                 timer.stop();
                 timer = null;
             }
@@ -386,7 +387,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         verticalScrollBar.setValue(verticalScrollBar.getMaximum());
     }
 
-    private boolean quietStepBack() {
+    private boolean quietStepBackward() {
         excitedContainers.clear();
 
         boolean result = false;
@@ -415,13 +416,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return result;
     }
 
-    private boolean stepBack(final GraphEditor editor) {
-        boolean ret = quietStepBack();
+    private void stepBackward(final GraphEditor editor) {
+        quietStepBackward();
         updateState(editor);
-        return ret;
     }
 
-    private boolean quietStep() {
+    private boolean quietStepForward() {
         excitedContainers.clear();
 
         boolean result = false;
@@ -450,32 +450,29 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return result;
     }
 
-    private boolean step(final GraphEditor editor) {
-        boolean ret = quietStep();
+    private void stepForward(final GraphEditor editor) {
+        quietStepForward();
         updateState(editor);
-        return ret;
     }
 
-    private boolean randomStep(final GraphEditor editor) {
-        ArrayList<? extends Node> enabledTransitions = getEnabledNodes();
-        if (enabledTransitions.isEmpty()) {
-            return false;
+    private void stepRandom(final GraphEditor editor) {
+        ArrayList<? extends MathNode> enabledUnderlyingNodes = getEnabledUnderlyingNodes();
+        if (!enabledUnderlyingNodes.isEmpty()) {
+            int randomIndex = (int) (Math.random() * enabledUnderlyingNodes.size());
+            MathNode underlyingNode = enabledUnderlyingNodes.get(randomIndex);
+            executeUnderlyingNode(editor, underlyingNode);
         }
-        int randomIndex = (int) (Math.random() * enabledTransitions.size());
-        Node transition = enabledTransitions.get(randomIndex);
-        executeTransition(editor, transition);
-        return true;
     }
 
     private void resetTraces(final GraphEditor editor) {
-        writeModelState(initialState);
+        writeUnderlyingModelState(initialState);
         mainTrace.setPosition(0);
         branchTrace.clear();
         updateState(editor);
     }
 
     private void clearTraces(final GraphEditor editor) {
-        writeModelState(initialState);
+        writeUnderlyingModelState(initialState);
         mainTrace.clear();
         branchTrace.clear();
         loopPosition = -1;
@@ -500,20 +497,20 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     private void pasteState(final GraphEditor editor) {
         String str = getClipboardText();
-        writeModelState(initialState);
+        writeUnderlyingModelState(initialState);
         Solution solution = TraceUtils.deserialiseSolution(str);
         mainTrace.clear();
         if (solution.getMainTrace() != null) {
             mainTrace.addAll(solution.getMainTrace());
             while (mainTrace.getPosition() < solution.getMainTrace().getPosition()) {
-                if (!quietStep()) break;
+                if (!quietStepForward()) break;
             }
         }
         branchTrace.clear();
         if (solution.getBranchTrace() != null) {
             branchTrace.addAll(solution.getBranchTrace());
             while (branchTrace.getPosition() < solution.getBranchTrace().getPosition()) {
-                if (!quietStep()) break;
+                if (!quietStepForward()) break;
             }
         }
         loopPosition = solution.getLoopPosition();
@@ -646,17 +643,17 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     @Override
     public boolean keyPressed(GraphEditorKeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_OPEN_BRACKET) {
-            stepBack(e.getEditor());
+            stepBackward(e.getEditor());
             return true;
         }
         if (e.getKeyCode() == KeyEvent.VK_CLOSE_BRACKET) {
-            step(e.getEditor());
+            stepForward(e.getEditor());
             return true;
         }
         return super.keyPressed(e);
     }
 
-    public void executeTransition(final GraphEditor editor, Node candidateNode) {
+    public void executeUnderlyingNode(final GraphEditor editor, MathNode candidateNode) {
         if (candidateNode == null) return;
 
         String ref = null;
@@ -668,23 +665,21 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         if (!branchTrace.isEmpty() && (branchTrace.getPosition() < branchTrace.size())) {
             ref = branchTrace.get(branchTrace.getPosition());
         }
-        if ((underlyingModel != null) && (ref != null)) {
-            Node node = underlyingModel.getMathModel().getNodeByReference(ref);
-            if (node == candidateNode) {
-                step(editor);
-                return;
-            }
+        Node node = getUnderlyingNode(ref);
+        if (node == candidateNode) {
+            stepForward(editor);
+            return;
         }
         while (branchTrace.getPosition() < branchTrace.size()) {
             branchTrace.removeCurrent();
         }
-        if (underlyingModel != null) {
-            String candidateRef = underlyingModel.getMathModel().getNodeReference(candidateNode);
+        if (getUnderlyingModel() != null) {
+            String candidateRef = getUnderlyingModel().getNodeReference(candidateNode);
             if (candidateRef != null) {
                 branchTrace.add(candidateRef);
             }
         }
-        step(editor);
+        stepForward(editor);
         scrollTraceToBottom();
     }
 
@@ -694,15 +689,17 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             VisualModel model = e.getModel();
             Func<Node, Boolean> filter = node -> {
                 if (node instanceof VisualComponent) {
-                    VisualComponent component = (VisualComponent) node;
-                    return isEnabledNode(component.getReferencedComponent());
+                    String ref = model.getMathReference(node);
+                    MathNode underlyingNode = getUnderlyingNode(ref);
+                    return isEnabledUnderlyingNode(underlyingNode);
                 }
                 return false;
             };
             Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(), filter);
             if (deepestNode instanceof VisualComponent) {
-                VisualComponent component = (VisualComponent) deepestNode;
-                executeTransition(e.getEditor(), component.getReferencedComponent());
+                String ref = model.getMathReference(deepestNode);
+                MathNode underlyingNode = getUnderlyingNode(ref);
+                executeUnderlyingNode(e.getEditor(), underlyingNode);
             }
         }
     }
@@ -745,38 +742,69 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         updateState(editor);
     }
 
-    public MathNode getTraceCurrentNode() {
+    public MathNode getCurrentUnderlyingNode() {
         String ref = null;
         if (branchTrace.canProgress()) {
             ref = branchTrace.getCurrent();
         } else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
             ref = mainTrace.getCurrent();
         }
-        MathNode result = null;
-        if ((underlyingModel != null) && (ref != null)) {
-            result = underlyingModel.getMathModel().getNodeByReference(ref);
-        }
-        return result;
+        return getUnderlyingNode(ref);
     }
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
         return node -> {
+            VisualModel model = editor.getModel();
             if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
-                return getContainerDecoration((Container) node);
-            }
-            if (node instanceof VisualConnection) {
-                return getConnectionDecoration((VisualConnection) node);
+                return getContainerDecoration(model, (Container) node);
             }
             if (node instanceof VisualComponent) {
-                return getComponentDecoration((VisualComponent) node);
+                return getComponentDecoration(model, (VisualComponent) node);
+            }
+            if (node instanceof VisualConnection) {
+                return getConnectionDecoration(model, (VisualConnection) node);
             }
             return null;
         };
     }
 
-    public Decoration getContainerDecoration(Container container) {
-        final boolean isExcited = isContainerExcited(container);
+    public Decoration getComponentDecoration(VisualModel model, VisualComponent component) {
+        String ref = model.getMathReference(component);
+        MathNode node = getUnderlyingNode(ref);
+        final boolean isExcited = isEnabledUnderlyingNode(node);
+        MathNode currentNode = getCurrentUnderlyingNode();
+        final boolean isSuggested = isExcited && (node == currentNode);
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
+                return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
+            }
+        };
+    }
+
+    public Decoration getConnectionDecoration(VisualModel model, VisualConnection connection) {
+        final boolean isExcited = isConnectionExcited(model, connection);
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
+                return null;
+            }
+        };
+    }
+
+    public abstract boolean isConnectionExcited(VisualModel model, VisualConnection connection);
+
+    public Decoration getContainerDecoration(VisualModel model, Container container) {
+        final boolean isExcited = isContainerExcited(model, container);
         return new ContainerDecoration() {
             @Override
             public Color getColorisation() {
@@ -793,55 +821,22 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         };
     }
 
-    public Decoration getConnectionDecoration(VisualConnection connection) {
-        final boolean isExcited = isConnectionExcited(connection);
-        return new Decoration() {
-            @Override
-            public Color getColorisation() {
-                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
-            }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
-        };
-    }
-
-    public Decoration getComponentDecoration(VisualComponent component) {
-        Node node = component.getReferencedComponent();
-        Node currentTraceNode = getTraceCurrentNode();
-        final boolean isExcited = isEnabledNode(node);
-        final boolean isSuggested = isExcited && (node == currentTraceNode);
-        return new Decoration() {
-            @Override
-            public Color getColorisation() {
-                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
-            }
-            @Override
-            public Color getBackground() {
-                return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
-            }
-        };
-    }
-
-    public boolean isContainerExcited(Container container) {
-        if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+    public boolean isContainerExcited(VisualModel model, Container container) {
+        if (excitedContainers.containsKey(container)) {
+            return excitedContainers.get(container);
+        }
         boolean result = false;
         for (Node node : container.getChildren()) {
             if (node instanceof VisualComponent) {
-                VisualComponent component = (VisualComponent) node;
-                result = isEnabledNode(component.getReferencedComponent());
+                String ref = model.getMathReference(node);
+                result = isEnabledUnderlyingNode(getUnderlyingNode(ref));
             } else if (node instanceof Container) {
-                result = isContainerExcited((Container) node);
+                result = isContainerExcited(model, (Container) node);
             }
             if (result) break;
         }
         excitedContainers.put(container, result);
         return result;
-    }
-
-    public boolean isConnectionExcited(VisualConnection connection) {
-        return false;
     }
 
     @Override
@@ -852,15 +847,15 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return ref;
     }
 
-    public abstract HashMap<? extends Node, Integer> readModelState();
+    public abstract HashMap<? extends MathNode, Integer> readUnderlyingModelState();
 
-    public abstract void writeModelState(Map<? extends Node, Integer> state);
+    public abstract void writeUnderlyingModelState(Map<? extends MathNode, Integer> state);
 
     public abstract void applySavedState(GraphEditor editor);
 
-    public abstract ArrayList<? extends Node> getEnabledNodes();
+    public abstract ArrayList<? extends MathNode> getEnabledUnderlyingNodes();
 
-    public abstract boolean isEnabledNode(Node node);
+    public abstract boolean isEnabledUnderlyingNode(MathNode node);
 
     public abstract boolean fire(String ref);
 

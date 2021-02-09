@@ -47,8 +47,8 @@ public class VisualStg extends AbstractVisualModel {
         // Hide implicit places
         // FIXME: Implicit places should not appear in the first place.
         for (VisualStgPlace vp: getVisualPlaces()) {
-            Place place = vp.getReferencedComponent();
-            if ((place instanceof StgPlace) && ((StgPlace) place).isImplicit()) {
+            StgPlace place = vp.getReferencedComponent();
+            if ((place != null) && place.isImplicit()) {
                 maybeMakeImplicit(vp, false);
             }
         }

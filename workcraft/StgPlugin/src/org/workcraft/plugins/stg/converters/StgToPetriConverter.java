@@ -5,6 +5,7 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetri;
@@ -17,8 +18,8 @@ import java.util.Map;
 
 public class StgToPetriConverter extends DefaultPetriConverter<VisualStg, VisualPetri> {
 
-    public StgToPetriConverter(VisualStg srcModel, VisualPetri dstModel) {
-        super(srcModel, dstModel);
+    public StgToPetriConverter(VisualStg srcModel) {
+        super(srcModel, new VisualPetri(new Petri()));
     }
 
     @Override

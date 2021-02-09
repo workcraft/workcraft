@@ -620,10 +620,15 @@ public class MainWindow extends JFrame {
 
     public void requestFocus(final WorkspaceEntry we) {
         for (DockableWindow window: weWindowsMap.get(we)) {
-            Container parent = window.getComponent().getParent();
+            ContentPanel component = window.getComponent();
+            Container parent = component.getParent();
             if (parent instanceof JTabbedPane) {
                 JTabbedPane tabbedPane = (JTabbedPane) parent;
-                tabbedPane.setSelectedComponent(window.getComponent());
+                tabbedPane.setSelectedComponent(component);
+                GraphEditorPanel editor = getEditor(we);
+                if (editor != null) {
+                    editor.requestFocus();
+                }
                 break;
             }
         }

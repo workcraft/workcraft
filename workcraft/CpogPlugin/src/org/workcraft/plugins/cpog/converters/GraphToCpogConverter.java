@@ -1,18 +1,19 @@
 package org.workcraft.plugins.cpog.converters;
 
-import java.util.Map;
-
+import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.converters.DefaultModelConverter;
+import org.workcraft.plugins.cpog.Cpog;
 import org.workcraft.plugins.cpog.Vertex;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.graph.VisualGraph;
 
+import java.util.Map;
+
 public class GraphToCpogConverter extends DefaultModelConverter<VisualGraph, VisualCpog> {
 
-    public GraphToCpogConverter(VisualGraph srcModel, VisualCpog dstModel) {
-        super(srcModel, dstModel);
+    public GraphToCpogConverter(VisualGraph srcModel) {
+        super(srcModel, new VisualCpog(new Cpog()));
     }
 
     @Override

@@ -1,20 +1,17 @@
 package org.workcraft.plugins.fst.converters;
 
+import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.converters.DefaultModelConverter;
 import org.workcraft.plugins.fsm.*;
-import org.workcraft.plugins.fst.Signal;
-import org.workcraft.plugins.fst.SignalEvent;
-import org.workcraft.plugins.fst.VisualFst;
-import org.workcraft.plugins.fst.VisualSignalEvent;
+import org.workcraft.plugins.fst.*;
 
 import java.util.Map;
 
 public class FsmToFstConverter extends DefaultModelConverter<VisualFsm, VisualFst> {
 
-    public FsmToFstConverter(VisualFsm srcModel, VisualFst dstModel) {
-        super(srcModel, dstModel);
+    public FsmToFstConverter(VisualFsm srcModel) {
+        super(srcModel, new VisualFst(new Fst()));
     }
 
     @Override

@@ -10,6 +10,7 @@ import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.plugins.xmas.VisualXmas;
@@ -17,6 +18,8 @@ import org.workcraft.plugins.xmas.components.*;
 import org.workcraft.plugins.xmas.stg.*;
 import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -49,10 +52,20 @@ public class XmasSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public void generateUnderlyingModel(VisualModel model) {
-        converter = new XmasToStgConverter((VisualXmas) model);
-        skipTransitions = getSkipTransitions((VisualXmas) model);
-        setUnderlyingModel(converter.getStgModel());
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        final VisualXmas xmas = WorkspaceUtils.getAs(we, VisualXmas.class);
+        converter = new XmasToStgConverter(xmas);
+        skipTransitions = getSkipTransitions(xmas);
+    }
+
+    @Override
+    public Stg getUnderlyingModel() {
+        return converter.getStgModel().getMathModel();
+    }
+
+    @Override
+    public VisualModel getUnderlyingVisualModel() {
+        return converter.getStgModel();
     }
 
     @Override
@@ -84,10 +97,10 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
         }
         if (transition != null) {
-            executeTransition(e.getEditor(), transition);
+            executeUnderlyingNode(e.getEditor(), transition);
             Transition t = null;
             while ((t = getExcitedTransition(skipTransitions)) != null) {
-                executeTransition(e.getEditor(), t);
+                executeUnderlyingNode(e.getEditor(), t);
             }
         }
     }
@@ -129,34 +142,31 @@ public class XmasSimulationTool extends StgSimulationTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if (node instanceof VisualXmasContact) {
-                    return getContactDecoration((VisualXmasContact) node);
-                }
-                if (node instanceof VisualXmasConnection) {
-                    return getConnectionDecoration((VisualXmasConnection) node);
-                }
-                if (node instanceof VisualSourceComponent) {
-                    return getSourceDecoration((VisualSourceComponent) node);
-                }
-                if (node instanceof VisualSinkComponent) {
-                    return getSinkDecoration((VisualSinkComponent) node);
-                }
-                if (node instanceof VisualSwitchComponent) {
-                    return getSwitchDecoration((VisualSwitchComponent) node);
-                }
-                if (node instanceof VisualQueueComponent) {
-                    return getQueueComponent((VisualQueueComponent) node);
-                }
-                return null;
+        return node -> {
+            if (node instanceof VisualXmasContact) {
+                return getContactDecoration((VisualXmasContact) node);
             }
+            if (node instanceof VisualXmasConnection) {
+                return getConnectionDecoration((VisualXmasConnection) node);
+            }
+            if (node instanceof VisualSourceComponent) {
+                return getSourceDecoration((VisualSourceComponent) node);
+            }
+            if (node instanceof VisualSinkComponent) {
+                return getSinkDecoration((VisualSinkComponent) node);
+            }
+            if (node instanceof VisualSwitchComponent) {
+                return getSwitchDecoration((VisualSwitchComponent) node);
+            }
+            if (node instanceof VisualQueueComponent) {
+                return getQueueComponent((VisualQueueComponent) node);
+            }
+            return null;
         };
     }
 
     private Decoration getContactDecoration(VisualXmasContact contact) {
-        final Node traceCurrentNode = getTraceCurrentNode();
+        final Node traceCurrentNode = getCurrentUnderlyingNode();
         final ContactStg contactStg = converter.getContactStg(contact);
         final boolean isExcited = getExcitedTransition(contactStg.rdy.getAllTransitions()) != null;
         final boolean isSuggested = isExcited && converter.isRelated(contact, traceCurrentNode);
@@ -207,7 +217,7 @@ public class XmasSimulationTool extends StgSimulationTool {
     }
 
     private Decoration getSourceDecoration(VisualSourceComponent sourceComponent) {
-        final Node traceCurrentNode = getTraceCurrentNode();
+        final Node traceCurrentNode = getCurrentUnderlyingNode();
         final SourceStg sourceStg = converter.getSourceStg(sourceComponent);
         final boolean isExcited = getExcitedTransition(sourceStg.oracle.getAllTransitions()) != null;
         final boolean isSuggested = isExcited && converter.isRelated(sourceComponent, traceCurrentNode);
@@ -230,7 +240,7 @@ public class XmasSimulationTool extends StgSimulationTool {
     }
 
     private Decoration getSinkDecoration(VisualSinkComponent sinkComponent) {
-        final Node traceCurrentNode = getTraceCurrentNode();
+        final Node traceCurrentNode = getCurrentUnderlyingNode();
         final SinkStg sinkStg = converter.getSinkStg(sinkComponent);
         final boolean isExcited = getExcitedTransition(sinkStg.oracle.getAllTransitions()) != null;
         final boolean isSuggested = isExcited && converter.isRelated(sinkComponent, traceCurrentNode);
@@ -253,7 +263,7 @@ public class XmasSimulationTool extends StgSimulationTool {
     }
 
     private Decoration getSwitchDecoration(VisualSwitchComponent switchComponent) {
-        final Node traceCurrentNode = getTraceCurrentNode();
+        final Node traceCurrentNode = getCurrentUnderlyingNode();
         final SwitchStg switchStg = converter.getSwitchStg(switchComponent);
         final boolean isExcited = getExcitedTransition(switchStg.oracle.getAllTransitions()) != null;
         final boolean isSuggested = isExcited && converter.isRelated(switchComponent, traceCurrentNode);
@@ -311,7 +321,7 @@ public class XmasSimulationTool extends StgSimulationTool {
             for (VisualSignalTransition t: ts) {
                 if (t == null) continue;
                 Transition transition = t.getReferencedComponent();
-                if (isEnabledNode(transition)) {
+                if (isEnabledUnderlyingNode(transition)) {
                     return transition;
                 }
             }

@@ -1,14 +1,12 @@
 package org.workcraft.plugins.fsm.commands;
 
 import org.workcraft.commands.AbstractConversionCommand;
-import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.FsmDescriptor;
-import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.converters.GraphToFsmConverter;
 import org.workcraft.plugins.graph.VisualGraph;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 public class GraphToFsmConversionCommand extends AbstractConversionCommand {
 
@@ -24,9 +22,7 @@ public class GraphToFsmConversionCommand extends AbstractConversionCommand {
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        final VisualGraph graph = me.getAs(VisualGraph.class);
-        final VisualFsm fsm = new VisualFsm(new Fsm());
-        final GraphToFsmConverter converter = new GraphToFsmConverter(graph, fsm);
+        GraphToFsmConverter converter = new GraphToFsmConverter(me.getAs(VisualGraph.class));
         return new ModelEntry(new FsmDescriptor(), converter.getDstModel());
     }
 

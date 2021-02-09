@@ -1,11 +1,10 @@
 package org.workcraft.plugins.stg;
 
-import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.Framework;
+import org.workcraft.Version;
+import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.Version;
-import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.plugins.stg.commands.*;
 import org.workcraft.plugins.stg.interop.LpnExporter;
 import org.workcraft.plugins.stg.interop.LpnImporter;
@@ -13,6 +12,7 @@ import org.workcraft.plugins.stg.interop.StgExporter;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
+import org.workcraft.utils.ScriptableCommandUtils;
 
 @SuppressWarnings("unused")
 public class StgPlugin implements Plugin {

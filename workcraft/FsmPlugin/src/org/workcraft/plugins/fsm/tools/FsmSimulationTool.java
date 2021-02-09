@@ -16,6 +16,8 @@ import org.workcraft.plugins.fsm.*;
 import org.workcraft.plugins.fsm.converters.FsmToPetriConverter;
 import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -46,11 +48,18 @@ public class FsmSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void generateUnderlyingModel(VisualModel model) {
-        final VisualFsm fsm = (VisualFsm) model;
-        final VisualPetri petri = new VisualPetri(new Petri());
-        converter = new FsmToPetriConverter(fsm, petri);
-        setUnderlyingModel(converter.getDstModel());
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        converter = new FsmToPetriConverter(WorkspaceUtils.getAs(we, VisualFsm.class));
+    }
+
+    @Override
+    public PetriModel getUnderlyingModel() {
+        return converter.getDstModel().getMathModel();
+    }
+
+    @Override
+    public VisualModel getUnderlyingVisualModel() {
+        return converter.getDstModel();
     }
 
     @Override
@@ -64,7 +73,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
             Fsm fsm = (Fsm) model;
             for (State state: fsm.getStates()) {
                 String ref = fsm.getNodeReference(state);
-                Node underlyingNode = getUnderlyingPetri().getNodeByReference(ref);
+                Node underlyingNode = getUnderlyingModel().getNodeByReference(ref);
                 if ((underlyingNode instanceof Place) && savedState.containsKey(underlyingNode)) {
                     boolean isInitial = savedState.get(underlyingNode) > 0;
                     state.setInitial(isInitial);
@@ -82,21 +91,23 @@ public class FsmSimulationTool extends PetriSimulationTool {
 
             Transition transition = getExcitedTransitionOfNode(deepestNode);
             if (transition != null) {
-                executeTransition(e.getEditor(), transition);
+                executeUnderlyingNode(e.getEditor(), transition);
             }
         }
     }
 
     @Override
-    public boolean isContainerExcited(Container container) {
-        if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
+    public boolean isContainerExcited(VisualModel model, Container container) {
+        if (excitedContainers.containsKey(container)) {
+            return excitedContainers.get(container);
+        }
         boolean ret = false;
         for (Node node: container.getChildren()) {
             if (node instanceof VisualEvent) {
                 ret = ret || (getExcitedTransitionOfNode(node) != null);
             }
             if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container) node);
+                ret = ret || isContainerExcited(model, (Container) node);
             }
             if (ret) break;
         }
@@ -111,24 +122,26 @@ public class FsmSimulationTool extends PetriSimulationTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if (converter == null) return null;
-                if (node instanceof VisualState) {
-                    return getStateDecoration((VisualState) node);
-                } else if (node instanceof VisualEvent) {
-                    return getEventDecoration((VisualEvent) node);
-                } else if (node instanceof VisualPage || node instanceof VisualGroup) {
-                    return getContainerDecoration((Container) node);
-                }
+        return node -> {
+            if (converter == null) {
                 return null;
             }
+            VisualModel model = editor.getModel();
+            if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
+                return getContainerDecoration(model, (Container) node);
+            }
+            if (node instanceof VisualState) {
+                return getStateDecoration((VisualState) node);
+            }
+            if (node instanceof VisualEvent) {
+                return getEventDecoration((VisualEvent) node);
+            }
+            return null;
         };
     }
 
     public Decoration getEventDecoration(VisualEvent event) {
-        Node transition = getTraceCurrentNode();
+        Node transition = getCurrentUnderlyingNode();
         final boolean isExcited = getExcitedTransitionOfNode(event) != null;
         final boolean isSuggested = isExcited && converter.isRelated(event, transition);
         return new Decoration() {
@@ -167,7 +180,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
             VisualTransition vTransition = converter.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedComponent();
-                if (isEnabledNode(transition)) {
+                if (isEnabledUnderlyingNode(transition)) {
                     return transition;
                 }
             }

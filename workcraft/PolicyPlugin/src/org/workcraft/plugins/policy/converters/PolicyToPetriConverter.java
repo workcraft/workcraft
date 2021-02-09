@@ -17,9 +17,9 @@ import java.util.HashSet;
 import java.util.Map;
 
 public class PolicyToPetriConverter {
+
     private final VisualPolicy policyNet;
     private final VisualPetri petriNet;
-
     private final Map<VisualPlace, VisualPlace> placeMap;
     private final Map<VisualBundledTransition, VisualTransition> transitionMap;
     private final Map<VisualBundle, VisualTransition> bundleMap;
