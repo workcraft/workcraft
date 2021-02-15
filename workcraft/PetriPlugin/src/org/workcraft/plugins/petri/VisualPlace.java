@@ -27,9 +27,11 @@ public class VisualPlace extends VisualComponent {
 
     public static final String PROPERTY_TOKEN_COLOR = "Token color";
 
-    protected static double singleTokenSize = VisualCommonSettings.getNodeSize() / 1.9;
-    protected static double multipleTokenSeparation = VisualCommonSettings.getStrokeWidth() / 8;
-    protected Color tokenColor = VisualCommonSettings.getBorderColor();
+    private static final double TOKEN_SIZE = VisualCommonSettings.getNodeSize() / 1.9;
+    private static final double TOKEN_SEPARATION = VisualCommonSettings.getStrokeWidth() / 8;
+    private static final double TOKEN_SPACE = VisualCommonSettings.getNodeSize() - 2.0 * VisualCommonSettings.getStrokeWidth();
+
+    private Color tokenColor = VisualCommonSettings.getBorderColor();
 
     public VisualPlace(Place place) {
         super(place);
@@ -80,8 +82,7 @@ public class VisualPlace extends VisualComponent {
             tokenCount = ((PlaceDecoration) d).getTokens();
             tokenColor = ((PlaceDecoration) d).getTokenColor();
         }
-        double tokenSpace = VisualCommonSettings.getNodeSize() - 2.0 * VisualCommonSettings.getStrokeWidth();
-        drawTokens(r, tokenCount, singleTokenSize, multipleTokenSeparation, tokenSpace, tokenColor);
+        drawTokens(r, tokenCount, TOKEN_SIZE, TOKEN_SEPARATION, TOKEN_SPACE, tokenColor);
     }
 
     @Override

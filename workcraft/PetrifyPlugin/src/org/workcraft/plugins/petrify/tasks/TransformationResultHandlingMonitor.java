@@ -3,10 +3,8 @@ package org.workcraft.plugins.petrify.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.dialogs.ExceptionDialog;
-import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.PetriDescriptor;
 import org.workcraft.plugins.petri.PetriModel;
-import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.StgToPetriConverter;
 import org.workcraft.plugins.stg.utils.MutexUtils;
@@ -54,9 +52,7 @@ public class TransformationResultHandlingMonitor extends AbstractResultHandlingM
     }
 
     private PetriModel convertStgToPetriNet(StgModel srcModel) {
-        VisualStg stg = new VisualStg((Stg) srcModel);
-        VisualPetri petri = new VisualPetri(new Petri());
-        StgToPetriConverter converter = new StgToPetriConverter(stg, petri);
+        StgToPetriConverter converter = new StgToPetriConverter(new VisualStg((Stg) srcModel));
         return converter.getDstModel().getMathModel();
     }
 

@@ -1,18 +1,13 @@
 package org.workcraft.plugins.petri;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
-
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualReplica;
-import org.workcraft.utils.ColorUtils;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.tools.Decoration;
+import org.workcraft.utils.ColorUtils;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 @DisplayName("Proxy place")
 @SVGIcon("images/petri-node-proxy.svg")

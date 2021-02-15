@@ -5,22 +5,27 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.properties.BooleanCellEditor;
 import org.workcraft.gui.properties.BooleanCellRenderer;
 import org.workcraft.gui.properties.ColorCellEditor;
 import org.workcraft.gui.properties.ColorCellRenderer;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.dtd.DtdDescriptor;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
+import org.workcraft.plugins.petri.tools.PlaceDecoration;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.StgToDtdConverter;
+import org.workcraft.plugins.stg.converters.StgToStgConverter;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.shared.ColorGenerator;
@@ -28,6 +33,7 @@ import org.workcraft.traces.Trace;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.activation.ActivationDataFlavor;
 import javax.activation.DataHandler;
@@ -57,6 +63,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     protected JTable stateTable;
     private JPanel panel;
     private HashMap<String, Boolean> initialSignalState = new HashMap<>();
+    private StgToStgConverter converter;
 
     public StgSimulationTool() {
         super(true);
@@ -344,7 +351,7 @@ public class StgSimulationTool extends PetriSimulationTool {
                 Pair<String, String> pair = TraceUtils.splitLoopDecoration(text);
                 String prefix = pair.getFirst();
                 String ref = pair.getSecond();
-                final Node node = getUnderlyingStg().getNodeByReference(ref);
+                final Node node = getUnderlyingModel().getNodeByReference(ref);
                 String colorCode = ColorUtils.getHexRGB(getNodeColor(node));
                 label.setText("<html><span style='color: " + GRAY_CODE + "'>" + prefix + "</span>" +
                         "<span style='color: " + colorCode + "'>" + ref + "</span></html>");
@@ -360,17 +367,20 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
     }
 
-    public Stg getUnderlyingStg() {
-        return (Stg) getUnderlyingModel().getMathModel();
+    @Override
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        converter = new StgToStgConverter(WorkspaceUtils.getAs(we, VisualStg.class));
+
     }
 
     @Override
-    public boolean isConnectionExcited(VisualConnection connection) {
-        if (connection instanceof VisualImplicitPlaceArc) {
-            StgPlace place = ((VisualImplicitPlaceArc) connection).getImplicitPlace();
-            return (place != null) && (place.getTokens() > 0);
-        }
-        return super.isConnectionExcited(connection);
+    public Stg getUnderlyingModel() {
+        return converter.getDstModel().getMathModel();
+    }
+
+    @Override
+    public VisualModel getUnderlyingVisualModel() {
+        return converter.getDstModel();
     }
 
     @Override
@@ -402,10 +412,10 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         for (final String ref : combinedTrace) {
-            final Node node = getUnderlyingStg().getNodeByReference(ref);
+            final Node node = getUnderlyingModel().getNodeByReference(ref);
             if (node instanceof SignalTransition) {
                 final SignalTransition transition = (SignalTransition) node;
-                final String signalReference = getUnderlyingStg().getSignalReference(transition);
+                final String signalReference = getUnderlyingModel().getSignalReference(transition);
                 final SignalData signalState = signalDataMap.get(signalReference);
                 if (signalState != null) {
                     switch (transition.getDirection()) {
@@ -425,13 +435,13 @@ public class StgSimulationTool extends PetriSimulationTool {
             }
         }
 
-        for (final Node node : getUnderlyingStg().getTransitions()) {
+        for (final Node node : getUnderlyingModel().getTransitions()) {
             if (node instanceof SignalTransition) {
                 final SignalTransition transition = (SignalTransition) node;
-                final String signalReference = getUnderlyingStg().getSignalReference(transition);
+                final String signalReference = getUnderlyingModel().getSignalReference(transition);
                 final SignalData signalData = signalDataMap.get(signalReference);
                 if (signalData != null) {
-                    signalData.excited |= isEnabledNode(transition);
+                    signalData.excited |= isEnabledUnderlyingNode(transition);
                 }
             }
         }
@@ -459,7 +469,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     private HashMap<String, Boolean> getInitialState() {
-        Stg stg = getUnderlyingStg();
+        Stg stg = getUnderlyingModel();
         HashMap<String, Boolean> result = StgUtils.guessInitialStateFromSignalPlaces(stg);
         Set<String> signalRefs = stg.getSignalReferences();
         if (result.size() < signalRefs.size()) {
@@ -474,7 +484,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         if (trace.isEmpty()) {
             DialogUtils.showWarning("Cannot generate a timing diagram for an empty trace.");
         } else {
-            final Stg stg = getUnderlyingStg();
+            final Stg stg = getUnderlyingModel();
             final LinkedList<Pair<String, Color>> visibleSignals = getVisibleSignals();
             final StgToDtdConverter converter = new StgToDtdConverter(stg, trace, visibleSignals);
             final VisualDtd dtd = converter.getVisualDtd();
@@ -510,7 +520,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     private void initialiseStateMap() {
-        Stg stg = getUnderlyingStg();
+        Stg stg = getUnderlyingModel();
         HashMap<String, SignalData> newStateMap = new HashMap<>();
         List<String> allSignals = new LinkedList<>();
         for (Signal.Type type: Signal.Type.values()) {
@@ -549,8 +559,11 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     @Override
     public void coloriseTokens(final Transition t) {
-        final VisualStg visualStg = (VisualStg) getUnderlyingModel();
-        final VisualTransition vt = visualStg.getVisualTransition(t);
+        VisualModel model = getUnderlyingVisualModel();
+        VisualStg stg = (model instanceof VisualStg) ? (VisualStg) model : null;
+        if (stg == null) return;
+
+        final VisualTransition vt = stg.getVisualTransition(t);
         if (vt == null) return;
         Color tokenColor = Color.BLACK;
         final ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
@@ -559,7 +572,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             tokenColor = tokenColorGenerator.updateColor();
         } else {
             // combine preset token colours
-            for (final Connection c : visualStg.getConnections(vt)) {
+            for (final Connection c : stg.getConnections(vt)) {
                 if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
                     final VisualConnection vc = (VisualConnection) c;
                     if (vc.isTokenColorPropagator()) {
@@ -575,7 +588,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             }
         }
         // propagate the colour to postset tokens
-        for (final Connection c : visualStg.getConnections(vt)) {
+        for (final Connection c : stg.getConnections(vt)) {
             if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
                 final VisualConnection vc = (VisualConnection) c;
                 if (vc.isTokenColorPropagator()) {
@@ -589,6 +602,51 @@ public class StgSimulationTool extends PetriSimulationTool {
                 }
             }
         }
+    }
+
+    @Override
+    public Decoration getConnectionDecoration(VisualModel model, VisualConnection connection) {
+        VisualImplicitPlaceArc underlyingVisualImplicitArc = getUnderlyingVisualImplicitArc(model, connection);
+        if (underlyingVisualImplicitArc == null) {
+            return super.getConnectionDecoration(model, connection);
+        }
+        StgPlace underlyingPlace = underlyingVisualImplicitArc.getImplicitPlace();
+
+        return new PlaceDecoration() {
+            @Override
+            public Color getColorisation() {
+                return underlyingPlace.isImplicit() & (underlyingPlace.getTokens() > 0)
+                        ? SimulationDecorationSettings.getExcitedComponentColor() : null;
+            }
+
+            @Override
+            public Color getBackground() {
+                return null;
+            }
+
+            @Override
+            public int getTokens() {
+                return underlyingPlace.getTokens();
+            }
+
+            @Override
+            public Color getTokenColor() {
+                return underlyingVisualImplicitArc.getTokenColor();
+            }
+        };
+    }
+
+    private VisualImplicitPlaceArc getUnderlyingVisualImplicitArc(VisualModel model, VisualConnection connection) {
+        VisualModel underlyingVisualModel = getUnderlyingVisualModel();
+        if ((connection instanceof VisualImplicitPlaceArc) && (underlyingVisualModel instanceof VisualStg)) {
+            String ref = model.getMathReference(connection);
+            for (VisualImplicitPlaceArc underlyingArc : ((VisualStg) underlyingVisualModel).getVisualImplicitPlaceArcs()) {
+                if (ref.equals(underlyingVisualModel.getMathReference(underlyingArc))) {
+                    return underlyingArc;
+                }
+            }
+        }
+        return null;
     }
 
 }

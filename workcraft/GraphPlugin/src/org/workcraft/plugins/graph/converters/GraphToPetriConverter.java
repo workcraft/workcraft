@@ -13,6 +13,7 @@ import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Symbol;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.graph.VisualVertex;
+import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -25,16 +26,16 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class GraphToPetriConverter {
+
     private final VisualGraph srcModel;
     private final VisualPetri dstModel;
-
     private final Map<VisualConnection, VisualPlace> arcToPlaceMap;
     private final Map<VisualVertex, VisualTransition> vertexToTransitionMap;
     private final Map<String, String> refToSymbolMap;
 
-    public GraphToPetriConverter(VisualGraph srcModel, VisualPetri dstModel) {
+    public GraphToPetriConverter(VisualGraph srcModel) {
         this.srcModel = srcModel;
-        this.dstModel = dstModel;
+        this.dstModel = new VisualPetri(new Petri());
         arcToPlaceMap = convertArcs();
         vertexToTransitionMap = convertVertices();
         refToSymbolMap = cacheLabels();

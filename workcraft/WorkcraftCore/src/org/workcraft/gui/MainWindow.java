@@ -34,6 +34,7 @@ import org.workcraft.gui.tabs.DockingUtils;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
@@ -299,6 +300,11 @@ public class MainWindow extends JFrame {
     private void closeDockableEditorWindow(DockableWindow editorWindow, GraphEditorPanel editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         try {
+            // Switch to default tool in case there were captured mementos
+            Toolbox toolbox = getToolbox(we);
+            GraphEditorTool defaultTool = toolbox.getDefaultTool();
+            toolbox.selectTool(defaultTool, false);
+            // Prompt to save changes if necessary
             saveChangedOrCancel(we);
             // Un-maximise the editor window
             if (DockingManager.isMaximized(editorWindow)) {
@@ -614,10 +620,15 @@ public class MainWindow extends JFrame {
 
     public void requestFocus(final WorkspaceEntry we) {
         for (DockableWindow window: weWindowsMap.get(we)) {
-            Container parent = window.getComponent().getParent();
+            ContentPanel component = window.getComponent();
+            Container parent = component.getParent();
             if (parent instanceof JTabbedPane) {
                 JTabbedPane tabbedPane = (JTabbedPane) parent;
-                tabbedPane.setSelectedComponent(window.getComponent());
+                tabbedPane.setSelectedComponent(component);
+                GraphEditorPanel editor = getEditor(we);
+                if (editor != null) {
+                    editor.requestFocus();
+                }
                 break;
             }
         }
@@ -852,8 +863,10 @@ public class MainWindow extends JFrame {
     public void refreshWorkspaceEntryTitles(Collection<WorkspaceEntry> wes) {
         for (WorkspaceEntry we : wes) {
             for (DockableWindow window : weWindowsMap.get(we)) {
-                String title = we.getTitleAndModel();
-                window.setTitle(title);
+                if (!window.isClosed()) {
+                    String title = we.getTitleAndModel();
+                    window.setTitle(title);
+                }
             }
         }
         DockingUtils.updateHeaders(defaultDockingPort);

@@ -5,7 +5,6 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.FsmDescriptor;
-import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
@@ -66,9 +65,7 @@ public class ConversionResultHandlingMonitor extends AbstractResultHandlingMonit
     }
 
     private Fsm convertFstToFsm(Fst srcModel) {
-        VisualFst fst = new VisualFst(srcModel);
-        VisualFsm fsm = new VisualFsm(new Fsm());
-        FstToFsmConverter converter = new FstToFsmConverter(fst, fsm);
+        FstToFsmConverter converter = new FstToFsmConverter(new VisualFst(srcModel));
         return converter.getDstModel().getMathModel();
     }
 

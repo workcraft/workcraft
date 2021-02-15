@@ -23,8 +23,9 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -55,11 +56,18 @@ public class FstSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public void generateUnderlyingModel(VisualModel model) {
-        final VisualFst fst = (VisualFst) model;
-        final VisualStg stg = new VisualStg(new Stg());
-        converter = new FstToStgConverter(fst, stg);
-        setUnderlyingModel(converter.getDstModel());
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        converter = new FstToStgConverter(WorkspaceUtils.getAs(we, VisualFst.class));
+    }
+
+    @Override
+    public Stg getUnderlyingModel() {
+        return converter.getDstModel().getMathModel();
+    }
+
+    @Override
+    public VisualModel getUnderlyingVisualModel() {
+        return converter.getDstModel();
     }
 
     @Override
@@ -73,7 +81,7 @@ public class FstSimulationTool extends StgSimulationTool {
             Fst fst = (Fst) model;
             for (State state: fst.getStates()) {
                 String ref = fst.getNodeReference(state);
-                Node underlyingNode = getUnderlyingStg().getNodeByReference(ref);
+                Node underlyingNode = getUnderlyingModel().getNodeByReference(ref);
                 if ((underlyingNode instanceof Place) && savedState.containsKey(underlyingNode)) {
                     boolean isInitial = savedState.get(underlyingNode) > 0;
                     state.setInitial(isInitial);
@@ -91,26 +99,28 @@ public class FstSimulationTool extends StgSimulationTool {
 
             Transition transition = getExcitedTransitionOfNode(deepestNode);
             if (transition != null) {
-                executeTransition(e.getEditor(), transition);
+                executeUnderlyingNode(e.getEditor(), transition);
             }
         }
     }
 
     @Override
-    public boolean isContainerExcited(Container container) {
-        if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
-        boolean ret = false;
+    public boolean isContainerExcited(VisualModel model, Container container) {
+        if (excitedContainers.containsKey(container)) {
+            return excitedContainers.get(container);
+        }
+        boolean result = false;
         for (Node node: container.getChildren()) {
             if (node instanceof VisualEvent) {
-                ret = ret || (getExcitedTransitionOfNode(node) != null);
+                result = result || (getExcitedTransitionOfNode(node) != null);
             }
             if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container) node);
+                result = result || isContainerExcited(model, (Container) node);
             }
-            if (ret) break;
+            if (result) break;
         }
-        excitedContainers.put(container, ret);
-        return ret;
+        excitedContainers.put(container, result);
+        return result;
     }
 
     @Override
@@ -120,24 +130,26 @@ public class FstSimulationTool extends StgSimulationTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if (converter == null) return null;
-                if (node instanceof VisualState) {
-                    return getStateDecoration((VisualState) node);
-                } else if (node instanceof VisualEvent) {
-                    return getEventDecoration((VisualEvent) node);
-                } else if (node instanceof VisualPage || node instanceof VisualGroup) {
-                    return getContainerDecoration((Container) node);
-                }
+        return node -> {
+            if (converter == null) {
                 return null;
             }
+            VisualModel model = editor.getModel();
+            if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
+                return getContainerDecoration(model, (Container) node);
+            }
+            if (node instanceof VisualState) {
+                return getStateDecoration((VisualState) node);
+            }
+            if (node instanceof VisualEvent) {
+                return getEventDecoration((VisualEvent) node);
+            }
+            return null;
         };
     }
 
     public Decoration getEventDecoration(VisualEvent event) {
-        Node transition = getTraceCurrentNode();
+        Node transition = getCurrentUnderlyingNode();
         final boolean isExcited = getExcitedTransitionOfNode(event) != null;
         final boolean isSuggested = isExcited && converter.isRelated(event, transition);
         return new Decoration() {
@@ -176,7 +188,7 @@ public class FstSimulationTool extends StgSimulationTool {
             VisualTransition vTransition = converter.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedComponent();
-                if (isEnabledNode(transition)) {
+                if (isEnabledUnderlyingNode(transition)) {
                     return transition;
                 }
             }

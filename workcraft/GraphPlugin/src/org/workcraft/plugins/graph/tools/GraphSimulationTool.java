@@ -15,8 +15,13 @@ import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.graph.VisualVertex;
 import org.workcraft.plugins.graph.converters.GraphToPetriConverter;
-import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.petri.PetriModel;
+import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -47,11 +52,18 @@ public class GraphSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void generateUnderlyingModel(VisualModel model) {
-        final VisualGraph graph = (VisualGraph) model;
-        final VisualPetri petri = new VisualPetri(new Petri());
-        converter = new GraphToPetriConverter(graph, petri);
-        setUnderlyingModel(converter.getDstModel());
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        converter = new GraphToPetriConverter(WorkspaceUtils.getAs(we, VisualGraph.class));
+    }
+
+    @Override
+    public PetriModel getUnderlyingModel() {
+        return converter.getDstModel().getMathModel();
+    }
+
+    @Override
+    public VisualModel getUnderlyingVisualModel() {
+        return converter.getDstModel();
     }
 
     @Override
@@ -68,7 +80,7 @@ public class GraphSimulationTool extends PetriSimulationTool {
 
             Transition transition = getExcitedTransitionOfNode(deepestNode);
             if (transition != null) {
-                executeTransition(e.getEditor(), transition);
+                executeUnderlyingNode(e.getEditor(), transition);
             }
         }
     }
@@ -80,26 +92,28 @@ public class GraphSimulationTool extends PetriSimulationTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if (converter == null) return null;
-                if (node instanceof VisualVertex) {
-                    return getVertexDecoration((VisualVertex) node);
-                } else if (node instanceof VisualConnection) {
-                    return getConnectionDecorator((VisualConnection) node);
-                } else if (node instanceof VisualPage || node instanceof VisualGroup) {
-                    return getContainerDecoration((Container) node);
-                }
-
+        return node -> {
+            if (converter == null) {
                 return null;
             }
+            VisualModel model = editor.getModel();
+            if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
+                return getContainerDecoration(model, (Container) node);
+            }
+            if (node instanceof VisualVertex) {
+                return getVertexDecoration((VisualVertex) node);
+            }
+            if (node instanceof VisualConnection) {
+                return getConnectionDecoration(model, (VisualConnection) node);
+            }
+
+            return null;
         };
     }
 
     private Decoration getVertexDecoration(VisualVertex vertex) {
-        Node transition = getTraceCurrentNode();
         final boolean isExcited = isVertexExcited(vertex);
+        Node transition = getCurrentUnderlyingNode();
         final boolean isSuggested = isExcited && converter.isRelated(vertex, transition);
         return new Decoration() {
             @Override
@@ -114,38 +128,23 @@ public class GraphSimulationTool extends PetriSimulationTool {
         };
     }
 
-    protected Decoration getConnectionDecorator(VisualConnection connection) {
-        final boolean isExcited = isConnectionExcited(connection);
-        return new Decoration() {
-            @Override
-            public Color getColorisation() {
-                return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
-            }
-
-            @Override
-            public Color getBackground() {
-                return null;
-            }
-        };
-    }
-
     @Override
-    public boolean isConnectionExcited(VisualConnection connection) {
+    public boolean isConnectionExcited(VisualModel model, VisualConnection connection) {
         VisualPlace place = converter.getRelatedPlace(connection);
-        return (place == null) ? false : place.getReferencedComponent().getTokens() != 0;
+        return (place != null) && (place.getReferencedComponent().getTokens() != 0);
     }
 
     private boolean isVertexExcited(VisualVertex vertex) {
         VisualTransition transition = converter.getRelatedTransition(vertex);
-        return (transition == null) ? false : isEnabledNode(transition.getReferencedComponent());
+        return (transition != null) && isEnabledUnderlyingNode(transition.getReferencedComponent());
     }
 
     private Transition getExcitedTransitionOfNode(Node node) {
-        if ((node != null) && (node instanceof VisualVertex)) {
+        if (node instanceof VisualVertex) {
             VisualTransition vTransition = converter.getRelatedTransition((VisualVertex) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedComponent();
-                if (isEnabledNode(transition)) {
+                if (isEnabledUnderlyingNode(transition)) {
                     return transition;
                 }
             }

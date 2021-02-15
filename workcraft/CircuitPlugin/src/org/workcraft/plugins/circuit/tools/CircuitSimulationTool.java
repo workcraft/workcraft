@@ -5,7 +5,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.tools.ContainerDecoration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
@@ -15,11 +14,14 @@ import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.ColorUtils;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -31,10 +33,19 @@ public class CircuitSimulationTool extends StgSimulationTool {
     private CircuitToStgConverter converter;
 
     @Override
-    public void generateUnderlyingModel(VisualModel model) {
-        VisualCircuit circuit = (VisualCircuit) model;
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         converter = new CircuitToStgConverter(circuit);
-        setUnderlyingModel(converter.getStg());
+    }
+
+    @Override
+    public Stg getUnderlyingModel() {
+        return converter.getStg().getMathModel();
+    }
+
+    @Override
+    public VisualModel getUnderlyingVisualModel() {
+        return converter.getStg();
     }
 
     @Override
@@ -49,7 +60,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
             for (FunctionContact contact: circuit.getFunctionContacts()) {
                 String contactName = CircuitUtils.getSignalReference(circuit, contact);
                 String oneName = SignalStg.appendHighSuffix(contactName);
-                Node underlyingOneNode = getUnderlyingStg().getNodeByReference(oneName);
+                Node underlyingOneNode = getUnderlyingModel().getNodeByReference(oneName);
                 if ((underlyingOneNode instanceof Place) && savedState.containsKey(underlyingOneNode)) {
                     boolean signalLevel = savedState.get(underlyingOneNode) > 0;
                     contact.setInitToOne(signalLevel);
@@ -65,7 +76,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
             SignalStg signalStg = converter.getSignalStg(contact);
             if (signalStg != null) {
                 for (VisualSignalTransition transition: signalStg.getAllTransitions()) {
-                    if (isEnabledNode(transition.getReferencedComponent())) {
+                    if (isEnabledUnderlyingNode(transition.getReferencedComponent())) {
                         result.add(transition.getReferencedComponent());
                     }
                 }
@@ -112,37 +123,39 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 hideIssue(editor);
                 HashSet<SignalTransition> transitions = getContactExcitedTransitions(contact);
                 SignalTransition transition = null;
-                Node traceCurrentNode = getTraceCurrentNode();
+                Node traceCurrentNode = getCurrentUnderlyingNode();
                 if (transitions.contains(traceCurrentNode)) {
                     transition = (SignalTransition) traceCurrentNode;
                 } else if (!transitions.isEmpty()) {
                     transition = transitions.iterator().next();
                 }
                 if (transition != null) {
-                    executeTransition(editor, transition);
+                    executeUnderlyingNode(editor, transition);
                 }
             }
         }
     }
 
     @Override
-    public boolean isContainerExcited(Container container) {
-        if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
-        boolean ret = false;
-        for (Node node: container.getChildren()) {
+    public boolean isContainerExcited(VisualModel model, Container container) {
+        if (excitedContainers.containsKey(container)) {
+            return excitedContainers.get(container);
+        }
+        boolean result = false;
+        for (Node node : container.getChildren()) {
             if (node instanceof VisualContact) {
-                HashSet<SignalTransition> transitions = getContactExcitedTransitions((VisualContact) node);
-                ret = ret || !transitions.isEmpty();
+                VisualContact contact = (VisualContact) node;
+                HashSet<SignalTransition> transitions = getContactExcitedTransitions(contact);
+                result = !transitions.isEmpty();
+            } else if (node instanceof Container) {
+                result = isContainerExcited(model, (Container) node);
             }
-            if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container) node);
-            }
-            if (ret) {
+            if (result) {
                 break;
             }
         }
-        excitedContainers.put(container, ret);
-        return ret;
+        excitedContainers.put(container, result);
+        return result;
     }
 
     @Override
@@ -152,27 +165,26 @@ public class CircuitSimulationTool extends StgSimulationTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if (converter == null) return null;
-                if (node instanceof VisualFunctionComponent) {
-                    return getFunctionComponentDecoration((VisualFunctionComponent) node);
-                }
-                if (node instanceof VisualContact) {
-                    return getContactDecoration((VisualContact) node);
-                }
-                if (node instanceof VisualCircuitConnection) {
-                    return getConnectionOrJointDecoration((VisualCircuitConnection) node);
-                }
-                if (node instanceof VisualJoint) {
-                    return getConnectionOrJointDecoration((VisualJoint) node);
-                }
-                if (node instanceof VisualPage || node instanceof VisualGroup) {
-                    return getContainerDecoration((Container) node);
-                }
+        return node -> {
+            if (converter == null) {
                 return null;
             }
+            if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
+                return getContainerDecoration(editor.getModel(), (Container) node);
+            }
+            if (node instanceof VisualFunctionComponent) {
+                return getFunctionComponentDecoration((VisualFunctionComponent) node);
+            }
+            if (node instanceof VisualContact) {
+                return getContactDecoration((VisualContact) node);
+            }
+            if (node instanceof VisualCircuitConnection) {
+                return getConnectionOrJointDecoration((VisualCircuitConnection) node);
+            }
+            if (node instanceof VisualJoint) {
+                return getConnectionOrJointDecoration((VisualJoint) node);
+            }
+            return null;
         };
     }
 
@@ -180,9 +192,9 @@ public class CircuitSimulationTool extends StgSimulationTool {
         boolean hasSuggestedOutput = false;
         Collection<VisualContact> excitedOutputs = getExcitedOutputs(component);
         if (!excitedOutputs.isEmpty()) {
-            Node traceCurrentNode = getTraceCurrentNode();
+            Node traceCurrentNode = getCurrentUnderlyingNode();
             for (VisualContact output: excitedOutputs) {
-                Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(output);
+                Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInversion(output);
                 if (signalStgAndInversion != null) {
                     SignalStg signalStg = signalStgAndInversion.getFirst();
                     if (signalStg.contains(traceCurrentNode)) {
@@ -207,7 +219,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
     }
 
     public Decoration getContactDecoration(VisualContact contact) {
-        Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
+        Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInversion(contact);
         if (signalStgAndInversion == null) {
             return null;
         }
@@ -216,13 +228,13 @@ public class CircuitSimulationTool extends StgSimulationTool {
         if (parent instanceof VisualFunctionComponent) {
             isZeroDelay = ((VisualFunctionComponent) parent).getIsZeroDelay();
         }
-        Node traceCurrentNode = getTraceCurrentNode();
+        Node traceCurrentNode = getCurrentUnderlyingNode();
         SignalStg signalStg = signalStgAndInversion.getFirst();
         boolean isInverting = signalStgAndInversion.getSecond();
         final boolean isOne = (signalStg.one.getReferencedComponent().getTokens() == 1) != isInverting;
         final boolean isZero = (signalStg.zero.getReferencedComponent().getTokens() == 1) != isInverting;
         final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty() && !isZeroDelay;
-        final boolean isSuggested = isExcited && signalStg.contains(traceCurrentNode) && !isZeroDelay;
+        final boolean isSuggested = isExcited && signalStg.contains(traceCurrentNode);
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
@@ -247,7 +259,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
     }
 
     public Decoration getConnectionOrJointDecoration(VisualNode node) {
-        Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(node);
+        Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInversion(node);
         if (signalStgAndInversion == null) {
             return null;
         }
@@ -273,25 +285,6 @@ public class CircuitSimulationTool extends StgSimulationTool {
             @Override
             public boolean showForcedInit() {
                 return false;
-            }
-        };
-    }
-
-    @Override
-    public Decoration getContainerDecoration(Container container) {
-        final boolean ret = isContainerExcited(container);
-        return new ContainerDecoration() {
-            @Override
-            public Color getColorisation() {
-                return null;
-            }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
-            @Override
-            public boolean isContainerExcited() {
-                return ret;
             }
         };
     }

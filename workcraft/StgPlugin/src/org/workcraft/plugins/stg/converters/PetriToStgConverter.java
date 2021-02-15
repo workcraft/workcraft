@@ -12,8 +12,8 @@ import java.util.Map;
 
 public class PetriToStgConverter extends DefaultPetriConverter<VisualPetri, VisualStg> {
 
-    public PetriToStgConverter(VisualPetri srcModel, VisualStg dstModel) {
-        super(srcModel, dstModel);
+    public PetriToStgConverter(VisualPetri srcModel) {
+        super(srcModel, new VisualStg(new Stg()));
     }
 
     @Override

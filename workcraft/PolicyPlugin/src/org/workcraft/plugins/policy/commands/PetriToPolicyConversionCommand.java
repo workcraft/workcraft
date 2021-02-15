@@ -3,15 +3,13 @@ package org.workcraft.plugins.policy.commands;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.petri.VisualPetri;
-import org.workcraft.plugins.policy.Policy;
 import org.workcraft.plugins.policy.PolicyDescriptor;
-import org.workcraft.plugins.policy.VisualPolicy;
 import org.workcraft.plugins.policy.converters.PetriToPolicyConverter;
-import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 public class PetriToPolicyConversionCommand extends AbstractConversionCommand {
 
@@ -31,9 +29,7 @@ public class PetriToPolicyConversionCommand extends AbstractConversionCommand {
             DialogUtils.showError("Policy Net cannot be derived from a hierarchical Petri Net.");
             return null;
         }
-        final VisualPetri src = me.getAs(VisualPetri.class);
-        final VisualPolicy dst = new VisualPolicy(new Policy());
-        final PetriToPolicyConverter converter = new PetriToPolicyConverter(src, dst);
+        PetriToPolicyConverter converter = new PetriToPolicyConverter(me.getAs(VisualPetri.class));
         return new ModelEntry(new PolicyDescriptor(), converter.getDstModel());
     }
 

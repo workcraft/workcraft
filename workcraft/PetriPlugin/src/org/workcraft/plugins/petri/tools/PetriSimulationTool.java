@@ -4,18 +4,23 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.dialogs.ExceptionDialog;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.SimulationTool;
 import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.petri.converters.PetriToPetriConverter;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.shared.ColorGenerator;
 import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.TextUtils;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
 import java.util.*;
@@ -23,6 +28,7 @@ import java.util.*;
 public class PetriSimulationTool extends SimulationTool {
 
     private final Set<Place> badCapacityPlaces = new HashSet<>();
+    private PetriToPetriConverter converter;
 
     public PetriSimulationTool() {
         this(false);
@@ -32,9 +38,18 @@ public class PetriSimulationTool extends SimulationTool {
         super(enableTraceGraph);
     }
 
-    public PetriModel getUnderlyingPetri() {
-        VisualModel underlyingModel = getUnderlyingModel();
-        return underlyingModel == null ? null : (PetriModel) underlyingModel.getMathModel();
+    @Override
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        converter = new PetriToPetriConverter(WorkspaceUtils.getAs(we, VisualPetri.class));
+    }
+
+    @Override
+    public PetriModel getUnderlyingModel() {
+        return converter.getDstModel().getMathModel();
+    }
+
+    public VisualModel getUnderlyingVisualModel() {
+        return converter.getDstModel();
     }
 
     @Override
@@ -44,25 +59,28 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     @Override
-    public boolean isConnectionExcited(VisualConnection connection) {
+    public boolean isConnectionExcited(VisualModel model, VisualConnection connection) {
         VisualNode first = connection.getFirst();
-        Place place = null;
+        String ref = null;
         if (first instanceof VisualPlace) {
-            place = ((VisualPlace) first).getReferencedComponent();
+            VisualPlace place = (VisualPlace) first;
+            ref = model.getMathReference(place.getReferencedComponent());
         } else if (first instanceof VisualReplicaPlace) {
-            place = ((VisualReplicaPlace) first).getReferencedPlace();
+            VisualReplicaPlace replicaPlace = (VisualReplicaPlace) first;
+            ref = model.getMathReference(replicaPlace.getReferencedPlace());
         }
-        return (place != null) && (place.getTokens() > 0);
+        MathNode underlyingNode = getUnderlyingNode(ref);
+        return (underlyingNode instanceof Place) && (((Place) underlyingNode).getTokens() > 0);
     }
 
     @Override
-    public HashMap<? extends Node, Integer> readModelState() {
-        return PetriUtils.getMarking(getUnderlyingPetri());
+    public HashMap<? extends MathNode, Integer> readUnderlyingModelState() {
+        return PetriUtils.getMarking(getUnderlyingModel());
     }
 
     @Override
-    public void writeModelState(Map<? extends Node, Integer> state) {
-        HashSet<Place> places = new HashSet<>(getUnderlyingPetri().getPlaces());
+    public void writeUnderlyingModelState(Map<? extends MathNode, Integer> state) {
+        HashSet<Place> places = new HashSet<>(getUnderlyingModel().getPlaces());
         for (Node node: state.keySet()) {
             if (node instanceof Place) {
                 Place place = (Place) node;
@@ -86,7 +104,7 @@ public class PetriSimulationTool extends SimulationTool {
             editor.getWorkspaceEntry().saveMemento();
             for (Place place: petri.getPlaces()) {
                 String ref = petri.getNodeReference(place);
-                Node underlyingNode = getUnderlyingPetri().getNodeByReference(ref);
+                Node underlyingNode = getUnderlyingModel().getNodeByReference(ref);
                 if ((underlyingNode instanceof Place) && savedState.containsKey(underlyingNode)) {
                     Integer tokens = savedState.get(underlyingNode);
                     place.setTokens(tokens);
@@ -96,9 +114,9 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     @Override
-    public boolean isEnabledNode(Node node) {
+    public boolean isEnabledUnderlyingNode(MathNode node) {
         boolean result = false;
-        PetriModel petri = getUnderlyingPetri();
+        PetriModel petri = getUnderlyingModel();
         if ((petri != null) && (node instanceof Transition)) {
             Transition transition = (Transition) node;
             result = petri.isEnabled(transition);
@@ -107,10 +125,10 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     @Override
-    public ArrayList<Node> getEnabledNodes() {
-        ArrayList<Node> result = new ArrayList<>();
-        for (Transition transition: getUnderlyingPetri().getTransitions()) {
-            if (isEnabledNode(transition)) {
+    public ArrayList<? extends MathNode> getEnabledUnderlyingNodes() {
+        ArrayList<MathNode> result = new ArrayList<>();
+        for (Transition transition : getUnderlyingModel().getTransitions()) {
+            if (isEnabledUnderlyingNode(transition)) {
                 result.add(transition);
             }
         }
@@ -121,14 +139,14 @@ public class PetriSimulationTool extends SimulationTool {
     public boolean fire(String ref) {
         boolean result = false;
         Transition transition = null;
-        PetriModel petri = getUnderlyingPetri();
+        PetriModel petri = getUnderlyingModel();
         if (ref != null) {
             final Node node = petri.getNodeByReference(ref);
             if (node instanceof Transition) {
                 transition = (Transition) node;
             }
         }
-        if (isEnabledNode(transition)) {
+        if (isEnabledUnderlyingNode(transition)) {
             HashMap<Place, Integer> capacity = new HashMap<>();
             for (MathNode node: petri.getPostset(transition)) {
                 if (node instanceof Place) {
@@ -160,15 +178,16 @@ public class PetriSimulationTool extends SimulationTool {
     public boolean unfire(String ref) {
         boolean result = false;
         Transition transition = null;
+        PetriModel petri = getUnderlyingModel();
         if (ref != null) {
-            final Node node = getUnderlyingPetri().getNodeByReference(ref);
+            final Node node = petri.getNodeByReference(ref);
             if (node instanceof Transition) {
                 transition = (Transition) node;
             }
         }
         if (transition != null) {
-            if (getUnderlyingPetri().isUnfireEnabled(transition)) {
-                getUnderlyingPetri().unFire(transition);
+            if (petri.isUnfireEnabled(transition)) {
+                petri.unFire(transition);
                 result = true;
             }
         }
@@ -181,9 +200,13 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     public void coloriseTokens(Transition transition) {
-        VisualPetri model = (VisualPetri) getUnderlyingModel();
-        VisualTransition vt = model.getVisualTransition(transition);
+        VisualModel model = getUnderlyingVisualModel();
+        VisualPetri petri = (model instanceof VisualPetri) ? (VisualPetri) model : null;
+        if (petri == null) return;
+
+        VisualTransition vt = petri.getVisualTransition(transition);
         if (vt == null) return;
+
         Color tokenColor = Color.BLACK;
         ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
         if (tokenColorGenerator != null) {
@@ -191,7 +214,7 @@ public class PetriSimulationTool extends SimulationTool {
             tokenColor = tokenColorGenerator.updateColor();
         } else {
             // combine preset token colours
-            for (Connection c : model.getConnections(vt)) {
+            for (Connection c : petri.getConnections(vt)) {
                 if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
                     VisualConnection vc = (VisualConnection) c;
                     if (vc.isTokenColorPropagator() && (vc.getFirst() instanceof VisualPlace)) {
@@ -202,7 +225,7 @@ public class PetriSimulationTool extends SimulationTool {
             }
         }
         // propagate the colour to postset tokens
-        for (Connection c : model.getConnections(vt)) {
+        for (Connection c : petri.getConnections(vt)) {
             if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
                 VisualConnection vc = (VisualConnection) c;
                 if (vc.isTokenColorPropagator() && (vc.getSecond() instanceof VisualPlace)) {
@@ -211,6 +234,44 @@ public class PetriSimulationTool extends SimulationTool {
                 }
             }
         }
+    }
+
+    @Override
+    public Decoration getComponentDecoration(VisualModel model, VisualComponent component) {
+        VisualPlace underlyingVisualPlace = getUnderlyingVisualPlace(model, component);
+        if (underlyingVisualPlace == null) {
+            return super.getComponentDecoration(model, component);
+        }
+        return new PlaceDecoration() {
+            @Override
+            public Color getColorisation() {
+                return null;
+            }
+
+            @Override
+            public Color getBackground() {
+                return null;
+            }
+
+            @Override
+            public int getTokens() {
+                return underlyingVisualPlace.getReferencedComponent().getTokens();
+            }
+
+            @Override
+            public Color getTokenColor() {
+                return underlyingVisualPlace.getTokenColor();
+            }
+        };
+    }
+
+    private VisualPlace getUnderlyingVisualPlace(VisualModel model, VisualComponent component) {
+        VisualModel underlyingVisualModel = getUnderlyingVisualModel();
+        if ((component instanceof VisualPlace) && (underlyingVisualModel != null)) {
+            String ref = model.getMathReference(component);
+            return underlyingVisualModel.getVisualComponentByMathReference(ref, VisualPlace.class);
+        }
+        return null;
     }
 
 }

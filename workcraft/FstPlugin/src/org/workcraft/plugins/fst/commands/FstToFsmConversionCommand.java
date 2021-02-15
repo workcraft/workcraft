@@ -1,14 +1,12 @@
 package org.workcraft.plugins.fst.commands;
 
 import org.workcraft.commands.AbstractConversionCommand;
-import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.FsmDescriptor;
-import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.converters.FstToFsmConverter;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 public class FstToFsmConversionCommand extends AbstractConversionCommand {
 
@@ -24,9 +22,7 @@ public class FstToFsmConversionCommand extends AbstractConversionCommand {
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        final VisualFst src = me.getAs(VisualFst.class);
-        final VisualFsm dst = new VisualFsm(new Fsm());
-        final FstToFsmConverter converter = new FstToFsmConverter(src, dst);
+        FstToFsmConverter converter = new FstToFsmConverter(me.getAs(VisualFst.class));
         return new ModelEntry(new FsmDescriptor(), converter.getDstModel());
     }
 

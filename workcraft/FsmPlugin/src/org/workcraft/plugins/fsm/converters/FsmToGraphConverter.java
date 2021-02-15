@@ -1,18 +1,19 @@
 package org.workcraft.plugins.fsm.converters;
 
-import java.util.Map;
-
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.converters.DefaultModelConverter;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
+import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
 import org.workcraft.plugins.graph.VisualGraph;
 
+import java.util.Map;
+
 public class FsmToGraphConverter extends DefaultModelConverter<VisualFsm, VisualGraph> {
 
-    public FsmToGraphConverter(VisualFsm srcModel, VisualGraph dstModel) {
-        super(srcModel, dstModel);
+    public FsmToGraphConverter(VisualFsm srcModel) {
+        super(srcModel, new VisualGraph(new Graph()));
     }
 
     @Override

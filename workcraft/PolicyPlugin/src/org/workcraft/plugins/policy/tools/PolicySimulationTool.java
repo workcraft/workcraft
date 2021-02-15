@@ -12,6 +12,7 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
+import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -22,6 +23,8 @@ import org.workcraft.plugins.policy.Policy;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicy;
 import org.workcraft.plugins.policy.converters.PolicyToPetriConverter;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -37,9 +40,18 @@ public class PolicySimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void generateUnderlyingModel(VisualModel model) {
-        converter = new PolicyToPetriConverter((VisualPolicy) model);
-        setUnderlyingModel(converter.getPetriNet());
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        converter = new PolicyToPetriConverter(WorkspaceUtils.getAs(we, VisualPolicy.class));
+    }
+
+    @Override
+    public PetriModel getUnderlyingModel() {
+        return converter.getPetriNet().getMathModel();
+    }
+
+    @Override
+    public VisualModel getUnderlyingVisualModel() {
+        return converter.getPetriNet();
     }
 
     @Override
@@ -51,106 +63,97 @@ public class PolicySimulationTool extends PetriSimulationTool {
 
             Transition transition = getExcitedTransitionOfNode(deepestNode);
             if (transition != null) {
-                executeTransition(e.getEditor(), transition);
+                executeUnderlyingNode(e.getEditor(), transition);
             }
         }
     }
 
     @Override
-    public boolean isContainerExcited(Container container) {
-        if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
-        boolean ret = false;
-
+    public boolean isContainerExcited(VisualModel model, Container container) {
+        if (excitedContainers.containsKey(container)) {
+            return excitedContainers.get(container);
+        }
+        boolean result = false;
         for (Node node: container.getChildren()) {
 
             if (node instanceof VisualBundledTransition) {
-                ret = ret || (getExcitedTransitionOfNode(node) != null);
+                result = result || (getExcitedTransitionOfNode(node) != null);
             }
 
             if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container) node);
+                result = result || isContainerExcited(model, (Container) node);
             }
 
-            if (ret) break;
+            if (result) break;
         }
 
-        excitedContainers.put(container, ret);
-        return ret;
+        excitedContainers.put(container, result);
+        return result;
     }
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                Node transition = getTraceCurrentNode();
-                final boolean isExcited = getExcitedTransitionOfNode(node) != null;
-                final boolean isSuggested = isExcited && converter.isRelated(node, transition);
+        return node -> {
 
-                if (node instanceof VisualBundledTransition) {
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
-                        }
-                    };
-                }
-
-                if (node instanceof VisualPlace) {
-                    final VisualPlace p = converter.getRelatedPlace((VisualPlace) node);
-                    return new PlaceDecoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                        @Override
-                        public int getTokens() {
-                            return p == null ? 0 : p.getReferencedComponent().getTokens();
-                        }
-                        @Override
-                        public Color getTokenColor() {
-                            return p.getTokenColor();
-                        }
-                    };
-                }
-
-                if (node instanceof VisualPage || node instanceof VisualGroup) {
-
-                    if (node.getParent() == null) return null; // do not work with the root node
-
-                    final boolean ret = isContainerExcited((Container) node);
-
-                    return new ContainerDecoration() {
-
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-
-                        @Override
-                        public boolean isContainerExcited() {
-                            return ret;
-                        }
-                    };
-
-                }
-
-                return null;
+            if ((node instanceof VisualPage) || (node instanceof VisualGroup)) {
+                if (node.getParent() == null) return null; // do not work with the root node
+                VisualModel model = editor.getModel();
+                final boolean ret = isContainerExcited(model, (Container) node);
+                return new ContainerDecoration() {
+                    @Override
+                    public Color getColorisation() {
+                        return null;
+                    }
+                    @Override
+                    public Color getBackground() {
+                        return null;
+                    }
+                    @Override
+                    public boolean isContainerExcited() {
+                        return ret;
+                    }
+                };
             }
+
+            if (node instanceof VisualBundledTransition) {
+                final boolean isExcited = getExcitedTransitionOfNode(node) != null;
+                Node transition = getCurrentUnderlyingNode();
+                final boolean isSuggested = isExcited && converter.isRelated(node, transition);
+                return new Decoration() {
+                    @Override
+                    public Color getColorisation() {
+                        return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
+                    }
+                    @Override
+                    public Color getBackground() {
+                        return isSuggested ? SimulationDecorationSettings.getSuggestedComponentColor() : null;
+                    }
+                };
+            }
+
+            if (node instanceof VisualPlace) {
+                final VisualPlace p = converter.getRelatedPlace((VisualPlace) node);
+                return new PlaceDecoration() {
+                    @Override
+                    public Color getColorisation() {
+                        return null;
+                    }
+                    @Override
+                    public Color getBackground() {
+                        return null;
+                    }
+                    @Override
+                    public int getTokens() {
+                        return p == null ? 0 : p.getReferencedComponent().getTokens();
+                    }
+                    @Override
+                    public Color getTokenColor() {
+                        return p.getTokenColor();
+                    }
+                };
+            }
+
+            return null;
         };
     }
 
@@ -167,7 +170,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
             for (VisualTransition t: ts) {
                 if (t == null) continue;
                 Transition transition = t.getReferencedComponent();
-                if (isEnabledNode(transition)) {
+                if (isEnabledUnderlyingNode(transition)) {
                     return transition;
                 }
             }

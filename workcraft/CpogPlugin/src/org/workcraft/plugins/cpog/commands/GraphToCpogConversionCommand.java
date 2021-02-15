@@ -1,15 +1,13 @@
 package org.workcraft.plugins.cpog.commands;
 
 import org.workcraft.commands.AbstractConversionCommand;
-import org.workcraft.plugins.cpog.Cpog;
 import org.workcraft.plugins.cpog.CpogDescriptor;
-import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.converters.GraphToCpogConverter;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.VisualGraph;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 public class GraphToCpogConversionCommand extends AbstractConversionCommand {
 
@@ -25,9 +23,7 @@ public class GraphToCpogConversionCommand extends AbstractConversionCommand {
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        final VisualGraph graph = me.getAs(VisualGraph.class);
-        final VisualCpog cpog = new VisualCpog(new Cpog());
-        final GraphToCpogConverter converter = new GraphToCpogConverter(graph, cpog);
+        GraphToCpogConverter converter = new GraphToCpogConverter(me.getAs(VisualGraph.class));
         return new ModelEntry(new CpogDescriptor(), converter.getDstModel());
     }
 

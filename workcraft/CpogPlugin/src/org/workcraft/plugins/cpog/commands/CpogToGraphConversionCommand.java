@@ -5,11 +5,9 @@ import org.workcraft.plugins.cpog.Cpog;
 import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.converters.CpogToGraphConverter;
-import org.workcraft.plugins.graph.Graph;
-import org.workcraft.plugins.graph.VisualGraph;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 public class CpogToGraphConversionCommand extends AbstractConversionCommand {
 
@@ -25,9 +23,7 @@ public class CpogToGraphConversionCommand extends AbstractConversionCommand {
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        final VisualCpog cpog = (VisualCpog) me.getVisualModel();
-        final VisualGraph graph = new VisualGraph(new Graph());
-        final CpogToGraphConverter converter = new CpogToGraphConverter(cpog, graph);
+        CpogToGraphConverter converter = new CpogToGraphConverter(WorkspaceUtils.getAs(me, VisualCpog.class));
         return new ModelEntry(new CpogDescriptor(), converter.getDstModel());
     }
 

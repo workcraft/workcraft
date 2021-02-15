@@ -12,8 +12,8 @@ import java.util.Map;
 
 public class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualFsm> {
 
-    public FstToFsmConverter(VisualFst srcModel, VisualFsm dstModel) {
-        super(srcModel, dstModel);
+    public FstToFsmConverter(VisualFst srcModel) {
+        super(srcModel, new VisualFsm(new Fsm()));
     }
 
     @Override

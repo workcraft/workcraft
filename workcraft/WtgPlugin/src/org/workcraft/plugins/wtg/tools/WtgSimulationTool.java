@@ -17,19 +17,21 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.NamedTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
-import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.plugins.wtg.*;
 import org.workcraft.plugins.wtg.converter.WtgToStgConverter;
 import org.workcraft.plugins.wtg.decorations.StateDecoration;
 import org.workcraft.plugins.wtg.decorations.WaveformDecoration;
 import org.workcraft.plugins.wtg.utils.VerificationUtils;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
 public class WtgSimulationTool extends StgSimulationTool {
+
     private WtgToStgConverter converter;
 
     @Override
@@ -45,13 +47,21 @@ public class WtgSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public void generateUnderlyingModel(VisualModel model) {
-        final Wtg wtg = (Wtg) model.getMathModel();
-        final Stg stg = new Stg();
+    public void generateUnderlyingModel(WorkspaceEntry we) {
+        final Wtg wtg = WorkspaceUtils.getAs(we, Wtg.class);
         if (VerificationUtils.checkStructure(wtg) && VerificationUtils.checkNameCollisions(wtg)) {
-            converter = new WtgToStgConverter(wtg, stg);
-            setUnderlyingModel(new VisualStg(converter.getDstModel()));
+            converter = new WtgToStgConverter(wtg);
         }
+    }
+
+    @Override
+    public Stg getUnderlyingModel() {
+        return converter.getDstModel();
+    }
+
+    @Override
+    public VisualModel getUnderlyingVisualModel() {
+        return null;
     }
 
     @Override
@@ -63,23 +73,23 @@ public class WtgSimulationTool extends StgSimulationTool {
 
             Transition transition = null;
             if (deepestNode instanceof VisualSignal) {
-                transition = getExcitedTransitionOfSignal((VisualSignal) deepestNode);
+                transition = getExcitedTransitionOfSignal(model, (VisualSignal) deepestNode);
             } else if (deepestNode instanceof VisualEvent) {
                 VisualEvent event = (VisualEvent) deepestNode;
                 transition = getExcitedTransitionOfEvent(event);
                 if (transition == null) {
-                    transition = getExcitedTransitionOfSignal(event.getVisualSignal());
+                    transition = getExcitedTransitionOfSignal(model, event.getVisualSignal());
                 }
             }
 
             if (transition != null) {
-                executeTransition(e.getEditor(), transition);
+                executeUnderlyingNode(e.getEditor(), transition);
             }
         }
     }
 
     @Override
-    public boolean isContainerExcited(Container container) {
+    public boolean isContainerExcited(VisualModel model, Container container) {
         if (container instanceof VisualWaveform) {
             Waveform waveform = ((VisualWaveform) container).getReferencedComponent();
             return converter.isActiveWaveform(waveform);
@@ -98,7 +108,7 @@ public class WtgSimulationTool extends StgSimulationTool {
             Wtg wtg = (Wtg) model;
             for (State state : wtg.getStates()) {
                 String ref = wtg.getNodeReference(state);
-                Node underlyingNode = getUnderlyingStg().getNodeByReference(ref);
+                Node underlyingNode = getUnderlyingModel().getNodeByReference(ref);
                 if ((underlyingNode instanceof StgPlace) && savedState.containsKey(underlyingNode)
                         && (savedState.get(underlyingNode) > 0)) {
                     state.setInitial(true);
@@ -123,13 +133,13 @@ public class WtgSimulationTool extends StgSimulationTool {
                 return getStateDecoration((VisualState) node);
             }
             if (node instanceof VisualWaveform) {
-                return getWaveformDecoration((VisualWaveform) node);
+                return getWaveformDecoration(editor.getModel(), (VisualWaveform) node);
             }
             if (node instanceof VisualEvent) {
                 return getEventDecoration((VisualEvent) node);
             }
             if (node instanceof VisualLevelConnection) {
-                return getLevelDecoration((VisualLevelConnection) node);
+                return getLevelDecoration(editor.getModel(), (VisualLevelConnection) node);
             }
             return null;
         };
@@ -143,8 +153,8 @@ public class WtgSimulationTool extends StgSimulationTool {
         return p.getTokens() > 0 ? StateDecoration.Marked.INSTANCE : StateDecoration.Unmarked.INSTANCE;
     }
 
-    private Decoration getWaveformDecoration(VisualWaveform waveform) {
-        boolean isWaveformActive = !isInNodalState() && isContainerExcited(waveform);
+    private Decoration getWaveformDecoration(VisualModel model, VisualWaveform waveform) {
+        boolean isWaveformActive = !isInNodalState() && isContainerExcited(model, waveform);
         return isWaveformActive ? WaveformDecoration.Active.INSTANCE : WaveformDecoration.Inactive.INSTANCE;
     }
 
@@ -160,7 +170,7 @@ public class WtgSimulationTool extends StgSimulationTool {
     }
 
     private Decoration getEventDecoration(VisualEvent event) {
-        MathNode transition = getTraceCurrentNode();
+        MathNode transition = getCurrentUnderlyingNode();
         final boolean isExcited = getExcitedTransitionOfEvent(event) != null;
         final boolean isSuggested = isExcited && converter.isRelated(event.getReferencedComponent(), transition);
         return new Decoration() {
@@ -176,8 +186,8 @@ public class WtgSimulationTool extends StgSimulationTool {
         };
     }
 
-    private Decoration getLevelDecoration(VisualLevelConnection level) {
-        MathNode transition = getTraceCurrentNode();
+    private Decoration getLevelDecoration(VisualModel model, VisualLevelConnection level) {
+        MathNode transition = getCurrentUnderlyingNode();
         VisualEvent firstEvent = (VisualEvent) level.getFirst();
         VisualEvent secondEvent = (VisualEvent) level.getSecond();
         VisualSignal signal = secondEvent.getVisualSignal();
@@ -185,7 +195,7 @@ public class WtgSimulationTool extends StgSimulationTool {
         Signal.State state = DtdUtils.getNextState(firstEvent.getReferencedComponent());
         NamedTransition enabledUnstableTransition = converter.getEnabledUnstableTransition(signal.getReferencedComponent());
         boolean isEnabledUnstable = (state == Signal.State.UNSTABLE) && (enabledUnstableTransition != null);
-        boolean isExcitedWaveform = isContainerExcited(getWaveform(signal));
+        boolean isExcitedWaveform = isContainerExcited(model, getWaveform(signal));
 
         final boolean isExcited = isEnabledUnstable && isExcitedWaveform;
         final boolean isSuggested = isExcited && (enabledUnstableTransition == transition);
@@ -215,17 +225,17 @@ public class WtgSimulationTool extends StgSimulationTool {
     private Transition getExcitedTransitionOfEvent(VisualEvent event) {
         if (event != null) {
             NamedTransition transition = converter.getRelatedTransition(event.getReferencedComponent());
-            if ((transition != null) && isEnabledNode(transition)) {
+            if ((transition != null) && isEnabledUnderlyingNode(transition)) {
                 return transition;
             }
         }
         return null;
     }
 
-    private Transition getExcitedTransitionOfSignal(VisualSignal signal) {
+    private Transition getExcitedTransitionOfSignal(VisualModel model, VisualSignal signal) {
         Transition result = null;
         VisualWaveform waveform = getWaveform(signal);
-        if ((waveform != null) && isContainerExcited(waveform)) {
+        if ((waveform != null) && isContainerExcited(model, waveform)) {
             result = converter.getEnabledUnstableTransition(signal.getReferencedComponent());
             if (result == null) {
                 result = getExcitedTransitionOfEvent(signal.getVisualSignalEntry());

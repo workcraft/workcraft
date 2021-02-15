@@ -22,7 +22,6 @@ public interface ModelConverter<S extends VisualModel, T extends VisualModel> {
     void preprocessing();
     void postprocessing();
 
-
     String convertTitle(String title);
     VisualPage convertPage(VisualPage srcPage);
     VisualComponent convertComponent(VisualComponent srcComponent);

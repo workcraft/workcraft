@@ -25,9 +25,9 @@ public class WtgToStgConverter {
     private final Map<Waveform, Triple<NamedTransition, NamedTransition, StgPlace>> waveformToEntryExitInactiveMap;
     private final Map<Event, NamedTransition> eventToTransitionMap;
 
-    public WtgToStgConverter(Wtg srcModel, Stg dstModel) {
+    public WtgToStgConverter(Wtg srcModel) {
         this.srcModel = srcModel;
-        this.dstModel = dstModel;
+        this.dstModel = new Stg();
         stateToPlaceMap = convertStates();
         unstableSignalToStgMap = createSignalStatePlaces();
         waveformToEntryExitInactiveMap = convertWaveforms();
