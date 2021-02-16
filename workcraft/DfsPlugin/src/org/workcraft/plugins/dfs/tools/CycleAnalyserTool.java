@@ -350,7 +350,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             @Override
             public void paint(final Graphics g) {
                 g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                g.fillRect(0, 0, getWidth(), getHeight());
                 super.paint(g);
             }
         };

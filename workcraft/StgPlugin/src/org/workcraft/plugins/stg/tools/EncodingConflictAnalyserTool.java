@@ -245,20 +245,21 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             @Override
             public void paint(Graphics g) {
                 g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                g.fillRect(0, 0, getWidth(), getHeight());
                 super.paint(g);
             }
         };
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                boolean isSelected, boolean hasFocus, int row, int col) {
+
             JLabel result = null;
             label.setBorder(GuiUtils.getTableCellBorder());
             if ((cores != null) && (row >= 0) && (row < cores.size())) {
                 Core core = cores.get(row);
                 label.setText((String) value);
-                if (column == COLUMN_COLOR) {
+                if (col == COLUMN_COLOR) {
                     label.setBackground(core.getColor());
                 } else {
                     String signalName = core.getComment();
@@ -268,6 +269,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
                                 + "<br>  Configuration 1: " + core.getFirstConfiguration()
                                 + "<br>  Configuration 2: " + core.getSecondConfiguration()
                                 + "</html>";
+
                         label.setToolTipText(text);
                     }
                     if (isSelected) {

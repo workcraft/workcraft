@@ -37,12 +37,10 @@ public class PropertyDeclarationRenderer extends DefaultTableCellRenderer {
             label.setBackground(tableHeader.getBackground());
         }
 
-        String text = (value == null) ? "" : value.toString();
-        label.setText(text);
+        label.setText((value == null) ? "" : value.toString());
 
         boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, col);
-        label.setToolTipText(fits ? null : text);
-
+        label.setToolTipText(fits ? null : label.getText());
         return label;
     }
 
