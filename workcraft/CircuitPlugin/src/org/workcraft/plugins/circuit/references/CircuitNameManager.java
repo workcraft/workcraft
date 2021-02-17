@@ -75,7 +75,7 @@ public class CircuitNameManager extends DefaultNameManager {
 
     private boolean renameOccupantIfDifferent(Node node, String name) {
         Node occupant = getNode(name);
-        if (occupant != node) {
+        if ((occupant != null) && (occupant.getParent() != null) && (occupant != node)) {
             if (!(occupant instanceof CircuitComponent)) {
                 throw new ArgumentException("Name '" + name + "' is unavailable.");
             }

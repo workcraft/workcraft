@@ -1,14 +1,16 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.Framework;
-import org.workcraft.utils.*;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.refinement.ComponentInterface;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -171,7 +173,7 @@ public final class RefinementUtils {
             if (!checkRefinementCircuitTitle(component, refinement.getSecond())) {
                 msg += "\n  * module name does not match the refinement title";
             }
-            if (!checkRefinementCircuitPorts(circuit, component, refinement.getSecond())) {
+            if (!checkRefinementCircuitPorts(component, refinement.getSecond())) {
                 msg += "\n  * component pins do not match the refinement circuit ports";
             }
         }
@@ -190,9 +192,53 @@ public final class RefinementUtils {
         return component.getModule().equals(refinementCircuit.getTitle());
     }
 
-    public static boolean checkRefinementCircuitPorts(Circuit circuit, FunctionComponent component, Circuit refinementCircuit) {
-        return CircuitUtils.getInputPortNames(refinementCircuit).equals(CircuitUtils.getInputPinNames(circuit, component))
-                && CircuitUtils.getOutputPortNames(refinementCircuit).equals(CircuitUtils.getOutputPinNames(circuit, component));
+    public static boolean checkRefinementCircuitPorts(CircuitComponent component, Circuit refinementCircuit) {
+        return CircuitUtils.getInputPortNames(refinementCircuit).equals(CircuitUtils.getInputPinNames(component))
+                && CircuitUtils.getOutputPortNames(refinementCircuit).equals(CircuitUtils.getOutputPinNames(component));
+    }
+
+    public static ComponentInterface getComponentInterface(CircuitComponent component) {
+        return component == null ? null : new ComponentInterface(component.getModule(),
+                CircuitUtils.getInputPinNames(component), CircuitUtils.getOutputPinNames(component));
+    }
+
+    public static ComponentInterface getModelInterface(MathModel model) {
+        return new ComponentInterface(model.getTitle(), getInputSignals(model), getOutputSignals(model));
+    }
+
+    private static Set<String> getInputSignals(MathModel model) {
+        if (model instanceof Circuit) {
+            return CircuitUtils.getInputPortNames((Circuit) model);
+        }
+        if (model instanceof Stg) {
+            return ((Stg) model).getSignalReferences(Signal.Type.INPUT);
+        }
+        return null;
+    }
+
+    private static Set<String> getOutputSignals(MathModel model) {
+        if (model instanceof Circuit) {
+            return CircuitUtils.getOutputPortNames((Circuit) model);
+        }
+        if (model instanceof Stg) {
+            return ((Stg) model).getSignalReferences(Signal.Type.OUTPUT);
+        }
+        return null;
+    }
+
+    public static boolean isCompatible(ComponentInterface ci1, ComponentInterface ci2) {
+        return (ci1 != null) && (ci2 != null)
+                && isCompatibleName(ci1.getName(), ci2.getName())
+                && isCompatibleSignals(ci1.getInputs(), ci2.getInputs())
+                && isCompatibleSignals(ci1.getOutputs(), ci2.getOutputs());
+    }
+
+    public static boolean isCompatibleName(String aName, String bName) {
+        return (aName != null) && aName.equals(bName);
+    }
+
+    public static boolean isCompatibleSignals(Set<String> aSignals, Set<String> bSignals) {
+        return (aSignals != null)  && aSignals.equals(bSignals);
     }
 
 }

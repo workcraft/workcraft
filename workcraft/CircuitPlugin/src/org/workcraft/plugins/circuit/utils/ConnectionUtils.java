@@ -25,7 +25,7 @@ public final class ConnectionUtils {
             if (polyline.getControlPointCount() > 0) {
                 moveInternalContactsToControlPoints(first, second, polyline);
             } else {
-                moveInternalContactrsByGradient(first, second);
+                moveInternalContactsByGradient(first, second);
             }
         }
     }
@@ -78,7 +78,7 @@ public final class ConnectionUtils {
         return 0;
     }
 
-    private static void moveInternalContactrsByGradient(VisualNode first, VisualNode second) {
+    private static void moveInternalContactsByGradient(VisualNode first, VisualNode second) {
         Point2D gradient = getGradient(first, second);
         if (gradient != null) {
             if (first instanceof VisualContact) {
