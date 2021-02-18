@@ -121,7 +121,7 @@ public class StgPlugin implements Plugin {
                 "<VisualPlace ref=\"(.*?)\">",
                 "<VisualStgPlace ref=\"$1\"/>\\n<VisualPlace>");
 
-        Version v320 = new Version(3, 2, 0, Version.Status.RELEASE);
+        Version v320 = new Version(3, 2, 1, Version.Status.ALPHA);
 
         cm.registerContextualReplacement(v320, Stg.class.getName(), "SignalTransition",
                 "<property class=\"org.workcraft.plugins.stg.SignalTransition\\$Type\" enum-class=\"org.workcraft.plugins.stg.SignalTransition\\$Type\" name=\"signalType\" value=",
