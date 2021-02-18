@@ -301,11 +301,11 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     public Collection<VisualContact> getVisualPorts() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, contact -> contact.isPort());
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, VisualContact::isPort);
     }
 
     public Collection<VisualContact> getVisualDrivers() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, contact -> contact.isDriver());
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, VisualContact::isDriver);
     }
 
     @Override
