@@ -142,6 +142,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
     private JPanel createDirectoryPanel() {
         dir = Framework.getInstance().getLastDirectory();
         JTextField dirText = new JTextField(dir.getPath());
+        dirText.setEditable(false);
         JPanel dirPanel = GuiUtils.createLabeledComponent(dirText, "Save directory:");
         JButton dirSelectButton = new JButton("Browse...");
         dirPanel.add(dirSelectButton, BorderLayout.EAST);

@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
@@ -44,10 +43,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, CircuitComponent.PROPERTY_IS_ENVIRONMENT,
-                        this::setIsEnvironment, this::getIsEnvironment).setCombinable().setTemplatable());
-
-        addPropertyDeclaration(new PropertyDeclaration<>(FileReference.class, CircuitComponent.PROPERTY_REFINEMENT,
-                this::setRefinement, this::getRefinement));
+                this::setIsEnvironment, this::getIsEnvironment).setCombinable().setTemplatable());
 
         // TODO: Rename label to module name (?)
         //  renamePropertyDeclarationByName(PROPERTY_LABEL, CircuitComponent.PROPERTY_MODULE);
@@ -71,28 +67,6 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         if (getReferencedComponent() != null) {
             getReferencedComponent().setIsEnvironment(value);
         }
-    }
-
-    @NoAutoSerialisation
-    public FileReference getRefinement() {
-        if (getReferencedComponent() != null) {
-            return getReferencedComponent().getRefinement();
-        }
-        return null;
-    }
-
-    @NoAutoSerialisation
-    public void setRefinement(FileReference value) {
-        if (getReferencedComponent() != null) {
-            getReferencedComponent().setRefinement(value);
-        }
-    }
-
-    public boolean hasRefinement() {
-        if (getReferencedComponent() != null) {
-            return getReferencedComponent().hasRefinement();
-        }
-        return false;
     }
 
     private LinkedList<VisualContact> getOrderedOutsideContacts(Direction dir) {
@@ -587,7 +561,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     protected void drawRefinement(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        if ((bb != null) && hasRefinement()) {
+        if ((bb != null) && getReferencedComponent().hasRefinement()) {
             double dx = VisualCommonSettings.getNodeSize() / 10;
             double dy = VisualCommonSettings.getNodeSize() / 10;
             double x = bb.getCenterX();

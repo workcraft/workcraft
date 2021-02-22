@@ -217,14 +217,14 @@ public class StgSimulationTool extends PetriSimulationTool {
             @Override
             public void paint(final Graphics g) {
                 g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                g.fillRect(0, 0, getWidth(), getHeight());
                 super.paint(g);
             }
         };
 
         @Override
         public Component getTableCellRendererComponent(final JTable table, final Object value,
-                final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+                final boolean isSelected, final boolean hasFocus, final int row, final int col) {
 
             label.setText("");
             label.setBorder(GuiUtils.getTableCellBorder());
@@ -233,7 +233,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             label.setFont(table.getFont().deriveFont(Font.PLAIN));
             if (isActivated() && (value instanceof SignalData)) {
                 final SignalData st = (SignalData) value;
-                switch (column) {
+                switch (col) {
                 case COLUMN_SIGNAL:
                     label.setText(st.name);
                     label.setForeground(getTypeColor(st.type));
@@ -248,6 +248,9 @@ public class StgSimulationTool extends PetriSimulationTool {
                     break;
                 }
             }
+
+            boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, col);
+            label.setToolTipText(fits ? null : label.getText());
             return label;
         }
     }

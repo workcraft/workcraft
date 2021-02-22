@@ -72,7 +72,6 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
             clearAction();
             break;
         }
-        fireEditingStopped();
     }
 
     private void enterAction() {
@@ -105,18 +104,18 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
 
         if (DialogUtils.showFileOpener(fc)) {
             file = fc.getSelectedFile();
-            if (fileReference == null) {
-                fileReference = new FileReference();
-            }
+            fileReference = new FileReference();
             String path = FileUtils.getFullPath(file);
             fileReference.setPath(path);
             update();
+            fireEditingStopped();
         }
     }
 
     private void clearAction() {
         fileReference = null;
         update();
+        fireEditingStopped();
     }
 
     @Override

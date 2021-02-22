@@ -29,6 +29,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CircuitUtils {
 
@@ -577,20 +578,12 @@ public class CircuitUtils {
         return result;
     }
 
-    public static Set<String> getInputPinNames(Circuit circuit, FunctionComponent component) {
-        Set<String> result = new HashSet<>();
-        for (Contact pin : component.getInputs()) {
-            result.add(circuit.getName(pin));
-        }
-        return result;
+    public static Set<String> getInputPinNames(CircuitComponent component) {
+        return component.getInputs().stream().map(Contact::getName).collect(Collectors.toSet());
     }
 
-    public static Set<String> getOutputPinNames(Circuit circuit, FunctionComponent component) {
-        Set<String> result = new HashSet<>();
-        for (Contact pin : component.getOutputs()) {
-            result.add(circuit.getName(pin));
-        }
-        return result;
+    public static Set<String> getOutputPinNames(CircuitComponent component) {
+        return component.getOutputs().stream().map(Contact::getName).collect(Collectors.toSet());
     }
 
     public static void setTitleAndEnvironment(VisualCircuit visualCircuit, WorkspaceEntry stgWe) {

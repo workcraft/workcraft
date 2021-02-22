@@ -7,10 +7,12 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
@@ -21,20 +23,25 @@ import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
+import org.workcraft.plugins.circuit.refinement.ComponentInterface;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.RouterVisualiser;
 import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.plugins.circuit.tools.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.RefinementUtils;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.WorkUtils;
+import org.workcraft.workspace.ModelEntry;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.io.File;
+import java.util.*;
 
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
@@ -240,16 +247,34 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     public VisualFunctionContact getOrCreateContact(VisualFunctionComponent component, String name, Contact.IOType ioType) {
+        VisualFunctionContact result = getContact(component, name);
+        if (result == null) {
+            result = createContact(component, name, ioType);
+        } else if (result.getReferencedComponent().getIOType() != ioType) {
+            remove(result);
+            result = createContact(component, name, ioType);
+        }
+        return result;
+    }
+
+    private VisualFunctionContact getContact(VisualFunctionComponent component, String name) {
         for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
             String contactName = getMathModel().getName(contact.getReferencedComponent());
             if (name.equals(contactName)) {
                 return contact;
             }
         }
+        return null;
+    }
+
+    private VisualFunctionContact createContact(VisualFunctionComponent component, String name, Contact.IOType ioType) {
         VisualFunctionContact result = new VisualFunctionContact(new FunctionContact(ioType));
         result.setDefaultDirection();
         component.addContact(result);
         setMathName(result, name);
+
+        VisualContact.Direction direction = (ioType == Contact.IOType.INPUT) ? VisualContact.Direction.WEST : VisualContact.Direction.EAST;
+        component.setPositionByDirection(result, direction, false);
         return result;
     }
 
@@ -276,11 +301,11 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     public Collection<VisualContact> getVisualPorts() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, contact -> contact.isPort());
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, VisualContact::isPort);
     }
 
     public Collection<VisualContact> getVisualDrivers() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, contact -> contact.isDriver());
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, VisualContact::isDriver);
     }
 
     @Override
@@ -325,6 +350,7 @@ public class VisualCircuit extends AbstractVisualModel {
             properties.add(getResetFunctionProperty(contact));
         } else if (node instanceof VisualFunctionComponent) {
             VisualFunctionComponent component = (VisualFunctionComponent) node;
+            properties.add(getRefinementProperty(component));
             VisualFunctionContact mainOutput = component.getMainVisualOutput();
             if (mainOutput != null) {
                 properties.add(getSetFunctionProperty(mainOutput));
@@ -344,7 +370,79 @@ public class VisualCircuit extends AbstractVisualModel {
 
     private PropertyDescriptor getEnvironmentProperty() {
         return new PropertyDeclaration<>(FileReference.class, PROPERTY_ENVIRONMENT,
-            getMathModel()::setEnvironment, getMathModel()::getEnvironment);
+                getMathModel()::setEnvironment, getMathModel()::getEnvironment);
+    }
+
+    private PropertyDescriptor getRefinementProperty(VisualFunctionComponent component) {
+        return new PropertyDeclaration<>(FileReference.class, CircuitComponent.PROPERTY_REFINEMENT + "!",
+                value -> setRefinementIfCompatible(component, value),
+                () -> component.getReferencedComponent().getRefinement());
+    }
+
+    private void setRefinementIfCompatible(VisualFunctionComponent component, FileReference value) {
+        Boolean decision = null;
+        if (value == null) {
+            decision = true;
+        }
+
+        MathModel refinementModel = null;
+        if (decision == null) {
+            File file = value.getFile();
+            try {
+                ModelEntry me = WorkUtils.loadModel(file);
+                refinementModel = me.getMathModel();
+            } catch (DeserialisationException e) {
+                decision = false;
+                DialogUtils.showError("Cannot read refinement model from '" + FileUtils.getFullPath(file)
+                        + "':\n " + e.getMessage());
+            }
+        }
+
+        ComponentInterface refinementInterface = null;
+        if (decision == null) {
+            if ((refinementModel instanceof Stg) || (refinementModel instanceof Circuit)) {
+                refinementInterface = RefinementUtils.getModelInterface(refinementModel);
+            } else {
+                decision = false;
+                DialogUtils.showError("Incompatible refinement model type: " + refinementModel.getDisplayName());
+            }
+        }
+
+        ComponentInterface componentInterface = null;
+        if (decision == null) {
+            componentInterface = RefinementUtils.getComponentInterface(component.getReferencedComponent());
+            if (RefinementUtils.isCompatible(componentInterface, refinementInterface)) {
+                decision = true;
+            }
+        }
+
+        if (decision == null) {
+            boolean answer = DialogUtils.showConfirmWarning("Incompatible interface." +
+                        "\nUpdate component to match refinement model?");
+
+            if (answer) {
+                decision = true;
+                Set<String> inputs = refinementInterface.getInputs();
+                Set<String> outputs = refinementInterface.getOutputs();
+                for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
+                    String signal = contact.getName();
+                    if (!(contact.isInput() && inputs.contains(signal)) && !(contact.isOutput() && outputs.contains(signal))) {
+                        component.remove(contact);
+                    }
+                }
+                component.getReferencedComponent().setModule(refinementInterface.getName());
+                for (String signal : inputs) {
+                    getOrCreateContact(component, signal, Contact.IOType.INPUT);
+                }
+                for (String outputSignal : outputs) {
+                    getOrCreateContact(component, outputSignal, Contact.IOType.OUTPUT);
+                }
+            }
+        }
+
+        if ((decision != null) && decision) {
+            component.getReferencedComponent().setRefinement(value);
+        }
     }
 
     private PropertyDescriptor getSetFunctionProperty(VisualFunctionContact contact) {

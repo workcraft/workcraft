@@ -38,13 +38,10 @@ abstract class AbstractCompositionOutputInterpreter extends ReachabilityOutputIn
         }
         if (!signals.isEmpty()) {
             if (propertyHolds) {
-                result += "\nYet ";
+                result += TextUtils.wrapMessageWithItems("\nYet composition has dead signal", signals);
+                result += "\n\nWarning: dead signals may indicate design issues!";
             } else {
-                result += "\nAlso ";
-            }
-            result += TextUtils.wrapMessageWithItems("composition has dead signal", signals);
-            if (propertyHolds) {
-                result += "\nWarning: dead signals may indicate design issues!";
+                result += " Also composition has dead signals.";
             }
         }
         return result;

@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.serialisation;
 
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.Not;
@@ -15,9 +16,7 @@ import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.ExportUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.*;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -41,7 +40,8 @@ public class VerilogSerialiser implements ModelSerialiser {
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         if (model instanceof Circuit) {
             Circuit circuit = (Circuit) model;
-            if (RefinementUtils.checkRefinementCircuits(circuit)) {
+            Set<FunctionComponent> badComponents = RefinementUtils.getIncompatibleRefinementCircuitComponents(circuit);
+            if (badComponents.isEmpty()) {
                 PrintWriter writer = new PrintWriter(out);
                 writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
                 refinementCircuits.clear();
@@ -50,6 +50,11 @@ public class VerilogSerialiser implements ModelSerialiser {
                 writeCircuit(writer, circuit);
                 writeRefinementCircuits(writer);
                 writer.close();
+            } else {
+                String msg = TextUtils.wrapMessageWithItems("Incompatible refinement interface for component",
+                        ReferenceHelper.getReferenceSet(circuit, badComponents));
+
+                DialogUtils.showError(msg);
             }
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());

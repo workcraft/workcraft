@@ -151,7 +151,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         traceTable.getTableHeader().setReorderingAllowed(false);
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         traceTable.setRowHeight(SizeHelper.getComponentHeightFromFont(traceTable.getFont()));
-        traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
+        traceTable.setDefaultRenderer(Object.class, new TraceTableCellRenderer());
 
         tracePane = new JScrollPane();
         tracePane.setViewportView(traceTable);
@@ -558,12 +558,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         updateState(editor);
     }
 
-    private final class TraceTableCellRendererImplementation implements TableCellRenderer {
+    private final class TraceTableCellRenderer implements TableCellRenderer {
         private final JLabel label = new JLabel() {
             @Override
             public void paint(Graphics g) {
                 g.setColor(getBackground());
-                g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+                g.fillRect(0, 0, getWidth(), getHeight());
                 super.paint(g);
             }
         };
@@ -584,19 +584,21 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                boolean isSelected, boolean hasFocus, int row, int col) {
 
             JLabel result = null;
             label.setBorder(GuiUtils.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
                 label.setText(value.toString());
-                if (isActive(row, column)) {
+                if (isActive(row, col)) {
                     label.setForeground(table.getSelectionForeground());
                     label.setBackground(table.getSelectionBackground());
                 } else {
                     label.setForeground(table.getForeground());
                     label.setBackground(table.getBackground());
                 }
+                boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, col);
+                label.setToolTipText(fits ? null : label.getText());
                 result = label;
             }
             return result;

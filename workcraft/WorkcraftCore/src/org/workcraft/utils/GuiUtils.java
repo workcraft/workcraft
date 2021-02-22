@@ -351,9 +351,14 @@ public class GuiUtils {
     }
 
     public static int getLabelTextWidth(JLabel label) {
+        Border border = label.getBorder();
+        Insets borderInsets = border == null ? new Insets(0, 0, 0, 0) : border.getBorderInsets(label);
+
+        String text = label.getText();
         FontMetrics fontMetrics = label.getFontMetrics(label.getFont());
-        Insets borderInsets = label.getBorder().getBorderInsets(label);
-        return fontMetrics.stringWidth(label.getText()) + borderInsets.left + borderInsets.right;
+        int textWidth = (text == null) || (fontMetrics == null) ? 0 : fontMetrics.stringWidth(text);
+
+        return textWidth + borderInsets.left + borderInsets.right;
     }
 
     public static double getTableColumnTextWidth(JTable table, int col) {

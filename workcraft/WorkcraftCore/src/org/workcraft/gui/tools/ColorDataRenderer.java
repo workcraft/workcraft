@@ -12,14 +12,15 @@ public final class ColorDataRenderer implements TableCellRenderer {
         @Override
         public void paint(final Graphics g) {
             g.setColor(getBackground());
-            g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+            g.fillRect(0, 0, getWidth(), getHeight());
             super.paint(g);
         }
     };
 
     @Override
     public Component getTableCellRendererComponent(final JTable table, final Object value,
-            final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+            final boolean isSelected, final boolean hasFocus, final int row, final int col) {
+
         label.setText("");
         label.setBorder(GuiUtils.getTableCellBorder());
         label.setBackground((Color) value);

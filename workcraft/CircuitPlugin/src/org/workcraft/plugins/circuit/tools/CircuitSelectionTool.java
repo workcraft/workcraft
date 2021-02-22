@@ -100,15 +100,17 @@ public class CircuitSelectionTool extends SelectionTool {
                     AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, contact);
                     textEditor.edit(contact.getName(), contact.getNameFont(),
                             contact.getNameOffset(), Alignment.CENTER, false);
+
                     processed = true;
                 }
             } else if (node instanceof VisualCircuitComponent) {
                 VisualCircuitComponent component = (VisualCircuitComponent) node;
                 if (e.isCtrlKeyDown()) {
-                    processed = RefinementUtils.openRefinementCircuit(component);
+                    RefinementUtils.openRefinementCircuit(component);
                 } else {
-                    processed = RefinementUtils.openRefinementModel(component);
+                    RefinementUtils.openRefinementModel(component);
                 }
+                processed = true;
             }
         }
         if (!processed) {
