@@ -1,19 +1,9 @@
 package org.workcraft.plugins.policy.tools;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
-import javax.swing.JButton;
-import javax.swing.JToolBar;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.GraphEditor;
@@ -21,7 +11,15 @@ import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicy;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
+
+import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class PolicySelectionTool extends SelectionTool {
 
@@ -35,18 +33,17 @@ public class PolicySelectionTool extends SelectionTool {
 
         JButton bundleButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/policy-selection-bundle.svg"),
-                "Bundle selected transitions (" + DesktopApi.getMenuKeyName() + "-B)");
-        bundleButton.addActionListener(event -> selectionBundle(editor));
-        toolbar.add(bundleButton);
+                "Bundle selected transitions (" + DesktopApi.getMenuKeyName() + "-B)",
+                event -> selectionBundle(editor));
 
         JButton unbundleButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/policy-selection-unbundle.svg"),
-                "Unbundle selected transitions (" + DesktopApi.getMenuKeyName() + "+Shift-B)");
-        unbundleButton.addActionListener(event -> selectionUnbundle(editor));
+                "Unbundle selected transitions (" + DesktopApi.getMenuKeyName() + "+Shift-B)",
+                event -> selectionUnbundle(editor));
+
+        toolbar.add(bundleButton);
         toolbar.add(unbundleButton);
-        if (toolbar.getComponentCount() > 0) {
-            toolbar.addSeparator();
-        }
+        toolbar.addSeparator();
     }
 
     @Override

@@ -71,23 +71,23 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
         JButton tagPathBreakerSelfloopPinsButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-cycle-selfloop_pins.svg"),
-                "Path breaker all self-loops");
-        tagPathBreakerSelfloopPinsButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerSelfloopPins(c)));
+                "Path breaker all self-loops",
+                l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerSelfloopPins(c)));
 
         JButton tagPathBreakerAutoAppendButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-cycle-auto_append.svg"),
-                "Auto-append path breaker pins as necessary to complete cycle breaking");
-        tagPathBreakerAutoAppendButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerAutoAppend(c)));
+                "Auto-append path breaker pins as necessary to complete cycle breaking",
+                l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerAutoAppend(c)));
 
         JButton tagPathBreakerAutoDiscardButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-cycle-auto_discard.svg"),
-                "Auto-discard path breaker pins that are redundant for cycle breaking");
-        tagPathBreakerAutoDiscardButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerAutoDiscard(c)));
+                "Auto-discard path breaker pins that are redundant for cycle breaking",
+                l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerAutoDiscard(c)));
 
         JButton tagPathBreakerClearAllButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/circuit-cycle-clear_all.svg"),
-                "Clear all path breaker pins");
-        tagPathBreakerClearAllButton.addActionListener(l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerClearAll(c)));
+                "Clear all path breaker pins",
+                l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerClearAll(c)));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(tagPathBreakerSelfloopPinsButton);

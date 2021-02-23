@@ -23,6 +23,7 @@ import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -178,6 +179,12 @@ public class GuiUtils {
         int offset = posClose + (int) Math.round(0.5 * crossWidth);
         Point hotSpot = new Point(offset, offset);
         return toolkit.createCustomCursor(cursorImage, hotSpot, name);
+    }
+
+    public static JButton createIconButton(Icon icon, String toolTip, ActionListener action) {
+        JButton button = createIconButton(icon, toolTip);
+        button.addActionListener(action);
+        return button;
     }
 
     public static JButton createIconButton(Icon icon, String toolTip) {
