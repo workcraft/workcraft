@@ -13,6 +13,11 @@ import java.io.InputStream;
 public class ImportTests {
 
     @Test
+    public void emptyTest() throws DeserialisationException {
+        testStg("empty.g", 0, 0, 0, 0);
+    }
+
+    @Test
     public void seqMixTest() throws DeserialisationException {
         testStg("seq_mix.g", 17, 0, 18, 2);
     }
