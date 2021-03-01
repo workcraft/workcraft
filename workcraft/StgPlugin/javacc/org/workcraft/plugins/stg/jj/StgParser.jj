@@ -42,11 +42,11 @@ public class StgParser {
     private Stg stg;
 
     private void init() {
-        signals = new HashMap<String, Signal.Type>();
-        dummies = new HashSet<String>();
+        signals = new HashMap<>();
+        dummies = new HashSet<>();
         stg = new Stg();
-        implicitPlaces = new HashMap<Pair<Node, Node>, StgPlace>();
-        places = new HashMap<String, StgPlace>();
+        implicitPlaces = new HashMap<>();
+        places = new HashMap<>();
     }
 
     private Node getOrCreate(String ref) {
@@ -239,20 +239,6 @@ TOKEN :
     <INTEGER : (["0"-"9"])+>
 |
     <SPLIT_SUFFIX : "@" (<INTEGER>)+>
-|
-    "{"
-|
-    "}"
-|
-    "<"
-|
-    ">"
-|
-    ","
-|
-    "/"
-|
-    "="
 }
 
 Stg parse() :
@@ -262,6 +248,7 @@ Stg parse() :
     {
         init();
     }
+    (<LINEBREAK>)?
     (
         header() <LINEBREAK>
     )*
@@ -282,7 +269,6 @@ void header() :
     List<String> list;
 }
 {
-    (<LINEBREAK>)*
     (
         <MODEL_NAME> t = <NAME>
         {
@@ -324,7 +310,7 @@ void header() :
 List<String> stringList() :
 {
     Token t;
-    List<String> list = new LinkedList<String>();
+    List<String> list = new LinkedList<>();
 }
 {
     (
@@ -365,13 +351,11 @@ void capacityEntry() :
 }
 {
     (
-        (
-            p = implicitPlaceReference()
-        |
-            p = explicitPlaceReference()
-        )
-        value = assignment()
+        p = implicitPlaceReference()
+    |
+        p = explicitPlaceReference()
     )
+    value = assignment()
     {
         p.setCapacity(value);
     }
@@ -406,15 +390,13 @@ void markingEntry() :
 }
 {
     (
-        (
             p = implicitPlaceReference()
     |
             p = explicitPlaceReference()
-        )
-        (
-            value = assignment()
-        )?
     )
+    (
+            value = assignment()
+    )?
     {
         p.setTokens(value);
     }
