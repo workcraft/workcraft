@@ -35,6 +35,25 @@ import java.util.*;
 
 public class SelectionTool extends AbstractGraphEditorTool {
 
+    public static final String GROUP_ICON = "images/selection-group.svg";
+    public static final String GROUP_HINT = "Group selection (" + DesktopApi.getMenuKeyName() + "-G)";
+    public static final String PAGE_ICON = "images/selection-page.svg";
+    public static final String PAGE_HHINT = "Combine selection into a page (Alt-G)";
+    public static final String UNGROUP_ICON = "images/selection-ungroup.svg";
+    public static final String UNGROUP_HINT = "Ungroup selection (" + DesktopApi.getMenuKeyName() + "+Shift-G)";
+    public static final String UP_LEVEL_ICON = "images/selection-level_up.svg";
+    public static final String UP_LEVEL_HINT = "Level up (PageUp)";
+    public static final String DOWN_LEVEL_ICON = "images/selection-level_down.svg";
+    public static final String DOWN_LEVEL_HINT = "Level down (PageDown)";
+    public static final String HORIZONTAL_FLIP_ICON = "images/selection-flip_horizontal.svg";
+    public static final String HORIZONTAL_FLIP_HINT = "Flip horizontal";
+    public static final String VERTICAL_FLIP_ICON = "images/selection-flip_vertical.svg";
+    public static final String VERTICAL_FLIP_HINT = "Flip vertical";
+    public static final String CW_ROTATE_ICON = "images/selection-rotate_clockwise.svg";
+    public static final String CW_ROTATE_HINT = "Rotate clockwise";
+    public static final String CCW_ROTATE_ICON = "images/selection-rotate_counterclockwise.svg";
+    public static final String CCW_ROTATE_HINT = "Rotate counterclockwise";
+
     public enum DrugState { NONE, MOVE, SELECT }
     public enum SelectionMode { NONE, ADD, REMOVE, REPLACE }
 
@@ -97,10 +116,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         super.updateControlsToolbar(toolbar, editor);
 
         if (enableGrouping) {
-            JButton groupButton = GuiUtils.createIconButton(
-                    GuiUtils.createIconFromSVG("images/selection-group.svg"),
-                    "Group selection (" + DesktopApi.getMenuKeyName() + "-G)");
-            groupButton.addActionListener(event -> {
+            JButton groupButton = GuiUtils.createIconButton(GROUP_ICON, GROUP_HINT, event -> {
                 groupSelection(editor);
                 editor.requestFocus();
             });
@@ -108,10 +124,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (enablePaging) {
-            JButton groupPageButton = GuiUtils.createIconButton(
-                    GuiUtils.createIconFromSVG("images/selection-page.svg"),
-                    "Combine selection into a page (Alt-G)");
-            groupPageButton.addActionListener(event -> {
+            JButton groupPageButton = GuiUtils.createIconButton(PAGE_ICON, PAGE_HHINT, event -> {
                 pageSelection(editor);
                 editor.requestFocus();
             });
@@ -119,28 +132,19 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (enableGrouping || enablePaging) {
-            JButton ungroupButton = GuiUtils.createIconButton(
-                    GuiUtils.createIconFromSVG("images/selection-ungroup.svg"),
-                    "Ungroup selection (" + DesktopApi.getMenuKeyName() + "+Shift-G)");
-            ungroupButton.addActionListener(event -> {
+            JButton ungroupButton = GuiUtils.createIconButton(UNGROUP_ICON, UNGROUP_HINT, event -> {
                 ungroupSelection(editor);
                 editor.requestFocus();
             });
             toolbar.add(ungroupButton);
 
-            JButton levelUpButton = GuiUtils.createIconButton(
-                    GuiUtils.createIconFromSVG("images/selection-level_up.svg"),
-                    "Level up (PageUp)");
-            levelUpButton.addActionListener(event -> {
+            JButton levelUpButton = GuiUtils.createIconButton(UP_LEVEL_ICON, UP_LEVEL_HINT, event -> {
                 changeLevelUp(editor);
                 editor.requestFocus();
             });
             toolbar.add(levelUpButton);
 
-            JButton levelDownButton = GuiUtils.createIconButton(
-                    GuiUtils.createIconFromSVG("images/selection-level_down.svg"),
-                    "Level down (PageDown)");
-            levelDownButton.addActionListener(event -> {
+            JButton levelDownButton = GuiUtils.createIconButton(DOWN_LEVEL_ICON, DOWN_LEVEL_HINT, event -> {
                 changeLevelDown(editor);
                 editor.requestFocus();
             });
@@ -150,19 +154,13 @@ public class SelectionTool extends AbstractGraphEditorTool {
             toolbar.addSeparator();
         }
         if (enableFlipping) {
-            JButton flipHorizontalButton = GuiUtils.createIconButton(
-                    GuiUtils.createIconFromSVG("images/selection-flip_horizontal.svg"),
-                    "Flip horizontal");
-            flipHorizontalButton.addActionListener(event -> {
+            JButton flipHorizontalButton = GuiUtils.createIconButton(HORIZONTAL_FLIP_ICON, HORIZONTAL_FLIP_HINT, event -> {
                 flipSelectionHorizontal(editor);
                 editor.requestFocus();
             });
             toolbar.add(flipHorizontalButton);
 
-            JButton flipVerticalButton = GuiUtils.createIconButton(
-                    GuiUtils.createIconFromSVG("images/selection-flip_vertical.svg"),
-                    "Flip vertical");
-            flipVerticalButton.addActionListener(event -> {
+            JButton flipVerticalButton = GuiUtils.createIconButton(VERTICAL_FLIP_ICON, VERTICAL_FLIP_HINT, event -> {
                 flipSelectionVertical(editor);
                 editor.requestFocus();
             });
@@ -170,19 +168,13 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (enableRotating) {
-            JButton rotateClockwiseButton = GuiUtils.createIconButton(
-                    GuiUtils.createIconFromSVG("images/selection-rotate_clockwise.svg"),
-                    "Rotate clockwise");
-            rotateClockwiseButton.addActionListener(event -> {
+            JButton rotateClockwiseButton = GuiUtils.createIconButton(CW_ROTATE_ICON, CW_ROTATE_HINT, event -> {
                 rotateSelectionClockwise(editor);
                 editor.requestFocus();
             });
             toolbar.add(rotateClockwiseButton);
 
-            JButton rotateCounterclockwiseButton = GuiUtils.createIconButton(
-                    GuiUtils.createIconFromSVG("images/selection-rotate_counterclockwise.svg"),
-                    "Rotate counterclockwise");
-            rotateCounterclockwiseButton.addActionListener(event -> {
+            JButton rotateCounterclockwiseButton = GuiUtils.createIconButton(CCW_ROTATE_ICON, CCW_ROTATE_HINT, event -> {
                 rotateSelectionCounterclockwise(editor);
                 editor.requestFocus();
             });

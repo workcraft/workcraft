@@ -1,6 +1,5 @@
 package org.workcraft.gui;
 
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
@@ -34,10 +33,9 @@ public class MainWindowIconManager {
     }
 
     public static void apply(final MainWindow window) {
-        int size = SizeHelper.getIconSize();
         Thread thread = new Thread(() -> {
-            ImageIcon activeSvg = GuiUtils.createIconFromSVG("images/icon.svg", size, size, Color.WHITE);
-            ImageIcon inactiveSvg = GuiUtils.createIconFromSVG("images/icon-inactive.svg", size, size, Color.WHITE);
+            ImageIcon activeSvg = GuiUtils.createIconFromSVG("images/icon.svg");
+            ImageIcon inactiveSvg = GuiUtils.createIconFromSVG("images/icon-inactive.svg");
             final Image activeIcon = activeSvg.getImage();
             final Image inactiveIcon = inactiveSvg.getImage();
             try {
