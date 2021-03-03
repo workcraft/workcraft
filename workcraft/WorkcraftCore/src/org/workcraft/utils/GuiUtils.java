@@ -81,16 +81,7 @@ public class GuiUtils {
         return ImageIO.read(res);
     }
 
-    public static ImageIcon createIconFromImage(String path) {
-        URL res = ClassLoader.getSystemResource(path);
-        if (res == null) {
-            System.err.println("Missing icon: " + path);
-            return null;
-        }
-        return new ImageIcon(res);
-    }
-
-    public static ImageIcon createIconFromSVG(String path, int width, int height, Color background) {
+    private static ImageIcon createIconFromSVG(String path, int width, int height, Color background) {
         try {
             System.setProperty("org.apache.batik.warn_destination", "false");
             Document document;
@@ -139,23 +130,14 @@ public class GuiUtils {
         }
     }
 
-    public static ImageIcon createIconFromSVG(String path) {
+    public static ImageIcon createIconFromSVG(String svgPath) {
         int iconSize = SizeHelper.getToolIconSize();
-        return createIconFromSVG(path, iconSize, iconSize);
+        return createIconFromSVG(svgPath, iconSize, iconSize, null);
     }
 
-    public static ImageIcon createIconFromSVG(String path, int width, int height) {
-        return createIconFromSVG(path, width, height, null);
-    }
-
-    public static Cursor createCursorFromImage(String path) {
-        ImageIcon icon = createIconFromImage(path);
-        return createCursorFromIcon(icon, path);
-    }
-
-    public static Cursor createCursorFromSVG(String path) {
-        ImageIcon icon = createIconFromSVG(path);
-        return createCursorFromIcon(icon, path);
+    public static Cursor createCursorFromSVG(String svgPath) {
+        ImageIcon icon = createIconFromSVG(svgPath);
+        return createCursorFromIcon(icon, svgPath);
     }
 
     public static Cursor createCursorFromIcon(ImageIcon icon, String name) {
@@ -181,7 +163,8 @@ public class GuiUtils {
         return toolkit.createCustomCursor(cursorImage, hotSpot, name);
     }
 
-    public static JButton createIconButton(Icon icon, String toolTip, ActionListener action) {
+    public static JButton createIconButton(String svgPath, String toolTip, ActionListener action) {
+        ImageIcon icon = createIconFromSVG(svgPath);
         JButton button = createIconButton(icon, toolTip);
         button.addActionListener(action);
         return button;

@@ -40,6 +40,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class CpogSelectionTool extends SelectionTool {
 
+    private static final String GROUP_ICON = "images/selection-page.svg";
+    private static final String GROUP_HINT = "Combine selection as a scenario (Alt-G)";
+
     private static final double minRadius = 2.0;
     private static final double expandRadius = 2.0;
 
@@ -211,10 +214,7 @@ public class CpogSelectionTool extends SelectionTool {
         panel.add(expressionScroll, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
 
-        JButton groupPageButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/selection-page.svg"),
-                "Combine selection as a scenario (Alt-G)",
-                event -> groupPageAction(editor));
+        JButton groupPageButton = GuiUtils.createIconButton(GROUP_ICON, GROUP_HINT, event -> groupPageAction(editor));
 
         JPanel groupPanel = getGroupPanel();
         if (groupPanel != null) {

@@ -36,18 +36,18 @@ import java.util.Map;
 
 public abstract class SimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
 
-    private static final ImageIcon PLAY_ICON = GuiUtils.createIconFromSVG("images/simulation-play.svg");
-    private static final ImageIcon PAUSE_ICON = GuiUtils.createIconFromSVG("images/simulation-pause.svg");
-    private static final ImageIcon BACKWARD_ICON = GuiUtils.createIconFromSVG("images/simulation-backward.svg");
-    private static final ImageIcon FORWARD_ICON = GuiUtils.createIconFromSVG("images/simulation-forward.svg");
-    private static final ImageIcon RECORD_ICON = GuiUtils.createIconFromSVG("images/simulation-record.svg");
-    private static final ImageIcon STOP_ICON = GuiUtils.createIconFromSVG("images/simulation-stop.svg");
-    private static final ImageIcon EJECT_ICON = GuiUtils.createIconFromSVG("images/simulation-eject.svg");
-    private static final ImageIcon TIMING_DIAGRAM_ICON = GuiUtils.createIconFromSVG("images/simulation-trace-graph.svg");
-    private static final ImageIcon COPY_STATE_ICON = GuiUtils.createIconFromSVG("images/simulation-trace-copy.svg");
-    private static final ImageIcon PASTE_STATE_ICON = GuiUtils.createIconFromSVG("images/simulation-trace-paste.svg");
-    private static final ImageIcon MERGE_TRACE_ICON = GuiUtils.createIconFromSVG("images/simulation-trace-merge.svg");
-    private static final ImageIcon SAVE_INITIAL_STATE_ICON = GuiUtils.createIconFromSVG("images/simulation-marking-save.svg");
+    private static final String PLAY_ICON = "images/simulation-play.svg";
+    private static final String PAUSE_ICON = "images/simulation-pause.svg";
+    private static final String BACKWARD_ICON = "images/simulation-backward.svg";
+    private static final String FORWARD_ICON = "images/simulation-forward.svg";
+    private static final String RECORD_ICON = "images/simulation-record.svg";
+    private static final String STOP_ICON = "images/simulation-stop.svg";
+    private static final String EJECT_ICON = "images/simulation-eject.svg";
+    private static final String TIMING_DIAGRAM_ICON = "images/simulation-trace-graph.svg";
+    private static final String COPY_STATE_ICON = "images/simulation-trace-copy.svg";
+    private static final String PASTE_STATE_ICON = "images/simulation-trace-paste.svg";
+    private static final String MERGE_TRACE_ICON = "images/simulation-trace-merge.svg";
+    private static final String SAVE_INITIAL_STATE_ICON = "images/simulation-marking-save.svg";
 
     private static final String PLAY_HINT = "Play through the trace";
     private static final String PAUSE_HINT = "Pause trace playback";
@@ -104,19 +104,90 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             return panel;
         }
 
-        playButton = GuiUtils.createIconButton(PLAY_ICON, PLAY_HINT);
-        backwardButton = GuiUtils.createIconButton(BACKWARD_ICON, BACKWARD_HINT);
-        forwardButton = GuiUtils.createIconButton(FORWARD_ICON, FORWARD_HINT);
-        recordButton = GuiUtils.createIconButton(RECORD_ICON, RECORD_HINT);
-        ejectButton = GuiUtils.createIconButton(EJECT_ICON, EJECT_HINT);
+        playButton = GuiUtils.createIconButton(PLAY_ICON, PLAY_HINT, event -> {
+            if (timer == null) {
+                timer = new Timer(speedSlider.getDelay(), event1 -> stepForward(editor));
+                timer.start();
+                random = false;
+            } else if (!random) {
+                timer.stop();
+                timer = null;
+                random = false;
+            } else {
+                random = false;
+            }
+            updateState(editor);
+            editor.requestFocus();
+        });
+
+        backwardButton = GuiUtils.createIconButton(BACKWARD_ICON, BACKWARD_HINT, event -> {
+            stepBackward(editor);
+            editor.requestFocus();
+        });
+
+        forwardButton = GuiUtils.createIconButton(FORWARD_ICON, FORWARD_HINT, event -> {
+            stepForward(editor);
+            editor.requestFocus();
+        });
+
+        recordButton = GuiUtils.createIconButton(RECORD_ICON, RECORD_HINT, event -> {
+            if (timer == null) {
+                timer = new Timer(speedSlider.getDelay(), event1 -> stepRandom(editor));
+                timer.start();
+                random = true;
+            } else if (random) {
+                timer.stop();
+                timer = null;
+                random = false;
+            } else {
+                random = true;
+            }
+            updateState(editor);
+            editor.requestFocus();
+        });
+
+        ejectButton = GuiUtils.createIconButton(EJECT_ICON, EJECT_HINT, event -> {
+            clearTraces(editor);
+            editor.requestFocus();
+        });
 
         speedSlider = new SpeedSlider();
+        speedSlider.addChangeListener(e -> {
+            if (timer != null) {
+                timer.stop();
+                int delay = speedSlider.getDelay();
+                timer.setInitialDelay(delay);
+                timer.setDelay(delay);
+                timer.start();
+            }
+            updateState(editor);
+            editor.requestFocus();
+        });
 
-        JButton generateGraphButton = GuiUtils.createIconButton(TIMING_DIAGRAM_ICON, TIMING_DIAGRAM_HINT);
-        JButton copyStateButton = GuiUtils.createIconButton(COPY_STATE_ICON, COPY_STATE_HINT);
-        JButton pasteStateButton = GuiUtils.createIconButton(PASTE_STATE_ICON, PASTE_STATE_HINT);
-        JButton mergeTraceButton = GuiUtils.createIconButton(MERGE_TRACE_ICON, MERGE_TRACE_HINT);
-        JButton saveInitStateButton = GuiUtils.createIconButton(SAVE_INITIAL_STATE_ICON, SAVE_INITIAL_STATE_HINT);
+        JButton generateGraphButton = GuiUtils.createIconButton(TIMING_DIAGRAM_ICON, TIMING_DIAGRAM_HINT, event -> {
+            generateTraceGraph(editor);
+            editor.requestFocus();
+        });
+
+        JButton copyStateButton = GuiUtils.createIconButton(COPY_STATE_ICON, COPY_STATE_HINT, event -> {
+            copyState(editor);
+            editor.requestFocus();
+        });
+
+        JButton pasteStateButton = GuiUtils.createIconButton(PASTE_STATE_ICON, PASTE_STATE_HINT, event -> {
+            pasteState(editor);
+            editor.requestFocus();
+        });
+
+        JButton mergeTraceButton = GuiUtils.createIconButton(MERGE_TRACE_ICON, MERGE_TRACE_HINT, event -> {
+            mergeTrace(editor);
+            editor.requestFocus();
+        });
+
+        JButton saveInitStateButton = GuiUtils.createIconButton(SAVE_INITIAL_STATE_ICON, SAVE_INITIAL_STATE_HINT, event -> {
+            savedState = readUnderlyingModelState();
+            editor.requestFocus();
+        });
 
         JPanel simulationControl = new JPanel();
         simulationControl.add(playButton);
@@ -152,105 +223,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         traceTable.setRowHeight(SizeHelper.getComponentHeightFromFont(traceTable.getFont()));
         traceTable.setDefaultRenderer(Object.class, new TraceTableCellRenderer());
-
-        tracePane = new JScrollPane();
-        tracePane.setViewportView(traceTable);
-        tracePane.setMinimumSize(new Dimension(1, 50));
-
-        statePane = new JScrollPane();
-        statePane.setMinimumSize(new Dimension(1, 50));
-
-        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tracePane, statePane);
-        splitPane.setOneTouchExpandable(true);
-        splitPane.setResizeWeight(0.5);
-
-        infoPanel = new JPanel();
-        infoPanel.setLayout(new BorderLayout());
-        infoPanel.add(splitPane, BorderLayout.CENTER);
-        speedSlider.addChangeListener(e -> {
-            if (timer != null) {
-                timer.stop();
-                int delay = speedSlider.getDelay();
-                timer.setInitialDelay(delay);
-                timer.setDelay(delay);
-                timer.start();
-            }
-            updateState(editor);
-            editor.requestFocus();
-        });
-
-        recordButton.addActionListener(event -> {
-            if (timer == null) {
-                timer = new Timer(speedSlider.getDelay(), event1 -> stepRandom(editor));
-                timer.start();
-                random = true;
-            } else if (random) {
-                timer.stop();
-                timer = null;
-                random = false;
-            } else {
-                random = true;
-            }
-            updateState(editor);
-            editor.requestFocus();
-        });
-
-        playButton.addActionListener(event -> {
-            if (timer == null) {
-                timer = new Timer(speedSlider.getDelay(), event1 -> stepForward(editor));
-                timer.start();
-                random = false;
-            } else if (!random) {
-                timer.stop();
-                timer = null;
-                random = false;
-            } else {
-                random = false;
-            }
-            updateState(editor);
-            editor.requestFocus();
-        });
-
-        ejectButton.addActionListener(event -> {
-            clearTraces(editor);
-            editor.requestFocus();
-        });
-
-        backwardButton.addActionListener(event -> {
-            stepBackward(editor);
-            editor.requestFocus();
-        });
-
-        forwardButton.addActionListener(event -> {
-            stepForward(editor);
-            editor.requestFocus();
-        });
-
-        generateGraphButton.addActionListener(event -> {
-            generateTraceGraph(editor);
-            editor.requestFocus();
-        });
-
-        copyStateButton.addActionListener(event -> {
-            copyState(editor);
-            editor.requestFocus();
-        });
-
-        pasteStateButton.addActionListener(event -> {
-            pasteState(editor);
-            editor.requestFocus();
-        });
-
-        mergeTraceButton.addActionListener(event -> {
-            mergeTrace(editor);
-            editor.requestFocus();
-        });
-
-        saveInitStateButton.addActionListener(event -> {
-            savedState = readUnderlyingModelState();
-            editor.requestFocus();
-        });
-
         traceTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -284,6 +256,21 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
                 editor.requestFocus();
             }
         });
+
+        tracePane = new JScrollPane();
+        tracePane.setViewportView(traceTable);
+        tracePane.setMinimumSize(new Dimension(1, 50));
+
+        statePane = new JScrollPane();
+        statePane.setMinimumSize(new Dimension(1, 50));
+
+        splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tracePane, statePane);
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setResizeWeight(0.5);
+
+        infoPanel = new JPanel();
+        infoPanel.setLayout(new BorderLayout());
+        infoPanel.add(splitPane, BorderLayout.CENTER);
 
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
@@ -349,26 +336,26 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     public void updateState(final GraphEditor editor) {
         if (timer == null) {
-            playButton.setIcon(PLAY_ICON);
+            playButton.setIcon(GuiUtils.createIconFromSVG(PLAY_ICON));
             playButton.setToolTipText(PLAY_HINT);
-            recordButton.setIcon(RECORD_ICON);
+            recordButton.setIcon(GuiUtils.createIconFromSVG(RECORD_ICON));
             recordButton.setToolTipText(RECORD_HINT);
         } else {
             if (random) {
-                playButton.setIcon(PLAY_ICON);
+                playButton.setIcon(GuiUtils.createIconFromSVG(PLAY_ICON));
                 playButton.setToolTipText(PLAY_HINT);
-                recordButton.setIcon(STOP_ICON);
+                recordButton.setIcon(GuiUtils.createIconFromSVG(STOP_ICON));
                 recordButton.setToolTipText(STOP_HINT);
                 timer.setDelay(speedSlider.getDelay());
             } else if (branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress())) {
-                playButton.setIcon(PAUSE_ICON);
+                playButton.setIcon(GuiUtils.createIconFromSVG(PAUSE_ICON));
                 playButton.setToolTipText(PAUSE_HINT);
-                recordButton.setIcon(RECORD_ICON);
+                recordButton.setIcon(GuiUtils.createIconFromSVG(RECORD_ICON));
                 timer.setDelay(speedSlider.getDelay());
             } else {
-                playButton.setIcon(PLAY_ICON);
+                playButton.setIcon(GuiUtils.createIconFromSVG(PLAY_ICON));
                 playButton.setToolTipText(PLAY_HINT);
-                recordButton.setIcon(RECORD_ICON);
+                recordButton.setIcon(GuiUtils.createIconFromSVG(RECORD_ICON));
                 recordButton.setToolTipText(RECORD_HINT);
                 timer.stop();
                 timer = null;

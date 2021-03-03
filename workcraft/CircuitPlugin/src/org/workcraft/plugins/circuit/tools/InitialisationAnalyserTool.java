@@ -71,34 +71,34 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getForcedControlsPanel(final GraphEditor editor) {
         JButton tagForceInitInputPortsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-input_ports.svg"),
-                "Force init all input ports (environment responsibility)");
-        tagForceInitInputPortsButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitInputPorts));
+                "images/circuit-initialisation-input_ports.svg",
+                "Force init all input ports (environment responsibility)",
+                l -> changeForceInit(editor, ResetUtils::tagForceInitInputPorts));
 
         JButton tagForceInitNecessaryPinsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-problematic_pins.svg"),
-                "Force init output pins with problematic initial state");
-        tagForceInitNecessaryPinsButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitProblematicPins));
+                "images/circuit-initialisation-problematic_pins.svg",
+                "Force init output pins with problematic initial state",
+                l -> changeForceInit(editor, ResetUtils::tagForceInitProblematicPins));
 
         JButton tagForceInitSequentialPinsButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-sequential_pins.svg"),
-                "Force init output pins of sequential gates");
-        tagForceInitSequentialPinsButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitSequentialPins));
+                "images/circuit-initialisation-sequential_pins.svg",
+                "Force init output pins of sequential gates",
+                l -> changeForceInit(editor, ResetUtils::tagForceInitSequentialPins));
 
         JButton tagForceInitAutoAppendButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_append.svg"),
-                "Auto-append force init pins as necessary to complete initialisation");
-        tagForceInitAutoAppendButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitAutoAppend));
+                "images/circuit-initialisation-auto_append.svg",
+                "Auto-append force init pins as necessary to complete initialisation",
+                l -> changeForceInit(editor, ResetUtils::tagForceInitAutoAppend));
 
         JButton tagForceInitAutoDiscardButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-auto_discard.svg"),
-                "Auto-discard force init pins that are redundant for initialisation");
-        tagForceInitAutoDiscardButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitAutoDiscard));
+                "images/circuit-initialisation-auto_discard.svg",
+                "Auto-discard force init pins that are redundant for initialisation",
+                l -> changeForceInit(editor, ResetUtils::tagForceInitAutoDiscard));
 
         JButton tagForceInitClearAllButton = GuiUtils.createIconButton(
-                GuiUtils.createIconFromSVG("images/circuit-initialisation-clear_all.svg"),
-                "Clear all force init ports and pins");
-        tagForceInitClearAllButton.addActionListener(l -> changeForceInit(editor, ResetUtils::tagForceInitClearAll));
+                "images/circuit-initialisation-clear_all.svg",
+                "Clear all force init ports and pins",
+                l -> changeForceInit(editor, ResetUtils::tagForceInitClearAll));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(tagForceInitInputPortsButton);
