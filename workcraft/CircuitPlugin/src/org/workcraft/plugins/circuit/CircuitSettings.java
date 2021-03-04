@@ -90,6 +90,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyScanckPortPin = prefix + ".scanckPortPin";
     private static final String keyScanenPortPin = prefix + ".scanenPortPin";
     private static final String keyScantmPortPin = prefix + ".scantmPortPin";
+    private static final String keyStitchScan = prefix + ".stitchScan";
 
     /*
      * Defaults
@@ -129,6 +130,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultScanckPortPin = "scanck / CK";
     private static final String defaultScanenPortPin = "scanen / SE";
     private static final String defaultScantmPortPin = "scantm / TM";
+    private static final boolean defaultStitchScan = true;
 
     /*
      * Variables
@@ -168,6 +170,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String scanckPortPin = defaultScanckPortPin;
     private static String scanenPortPin = defaultScanenPortPin;
     private static String scantmPortPin = defaultScantmPortPin;
+    private static boolean stitchScan = defaultStitchScan;
 
     static {
         properties.add(new PropertyDeclaration<>(Boolean.class,
@@ -353,6 +356,11 @@ public class CircuitSettings extends AbstractModelSettings {
                 PropertyHelper.BULLET_PREFIX + "Scan test mode port / pin names",
                 value -> setPortPinPair(value, CircuitSettings::setScantmPortPin, "Scan test mode"),
                 CircuitSettings::getScantmPortPin));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Stitch scan into chain",
+                CircuitSettings::setStitchScan,
+                CircuitSettings::getStitchScan));
     }
 
     private static String getBaseRelativePath(File file) {
@@ -418,6 +426,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setScanckPortPin(config.getString(keyScanckPortPin, defaultScanckPortPin));
         setScanenPortPin(config.getString(keyScanenPortPin, defaultScanenPortPin));
         setScantmPortPin(config.getString(keyScantmPortPin, defaultScantmPortPin));
+        setStitchScan(config.getBoolean(keyStitchScan, defaultStitchScan));
     }
 
     @Override
@@ -443,7 +452,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
         config.setInt(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyBusSuffix, getBusSuffix());
-        // reset
+        // Reset
         config.set(keyResetActiveHighPort, getResetActiveHighPort());
         config.set(keyResetActiveLowPort, getResetActiveLowPort());
         config.set(keySetPin, getSetPin());
@@ -457,6 +466,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyScanckPortPin, getScanckPortPin());
         config.set(keyScanenPortPin, getScanenPortPin());
         config.set(keyScantmPortPin, getScantmPortPin());
+        config.setBoolean(keyStitchScan, getStitchScan());
     }
 
     public static boolean getShowContacts() {
@@ -745,6 +755,14 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static Pair<String, String> parseScantmPortPin() {
         return parsePortPinPair(getScantmPortPin());
+    }
+
+    public static boolean getStitchScan() {
+        return stitchScan;
+    }
+
+    public static void setStitchScan(boolean value) {
+        stitchScan = value;
     }
 
     private static void setGate2Data(String value, Consumer<String> setter, String msg, String defaultValue) {
