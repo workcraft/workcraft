@@ -131,11 +131,11 @@ public class CircuitUtils {
         return zeroDelayInput;
     }
 
-    public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact) {
+    public static Set<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact) {
         return findDriven(circuit, contact, true);
     }
 
-    public static Collection<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
+    public static Set<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
         Collection<Contact> drivenContacts = findDriven(circuit.getMathModel(), contact.getReferencedComponent(), transparentZeroDelayComponents);
         return getVisualContacts(circuit, drivenContacts);
     }
@@ -357,8 +357,8 @@ public class CircuitUtils {
         });
     }
 
-    private static HashSet<VisualContact> getVisualContacts(final VisualCircuit visualCircuit, Collection<Contact> mathContacts) {
-        HashSet<VisualContact> result = new HashSet<>();
+    private static Set<VisualContact> getVisualContacts(final VisualCircuit visualCircuit, Collection<Contact> mathContacts) {
+        Set<VisualContact> result = new HashSet<>();
         for (Contact mathContact: mathContacts) {
             VisualContact visualContact = visualCircuit.getVisualComponent(mathContact, VisualContact.class);
             if (visualContact != null) {
@@ -506,7 +506,7 @@ public class CircuitUtils {
     }
 
     public static VisualFunctionContact getOrCreatePort(VisualCircuit circuit, String portName,
-            Contact.IOType ioType, VisualContact.Direction direction) {
+            IOType ioType, VisualContact.Direction direction) {
 
         VisualFunctionContact result = null;
         VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
@@ -518,7 +518,7 @@ public class CircuitUtils {
             }
         } else if (component instanceof VisualFunctionContact) {
             result = (VisualFunctionContact) component;
-            if (result.isOutput()) {
+            if (result.getReferencedComponent().getIOType() != ioType) {
                 DialogUtils.showError("Cannot reuse existing port '" + portName + "' because it is of different type.");
                 return null;
             }
@@ -534,14 +534,25 @@ public class CircuitUtils {
     public static VisualFunctionContact getOrCreateContact(VisualCircuit circuit, VisualFunctionComponent component,
             String contactName, Contact.IOType ioType, VisualContact.Direction direction) {
 
-        VisualFunctionContact result = null;
-        String ref = NamespaceHelper.getReference(circuit.getMathReference(component), contactName);
-        result = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
+        VisualFunctionContact result = getFunctionContact(circuit, component, contactName);
         if (result == null) {
             result = circuit.getOrCreateContact(component, contactName, ioType);
             component.setPositionByDirection(result, direction, false);
         }
         return result;
+    }
+
+    public static VisualFunctionContact getFunctionContact(VisualCircuit circuit,
+            VisualFunctionComponent component, String contactName) {
+
+        String ref = NamespaceHelper.getReference(circuit.getMathReference(component), contactName);
+        return circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
+    }
+
+    public static void disconnectContact(VisualCircuit circuit, VisualContact contact) {
+        for (VisualConnection connection : circuit.getConnections(contact)) {
+            circuit.remove(connection);
+        }
     }
 
     public static Collection<FunctionComponent> correctZeroDelayInitialState(Circuit circuit) {

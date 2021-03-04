@@ -47,6 +47,7 @@ public class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getSimplifyStg()),
                 framework.getConfigVar(prefix + ".simplifyStg", false));
 
+        // Gate library
         Assertions.assertEquals(Config.toString(CircuitSettings.getGateLibrary()),
                 framework.getConfigVar(prefix + ".gateLibrary", false));
 
@@ -59,6 +60,7 @@ public class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getMutexData()),
                 framework.getConfigVar(prefix + ".mutexData", false));
 
+        // Import/export
         Assertions.assertEquals(Config.toString(CircuitSettings.getExportSubstitutionLibrary()),
                 framework.getConfigVar(prefix + ".exportSubstitutionLibrary", false));
 
@@ -71,9 +73,13 @@ public class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getInvertImportSubstitutionRules()),
                 framework.getConfigVar(prefix + ".invertImportSubstitutionRules", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getVerilogAssignDelay()),
+                framework.getConfigVar(prefix + ".verilogAssignDelay", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));
 
+        // Reset
         Assertions.assertEquals(Config.toString(CircuitSettings.getResetActiveHighPort()),
                 framework.getConfigVar(prefix + ".resetActiveHighPort", false));
 
@@ -86,6 +92,7 @@ public class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getClearPin()),
                 framework.getConfigVar(prefix + ".clearPin", false));
 
+        // Scan
         Assertions.assertEquals(Config.toString(CircuitSettings.getTbufData()),
                 framework.getConfigVar(prefix + ".tbufData", false));
 
@@ -110,8 +117,8 @@ public class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getScantmPortPin()),
                 framework.getConfigVar(prefix + ".scantmPortPin", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getVerilogAssignDelay()),
-                framework.getConfigVar(prefix + ".verilogAssignDelay", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getStitchScan()),
+                framework.getConfigVar(prefix + ".stitchScan", false));
     }
 
 }
