@@ -24,27 +24,27 @@ public class Viewport {
      * The scaling factor per zoom level. Increasing the zoom level by 1 will effectively magnify all
      * objects by this factor, while decreasing it by 1 will shrink all objects by the same factor.
      */
-    protected static final double SCALE_FACTOR = Math.pow(2, 1.0 / 8);
+    private static final double SCALE_FACTOR = Math.pow(2, 1.0 / 8);
 
     /**
      * The origin point in user space.
      */
-    protected static final Point2D ORIGIN = new Point2D.Double(0, 0);
+    private static final Point2D ORIGIN = new Point2D.Double(0, 0);
 
     /**
      * Current horizontal view translation in user space.
      */
-    protected double tx = 0.0;
+    private double tx = 0.0;
 
     /**
      * Current vertical view translation in user space.
      */
-    protected double ty = 0.0;
+    private double ty = 0.0;
 
     /**
      * Current view scale factor.
      */
-    protected double s = DEFAULT_SCALE;
+    private double s = DEFAULT_SCALE;
 
     /**
      * The transformation from user space to screen space such that the point (0, 0) in user space is
@@ -53,12 +53,12 @@ public class Viewport {
      * vertical coordinate of the viewport, and the coordinates on the X axis are mapped in such a way
      * as to preserve the aspect ratio of the objects displayed.
      */
-    protected AffineTransform userToScreenTransform;
+    private AffineTransform userToScreenTransform;
 
     /**
      * The transformation of the user space that takes into account the current pan and zoom values.
      */
-    protected AffineTransform viewTransform;
+    private AffineTransform viewTransform;
 
     /**
      * The concatenation of the user-to-screen and pan/zoom transforms.
@@ -73,18 +73,18 @@ public class Viewport {
     /**
      * The current viewport shape.
      */
-    protected Rectangle shape;
+    private Rectangle shape;
 
     /**
      * The list of listeners to be notified in case of viewport parameters change.
      */
-    protected LinkedList<ViewportListener> listeners;
+    private LinkedList<ViewportListener> listeners;
 
     /**
      * Called when the viewport parameters such as pan and zoom are changed. Updates the corresponding
      * transforms, and notifies the change listeners.
      */
-    protected void viewChanged() {
+    private void viewChanged() {
         viewTransform.setToIdentity();
         viewTransform.scale(s, s);
         viewTransform.translate(tx, ty);
