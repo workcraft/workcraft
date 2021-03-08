@@ -167,13 +167,13 @@ public class Grid implements ViewportListener {
 
     private void updateGridMinorCrosses(Viewport viewport, double interval) {
         minorLinesPath = new Path2D.Double();
-        double radius = Math.max(1.0, EditorCommonSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 3.0);
+        double radius = Math.max(1.0, EditorCommonSettings.getFontSize() * SizeHelper.getScreenDpmm() / 30.0);
         updateGridCrosses(viewport, interval, radius, minorLinePositions, minorLinePositionsScreen, minorLinesPath);
     }
 
     private void updateGridMajorCrosses(Viewport viewport, double interval) {
         majorLinesPath = new Path2D.Double();
-        double radius = Math.max(1.0, EditorCommonSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 2.0);
+        double radius = Math.max(1.0, EditorCommonSettings.getFontSize() * SizeHelper.getScreenDpmm() / 20.0);
         updateGridCrosses(viewport, interval, radius, majorLinePositions, majorLinePositionsScreen, majorLinesPath);
     }
 
