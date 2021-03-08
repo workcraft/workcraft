@@ -66,7 +66,6 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     // Grid
     private static final String keyGridVisibility = prefix + ".gridVisibility";
     private static final String keyLightGrid = prefix + ".lightGrid";
-    private static final String keyLightGridSize = prefix + ".lightGridSize";
     private static final String keyGridColor = prefix + ".gridColor";
     private static final String keyRulerVisibility = prefix + ".rulerVisibility";
     // Hints
@@ -94,7 +93,6 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     // Grid
     private static final boolean defaultGridVisibility = true;
     private static final boolean defaultLightGrid = true;
-    private static final double defaultLightGridSize = 1.0;
     private static final Color defaultGridColor = new Color(225, 225, 225);
     private static final boolean defaultRulerVisibility = false;
     // Hints
@@ -122,7 +120,6 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     // Grid
     private static boolean gridVisibility = defaultGridVisibility;
     private static boolean lightGrid = defaultLightGrid;
-    private static double lightGridSize = defaultLightGridSize;
     private static Color gridColor = defaultGridColor;
     private static boolean rulerVisibility = defaultRulerVisibility;
     // Hints
@@ -186,11 +183,6 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 PropertyHelper.BULLET_PREFIX + "Use light grid",
                 EditorCommonSettings::setLightGrid,
                 EditorCommonSettings::getLightGrid));
-
-        properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Light grid cross size (mm)",
-                EditorCommonSettings::setLightGridSize,
-                EditorCommonSettings::getLightGridSize));
 
         properties.add(new PropertyDeclaration<>(Color.class,
                 PropertyHelper.BULLET_PREFIX + "Grid color",
@@ -261,7 +253,6 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         // Grid
         setGridVisibility(config.getBoolean(keyGridVisibility, defaultGridVisibility));
         setLightGrid(config.getBoolean(keyLightGrid, defaultLightGrid));
-        setLightGridSize(config.getDouble(keyLightGridSize, defaultLightGridSize));
         setGridColor(config.getColor(keyGridColor, defaultGridColor));
         setRulerVisibility(config.getBoolean(keyRulerVisibility, defaultRulerVisibility));
         // Hints
@@ -289,7 +280,6 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         // Grid
         config.setBoolean(keyGridVisibility, getGridVisibility());
         config.setBoolean(keyLightGrid, getLightGrid());
-        config.setDouble(keyLightGridSize, getLightGridSize());
         config.setColor(keyGridColor, getGridColor());
         config.setBoolean(keyRulerVisibility, getRulerVisibility());
         // Hints
@@ -384,14 +374,6 @@ public class EditorCommonSettings extends AbstractCommonSettings {
 
     public static boolean getLightGrid() {
         return lightGrid;
-    }
-
-    public static double getLightGridSize() {
-        return lightGridSize;
-    }
-
-    public static void setLightGridSize(double value) {
-        lightGridSize = value;
     }
 
     public static Color getGridColor() {

@@ -96,9 +96,6 @@ public class CommonSettingsTest {
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getLightGrid()),
                 framework.getConfigVar(prefix + ".lightGrid", false));
 
-        Assertions.assertEquals(Config.toString(EditorCommonSettings.getLightGridSize()),
-                framework.getConfigVar(prefix + ".lightGridSize", false));
-
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getGridColor()),
                 framework.getConfigVar(prefix + ".gridColor", false));
 
