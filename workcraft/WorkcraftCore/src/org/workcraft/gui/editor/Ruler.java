@@ -139,14 +139,14 @@ public class Ruler implements GridListener {
 
     @Override
     public void gridChanged(Grid grid) {
-        int[][] minorLinesScreen = grid.getMinorLinePositionsScreen();
+        int[][] minorLinesScreen = grid.getMinorScreenPositions();
         horizontalMinorTicks = minorLinesScreen[0];
         verticalMinorTicks = minorLinesScreen[1];
-        int[][] majorLinesScreen = grid.getMajorLinePositionsScreen();
+        int[][] majorLinesScreen = grid.getMajorScreenPositions();
         horizontalMajorTicks = majorLinesScreen[0];
         verticalMajorTicks = majorLinesScreen[1];
 
-        double[][] majorLines = grid.getMajorLinePositions();
+        double[][] majorLines = grid.getMajorPositions();
         horizontalMajorCaptions = new String[majorLines[0].length];
         verticalMajorCaptions = new String[majorLines[1].length];
 
