@@ -2,6 +2,7 @@ package org.workcraft.plugins.builtin.settings;
 
 import org.workcraft.Config;
 import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
@@ -9,6 +10,7 @@ import org.workcraft.gui.properties.PropertyHelper;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class VisualCommonSettings extends AbstractCommonSettings {
 
@@ -200,10 +202,15 @@ public class VisualCommonSettings extends AbstractCommonSettings {
                 VisualCommonSettings::setConnectionArrowWidth,
                 VisualCommonSettings::getConnectionArrowWidth));
 
-        properties.add(new PropertyDeclaration<>(Double.class,
+        properties.add(new PropertyDeclaration<Double>(Double.class,
                 PropertyHelper.BULLET_PREFIX + "Arrow length (cm)",
                 VisualCommonSettings::setConnectionArrowLength,
-                VisualCommonSettings::getConnectionArrowLength));
+                VisualCommonSettings::getConnectionArrowLength) {
+            @Override
+            public Map<Double, String> getChoice() {
+                return VisualConnection.PREDEFINED_ARROW_LENGTHS;
+            }
+        });
 
         properties.add(new PropertyDeclaration<>(Double.class,
                 PropertyHelper.BULLET_PREFIX + "Bubble size (cm)",
@@ -230,7 +237,7 @@ public class VisualCommonSettings extends AbstractCommonSettings {
         properties.add(PropertyHelper.createSeparatorProperty("Expression"));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Render text after \'_\' as subscript",
+                PropertyHelper.BULLET_PREFIX + "Render text after '_' as subscript",
                 VisualCommonSettings::setUseSubscript,
                 VisualCommonSettings::getUseSubscript));
     }

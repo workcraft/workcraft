@@ -6,10 +6,26 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
 
 import java.awt.*;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class EditorCommonSettings extends AbstractCommonSettings {
+
+    public static final Map<Double, String> PREDEFINED_SCREEN_DPI = new LinkedHashMap<>();
+
+    static {
+        PREDEFINED_SCREEN_DPI.put(81.6, "27\" 1920 x 1080 (or 3840 x 2160 @ 200%)");
+        PREDEFINED_SCREEN_DPI.put(91.8, "24\" 1920 x 1080");
+        PREDEFINED_SCREEN_DPI.put(94.3, "24\" 1920 x 1200");
+        PREDEFINED_SCREEN_DPI.put(108.8, "27\" 2560 x 1440 (or 3840 x 2160 @ 150%)");
+        PREDEFINED_SCREEN_DPI.put(141.2, "15.6\" 1920 x 1080 (or 3840 x 2160 @ 200%)");
+        PREDEFINED_SCREEN_DPI.put(157.4, "14\" 1920 x 1080");
+        PREDEFINED_SCREEN_DPI.put(163.2, "27\" 3840 x 2160");
+        PREDEFINED_SCREEN_DPI.put(188.3, "15.6\" 2560 x 1440 (or 3840 x 2160 @ 150%)");
+        PREDEFINED_SCREEN_DPI.put(282.4, "15.6\" 3840 x 2160");
+    }
 
     public enum TitleStyle {
         MINIMAL("minimal: Title"),
@@ -55,6 +71,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
      * Keys
      */
     // GUI
+    private static final String keyScreenDpi = prefix + ".screenDpi";
     private static final String keyFontSize = prefix + ".fontSize";
     private static final String keyTitleStyle = prefix + ".titleStyle";
     private static final String keyDialogStyle = prefix + ".dialogStyle";
@@ -82,6 +99,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
      * Defaults
      */
     // GUI
+    private static final double defaultScreenDpi = 96.0;
     private static final double defaultFontSize = 10.0;
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final DialogStyle defaultDialogStyle = DialogStyle.CROSS_PLATFORM;
@@ -109,6 +127,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
      * Variables
      */
     // GUI
+    private static double screenDpi = defaultScreenDpi;
     private static double fontSize = defaultFontSize;
     private static TitleStyle titleStyle = defaultTitleStyle;
     private static DialogStyle dialogStyle = defaultDialogStyle;
@@ -134,6 +153,16 @@ public class EditorCommonSettings extends AbstractCommonSettings {
 
     static {
         properties.add(PropertyHelper.createSeparatorProperty("GUI decoration"));
+
+        properties.add(new PropertyDeclaration<Double>(Double.class,
+                PropertyHelper.BULLET_PREFIX + "Screen pixel density (dpi) - requires restart",
+                EditorCommonSettings::setScreenDpi,
+                EditorCommonSettings::getScreenDpi) {
+            @Override
+            public Map<Double, String> getChoice() {
+                return PREDEFINED_SCREEN_DPI;
+            }
+        });
 
         properties.add(new PropertyDeclaration<>(Double.class,
                 PropertyHelper.BULLET_PREFIX + "Base font size (point) - requires restart",
@@ -242,6 +271,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     @Override
     public void load(Config config) {
         // GUI
+        setScreenDpi(config.getDouble(keyScreenDpi, defaultScreenDpi));
         setFontSize(config.getDouble(keyFontSize, defaultFontSize));
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
         setDialogStyle(config.getEnum(keyDialogStyle, DialogStyle.class, defaultDialogStyle));
@@ -269,6 +299,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     @Override
     public void save(Config config) {
         // GUI
+        config.setDouble(keyScreenDpi, getScreenDpi());
         config.setDouble(keyFontSize, getFontSize());
         config.setEnum(keyTitleStyle, getTitleStyle());
         config.setEnum(keyDialogStyle, getDialogStyle());
@@ -296,6 +327,14 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     @Override
     public String getName() {
         return "Editor";
+    }
+
+    public static double getScreenDpi() {
+        return screenDpi;
+    }
+
+    public static void setScreenDpi(double value) {
+        screenDpi = value;
     }
 
     public static double getFontSize() {

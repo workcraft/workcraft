@@ -25,6 +25,14 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     public static final String PROPERTY_ARROW_LENGTH = "Arrow length";
     public static final String PROPERTY_ARROW_WIDTH = "Arrow width";
     public static final String PROPERTY_SCALE_MODE = "Scale mode";
+    public static final Map<Double, String> PREDEFINED_ARROW_LENGTHS = new LinkedHashMap<>();
+
+    static {
+        PREDEFINED_ARROW_LENGTHS.put(0.0, "none");
+        PREDEFINED_ARROW_LENGTHS.put(0.2, "short");
+        PREDEFINED_ARROW_LENGTHS.put(0.4, "medium");
+        PREDEFINED_ARROW_LENGTHS.put(0.8, "long");
+    }
 
     public enum ConnectionType {
         POLYLINE("Polyline"),
@@ -40,7 +48,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         public String toString() {
             return name;
         }
-    };
+    }
 
     public enum ScaleMode {
         NONE("Lock anchors"),
@@ -118,12 +126,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
                 this::setArrowLength, this::getArrowLength) {
             @Override
             public Map<Double, String> getChoice() {
-                LinkedHashMap<Double, String> result = new LinkedHashMap<>();
-                result.put(0.0, "none");
-                result.put(0.2, "short");
-                result.put(0.4, "medium");
-                result.put(0.8, "long");
-                return result;
+                return PREDEFINED_ARROW_LENGTHS;
             }
         }.setCombinable().setTemplatable());
 
@@ -195,11 +198,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
             observableHierarchyImpl.sendNotification(new NodesDeletingEvent(this, getGraphic()));
             children.remove(getGraphic());
             observableHierarchyImpl.sendNotification(new NodesDeletedEvent(this, getGraphic()));
-            if (connectionType == null) {
-            } else if (connectionType == ConnectionType.POLYLINE) {
+            if (connectionType == ConnectionType.POLYLINE) {
                 graphic = new Polyline(this);
                 setScaleMode(ScaleMode.NONE);
-            } else if (connectionType == ConnectionType.BEZIER) {
+            }
+            if (connectionType == ConnectionType.BEZIER) {
                 graphic = new Bezier(this);
                 setScaleMode(ScaleMode.LOCK_RELATIVELY);
             }
@@ -517,8 +520,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
                 dstHasArrow |= srcConnection.hasArrow();
                 arrowLengths.add(srcConnection.getArrowLength());
                 arrowWidths.add(srcConnection.getArrowWidth());
-                bubbleSizes.add(srcConnection.getBubbleSize());
                 dstHasBubble |= srcConnection.hasBubble();
+                bubbleSizes.add(srcConnection.getBubbleSize());
             }
         }
         setConnectionType(MixUtils.vote(connectionTypes, ConnectionType.POLYLINE));
@@ -528,6 +531,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         setArrowLength(MixUtils.average(arrowLengths));
         setArrowWidth(MixUtils.average(arrowWidths));
         setBubble(dstHasBubble);
+        setBubbleSize(MixUtils.average(bubbleSizes));
         setScaleMode(MixUtils.vote(scaleModes, ScaleMode.ADAPTIVE));
     }
 
