@@ -1,5 +1,6 @@
 package org.workcraft.gui.properties;
 
+import org.workcraft.gui.controls.FlatLabel;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
@@ -9,7 +10,7 @@ import java.awt.*;
 
 public class PropertyDeclarationRenderer extends DefaultTableCellRenderer {
 
-    private final JLabel label = new JLabel() {
+    private final JLabel label = new FlatLabel() {
         @Override
         public void paint(Graphics g) {
             g.setColor(getBackground());
@@ -19,7 +20,6 @@ public class PropertyDeclarationRenderer extends DefaultTableCellRenderer {
     };
 
     public PropertyDeclarationRenderer(PropertyDescriptor descriptor) {
-        label.setBorder(GuiUtils.getTableCellBorder());
         label.setHorizontalAlignment(LEADING);
 
         if ((descriptor != null) && (descriptor.getValue() == null) && descriptor.isCombinable()) {

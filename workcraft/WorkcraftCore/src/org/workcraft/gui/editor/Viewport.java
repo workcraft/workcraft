@@ -1,5 +1,7 @@
 package org.workcraft.gui.editor;
 
+import org.workcraft.dom.visual.SizeHelper;
+
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
@@ -30,6 +32,7 @@ public class Viewport {
      * The origin point in user space.
      */
     private static final Point2D ORIGIN = new Point2D.Double(0, 0);
+    public static final double MIN_DIMENSION = 0.01;
 
     /**
      * Current horizontal view translation in user space.
@@ -53,32 +56,32 @@ public class Viewport {
      * vertical coordinate of the viewport, and the coordinates on the X axis are mapped in such a way
      * as to preserve the aspect ratio of the objects displayed.
      */
-    private AffineTransform userToScreenTransform;
+    private final AffineTransform userToScreenTransform;
 
     /**
      * The transformation of the user space that takes into account the current pan and zoom values.
      */
-    private AffineTransform viewTransform;
+    private final AffineTransform viewTransform;
 
     /**
      * The concatenation of the user-to-screen and pan/zoom transforms.
      */
-    private AffineTransform finalTransform;
+    private final AffineTransform finalTransform;
 
     /**
      * The reverse of the final (concatenated) transform.
      */
-    private AffineTransform finalInverseTransform;
+    private final AffineTransform finalInverseTransform;
 
     /**
      * The current viewport shape.
      */
-    private Rectangle shape;
+    private final Rectangle shape;
 
     /**
      * The list of listeners to be notified in case of viewport parameters change.
      */
-    private LinkedList<ViewportListener> listeners;
+    private final LinkedList<ViewportListener> listeners;
 
     /**
      * Called when the viewport parameters such as pan and zoom are changed. Updates the corresponding
@@ -98,26 +101,9 @@ public class Viewport {
     }
 
     /**
-     * Called when the viewport parameters such as size and position are changed. Updates the corresponding
-     * transforms, and notifies the change listeners.
-     */
-    protected void shapeChanged() {
-        userToScreenTransform.setToIdentity();
-        userToScreenTransform.translate(shape.width / 2 + shape.x, shape.height / 2 + shape.y);
-        double s = Math.min(shape.height / 2, shape.width / 2);
-        userToScreenTransform.scale(s, s);
-        updateFinalTransform();
-
-        // notify listeners
-        for (ViewportListener l: listeners) {
-            l.shapeChanged(this);
-        }
-    }
-
-    /**
      * Recalculates the final transform by concatenating the user-to-screen transform and the view transform.
      */
-    protected void updateFinalTransform() {
+    private void updateFinalTransform() {
         finalTransform.setTransform(userToScreenTransform);
         finalTransform.concatenate(viewTransform);
         try {
@@ -146,20 +132,8 @@ public class Viewport {
         finalInverseTransform = new AffineTransform();
         shape = new Rectangle();
         listeners = new LinkedList<>();
-
         viewChanged();
-
         setShape(x, y, w, h);
-    }
-
-    /**
-     * Initialises the user-to-screen transform according to the viewport parameters,
-     * and the view transform with the default values.
-     * @param shape
-     * The shape of the viewport (all values in pixels).
-     */
-    public Viewport(Rectangle shape) {
-        this(shape.x, shape.y, shape.width, shape.height);
     }
 
     /**
@@ -244,7 +218,7 @@ public class Viewport {
         viewChanged();
     }
 
-    public void scale(double scale) {
+    private void setScale(double scale) {
         if (scale < 0.01f) {
             scale = 0.01f;
         }
@@ -252,11 +226,19 @@ public class Viewport {
             scale = 1.0f;
         }
         this.s = scale;
+    }
+
+    public void scale(double scale) {
+        setScale(scale);
         viewChanged();
     }
 
     public void scaleDefault() {
-        scale(DEFAULT_SCALE);
+        double minDimension = Math.max(1.0, Math.min(shape.width, shape.height));
+        if (minDimension > MIN_DIMENSION) {
+            setScale(10.0 * SizeHelper.getScreenDpmm() / minDimension);
+        }
+        viewChanged();
     }
 
     /**
@@ -267,7 +249,8 @@ public class Viewport {
      * The required change of the zoom level. Use positive value to zoom in, negative value to zoom out.
      */
     public void zoom(int levels) {
-        scale(s * Math.pow(SCALE_FACTOR, levels));
+        setScale(s * Math.pow(SCALE_FACTOR, levels));
+        viewChanged();
     }
 
     /**
@@ -286,9 +269,7 @@ public class Viewport {
      */
     public void zoom(int levels, Point anchor) {
         Point2D anchorInUserSpace = screenToUser(anchor);
-        zoom(levels);
-
-        viewChanged();
+        setScale(s * Math.pow(SCALE_FACTOR, levels));
 
         Point2D anchorInNewSpace = screenToUser(anchor);
 
@@ -310,18 +291,24 @@ public class Viewport {
      * The height of the new viewport (in pixels)
      */
     public void setShape(int x, int y, int width, int height) {
-        shape.setBounds(x, y, width, height);
-        shapeChanged();
-    }
+        double newMinDimension = Math.min(width, height);
+        double oldMinDimension = Math.min(shape.width, shape.height);
+        if ((oldMinDimension > MIN_DIMENSION) && (newMinDimension > MIN_DIMENSION)) {
+            scale(s * oldMinDimension / newMinDimension);
+        }
 
-    /**
-     * Changes the shape of the viewport.
-     * @param shape
-     *     The new shape of the viewport as Rectangle (in pixels).
-     */
-    public void setShape(Rectangle shape) {
-        setShape(shape.x, shape.y, shape.width, shape.height);
-        shapeChanged();
+        // Updates the corresponding transforms, and notifies the change listeners
+        userToScreenTransform.setToIdentity();
+        userToScreenTransform.translate(width / 2.0 + x, height / 2.0 + y);
+        userToScreenTransform.scale(newMinDimension, newMinDimension);
+        updateFinalTransform();
+
+        shape.setBounds(x, y, width, height);
+
+        // notify listeners
+        for (ViewportListener l : listeners) {
+            l.shapeChanged(this);
+        }
     }
 
     /**

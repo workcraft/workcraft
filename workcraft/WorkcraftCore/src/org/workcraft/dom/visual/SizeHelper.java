@@ -7,7 +7,7 @@ import java.awt.*;
 public class SizeHelper {
 
     public static double getScreenDpi() {
-        return Toolkit.getDefaultToolkit().getScreenResolution();
+        return EditorCommonSettings.getScreenDpi();
     }
 
     public static double getScreenDpmm() {

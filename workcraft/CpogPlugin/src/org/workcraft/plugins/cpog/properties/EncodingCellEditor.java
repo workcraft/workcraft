@@ -1,13 +1,12 @@
 package org.workcraft.plugins.cpog.properties;
 
-import java.awt.Component;
-
-import javax.swing.JTable;
-
-import org.workcraft.gui.properties.GenericCellEditor;
+import org.workcraft.gui.properties.BasicCellEditor;
 import org.workcraft.plugins.cpog.Encoding;
 
-class EncodingCellEditor extends GenericCellEditor {
+import javax.swing.*;
+import java.awt.*;
+
+class EncodingCellEditor extends BasicCellEditor {
 
     private static final long serialVersionUID = 8L;
     private Encoding encoding;

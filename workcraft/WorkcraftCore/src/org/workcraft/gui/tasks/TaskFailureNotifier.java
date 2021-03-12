@@ -20,7 +20,7 @@ public class TaskFailureNotifier extends BasicProgressMonitor<Object> {
     }
 
     @Override
-    public void isFinished(final Result<? extends Object> result) {
+    public void isFinished(final Result<?> result) {
         super.isFinished(result);
         if (result.isFailure()) {
             SwingUtilities.invokeLater(() -> {

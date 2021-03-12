@@ -10,11 +10,11 @@ import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
 
-public class FlatComboBox extends JComboBox {
+public class FlatComboBox extends JComboBox<Object> {
 
     private static final Color PANEL_BACKGROUND = UIManager.getColor("Panel.background");
 
-    class FlatComboBoxUI extends BasicComboBoxUI {
+    static class FlatComboBoxUI extends BasicComboBoxUI {
         @Override
         protected ComboPopup createPopup() {
             BasicComboPopup popup = new BasicComboPopup(comboBox) {
@@ -28,7 +28,7 @@ public class FlatComboBox extends JComboBox {
         }
     }
 
-    class FlatListCellRenderer implements ListCellRenderer {
+    static class FlatListCellRenderer implements ListCellRenderer<Object> {
         private final Border insetBorder = GuiUtils.getTableCellBorder();
         private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 

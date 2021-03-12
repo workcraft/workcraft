@@ -17,6 +17,7 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable {
@@ -89,19 +90,18 @@ public class PropertyEditorTable extends JTable {
         cellEditors = new TableCellEditor[model.getRowCount()];
         for (int i = 0; i < model.getRowCount(); i++) {
             PropertyDescriptor decl = model.getDeclaration(i);
-            if (decl.getChoice() != null) {
-                // If object declares a predefined set of values, use a ComboBox to edit the property regardless of class
+            Class type = decl.getType();
+            if (type.isEnum()) {
                 model.setRowClass(i, null);
                 cellRenderers[i] = new ChoiceCellRenderer();
                 cellEditors[i] = new ChoiceCellEditor(decl);
             } else {
-                // otherwise, try to get a corresponding PropertyClass object, that knows how to edit a property of this class
-                Class type = decl.getType();
                 PropertyClass cls = propertyClasses.get(type);
                 model.setRowClass(i, cls);
                 if (cls != null) {
-                    cellRenderers[i] = cls.getCellRenderer();
-                    cellEditors[i] = cls.getCellEditor();
+                    Map<Object, String> predefinedValues = decl.getChoice();
+                    cellRenderers[i] = cls.getCellRenderer(predefinedValues != null);
+                    cellEditors[i] = cls.getCellEditor(predefinedValues);
                 } else {
                     // no PropertyClass exists for this class, fall back to read-only mode using Object.toString()
                     System.err.println("Data class '" + type.getName() + "' is not supported by the Property editor.");

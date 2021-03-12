@@ -15,10 +15,9 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
-@SuppressWarnings("serial")
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
-    class TaskControlMonitor extends BasicProgressMonitor<Object> {
+    static class TaskControlMonitor extends BasicProgressMonitor<Object> {
         private final TaskManagerWindow window;
         private final TaskControl taskControl;
 
@@ -33,7 +32,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         }
 
         @Override
-        public void isFinished(Result<? extends Object> result) {
+        public void isFinished(Result<?> result) {
             super.isFinished(result);
             SwingUtilities.invokeLater(() -> window.removeTaskControl(taskControl));
         }
@@ -44,7 +43,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         }
     }
 
-    public class ScrollPaneWidthTrackingPanel extends JPanel implements Scrollable {
+    public static class ScrollPaneWidthTrackingPanel extends JPanel implements Scrollable {
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -83,7 +82,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
             this.description = description;
         }
 
-        public TaskControl getTaskCotnrol() {
+        public TaskControl getTaskControl() {
             return taskControl;
         }
 
@@ -127,7 +126,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     }
 
     @Override
-    public ProgressMonitor<Object> taskStarting(final String description) {
+    public ProgressMonitor<?> taskStarting(final String description) {
         TaskControlGenerator tcg = new TaskControlGenerator(content, description);
 
         setTabActivity(true);
@@ -141,7 +140,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
                 throw new RuntimeException(e);
             }
         }
-        return new TaskControlMonitor(this, tcg.getTaskCotnrol());
+        return new TaskControlMonitor(this, tcg.getTaskControl());
     }
 
     private void setTabActivity(final boolean active) {

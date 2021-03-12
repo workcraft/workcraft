@@ -3,7 +3,6 @@ package org.workcraft.gui.properties;
 import javax.swing.table.AbstractTableModel;
 import java.util.Map;
 
-@SuppressWarnings("serial")
 public class PropertyEditorTableModel extends AbstractTableModel {
 
     private final String[] columnNames;
@@ -85,7 +84,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
             if (rowClasses[row] != null) {
                 return rowClasses[row].toCellRendererValue(value);
             } else {
-                Map<? extends Object, String> choice = declarations[row].getChoice();
+                Map<?, String> choice = declarations[row].getChoice();
                 if (choice != null) {
                     return choice.get(value);
                 } else {

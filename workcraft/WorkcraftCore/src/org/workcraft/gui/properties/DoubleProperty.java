@@ -1,23 +1,10 @@
 package org.workcraft.gui.properties;
 
-import org.workcraft.gui.controls.FlatCellRenderer;
 import org.workcraft.utils.ParseUtils;
 
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
 import java.util.IllegalFormatException;
 
-public class DoubleProperty implements PropertyClass<Double, String> {
-
-    @Override
-    public TableCellEditor getCellEditor() {
-        return new GenericCellEditor();
-    }
-
-    @Override
-    public TableCellRenderer getCellRenderer() {
-        return new FlatCellRenderer();
-    }
+public class DoubleProperty extends AbstractBasicProperty<Double> {
 
     @Override
     public Double fromCellEditorValue(String editorComponentValue) {

@@ -2,7 +2,7 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionUtils;
-import org.workcraft.utils.GuiUtils;
+import org.workcraft.gui.controls.FlatTextField;
 
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
@@ -15,7 +15,7 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
 
     private final JPanel panel = new JPanel(new BorderLayout());
     private final JButton leftButton = new JButton();
-    private final JTextField text = new JTextField();
+    private final JTextField text = new FlatTextField();
     private final JButton rightButton = new JButton();
 
     public TextActionCellEditor() {
@@ -24,7 +24,6 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
         leftButton.setMargin(PropertyHelper.BUTTON_INSETS);
 
         text.setFocusable(true);
-        text.setBorder(GuiUtils.getTableCellBorder());
         text.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
