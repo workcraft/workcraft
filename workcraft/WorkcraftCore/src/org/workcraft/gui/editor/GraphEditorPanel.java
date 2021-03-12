@@ -502,7 +502,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                 }
                 double scaleX = ratioX / modelBox.getWidth();
                 double scaleY = ratioY / modelBox.getHeight();
-                double scale = 2.0 * Math.min(scaleX, scaleY);
+                double scale = Math.min(scaleX, scaleY);
                 viewport.scale(scale);
                 panCenter();
             }

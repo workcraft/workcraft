@@ -14,11 +14,12 @@ import java.util.LinkedList;
  */
 public class Grid implements ViewportListener {
 
-    private static final int MAX_GRID_COUNT = 128;
+    private static final int MAX_GRID_COUNT = 256;
     private static final double MINOR_INTERVAL_FACTOR = 0.1;
     private static final double INTERVAL_SCALE_FACTOR = 2;
-    private static final double MAX_THRESHOLD = 5;
-    private static final double MIN_THRESHOLD = 2.5;
+    private static final double INTERVAL_MIN_SCREEN_MM = 50.0;
+    private static final double INTERVAL_MAX_SCREEN_MM = 100.0;
+    public static final double INTERVAL_START_VALUE = 10.0;
 
     private final double[][] majorPositions = new double[2][];
     private final double[][] minorPositions = new double[2][];
@@ -26,7 +27,7 @@ public class Grid implements ViewportListener {
     private final int[][] minorScreenPositions = new int[2][];
     private final Stroke stroke = new BasicStroke();
 
-    private double majorInterval = 10.0;
+    private double majorInterval = INTERVAL_START_VALUE;
     private Path2D minorShape = new Path2D.Double();
     private Path2D majorShape = new Path2D.Double();
 
@@ -44,24 +45,7 @@ public class Grid implements ViewportListener {
         Rectangle view = viewport.getShape();
         if (view.isEmpty()) return;
 
-        // Compute the visible user space area from the viewport
-        Point2D visibleUL = new Point2D.Double();
-        Point2D visibleLR = new Point2D.Double();
-        Point viewLL = new Point(view.x, view.height + view.y);
-        Point viewUR = new Point(view.width + view.x, view.y);
-        viewport.getInverseTransform().transform(viewLL, visibleUL);
-        viewport.getInverseTransform().transform(viewUR, visibleLR);
-
-        // Dynamic line interval scaling
-        double visibleHeight = visibleUL.getY() - visibleLR.getY();
-        if (majorInterval > 0) {
-            while (visibleHeight / majorInterval > MAX_THRESHOLD) {
-                majorInterval *= INTERVAL_SCALE_FACTOR;
-            }
-            while (visibleHeight / majorInterval < MIN_THRESHOLD) {
-                majorInterval /= INTERVAL_SCALE_FACTOR;
-            }
-        }
+        updateMajorInterval(viewport);
 
         if (EditorCommonSettings.getLightGrid()) {
             updateGridMinorCrosses(viewport, majorInterval * MINOR_INTERVAL_FACTOR);
@@ -73,6 +57,21 @@ public class Grid implements ViewportListener {
 
         for (GridListener l : listeners) {
             l.gridChanged(this);
+        }
+    }
+
+    private void updateMajorInterval(Viewport viewport) {
+        double scale = viewport.getTransform().getScaleX();
+        if (scale > 0) {
+            majorInterval = INTERVAL_START_VALUE;
+            double minInterval = INTERVAL_MIN_SCREEN_MM * SizeHelper.getScreenDpmm() / scale;
+            while (majorInterval < minInterval) {
+                majorInterval *= INTERVAL_SCALE_FACTOR;
+            }
+            double maxInterval = INTERVAL_MAX_SCREEN_MM * SizeHelper.getScreenDpmm() / scale;
+            while (majorInterval  > maxInterval) {
+                majorInterval /= INTERVAL_SCALE_FACTOR;
+            }
         }
     }
 
