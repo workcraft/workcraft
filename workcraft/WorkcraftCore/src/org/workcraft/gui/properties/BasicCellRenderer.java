@@ -7,16 +7,16 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-public class GenericCellRenderer implements TableCellRenderer {
+public class BasicCellRenderer implements TableCellRenderer {
 
     private final JComponent component;
 
-    public GenericCellRenderer() {
+    public BasicCellRenderer() {
         this(false);
     }
 
-    public GenericCellRenderer(boolean hasChoice) {
-        component = hasChoice ? new FlatComboBox() : new FlatLabel();
+    public BasicCellRenderer(boolean hasPredefinedValues) {
+        component = hasPredefinedValues ? new FlatComboBox() : new FlatLabel();
     }
 
     private void setText(String text) {

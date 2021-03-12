@@ -12,7 +12,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Map;
 
-public class GenericCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener {
+public class BasicCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener {
 
     static class ChoiceWrapper {
         public Object object;
@@ -25,17 +25,17 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
 
         @Override
         public String toString() {
-            return "<html>"+ object + "<i> - " + description + "</i></html>";
+            return "<html>" + object + "<i> - " + description + "</i></html>";
         }
     }
 
     private final JComponent component;
 
-    public GenericCellEditor() {
+    public BasicCellEditor() {
         this(null);
     }
 
-    public GenericCellEditor(Map<?, String> predefinedValues) {
+    public BasicCellEditor(Map<?, String> predefinedValues) {
         if (predefinedValues == null) {
             component = new FlatTextField();
             component.addFocusListener(new FocusAdapter() {

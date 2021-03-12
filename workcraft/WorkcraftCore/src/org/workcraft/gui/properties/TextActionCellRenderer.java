@@ -2,7 +2,7 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionUtils;
-import org.workcraft.utils.GuiUtils;
+import org.workcraft.gui.controls.FlatTextField;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -12,7 +12,7 @@ import java.awt.event.MouseEvent;
 @SuppressWarnings("serial")
 public class TextActionCellRenderer extends JPanel implements TableCellRenderer {
 
-    private final JTextField text = new JTextField();
+    private final JTextField text = new FlatTextField();
     private final JButton leftButton = new JButton();
     private final JButton rightButton = new JButton();
 
@@ -22,7 +22,6 @@ public class TextActionCellRenderer extends JPanel implements TableCellRenderer 
         leftButton.setMargin(PropertyHelper.BUTTON_INSETS);
 
         text.setFocusable(true);
-        text.setBorder(GuiUtils.getTableCellBorder());
 
         rightButton.setFocusable(false);
         rightButton.setVisible(false);

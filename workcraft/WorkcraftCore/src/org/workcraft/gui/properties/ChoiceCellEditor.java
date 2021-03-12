@@ -7,45 +7,41 @@ import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-@SuppressWarnings("serial")
 public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener {
 
-    class ChoiceWrapper {
-        public Object value;
-        public String text;
+    static class ChoiceWrapper {
+        public Object object;
+        public String description;
 
-        ChoiceWrapper(String text, Object value) {
-            this.text = text;
-            this.value = value;
+        ChoiceWrapper(Object object, String description) {
+            this.object = object;
+            this.description = description;
         }
 
         @Override
         public String toString() {
-            return text;
+            return description;
         }
     }
 
     private final FlatComboBox comboBox;
-    private final ChoiceWrapper[] wrappers;
+    private final List<ChoiceWrapper> wrappers;
 
-    public ChoiceCellEditor(PropertyDescriptor descriptor) {
+    public ChoiceCellEditor(PropertyDescriptor<Object> descriptor) {
         comboBox = new FlatComboBox();
         comboBox.setFocusable(false);
         comboBox.addItemListener(this);
 
-        Map<? extends Object, String> choice = descriptor.getChoice();
-        int choiceCount = choice.size();
-        wrappers = new ChoiceWrapper[choiceCount];
-        int index = 0;
-        for (Object object: choice.keySet()) {
-            String text = choice.get(object);
-            if (text != null) {
-                wrappers[index] = new ChoiceWrapper(text, object);
-                comboBox.addItem(wrappers[index]);
-            }
-            index++;
+        Map<Object, String> choice = descriptor.getChoice();
+        wrappers = new ArrayList<>();
+        for (Map.Entry<Object, String> entry : choice.entrySet()) {
+            ChoiceWrapper wrapper = new ChoiceWrapper(entry.getKey(), entry.getValue());
+            wrappers.add(wrapper);
+            comboBox.addItem(wrapper);
         }
     }
 
@@ -53,7 +49,7 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
     public Object getCellEditorValue() {
         Object selectedItem = comboBox.getSelectedItem();
         if (selectedItem instanceof ChoiceWrapper) {
-            return ((ChoiceWrapper) selectedItem).value;
+            return ((ChoiceWrapper) selectedItem).object;
         }
         return null;
     }
@@ -65,7 +61,7 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
         // First select non-existent item, then select a "correct" item.
         comboBox.setSelectedItem(null);
         for (ChoiceWrapper wrapper: wrappers) {
-            if (wrapper.text.equals(value)) {
+            if (wrapper.description.equals(value)) {
                 comboBox.setSelectedItem(wrapper);
                 break;
             }
