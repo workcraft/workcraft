@@ -17,21 +17,18 @@ import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonitor<SynthesisOutput, WorkspaceEntry> {
 
-    private static final Pattern patternAddingStateSignal = Pattern.compile(
+    private static final Pattern ADDING_STATE_SIGNAL_PATTERN = Pattern.compile(
             "Adding state signal: (.*)\\R", Pattern.UNIX_LINES);
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
@@ -90,7 +87,7 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         WorkspaceEntry result = handleVerilogSynthesisOutput(synthOutput);
 
         // Report inserted CSC signals and unmapped signals AFTER importing the Verilog, so the circuit is visible.
-        checkNewSignals(synthOutput);
+        checkCscSignals(synthOutput);
         if (technologyMapping) {
             CircuitUtils.mapUnmappedBuffers(result);
             CircuitUtils.checkUnmappedSignals(result);
@@ -99,23 +96,12 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         return result;
     }
 
-    private void checkNewSignals(SynthesisOutput synthOutput) {
+    private void checkCscSignals(SynthesisOutput synthOutput) {
         String errorMessage = synthOutput.getStderrString();
-        List<String> stateSignals = getMatchedSignals(errorMessage, patternAddingStateSignal);
-        if (!stateSignals.isEmpty()) {
-            String msg = TextUtils.wrapMessageWithItems(
-                    "CSC conflicts are automatically resolved by inserting signal", stateSignals);
-            DialogUtils.showInfo(msg);
+        Matcher matcher = ADDING_STATE_SIGNAL_PATTERN.matcher(errorMessage);
+        if (matcher.find()) {
+            DialogUtils.showInfo("CSC conflicts are automatically resolved during synthesis");
         }
-    }
-
-    private List<String> getMatchedSignals(String errorMessage, Pattern pattern) {
-        List<String> result = new ArrayList<>();
-        Matcher matcher = pattern.matcher(errorMessage);
-        while (matcher.find()) {
-            result.add(matcher.group(1));
-        }
-        return result;
     }
 
     private WorkspaceEntry handleVerilogSynthesisOutput(SynthesisOutput synthOutput) {

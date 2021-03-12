@@ -28,8 +28,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingMonitor<SynthesisChainOutput, WorkspaceEntry> {
+
+    private static final Pattern CSC_CONFLICT_PATTERN = Pattern.compile(
+            "Warning: CSC conflict for signal (.+): cannot derive implementation " +
+                  "\\(in logic decomposition mode inserted internal signals may promote a USC conflict to CSC one\\)\\R",
+            Pattern.UNIX_LINES);
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
@@ -108,7 +115,8 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
 
         WorkspaceEntry result = handleVerilogSynthesisOutput(mpsatOutput, celementAssign, sequentialAssign, renderType);
 
-        // Report unmapped signals AFTER importing the Verilog, so the circuit is visible.
+        // Report inserted CSC signals and unmapped signals AFTER importing the Verilog, so the circuit is visible.
+        checkCscSignals(mpsatOutput);
         if (technologyMapping) {
             CircuitUtils.checkUnmappedSignals(result);
         }
@@ -134,6 +142,14 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         CircuitUtils.setTitleAndEnvironment(visualCircuit, we);
         framework.updatePropertyView();
         return dstWe;
+    }
+
+    private void checkCscSignals(MpsatOutput mpsatOutput) {
+        String errorMessage = mpsatOutput.getStderrString();
+        Matcher matcher = CSC_CONFLICT_PATTERN.matcher(errorMessage);
+        if (matcher.find()) {
+            DialogUtils.showInfo("CSC conflicts are automatically resolved during synthesis");
+        }
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit, final RenderType renderType) {
