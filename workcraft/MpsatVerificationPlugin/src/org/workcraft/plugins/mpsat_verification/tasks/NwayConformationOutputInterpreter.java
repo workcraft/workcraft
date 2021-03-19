@@ -150,7 +150,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
     private void writeTableBody(Solution solution, String indent) {
         ProjectionBuilder projectionBuilder = new ProjectionBuilder(solution, getCompositionData(), wes);
-        Trace compositionViolationTrace = projectionBuilder.calcCompositionViolationTrace();
+        Trace compositionViolationTrace = projectionBuilder.getCompositionTraceWithViolationEvent();
         Map<WorkspaceEntry, ProjectionTrace> componentProjectionTraceMap = projectionBuilder.calcComponentProjectionTraces();
 
         for (int i = 0; i < compositionViolationTrace.size(); i++) {
@@ -193,11 +193,11 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
     private void writeList(Solution solution, String indent) {
         ProjectionBuilder projectionBuilder = new ProjectionBuilder(solution, getCompositionData(), wes);
-        Trace projectedEvents = projectionBuilder.calcCompositionViolationTrace();
+        Trace violationTrace = projectionBuilder.getCompositionTraceWithViolationEvent();
         Map<WorkspaceEntry, ProjectionTrace> componentProjectionTraceMap = projectionBuilder.calcComponentProjectionTraces();
 
-        int maxLen = projectedEvents.stream().mapToInt(String::length).max().orElse(0);
-        for (int i = 0; i < projectedEvents.size(); i++) {
+        int maxLen = violationTrace.stream().mapToInt(String::length).max().orElse(0);
+        for (int i = 0; i < violationTrace.size(); i++) {
             List<String> inputRefs = new ArrayList<>();
             List<String> outputRefs = new ArrayList<>();
             List<String> internalRefs = new ArrayList<>();
@@ -226,7 +226,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
             String inputStr = String.join(", ", inputRefs);
             String outputStr = String.join(", ", outputRefs);
             String internalStr = String.join(", ", internalRefs);
-            String prefix = String.format(indent + "%-" + maxLen + "s : ", projectedEvents.get(i));
+            String prefix = String.format(indent + "%-" + maxLen + "s : ", violationTrace.get(i));
             if (!internalStr.isEmpty()) {
                 LogUtils.logMessage(prefix + internalStr);
             } else {

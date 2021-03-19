@@ -5,6 +5,7 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
+import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
@@ -35,9 +36,11 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
     private static final String COMPOSITION_SHADOW_STG_FILE_NAME = "composition-shadow" + STG_FILE_EXTENSION;
 
     private final List<WorkspaceEntry> wes;
+    private final Map<WorkspaceEntry, Map<String, String>> renames;
 
-    public NwayConformationTask(List<WorkspaceEntry> wes) {
+    public NwayConformationTask(List<WorkspaceEntry> wes, Map<WorkspaceEntry, Map<String, String>> renames) {
         this.wes = wes;
+        this.renames = renames;
     }
 
     @Override
@@ -83,6 +86,9 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             // Export component STG (convert internal signals to dummies and keep track of renaming)
             @SuppressWarnings("PMD.PrematureDeclaration")
             Map<String, String> substitutions = StgUtils.convertInternalSignalsToDummies(stg);
+            Map<String, String> renameMap = renames.getOrDefault(we, Collections.emptyMap());
+            substitutions.putAll(StgUtils.renameSignals(stg, renameMap));
+
             File stgFile = new File(directory, we.getTitle() + STG_FILE_EXTENSION);
             Result<? extends ExportOutput> exportResult = StgUtils.exportStg(stg, stgFile, monitor);
             if (!exportResult.isSuccess()) {
@@ -132,11 +138,29 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
         Stg compositionStg = StgUtils.importStg(pcompOutput.getOutputFile());
         CompositionTransformer transformer = new CompositionTransformer(compositionStg, compositionData);
         Set<SignalTransition> shadowTransitions = new HashSet<>();
+        int index = 0;
         for (WorkspaceEntry we : wes) {
             StgModel componentStg = WorkspaceUtils.getAs(we, StgModel.class);
-            Set<String> componentOutputSignals = componentStg.getSignalReferences(Signal.Type.OUTPUT);
+            Map<String, String> renameMap = renames.getOrDefault(we, Collections.emptyMap());
+            Set<String> componentOutputSignals = componentStg.getSignalReferences(Signal.Type.OUTPUT).stream()
+                    .map(name -> renameMap.getOrDefault(name, name)).collect(Collectors.toSet());
+
             File componentStgFile = getComponentStgFile(directory, we);
-            shadowTransitions.addAll(transformer.insetShadowTransitions(componentOutputSignals, componentStgFile));
+            Collection<SignalTransition> componentShadowTransitions = transformer.insetShadowTransitions(componentOutputSignals, componentStgFile);
+            shadowTransitions.addAll(componentShadowTransitions);
+
+            ComponentData componentData = compositionData.getComponentData(index);
+            if (componentData != null) {
+                Map<String, String> substitutions = new HashMap<>();
+                for (SignalTransition shadowTransition : componentShadowTransitions) {
+                    String shadowTransitionRef = compositionStg.getNodeReference(shadowTransition);
+                    String srcCompositionTransitionRef = componentData.getSrcTransition(shadowTransitionRef);
+                    String srcComponentTransitionRef = componentData.getSrcTransition(srcCompositionTransitionRef);
+                    substitutions.put(srcCompositionTransitionRef, srcComponentTransitionRef);
+                }
+                componentData.substituteSrcTransitions(substitutions);
+            }
+            index++;
         }
         // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
         transformer.insertShadowEnablerPlace(shadowTransitions);
