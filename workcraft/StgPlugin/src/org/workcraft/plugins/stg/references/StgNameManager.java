@@ -6,10 +6,10 @@ import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.LabelParser;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.types.ListMap;
 import org.workcraft.types.Pair;
 import org.workcraft.types.Triple;
+import org.workcraft.utils.DialogUtils;
 
 public class StgNameManager extends DefaultNameManager {
 
@@ -62,10 +62,10 @@ public class StgNameManager extends DefaultNameManager {
             signalName = name;
         } else {
             final Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(name);
-            if (r == null) {
+            signalName = r == null ? null : r.getFirst();
+            if (!Identifier.isValid(signalName)) {
                 throw new ArgumentException("Name '" + name + "' is not a valid signal transition label.");
             }
-            signalName = r.getFirst();
             direction = r.getSecond();
             instance = r.getThird();
         }
@@ -78,10 +78,10 @@ public class StgNameManager extends DefaultNameManager {
 
     private void setDummyTransitionName(DummyTransition dt, String name, boolean forceInstance) {
         final Pair<String, Integer> r = LabelParser.parseDummyTransition(name);
-        if (r == null) {
+        String dummyName = r == null ? null : r.getFirst();
+        if (!Identifier.isValid(dummyName)) {
             throw new ArgumentException("Name '" + name + "' is not a valid dummy label.");
         }
-        String dummyName = r.getFirst();
         if (!dummyTransitions.get(dummyName).isEmpty() || isUnusedName(dummyName) || renameOccupantIfDifferent(dt, dummyName)) {
             instancedNameManager.assign(dt, r, forceInstance);
             renameDummyTransition(dt, dummyName);
