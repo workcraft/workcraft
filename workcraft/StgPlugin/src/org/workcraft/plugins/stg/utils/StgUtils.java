@@ -175,6 +175,21 @@ public class StgUtils {
         return result;
     }
 
+    public static Map<String, String> renameSignals(Stg stg, Map<String, String> renameMap) {
+        Map<String, String> result = new HashMap<>();
+        for (SignalTransition signalTransition : stg.getSignalTransitions()) {
+            String oldSignalName = signalTransition.getSignalName();
+            String newSignalName = renameMap.get(oldSignalName);
+            if (newSignalName != null) {
+                String oldTransitionRef = stg.getNodeReference(signalTransition);
+                stg.setName(signalTransition, newSignalName);
+                String newTransitionRef = stg.getNodeReference(signalTransition);
+                result.put(newTransitionRef, oldTransitionRef);
+            }
+        }
+        return result;
+    }
+
     public static void convertInternalSignalsToOutputs(Stg stg) {
         for (String signal : stg.getSignalReferences(Signal.Type.INTERNAL)) {
             stg.setSignalType(signal, Signal.Type.OUTPUT);

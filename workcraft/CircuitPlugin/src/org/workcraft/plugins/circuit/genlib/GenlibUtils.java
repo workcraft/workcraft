@@ -73,6 +73,7 @@ public class GenlibUtils {
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }
+        contact.setDefaultDirection();
     }
 
     private static String getSetFunction(Gate gate) {

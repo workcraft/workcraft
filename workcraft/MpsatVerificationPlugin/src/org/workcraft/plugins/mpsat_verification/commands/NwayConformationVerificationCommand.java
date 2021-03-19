@@ -17,7 +17,9 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class NwayConformationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
@@ -61,7 +63,7 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
             return;
         }
 
-        NwayConformationTask task = new NwayConformationTask(wes);
+        NwayConformationTask task = new NwayConformationTask(wes, getRenames());
         TaskManager manager = Framework.getInstance().getTaskManager();
         String titles = wes.stream().map(WorkspaceEntry::getTitle).collect(Collectors.joining(", "));
         String description = MpsatUtils.getToolchainDescription(titles);
@@ -82,6 +84,10 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
 
     public NwayConformationChainResultHandlingMonitor getMonitor(List<WorkspaceEntry> wes) {
         return new NwayConformationChainResultHandlingMonitor(wes);
+    }
+
+    public Map<WorkspaceEntry, Map<String, String>> getRenames() {
+        return Collections.emptyMap();
     }
 
 }

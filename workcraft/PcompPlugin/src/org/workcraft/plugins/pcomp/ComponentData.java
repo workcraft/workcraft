@@ -57,8 +57,8 @@ public class ComponentData {
         return dst2srcTransitionMap.get(dst);
     }
 
-    public HashSet<String> getDstTransitions(String src) {
-        HashSet<String> result = new HashSet<>();
+    public Set<String> getDstTransitions(String src) {
+        Set<String> result = new HashSet<>();
         for (Entry<String, String> entry: dst2srcTransitionMap.entrySet()) {
             if (src.equals(entry.getValue())) {
                 result.add(entry.getKey());
@@ -67,12 +67,12 @@ public class ComponentData {
         return result;
     }
 
-    public HashSet<String> getStcTransitions() {
-        return new HashSet<>(dst2srcTransitionMap.keySet());
+    public Set<String> getSrcTransitions() {
+        return new HashSet<>(dst2srcTransitionMap.values());
     }
 
-    public HashSet<String> getDstTransitions() {
-        return new HashSet<>(dst2srcTransitionMap.values());
+    public Set<String> getDstTransitions() {
+        return new HashSet<>(dst2srcTransitionMap.keySet());
     }
 
     public void addShadowTransition(String shadow, String src) {

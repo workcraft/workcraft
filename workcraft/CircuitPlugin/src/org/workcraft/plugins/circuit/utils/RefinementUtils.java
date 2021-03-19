@@ -99,6 +99,9 @@ public final class RefinementUtils {
     }
 
     private static Pair<File, Circuit> getRefinementCircuit(File file) {
+        if (file == null) {
+            return null;
+        }
         try {
             ModelEntry me = WorkUtils.loadModel(file);
             if (me != null) {
