@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.mpsat_verification.projection.Enabledness;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -10,9 +11,11 @@ import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -29,11 +32,9 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
     @Override
     public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
-
         ComponentData data = getComponentData();
         StgModel stg = getStg();
-        HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
-
+        HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
         for (Solution solution : solutions) {
             Trace trace = solution.getMainTrace();
             LogUtils.logMessage("Violation trace: " + trace);
@@ -42,30 +43,45 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
                 LogUtils.logMessage("Projection trace: " + trace);
             }
             if (!PetriUtils.fireTrace(stg, trace)) {
-                PetriUtils.setMarking(stg, marking);
+                PetriUtils.setMarking(stg, initialMarking);
                 throw new RuntimeException("Cannot execute trace: " + trace);
             }
-            // Check if any local signal gets disabled by firing other signal event
-            HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
-            for (SignalTransition transition : getEnabledSignalTransitions(stg)) {
-                stg.fire(transition);
-                HashSet<String> nonpersistentLocalSignals = new HashSet<>(enabledLocalSignals);
-                nonpersistentLocalSignals.remove(transition.getSignalName());
-                nonpersistentLocalSignals.removeAll(getEnabledLocalSignals(stg));
+            // Check if any local signal gets disabled by firing continuations
+            Enabledness enabledness = CompositionUtils.getEnabledness(solution.getContinuations(), data);
+            for (String enabledTransitionRef : enabledness.keySet()) {
+                HashSet<String> nonpersistentLocalSignals = getNonpersistentLocalSignals(stg,
+                        enabledness.get(enabledTransitionRef), enabledTransitionRef);
+
                 if (!nonpersistentLocalSignals.isEmpty()) {
                     String comment = getMessageWithList("Non-persistent signal", nonpersistentLocalSignals);
-                    String transitionRef = stg.getNodeReference(transition);
-                    String msg = getMessageWithList("Event '" + transitionRef + "' disables signal", nonpersistentLocalSignals);
+                    String msg = getMessageWithList("Event '" + enabledTransitionRef + "' disables signal", nonpersistentLocalSignals);
                     LogUtils.logWarning(msg);
                     Trace processedTrace = new Trace(trace);
-                    processedTrace.add(transitionRef);
+                    processedTrace.add(enabledTransitionRef);
                     Solution processedSolution = new Solution(processedTrace, null, comment);
                     result.add(processedSolution);
                 }
-                stg.unFire(transition);
             }
-            PetriUtils.setMarking(stg, marking);
+            PetriUtils.setMarking(stg, initialMarking);
         }
+        return result;
+    }
+
+    private HashSet<String> getNonpersistentLocalSignals(StgModel stg, Trace continuationTrace, String enabledTransitionRef) {
+        HashSet<String> result = new HashSet<>();
+        continuationTrace.add(enabledTransitionRef);
+        HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
+        HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
+        if (PetriUtils.fireTrace(stg, continuationTrace)) {
+            result.addAll(enabledLocalSignals);
+            Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(enabledTransitionRef);
+            if (r != null) {
+                result.remove(r.getFirst());
+            }
+            HashSet<String> stillEnabledLocalSignals = getEnabledLocalSignals(stg);
+            result.removeAll(stillEnabledLocalSignals);
+        }
+        PetriUtils.setMarking(stg, marking);
         return result;
     }
 
