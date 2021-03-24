@@ -561,7 +561,7 @@ public final class Framework {
         return createWork(me, path, open, true);
     }
 
-    private WorkspaceEntry createWork(ModelEntry me, Path<String> path, boolean open, boolean changed) {
+    public WorkspaceEntry createWork(ModelEntry me, Path<String> path, boolean open, boolean changed) {
         WorkspaceEntry we = new WorkspaceEntry();
         we.setModelEntry(createVisualIfAbsent(me));
         getWorkspace().addWork(path, we);
@@ -679,14 +679,13 @@ public final class Framework {
         return we;
     }
 
-    public WorkspaceEntry mergeWork(WorkspaceEntry we, File file) throws DeserialisationException {
+    public void mergeWork(WorkspaceEntry we, File file) throws DeserialisationException {
         if ((we != null) && FileFilters.isWorkFile(file)) {
             ModelEntry me = WorkUtils.loadModel(file);
             if (me != null) {
                 we.insert(me);
             }
         }
-        return we;
     }
 
     /**
