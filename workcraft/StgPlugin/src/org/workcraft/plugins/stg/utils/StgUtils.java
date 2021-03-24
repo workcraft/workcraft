@@ -23,6 +23,7 @@ import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.*;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -175,21 +176,6 @@ public class StgUtils {
         return result;
     }
 
-    public static Map<String, String> renameSignals(Stg stg, Map<String, String> renameMap) {
-        Map<String, String> result = new HashMap<>();
-        for (SignalTransition signalTransition : stg.getSignalTransitions()) {
-            String oldSignalName = signalTransition.getSignalName();
-            String newSignalName = renameMap.get(oldSignalName);
-            if (newSignalName != null) {
-                String oldTransitionRef = stg.getNodeReference(signalTransition);
-                stg.setName(signalTransition, newSignalName);
-                String newTransitionRef = stg.getNodeReference(signalTransition);
-                result.put(newTransitionRef, oldTransitionRef);
-            }
-        }
-        return result;
-    }
-
     public static void convertInternalSignalsToOutputs(Stg stg) {
         for (String signal : stg.getSignalReferences(Signal.Type.INTERNAL)) {
             stg.setSignalType(signal, Signal.Type.OUTPUT);
@@ -242,7 +228,6 @@ public class StgUtils {
         if (exporter == null) {
             throw new NoExporterException(stg, format);
         }
-
         ExportTask exportTask = new ExportTask(exporter, stg, file);
         String description = "Exporting " + file.getAbsolutePath();
         SubtaskMonitor<Object> subtaskMonitor = monitor == null ? null : new SubtaskMonitor<>(monitor);
@@ -330,34 +315,52 @@ public class StgUtils {
      */
     private static StgModel copyStgPreserveSignals(StgModel stg) {
         Stg result = new Stg();
-        Map<MathNode, MathNode> nodeMap = new HashMap<>();
-        // Copy signal transitions with their hierarchy.
+        copyStgRenameSignals(stg, result, Collections.emptyMap());
+        return result;
+    }
+
+    /**
+     * Copy the given STG renaming signals. Note that STG places are copied without
+     * hierarchy and their names are not preserved.
+     *
+     * @param stg an STG to be copied
+     * @param newStg an STG to be populated
+     * @return node mapping from the original stg to newStg
+     */
+    public static Map<MathNode, MathNode> copyStgRenameSignals(StgModel stg, Stg newStg, Map<String, String> signalRenames) {
+        Map<MathNode, MathNode> result = new HashMap<>();
+        // Copy signal transitions with their hierarchy, renaming their signals if necessary.
         for (SignalTransition signalTransition : stg.getSignalTransitions()) {
             String ref = stg.getNodeReference(signalTransition);
-            SignalTransition newSignalTransition = result.createSignalTransition(ref, null);
+            Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
+            if (r != null) {
+                String signalRef = r.getFirst();
+                ref = signalRenames.getOrDefault(signalRef, signalRef) + r.getSecond();
+            }
+            SignalTransition newSignalTransition = newStg.createSignalTransition(ref, null);
             newSignalTransition.setSignalType(signalTransition.getSignalType());
             newSignalTransition.setDirection(signalTransition.getDirection());
-            nodeMap.put(signalTransition, newSignalTransition);
+            result.put(signalTransition, newSignalTransition);
         }
         // Copy dummy transitions with their hierarchy.
         for (DummyTransition dummyTransition : stg.getDummyTransitions()) {
             String ref = stg.getNodeReference(dummyTransition);
-            DummyTransition newDummyTransition = result.createDummyTransition(ref, null);
-            nodeMap.put(dummyTransition, newDummyTransition);
+            DummyTransition newDummyTransition = newStg.createDummyTransition(ref, null);
+            result.put(dummyTransition, newDummyTransition);
         }
         // Copy places WITHOUT their hierarchy -- implicit places cannot be copied (NOTE that implicit place ref in NOT C-style).
         for (Place place : stg.getPlaces()) {
-            StgPlace newPlace = result.createPlace();
+            StgPlace newPlace = newStg.createPlace();
             newPlace.setCapacity(place.getCapacity());
             newPlace.setTokens(place.getTokens());
-            nodeMap.put(place, newPlace);
+            result.put(place, newPlace);
         }
         // Connect places and transitions.
         for (Connection connection : stg.getConnections()) {
-            MathNode firstNode = nodeMap.get(connection.getFirst());
-            MathNode secondNode = nodeMap.get(connection.getSecond());
+            MathNode firstNode = result.get(connection.getFirst());
+            MathNode secondNode = result.get(connection.getSecond());
             try {
-                result.connect(firstNode, secondNode);
+                newStg.connect(firstNode, secondNode);
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }

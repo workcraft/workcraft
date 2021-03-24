@@ -7,6 +7,8 @@ import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class FileUtils {
@@ -341,6 +343,21 @@ public class FileUtils {
             }
         }
         return file;
+    }
+
+    public static List<File> getDirectoryFiles(File dir) {
+        List<File> result = new ArrayList<>();
+        if ((dir != null) && dir.isDirectory()) {
+            File[] fileArray = dir.listFiles();
+            if (fileArray != null) {
+                for (File file : fileArray) {
+                    if ((file != null) && file.isFile()) {
+                        result.add(file);
+                    }
+                }
+            }
+        }
+        return result;
     }
 
 }

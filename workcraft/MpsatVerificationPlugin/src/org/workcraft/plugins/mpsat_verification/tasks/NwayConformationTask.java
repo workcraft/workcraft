@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
@@ -20,9 +21,7 @@ import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -80,17 +79,18 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
         ExtendedExportOutput extendedExportOutput = new ExtendedExportOutput();
         for (WorkspaceEntry we : wes) {
             // Clone component STG as its internal signals will be converted to dummies
-            ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
-            Stg stg = WorkspaceUtils.getAs(me, Stg.class);
+            Stg componentStg = WorkspaceUtils.getAs(we, Stg.class);
+            Stg processedStg = new Stg();
+            Map<MathNode, MathNode> nodeMap = StgUtils.copyStgRenameSignals(componentStg, processedStg,
+                    renames.getOrDefault(we, Collections.emptyMap()));
 
             // Export component STG (convert internal signals to dummies and keep track of renaming)
             @SuppressWarnings("PMD.PrematureDeclaration")
-            Map<String, String> substitutions = StgUtils.convertInternalSignalsToDummies(stg);
-            Map<String, String> renameMap = renames.getOrDefault(we, Collections.emptyMap());
-            substitutions.putAll(StgUtils.renameSignals(stg, renameMap));
+            Map<String, String> substitutions = StgUtils.convertInternalSignalsToDummies(processedStg);
+            substitutions.putAll(getTransitionSubstitutions(componentStg, processedStg, nodeMap));
 
             File stgFile = new File(directory, we.getTitle() + STG_FILE_EXTENSION);
-            Result<? extends ExportOutput> exportResult = StgUtils.exportStg(stg, stgFile, monitor);
+            Result<? extends ExportOutput> exportResult = StgUtils.exportStg(processedStg, stgFile, monitor);
             if (!exportResult.isSuccess()) {
                 return new Result<>(exportResult.getOutcome(), payload);
             }
@@ -98,6 +98,19 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
         }
         Result<ExtendedExportOutput> extendedExportResult = Result.success(extendedExportOutput);
         return Result.success(payload.applyExportResult(extendedExportResult));
+    }
+
+    private Map<String, String> getTransitionSubstitutions(Stg srcStg, Stg dstStg, Map<MathNode, MathNode> nodeMap) {
+        Map<String, String> result = new HashMap<>();
+        for (MathNode srcNode : srcStg.getSignalTransitions()) {
+            MathNode dstNode = nodeMap.get(srcNode);
+            if (dstNode instanceof SignalTransition) {
+                String srcRef = srcStg.getNodeReference(srcNode);
+                String dstRef = dstStg.getNodeReference(dstNode);
+                result.put(dstRef, srcRef);
+            }
+        }
+        return result;
     }
 
     private Result<? extends VerificationChainOutput> composeInterfaces(VerificationChainOutput payload,
