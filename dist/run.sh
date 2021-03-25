@@ -192,7 +192,6 @@ for platform in $platforms; do
 
     echo "  * Adjusting file attributes..."
     adjust_permissions "$platform_path"
-    echo $pack
 
     if $pack; then
         echo "  * Creating distribution archive..."
