@@ -372,7 +372,7 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     private PropertyDescriptor getRefinementProperty(VisualFunctionComponent component) {
-        return new PropertyDeclaration<>(FileReference.class, CircuitComponent.PROPERTY_REFINEMENT + "!",
+        return new PropertyDeclaration<>(FileReference.class, CircuitComponent.PROPERTY_REFINEMENT,
                 value -> setRefinementIfCompatible(component, value),
                 () -> component.getReferencedComponent().getRefinement());
     }

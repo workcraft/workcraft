@@ -78,7 +78,7 @@ public class HitMan {
 
     @SuppressWarnings("unchecked")
     public static <T extends Node> T hitFirstChild(Point2D point, Node node, final Class<T> type) {
-        return (T) hitFirstChild(point, node, Hierarchy.getTypeFilter(type));
+        return (T) hitFirstChild(point, node, type::isInstance);
     }
 
     public static Node hitFirstChild(Point2D point, Node parentNode, Func<Node, Boolean> filter) {
@@ -144,7 +144,7 @@ public class HitMan {
 
     @SuppressWarnings("unchecked")
     public static <T extends Node> T hitDeepest(Point2D point, Node node, final Class<T> type) {
-        return (T) hitDeepest(point, node, Hierarchy.getTypeFilter(type));
+        return (T) hitDeepest(point, node, type::isInstance);
     }
 
     public static Node hitDeepest(Point2D point, Node node, final Func<Node, Boolean> filter) {

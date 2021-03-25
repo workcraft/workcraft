@@ -14,10 +14,6 @@ import java.util.LinkedList;
 
 public class Hierarchy {
 
-    public static <T> Func<Node, Boolean> getTypeFilter(final Class<T> type) {
-        return node -> type.isInstance(node);
-    }
-
     public static <T extends Node> Collection<T> filterNodesByType(Collection<Node> nodes, final Class<T> type) {
         LinkedList<T> result = new LinkedList<>();
         for (Node node : nodes) {
@@ -109,12 +105,12 @@ public class Hierarchy {
     }
 
     public static Container getNearestContainer(Collection<? extends Node> nodes) {
-        return getNearestContainer(nodes.toArray(new Node[nodes.size()]));
+        return getNearestContainer(nodes.toArray(new Node[0]));
     }
 
     @SuppressWarnings({ "unchecked" })
     public static <T> T getNearestAncestor(Node node, final Class<T> type) {
-        return (T) getNearestAncestor(node, n -> type.isInstance(n));
+        return (T) getNearestAncestor(node, type::isInstance);
     }
 
     public static Node getNearestAncestor(Node node, Func<Node, Boolean> filter) {

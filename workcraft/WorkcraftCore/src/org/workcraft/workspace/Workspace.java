@@ -50,7 +50,7 @@ public class Workspace {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        addMount(Path.<String>empty(), getBaseDir(), true);
+        addMount(Path.empty(), getBaseDir(), true);
     }
 
     public File getFile(Path<String> wsPath) {
@@ -224,9 +224,9 @@ public class Workspace {
             throw new RuntimeException("Workspace must be saved to a directory, not a file.");
         }
         try {
-            for (File f : getBaseDir().listFiles()) {
-                if (!f.getAbsoluteFile().equals(workspaceFile.getAbsoluteFile())) {
-                    FileUtils.copyAll(f, newBaseDir);
+            for (File file : FileUtils.getDirectoryFiles(getBaseDir())) {
+                if (!file.getAbsoluteFile().equals(workspaceFile.getAbsoluteFile())) {
+                    FileUtils.copyAll(file, newBaseDir);
                 }
             }
         } catch (IOException e) {
@@ -238,7 +238,7 @@ public class Workspace {
 
     private void setWorkspaceFile(File file) {
         workspaceFile = file;
-        Path<String> empty = Path.<String>empty();
+        Path<String> empty = Path.empty();
         mounts.remove(empty);
         addMount(empty, getBaseDir(), temporary);
     }
@@ -312,7 +312,7 @@ public class Workspace {
     }
 
     private MountTree getHardMountsRoot() {
-        return new MountTree(getBaseDir(), mounts, Path.<String>empty());
+        return new MountTree(getBaseDir(), mounts, Path.empty());
     }
 
     public MountTree getRoot() {
@@ -326,7 +326,7 @@ public class Workspace {
                 }
             }
         }
-        return new MountTree(getBaseDir(), allMounts, Path.<String>empty());
+        return new MountTree(getBaseDir(), allMounts, Path.empty());
     }
 
     public Path<String> tempMountExternalFile(File file) {

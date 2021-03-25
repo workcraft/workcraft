@@ -103,14 +103,6 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             }
         }
 
-        public boolean isHorisontal() {
-            return (this == WEST) || (this == EAST);
-        }
-
-        public boolean isVertical() {
-            return (this == NORTH) || (this == SOUTH);
-        }
-
         public int getGradientX() {
             switch (this) {
             case WEST: return -1;
@@ -126,7 +118,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             default: return 0;
             }
         }
-    };
+    }
 
     public static final Color inputColor = Color.RED;
     public static final Color outputColor = Color.BLUE;
@@ -148,7 +140,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             public boolean isVisible() {
                 return isPort();
             }
-        }.setCombinable().setTemplatable());
+        }.setCombinable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(IOType.class, Contact.PROPERTY_IO_TYPE,
                 value -> getReferencedComponent().setIOType(value),
@@ -385,10 +377,6 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         return getReferencedComponent().isPin();
     }
 
-    public boolean isEnvironmentPin() {
-        return getReferencedComponent().isEnvironmentPin();
-    }
-
     public boolean isPort() {
         return getReferencedComponent().isPort();
     }
@@ -481,8 +469,6 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             getReferencedComponent().setPathBreaker(srcComponent.getReferencedComponent().getPathBreaker());
             // TODO: Note that IOType and Direction are currently NOT copied to allow input/output
             //       port generation with Shift key (and not to be copied from a template node).
-            // getReferencedContact().setIOType(srcComponent.getReferencedContact().getIOType());
-            // setDirection(srcComponent.getDirection());
         }
     }
 
