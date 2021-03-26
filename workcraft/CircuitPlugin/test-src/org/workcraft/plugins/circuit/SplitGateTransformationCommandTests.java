@@ -31,6 +31,12 @@ public class SplitGateTransformationCommandTests {
     }
 
     @Test
+    public void testLiteralReuseSplitGateTransformationCommand() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "split-literal_reuse.circuit.work");
+        testSplitGateTransformationCommand(workName, 0, 3, 5, 2);
+    }
+
+    @Test
     public void testVmeSplitGateTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testSplitGateTransformationCommand(workName, 15, 18, 85, 0);

@@ -10,6 +10,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Not;
 import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.visitors.OrderedVariableExtractor;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.naryformula.SplitForm;
@@ -158,7 +159,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
 
     private static List<NodeConnectionPair> getComponentDriverNodes(VisualCircuit circuit, VisualFunctionComponent component) {
         List<NodeConnectionPair> result = new LinkedList<>();
-        for (VisualContact inputContact : GateUtils.getOrderedInputs(component)) {
+        for (VisualContact inputContact : getOrderedInputsWithRepetitions(component)) {
             VisualNode driver = null;
             VisualConnection visualConnection = null;
             for (VisualConnection connection : circuit.getConnections(inputContact)) {
@@ -167,6 +168,22 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
                 break;
             }
             result.add(new NodeConnectionPair(driver, visualConnection));
+        }
+        return result;
+    }
+
+    public static List<VisualFunctionContact> getOrderedInputsWithRepetitions(VisualFunctionComponent component) {
+        List<VisualFunctionContact> result = new LinkedList<>();
+        BooleanFormula setFunction = component.getGateOutput().getSetFunction();
+        List<BooleanVariable> orderedVariables = setFunction.accept(new OrderedVariableExtractor());
+        for (BooleanVariable variable : orderedVariables) {
+            if (variable instanceof FunctionContact) {
+                FunctionContact inputContact = (FunctionContact) variable;
+                VisualFunctionContact visualContact = component.getVisualContact(inputContact);
+                if (visualContact != null) {
+                    result.add(visualContact);
+                }
+            }
         }
         return result;
     }
