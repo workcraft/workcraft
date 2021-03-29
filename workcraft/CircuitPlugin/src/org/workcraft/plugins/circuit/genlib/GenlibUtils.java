@@ -162,7 +162,8 @@ public class GenlibUtils {
         if (gate != null) {
             try {
                 BooleanFormula formula = BooleanFormulaParser.parse(gate.function.formula);
-                return FormulaUtils.extractOrderedVariables(formula).size() + (gate.isSequential() ? 0 : 1);
+                List<BooleanVariable> pins = FormulaUtils.extractOrderedVariables(formula);
+                return pins.size() + (gate.isSequential() ? 0 : 1);
             } catch (ParseException e) {
             }
         }

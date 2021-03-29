@@ -24,7 +24,7 @@ public class FormulaUtils {
     public static BooleanFormula replace(BooleanFormula formula, BooleanVariable variable,
             BooleanFormula value, BooleanWorker worker) {
 
-        return replace(formula, Arrays.asList(variable), Arrays.asList(value), worker);
+        return replace(formula, Collections.singletonList(variable), Collections.singletonList(value), worker);
     }
 
     public static BooleanFormula replace(BooleanFormula formula, List<? extends BooleanVariable> variables,
@@ -70,7 +70,7 @@ public class FormulaUtils {
     public static List<BooleanVariable> extractOrderedVariables(BooleanFormula formula) {
         List<BooleanVariable> result = new ArrayList<>();
         if (formula != null) {
-            result.addAll(formula.accept(new OrderedVariableExtractor()));
+            result.addAll(new LinkedHashSet<>(formula.accept(new OrderedVariableExtractor())));
         }
         return result;
     }

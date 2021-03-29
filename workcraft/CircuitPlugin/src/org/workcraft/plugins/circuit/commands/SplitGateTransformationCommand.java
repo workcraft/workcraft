@@ -10,6 +10,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Not;
 import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.visitors.OrderedVariableExtractor;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.naryformula.SplitForm;
@@ -118,7 +119,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         NodeConnectionPair fromNodeConnection = fromNodeConnectionIterator.next();
         if (!toNodeConnectionsStack.isEmpty()) {
             Set<NodeConnectionPair> toNodeConnections = toNodeConnectionsStack.pop();
-            connectFanoutCopyFrom(circuit, fromNodeConnection, toNodeConnections);
+            connectFromCopyFanout(circuit, fromNodeConnection, toNodeConnections);
         }
     }
 
@@ -136,7 +137,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         outputContact.setDirection(direction);
         if (!toNodeConnectionsStack.isEmpty()) {
             Set<NodeConnectionPair> toNodeConnections = toNodeConnectionsStack.pop();
-            connectFanout(circuit, outputContact, toNodeConnections);
+            connectToCopyFanout(circuit, outputContact, toNodeConnections);
             if (toNodeConnections.size() == 1) {
                 NodeConnectionPair nodeConnection = toNodeConnections.iterator().next();
                 VisualComponent toNode = (VisualComponent) nodeConnection.getFirst();
@@ -158,7 +159,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
 
     private static List<NodeConnectionPair> getComponentDriverNodes(VisualCircuit circuit, VisualFunctionComponent component) {
         List<NodeConnectionPair> result = new LinkedList<>();
-        for (VisualContact inputContact : GateUtils.getOrderedInputs(component)) {
+        for (VisualContact inputContact : getOrderedInputsWithRepetitions(component)) {
             VisualNode driver = null;
             VisualConnection visualConnection = null;
             for (VisualConnection connection : circuit.getConnections(inputContact)) {
@@ -167,6 +168,22 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
                 break;
             }
             result.add(new NodeConnectionPair(driver, visualConnection));
+        }
+        return result;
+    }
+
+    public static List<VisualFunctionContact> getOrderedInputsWithRepetitions(VisualFunctionComponent component) {
+        List<VisualFunctionContact> result = new LinkedList<>();
+        BooleanFormula setFunction = component.getGateOutput().getSetFunction();
+        List<BooleanVariable> orderedVariables = setFunction.accept(new OrderedVariableExtractor());
+        for (BooleanVariable variable : orderedVariables) {
+            if (variable instanceof FunctionContact) {
+                FunctionContact inputContact = (FunctionContact) variable;
+                VisualFunctionContact visualContact = component.getVisualContact(inputContact);
+                if (visualContact != null) {
+                    result.add(visualContact);
+                }
+            }
         }
         return result;
     }
@@ -198,38 +215,50 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         return outputContact;
     }
 
-    private static void connectFanoutCopyFrom(VisualCircuit circuit, NodeConnectionPair fromNodeConnection,
+    private static void connectFromCopyFanout(VisualCircuit circuit, NodeConnectionPair fromNodeConnection,
             Set<NodeConnectionPair> toNodeConnections) {
 
         for (NodeConnectionPair toNodeConnection : toNodeConnections) {
-            if ((fromNodeConnection != null) && (toNodeConnection != null)) {
-                try {
-                    VisualNode fromNode = fromNodeConnection.getFirst();
-                    VisualNode toNode = toNodeConnection.getFirst();
-                    VisualConnection connection = circuit.connect(fromNode, toNode);
-                    VisualConnection fromConnection = fromNodeConnection.getSecond();
-                    connection.copyShape(fromConnection);
-                    connection.copyStyle(fromConnection);
-                } catch (InvalidConnectionException e) {
-                    throw new RuntimeException(e);
-                }
+            if ((fromNodeConnection != null) && (fromNodeConnection.getFirst() != null) && (toNodeConnection != null)) {
+                connectFromCopy(circuit, fromNodeConnection, toNodeConnection);
             }
         }
     }
 
-    private static void connectFanout(VisualCircuit circuit, VisualNode fromNode, Set<NodeConnectionPair> toNodeConnections) {
+    private static void connectFromCopy(VisualCircuit circuit, NodeConnectionPair fromNodeConnection,
+            NodeConnectionPair toNodeConnection) {
+
+        VisualNode fromNode = fromNodeConnection.getFirst();
+        VisualConnection fromConnection = fromNodeConnection.getSecond();
+        VisualNode toNode = toNodeConnection.getFirst();
+        try {
+            VisualConnection connection = circuit.connect(fromNode, toNode);
+            connection.copyShape(fromConnection);
+            connection.copyStyle(fromConnection);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static void connectToCopyFanout(VisualCircuit circuit, VisualNode fromNode,
+            Set<NodeConnectionPair> toNodeConnections) {
+
         for (NodeConnectionPair toNodeConnection: toNodeConnections) {
-            if ((fromNode != null) && (toNodeConnection != null)) {
-                try {
-                    VisualNode toNode = toNodeConnection.getFirst();
-                    VisualConnection toConnection = toNodeConnection.getSecond();
-                    VisualConnection connection = circuit.connect(fromNode, toNode);
-                    connection.copyShape(toConnection);
-                    connection.copyStyle(toConnection);
-                } catch (InvalidConnectionException e) {
-                    throw new RuntimeException(e);
-                }
+            if ((fromNode != null) && (toNodeConnection != null) && (toNodeConnection.getFirst() != null)) {
+                connectToCopy(circuit, fromNode, toNodeConnection);
             }
+        }
+    }
+
+    private static void connectToCopy(VisualCircuit circuit, VisualNode fromNode, NodeConnectionPair toNodeConnection) {
+        VisualNode toNode = toNodeConnection.getFirst();
+        VisualConnection toConnection = toNodeConnection.getSecond();
+        try {
+            VisualConnection connection = circuit.connect(fromNode, toNode);
+            connection.copyShape(toConnection);
+            connection.copyStyle(toConnection);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -1,16 +1,20 @@
 package org.workcraft.plugins.circuit;
 
-import java.net.URL;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.SplitGateTransformationCommand;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.net.URL;
+import java.util.Collection;
+import java.util.Set;
 
 public class SplitGateTransformationCommandTests {
 
@@ -21,13 +25,25 @@ public class SplitGateTransformationCommandTests {
     }
 
     @Test
-    public void testVmeSplitGateTransformationCommand() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
-        testSplitGateTransformationCommand(workName, 15, 18);
+    public void testDisconnectedSplitGateTransformationCommand() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "split-disconnected.circuit.work");
+        testSplitGateTransformationCommand(workName, 0, 3, 5, 2);
     }
 
-    private void testSplitGateTransformationCommand(String workName, int expMappedGateCount, int expUnmappedGateCount)
-            throws DeserialisationException {
+    @Test
+    public void testLiteralReuseSplitGateTransformationCommand() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "split-literal_reuse.circuit.work");
+        testSplitGateTransformationCommand(workName, 0, 3, 5, 2);
+    }
+
+    @Test
+    public void testVmeSplitGateTransformationCommand() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testSplitGateTransformationCommand(workName, 15, 18, 85, 0);
+    }
+
+    private void testSplitGateTransformationCommand(String workName, int expMappedGateCount, int expUnmappedGateCount,
+            int expConnectionCount, int expDisconnectedContactCount) throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -41,18 +57,30 @@ public class SplitGateTransformationCommandTests {
         SplitGateTransformationCommand command = new SplitGateTransformationCommand();
         command.execute(we);
 
-        int dstMappedGateCount = 0;
-        int dstUnmappedGateCount = 0;
+        int mappedGateCount = 0;
+        int unmappedGateCount = 0;
         for (VisualFunctionComponent component: circuit.getVisualFunctionComponents()) {
             if (component.isMapped()) {
-                dstMappedGateCount++;
+                mappedGateCount++;
             } else {
-                dstUnmappedGateCount++;
+                unmappedGateCount++;
             }
         }
 
-        Assertions.assertEquals(expMappedGateCount, dstMappedGateCount);
-        Assertions.assertEquals(expUnmappedGateCount, dstUnmappedGateCount);
+        Assertions.assertEquals(expMappedGateCount, mappedGateCount);
+        Assertions.assertEquals(expUnmappedGateCount, unmappedGateCount);
+
+        Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class);
+        Assertions.assertEquals(expConnectionCount, connections.size());
+
+        int disconnectedContactCount = 0;
+        for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
+            Set<VisualConnection> contactConnections = circuit.getConnections(contact);
+            if (contactConnections.isEmpty()) {
+                disconnectedContactCount++;
+            }
+        }
+        Assertions.assertEquals(expDisconnectedContactCount, disconnectedContactCount);
 
         framework.closeWork(we);
     }

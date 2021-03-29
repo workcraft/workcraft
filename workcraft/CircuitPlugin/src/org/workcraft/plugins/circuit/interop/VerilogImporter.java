@@ -10,7 +10,9 @@ import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.*;
-import org.workcraft.formula.*;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
@@ -610,8 +612,14 @@ public class VerilogImporter implements Importer {
         FunctionContact gateOutput = component.getGateOutput();
         if (gateOutput != null) {
             result.add(gateOutput);
+
+            BooleanFormula setFunction = gateOutput.getSetFunction();
+            for (BooleanVariable variable : FormulaUtils.extractOrderedVariables(setFunction)) {
+                if (variable instanceof FunctionContact) {
+                    result.add((FunctionContact) variable);
+                }
+            }
         }
-        result.addAll(GateUtils.getOrderedInputs(component));
         return result;
     }
 

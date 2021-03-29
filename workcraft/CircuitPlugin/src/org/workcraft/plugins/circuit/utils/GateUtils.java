@@ -35,7 +35,7 @@ public class GateUtils {
         if (container instanceof VisualCircuitComponent) {
             container = (Container) container.getParent();
         }
-        circuit.reparent(container, circuit, circuit.getRoot(), Arrays.asList(component));
+        circuit.reparent(container, circuit, circuit.getRoot(), Collections.singletonList(component));
 
         LinkedList<VisualComponent> succComponents = new LinkedList<>();
         for (VisualNode succNode : circuit.getPostset(predContact)) {
@@ -46,7 +46,9 @@ public class GateUtils {
         Point2D predPoint = predContact.getRootSpacePosition();
         Point2D succPoint = MixUtils.middleRootspacePosition(succComponents);
         Point2D pos = MixUtils.middlePoint(Arrays.asList(predPoint, succPoint));
-        component.setRootSpacePosition(pos);
+        if (pos != null) {
+            component.setRootSpacePosition(pos);
+        }
 
         VisualContact inputContact = component.getFirstVisualInput();
         VisualContact outputContact = component.getFirstVisualOutput();
@@ -82,7 +84,7 @@ public class GateUtils {
         if (container instanceof VisualCircuitComponent) {
             container = (Container) container.getParent();
         }
-        circuit.reparent(container, circuit, circuit.getRoot(), Arrays.asList(component));
+        circuit.reparent(container, circuit, circuit.getRoot(), Collections.singletonList(component));
 
         Point2D pos = connection.getMiddleSegmentCenterPoint();
         component.setPosition(pos);
@@ -261,7 +263,7 @@ public class GateUtils {
     }
 
     public static Set<BooleanVariable> getUsedPortVariables(Circuit circuit) {
-        Set<BooleanVariable> result = new HashSet();
+        Set<BooleanVariable> result = new HashSet<>();
         for (Contact contact : circuit.getInputPorts()) {
             if (!(contact instanceof FunctionContact)) continue;
             FunctionContact inputPort = (FunctionContact) contact;
@@ -272,7 +274,7 @@ public class GateUtils {
     }
 
     public static Set<BooleanVariable> getUsedVariables(FunctionComponent component) {
-        Set<BooleanVariable> result = new HashSet();
+        Set<BooleanVariable> result = new HashSet<>();
         for (FunctionContact contact : component.getFunctionOutputs()) {
             result.add(contact);
             result.addAll(GateUtils.getUsedVariables(contact));
@@ -291,35 +293,6 @@ public class GateUtils {
             literals.addAll(FormulaUtils.extractOrderedVariables(resetFunction));
         }
         return literals;
-    }
-
-    public static List<VisualFunctionContact> getOrderedInputs(VisualFunctionComponent component) {
-        List<VisualFunctionContact> result = new LinkedList<>();
-        if (component.getReferencedComponent() != null) {
-            for (FunctionContact contact: getOrderedInputs(component.getReferencedComponent())) {
-                VisualFunctionContact visualContact = component.getVisualContact(contact);
-                if (visualContact != null) {
-                    result.add(visualContact);
-                }
-            }
-        }
-        return result;
-    }
-
-    public static List<FunctionContact> getOrderedInputs(FunctionComponent component) {
-        List<FunctionContact> result = new LinkedList<>();
-        FunctionContact outputContact = component.getGateOutput();
-        if (outputContact != null) {
-            BooleanFormula setFunction = outputContact.getSetFunction();
-            List<BooleanVariable> orderedVariables = FormulaUtils.extractOrderedVariables(setFunction);
-            for (BooleanVariable variable : orderedVariables) {
-                if (variable instanceof FunctionContact) {
-                    FunctionContact contact = (FunctionContact) variable;
-                    result.add(contact);
-                }
-            }
-        }
-        return result;
     }
 
     public static VisualFunctionComponent createAndGate(VisualCircuit circuit, int count) {

@@ -2,61 +2,62 @@ package org.workcraft.formula.visitors;
 
 import org.workcraft.formula.*;
 
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 
-public class OrderedVariableExtractor implements BooleanVisitor<LinkedHashSet<BooleanVariable>> {
+public class OrderedVariableExtractor implements BooleanVisitor<List<BooleanVariable>> {
 
-    private final LinkedHashSet<BooleanVariable> variables = new LinkedHashSet<>();
+    private final List<BooleanVariable> variables = new ArrayList<>();
 
     @Override
-    public LinkedHashSet<BooleanVariable> visit(Zero node) {
+    public List<BooleanVariable> visit(Zero node) {
         return variables;
     }
 
     @Override
-    public LinkedHashSet<BooleanVariable> visit(One node) {
+    public List<BooleanVariable> visit(One node) {
         return variables;
     }
 
     @Override
-    public LinkedHashSet<BooleanVariable> visit(BooleanVariable node) {
+    public List<BooleanVariable> visit(BooleanVariable node) {
         variables.add(node);
         return variables;
     }
 
     @Override
-    public LinkedHashSet<BooleanVariable> visit(Not node) {
+    public List<BooleanVariable> visit(Not node) {
         return node.getX().accept(this);
     }
 
     @Override
-    public LinkedHashSet<BooleanVariable> visit(And node) {
+    public List<BooleanVariable> visit(And node) {
         return visitBinaryOperator(node);
     }
 
     @Override
-    public LinkedHashSet<BooleanVariable> visit(Or node) {
+    public List<BooleanVariable> visit(Or node) {
         return visitBinaryOperator(node);
     }
 
     @Override
-    public LinkedHashSet<BooleanVariable> visit(Iff node) {
+    public List<BooleanVariable> visit(Iff node) {
         return visitBinaryOperator(node);
     }
 
     @Override
-    public LinkedHashSet<BooleanVariable> visit(Xor node) {
+    public List<BooleanVariable> visit(Xor node) {
         return visitBinaryOperator(node);
     }
 
     @Override
-    public LinkedHashSet<BooleanVariable> visit(Imply node) {
+    public List<BooleanVariable> visit(Imply node) {
         return visitBinaryOperator(node);
     }
 
-    private LinkedHashSet<BooleanVariable> visitBinaryOperator(BinaryBooleanFormula node) {
-        variables.addAll(node.getX().accept(this));
-        variables.addAll(node.getY().accept(this));
+    private List<BooleanVariable> visitBinaryOperator(BinaryBooleanFormula node) {
+        node.getX().accept(this);
+        node.getY().accept(this);
         return variables;
     }
 
