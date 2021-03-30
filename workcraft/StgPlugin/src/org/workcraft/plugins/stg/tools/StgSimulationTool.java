@@ -4,8 +4,11 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.properties.BooleanCellEditor;
@@ -64,6 +67,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     private JPanel panel;
     private HashMap<String, Boolean> initialSignalState = new HashMap<>();
     private StgToStgConverter converter;
+    private Map<String, MathNode> refToUnderlyingNodeMap;
 
     public StgSimulationTool() {
         super(true);
@@ -372,13 +376,28 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     @Override
     public void generateUnderlyingModel(WorkspaceEntry we) {
-        converter = new StgToStgConverter(WorkspaceUtils.getAs(we, VisualStg.class));
+        VisualStg srcStg = WorkspaceUtils.getAs(we, VisualStg.class);
+        converter = new StgToStgConverter(srcStg);
 
+        refToUnderlyingNodeMap = new HashMap<>();
+        for (VisualTransition srcTransition : srcStg.getVisualTransitions()) {
+            String srcRef = srcStg.getMathReference(srcTransition);
+            VisualNode dstNode = converter.getSrcToDstNode(srcTransition);
+            if (dstNode instanceof VisualComponent) {
+                VisualComponent dstComponent = (VisualComponent) dstNode;
+                refToUnderlyingNodeMap.put(srcRef, dstComponent.getReferencedComponent());
+            }
+        }
     }
 
     @Override
     public Stg getUnderlyingModel() {
         return converter.getDstModel().getMathModel();
+    }
+
+    @Override
+    public MathNode getUnderlyingNode(String ref) {
+        return refToUnderlyingNodeMap == null ? null : refToUnderlyingNodeMap.get(ref);
     }
 
     @Override
