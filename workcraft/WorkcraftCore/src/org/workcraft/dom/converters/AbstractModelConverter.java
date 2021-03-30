@@ -9,14 +9,15 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.utils.Hierarchy;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public abstract class AbstractModelConverter<S extends VisualModel, T extends VisualModel>
         implements ModelConverter<S, T> {
 
     private final S srcModel;
     private final T dstModel;
-    private final HashMap<VisualNode, VisualNode> srcToDstNodes = new HashMap<>();
-    private final HashMap<String, Container> refToDstPage = new HashMap<>();
+    private final Map<VisualNode, VisualNode> srcToDstNodes = new HashMap<>();
+    private final Map<String, Container> refToDstPage = new HashMap<>();
 
     public AbstractModelConverter(S srcModel, T dstModel) {
         this.srcModel = srcModel;
