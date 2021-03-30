@@ -155,7 +155,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         properties.add(PropertyHelper.createSeparatorProperty("GUI decoration"));
 
         properties.add(new PropertyDeclaration<Double>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Screen pixel density (dpi) - requires restart",
+                PropertyHelper.BULLET_PREFIX + "Screen pixel density (DPI) - requires restart",
                 EditorCommonSettings::setScreenDpi,
                 EditorCommonSettings::getScreenDpi) {
             @Override

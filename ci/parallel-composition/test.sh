@@ -1,1 +1,1 @@
-./gradlew run --args="-nogui -noconfig -dir:${test_dir} -exec:conformation.js" >${log_file}
+./gradlew run --args="-nogui -noconfig -dir:${test_dir} -exec:composition.js" >${log_file}
