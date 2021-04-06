@@ -160,8 +160,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     @Override
-    public void centerPivotPoint(boolean horisontal, boolean vertical) {
-        super.centerPivotPoint(horisontal, vertical);
+    public void centerPivotPoint(boolean horizontal, boolean vertical) {
+        super.centerPivotPoint(horizontal, vertical);
         invalidateBoundingBox();
     }
 
@@ -199,60 +199,55 @@ public class VisualCircuitComponent extends VisualComponent implements Container
             positionHorizontal(vc, reverseProgression);
             break;
         }
-        centerPivotPoint(true, true);
         invalidateBoundingBox();
     }
 
     private void positionHorizontal(VisualContact vc, boolean reverseProgression) {
         LinkedList<VisualContact> contacts = getOrderedOutsideContacts(vc.getDirection());
         contacts.remove(vc);
-        if (contacts.isEmpty()) {
-            vc.setX(0);
-        } else {
+        double x = 0.0;
+        if (!contacts.isEmpty()) {
             if (reverseProgression) {
-                double x = TransformHelper.snapP5(contacts.getFirst().getX() - contactStep);
+                x = TransformHelper.snapP5(contacts.getFirst().getX() - contactStep);
                 for (VisualContact contact : getOrderedOutsideContacts(Direction.WEST)) {
                     if (contact.getX() > x - contactMargin - contactLength) {
                         contact.setX(x - contactMargin - contactLength);
                     }
                 }
-                vc.setX(x);
             } else {
-                double x = TransformHelper.snapP5(contacts.getLast().getX() + contactStep);
+                x = TransformHelper.snapP5(contacts.getLast().getX() + contactStep);
                 for (VisualContact contact : getOrderedOutsideContacts(Direction.EAST)) {
                     if (contact.getX() < x + contactMargin + contactLength) {
                         contact.setX(x + contactMargin + contactLength);
                     }
                 }
-                vc.setX(x);
             }
         }
+        vc.setX(x);
     }
 
     private void positionVertical(VisualContact vc, boolean reverseProgression) {
         LinkedList<VisualContact> contacts = getOrderedOutsideContacts(vc.getDirection());
         contacts.remove(vc);
-        if (contacts.isEmpty()) {
-            vc.setY(0);
-        } else {
+        double y = 0.0;
+        if (!contacts.isEmpty()) {
             if (reverseProgression) {
-                double y = TransformHelper.snapP5(contacts.getFirst().getY() - contactStep);
+                y = TransformHelper.snapP5(contacts.getFirst().getY() - contactStep);
                 for (VisualContact contact : getOrderedOutsideContacts(Direction.NORTH)) {
                     if (contact.getY() > y - contactMargin - contactLength) {
                         contact.setY(y - contactMargin - contactLength);
                     }
                 }
-                vc.setY(y);
             } else {
-                double y = TransformHelper.snapP5(contacts.getLast().getY() + contactStep);
+                y = TransformHelper.snapP5(contacts.getLast().getY() + contactStep);
                 for (VisualContact contact : getOrderedOutsideContacts(Direction.SOUTH)) {
                     if (contact.getY() < y + contactMargin + contactLength) {
                         contact.setY(y + contactMargin + contactLength);
                     }
                 }
-                vc.setY(y);
             }
         }
+        vc.setY(y);
     }
 
     public void invalidateBoundingBox() {

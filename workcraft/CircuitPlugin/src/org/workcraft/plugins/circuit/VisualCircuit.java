@@ -268,10 +268,11 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     private VisualFunctionContact createContact(VisualFunctionComponent component, String name, Contact.IOType ioType) {
-        VisualFunctionContact result = new VisualFunctionContact(new FunctionContact(ioType));
-        component.addContact(result);
+        VisualFunctionContact result = component.createContact(ioType);
         setMathName(result, name);
-        VisualContact.Direction direction = (ioType == Contact.IOType.INPUT) ? VisualContact.Direction.WEST : VisualContact.Direction.EAST;
+        VisualContact.Direction direction = (ioType == Contact.IOType.INPUT)
+                ? VisualContact.Direction.WEST : VisualContact.Direction.EAST;
+
         component.setPositionByDirection(result, direction, false);
         return result;
     }
@@ -378,53 +379,48 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     private void setRefinementIfCompatible(VisualFunctionComponent component, FileReference value) {
-        Boolean decision = null;
         if (value == null) {
-            decision = true;
+            component.getReferencedComponent().setRefinement(null);
+            return;
         }
 
-        MathModel refinementModel = null;
-        if (decision == null) {
-            File file = value.getFile();
-            try {
-                ModelEntry me = WorkUtils.loadModel(file);
-                refinementModel = me.getMathModel();
-            } catch (DeserialisationException e) {
-                decision = false;
-                DialogUtils.showError("Cannot read refinement model from '" + FileUtils.getFullPath(file)
-                        + "':\n " + e.getMessage());
+        MathModel refinementModel;
+        File file = value.getFile();
+        try {
+            ModelEntry me = WorkUtils.loadModel(file);
+            refinementModel = me.getMathModel();
+        } catch (DeserialisationException e) {
+            String path = FileUtils.getFullPath(file);
+            DialogUtils.showError("Cannot read refinement model from '" + path + "':\n " + e.getMessage());
+            return;
+        }
+
+        ComponentInterface refinementInterface;
+        if ((refinementModel instanceof Stg) || (refinementModel instanceof Circuit)) {
+            refinementInterface = RefinementUtils.getModelInterface(refinementModel);
+        } else {
+            DialogUtils.showError("Incompatible refinement model type: " + refinementModel.getDisplayName());
+            return;
+        }
+
+        ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component.getReferencedComponent());
+        if (!RefinementUtils.isCompatible(componentInterface, refinementInterface)) {
+            int answer = DialogUtils.showYesNoCancel(
+                    "Component interface is incompatible with the reference model."
+                    + "\n\nUpdate component pins to match the reference model signals?",
+                    "Reference model", 0);
+
+            if (answer == 2) {
+                return;
             }
-        }
-
-        ComponentInterface refinementInterface = null;
-        if (decision == null) {
-            if ((refinementModel instanceof Stg) || (refinementModel instanceof Circuit)) {
-                refinementInterface = RefinementUtils.getModelInterface(refinementModel);
-            } else {
-                decision = false;
-                DialogUtils.showError("Incompatible refinement model type: " + refinementModel.getDisplayName());
-            }
-        }
-
-        ComponentInterface componentInterface = null;
-        if (decision == null) {
-            componentInterface = RefinementUtils.getComponentInterface(component.getReferencedComponent());
-            if (RefinementUtils.isCompatible(componentInterface, refinementInterface)) {
-                decision = true;
-            }
-        }
-
-        if (decision == null) {
-            boolean answer = DialogUtils.showConfirmWarning("Incompatible interface." +
-                        "\nUpdate component to match refinement model?");
-
-            if (answer) {
-                decision = true;
+            if (answer == 0) {
                 Set<String> inputs = refinementInterface.getInputs();
                 Set<String> outputs = refinementInterface.getOutputs();
                 for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
                     String signal = contact.getName();
-                    if (!(contact.isInput() && inputs.contains(signal)) && !(contact.isOutput() && outputs.contains(signal))) {
+                    boolean matchesRefinementInput = contact.isInput() && inputs.contains(signal);
+                    boolean matchesRefinementOutput = contact.isOutput() && outputs.contains(signal);
+                    if (!matchesRefinementInput && !matchesRefinementOutput) {
                         component.remove(contact);
                     }
                 }
@@ -437,10 +433,7 @@ public class VisualCircuit extends AbstractVisualModel {
                 }
             }
         }
-
-        if ((decision != null) && decision) {
-            component.getReferencedComponent().setRefinement(value);
-        }
+        component.getReferencedComponent().setRefinement(value);
     }
 
     private PropertyDescriptor getSetFunctionProperty(VisualFunctionContact contact) {
