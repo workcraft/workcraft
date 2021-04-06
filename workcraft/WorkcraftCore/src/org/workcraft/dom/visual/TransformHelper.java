@@ -66,10 +66,8 @@ public class TransformHelper {
     public static Point2D getCentre(Collection<? extends VisualNode> nodes) {
         Rectangle2D bb = null;
         for (VisualNode node : nodes) {
-            if (node instanceof Touchable) {
-                Rectangle2D nodeBoundingBox = ((Touchable) node).getBoundingBox();
-                bb = BoundingBoxHelper.union(bb, nodeBoundingBox);
-            }
+            Rectangle2D nodeBoundingBox = node.getBoundingBox();
+            bb = BoundingBoxHelper.union(bb, nodeBoundingBox);
         }
         return (bb == null) ? null : new Point2D.Double(bb.getCenterX(), bb.getCenterY());
     }
