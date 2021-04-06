@@ -51,6 +51,13 @@ public class CircuitSelectionTool extends SelectionTool {
             popup.add(addInputMenuItem);
             popup.addSeparator();
 
+            JMenuItem removePinsMenuItem = new JMenuItem("Remove all pins");
+            removePinsMenuItem.addActionListener(event -> {
+                editor.getWorkspaceEntry().saveMemento();
+                component.remove(component.getVisualFunctionContacts());
+            });
+            popup.add(removePinsMenuItem);
+
             JMenuItem defaultContactPositionMenuItem = new JMenuItem("Set contacts in default position");
             defaultContactPositionMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();

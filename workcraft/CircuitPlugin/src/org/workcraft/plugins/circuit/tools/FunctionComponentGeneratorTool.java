@@ -111,19 +111,19 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
     class SymbolPanel extends JPanel {
         private static final double MIN_SCALE_FACTOR = 10.0;
-        private static final double MAX_SCALE_FACTOR = 100.0;
+        private static final double MAX_SCALE_FACTOR = 30.0;
 
         private final VisualCircuit circuit = new VisualCircuit(new Circuit()) {
             @Override
             public void registerGraphEditorTools() {
-                // Prevent creation registration of GraphEditorTools because it leads to a
-                // loop between VisualCircuit and FunctionComponentGeneratorTool classes.
+                // Prevent registration of GraphEditorTools because it leads to a loop
+                // between VisualCircuit and FunctionComponentGeneratorTool classes.
             }
         };
 
         private VisualFunctionComponent component = null;
 
-        public void setInstntiator(Instantiator instantiator) {
+        public void setInstantiator(Instantiator instantiator) {
             if (component != null) {
                 circuit.remove(component);
             }
@@ -147,14 +147,10 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                 component.copyStyle(getTemplateNode());
                 // Cache component text to better estimate its bounding box
                 component.cacheRenderedText(null);
-                int width = getWidth();
-                if (component.getRenderType() == ComponentRenderingResult.RenderType.BOX) {
-                    width *= 0.8;
-                }
                 Graphics2D g2d = (Graphics2D) g;
-                g2d.translate(width / 2, getHeight() / 2);
+                g2d.translate(getWidth() / 2, getHeight() / 2);
                 Rectangle2D bb = component.getBoundingBox();
-                double scaleX = (width - 5 * SizeHelper.getLayoutHGap()) / bb.getWidth();
+                double scaleX = (getWidth() - 5 * SizeHelper.getLayoutHGap()) / bb.getWidth();
                 double scaleY = (getHeight() - 5 * SizeHelper.getLayoutVGap()) / bb.getHeight();
                 double scale = Math.min(scaleX, scaleY);
                 if (scale < MIN_SCALE_FACTOR) {
@@ -298,7 +294,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             libraryItem = libraryList.getSelectedValue();
             if (libraryItem != null) {
                 getTemplateNode().getReferencedComponent().setModule(this.libraryItem.name);
-                symbolPanel.setInstntiator(this.libraryItem.instantiator);
+                symbolPanel.setInstantiator(this.libraryItem.instantiator);
                 Framework.getInstance().updatePropertyView();
             }
         });
