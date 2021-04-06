@@ -172,7 +172,9 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     @Override
-    public VisualCircuitConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
+    public VisualCircuitConnection connect(VisualNode first, VisualNode second, MathConnection mConnection)
+            throws InvalidConnectionException {
+
         validateConnection(first, second);
 
         if (first instanceof VisualConnection) {
@@ -183,7 +185,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
             Container container = (Container) connection.getParent();
             VisualJoint joint = createJoint(container);
-            joint.setPosition(TransformHelper.snapP5(splitPoint));
+            joint.setPosition(splitPoint);
             remove(connection);
 
             VisualConnection predConnection = connect(connection.getFirst(), joint);

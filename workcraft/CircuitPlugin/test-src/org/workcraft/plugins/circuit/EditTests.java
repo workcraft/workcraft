@@ -94,9 +94,6 @@ public class EditTests {
         VisualNode forkNode = forkConnection.getSecond();
         Assertions.assertTrue(forkNode instanceof VisualFunctionContact);
 
-        VisualJoint joint = (VisualJoint) jointNode;
-        Assertions.assertEquals(new Point2D.Double(-3.0, 0.0), joint.getRootSpacePosition());
-
         VisualFunctionContact forkContact = (VisualFunctionContact) forkNode;
         checkContact(forkContact, "i0", VisualFunctionContact.Direction.WEST, new Point2D.Double(0.0, 3.0));
         List<Point2D> controlPoints = new ArrayList<>();
