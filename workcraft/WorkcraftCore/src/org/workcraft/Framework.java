@@ -350,7 +350,7 @@ public final class Framework {
             Matcher nameMatcher = pattern.matcher(name);
             Matcher descriptionMatcher = pattern.matcher(item.description);
             if (nameMatcher.find() || (searchDescription && descriptionMatcher.find())) {
-                result.add(item.toString() + "\n");
+                result.add(item + "\n");
             }
         }
         Collections.sort(result);
@@ -521,6 +521,12 @@ public final class Framework {
         return inGuiMode;
     }
 
+    public void requestFocus(WorkspaceEntry we) {
+        if (isInGuiMode() && (mainWindow != null) && (we != null)) {
+            mainWindow.requestFocus(we);
+        }
+    }
+
     public void setArgs(Collection<String> args) {
         SetArgs setargs = new SetArgs();
         setargs.setArgs(args.toArray());
@@ -648,6 +654,10 @@ public final class Framework {
     }
 
     public WorkspaceEntry loadWork(File file) throws DeserialisationException {
+        return loadWork(file, true);
+    }
+
+    public WorkspaceEntry loadWork(File file, boolean open) throws DeserialisationException {
         // Check if work is already loaded
         Path<String> path = getWorkspace().getPath(file);
         for (WorkspaceEntry we : getWorkspace().getWorks()) {
@@ -669,7 +679,7 @@ public final class Framework {
                 Path<String> parent = path == null ? Path.empty() : path.getParent();
                 path = getWorkspace().createWorkPath(parent, desiredName);
             }
-            we = createWork(me, path, true, false);
+            we = createWork(me, path, open, false);
             if (isWorkFile) {
                 Collection<Resource> resources = WorkUtils.loadResources(file);
                 resources.forEach(we::addResource);
