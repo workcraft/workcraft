@@ -17,6 +17,7 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.*;
+import java.io.File;
 import java.util.List;
 import java.util.*;
 
@@ -556,7 +557,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     protected void drawRefinement(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        if ((bb != null) && getReferencedComponent().hasRefinement()) {
+        File file = getReferencedComponent().getRefinementFile();
+        if ((bb != null) && (file != null)) {
             double dx = VisualCommonSettings.getNodeSize() / 10;
             double dy = VisualCommonSettings.getNodeSize() / 10;
             double x = bb.getCenterX();

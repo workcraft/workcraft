@@ -139,7 +139,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         // Write writer assign statements
         boolean hasAssignments = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
-            if (!component.isMapped() && !component.hasRefinement()) {
+            if (!component.isMapped() && (component.getRefinementFile() == null)) {
                 if (writeAssigns(writer, circuitInfo, component)) {
                     hasAssignments = true;
                 } else {
@@ -154,7 +154,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         // Write writer mapped components
         boolean hasMappedComponents = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
-            if (component.isMapped() || component.hasRefinement()) {
+            if (component.isMapped() || (component.getRefinementFile() != null)) {
                 writeInstance(writer, circuitInfo, component);
                 hasMappedComponents = true;
             }
@@ -185,7 +185,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             } else if (!resetExpr.isEmpty()) {
                 expr = resetExpr;
             }
-            if ((expr != null) && !expr.isEmpty()) {
+            if (expr != null) {
                 writer.println("    " + KEYWORD_ASSIGN + getDelayParameter() + " " + signalName + " = " + expr + ";");
                 result = true;
             }
