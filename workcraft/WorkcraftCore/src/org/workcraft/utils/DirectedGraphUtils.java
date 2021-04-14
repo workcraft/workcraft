@@ -31,11 +31,7 @@ public class DirectedGraphUtils {
         Map<T, Set<T>> result = new HashMap<>();
         for (T currentVertex : graph.keySet()) {
             for (T nextVertex : graph.get(currentVertex)) {
-                Set<T> postset = result.get(nextVertex);
-                if (postset == null) {
-                    postset = new HashSet<>();
-                    result.put(nextVertex, postset);
-                }
+                Set<T> postset = result.computeIfAbsent(nextVertex, k -> new HashSet<>());
                 postset.add(currentVertex);
             }
         }
@@ -121,7 +117,7 @@ public class DirectedGraphUtils {
         block.set.add(currentVertex);
 
         for (T nextVertex : graph.get(currentVertex)) {
-            if (nextVertex == startVertex) {
+            if (nextVertex.equals(startVertex)) {
                 result.add(new ArrayList<>(stack));
             } else if (!block.set.contains(nextVertex)) {
                 result.addAll(findSimpleCycles(graph, startVertex, nextVertex, stack, block));
@@ -132,14 +128,8 @@ public class DirectedGraphUtils {
             unblock(currentVertex, block);
         } else {
             for (T nextVertex : graph.get(currentVertex)) {
-                Set<T> blockedSetForVertex = block.map.get(nextVertex);
-                if (blockedSetForVertex == null) {
-                    blockedSetForVertex = new HashSet<>();
-                    block.map.put(nextVertex, blockedSetForVertex);
-                }
-                if (!blockedSetForVertex.contains(currentVertex)) {
-                    blockedSetForVertex.add(currentVertex);
-                }
+                Set<T> blockedSetForVertex = block.map.computeIfAbsent(nextVertex, k -> new HashSet<>());
+                blockedSetForVertex.add(currentVertex);
             }
         }
 

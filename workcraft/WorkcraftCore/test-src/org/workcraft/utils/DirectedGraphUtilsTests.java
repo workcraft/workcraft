@@ -3,11 +3,12 @@ package org.workcraft.utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.util.*;
 
 public class DirectedGraphUtilsTests {
 
-    private static final Map<Object, Set<Object>> graph;
+    private static final Map<Integer, Set<Integer>> graph;
 
     static {
         graph = new HashMap<>();
@@ -101,6 +102,32 @@ public class DirectedGraphUtilsTests {
         cycles.add(Arrays.asList(8, 9));
         cycles.add(Arrays.asList(0));
         Assertions.assertEquals(cycles, DirectedGraphUtils.findSimpleCycles(graph));
+    }
+
+    @Test
+    public void findFileSimpleCyclesTest() {
+        Map<File, Set<File>> fileGraph = new HashMap<>();
+        fileGraph.put(new File("1"), new HashSet<>(Arrays.asList(new File("2"), new File("5"), new File("8"))));
+        fileGraph.put(new File("2"), new HashSet<>(Arrays.asList(new File("3"), new File("7"), new File("9"))));
+        fileGraph.put(new File("3"), new HashSet<>(Arrays.asList(new File("1"), new File("2"), new File("4"), new File("6"))));
+        fileGraph.put(new File("4"), new HashSet<>(Arrays.asList(new File("5"))));
+        fileGraph.put(new File("5"), new HashSet<>(Arrays.asList(new File("2"))));
+        fileGraph.put(new File("6"), new HashSet<>(Arrays.asList(new File("4"))));
+        fileGraph.put(new File("7"), new HashSet<>(Arrays.asList()));
+        fileGraph.put(new File("8"), new HashSet<>(Arrays.asList(new File("8"), new File("9"))));
+        fileGraph.put(new File("9"), new HashSet<>(Arrays.asList(new File("8"))));
+        fileGraph.put(new File("0"), new HashSet<>(Arrays.asList(new File("0"))));
+
+        Set<List<File>> fileCycles = new HashSet<>(); // Starting point in of the cycles differ from integer graph
+        fileCycles.add(Arrays.asList(new File("3"), new File("1"), new File("2")));
+        fileCycles.add(Arrays.asList(new File("3"), new File("1"), new File("5"), new File("2")));
+        fileCycles.add(Arrays.asList(new File("3"), new File("2")));
+        fileCycles.add(Arrays.asList(new File("3"), new File("4"), new File("5"), new File("2")));
+        fileCycles.add(Arrays.asList(new File("3"), new File("6"), new File("4"), new File("5"), new File("2")));
+        fileCycles.add(Arrays.asList(new File("8")));
+        fileCycles.add(Arrays.asList(new File("9"), new File("8")));
+        fileCycles.add(Arrays.asList(new File("0")));
+        Assertions.assertEquals(fileCycles, DirectedGraphUtils.findSimpleCycles(fileGraph));
     }
 
     @Test
