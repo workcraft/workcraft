@@ -19,7 +19,7 @@ subprojects {
     targetCompatibility = gradle.javaTargetVersion
 
     sourceSets {
-        main.java.srcDirs = ['src', 'src-gen']
+        main.java.srcDirs = ['src']
         main.resources.srcDirs = ['res']
         test.java.srcDirs = ['test-src']
         test.resources.srcDirs = ['test-res']
