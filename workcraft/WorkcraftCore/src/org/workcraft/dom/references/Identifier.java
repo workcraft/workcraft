@@ -33,11 +33,11 @@ public class Identifier {
         }
     }
 
-    public static final String makeInternal(String value) {
+    public static String makeInternal(String value) {
         return value.startsWith(INTERNAL_PREFIX) ? value : INTERNAL_PREFIX + value;
     }
 
-    public static final String appendNamespaceSeparator(String value) {
+    public static String appendNamespaceSeparator(String value) {
         return value.endsWith(NAMESPACE_SUFFIX) ? value : value + NAMESPACE_SUFFIX;
     }
 
