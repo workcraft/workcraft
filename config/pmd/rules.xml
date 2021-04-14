@@ -23,6 +23,7 @@
         <exclude name="PreserveStackTrace"/> <!-- Interesting to enforce but used often -->
         <exclude name="GuardLogStatement"/> <!-- Interesting to enforce -->
         <exclude name="AvoidStringBufferField"/> <!-- Interesting to enforce -->
+        <exclude name="UseTryWithResources" />  <!-- Interesting to enforce -->
     </rule>
     <rule ref="category/java/bestpractices.xml/AvoidReassigningLoopVariables">
         <properties>
