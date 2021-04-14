@@ -1,9 +1,6 @@
 package org.workcraft.plugins.graph.converters;
 
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.HierarchyReferenceManager;
-import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -49,7 +46,7 @@ public class GraphToPetriConverter {
 
     private Map<String, String> cacheLabels() {
         Map<String, String> result = new HashMap<>();
-        for (Entry<VisualVertex, VisualTransition> entry: vertexToTransitionMap.entrySet()) {
+        for (Entry<VisualVertex, VisualTransition> entry : vertexToTransitionMap.entrySet()) {
             VisualVertex vertex = entry.getKey();
             VisualTransition transition = entry.getValue();
             Symbol symbol = vertex.getReferencedComponent().getSymbol();
@@ -62,9 +59,8 @@ public class GraphToPetriConverter {
 
     private Map<VisualConnection, VisualPlace> convertArcs() {
         Map<VisualConnection, VisualPlace> result = new HashMap<>();
-        for (VisualConnection connection: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualConnection.class)) {
-            String name = srcModel.getMathModel().getNodeReference(connection.getReferencedConnection());
-            VisualPlace place = dstModel.createPlace(name, null);
+        for (VisualConnection connection : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualConnection.class)) {
+            VisualPlace place = dstModel.createPlace(null, null);
             place.setPosition(connection.getMiddleSegmentCenterPoint());
             place.setForegroundColor(connection.getColor());
             place.getReferencedComponent().setTokens(0);
@@ -76,15 +72,13 @@ public class GraphToPetriConverter {
 
     private Map<VisualVertex, VisualTransition> convertVertices() {
         Map<VisualVertex, VisualTransition> result = new HashMap<>();
-        HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getMathModel().getReferenceManager();
-        NameManager nameManager = refManager.getNameManager(null);
-        for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
-            Symbol symbol = vertex.getReferencedComponent().getSymbol();
-            String symbolName = (symbol == null) ? Graph.EPSILON_SERIALISATION : srcModel.getMathName(symbol);
-            String name = nameManager.getDerivedName(null, symbolName);
+        for (VisualVertex vertex : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
+            String name = srcModel.getMathName(vertex);
             VisualTransition transition = dstModel.createTransition(name, null);
             transition.copyPosition(vertex);
             transition.copyStyle(vertex);
+            Symbol symbol = vertex.getReferencedComponent().getSymbol();
+            String symbolName = (symbol == null) ? Graph.EPSILON_SERIALISATION : srcModel.getMathName(symbol);
             if (symbol != null) {
                 transition.setLabel(symbolName);
             }
@@ -97,23 +91,20 @@ public class GraphToPetriConverter {
         for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
             VisualTransition transition = vertexToTransitionMap.get(vertex);
             if (transition == null) continue;
-            for (Connection srcConnection: srcModel.getConnections(vertex)) {
-                if (srcConnection instanceof VisualConnection) {
-                    VisualConnection arc = (VisualConnection) srcConnection;
-                    VisualPlace place = arcToPlaceMap.get(arc);
-                    if (place == null) continue;
-                    Point2D splitPoint = arc.getSplitPoint();
-                    if (arc.getFirst() == vertex) {
-                        VisualConnection dstConnection = dstModel.connect(transition, place);
-                        dstConnection.copyStyle(arc);
-                        LinkedList<Point2D> prefixLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(arc, splitPoint);
-                        ConnectionHelper.addControlPoints(dstConnection, prefixLocationsInRootSpace);
-                    } else {
-                        VisualConnection dstConnection = dstModel.connect(place, transition);
-                        dstConnection.copyStyle(arc);
-                        LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(arc, splitPoint);
-                        ConnectionHelper.addControlPoints(dstConnection, suffixLocationsInRootSpace);
-                    }
+            for (VisualConnection arc : srcModel.getConnections(vertex)) {
+                VisualPlace place = arcToPlaceMap.get(arc);
+                if (place == null) continue;
+                Point2D splitPoint = arc.getSplitPoint();
+                if (arc.getFirst() == vertex) {
+                    VisualConnection dstConnection = dstModel.connect(transition, place);
+                    dstConnection.copyStyle(arc);
+                    LinkedList<Point2D> prefixLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(arc, splitPoint);
+                    ConnectionHelper.addControlPoints(dstConnection, prefixLocationsInRootSpace);
+                } else {
+                    VisualConnection dstConnection = dstModel.connect(place, transition);
+                    dstConnection.copyStyle(arc);
+                    LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(arc, splitPoint);
+                    ConnectionHelper.addControlPoints(dstConnection, suffixLocationsInRootSpace);
                 }
             }
         }
@@ -123,10 +114,10 @@ public class GraphToPetriConverter {
         double dx = 0.0;
         double dy = 0.0;
         int count = 0;
-        for (Connection connection: model.getConnections(node)) {
+        for (VisualConnection connection : model.getConnections(node)) {
             Node second = connection.getSecond();
-            if ((second != node) && (connection instanceof VisualConnection)) {
-                Point2D pos = ((VisualConnection) connection).getMiddleSegmentCenterPoint();
+            if (second != node) {
+                Point2D pos = connection.getMiddleSegmentCenterPoint();
                 dx += pos.getX() - node.getX();
                 dy += pos.getY() - node.getY();
                 count++;
@@ -141,10 +132,10 @@ public class GraphToPetriConverter {
         double dx = 0.0;
         double dy = 0.0;
         int count = 0;
-        for (Connection connection: model.getConnections(node)) {
+        for (VisualConnection connection : model.getConnections(node)) {
             Node first = connection.getFirst();
-            if ((first != node) && (connection instanceof VisualConnection)) {
-                Point2D pos = ((VisualConnection) connection).getMiddleSegmentCenterPoint();
+            if (first != node) {
+                Point2D pos = connection.getMiddleSegmentCenterPoint();
                 dx += node.getX() - pos.getX();
                 dy += node.getY() - pos.getY();
                 count++;
@@ -156,7 +147,7 @@ public class GraphToPetriConverter {
     }
 
     private void connectTerminals() throws InvalidConnectionException {
-        for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
+        for (VisualVertex vertex : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
             VisualTransition transition = vertexToTransitionMap.get(vertex);
             if (transition == null) continue;
             if (srcModel.getPreset(vertex).isEmpty()) {
@@ -195,9 +186,9 @@ public class GraphToPetriConverter {
     public boolean isRelated(Node highLevelNode, Node node) {
         boolean result = false;
         if (highLevelNode instanceof VisualVertex) {
-            VisualTransition transiton = getRelatedTransition((VisualVertex) highLevelNode);
-            if (transiton != null) {
-                result = (node == transiton) || (node == transiton.getReferencedComponent());
+            VisualTransition transition = getRelatedTransition((VisualVertex) highLevelNode);
+            if (transition != null) {
+                result = (node == transition) || (node == transition.getReferencedComponent());
             }
         } else if (highLevelNode instanceof VisualConnection) {
             VisualPlace place = getRelatedPlace((VisualConnection) highLevelNode);
