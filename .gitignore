@@ -18,6 +18,7 @@
 /workcraft/*/.settings
 
 # InteliJ IDEA
+/.shelf/
 /workcraft.iml
 /workcraft.ipr
 /workcraft.iws
