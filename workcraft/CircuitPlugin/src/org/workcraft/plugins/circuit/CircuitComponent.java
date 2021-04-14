@@ -6,6 +6,7 @@ import org.workcraft.dom.references.FileReference;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.utils.Hierarchy;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -54,8 +55,8 @@ public class CircuitComponent extends MathGroup {
         }
     }
 
-    public boolean hasRefinement() {
-        return (refinement != null) && (refinement.getFile() != null);
+    public File getRefinementFile() {
+        return (refinement == null) ? null : refinement.getFile();
     }
 
     public boolean getIsEnvironment() {

@@ -26,13 +26,23 @@ public class FileUtils {
     }
 
     public static String getFileNameWithoutExtension(File file) {
+        return getFileNameWithoutExtension(file, false);
+    }
+
+    public static String getFileNameWithoutExtension(File file, boolean compoundExtension) {
         String name = file.getName();
-        int k = name.lastIndexOf('.');
-        if (k == -1) {
-            return name;
-        } else {
-            return name.substring(0, k);
-        }
+        int i = compoundExtension ? name.indexOf('.') : name.lastIndexOf('.');
+        return i == -1 ? name : name.substring(0, i);
+    }
+
+    public static String getFileExtension(File file) {
+        return getFileExtension(file, false);
+    }
+
+    public static String getFileExtension(File file, boolean compoundExtension) {
+        String name = file.getName();
+        int i = compoundExtension ? name.indexOf('.') : name.lastIndexOf('.');
+        return i == -1 ? "" : name.substring(i);
     }
 
     public static void dumpString(File out, String string) throws IOException {
@@ -48,7 +58,7 @@ public class FileUtils {
         try {
             inChannel.transferTo(0, inChannel.size(), outChannel);
         } finally {
-            if (is != null) is.close();
+            is.close();
             if (inChannel != null) inChannel.close();
             if (outChannel != null) outChannel.close();
         }

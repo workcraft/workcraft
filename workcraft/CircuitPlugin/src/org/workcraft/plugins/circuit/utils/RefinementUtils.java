@@ -61,8 +61,8 @@ public final class RefinementUtils {
     }
 
     private static void openRefinementFile(File file) {
-        if (file != null) {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        if ((file != null) && (mainWindow != null)) {
             WorkspaceEntry we = mainWindow.openWork(file);
             if (we != null) {
                 mainWindow.requestFocus(we);
@@ -71,10 +71,8 @@ public final class RefinementUtils {
     }
 
     public static Pair<File, Stg> getRefinementStg(CircuitComponent component) {
-        if (component.hasRefinement()) {
-            return getRefinementStg(component.getRefinement().getFile());
-        }
-        return null;
+        File file = component.getRefinementFile();
+        return file == null ? null : getRefinementStg(file);
     }
 
     private static Pair<File, Stg> getRefinementStg(File file) {
@@ -92,10 +90,8 @@ public final class RefinementUtils {
     }
 
     public static Pair<File, Circuit> getRefinementCircuit(CircuitComponent component) {
-        if (component.hasRefinement()) {
-            return getRefinementCircuit(component.getRefinement().getFile());
-        }
-        return null;
+        File file = component.getRefinementFile();
+        return file == null ? null : getRefinementCircuit(file);
     }
 
     private static Pair<File, Circuit> getRefinementCircuit(File file) {

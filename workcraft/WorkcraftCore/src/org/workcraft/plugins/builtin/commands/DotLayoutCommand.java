@@ -98,6 +98,7 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
             for (String node : parser.getNodes()) {
                 applyNodePosition(model, node, parser.getNodeAttributes(node));
             }
+            straightenConnections(model);
             for (Pair<String, String> edge : parser.getEdges()) {
                 applyEdgeShape(model, edge, parser.getEdgeAttributes(edge));
             }
@@ -106,6 +107,13 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
         }
         for (VisualPage page : Hierarchy.getDescendantsOfType(model.getRoot(), VisualPage.class)) {
             page.centerPivotPoint(true, true);
+        }
+    }
+
+    private void straightenConnections(VisualModel model) {
+        for (VisualConnection connection : Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class)) {
+            connection.setConnectionType(VisualConnection.ConnectionType.BEZIER);
+            connection.setConnectionType(VisualConnection.ConnectionType.POLYLINE);
         }
     }
 
@@ -139,8 +147,6 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
             VisualConnection connection = model.getConnection(fromNode, toNode);
             String s = attributes.get("pos");
             if ((connection != null) && (s != null)) {
-                connection.setConnectionType(VisualConnection.ConnectionType.BEZIER);
-                connection.setConnectionType(VisualConnection.ConnectionType.POLYLINE);
                 connection.setScaleMode(VisualConnection.ScaleMode.ADAPTIVE);
                 List<Point2D> points = parseEdgeShape(s);
                 Collections.reverse(points);
