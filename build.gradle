@@ -19,7 +19,7 @@ subprojects {
     targetCompatibility = gradle.javaTargetVersion
 
     sourceSets {
-        main.java.srcDirs = ['src']
+        main.java.srcDirs = ['src', 'src-gen']
         main.resources.srcDirs = ['res']
         test.java.srcDirs = ['test-src']
         test.resources.srcDirs = ['test-res']
@@ -149,6 +149,7 @@ subprojects {
     }
 
     cpdCheck {
+        dependsOn compileJavacc
         source = sourceSets.main.allJava
         exclude gradle.javaccExclude
     }
@@ -188,6 +189,7 @@ subprojects {
 
 
 cpdCheck {
+    dependsOn compileJavacc
     source = sourceSets.main.allJava
     exclude gradle.javaccExclude
 }
