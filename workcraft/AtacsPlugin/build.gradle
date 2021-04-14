@@ -3,6 +3,4 @@ dependencies {
     implementation project(':PetriPlugin')
     implementation project(':StgPlugin')
     implementation project(':CircuitPlugin')
-
-    testImplementation project(path: ':CircuitPlugin', configuration: 'testArchives')
 }

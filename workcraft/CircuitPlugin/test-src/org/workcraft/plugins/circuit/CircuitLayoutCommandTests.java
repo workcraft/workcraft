@@ -4,10 +4,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
@@ -50,7 +52,7 @@ public class CircuitLayoutCommandTests {
         Set<String> srcInputs = new HashSet<>();
         Set<String> srcOutputs = new HashSet<>();
         Set<String> srcGates = new HashSet<>();
-        TestUtils.collectNodes(we, srcInputs, srcOutputs, srcGates);
+        collectNodes(we, srcInputs, srcOutputs, srcGates);
 
         CircuitLayoutCommand command = new CircuitLayoutCommand();
         command.execute(we);
@@ -58,13 +60,29 @@ public class CircuitLayoutCommandTests {
         Set<String> dstInputs = new HashSet<>();
         Set<String> dstOutputs = new HashSet<>();
         Set<String> dstGates = new HashSet<>();
-        TestUtils.collectNodes(we, dstInputs, dstOutputs, dstGates);
+        collectNodes(we, dstInputs, dstOutputs, dstGates);
 
         Assertions.assertEquals(srcInputs, dstInputs);
         Assertions.assertEquals(srcOutputs, dstOutputs);
         Assertions.assertEquals(srcGates, dstGates);
 
         framework.closeWork(we);
+    }
+
+    private void collectNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        for (Contact port: circuit.getPorts()) {
+            if (port.isInput()) {
+                inputs.add(circuit.getNodeReference(port));
+            }
+            if (port.isOutput()) {
+                outputs.add(circuit.getNodeReference(port));
+            }
+        }
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            String ref = circuit.getNodeReference(component);
+            gates.add(component.getModule() + " " + Identifier.truncateNamespaceSeparator(ref));
+        }
     }
 
 }

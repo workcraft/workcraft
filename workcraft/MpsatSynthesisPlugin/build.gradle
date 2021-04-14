@@ -6,6 +6,4 @@ dependencies {
     implementation project(':CircuitPlugin')
     implementation project(':PunfPlugin')
     implementation project(':MpsatVerificationPlugin')
-
-    testImplementation project(path: ':CircuitPlugin', configuration: 'testArchives')
 }
