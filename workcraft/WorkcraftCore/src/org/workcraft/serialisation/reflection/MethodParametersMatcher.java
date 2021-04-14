@@ -39,7 +39,7 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
             throw new RuntimeException("We have a bug o_O");
         }
 
-        if (this.methods.size() < 1) {
+        if (this.methods.isEmpty()) {
             if (filtered.length > 1) {
                 throw new AmbiguousMethodException();
             } else {

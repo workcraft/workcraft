@@ -17,11 +17,8 @@ public class FileUtils {
 
     public static void copyFile(File inFile, File outFile) throws IOException {
         outFile.getParentFile().mkdirs();
-        FileOutputStream os = new FileOutputStream(outFile);
-        try {
+        try (FileOutputStream os = new FileOutputStream(outFile)) {
             copyFileToStream(inFile, os);
-        } finally {
-            os.close();
         }
     }
 
@@ -46,21 +43,17 @@ public class FileUtils {
     }
 
     public static void dumpString(File out, String string) throws IOException {
-        FileOutputStream fos = new FileOutputStream(out);
-        fos.write(string.getBytes());
-        fos.close();
+        try (FileOutputStream fos = new FileOutputStream(out)) {
+            fos.write(string.getBytes());
+        }
     }
 
     public static void copyFileToStream(File inFile, OutputStream os) throws IOException {
-        FileInputStream is = new FileInputStream(inFile);
-        FileChannel inChannel = is.getChannel();
-        WritableByteChannel outChannel = Channels.newChannel(os);
-        try {
+        try (FileInputStream is = new FileInputStream(inFile);
+                FileChannel inChannel = is.getChannel();
+                WritableByteChannel outChannel = Channels.newChannel(os)) {
+
             inChannel.transferTo(0, inChannel.size(), outChannel);
-        } finally {
-            is.close();
-            if (inChannel != null) inChannel.close();
-            if (outChannel != null) outChannel.close();
         }
     }
 
@@ -160,20 +153,17 @@ public class FileUtils {
     }
 
     public static void writeAllText(File file, String source) throws IOException {
-        FileWriter writer = new FileWriter(file);
-        writer.write(source);
-        writer.close();
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write(source);
+        }
     }
 
     /**
      * Reads all text from the file using the default charset.
      */
     public static String readAllText(File file) throws IOException {
-        InputStream stream = new FileInputStream(file);
-        try {
+        try (InputStream stream = new FileInputStream(file)) {
             return readAllText(stream);
-        } finally {
-            stream.close();
         }
     }
 
@@ -198,14 +188,11 @@ public class FileUtils {
      * Reads first count characters from the file using UTF8 charset.
      */
     public static String readHeaderUtf8(File file, int count) throws IOException {
-        InputStream stream = new FileInputStream(file);
-        try {
+        try (InputStream stream = new FileInputStream(file)) {
             BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             char[] buf = new char[count];
             int len = in.read(buf, 0, count);
             return new String(buf, 0, len);
-        } finally {
-            stream.close();
         }
     }
 
@@ -215,11 +202,8 @@ public class FileUtils {
     }
 
     public static String readAllTextFromSystemResource(String path) throws IOException {
-        InputStream stream = ClassLoader.getSystemResourceAsStream(path);
-        try {
+        try (InputStream stream = ClassLoader.getSystemResourceAsStream(path)) {
             return readAllText(stream);
-        } finally {
-            stream.close();
         }
     }
 
@@ -233,15 +217,15 @@ public class FileUtils {
 
     public static boolean containsKeyword(InputStream is, String keyword) {
         boolean result = false;
-        Scanner scanner = new Scanner(is);
-        while (scanner.hasNextLine()) {
-            String line = scanner.nextLine();
-            if (line.contains(keyword)) {
-                result = true;
-                break;
+        try (Scanner scanner = new Scanner(is)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                if (line.contains(keyword)) {
+                    result = true;
+                    break;
+                }
             }
         }
-        scanner.close();
         return result;
     }
 
