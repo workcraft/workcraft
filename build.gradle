@@ -3,6 +3,7 @@ plugins {
     id 'ca.coglinc.javacc'
     id 'com.github.kt3k.coveralls'
     id 'de.aaschmid.cpd'
+    id 'com.github.jk1.dependency-license-report'
 }
 
 repositories {
@@ -186,6 +187,19 @@ subprojects {
         }
     }
 }
+
+
+apply plugin: 'com.github.jk1.dependency-license-report'
+
+licenseReport {
+    configurations = ['runtimeClasspath', 'compileClasspath']
+    renderers = [new com.github.jk1.license.render.InventoryHtmlReportRenderer()]
+    allowedLicensesFile = new File("${project.rootDir}/config/license/allowed.json")
+}
+
+checkLicense.group = 'Verification'
+generateLicenseReport.group = 'Verification'
+checkLicensePreparation.group = null
 
 
 cpdCheck {
