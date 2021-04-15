@@ -3,6 +3,7 @@ plugins {
     id 'ca.coglinc.javacc'
     id 'com.github.kt3k.coveralls'
     id 'de.aaschmid.cpd'
+    id 'com.github.jk1.dependency-license-report'
 }
 
 repositories {
@@ -19,7 +20,7 @@ subprojects {
     targetCompatibility = gradle.javaTargetVersion
 
     sourceSets {
-        main.java.srcDirs = ['src']
+        main.java.srcDirs = ['src', 'src-gen']
         main.resources.srcDirs = ['res']
         test.java.srcDirs = ['test-src']
         test.resources.srcDirs = ['test-res']
@@ -149,6 +150,7 @@ subprojects {
     }
 
     cpdCheck {
+        dependsOn compileJavacc
         source = sourceSets.main.allJava
         exclude gradle.javaccExclude
     }
@@ -187,7 +189,21 @@ subprojects {
 }
 
 
+apply plugin: 'com.github.jk1.dependency-license-report'
+
+licenseReport {
+    configurations = ['runtimeClasspath', 'compileClasspath']
+    renderers = [new com.github.jk1.license.render.InventoryHtmlReportRenderer()]
+    allowedLicensesFile = new File("${project.rootDir}/config/license/allowed.json")
+}
+
+checkLicense.group = 'Verification'
+generateLicenseReport.group = 'Verification'
+checkLicensePreparation.group = null
+
+
 cpdCheck {
+    dependsOn compileJavacc
     source = sourceSets.main.allJava
     exclude gradle.javaccExclude
 }

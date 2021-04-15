@@ -1,19 +1,36 @@
 package org.workcraft.plugins.petrify;
 
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
+
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractSynthesisCommand;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.TestUtils;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.petrify.commands.ComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.GeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.StandardCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.TechnologyMappingSynthesisCommand;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.PackageUtils;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class SynthesisCommandsTests {
 
@@ -74,7 +91,7 @@ public class SynthesisCommandsTests {
 
     private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            TestUtils.checkSynthesisCommand(ComplexGateSynthesisCommand.class, workName, expectedGateCount);
+            checkSynthesisCommand(ComplexGateSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -106,7 +123,7 @@ public class SynthesisCommandsTests {
 
     private void testGeneralisedCelementSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            TestUtils.checkSynthesisCommand(GeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
+            checkSynthesisCommand(GeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -146,7 +163,7 @@ public class SynthesisCommandsTests {
 
     private void testStandardCelementSynthesisCommand(String workName, int minGateCount, int maxGateCount) {
         try {
-            TestUtils.checkSynthesisCommand(StandardCelementSynthesisCommand.class, workName,
+            checkSynthesisCommand(StandardCelementSynthesisCommand.class, workName,
                     minGateCount, maxGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
@@ -197,10 +214,88 @@ public class SynthesisCommandsTests {
 
     private void testTechnologyMappingSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            TestUtils.checkSynthesisCommand(TechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
+            checkSynthesisCommand(TechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
+    }
+
+    private <C extends AbstractSynthesisCommand> void checkSynthesisCommand(Class<C> cls, String workName,
+            int expectedComponentCount)
+            throws DeserialisationException, InstantiationException, IllegalAccessException {
+
+        checkSynthesisCommand(cls, workName, expectedComponentCount, expectedComponentCount);
+    }
+
+    private <C extends AbstractSynthesisCommand> void checkSynthesisCommand(Class<C> cls, String workName,
+            int minComponentCount, int maxComponentCount)
+            throws DeserialisationException, InstantiationException, IllegalAccessException {
+
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        URL srcUrl = classLoader.getResource(workName);
+
+        WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
+        Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
+        Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> srcMutexes = MutexUtils.getMutexPlaceReferences(srcStg);
+        Set<String> srcPageRefs = new HashSet<>();
+        for (PageNode page: Hierarchy.getChildrenOfType(srcStg.getRoot(), PageNode.class)) {
+            boolean hasInputs = !srcStg.getSignalNames(Signal.Type.INPUT, page).isEmpty();
+            boolean hasOutputs = !srcStg.getSignalNames(Signal.Type.OUTPUT, page).isEmpty();
+            if (hasInputs || hasOutputs) {
+                String srcPageRef = srcStg.getNodeReference(page);
+                srcPageRefs.add(srcPageRef);
+            }
+        }
+
+        C command = cls.newInstance();
+        WorkspaceEntry dstWe = command.execute(srcWe);
+        Circuit dstCircuit = WorkspaceUtils.getAs(dstWe, Circuit.class);
+        Set<String> dstInputs = new HashSet<>();
+        Set<String> dstOutputs = new HashSet<>();
+        // Process primary ports
+        for (Contact port: dstCircuit.getPorts()) {
+            String dstSignal = dstCircuit.getNodeReference(port);
+            if (port.isInput()) {
+                dstInputs.add(dstSignal);
+            }
+            if (port.isOutput()) {
+                dstOutputs.add(dstSignal);
+            }
+        }
+        // Process environment pins
+        Set<String> dstPageRefs = new HashSet<>();
+        for (PageNode page: Hierarchy.getChildrenOfType(dstCircuit.getRoot(), PageNode.class)) {
+            for (Contact port: dstCircuit.getPorts()) {
+                if (port.getParent() == page) {
+                    dstPageRefs.add(dstCircuit.getNodeReference(page));
+                    break;
+                }
+            }
+        }
+        Set<String> dstMutexes = getMutexComponentReferences(dstCircuit);
+        int dstComponentCount = dstCircuit.getFunctionComponents().size();
+
+        Assertions.assertEquals(srcInputs, dstInputs);
+        Assertions.assertEquals(srcOutputs, dstOutputs);
+        Assertions.assertEquals(srcMutexes, dstMutexes);
+        Assertions.assertTrue(minComponentCount <= dstComponentCount);
+        Assertions.assertTrue(maxComponentCount >= dstComponentCount);
+        Assertions.assertEquals(srcPageRefs, dstPageRefs);
+    }
+
+    private Set<String> getMutexComponentReferences(Circuit circuit) {
+        HashSet<String> result = new HashSet<>();
+        Mutex mutex = CircuitSettings.parseMutexData();
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            if (mutex.name.equals(component.getModule())) {
+                String ref = circuit.getNodeReference(component);
+                result.add(Identifier.truncateNamespaceSeparator(ref));
+            }
+        }
+        return result;
     }
 
 }

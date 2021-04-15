@@ -4,11 +4,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -87,7 +89,7 @@ public class ImportExportTests {
         Set<String> wInputs = new HashSet<>();
         Set<String> wOutputs = new HashSet<>();
         Set<String> wGates = new HashSet<>();
-        TestUtils.collectNodes(wWe, wInputs, wOutputs, wGates);
+        collectNodes(wWe, wInputs, wOutputs, wGates);
 
         WorkspaceEntry vWe = null;
         Set<String> vInputs = new HashSet<>();
@@ -98,7 +100,7 @@ public class ImportExportTests {
             vFile.deleteOnExit();
             framework.exportWork(wWe, vFile, VerilogFormat.getInstance());
             vWe = framework.loadWork(vFile);
-            TestUtils.collectNodes(vWe, vInputs, vOutputs, vGates);
+            collectNodes(vWe, vInputs, vOutputs, vGates);
         } catch (IOException | SerialisationException e) {
         }
 
@@ -113,7 +115,7 @@ public class ImportExportTests {
             Set<String> sInputs = new HashSet<>();
             Set<String> sOutputs = new HashSet<>();
             Set<String> sGates = new HashSet<>();
-            TestUtils.collectNodes(sWe, sInputs, sOutputs, sGates);
+            collectNodes(sWe, sInputs, sOutputs, sGates);
 
             Assertions.assertEquals(wInputs, sInputs);
             Assertions.assertEquals(wOutputs, sOutputs);
@@ -124,6 +126,22 @@ public class ImportExportTests {
 
         framework.closeWork(wWe);
         framework.closeWork(vWe);
+    }
+
+    private void collectNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        for (Contact port: circuit.getPorts()) {
+            if (port.isInput()) {
+                inputs.add(circuit.getNodeReference(port));
+            }
+            if (port.isOutput()) {
+                outputs.add(circuit.getNodeReference(port));
+            }
+        }
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            String ref = circuit.getNodeReference(component);
+            gates.add(component.getModule() + " " + Identifier.truncateNamespaceSeparator(ref));
+        }
     }
 
 }
