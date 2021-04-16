@@ -39,7 +39,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
     @Override
     public void setDefaultControlPoints() {
         initControlPoints(new BezierControlPoint(), new BezierControlPoint());
-        if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001) {
+        if (connectionInfo.isSelfLoop()) {
             Point2D p = connectionInfo.getFirstCenter();
             cp1.setPosition(new Point2D.Double(p.getX() - 2.0, p.getY() + 2.0));
             cp2.setPosition(new Point2D.Double(p.getX() + 2.0, p.getY() + 2.0));

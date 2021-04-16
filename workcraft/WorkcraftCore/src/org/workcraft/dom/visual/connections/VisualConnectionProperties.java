@@ -26,4 +26,5 @@ public interface VisualConnectionProperties {
     ScaleMode getScaleMode();
 
     boolean isTokenColorPropagator();
+    boolean isSelfLoop();
 }

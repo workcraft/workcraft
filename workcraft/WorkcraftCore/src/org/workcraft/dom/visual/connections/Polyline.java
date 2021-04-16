@@ -37,7 +37,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     @Override
     public void setDefaultControlPoints() {
         resetControlPoints();
-        if (connectionInfo.getFirstCenter().distanceSq(connectionInfo.getSecondCenter()) < 0.0001) {
+        if (connectionInfo.isSelfLoop()) {
             Point2D p = connectionInfo.getFirstCenter();
 
             ControlPoint cp1 = new ControlPoint();

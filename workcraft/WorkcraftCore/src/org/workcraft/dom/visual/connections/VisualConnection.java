@@ -330,6 +330,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         tokenColorPropagator = value;
     }
 
+    @Override
+    public boolean isSelfLoop() {
+        return (first != null) && (first == second);
+    }
+
     @NoAutoSerialisation
     public void setSplitPoint(Point2D point) {
         splitPoint = point;
