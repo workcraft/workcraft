@@ -2,8 +2,7 @@
 
 This cut down version of Batik is the minimal set of JARs necessary
 for building a functioning Workcraft. This effort was made in order
-to reduce the distribution size of Workcraft by ~10MB and to overcome
-a broken dependency on JAR Core package.
+to reduce the distribution size of Workcraft by ~10MB.
 
 The JARs of Batik were collected from binary distribution at:
 https://xmlgraphics.apache.org/batik/download.html
@@ -12,11 +11,11 @@ The JAR for FOP Transcoder was downloaded from:
 https://mvnrepository.com/artifact/org.apache.xmlgraphics/fop-transcoder
 
 If extra ~10MB and several unnecessary dependencies are not a problem,
-and when the broken dependency on JAR Core is fixed, then Batik and FOP
-can be included via Gradle in WorkcraftCore\build.gradle:
+then Batik and FOP transcoders can be included via Gradle in
+dependencies section of WorkcraftCore\build.gradle as follows:
 
-    lib 'org.apache.xmlgraphics:batik-transcoder:1.13'
-    lib 'org.apache.xmlgraphics:fop-transcoder:2.5'
+    lib 'org.apache.xmlgraphics:batik-transcoder:1.14'
+    lib 'org.apache.xmlgraphics:fop-transcoder:2.6'
 
 
 ## Dependency analysis
@@ -81,9 +80,6 @@ functionality of Workcraft.
 
   * batik-xml -- needed for loading SVG files
     (java.lang.NoClassDefFoundError: org/apache/batik/dom/util/DOMUtilities)
-
-  * commons-logging -- needed for logging in PDF Transcoder
-    (java.lang.NoClassDefFoundError: org/apache/commons/logging/Log)
 
   * xml-apis-ext -- needed for loading SVG files
     (java.lang.NoClassDefFoundError: org/apache/batik/anim/dom/SVGOMDocument)

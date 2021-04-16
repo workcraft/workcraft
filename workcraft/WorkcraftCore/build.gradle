@@ -5,6 +5,8 @@ dependencies {
     lib 'log4j:log4j:1.2.17'  // for configuration of log in FOP
     lib 'net.sf.jga:jga:0.8.3'  // for UnaryFunctor class
     lib 'info.clearthought:table-layout:4.3.0'  // for TableLayout
+    lib 'commons-io:commons-io:2.8.0'  //  for logging in Batik PDF Transcoder
+    lib 'commons-logging:commons-logging:1.2'  //  for logging in Batik PDF Transcoder
 }
 
 ext.excludeFromCoverage = [
