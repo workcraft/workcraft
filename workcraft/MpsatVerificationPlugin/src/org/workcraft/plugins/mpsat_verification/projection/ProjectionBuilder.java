@@ -98,22 +98,18 @@ public class ProjectionBuilder {
     }
 
     private Pair<String, Trace> calcCompositionViolation() {
-        Enabledness compositionViolationEnabledness = new Enabledness();
+        String compositionViolationEvent = null;
         for (WorkspaceEntry we : wes) {
-            Enabledness componentEnabledness = getComponentEnabledness(we);
-            for (String componentViolationEvent : getUnexpectedlyEnabledOutputEvents(we)) {
-                String compositionViolationEvent = getCompositionEvent(we, componentViolationEvent);
-                Trace trace = componentEnabledness.get(componentViolationEvent);
-                compositionViolationEnabledness.put(compositionViolationEvent, trace);
+            Set<String> componentViolationEvents = getUnexpectedlyEnabledOutputEvents(we);
+            if (!componentViolationEvents.isEmpty()) {
+                String componentViolationEvent = componentViolationEvents.iterator().next();
+                compositionViolationEvent = getCompositionEvent(we, componentViolationEvent);
+                if (compositionViolationEvent != null) {
+                    break;
+                }
             }
         }
-
-        String compositionViolationEvent = compositionViolationEnabledness.isEmpty() ? null
-                : compositionViolationEnabledness.keySet().iterator().next();
-
-        Trace compositionViolationContinuation = compositionViolationEnabledness.getOrDefault(compositionViolationEvent, new Trace());
         Trace compositionViolationTrace = new Trace(compositionSolution.getMainTrace());
-        compositionViolationTrace.addAll(compositionViolationContinuation);
         return Pair.of(compositionViolationEvent, compositionViolationTrace);
     }
 
@@ -206,9 +202,9 @@ public class ProjectionBuilder {
         for (WorkspaceEntry we : wes) {
             ComponentData componentData = getComponentData(we);
             Trace projectedTrace = new Trace();
-            for (String ref : getCompositionViolationTrace()) {
-                String srcRef = componentData == null ? null : componentData.getSrcTransition(ref);
-                projectedTrace.add(srcRef);
+            for (String compositionRef : getCompositionViolationTrace()) {
+                String componentRef = componentData == null ? null : componentData.getSrcTransition(compositionRef);
+                projectedTrace.add(componentRef);
             }
             result.put(we, projectedTrace);
         }
@@ -222,7 +218,6 @@ public class ProjectionBuilder {
     }
 
     public Map<WorkspaceEntry, ProjectionTrace> calcComponentProjectionTraces() {
-
         Map<WorkspaceEntry, ProjectionTrace> result = new HashMap<>();
         for (WorkspaceEntry we : wes) {
             ProjectionTrace projectionTrace = calcComponentProjectionTrace(we);
