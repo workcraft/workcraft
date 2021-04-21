@@ -18,6 +18,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -155,15 +156,19 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
         for (int i = 0; i < compositionViolationTrace.size(); i++) {
             StringBuilder line = new StringBuilder(indent);
+            Collection<ProjectionEvent> projectionSlice = new ArrayList<>();
             for (WorkspaceEntry we : wes) {
                 ProjectionTrace projectionTrace = componentProjectionTraceMap.get(we);
-                ProjectionEvent.Tag tag = i < projectionTrace.size()
-                        ? projectionTrace.get(i).tag
-                        : ProjectionEvent.Tag.NONE;
+                ProjectionEvent projectedEvent = i < projectionTrace.size() ? projectionTrace.get(i)
+                        : new ProjectionEvent(ProjectionEvent.Tag.NONE, null);
 
-                line.append(convertTagToString(tag)).append(" ");
+                projectionSlice.add(projectedEvent);
+                line.append(convertTagToString(projectedEvent.tag)).append(" ");
             }
-            line.append(" ").append(compositionViolationTrace.get(i));
+            String suggestedEvent = getSuggestedEvent(projectionSlice);
+            if (suggestedEvent != null) {
+                line.append(" ").append(suggestedEvent);
+            }
             LogUtils.logMessage(line.toString());
         }
     }
@@ -193,46 +198,85 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
     private void writeList(Solution solution, String indent) {
         ProjectionBuilder projectionBuilder = new ProjectionBuilder(solution, getCompositionData(), wes);
-        Trace violationTrace = projectionBuilder.getCompositionTraceWithViolationEvent();
+        Trace compositionTrace = projectionBuilder.getCompositionTraceWithViolationEvent();
         Map<WorkspaceEntry, ProjectionTrace> componentProjectionTraceMap = projectionBuilder.calcComponentProjectionTraces();
 
-        int maxLen = violationTrace.stream().mapToInt(String::length).max().orElse(0);
-        for (int i = 0; i < violationTrace.size(); i++) {
-            List<String> inputRefs = new ArrayList<>();
-            List<String> outputRefs = new ArrayList<>();
-            List<String> internalRefs = new ArrayList<>();
+        List<Pair<String, String>> partitionedLines = new ArrayList<>();
+        for (int i = 0; i < compositionTrace.size(); i++) {
+            List<String> inputWorkTitles = new ArrayList<>();
+            List<String> outputWorkTitles = new ArrayList<>();
+            List<String> internalWorkTitles = new ArrayList<>();
+            Collection<ProjectionEvent> projectionSlice = new ArrayList<>();
             for (WorkspaceEntry we : wes) {
                 ProjectionTrace projectionTrace = componentProjectionTraceMap.get(we);
                 String title = we.getTitle();
                 if (i < projectionTrace.size()) {
                     ProjectionEvent projectionEvent = projectionTrace.get(i);
+                    projectionSlice.add(projectionEvent);
                     if (projectionEvent.tag == ProjectionEvent.Tag.OUTPUT) {
-                        outputRefs.add(title);
+                        outputWorkTitles.add(title);
                     }
                     if (projectionEvent.tag == ProjectionEvent.Tag.INPUT) {
-                        inputRefs.add(title);
+                        inputWorkTitles.add(title);
                     }
                     if ((projectionEvent.tag == ProjectionEvent.Tag.INTERNAL)
                             || (projectionEvent.tag == ProjectionEvent.Tag.DUMMY)) {
 
-                        internalRefs.add(title);
+                        internalWorkTitles.add(title);
                     }
                     if (projectionEvent.tag == ProjectionEvent.Tag.VIOLATION) {
-                        inputRefs.add(title + " (unexpected)");
+                        inputWorkTitles.add(title + " (unexpected)");
                     }
                 }
-
             }
-            String inputStr = String.join(", ", inputRefs);
-            String outputStr = String.join(", ", outputRefs);
-            String internalStr = String.join(", ", internalRefs);
-            String prefix = String.format(indent + "%-" + maxLen + "s : ", violationTrace.get(i));
-            if (!internalStr.isEmpty()) {
-                LogUtils.logMessage(prefix + internalStr);
-            } else {
-                LogUtils.logMessage(prefix + outputStr + " " + RIGHT_ARROW_SYMBOL + " " + inputStr);
+            String prefix = getSuggestedEvent(projectionSlice);
+            String suffix  = !internalWorkTitles.isEmpty() ? String.join(", ", internalWorkTitles)
+                    : (String.join(", ", outputWorkTitles) + " " + RIGHT_ARROW_SYMBOL
+                        + " " + String.join(", ", inputWorkTitles));
+
+            partitionedLines.add(Pair.of(prefix, suffix));
+        }
+
+        int maxLength = partitionedLines.stream().mapToInt(line -> line.getFirst().length()).max().orElse(0);
+        for (Pair<String, String> line : partitionedLines) {
+            String paddedPrefix = String.format("%-" + maxLength + "s", line.getFirst());
+            LogUtils.logMessage(indent + paddedPrefix + " : " + line.getSecond());
+        }
+    }
+
+    private String getSuggestedEvent(Collection<ProjectionEvent> projectionSlice) {
+        String violationEvent = null;
+        String outputEvent = null;
+        String inputEvent = null;
+        String internalEvent = null;
+        String dummyEvent = null;
+        for (ProjectionEvent projectionEvent : projectionSlice) {
+            if (projectionEvent != null) {
+                switch (projectionEvent.tag) {
+                case VIOLATION:
+                    violationEvent = projectionEvent.ref;
+                    break;
+                case OUTPUT:
+                    outputEvent = projectionEvent.ref;
+                    break;
+                case INPUT:
+                    inputEvent = projectionEvent.ref;
+                    break;
+                case INTERNAL:
+                    internalEvent = projectionEvent.ref;
+                    break;
+                case DUMMY:
+                    dummyEvent = projectionEvent.ref;
+                    break;
+                }
             }
         }
+
+        return violationEvent != null ? violationEvent
+                : outputEvent != null ? outputEvent
+                : inputEvent != null ? inputEvent
+                : internalEvent != null ? internalEvent
+                : dummyEvent;
     }
 
     private String convertTagToString(ProjectionEvent.Tag tag) {

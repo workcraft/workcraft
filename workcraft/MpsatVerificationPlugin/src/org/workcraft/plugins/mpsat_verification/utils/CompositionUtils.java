@@ -55,7 +55,7 @@ public class CompositionUtils {
     public static Enabledness getEnabledness(Collection<Trace> compositionContinuations, ComponentData componentData) {
         Enabledness result = new Enabledness();
         for (Trace compositionContinuation : compositionContinuations) {
-            Trace projectedContinuation = projectContinuation(compositionContinuation, componentData);
+            Trace projectedContinuation = projectTrace(compositionContinuation, componentData);
             if ((projectedContinuation != null) && !projectedContinuation.isEmpty()) {
                 int lastIndex = projectedContinuation.size() - 1;
                 String ref = projectedContinuation.get(lastIndex);
@@ -64,21 +64,6 @@ public class CompositionUtils {
                 projectedContinuation.remove(lastIndex);
                 result.put(event, projectedContinuation);
             }
-        }
-        return result;
-    }
-
-    private static Trace projectContinuation(Trace continuation, ComponentData data) {
-        if ((continuation == null) || continuation.isEmpty() || (data == null)) {
-            return continuation;
-        }
-        Trace result = new Trace();
-        for (String ref : continuation) {
-            String srcRef = data.getSrcTransition(ref);
-            if (srcRef == null) {
-                return new Trace();
-            }
-            result.add(srcRef);
         }
         return result;
     }
