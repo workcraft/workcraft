@@ -14,7 +14,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class MpsatTask implements Task<MpsatOutput> {
@@ -47,7 +46,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         command.add(toolName);
 
         // Built-in arguments
-        command.addAll(Arrays.asList(verificationParameters.getMpsatArguments(directory)));
+        command.addAll(verificationParameters.getMpsatArguments(directory));
 
         // Extra arguments (should go before the file parameters)
         String extraArgs = MpsatVerificationSettings.getArgs();

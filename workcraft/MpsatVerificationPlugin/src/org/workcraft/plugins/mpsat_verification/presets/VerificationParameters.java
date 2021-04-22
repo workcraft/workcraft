@@ -7,6 +7,7 @@ import org.workcraft.utils.LogUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class VerificationParameters {
 
@@ -96,28 +97,22 @@ public class VerificationParameters {
         return inversePredicate;
     }
 
-    public String[] getMpsatArguments(File workingDirectory) {
-        ArrayList<String> args = new ArrayList<>(getMode().getArguments());
+    public List<String> getMpsatArguments(File workingDirectory) {
+        List<String> args = new ArrayList<>();
 
+        // Verification mode
         String expression = getExpression();
-        if (expression != null) {
-            try {
-                File assertionFile = getDescriptiveFile(workingDirectory, ASSERTION_FILE_PREFIX, ASSERTION_FILE_EXTENSION);
-                FileUtils.dumpString(assertionFile, expression);
-                if (MpsatVerificationSettings.getDebugReach()) {
-                    LogUtils.logInfo("REACH expression to check");
-                    LogUtils.logMessage(expression);
-                }
-
-                args.add("-d");
-                args.add("@" + assertionFile.getAbsolutePath());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        if (expression == null) {
+            args.add(getMode().getModeArgument());
+        } else {
+            File assertionFile = createAssertionFile(expression, workingDirectory);
+            args.add(getMode().getModeArgument() + "=" + assertionFile.getAbsolutePath());
         }
 
+        // Verbosity
         args.add(String.format("-v%d", getVerbosity()));
 
+        // Solution mode
         switch (getSolutionMode()) {
         case FIRST:
             break;
@@ -134,7 +129,21 @@ public class VerificationParameters {
             break;
         }
 
-        return args.toArray(new String[0]);
+        return args;
+    }
+
+    private File createAssertionFile(String expression, File workingDirectory) {
+        try {
+            File assertionFile = getDescriptiveFile(workingDirectory, ASSERTION_FILE_PREFIX, ASSERTION_FILE_EXTENSION);
+            FileUtils.dumpString(assertionFile, expression);
+            if (MpsatVerificationSettings.getDebugReach()) {
+                LogUtils.logInfo("REACH expression to check");
+                LogUtils.logMessage(expression);
+            }
+            return assertionFile;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public File getDescriptiveFile(File directory, String prefix, String extension) {
