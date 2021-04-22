@@ -24,6 +24,8 @@ public class MpsatTask implements Task<MpsatOutput> {
     // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
     private static final String STG_FILE_NAME = "mpsat.g";
     private static final String VERILOG_FILE_NAME = "mpsat.v";
+    private static final String CHECK_GATE_LIBRARY_MESSAGE =
+            "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences.";
 
     private static final Pattern SUCCESS_PATTERN = Pattern.compile(
             "(" +
@@ -36,13 +38,14 @@ public class MpsatTask implements Task<MpsatOutput> {
             ")",
             Pattern.UNIX_LINES);
 
+
     private final File unfoldingFile;
-    private final SynthesisMode synthesisMode;
+    private final SynthesisMode mode;
     private final File directory;
 
-    public MpsatTask(File unfoldingFile, SynthesisMode synthesisMode, File directory) {
+    public MpsatTask(File unfoldingFile, SynthesisMode mode, File directory) {
         this.unfoldingFile = unfoldingFile;
-        this.synthesisMode = synthesisMode;
+        this.mode = mode;
         if (directory == null) {
             // Prefix must be at least 3 symbols long.
             directory = FileUtils.createTempDirectory("mpsat-");
@@ -58,26 +61,24 @@ public class MpsatTask implements Task<MpsatOutput> {
         String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatSynthesisSettings.getCommand());
         command.add(toolName);
 
-        // Built-in arguments
-        for (String arg : synthesisMode.getArguments()) {
-            command.add(arg);
-        }
-
+        String modeParameter = null;
         // Technology mapping library (if needed and accepted)
-        String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
-        if (synthesisMode.needGateLibrary()) {
+        if (mode == SynthesisMode.TECH_MAPPING) {
+            String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
             if ((gateLibrary == null) || gateLibrary.isEmpty()) {
                 return Result.exception(new IOException("Gate library is not specified.\n" +
-                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+                        CHECK_GATE_LIBRARY_MESSAGE));
             }
             File gateLibraryFile = new File(gateLibrary);
             if (!FileUtils.checkAvailability(gateLibraryFile, "Gate library access error", false)) {
                 return Result.exception(new IOException("Cannot find gate library file '" + gateLibrary + "'.\n" +
-                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+                        CHECK_GATE_LIBRARY_MESSAGE));
             }
-            command.add("-d");
-            command.add(gateLibraryFile.getAbsolutePath());
+            modeParameter = gateLibraryFile.getAbsolutePath();
         }
+
+        // Built-in arguments
+        command.addAll(mode.getMpsatArguments(modeParameter));
 
         // Extra arguments (should go before the file parameters)
         String extraArgs = MpsatSynthesisSettings.getArgs();
@@ -97,7 +98,7 @@ public class MpsatTask implements Task<MpsatOutput> {
 
         // Output file
         File verilogFile = new File(directory, VERILOG_FILE_NAME);
-        if (synthesisMode != SynthesisMode.RESOLVE_ENCODING_CONFLICTS) {
+        if (mode != SynthesisMode.RESOLVE_ENCODING_CONFLICTS) {
             command.add(verilogFile.getAbsolutePath());
         }
 

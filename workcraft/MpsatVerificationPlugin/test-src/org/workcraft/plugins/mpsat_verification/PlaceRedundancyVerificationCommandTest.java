@@ -47,6 +47,14 @@ public class PlaceRedundancyVerificationCommandTest {
         testPlaceRedundancyVerificationCommands(workName, "<d+/100,dtack+/100>", null);
     }
 
+    @Test
+    public void testReadArcPlaceRedundancyVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "read_arc_place_redundancy.stg.work");
+        testPlaceRedundancyVerificationCommands(workName, "essential", false);
+        testPlaceRedundancyVerificationCommands(workName, "redundant", true);
+        testPlaceRedundancyVerificationCommands(workName, "missing", null);
+    }
+
     private void testPlaceRedundancyVerificationCommands(String workName, String refs, Boolean redundant)
             throws DeserialisationException {
 

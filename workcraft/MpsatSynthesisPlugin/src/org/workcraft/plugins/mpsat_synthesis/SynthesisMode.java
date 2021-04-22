@@ -1,31 +1,34 @@
 package org.workcraft.plugins.mpsat_synthesis;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public enum SynthesisMode {
 
-    RESOLVE_ENCODING_CONFLICTS(Arrays.asList("-R", "-$1", "-p0", "-cl", "-f"), false),
-    COMPLEX_GATE_IMPLEMENTATION(Arrays.asList("-E", "-!"), false),
-    GENERALISED_CELEMENT_IMPLEMENTATION(Arrays.asList("-G", "-!"), false),
-    STANDARD_CELEMENT_IMPLEMENTATION(Arrays.asList("-S", "-!"), false),
-    TECH_MAPPING(Arrays.asList("-T", "-f", "-p2", "-cl", "-!"), true);
+    RESOLVE_ENCODING_CONFLICTS("-R", Arrays.asList("-$1", "-p0", "-fl")),
+    COMPLEX_GATE_IMPLEMENTATION("-Ie", Arrays.asList("-!")),
+    GENERALISED_CELEMENT_IMPLEMENTATION("-Ig", Arrays.asList("-!")),
+    STANDARD_CELEMENT_IMPLEMENTATION("-Is", Arrays.asList("-!")),
+    TECH_MAPPING("-T", Arrays.asList("-p2", "-fl", "-!"));
 
-    private final List<String> arguments;
-    private final boolean needGateLibary;
+    private final String mode;
+    private final List<String> options;
 
-    SynthesisMode(List<String> arguments, boolean needGateLibary) {
-        this.arguments = arguments;
-        this.needGateLibary = needGateLibary;
+    SynthesisMode(String mode, List<String> options) {
+        this.mode = mode;
+        this.options = options;
     }
 
-    public List<String> getArguments() {
-        return Collections.unmodifiableList(arguments);
-    }
-
-    public boolean needGateLibrary() {
-        return needGateLibary;
+    public List<String> getMpsatArguments(String modeParameter) {
+        List<String> result = new ArrayList<>();
+        if (modeParameter == null) {
+            result.add(mode);
+        } else {
+            result.add(mode + "=" + modeParameter);
+        }
+        result.addAll(options);
+        return result;
     }
 
 }
