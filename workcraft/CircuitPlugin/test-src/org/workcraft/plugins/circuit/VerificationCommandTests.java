@@ -73,6 +73,19 @@ public class VerificationCommandTests {
     }
 
     @Test
+    public void mutexBufVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "mutex-buf.circuit.work");
+        testVerificationCommands(workName,
+                false,  // conformation
+                true,  // deadlock freeness
+                true,  // output persistency
+                null,   // strict implementation
+                true,  // binate implementation
+                false // refinement
+        );
+    }
+
+    @Test
     public void mappedCelementDecomposedVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-decomposed-tm.circuit.work");
         testVerificationCommands(workName,

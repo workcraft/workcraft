@@ -58,7 +58,7 @@ public class SignalTransition extends NamedTransition {
     }
 
     public void setSignalType(Signal.Type value) {
-        if (type != value) {
+        if ((type != value) && (value != null)) {
             type = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_TYPE));
         }
@@ -71,7 +71,7 @@ public class SignalTransition extends NamedTransition {
     // FIXME: As direction is part of the node reference use Stg.setDirection(Node) instead!
     // This method is only to be used from StgNameManager.
     public void setDirection(Direction value) {
-        if (direction != value) {
+        if ((direction != value) && (value != null)) {
             direction = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
         }
