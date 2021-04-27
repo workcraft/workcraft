@@ -312,9 +312,15 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
         for (Pair<String, String> grantPair : grantPairs) {
             String g1SignalName = grantPair.getFirst();
-            stg.setSignalType(g1SignalName, grantTypes.get(g1SignalName));
+            Signal.Type g1SignalType = grantTypes.get(g1SignalName);
+            if (g1SignalType != null) {
+                stg.setSignalType(g1SignalName, g1SignalType);
+            }
             String g2SignalName = grantPair.getSecond();
-            stg.setSignalType(g2SignalName, grantTypes.get(g2SignalName));
+            Signal.Type g2SignalType = grantTypes.get(g2SignalName);
+            if (g2SignalType != null) {
+                stg.setSignalType(g2SignalName, g2SignalType);
+            }
         }
     }
 
