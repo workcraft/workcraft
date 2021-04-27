@@ -397,7 +397,7 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     @Override
     public MathNode getUnderlyingNode(String ref) {
-        return refToUnderlyingNodeMap == null ? null : refToUnderlyingNodeMap.get(ref);
+        return refToUnderlyingNodeMap == null ? super.getUnderlyingNode(ref) : refToUnderlyingNodeMap.get(ref);
     }
 
     @Override
