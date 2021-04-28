@@ -9,6 +9,8 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.UnaryGateInterface;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,19 +21,17 @@ import java.util.stream.Collectors;
 public class ScanUtils {
 
     public static Set<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
-        Set<VisualFunctionComponent> components = new HashSet<>();
+        Set<VisualFunctionComponent> result = new HashSet<>();
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             for (VisualContact contact : component.getVisualOutputs()) {
                 if (contact.getReferencedComponent().getPathBreaker()) {
                     contact.getReferencedComponent().setPathBreaker(false);
                     VisualFunctionComponent testableGate = insertTestableGate(circuit, contact);
-                    if (testableGate != null) {
-                        components.add(testableGate);
-                    }
+                    result.add(testableGate);
                 }
             }
         }
-        return components;
+        return result;
     }
 
     private static VisualFunctionComponent insertTestableGate(VisualCircuit circuit, VisualContact contact) {
@@ -74,7 +74,26 @@ public class ScanUtils {
         return null;
     }
 
-    public static void insertScan(VisualCircuit circuit) throws InvalidConnectionException {
+    public static boolean insertScan(WorkspaceEntry we) {
+        boolean result = false;
+        if (WorkspaceUtils.isApplicable(we, VisualCircuit.class)) {
+            VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+            we.captureMemento();
+            try {
+                result = ScanUtils.insertScan(circuit);
+            } catch (InvalidConnectionException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (result) {
+            we.saveMemento();
+        } else {
+            we.uncaptureMemento();
+        }
+        return result;
+    }
+
+    public static boolean insertScan(VisualCircuit circuit) throws InvalidConnectionException {
         // Arrange SCAN components from right-to-left (and in the same column from bottom-to-top)
         List<VisualFunctionComponent> pathbreakerComponents = circuit.getVisualFunctionComponents().stream()
                 .filter(component -> hasPathBreakerOutput(component.getReferencedComponent()))
@@ -83,7 +102,8 @@ public class ScanUtils {
                     return result == 0 ? Double.compare(o2.getRootSpaceY(), o1.getRootSpaceY()) : result;
                 }).collect(Collectors.toList());
 
-        if (!pathbreakerComponents.isEmpty()) {
+        boolean result = !pathbreakerComponents.isEmpty();
+        if (result) {
             String ckName = CircuitSettings.parseScanckPortPin().getFirst();
             VisualFunctionContact ckPort = getOrCreateAlwaysLowInputPort(circuit, ckName, VisualContact.Direction.WEST);
 
@@ -112,13 +132,16 @@ public class ScanUtils {
             SpaceUtils.positionPort(circuit, tmPort, false);
             SpaceUtils.positionPort(circuit, inPort, true);
         }
+        return result;
     }
 
     private static VisualFunctionContact getOrCreateAlwaysLowInputPort(VisualCircuit circuit, String portName,
             VisualContact.Direction direction) {
 
         VisualFunctionContact port = CircuitUtils.getOrCreatePort(circuit, portName, Contact.IOType.INPUT, direction);
-        port.setSetFunction(Zero.getInstance());
+        if (port != null) {
+            port.setSetFunction(Zero.getInstance());
+        }
         return port;
     }
 
@@ -221,7 +244,7 @@ public class ScanUtils {
                 throw new RuntimeException(e);
             }
         }
-        VisualFunctionContact outPin = null;
+        VisualFunctionContact outPin;
         if (component.getVisualOutputs().size() == 1) {
             outPin = component.getFirstVisualOutput();
         } else {

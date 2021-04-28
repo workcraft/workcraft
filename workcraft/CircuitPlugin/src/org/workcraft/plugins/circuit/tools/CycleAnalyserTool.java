@@ -5,7 +5,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
@@ -34,7 +33,7 @@ import java.util.function.Function;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> breakerTable = new BasicTable("Path breakers");
+    private final BasicTable<String> breakerTable = new BasicTable<>("Path breakers");
     private Set<Contact> cycleContacts;
     private Set<FunctionComponent> cycleComponents;
     private JPanel panel;
@@ -72,22 +71,22 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         JButton tagPathBreakerSelfloopPinsButton = GuiUtils.createIconButton(
                 "images/circuit-cycle-selfloop_pins.svg",
                 "Path breaker all self-loops",
-                l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerSelfloopPins(c)));
+                l -> changePathBreaker(editor, CycleUtils::tagPathBreakerSelfloopPins));
 
         JButton tagPathBreakerAutoAppendButton = GuiUtils.createIconButton(
                 "images/circuit-cycle-auto_append.svg",
                 "Auto-append path breaker pins as necessary to complete cycle breaking",
-                l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerAutoAppend(c)));
+                l -> changePathBreaker(editor, CycleUtils::tagPathBreakerAutoAppend));
 
         JButton tagPathBreakerAutoDiscardButton = GuiUtils.createIconButton(
                 "images/circuit-cycle-auto_discard.svg",
                 "Auto-discard path breaker pins that are redundant for cycle breaking",
-                l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerAutoDiscard(c)));
+                l -> changePathBreaker(editor, CycleUtils::tagPathBreakerAutoDiscard));
 
         JButton tagPathBreakerClearAllButton = GuiUtils.createIconButton(
                 "images/circuit-cycle-clear_all.svg",
                 "Clear all path breaker pins",
-                l -> changePathBreaker(editor, c -> CycleUtils.tagPathBreakerClearAll(c)));
+                l -> changePathBreaker(editor, CycleUtils::tagPathBreakerClearAll));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(tagPathBreakerSelfloopPinsButton);
@@ -146,13 +145,8 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private void insertScan(GraphEditor editor) {
-        VisualCircuit circuit = (VisualCircuit) editor.getModel();
-        editor.getWorkspaceEntry().saveMemento();
-        try {
-            ScanUtils.insertScan(circuit);
-        } catch (InvalidConnectionException e) {
-            throw new RuntimeException(e);
-        }
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        ScanUtils.insertScan(we);
         editor.requestFocus();
     }
 
@@ -310,24 +304,21 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                Node mathNode = null;
-                if (node instanceof VisualComponent) {
-                    mathNode = ((VisualComponent) node).getReferencedComponent();
-                }
-
-                if (mathNode != null) {
-                    if (mathNode instanceof Contact) {
-                        return getContactDecoration((Contact) mathNode);
-                    }
-                    if (mathNode instanceof FunctionComponent) {
-                        return getComponentDecoration((FunctionComponent) mathNode);
-                    }
-                }
-                return (mathNode instanceof Contact) ? StateDecoration.Empty.INSTANCE : null;
+        return node -> {
+            Node mathNode = null;
+            if (node instanceof VisualComponent) {
+                mathNode = ((VisualComponent) node).getReferencedComponent();
             }
+
+            if (mathNode != null) {
+                if (mathNode instanceof Contact) {
+                    return getContactDecoration((Contact) mathNode);
+                }
+                if (mathNode instanceof FunctionComponent) {
+                    return getComponentDecoration((FunctionComponent) mathNode);
+                }
+            }
+            return (mathNode instanceof Contact) ? StateDecoration.Empty.INSTANCE : null;
         };
     }
 
