@@ -13,12 +13,12 @@ import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public final class RefinementUtils {
 
@@ -174,6 +174,110 @@ public final class RefinementUtils {
 
     private static boolean isCompatibleSignals(Set<String> aSignals, Set<String> bSignals) {
         return (aSignals != null)  && aSignals.equals(bSignals);
+    }
+
+    public static void updateInterface(WorkspaceEntry we, Set<File> changedRefinementFiles) {
+        Framework framework = Framework.getInstance();
+        VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+        for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
+            Pair<File, Circuit> refinementFileCircuitPair = getRefinementCircuit(component.getReferencedComponent());
+            if (refinementFileCircuitPair != null) {
+                File refinementFile = refinementFileCircuitPair.getFirst();
+                if (changedRefinementFiles.contains(refinementFile)) {
+                    try {
+                        //Circuit refinementCircuit = refinementFileCircuitPair.getSecond();
+                        WorkspaceEntry refinementWe = framework.loadWork(refinementFile, false);
+                        Circuit refinementCircuit = WorkspaceUtils.getAs(refinementWe, Circuit.class);
+                        ComponentInterface refinementInterface = getModelInterface(refinementCircuit);
+                        updateInterface(circuit, component, refinementInterface);
+                    } catch (DeserialisationException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void updateInterface(VisualCircuit circuit, VisualFunctionComponent component,
+            ComponentInterface componentInterface) {
+
+        Set<String> inputs = componentInterface.getInputs();
+        Set<String> outputs = componentInterface.getOutputs();
+        for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
+            String signal = contact.getName();
+            boolean matchesRefinementInput = contact.isInput() && inputs.contains(signal);
+            boolean matchesRefinementOutput = contact.isOutput() && outputs.contains(signal);
+            if (!matchesRefinementInput && !matchesRefinementOutput) {
+                component.remove(contact);
+            }
+        }
+        component.getReferencedComponent().setModule(componentInterface.getName());
+        for (String signal : inputs) {
+            circuit.getOrCreateContact(component, signal, Contact.IOType.INPUT);
+        }
+        for (String outputSignal : outputs) {
+            circuit.getOrCreateContact(component, outputSignal, Contact.IOType.OUTPUT);
+        }
+    }
+
+    public static List<File> getOrderedCircuitRefinementFiles(ModelEntry me) {
+        List<File> result = new ArrayList<>();
+        Stack<File> stack = new Stack<>();
+        stack.addAll(getRefinementFiles(me));
+        Set<File> processed = new HashSet<>();
+        while (!stack.empty()) {
+            File curFile = stack.pop();
+            try {
+                ModelEntry curMe = WorkUtils.loadModel(curFile);
+                Set<File> refinementFiles = getRefinementFiles(curMe);
+                refinementFiles.removeAll(processed);
+                if (refinementFiles.isEmpty()) {
+                    if (WorkspaceUtils.isApplicable(curMe, Circuit.class)) {
+                        result.add(curFile);
+                    }
+                    processed.add(curFile);
+                } else {
+                    stack.push(curFile);
+                    stack.addAll(refinementFiles);
+                }
+            } catch (DeserialisationException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public static Set<File> getRefinementFiles(ModelEntry me) {
+        Set<File> result = new HashSet<>();
+        if (WorkspaceUtils.isApplicable(me, Stg.class)) {
+            Stg stg = WorkspaceUtils.getAs(me, Stg.class);
+            result.addAll(getRefinementFiles(stg));
+        }
+        if (WorkspaceUtils.isApplicable(me, Circuit.class)) {
+            Circuit circuit = WorkspaceUtils.getAs(me, Circuit.class);
+            result.addAll(getRefinementFiles(circuit));
+        }
+        return result;
+    }
+
+    public static Set<File> getRefinementFiles(Stg stg) {
+        Set<File> result = new HashSet<>();
+        File refinementFile = stg.getRefinementFile();
+        if (refinementFile != null) {
+            result.add(refinementFile);
+        }
+        return result;
+    }
+
+    public static Set<File> getRefinementFiles(Circuit circuit) {
+        Set<File> result = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            File refinementFile = component.getRefinementFile();
+            if (refinementFile != null) {
+                result.add(refinementFile);
+            }
+        }
+        return result;
     }
 
 }

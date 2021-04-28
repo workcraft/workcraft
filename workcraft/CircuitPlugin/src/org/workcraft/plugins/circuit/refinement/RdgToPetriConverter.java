@@ -86,7 +86,7 @@ public class RdgToPetriConverter {
             try {
                 model.connect(fromNode, toNode);
             } catch (InvalidConnectionException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
     }

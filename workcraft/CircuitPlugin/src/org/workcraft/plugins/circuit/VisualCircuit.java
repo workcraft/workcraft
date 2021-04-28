@@ -41,7 +41,10 @@ import org.workcraft.workspace.ModelEntry;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
@@ -416,23 +419,7 @@ public class VisualCircuit extends AbstractVisualModel {
                 return;
             }
             if (answer == 0) {
-                Set<String> inputs = refinementInterface.getInputs();
-                Set<String> outputs = refinementInterface.getOutputs();
-                for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
-                    String signal = contact.getName();
-                    boolean matchesRefinementInput = contact.isInput() && inputs.contains(signal);
-                    boolean matchesRefinementOutput = contact.isOutput() && outputs.contains(signal);
-                    if (!matchesRefinementInput && !matchesRefinementOutput) {
-                        component.remove(contact);
-                    }
-                }
-                component.getReferencedComponent().setModule(refinementInterface.getName());
-                for (String signal : inputs) {
-                    getOrCreateContact(component, signal, Contact.IOType.INPUT);
-                }
-                for (String outputSignal : outputs) {
-                    getOrCreateContact(component, outputSignal, Contact.IOType.OUTPUT);
-                }
+                RefinementUtils.updateInterface(this, component, refinementInterface);
             }
         }
         component.getReferencedComponent().setRefinement(value);
