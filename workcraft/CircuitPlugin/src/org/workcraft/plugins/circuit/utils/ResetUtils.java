@@ -372,10 +372,10 @@ public final class ResetUtils {
             VisualFunctionContact clearContact = null;
             for (VisualFunctionContact contact : forceInitFuncContacts) {
                 if (contact.getInitToOne()) {
-                    setContact = getOrCreatePin(circuit, component, CircuitSettings.getSetPin());
+                    setContact = getOrCreateResetPin(circuit, component, CircuitSettings.getSetPin());
                     insertResetFunction(contact, setContact, isActiveLow);
                 } else {
-                    clearContact = getOrCreatePin(circuit, component, CircuitSettings.getClearPin());
+                    clearContact = getOrCreateResetPin(circuit, component, CircuitSettings.getClearPin());
                     insertResetFunction(contact, clearContact, isActiveLow);
                 }
             }
@@ -406,7 +406,7 @@ public final class ResetUtils {
         return result;
     }
 
-    private static VisualFunctionContact getOrCreatePin(VisualCircuit circuit, VisualFunctionComponent component, String name) {
+    private static VisualFunctionContact getOrCreateResetPin(VisualCircuit circuit, VisualFunctionComponent component, String name) {
         String ref = NamespaceHelper.getReference(circuit.getMathReference(component), name);
         VisualFunctionContact result = circuit.getVisualComponentByMathReference(ref, VisualFunctionContact.class);
         if (result == null) {

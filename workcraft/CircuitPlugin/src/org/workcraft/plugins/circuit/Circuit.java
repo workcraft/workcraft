@@ -46,6 +46,14 @@ public class Circuit extends AbstractMathModel {
         return connection;
     }
 
+    public boolean hasPort(String ref) {
+        return getNodeByReference(null, ref) instanceof Contact;
+    }
+
+    public boolean hasPin(FunctionComponent component, String ref) {
+        return getNodeByReference(component, ref) instanceof Contact;
+    }
+
     public Collection<FunctionContact> getFunctionContacts() {
         return Hierarchy.getDescendantsOfType(getRoot(), FunctionContact.class);
     }

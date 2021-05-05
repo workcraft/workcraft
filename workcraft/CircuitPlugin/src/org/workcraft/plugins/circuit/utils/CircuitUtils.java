@@ -611,4 +611,13 @@ public class CircuitUtils {
         }
     }
 
+    public static boolean hasContacts(VisualCircuit circuit, VisualCircuitComponent component, Collection<String> contactNames) {
+        return hasContacts(circuit.getMathModel(), component.getReferencedComponent(), contactNames);
+    }
+
+    public static boolean hasContacts(Circuit circuit, CircuitComponent component, Collection<String> contactNames) {
+        return contactNames.stream()
+                .allMatch(contactName -> circuit.getNodeByReference(component, contactName) != null);
+    }
+
 }
