@@ -659,17 +659,15 @@ public final class Framework {
 
     public WorkspaceEntry loadWork(File file, boolean open) throws DeserialisationException {
         // Check if work is already loaded
-        Path<String> path = getWorkspace().getPath(file);
-        for (WorkspaceEntry we : getWorkspace().getWorks()) {
-            if (we.getWorkspacePath().equals(path)) {
-                return we;
-            }
+        WorkspaceEntry we = getWorkspace().getWork(file);
+        if (we != null) {
+            return we;
         }
-        WorkspaceEntry we = null;
         ModelEntry me = WorkUtils.loadModel(file);
         if (me != null) {
             // Load (from *.work) or import (other extensions) work
             boolean isWorkFile = FileFilters.isWorkFile(file);
+            Path<String> path = getWorkspace().getPath(file);
             if (isWorkFile) {
                 if (path == null) {
                     path = getWorkspace().tempMountExternalFile(file);
