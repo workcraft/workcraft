@@ -4,24 +4,24 @@ import org.workcraft.formula.And;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.Not;
 import org.workcraft.formula.Or;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.StgSettings;
 
 public class MutexUtils {
 
-    public static BooleanFormula getGrantSet(VisualFunctionContact reqContact,
+    public static BooleanFormula getGrantSet(Mutex.Protocol mutexProtocol, VisualFunctionContact reqContact,
             VisualFunctionContact otherGrantContact, VisualFunctionContact otherReqContact) {
 
-        return getGrantSet(reqContact.getReferencedComponent(),
+        return getGrantSet(mutexProtocol, reqContact.getReferencedComponent(),
                 otherGrantContact.getReferencedComponent(), otherReqContact.getReferencedComponent());
     }
 
-    public static BooleanFormula getGrantSet(BooleanFormula reqContact,
+    public static BooleanFormula getGrantSet(Mutex.Protocol mutexProtocol, BooleanFormula reqContact,
             BooleanFormula otherGrantContact, BooleanFormula otherReqContact) {
 
         BooleanFormula result = new And(reqContact, new Not(otherGrantContact));
-        if (StgSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
+        if (mutexProtocol == Mutex.Protocol.RELAXED) {
             result = new Or(result, new And(reqContact, new Not(otherReqContact)));
         }
         return result;
@@ -33,6 +33,17 @@ public class MutexUtils {
 
     public static BooleanFormula getGrantReset(BooleanFormula reqContact) {
         return new Not(reqContact);
+    }
+
+    public static String appendProtocolSuffix(String name, Mutex.Protocol protocol) {
+        String result = name == null ? "" : name;
+        if (protocol == Mutex.Protocol.STRICT) {
+            result += CircuitSettings.getMutexStrictSuffix();
+        }
+        if (protocol == Mutex.Protocol.RELAXED) {
+            result += CircuitSettings.getMutexRelaxedSuffix();
+        }
+        return result;
     }
 
 }

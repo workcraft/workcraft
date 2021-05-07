@@ -91,7 +91,9 @@ public class MutexUtils {
         }
 
         String name = stg.getNodeReference(mutexPlace);
-        return new Mutex(name, r1Signal, g1Signal, r2Signal, g2Signal);
+        Mutex mutex = new Mutex(name, r1Signal, g1Signal, r2Signal, g2Signal);
+        mutex.setProtocol(mutexPlace.getMutexProtocol());
+        return mutex;
     }
 
     private static Set<SignalTransition> getTransitionsOfSignal(Stg stg,
