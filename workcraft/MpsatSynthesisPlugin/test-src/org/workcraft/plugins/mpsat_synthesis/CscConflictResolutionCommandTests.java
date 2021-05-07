@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_synthesis.commands.CscConflictResolutionCommand;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.MutexUtils;
@@ -18,6 +17,7 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +32,6 @@ public class CscConflictResolutionCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
         MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
@@ -71,13 +70,8 @@ public class CscConflictResolutionCommandTests {
         Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
         Set<String> dstMutexes = MutexUtils.getMutexPlaceReferences(dstStg);
 
-        Set<String> expInternals = new HashSet<>();
-        expInternals.addAll(srcInternals);
-        if (cscSignals != null) {
-            for (String cscSignal: cscSignals) {
-                expInternals.add(cscSignal);
-            }
-        }
+        Set<String> expInternals = new HashSet<>(srcInternals);
+        expInternals.addAll(Arrays.asList(cscSignals));
 
         Assertions.assertEquals(srcInputs, dstInputs);
         Assertions.assertEquals(expInternals, dstInternals);
