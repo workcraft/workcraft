@@ -69,6 +69,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyWaitData = prefix + ".waitData";
     private static final String keyWait0Data = prefix + ".wait0Data";
     private static final String keyMutexData = prefix + ".mutexData";
+    private static final String keyMutexStrictSuffix = prefix + ".mutexStrictSuffix";
+    private static final String keyMutexRelaxedSuffix = prefix + ".mutexRelaxedSuffix";
     // Import/export
     private static final String keyExportSubstitutionLibrary = prefix + ".exportSubstitutionLibrary";
     private static final String keyInvertExportSubstitutionRules = prefix + ".invertExportSubstitutionRules";
@@ -109,6 +111,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultWaitData = "WAIT (sig, (ctrl, san))";
     private static final String defaultWait0Data = "WAIT0 (sig, (ctrl, san))";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
+    private static final String defaultMutexStrictSuffix = "";
+    private static final String defaultMutexRelaxedSuffix = "_relaxed";
     // Import/export
     private static final String defaultExportSubstitutionLibrary = "";
     private static final boolean defaultInvertExportSubstitutionRules = false;
@@ -149,6 +153,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String waitData = defaultWaitData;
     private static String wait0Data = defaultWait0Data;
     private static String mutexData = defaultMutexData;
+    private static String mutexStrictSuffix = defaultMutexStrictSuffix;
+    private static String mutexRelaxedSuffix = defaultMutexRelaxedSuffix;
     // Import/export
     private static String exportSubstitutionLibrary = defaultExportSubstitutionLibrary;
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
@@ -255,6 +261,16 @@ public class CircuitSettings extends AbstractModelSettings {
                     }
                 },
                 CircuitSettings::getMutexData));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Strict MUTEX module suffix",
+                CircuitSettings::setMutexStrictSuffix,
+                CircuitSettings::getMutexStrictSuffix));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Relaxed MUTEX module suffix",
+                CircuitSettings::setMutexRelaxedSuffix,
+                CircuitSettings::getMutexRelaxedSuffix));
 
         properties.add(new PropertyDeclaration<>(Mutex.Protocol.class,
                 "MUTEX protocol",
@@ -405,6 +421,8 @@ public class CircuitSettings extends AbstractModelSettings {
         setWaitData(config.getString(keyWaitData, defaultWaitData));
         setWait0Data(config.getString(keyWait0Data, defaultWait0Data));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
+        setMutexStrictSuffix(config.getString(keyMutexStrictSuffix, defaultMutexStrictSuffix));
+        setMutexRelaxedSuffix(config.getString(keyMutexRelaxedSuffix, defaultMutexRelaxedSuffix));
         // Import/export
         setExportSubstitutionLibrary(config.getString(keyExportSubstitutionLibrary, defaultExportSubstitutionLibrary));
         setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
@@ -445,6 +463,8 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyWaitData, getWaitData());
         config.set(keyWait0Data, getWait0Data());
         config.set(keyMutexData, getMutexData());
+        config.set(keyMutexStrictSuffix, getMutexStrictSuffix());
+        config.set(keyMutexRelaxedSuffix, getMutexRelaxedSuffix());
         // Import/export
         config.set(keyExportSubstitutionLibrary, getExportSubstitutionLibrary());
         config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
@@ -583,6 +603,22 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static Mutex parseMutexData() {
         return parseMutexData(getMutexData());
+    }
+
+    public static String getMutexStrictSuffix() {
+        return mutexStrictSuffix;
+    }
+
+    public static void setMutexStrictSuffix(String value) {
+        mutexStrictSuffix = value;
+    }
+
+    public static String getMutexRelaxedSuffix() {
+        return mutexRelaxedSuffix;
+    }
+
+    public static void setMutexRelaxedSuffix(String value) {
+        mutexRelaxedSuffix = value;
     }
 
     public static String getExportSubstitutionLibrary() {

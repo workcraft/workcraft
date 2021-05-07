@@ -60,6 +60,12 @@ public class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getMutexData()),
                 framework.getConfigVar(prefix + ".mutexData", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getMutexStrictSuffix()),
+                framework.getConfigVar(prefix + ".mutexStrictSuffix", false));
+
+        Assertions.assertEquals(Config.toString(CircuitSettings.getMutexRelaxedSuffix()),
+                framework.getConfigVar(prefix + ".mutexRelaxedSuffix", false));
+
         // Import/export
         Assertions.assertEquals(Config.toString(CircuitSettings.getExportSubstitutionLibrary()),
                 framework.getConfigVar(prefix + ".exportSubstitutionLibrary", false));
