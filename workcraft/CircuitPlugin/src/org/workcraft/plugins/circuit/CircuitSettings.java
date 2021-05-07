@@ -69,6 +69,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyWaitData = prefix + ".waitData";
     private static final String keyWait0Data = prefix + ".wait0Data";
     private static final String keyMutexData = prefix + ".mutexData";
+    private static final String keyMutexLateSuffix = prefix + ".mutexLateSuffix";
+    private static final String keyMutexEarlySuffix = prefix + ".mutexEarlySuffix";
     // Import/export
     private static final String keyExportSubstitutionLibrary = prefix + ".exportSubstitutionLibrary";
     private static final String keyInvertExportSubstitutionRules = prefix + ".invertExportSubstitutionRules";
@@ -109,6 +111,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultWaitData = "WAIT (sig, (ctrl, san))";
     private static final String defaultWait0Data = "WAIT0 (sig, (ctrl, san))";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
+    private static final String defaultMutexLateSuffix = "";
+    private static final String defaultMutexEarlySuffix = "_early";
     // Import/export
     private static final String defaultExportSubstitutionLibrary = "";
     private static final boolean defaultInvertExportSubstitutionRules = false;
@@ -149,6 +153,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String waitData = defaultWaitData;
     private static String wait0Data = defaultWait0Data;
     private static String mutexData = defaultMutexData;
+    private static String mutexLateSuffix = defaultMutexLateSuffix;
+    private static String mutexEarlySuffix = defaultMutexEarlySuffix;
     // Import/export
     private static String exportSubstitutionLibrary = defaultExportSubstitutionLibrary;
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
@@ -255,6 +261,16 @@ public class CircuitSettings extends AbstractModelSettings {
                     }
                 },
                 CircuitSettings::getMutexData));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Late protocol MUTEX module suffix",
+                CircuitSettings::setMutexLateSuffix,
+                CircuitSettings::getMutexLateSuffix));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Early protocol MUTEX module suffix",
+                CircuitSettings::setMutexEarlySuffix,
+                CircuitSettings::getMutexEarlySuffix));
 
         properties.add(new PropertyDeclaration<>(Mutex.Protocol.class,
                 "MUTEX protocol",
@@ -405,6 +421,8 @@ public class CircuitSettings extends AbstractModelSettings {
         setWaitData(config.getString(keyWaitData, defaultWaitData));
         setWait0Data(config.getString(keyWait0Data, defaultWait0Data));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
+        setMutexLateSuffix(config.getString(keyMutexLateSuffix, defaultMutexLateSuffix));
+        setMutexEarlySuffix(config.getString(keyMutexEarlySuffix, defaultMutexEarlySuffix));
         // Import/export
         setExportSubstitutionLibrary(config.getString(keyExportSubstitutionLibrary, defaultExportSubstitutionLibrary));
         setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
@@ -445,6 +463,8 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyWaitData, getWaitData());
         config.set(keyWait0Data, getWait0Data());
         config.set(keyMutexData, getMutexData());
+        config.set(keyMutexLateSuffix, getMutexLateSuffix());
+        config.set(keyMutexEarlySuffix, getMutexEarlySuffix());
         // Import/export
         config.set(keyExportSubstitutionLibrary, getExportSubstitutionLibrary());
         config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
@@ -583,6 +603,22 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static Mutex parseMutexData() {
         return parseMutexData(getMutexData());
+    }
+
+    public static String getMutexLateSuffix() {
+        return mutexLateSuffix;
+    }
+
+    public static void setMutexLateSuffix(String value) {
+        mutexLateSuffix = value;
+    }
+
+    public static String getMutexEarlySuffix() {
+        return mutexEarlySuffix;
+    }
+
+    public static void setMutexEarlySuffix(String value) {
+        mutexEarlySuffix = value;
     }
 
     public static String getExportSubstitutionLibrary() {

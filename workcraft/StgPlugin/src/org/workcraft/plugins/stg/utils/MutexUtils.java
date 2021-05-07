@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
@@ -80,19 +79,21 @@ public class MutexUtils {
 
         Iterator<Signal> grantSignalIterator = grantSignals.iterator();
         Signal g1Signal = grantSignalIterator.next();
-        Set<SignalTransition> g1Transitions = getTransitionsOfSignal(stg, grantTransitions, g1Signal.name);
-        Signal r1Signal = getRequestSignal(stg, g1Transitions, mutexPlace);
-
         Signal g2Signal = grantSignalIterator.next();
+        Set<SignalTransition> g1Transitions = getTransitionsOfSignal(stg, grantTransitions, g1Signal.name);
         Set<SignalTransition> g2Transitions = getTransitionsOfSignal(stg, grantTransitions, g2Signal.name);
-        Signal r2Signal = getRequestSignal(stg, g2Transitions, mutexPlace);
+
+        Signal r1Signal = getRequestSignal(stg, g1Transitions, grantSignals, mutexPlace);
+        Signal r2Signal = getRequestSignal(stg, g2Transitions, grantSignals, mutexPlace);
 
         if ((r1Signal == null) || (r2Signal == null)) {
             return null;
         }
 
         String name = stg.getNodeReference(mutexPlace);
-        return new Mutex(name, r1Signal, g1Signal, r2Signal, g2Signal);
+        Mutex mutex = new Mutex(name, r1Signal, g1Signal, r2Signal, g2Signal);
+        mutex.setProtocol(mutexPlace.getMutexProtocol());
+        return mutex;
     }
 
     private static Set<SignalTransition> getTransitionsOfSignal(Stg stg,
@@ -104,7 +105,7 @@ public class MutexUtils {
     }
 
     private static Signal getRequestSignal(Stg stg, Collection<SignalTransition> grantTransitions,
-            StgPlace mutexPlace) {
+            Set<Signal> skipSignals, StgPlace mutexPlace) {
 
         Signal result = null;
         for (SignalTransition grantTransition : grantTransitions) {
@@ -118,14 +119,20 @@ public class MutexUtils {
                     if (stg.getPreset(predTransition).contains(predPlace)) {
                         continue;
                     }
+                    // Determine syntactic trigger transition and its signal
+                    SignalTransition requestTransition = (SignalTransition) predTransition;
+                    Signal requestSignal = new Signal(stg.getSignalReference(requestTransition),
+                            requestTransition.getSignalType());
+
+                    // Skip transitions of grant signals
+                    if (skipSignals.contains(requestSignal)) {
+                        continue;
+                    }
 
                     // Request must be rising edge
                     if (!isGoodMutexRequest(stg, predTransition)) {
                         return null;
                     }
-                    SignalTransition requestTransition = (SignalTransition) predTransition;
-                    Signal requestSignal = new Signal(stg.getSignalReference(requestTransition),
-                            requestTransition.getSignalType());
 
                     // All triggers must be of the same request signal
                     if (result == null) {
@@ -208,26 +215,23 @@ public class MutexUtils {
         if ((stg == null) || (mutex == null)) {
             return;
         }
-        for (Place place: stg.getPlaces()) {
-            if (place instanceof StgPlace) {
-                StgPlace stgPlace = (StgPlace) place;
-                Mutex newMutex = MutexUtils.getMutex(stg, stgPlace);
-                if (newMutex == null) {
-                    continue;
-                }
-                boolean r1r1 = mutex.r1.equals(newMutex.r1);
-                boolean g1g1 = mutex.g1.equals(newMutex.g1);
-                boolean r2r2 = mutex.r2.equals(newMutex.r2);
-                boolean g2g2 = mutex.g2.equals(newMutex.g2);
-                boolean r1r2 = mutex.r1.equals(newMutex.r2);
-                boolean g1g2 = mutex.g1.equals(newMutex.g2);
-                boolean r2r1 = mutex.r2.equals(newMutex.r1);
-                boolean g2g1 = mutex.g2.equals(newMutex.g1);
-                boolean match11 = r1r1 && g1g1 && r2r2 && g2g2;
-                boolean match21 = r1r2 && g1g2 && r2r1 && g2g1;
-                if (match11 || match21) {
-                    stgPlace.setMutex(true);
-                }
+        for (StgPlace place: stg.getPlaces()) {
+            Mutex newMutex = MutexUtils.getMutex(stg, place);
+            if (newMutex == null) {
+                continue;
+            }
+            boolean r1r1 = mutex.r1.equals(newMutex.r1);
+            boolean g1g1 = mutex.g1.equals(newMutex.g1);
+            boolean r2r2 = mutex.r2.equals(newMutex.r2);
+            boolean g2g2 = mutex.g2.equals(newMutex.g2);
+            boolean r1r2 = mutex.r1.equals(newMutex.r2);
+            boolean g1g2 = mutex.g1.equals(newMutex.g2);
+            boolean r2r1 = mutex.r2.equals(newMutex.r1);
+            boolean g2g1 = mutex.g2.equals(newMutex.g1);
+            boolean match11 = r1r1 && g1g1 && r2r2 && g2g2;
+            boolean match21 = r1r2 && g1g2 && r2r1 && g2g1;
+            if (match11 || match21) {
+                place.setMutex(true);
             }
         }
     }

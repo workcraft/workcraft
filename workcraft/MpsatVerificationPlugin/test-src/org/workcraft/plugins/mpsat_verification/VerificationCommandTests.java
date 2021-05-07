@@ -10,10 +10,11 @@ import org.workcraft.plugins.mpsat_verification.commands.*;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
@@ -48,8 +49,8 @@ public class VerificationCommandTests {
                 null, // USC
                 null,  // DI interface
                 null, // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -67,8 +68,8 @@ public class VerificationCommandTests {
                 null, // USC
                 null,  // DI interface
                 null, // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -86,8 +87,8 @@ public class VerificationCommandTests {
                 false, // USC
                 true,  // DI interface
                 false, // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -105,8 +106,8 @@ public class VerificationCommandTests {
                 true,  // USC
                 false, // DI interface
                 false, // normalcy
-                true,  // mutex implementability (strict)
-                false  // mutex implementability (relaxed)
+                true,  // mutex implementability (late protocol)
+                false  // mutex implementability (early protocol)
         );
     }
 
@@ -124,8 +125,8 @@ public class VerificationCommandTests {
                 false, // USC
                 false, // DI interface
                 false, // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -143,8 +144,8 @@ public class VerificationCommandTests {
                 true,  // USC
                 true,  // DI interface
                 true,  // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -162,8 +163,8 @@ public class VerificationCommandTests {
                 true,  // USC
                 true,  // DI interface
                 false,  // normalcy
-                true,  // mutex implementability (strict)
-                false  // mutex implementability (relaxed)
+                true,  // mutex implementability (late protocol)
+                false  // mutex implementability (early protocol)
         );
     }
 
@@ -181,8 +182,8 @@ public class VerificationCommandTests {
                 null,  // USC
                 null,  // DI interface
                 null,  // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -191,8 +192,8 @@ public class VerificationCommandTests {
             Boolean inputProperness, Boolean outputPersistency, Boolean outputDeterminacy,
             Boolean csc, Boolean usc,
             Boolean diInterface, Boolean normalcy,
-            Boolean mutexImplementabilityStrict,
-            Boolean mutexImplementabilityRelaxed)
+            Boolean mutexImplementabilityLateProtocol,
+            Boolean mutexImplementabilityEarlyProtocol)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
@@ -201,7 +202,6 @@ public class VerificationCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         CombinedVerificationCommand combinedCommand = new CombinedVerificationCommand();
-        StgSettings.setMutexProtocol(Mutex.Protocol.STRICT);
         Assertions.assertEquals(combined, combinedCommand.execute(we));
 
         ConsistencyVerificationCommand consistencyCommand = new ConsistencyVerificationCommand();
@@ -232,11 +232,18 @@ public class VerificationCommandTests {
         Assertions.assertEquals(normalcy, normalcyCommand.execute(we));
 
         MutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MutexImplementabilityVerificationCommand();
-        Assertions.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
+        setMutexProtocolIfApplicable(we, Mutex.Protocol.LATE);
+        Assertions.assertEquals(mutexImplementabilityLateProtocol, mutexImplementabilityCommand.execute(we));
 
-        StgSettings.setMutexProtocol(Mutex.Protocol.RELAXED);
-        Assertions.assertEquals(mutexImplementabilityRelaxed, mutexImplementabilityCommand.execute(we));
+        setMutexProtocolIfApplicable(we, Mutex.Protocol.EARLY);
+        Assertions.assertEquals(mutexImplementabilityEarlyProtocol, mutexImplementabilityCommand.execute(we));
+    }
 
+    private void setMutexProtocolIfApplicable(WorkspaceEntry we, Mutex.Protocol mutexProtocol) {
+        if (WorkspaceUtils.isApplicable(we, Stg.class)) {
+            Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+            stg.getMutexPlaces().forEach(mutexPlace -> mutexPlace.setMutexProtocol(mutexProtocol));
+        }
     }
 
 }

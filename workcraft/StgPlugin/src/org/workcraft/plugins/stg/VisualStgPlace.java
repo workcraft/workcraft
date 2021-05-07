@@ -30,6 +30,17 @@ public class VisualStgPlace extends VisualPlace {
                 value -> getReferencedComponent().setMutex(value),
                 () -> getReferencedComponent().isMutex())
                 .setCombinable());
+
+
+        addPropertyDeclaration(new PropertyDeclaration<Mutex.Protocol>(
+                Mutex.Protocol.class, StgPlace.PROPERTY_MUTEX_PROTOCOL,
+                value -> getReferencedComponent().setMutexProtocol(value),
+                () -> getReferencedComponent().getMutexProtocol()) {
+            @Override
+            public boolean isVisible() {
+                return getReferencedComponent().isMutex();
+            }
+        }.setCombinable());
     }
 
     @Override
@@ -48,7 +59,13 @@ public class VisualStgPlace extends VisualPlace {
             g.setColor(ColorUtils.colorise(getFillColor(), d.getBackground()));
             g.fill(shape);
             g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
-            g.setStroke(new BasicStroke((float) VisualCommonSettings.getStrokeWidth() / 2.0f));
+            float strokeWidth = (float) VisualCommonSettings.getStrokeWidth() / 2.0f;
+            if (getReferencedComponent().getMutexProtocol() == Mutex.Protocol.EARLY) {
+                g.setStroke(new BasicStroke(strokeWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER,
+                        1.0f, new float[]{0.05f, 0.1f}, 0.0f));
+            } else {
+                g.setStroke(new BasicStroke(strokeWidth));
+            }
             g.draw(shape);
         }
         super.draw(r);

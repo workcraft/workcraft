@@ -28,7 +28,7 @@ public class StgSettings extends AbstractModelSettings {
     private static final String defaultHighLevelSuffix = "_HIGH";
     private static final boolean defaultGroupSignalConversion = false;
     private static final boolean defaultShowTransitionInstance = false;
-    private static final Mutex.Protocol defaultMutexProtocol = Mutex.Protocol.STRICT;
+    private static final Mutex.Protocol defaultMutexProtocol = Mutex.Protocol.LATE;
     private static final double defaultTransitionFontSize = 0.75f;
 
     private static int densityMapLevelLimit = defaultDensityMapLevelLimit;

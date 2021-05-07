@@ -252,17 +252,25 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     public VisualFunctionContact getOrCreateContact(VisualFunctionComponent component, String name, Contact.IOType ioType) {
-        VisualFunctionContact result = getContact(component, name);
+        VisualFunctionContact result = getPin(component, name);
         if (result == null) {
-            result = createContact(component, name, ioType);
+            result = createPin(component, name, ioType);
         } else if (result.getReferencedComponent().getIOType() != ioType) {
             remove(result);
-            result = createContact(component, name, ioType);
+            result = createPin(component, name, ioType);
         }
         return result;
     }
 
-    private VisualFunctionContact getContact(VisualFunctionComponent component, String name) {
+    public boolean hasPort(String ref) {
+        return getMathModel().hasPort(ref);
+    }
+
+    public boolean hasPin(VisualFunctionComponent component, String name) {
+        return getMathModel().hasPin(component.getReferencedComponent(), name);
+    }
+
+    public VisualFunctionContact getPin(VisualFunctionComponent component, String name) {
         for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
             String contactName = getMathModel().getName(contact.getReferencedComponent());
             if (name.equals(contactName)) {
@@ -272,7 +280,7 @@ public class VisualCircuit extends AbstractVisualModel {
         return null;
     }
 
-    private VisualFunctionContact createContact(VisualFunctionComponent component, String name, Contact.IOType ioType) {
+    private VisualFunctionContact createPin(VisualFunctionComponent component, String name, Contact.IOType ioType) {
         VisualFunctionContact result = component.createContact(ioType);
         setMathName(result, name);
         VisualContact.Direction direction = (ioType == Contact.IOType.INPUT)

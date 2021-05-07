@@ -320,13 +320,15 @@ public class ReachUtils {
     }
 
     private static VerificationParameters getMutexImplementabilityParameters(Mutex mutex) {
-        String reach = getMutexImplementabilityReach()
+        String reach = getMutexImplementabilityReach(mutex.getProtocol())
                 .replace(MUTEX_R1_REPLACEMENT, mutex.r1.name)
                 .replace(MUTEX_G1_REPLACEMENT, mutex.g1.name)
                 .replace(MUTEX_R2_REPLACEMENT, mutex.r2.name)
                 .replace(MUTEX_G2_REPLACEMENT, mutex.g2.name);
 
-        String description = "Mutex implementability for place '" + mutex.name + "' ("
+        String description = "Mutex implementability "
+                + (mutex.getProtocol() == Mutex.Protocol.LATE ? "(late protocol) " : "(early protocol) ")
+                + "for place '" + mutex.name + "' ("
                 + mutex.r1.name + RIGHT_ARROW_SYMBOL + mutex.g1.name + ", "
                 + mutex.r2.name + RIGHT_ARROW_SYMBOL + mutex.g2.name + ")";
 
@@ -343,11 +345,13 @@ public class ReachUtils {
         };
     }
 
-    private static String getMutexImplementabilityReach() {
-        if (StgSettings.getMutexProtocol() == Mutex.Protocol.RELAXED) {
-            return MUTEX_IMPLEMENTABILITY_RELAXED_REACH;
+    private static String getMutexImplementabilityReach(Mutex.Protocol mutexProtocol) {
+        if (mutexProtocol == null) {
+            mutexProtocol = StgSettings.getMutexProtocol();
         }
-        return MUTEX_IMPLEMENTABILITY_STRICT_REACH;
+        return mutexProtocol == Mutex.Protocol.EARLY
+                ? MUTEX_IMPLEMENTABILITY_RELAXED_REACH
+                : MUTEX_IMPLEMENTABILITY_STRICT_REACH;
     }
 
     public static String getBooleanAsString(boolean value) {

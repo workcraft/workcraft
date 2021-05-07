@@ -582,9 +582,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
     public void setStroke(Graphics2D g) {
         if (getIsEnvironment()) {
-            float[] pattern = {0.2f, 0.2f};
-            g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
-                        BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+            g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(), BasicStroke.CAP_SQUARE,
+                    BasicStroke.JOIN_MITER, 1.0f, new float[]{0.2f, 0.2f}, 0.0f));
         } else {
             g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth()));
         }

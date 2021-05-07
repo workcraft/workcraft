@@ -177,22 +177,15 @@ public final class RefinementUtils {
     }
 
     public static void updateInterface(WorkspaceEntry we, Set<File> changedRefinementFiles) {
-        Framework framework = Framework.getInstance();
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             Pair<File, Circuit> refinementFileCircuitPair = getRefinementCircuit(component.getReferencedComponent());
             if (refinementFileCircuitPair != null) {
                 File refinementFile = refinementFileCircuitPair.getFirst();
                 if (changedRefinementFiles.contains(refinementFile)) {
-                    try {
-                        //Circuit refinementCircuit = refinementFileCircuitPair.getSecond();
-                        WorkspaceEntry refinementWe = framework.loadWork(refinementFile, false);
-                        Circuit refinementCircuit = WorkspaceUtils.getAs(refinementWe, Circuit.class);
-                        ComponentInterface refinementInterface = getModelInterface(refinementCircuit);
-                        updateInterface(circuit, component, refinementInterface);
-                    } catch (DeserialisationException e) {
-                        throw new RuntimeException(e);
-                    }
+                    Circuit refinementCircuit = refinementFileCircuitPair.getSecond();
+                    ComponentInterface refinementInterface = getModelInterface(refinementCircuit);
+                    updateInterface(circuit, component, refinementInterface);
                 }
             }
         }

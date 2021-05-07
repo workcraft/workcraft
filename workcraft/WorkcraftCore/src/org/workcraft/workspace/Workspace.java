@@ -385,6 +385,10 @@ public class Workspace {
         return result;
     }
 
+    public WorkspaceEntry getWork(File file) {
+        return getWork(getPath(file));
+    }
+
     public WorkspaceEntry getWork(Path<String> path) {
         return openFiles.getValue(path);
     }

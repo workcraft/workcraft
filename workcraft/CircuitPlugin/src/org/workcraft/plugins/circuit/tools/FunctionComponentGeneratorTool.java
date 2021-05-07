@@ -25,6 +25,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.SortUtils;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -36,8 +37,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.*;
+import java.util.Locale;
+import java.util.Vector;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -352,8 +355,9 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         }
         libraryItems.add(createWaitItem());
         libraryItems.add(createWait0Item());
-        libraryItems.add(createMutexItem());
-        libraryItems.sort(Comparator.comparing(LibraryItem::toString));
+        libraryItems.add(createMutexItem(Mutex.Protocol.LATE));
+        libraryItems.add(createMutexItem(Mutex.Protocol.EARLY));
+        libraryItems.sort((item1, item2) -> SortUtils.compareNatural(item1.toString(), item2.toString()));
         return libraryItems;
     }
 
@@ -413,7 +417,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator);
     }
 
-    private LibraryItem createMutexItem() {
+    private LibraryItem createMutexItem(Mutex.Protocol protocol) {
         Mutex module = CircuitSettings.parseMutexData();
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.BOX);
@@ -435,19 +439,20 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             circuit.setMathName(g2Contact, module.g2.name);
             g2Contact.setPosition(new Point2D.Double(1.5, 1.0));
 
-            BooleanFormula g1SetFormula = MutexUtils.getGrantSet(r1Contact, g2Contact, r2Contact);
+            BooleanFormula g1SetFormula = MutexUtils.getGrantSet(protocol, r1Contact, g2Contact, r2Contact);
             g1Contact.getReferencedComponent().setSetFunctionQuiet(g1SetFormula);
 
             BooleanFormula g1ResetFormula = MutexUtils.getGrantReset(r1Contact);
             g1Contact.getReferencedComponent().setResetFunctionQuiet(g1ResetFormula);
 
-            BooleanFormula g2SetFormula = MutexUtils.getGrantSet(r2Contact, g1Contact, r1Contact);
+            BooleanFormula g2SetFormula = MutexUtils.getGrantSet(protocol, r2Contact, g1Contact, r1Contact);
             g2Contact.getReferencedComponent().setSetFunctionQuiet(g2SetFormula);
 
             BooleanFormula g2ResetFormula = MutexUtils.getGrantReset(r2Contact);
             g2Contact.getReferencedComponent().setResetFunctionQuiet(g2ResetFormula);
         };
-        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
+        String moduleName = MutexUtils.appendProtocolSuffix(module.name, protocol);
+        return new LibraryItem(moduleName, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
     }
 
     @Override

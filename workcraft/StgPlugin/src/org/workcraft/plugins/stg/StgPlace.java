@@ -12,9 +12,11 @@ import org.workcraft.plugins.petri.Place;
 public class StgPlace extends Place {
     public static final String PROPERTY_IMPLICIT = "Implicit";
     public static final String PROPERTY_MUTEX = "Mutex";
+    public static final String PROPERTY_MUTEX_PROTOCOL = "Mutex protocol";
 
     private boolean implicit = false;
     private boolean mutex = false;
+    private Mutex.Protocol mutexProtocol = StgSettings.getMutexProtocol();
 
     public boolean isImplicit() {
         return implicit;
@@ -35,6 +37,17 @@ public class StgPlace extends Place {
         if (mutex != value) {
             mutex = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_MUTEX));
+        }
+    }
+
+    public Mutex.Protocol getMutexProtocol() {
+        return mutexProtocol;
+    }
+
+    public void setMutexProtocol(Mutex.Protocol value) {
+        if ((mutexProtocol != value) && (value != null)) {
+            mutexProtocol = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_MUTEX_PROTOCOL));
         }
     }
 

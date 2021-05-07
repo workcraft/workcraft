@@ -1,8 +1,5 @@
 work = load("arbitration-3.stg.work");
 
-setConfigVar("StgSettings.mutexProtocol", "RELAXED");
-mutexImplementabilityRelaxed = checkStgMutexImplementability(work);
-
 setConfigVar("StgSettings.mutexProtocol", "STRICT");
 write(
     "Combined check: " + checkStgCombined(work) + "\n" +
@@ -16,6 +13,5 @@ write(
     "DI interface: " + checkStgDiInterface(work) + "\n" +
     "Normalcy: " + checkStgNormalcy(work) + "\n" +
     "Mutex implementability: " + checkStgMutexImplementability(work) + "\n" +
-    "Mutex implementability (relaxed): " + mutexImplementabilityRelaxed + "\n" +
     "", "arbitration-3.stg.result");
 exit();

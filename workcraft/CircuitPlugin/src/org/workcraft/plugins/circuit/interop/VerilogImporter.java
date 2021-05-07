@@ -29,6 +29,7 @@ import org.workcraft.plugins.circuit.utils.*;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
@@ -52,7 +53,7 @@ public class VerilogImporter implements Importer {
     private Map<String, SubstitutionRule> substitutionRules = null;
     private Map<VerilogModule, String> moduleFileNames = null;
 
-    private class AssignGate {
+    private static class AssignGate {
         public final String outputName;
         public final String setFunction;
         public final String resetFunction;
@@ -66,7 +67,7 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private class Wire {
+    private static class Wire {
         public FunctionContact source = null;
         public HashSet<FunctionContact> sinks = new HashSet<>();
         public HashSet<FunctionContact> undefined = new HashSet<>();
@@ -94,7 +95,7 @@ public class VerilogImporter implements Importer {
         substitutionRules = null;
         moduleFileNames = null;
         Collection<VerilogModule> verilogModules = VerilogUtils.importVerilogModules(in);
-        Circuit circuit = null;
+        Circuit circuit;
         if ((verilogModules == null) || verilogModules.isEmpty()) {
             circuit = new Circuit();
         } else if (verilogModules.size() == 1) {
@@ -227,7 +228,6 @@ public class VerilogImporter implements Importer {
         for (VerilogAssign verilogAssign : verilogModule.assigns) {
             createAssignGate(circuit, verilogAssign, wires);
         }
-        Mutex mutexModule = CircuitSettings.parseMutexData();
         for (VerilogInstance verilogInstance : verilogModule.instances) {
             SubstitutionRule substitutionRule = null;
             Gate gate = createPrimitiveGate(verilogInstance);
@@ -243,18 +243,16 @@ public class VerilogImporter implements Importer {
                     gate = library.get(gateName);
                 }
             }
-            FunctionComponent component = null;
+            FunctionComponent component;
             if (gate != null) {
                 component = createLibraryGate(circuit, verilogInstance, wires, gate, substitutionRule);
-            } else if (isMutexInstance(verilogInstance, mutexModule)) {
-                Mutex mutexInstance = instanceToMutex(verilogInstance, mutexModule);
-                component = createMutex(circuit, mutexInstance, mutexModule, wires);
+            } else if (isMutexInstance(verilogInstance)) {
+                Mutex mutexInstance = instanceToMutexWithProtocol(verilogInstance, mutexes);
+                component = createMutex(circuit, mutexInstance, wires);
             } else {
                 component = createBlackBox(circuit, verilogInstance, wires, descendantModules);
             }
-            if (component != null) {
-                instanceComponentMap.put(verilogInstance, component);
-            }
+            instanceComponentMap.put(verilogInstance, component);
         }
         insertMutexes(mutexes, circuit, wires);
         createConnections(circuit, wires);
@@ -281,16 +279,41 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private boolean isMutexInstance(VerilogInstance verilogInstance, Mutex module) {
-        return (module != null) && (module.name != null) && module.name.equals(verilogInstance.moduleName);
+    private boolean isMutexInstance(VerilogInstance verilogInstance) {
+        Mutex module = CircuitSettings.parseMutexData();
+        String moduleName = module == null ? null : module.name;
+        return MutexUtils.appendProtocolSuffix(moduleName, Mutex.Protocol.LATE).equals(verilogInstance.moduleName) ||
+                MutexUtils.appendProtocolSuffix(moduleName, Mutex.Protocol.EARLY).equals(verilogInstance.moduleName);
     }
 
-    private Mutex instanceToMutex(VerilogInstance verilogInstance, Mutex module) {
+    private Mutex instanceToMutexWithProtocol(VerilogInstance verilogInstance, Collection<Mutex> mutexes) {
+        Mutex module = CircuitSettings.parseMutexData();
+        if ((module == null) || (module.name == null)) {
+            return null;
+        }
+        String name = verilogInstance.name;
         Signal r1 = getPinConnectedSignal(verilogInstance, module.r1.name, 0);
         Signal g1 = getPinConnectedSignal(verilogInstance, module.g1.name, 1);
         Signal r2 = getPinConnectedSignal(verilogInstance, module.r2.name, 2);
         Signal g2 = getPinConnectedSignal(verilogInstance, module.g2.name, 3);
-        return new Mutex(verilogInstance.name, r1, g1, r2, g2);
+
+        // Get fall-back protocol from default preferences and module name
+        Mutex.Protocol defaultProtocol = StgSettings.getMutexProtocol();
+        if (MutexUtils.appendProtocolSuffix(module.name, Mutex.Protocol.LATE).equals(verilogInstance.moduleName)) {
+            defaultProtocol = Mutex.Protocol.LATE;
+        } else if (MutexUtils.appendProtocolSuffix(module.name, Mutex.Protocol.EARLY).equals(verilogInstance.moduleName)) {
+            defaultProtocol = Mutex.Protocol.EARLY;
+        }
+
+        Mutex.Protocol protocol = mutexes.stream()
+                .filter(mutex -> (mutex.name != null) && mutex.name.equals(name))
+                .findFirst()
+                .map(Mutex::getProtocol)
+                .orElse(defaultProtocol);
+
+        Mutex result = new Mutex(name, r1, g1, r2, g2);
+        result.setProtocol(protocol);
+        return result;
     }
 
     private Signal getPinConnectedSignal(VerilogInstance verilogInstance, String portName, int portIndexIfNoPortName) {
@@ -316,8 +339,7 @@ public class VerilogImporter implements Importer {
         circuit.add(component);
         reparentAndRenameComponent(circuit, component, verilogAssign.name);
 
-        AssignGate assignGate = null;
-
+        AssignGate assignGate;
         if ((celementAssign && isCelementAssign(verilogAssign))
                 || (sequentialAssign && isSequentialAssign(verilogAssign))) {
 
@@ -369,7 +391,7 @@ public class VerilogImporter implements Importer {
             if (variables.size() != 3) {
                 return false;
             }
-            if (!variables.stream().anyMatch(var -> verilogAssign.name.equals(var.getLabel()))) {
+            if (variables.stream().noneMatch(var -> verilogAssign.name.equals(var.getLabel()))) {
                 return false;
             }
             BooleanVariable aVar = variables.get(0);
@@ -377,8 +399,8 @@ public class VerilogImporter implements Importer {
             BooleanVariable cVar = variables.get(2);
             return new BddManager().equal(FormulaUtils.createMaj(aVar, bVar, cVar), formula);
         } catch (ParseException e) {
+            return false;
         }
-        return false;
     }
 
     private AssignGate createCombinationalAssignGate(VerilogAssign verilogAssign) {
@@ -509,24 +531,24 @@ public class VerilogImporter implements Importer {
         if (operator == null) {
             return null;
         }
-        String expression = "";
+        StringBuilder expression = new StringBuilder();
         int index;
         for (index = 0; index < verilogInstance.connections.size(); index++) {
             if (index > 0) {
                 String pinName = getPrimitiveGatePinName(index);
-                if (!expression.isEmpty()) {
-                    expression += operator;
+                if (expression.length() > 0) {
+                    expression.append(operator);
                 }
-                expression += pinName;
+                expression.append(pinName);
             }
         }
         if (isInvertingPrimitive(verilogInstance.moduleName)) {
             if (index > 1) {
-                expression = "(" + expression + ")";
+                expression = new StringBuilder("(" + expression + ")");
             }
-            expression = "!" + expression;
+            expression.insert(0, "!");
         }
-        Function function = new Function(PRIMITIVE_GATE_OUTPUT_NAME, expression);
+        Function function = new Function(PRIMITIVE_GATE_OUTPUT_NAME, expression.toString());
         return new Gate("", 0.0, function, null, true);
     }
 
@@ -558,7 +580,6 @@ public class VerilogImporter implements Importer {
         case "nand":
         case "nor":
         case "xnor":
-            return true;
         default:
             return true;
         }
@@ -586,9 +607,6 @@ public class VerilogImporter implements Importer {
             }
 
             String wireName = getWireName(verilogConnection);
-            if (wireName == null) {
-                continue;
-            }
             Wire wire = getOrCreateWire(wireName, wires);
 
             String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index)
@@ -688,21 +706,16 @@ public class VerilogImporter implements Importer {
 
     private void insertMutexes(Collection<Mutex> mutexes, Circuit circuit, HashMap<String, Wire> wires) {
         LinkedList<String> internalSignals = new LinkedList<>();
-        if ((mutexes != null) & !mutexes.isEmpty()) {
-            Mutex moduleMutex = CircuitSettings.parseMutexData();
-            if ((moduleMutex != null) && (moduleMutex.name != null)) {
-                for (Mutex instanceMutex : mutexes) {
-                    if (instanceMutex.g1.type == Signal.Type.INTERNAL) {
-                        internalSignals.add(instanceMutex.g1.name);
-                    }
-                    if (instanceMutex.g2.type == Signal.Type.INTERNAL) {
-                        internalSignals.add(instanceMutex.g2.name);
-                    }
-                    createMutex(circuit, instanceMutex, moduleMutex, wires);
-                    removeTemporaryOutput(circuit, wires, instanceMutex.r1);
-                    removeTemporaryOutput(circuit, wires, instanceMutex.r2);
-                }
+        for (Mutex instanceMutex : mutexes == null ? new ArrayList<Mutex>() : mutexes) {
+            if (instanceMutex.g1.type == Signal.Type.INTERNAL) {
+                internalSignals.add(instanceMutex.g1.name);
             }
+            if (instanceMutex.g2.type == Signal.Type.INTERNAL) {
+                internalSignals.add(instanceMutex.g2.name);
+            }
+            createMutex(circuit, instanceMutex, wires);
+            removeTemporaryOutput(circuit, wires, instanceMutex.r1);
+            removeTemporaryOutput(circuit, wires, instanceMutex.r2);
         }
         if (!internalSignals.isEmpty()) {
             DialogUtils.showWarning("Mutex grants will be exposed as output ports: "
@@ -736,7 +749,7 @@ public class VerilogImporter implements Importer {
     private void reparentAndRenameComponent(Circuit circuit, FunctionComponent component, String ref) {
         String containerRef = NamespaceHelper.getParentReference(ref);
         if (!containerRef.isEmpty()) {
-            PageNode container = null;
+            PageNode container;
             Node parent = circuit.getNodeByReference(containerRef);
             if (parent instanceof PageNode) {
                 container = (PageNode) parent;
@@ -755,23 +768,30 @@ public class VerilogImporter implements Importer {
         circuit.setName(component, derivedName);
     }
 
-    private FunctionComponent createMutex(Circuit circuit, Mutex instance, Mutex module, HashMap<String, Wire> wires) {
-        final FunctionComponent component = new FunctionComponent();
-        component.setModule(module.name);
+    private FunctionComponent createMutex(Circuit circuit, Mutex instance, HashMap<String, Wire> wires) {
+        Mutex module = CircuitSettings.parseMutexData();
+        if ((module == null) || (module.name == null)) {
+            return null;
+        }
+        Mutex.Protocol protocol = instance.getProtocol();
+        String moduleName = MutexUtils.appendProtocolSuffix(module.name, protocol);
+        FunctionComponent component = new FunctionComponent();
         circuit.add(component);
+        component.setModule(moduleName);
+
         reparentAndRenameComponent(circuit, component, instance.name);
         FunctionContact r1Contact = addMutexPin(circuit, component, module.r1, instance.r1, wires);
         FunctionContact g1Contact = addMutexPin(circuit, component, module.g1, instance.g1, wires);
         FunctionContact r2Contact = addMutexPin(circuit, component, module.r2, instance.r2, wires);
         FunctionContact g2Contact = addMutexPin(circuit, component, module.g2, instance.g2, wires);
 
-        BooleanFormula g1Set = MutexUtils.getGrantSet(r1Contact, g2Contact, r2Contact);
+        BooleanFormula g1Set = MutexUtils.getGrantSet(protocol, r1Contact, g2Contact, r2Contact);
         g1Contact.setSetFunctionQuiet(g1Set);
 
         BooleanFormula g1Reset = MutexUtils.getGrantReset(r1Contact);
         g1Contact.setResetFunctionQuiet(g1Reset);
 
-        BooleanFormula g2Set = MutexUtils.getGrantSet(r2Contact, g1Contact, r1Contact);
+        BooleanFormula g2Set = MutexUtils.getGrantSet(protocol, r2Contact, g1Contact, r1Contact);
         g2Contact.setSetFunctionQuiet(g2Set);
         BooleanFormula g2Reset = MutexUtils.getGrantReset(r2Contact);
         g2Contact.setResetFunctionQuiet(g2Reset);
@@ -909,6 +929,7 @@ public class VerilogImporter implements Importer {
                 try {
                     circuit.connect(sourceContact, sinkContact);
                 } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
