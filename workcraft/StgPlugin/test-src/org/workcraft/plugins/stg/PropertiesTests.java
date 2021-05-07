@@ -41,7 +41,7 @@ public class PropertiesTests {
 
         VisualStgPlace visualPlace = visualModel.getVisualComponent(place, VisualStgPlace.class);
         visualModel.select(visualPlace);
-        check(ModelPropertyUtils.getSelectionProperties(visualModel), 14);
+        check(ModelPropertyUtils.getSelectionProperties(visualModel), 15);
 
         VisualSignalTransition visualOutputTransition = visualModel.createVisualSignalTransition("out1", Signal.Type.OUTPUT, SignalTransition.Direction.MINUS);
         VisualConnection visualUndirectedConnection = visualModel.connectUndirected(visualPlace, visualOutputTransition);

@@ -10,10 +10,11 @@ import org.workcraft.plugins.mpsat_verification.commands.*;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
@@ -201,7 +202,6 @@ public class VerificationCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         CombinedVerificationCommand combinedCommand = new CombinedVerificationCommand();
-        StgSettings.setMutexProtocol(Mutex.Protocol.STRICT);
         Assertions.assertEquals(combined, combinedCommand.execute(we));
 
         ConsistencyVerificationCommand consistencyCommand = new ConsistencyVerificationCommand();
@@ -232,11 +232,18 @@ public class VerificationCommandTests {
         Assertions.assertEquals(normalcy, normalcyCommand.execute(we));
 
         MutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MutexImplementabilityVerificationCommand();
+        setMutexProtocolIfApplicable(we, Mutex.Protocol.STRICT);
         Assertions.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
 
-        StgSettings.setMutexProtocol(Mutex.Protocol.RELAXED);
+        setMutexProtocolIfApplicable(we, Mutex.Protocol.RELAXED);
         Assertions.assertEquals(mutexImplementabilityRelaxed, mutexImplementabilityCommand.execute(we));
+    }
 
+    private void setMutexProtocolIfApplicable(WorkspaceEntry we, Mutex.Protocol mutexProtocol) {
+        if (WorkspaceUtils.isApplicable(we, Stg.class)) {
+            Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+            stg.getMutexPlaces().forEach(mutexPlace -> mutexPlace.setMutexProtocol(mutexProtocol));
+        }
     }
 
 }
