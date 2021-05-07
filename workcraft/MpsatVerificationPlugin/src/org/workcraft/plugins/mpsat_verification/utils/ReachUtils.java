@@ -326,7 +326,9 @@ public class ReachUtils {
                 .replace(MUTEX_R2_REPLACEMENT, mutex.r2.name)
                 .replace(MUTEX_G2_REPLACEMENT, mutex.g2.name);
 
-        String description = "Mutex implementability for place '" + mutex.name + "' ("
+        String description = "Mutex implementability "
+                + (mutex.getProtocol() == Mutex.Protocol.LATE ? "(late protocol) " : "(early protocol) ")
+                + "for place '" + mutex.name + "' ("
                 + mutex.r1.name + RIGHT_ARROW_SYMBOL + mutex.g1.name + ", "
                 + mutex.r2.name + RIGHT_ARROW_SYMBOL + mutex.g2.name + ")";
 
@@ -347,7 +349,7 @@ public class ReachUtils {
         if (mutexProtocol == null) {
             mutexProtocol = StgSettings.getMutexProtocol();
         }
-        return mutexProtocol == Mutex.Protocol.RELAXED
+        return mutexProtocol == Mutex.Protocol.EARLY
                 ? MUTEX_IMPLEMENTABILITY_RELAXED_REACH
                 : MUTEX_IMPLEMENTABILITY_STRICT_REACH;
     }

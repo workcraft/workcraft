@@ -49,8 +49,8 @@ public class VerificationCommandTests {
                 null, // USC
                 null,  // DI interface
                 null, // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -68,8 +68,8 @@ public class VerificationCommandTests {
                 null, // USC
                 null,  // DI interface
                 null, // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -87,8 +87,8 @@ public class VerificationCommandTests {
                 false, // USC
                 true,  // DI interface
                 false, // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -106,8 +106,8 @@ public class VerificationCommandTests {
                 true,  // USC
                 false, // DI interface
                 false, // normalcy
-                true,  // mutex implementability (strict)
-                false  // mutex implementability (relaxed)
+                true,  // mutex implementability (late protocol)
+                false  // mutex implementability (early protocol)
         );
     }
 
@@ -125,8 +125,8 @@ public class VerificationCommandTests {
                 false, // USC
                 false, // DI interface
                 false, // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -144,8 +144,8 @@ public class VerificationCommandTests {
                 true,  // USC
                 true,  // DI interface
                 true,  // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -163,8 +163,8 @@ public class VerificationCommandTests {
                 true,  // USC
                 true,  // DI interface
                 false,  // normalcy
-                true,  // mutex implementability (strict)
-                false  // mutex implementability (relaxed)
+                true,  // mutex implementability (late protocol)
+                false  // mutex implementability (early protocol)
         );
     }
 
@@ -182,8 +182,8 @@ public class VerificationCommandTests {
                 null,  // USC
                 null,  // DI interface
                 null,  // normalcy
-                null,  // mutex implementability (strict)
-                null  // mutex implementability (relaxed)
+                null,  // mutex implementability (late protocol)
+                null  // mutex implementability (early protocol)
         );
     }
 
@@ -192,8 +192,8 @@ public class VerificationCommandTests {
             Boolean inputProperness, Boolean outputPersistency, Boolean outputDeterminacy,
             Boolean csc, Boolean usc,
             Boolean diInterface, Boolean normalcy,
-            Boolean mutexImplementabilityStrict,
-            Boolean mutexImplementabilityRelaxed)
+            Boolean mutexImplementabilityLateProtocol,
+            Boolean mutexImplementabilityEarlyProtocol)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
@@ -232,11 +232,11 @@ public class VerificationCommandTests {
         Assertions.assertEquals(normalcy, normalcyCommand.execute(we));
 
         MutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MutexImplementabilityVerificationCommand();
-        setMutexProtocolIfApplicable(we, Mutex.Protocol.STRICT);
-        Assertions.assertEquals(mutexImplementabilityStrict, mutexImplementabilityCommand.execute(we));
+        setMutexProtocolIfApplicable(we, Mutex.Protocol.LATE);
+        Assertions.assertEquals(mutexImplementabilityLateProtocol, mutexImplementabilityCommand.execute(we));
 
-        setMutexProtocolIfApplicable(we, Mutex.Protocol.RELAXED);
-        Assertions.assertEquals(mutexImplementabilityRelaxed, mutexImplementabilityCommand.execute(we));
+        setMutexProtocolIfApplicable(we, Mutex.Protocol.EARLY);
+        Assertions.assertEquals(mutexImplementabilityEarlyProtocol, mutexImplementabilityCommand.execute(we));
     }
 
     private void setMutexProtocolIfApplicable(WorkspaceEntry we, Mutex.Protocol mutexProtocol) {

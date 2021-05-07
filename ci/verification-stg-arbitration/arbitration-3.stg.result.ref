@@ -9,4 +9,3 @@ USC: true
 DI interface: false
 Normalcy: false
 Mutex implementability: true
-Mutex implementability (relaxed): false

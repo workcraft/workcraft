@@ -282,8 +282,8 @@ public class VerilogImporter implements Importer {
     private boolean isMutexInstance(VerilogInstance verilogInstance) {
         Mutex module = CircuitSettings.parseMutexData();
         String moduleName = module == null ? null : module.name;
-        return MutexUtils.appendProtocolSuffix(moduleName, Mutex.Protocol.STRICT).equals(verilogInstance.moduleName) ||
-                MutexUtils.appendProtocolSuffix(moduleName, Mutex.Protocol.RELAXED).equals(verilogInstance.moduleName);
+        return MutexUtils.appendProtocolSuffix(moduleName, Mutex.Protocol.LATE).equals(verilogInstance.moduleName) ||
+                MutexUtils.appendProtocolSuffix(moduleName, Mutex.Protocol.EARLY).equals(verilogInstance.moduleName);
     }
 
     private Mutex instanceToMutexWithProtocol(VerilogInstance verilogInstance, Collection<Mutex> mutexes) {
@@ -299,10 +299,10 @@ public class VerilogImporter implements Importer {
 
         // Get fall-back protocol from default preferences and module name
         Mutex.Protocol defaultProtocol = StgSettings.getMutexProtocol();
-        if (MutexUtils.appendProtocolSuffix(module.name, Mutex.Protocol.STRICT).equals(verilogInstance.moduleName)) {
-            defaultProtocol = Mutex.Protocol.STRICT;
-        } else if (MutexUtils.appendProtocolSuffix(module.name, Mutex.Protocol.RELAXED).equals(verilogInstance.moduleName)) {
-            defaultProtocol = Mutex.Protocol.RELAXED;
+        if (MutexUtils.appendProtocolSuffix(module.name, Mutex.Protocol.LATE).equals(verilogInstance.moduleName)) {
+            defaultProtocol = Mutex.Protocol.LATE;
+        } else if (MutexUtils.appendProtocolSuffix(module.name, Mutex.Protocol.EARLY).equals(verilogInstance.moduleName)) {
+            defaultProtocol = Mutex.Protocol.EARLY;
         }
 
         Mutex.Protocol protocol = mutexes.stream()

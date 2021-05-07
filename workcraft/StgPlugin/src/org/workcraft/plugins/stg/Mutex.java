@@ -3,8 +3,8 @@ package org.workcraft.plugins.stg;
 public class Mutex {
 
     public enum Protocol {
-        STRICT("Strict (forbid two grants)"),
-        RELAXED("Relaxed (allow two grants on reset)");
+        LATE("Late"),
+        EARLY("Early");
 
         private final String name;
 

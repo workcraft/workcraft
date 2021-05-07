@@ -355,8 +355,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         }
         libraryItems.add(createWaitItem());
         libraryItems.add(createWait0Item());
-        libraryItems.add(createMutexItem(Mutex.Protocol.STRICT));
-        libraryItems.add(createMutexItem(Mutex.Protocol.RELAXED));
+        libraryItems.add(createMutexItem(Mutex.Protocol.LATE));
+        libraryItems.add(createMutexItem(Mutex.Protocol.EARLY));
         libraryItems.sort((item1, item2) -> SortUtils.compareNatural(item1.toString(), item2.toString()));
         return libraryItems;
     }

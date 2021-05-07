@@ -60,7 +60,7 @@ public class VisualStgPlace extends VisualPlace {
             g.fill(shape);
             g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
             float strokeWidth = (float) VisualCommonSettings.getStrokeWidth() / 2.0f;
-            if (getReferencedComponent().getMutexProtocol() == Mutex.Protocol.RELAXED) {
+            if (getReferencedComponent().getMutexProtocol() == Mutex.Protocol.EARLY) {
                 g.setStroke(new BasicStroke(strokeWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER,
                         1.0f, new float[]{0.05f, 0.1f}, 0.0f));
             } else {

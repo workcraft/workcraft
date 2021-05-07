@@ -21,7 +21,7 @@ public class MutexUtils {
             BooleanFormula otherGrantContact, BooleanFormula otherReqContact) {
 
         BooleanFormula result = new And(reqContact, new Not(otherGrantContact));
-        if (mutexProtocol == Mutex.Protocol.RELAXED) {
+        if (mutexProtocol == Mutex.Protocol.EARLY) {
             result = new Or(result, new And(reqContact, new Not(otherReqContact)));
         }
         return result;
@@ -37,11 +37,11 @@ public class MutexUtils {
 
     public static String appendProtocolSuffix(String name, Mutex.Protocol protocol) {
         String result = name == null ? "" : name;
-        if (protocol == Mutex.Protocol.STRICT) {
-            result += CircuitSettings.getMutexStrictSuffix();
+        if (protocol == Mutex.Protocol.LATE) {
+            result += CircuitSettings.getMutexLateSuffix();
         }
-        if (protocol == Mutex.Protocol.RELAXED) {
-            result += CircuitSettings.getMutexRelaxedSuffix();
+        if (protocol == Mutex.Protocol.EARLY) {
+            result += CircuitSettings.getMutexEarlySuffix();
         }
         return result;
     }
