@@ -4,6 +4,5 @@ dependencies {
     implementation project(':PetriPlugin')
     implementation project(':StgPlugin')
     implementation project(':CircuitPlugin')
-    implementation project(':PunfPlugin')
     implementation project(':MpsatVerificationPlugin')
 }

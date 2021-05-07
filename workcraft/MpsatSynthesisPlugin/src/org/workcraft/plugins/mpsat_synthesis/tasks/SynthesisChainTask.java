@@ -4,8 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -57,7 +55,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                 if (exportResult.isCancel()) {
                     return Result.cancel();
                 }
-                return Result.failure(new SynthesisChainOutput(exportResult, null, null, synthesisMode));
+                return Result.failure(new SynthesisChainOutput(exportResult, null, synthesisMode));
             }
             if ((mutexes != null) && !mutexes.isEmpty()) {
                 model = StgUtils.loadStg(netFile);
@@ -71,27 +69,13 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                     if (exportResult.isCancel()) {
                         return Result.cancel();
                     }
-                    return Result.failure(new SynthesisChainOutput(exportResult, null, null, synthesisMode));
+                    return Result.failure(new SynthesisChainOutput(exportResult, null, synthesisMode));
                 }
             }
             monitor.progressUpdate(0.33);
 
-            // Generate unfolding
-            File unfoldingFile = new File(directory, filePrefix + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
-
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new SynthesisChainOutput(
-                        exportResult, punfResult, null, synthesisMode));
-            }
-            monitor.progressUpdate(0.66);
-
             // Run MPSat on the generated unfolding
-            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, synthesisMode, directory);
+            MpsatTask mpsatTask = new MpsatTask(netFile, synthesisMode, directory);
             Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 
@@ -99,11 +83,11 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                 if (mpsatResult.isCancel()) {
                     return Result.cancel();
                 }
-                return Result.failure(new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisMode));
+                return Result.failure(new SynthesisChainOutput(exportResult, mpsatResult, synthesisMode));
             }
             monitor.progressUpdate(1.0);
 
-            return Result.success(new SynthesisChainOutput(exportResult, punfResult, mpsatResult, synthesisMode));
+            return Result.success(new SynthesisChainOutput(exportResult, mpsatResult, synthesisMode));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {

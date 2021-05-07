@@ -12,7 +12,6 @@ import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
@@ -180,25 +179,12 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         } else {
             final SynthesisChainOutput chainOutput = chainResult.getPayload();
             final Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
-            final Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             final Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
             if ((exportResult != null) && (exportResult.isFailure())) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 final Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.getMessage();
-                }
-            } else if ((punfResult != null) && (punfResult.isFailure())) {
-                errorMessage += "\n\nPunf could not build the unfolding prefix.";
-                final Throwable punfCause = punfResult.getCause();
-                if (punfCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + punfCause.getMessage();
-                } else {
-                    final PunfOutput punfOutput = punfResult.getPayload();
-                    if (punfOutput != null) {
-                        final String punfErrorMessage = punfOutput.getErrorsHeadAndTail();
-                        errorMessage += ERROR_CAUSE_PREFIX + punfErrorMessage;
-                    }
                 }
             } else if ((mpsatResult != null) && (mpsatResult.isFailure())) {
                 errorMessage += "\n\nMPSat did not execute as expected.";

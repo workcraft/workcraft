@@ -39,12 +39,12 @@ public class MpsatTask implements Task<MpsatOutput> {
             Pattern.UNIX_LINES);
 
 
-    private final File unfoldingFile;
+    private final File file;
     private final SynthesisMode mode;
     private final File directory;
 
-    public MpsatTask(File unfoldingFile, SynthesisMode mode, File directory) {
-        this.unfoldingFile = unfoldingFile;
+    public MpsatTask(File file, SynthesisMode mode, File directory) {
+        this.file = file;
         this.mode = mode;
         if (directory == null) {
             // Prefix must be at least 3 symbols long.
@@ -92,8 +92,8 @@ public class MpsatTask implements Task<MpsatOutput> {
         command.addAll(TextUtils.splitWords(extraArgs));
 
         // Input file
-        if (unfoldingFile != null) {
-            command.add(unfoldingFile.getAbsolutePath());
+        if (file != null) {
+            command.add(file.getAbsolutePath());
         }
 
         // Output file

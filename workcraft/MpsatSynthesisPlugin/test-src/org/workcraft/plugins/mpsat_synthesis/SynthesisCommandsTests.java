@@ -1,9 +1,5 @@
 package org.workcraft.plugins.mpsat_synthesis;
 
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,17 +17,17 @@ import org.workcraft.plugins.mpsat_synthesis.commands.ComplexGateSynthesisComman
 import org.workcraft.plugins.mpsat_synthesis.commands.GeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.mpsat_synthesis.commands.StandardCelementSynthesisCommand;
 import org.workcraft.plugins.mpsat_synthesis.commands.TechnologyMappingSynthesisCommand;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.MutexUtils;
-import org.workcraft.utils.BackendUtils;
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.PackageUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SynthesisCommandsTests {
 
@@ -44,7 +40,6 @@ public class SynthesisCommandsTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
         MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
         MpsatSynthesisSettings.setOpenSynthesisStg(true);
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
@@ -95,7 +90,8 @@ public class SynthesisCommandsTests {
     private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
         try {
             checkSynthesisCommand(ComplexGateSynthesisCommand.class, workName, expectedGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException
+                | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }
     }
@@ -127,7 +123,8 @@ public class SynthesisCommandsTests {
     private void testGeneralisedCelementSynthesisCommand(String workName, int expectedGateCount) {
         try {
             checkSynthesisCommand(GeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException
+                | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }
     }
@@ -159,7 +156,8 @@ public class SynthesisCommandsTests {
     private void testStandardCelementSynthesisCommand(String workName, int expectedGateCount) {
         try {
             checkSynthesisCommand(StandardCelementSynthesisCommand.class, workName, expectedGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException
+                | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }
     }
@@ -221,21 +219,22 @@ public class SynthesisCommandsTests {
     private void testTechnologyMappingSynthesisCommand(String workName, int expectedGateCount) {
         try {
             checkSynthesisCommand(TechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException
+                | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }
     }
 
     private <C extends AbstractSynthesisCommand> void checkSynthesisCommand(Class<C> cls, String workName,
-            int expectedComponentCount)
-            throws DeserialisationException, InstantiationException, IllegalAccessException {
+            int expectedComponentCount) throws DeserialisationException, InstantiationException,
+            IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 
         checkSynthesisCommand(cls, workName, expectedComponentCount, expectedComponentCount);
     }
 
     private <C extends AbstractSynthesisCommand> void checkSynthesisCommand(Class<C> cls, String workName,
-            int minComponentCount, int maxComponentCount)
-            throws DeserialisationException, InstantiationException, IllegalAccessException {
+            int minComponentCount, int maxComponentCount) throws DeserialisationException, InstantiationException,
+            IllegalAccessException, NoSuchMethodException, InvocationTargetException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -256,7 +255,7 @@ public class SynthesisCommandsTests {
             }
         }
 
-        C command = cls.newInstance();
+        C command = cls.getDeclaredConstructor().newInstance();
         WorkspaceEntry dstWe = command.execute(srcWe);
         Circuit dstCircuit = WorkspaceUtils.getAs(dstWe, Circuit.class);
         Set<String> dstInputs = new HashSet<>();
