@@ -1,7 +1,5 @@
 package org.workcraft.plugins.petri.tools;
 
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
@@ -53,7 +51,7 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     @Override
-    public void activated(final GraphEditor editor) {
+    public void activated(GraphEditor editor) {
         super.activated(editor);
         badCapacityPlaces.clear();
     }
@@ -81,20 +79,20 @@ public class PetriSimulationTool extends SimulationTool {
     @Override
     public void writeUnderlyingModelState(Map<? extends MathNode, Integer> state) {
         HashSet<Place> places = new HashSet<>(getUnderlyingModel().getPlaces());
-        for (Node node: state.keySet()) {
+        for (MathNode node : state.keySet()) {
             if (node instanceof Place) {
                 Place place = (Place) node;
                 if (places.contains(place)) {
                     place.setTokens(state.get(place));
                 } else {
-                    ExceptionDialog.show(new RuntimeException("Place " + place.toString() + " is not in the model"));
+                    ExceptionDialog.show(new RuntimeException("Place " + place + " is not in the model"));
                 }
             }
         }
     }
 
     @Override
-    public void applySavedState(final GraphEditor editor) {
+    public void applySavedState(GraphEditor editor) {
         if ((savedState == null) || savedState.isEmpty()) {
             return;
         }
@@ -102,9 +100,9 @@ public class PetriSimulationTool extends SimulationTool {
         if (model instanceof PetriModel) {
             PetriModel petri = (PetriModel) model;
             editor.getWorkspaceEntry().saveMemento();
-            for (Place place: petri.getPlaces()) {
+            for (Place place : petri.getPlaces()) {
                 String ref = petri.getNodeReference(place);
-                Node underlyingNode = getUnderlyingModel().getNodeByReference(ref);
+                MathNode underlyingNode = getUnderlyingNode(ref);
                 if ((underlyingNode instanceof Place) && savedState.containsKey(underlyingNode)) {
                     Integer tokens = savedState.get(underlyingNode);
                     place.setTokens(tokens);
@@ -141,14 +139,14 @@ public class PetriSimulationTool extends SimulationTool {
         Transition transition = null;
         PetriModel petri = getUnderlyingModel();
         if (ref != null) {
-            final Node node = petri.getNodeByReference(ref);
+            MathNode node = getUnderlyingNode(ref);
             if (node instanceof Transition) {
                 transition = (Transition) node;
             }
         }
         if (isEnabledUnderlyingNode(transition)) {
             HashMap<Place, Integer> capacity = new HashMap<>();
-            for (MathNode node: petri.getPostset(transition)) {
+            for (MathNode node : petri.getPostset(transition)) {
                 if (node instanceof Place) {
                     Place place = (Place) node;
                     capacity.put(place, place.getCapacity());
@@ -157,7 +155,7 @@ public class PetriSimulationTool extends SimulationTool {
             petri.fire(transition);
             coloriseTokens(transition);
             Set<String> placeRefs = new HashSet<>();
-            for (Node node: petri.getPostset(transition)) {
+            for (MathNode node : petri.getPostset(transition)) {
                 if (node instanceof Place) {
                     Place place = (Place) node;
                     if ((place.getCapacity() > capacity.get(place)) && !badCapacityPlaces.contains(place)) {
@@ -180,7 +178,7 @@ public class PetriSimulationTool extends SimulationTool {
         Transition transition = null;
         PetriModel petri = getUnderlyingModel();
         if (ref != null) {
-            final Node node = petri.getNodeByReference(ref);
+            MathNode node = getUnderlyingNode(ref);
             if (node instanceof Transition) {
                 transition = (Transition) node;
             }
@@ -195,17 +193,21 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     @Override
-    public String getHintText(final GraphEditor editor) {
+    public String getHintText(GraphEditor editor) {
         return "Click on a highlighted transition to fire it.";
     }
 
     public void coloriseTokens(Transition transition) {
         VisualModel model = getUnderlyingVisualModel();
         VisualPetri petri = (model instanceof VisualPetri) ? (VisualPetri) model : null;
-        if (petri == null) return;
+        if (petri == null) {
+            return;
+        }
 
         VisualTransition vt = petri.getVisualTransition(transition);
-        if (vt == null) return;
+        if (vt == null) {
+            return;
+        }
 
         Color tokenColor = Color.BLACK;
         ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
@@ -214,24 +216,18 @@ public class PetriSimulationTool extends SimulationTool {
             tokenColor = tokenColorGenerator.updateColor();
         } else {
             // combine preset token colours
-            for (Connection c : petri.getConnections(vt)) {
-                if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
-                    VisualConnection vc = (VisualConnection) c;
-                    if (vc.isTokenColorPropagator() && (vc.getFirst() instanceof VisualPlace)) {
-                        VisualPlace vp = (VisualPlace) vc.getFirst();
-                        tokenColor = ColorUtils.colorise(tokenColor, vp.getTokenColor());
-                    }
+            for (VisualConnection vc : petri.getConnections(vt)) {
+                if (vc.isTokenColorPropagator() && (vc.getFirst() instanceof VisualPlace) && (vc.getSecond() == vt)) {
+                    VisualPlace vp = (VisualPlace) vc.getFirst();
+                    tokenColor = ColorUtils.colorise(tokenColor, vp.getTokenColor());
                 }
             }
         }
         // propagate the colour to postset tokens
-        for (Connection c : petri.getConnections(vt)) {
-            if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
-                VisualConnection vc = (VisualConnection) c;
-                if (vc.isTokenColorPropagator() && (vc.getSecond() instanceof VisualPlace)) {
-                    VisualPlace vp = (VisualPlace) vc.getSecond();
-                    vp.setTokenColor(tokenColor);
-                }
+        for (VisualConnection vc : petri.getConnections(vt)) {
+            if (vc.isTokenColorPropagator() && (vc.getFirst() == vt) && (vc.getSecond() instanceof VisualPlace)) {
+                VisualPlace vp = (VisualPlace) vc.getSecond();
+                vp.setTokenColor(tokenColor);
             }
         }
     }

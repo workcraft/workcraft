@@ -1,8 +1,6 @@
 package org.workcraft.plugins.stg.tools;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.SizeHelper;
@@ -91,7 +89,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     private final class StateTable extends JTable {
-        StateTable(final StateTableModel model) {
+        StateTable(StateTableModel model) {
             super(model);
             getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
             getTableHeader().setReorderingAllowed(false);
@@ -108,12 +106,12 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         @Override
-        public void editingStopped(final ChangeEvent e) {
-            final TableCellEditor cellEditor = getCellEditor();
-            final String signalName = signals.get(editingRow);
+        public void editingStopped(ChangeEvent e) {
+            TableCellEditor cellEditor = getCellEditor();
+            String signalName = signals.get(editingRow);
             if ((cellEditor != null) && (signalName != null)) {
-                final SignalData signalData = signalDataMap.get(signalName);
-                final Object value = cellEditor.getCellEditorValue();
+                SignalData signalData = signalDataMap.get(signalName);
+                Object value = cellEditor.getCellEditorValue();
                 if ((signalData != null) && (value != null)) {
                     switch (editingColumn) {
                     case COLUMN_VISIBLE:
@@ -138,7 +136,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         @Override
-        public String getColumnName(final int column) {
+        public String getColumnName(int column) {
             switch (column) {
             case COLUMN_SIGNAL:
                 return "Signal";
@@ -154,7 +152,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         @Override
-        public Class<?> getColumnClass(final int col) {
+        public Class<?> getColumnClass(int col) {
             switch (col) {
             case COLUMN_SIGNAL:
             case COLUMN_STATE:
@@ -174,10 +172,10 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         @Override
-        public Object getValueAt(final int row, final int col) {
+        public Object getValueAt(int row, int col) {
             if (row < signalDataMap.size()) {
-                final String signalName = signals.get(row);
-                final SignalData signalData = signalDataMap.get(signalName);
+                String signalName = signals.get(row);
+                SignalData signalData = signalDataMap.get(signalName);
                 if (signalData != null) {
                     switch (col) {
                     case COLUMN_SIGNAL:
@@ -196,7 +194,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         @Override
-        public boolean isCellEditable(final int row, final int col) {
+        public boolean isCellEditable(int row, int col) {
             switch (col) {
             case COLUMN_VISIBLE:
             case COLUMN_COLOR:
@@ -206,9 +204,9 @@ public class StgSimulationTool extends PetriSimulationTool {
             }
         }
 
-        public void reorderRows(final int from, final int to) {
+        public void reorderRows(int from, int to) {
             if ((from >= 0) && (from < signals.size()) && (to >= 0) && (to < signals.size()) && (from != to)) {
-                final String name = signals.remove(from);
+                String name = signals.remove(from);
                 signals.add(to, name);
                 fireTableDataChanged();
             }
@@ -219,7 +217,7 @@ public class StgSimulationTool extends PetriSimulationTool {
 
         private final JLabel label = new JLabel() {
             @Override
-            public void paint(final Graphics g) {
+            public void paint(Graphics g) {
                 g.setColor(getBackground());
                 g.fillRect(0, 0, getWidth(), getHeight());
                 super.paint(g);
@@ -227,8 +225,8 @@ public class StgSimulationTool extends PetriSimulationTool {
         };
 
         @Override
-        public Component getTableCellRendererComponent(final JTable table, final Object value,
-                final boolean isSelected, final boolean hasFocus, final int row, final int col) {
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int col) {
 
             label.setText("");
             label.setBorder(GuiUtils.getTableCellBorder());
@@ -236,15 +234,15 @@ public class StgSimulationTool extends PetriSimulationTool {
             label.setBackground(table.getBackground());
             label.setFont(table.getFont().deriveFont(Font.PLAIN));
             if (isActivated() && (value instanceof SignalData)) {
-                final SignalData st = (SignalData) value;
+                SignalData signalData = (SignalData) value;
                 switch (col) {
                 case COLUMN_SIGNAL:
-                    label.setText(st.name);
-                    label.setForeground(getTypeColor(st.type));
+                    label.setText(signalData.name);
+                    label.setForeground(getTypeColor(signalData.type));
                     break;
                 case COLUMN_STATE:
-                    label.setText(st.value.toString());
-                    if (st.excited) {
+                    label.setText(signalData.value.toString());
+                    if (signalData.excited) {
                         label.setFont(table.getFont().deriveFont(Font.BOLD));
                     }
                     break;
@@ -261,59 +259,61 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     public class StateTableRowTransferHandler extends TransferHandler {
 
-        private final DataFlavor localObjectFlavor = new ActivationDataFlavor(Integer.class, "Integer Row Index");
+        private final DataFlavor localObjectFlavor = new ActivationDataFlavor(Integer.class,
+                "Integer Row Index");
+
         private final JTable table;
 
-        public StateTableRowTransferHandler(final JTable table) {
+        public StateTableRowTransferHandler(JTable table) {
             this.table = table;
         }
 
         @Override
-        protected Transferable createTransferable(final JComponent c) {
+        protected Transferable createTransferable(JComponent c) {
             return new DataHandler(table.getSelectedRow(), localObjectFlavor.getMimeType());
         }
 
         @Override
-        public boolean canImport(final TransferHandler.TransferSupport info) {
+        public boolean canImport(TransferHandler.TransferSupport info) {
             boolean result = (info.getComponent() == table) && info.isDrop() && info.isDataFlavorSupported(localObjectFlavor);
             table.setCursor(result ? DragSource.DefaultMoveDrop : DragSource.DefaultMoveNoDrop);
             return result;
         }
 
         @Override
-        public int getSourceActions(final JComponent c) {
+        public int getSourceActions(JComponent c) {
             return TransferHandler.COPY_OR_MOVE;
         }
 
         @Override
-        public boolean importData(final TransferHandler.TransferSupport info) {
-            final JTable target = (JTable) info.getComponent();
-            final JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
+        public boolean importData(TransferHandler.TransferSupport info) {
+            JTable target = (JTable) info.getComponent();
+            JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
             int toRow = dl.getRow();
-            final int lastRow = table.getModel().getRowCount();
+            int lastRow = table.getModel().getRowCount();
             if ((toRow < 0) || (toRow > lastRow)) {
                 toRow = lastRow;
             }
             target.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             try {
-                final int fromRow = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
+                int fromRow = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
                 if (toRow > fromRow) {
                     toRow--;
                 }
                 if ((fromRow != -1) && (fromRow != toRow)) {
-                    final StateTableModel stateTableModel = (StateTableModel) table.getModel();
+                    StateTableModel stateTableModel = (StateTableModel) table.getModel();
                     stateTableModel.reorderRows(fromRow, toRow);
                     target.getSelectionModel().addSelectionInterval(toRow, toRow);
                     return true;
                 }
-            } catch (final Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return false;
         }
 
         @Override
-        protected void exportDone(final JComponent c, final Transferable t, final int act) {
+        protected void exportDone(JComponent c, Transferable t, int act) {
             if ((act == TransferHandler.MOVE) || (act == TransferHandler.NONE)) {
                 table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
@@ -325,21 +325,21 @@ public class StgSimulationTool extends PetriSimulationTool {
 
         private final JLabel label = new JLabel() {
             @Override
-            public void paint(final Graphics g) {
+            public void paint(Graphics g) {
                 g.setColor(getBackground());
                 g.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
                 super.paint(g);
             }
         };
 
-        private boolean isActive(final int row, final int column) {
+        private boolean isActive(int row, int column) {
             if (column == 0) {
                 if (!mainTrace.isEmpty() && branchTrace.isEmpty()) {
                     return row == mainTrace.getPosition();
                 }
             } else {
-                final int absoluteBranchSize = mainTrace.getPosition() + branchTrace.size();
-                final int absoluteBranchPosition = mainTrace.getPosition() + branchTrace.getPosition();
+                int absoluteBranchSize = mainTrace.getPosition() + branchTrace.size();
+                int absoluteBranchPosition = mainTrace.getPosition() + branchTrace.getPosition();
                 if (!branchTrace.isEmpty() && (row >= mainTrace.getPosition()) && (row < absoluteBranchSize)) {
                     return row == absoluteBranchPosition;
                 }
@@ -348,8 +348,8 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         @Override
-        public Component getTableCellRendererComponent(final JTable table, final Object value,
-                final boolean isSelected, final boolean hasFocus, final int row, final int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
 
             JLabel result = null;
             label.setBorder(GuiUtils.getTableCellBorder());
@@ -358,7 +358,7 @@ public class StgSimulationTool extends PetriSimulationTool {
                 Pair<String, String> pair = TraceUtils.splitLoopDecoration(text);
                 String prefix = pair.getFirst();
                 String ref = pair.getSecond();
-                final Node node = getUnderlyingModel().getNodeByReference(ref);
+                MathNode node = getUnderlyingNode(ref);
                 String colorCode = ColorUtils.getHexRGB(getNodeColor(node));
                 label.setText("<html><span style='color: " + GRAY_CODE + "'>" + prefix + "</span>" +
                         "<span style='color: " + colorCode + "'>" + ref + "</span></html>");
@@ -397,7 +397,14 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     @Override
     public MathNode getUnderlyingNode(String ref) {
-        return refToUnderlyingNodeMap == null ? super.getUnderlyingNode(ref) : refToUnderlyingNodeMap.get(ref);
+        MathNode result = null;
+        if (refToUnderlyingNodeMap != null) {
+            result = refToUnderlyingNodeMap.get(ref);
+        }
+        if (result == null) {
+            result = super.getUnderlyingNode(ref);
+        }
+        return result;
     }
 
     @Override
@@ -406,7 +413,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public JPanel getControlsPanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(GraphEditor editor) {
         if (panel == null) {
             panel = super.getControlsPanel(editor);
             stateTable = new StateTable(new StateTableModel());
@@ -417,7 +424,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void updateState(final GraphEditor editor) {
+    public void updateState(GraphEditor editor) {
         super.updateState(editor);
         updateSignalState();
         stateTable.tableChanged(new TableModelEvent(stateTable.getModel()));
@@ -425,7 +432,7 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     public void updateSignalState() {
         initialiseSignalState();
-        final ArrayList<String> combinedTrace = new ArrayList<>();
+        ArrayList<String> combinedTrace = new ArrayList<>();
         if (!mainTrace.isEmpty()) {
             combinedTrace.addAll(mainTrace.subList(0, mainTrace.getPosition()));
         }
@@ -433,12 +440,12 @@ public class StgSimulationTool extends PetriSimulationTool {
             combinedTrace.addAll(branchTrace.subList(0, branchTrace.getPosition()));
         }
 
-        for (final String ref : combinedTrace) {
-            final Node node = getUnderlyingModel().getNodeByReference(ref);
+        for (String ref : combinedTrace) {
+            MathNode node = getUnderlyingNode(ref);
             if (node instanceof SignalTransition) {
-                final SignalTransition transition = (SignalTransition) node;
-                final String signalReference = getUnderlyingModel().getSignalReference(transition);
-                final SignalData signalState = signalDataMap.get(signalReference);
+                SignalTransition transition = (SignalTransition) node;
+                String signalReference = getUnderlyingModel().getSignalReference(transition);
+                SignalData signalState = signalDataMap.get(signalReference);
                 if (signalState != null) {
                     switch (transition.getDirection()) {
                     case MINUS:
@@ -457,14 +464,11 @@ public class StgSimulationTool extends PetriSimulationTool {
             }
         }
 
-        for (final Node node : getUnderlyingModel().getTransitions()) {
-            if (node instanceof SignalTransition) {
-                final SignalTransition transition = (SignalTransition) node;
-                final String signalReference = getUnderlyingModel().getSignalReference(transition);
-                final SignalData signalData = signalDataMap.get(signalReference);
-                if (signalData != null) {
-                    signalData.excited |= isEnabledUnderlyingNode(transition);
-                }
+        for (SignalTransition transition : getUnderlyingModel().getSignalTransitions()) {
+            String signalReference = getUnderlyingModel().getSignalReference(transition);
+            SignalData signalData = signalDataMap.get(signalReference);
+            if (signalData != null) {
+                signalData.excited |= isEnabledUnderlyingNode(transition);
             }
         }
     }
@@ -483,7 +487,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void activated(final GraphEditor editor) {
+    public void activated(GraphEditor editor) {
         super.activated(editor);
         initialSignalState = getInitialState();
         initialiseStateMap();
@@ -501,25 +505,25 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void generateTraceGraph(final GraphEditor editor) {
-        final Trace trace = getCombinedTrace();
+    public void generateTraceGraph(GraphEditor editor) {
+        Trace trace = getCombinedTrace();
         if (trace.isEmpty()) {
             DialogUtils.showWarning("Cannot generate a timing diagram for an empty trace.");
         } else {
-            final Stg stg = getUnderlyingModel();
-            final LinkedList<Pair<String, Color>> visibleSignals = getVisibleSignals();
-            final StgToDtdConverter converter = new StgToDtdConverter(stg, trace, visibleSignals);
-            final VisualDtd dtd = converter.getVisualDtd();
-            final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
-            final Framework framework = Framework.getInstance();
+            Stg stg = getUnderlyingModel();
+            LinkedList<Pair<String, Color>> visibleSignals = getVisibleSignals();
+            StgToDtdConverter converter = new StgToDtdConverter(stg, trace, visibleSignals);
+            VisualDtd dtd = converter.getVisualDtd();
+            ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
+            Framework framework = Framework.getInstance();
             framework.createWork(me, editor.getWorkspaceEntry().getFileName());
         }
     }
 
     private LinkedList<Pair<String, Color>> getVisibleSignals() {
-        final LinkedList<Pair<String, Color>> result = new LinkedList<>();
-        for (final String signalRef : signals) {
-            final SignalData signalData = signalDataMap.get(signalRef);
+        LinkedList<Pair<String, Color>> result = new LinkedList<>();
+        for (String signalRef : signals) {
+            SignalData signalData = signalDataMap.get(signalRef);
             if ((signalData != null) && signalData.visible) {
                 result.add(Pair.of(signalData.name, signalData.color));
             }
@@ -528,10 +532,10 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public String getTraceLabelByReference(final String ref) {
+    public String getTraceLabelByReference(String ref) {
         String result = ref;
         if (ref != null) {
-            final String name = NamespaceHelper.getReferenceName(ref);
+            String name = NamespaceHelper.getReferenceName(ref);
             Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(name);
             if (instancedTransition != null) {
                 String parentRef = NamespaceHelper.getParentReference(ref);
@@ -545,11 +549,11 @@ public class StgSimulationTool extends PetriSimulationTool {
         Stg stg = getUnderlyingModel();
         HashMap<String, SignalData> newStateMap = new HashMap<>();
         List<String> allSignals = new LinkedList<>();
-        for (Signal.Type type: Signal.Type.values()) {
+        for (Signal.Type type : Signal.Type.values()) {
             List<String> typedSignals = new LinkedList<>(stg.getSignalReferences(type));
             SortUtils.sortNatural(typedSignals);
             allSignals.addAll(typedSignals);
-            for (String signal: typedSignals) {
+            for (String signal : typedSignals) {
                 SignalData signalData = signalDataMap.getOrDefault(signal, new SignalData(signal, type));
                 newStateMap.put(signal, signalData);
             }
@@ -562,15 +566,15 @@ public class StgSimulationTool extends PetriSimulationTool {
         updateSignalState();
     }
 
-    private Color getNodeColor(final Node node) {
+    private Color getNodeColor(MathNode node) {
         if (node instanceof SignalTransition) {
-            final SignalTransition transition = (SignalTransition) node;
+            SignalTransition transition = (SignalTransition) node;
             return getTypeColor(transition.getSignalType());
         }
         return Color.BLACK;
     }
 
-    private Color getTypeColor(final Signal.Type type) {
+    private Color getTypeColor(Signal.Type type) {
         switch (type) {
         case INPUT:    return SignalCommonSettings.getInputColor();
         case OUTPUT:   return SignalCommonSettings.getOutputColor();
@@ -580,47 +584,46 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void coloriseTokens(final Transition t) {
+    public void coloriseTokens(Transition t) {
         VisualModel model = getUnderlyingVisualModel();
         VisualStg stg = (model instanceof VisualStg) ? (VisualStg) model : null;
-        if (stg == null) return;
+        if (stg == null) {
+            return;
+        }
 
-        final VisualTransition vt = stg.getVisualTransition(t);
-        if (vt == null) return;
+        VisualTransition vt = stg.getVisualTransition(t);
+        if (vt == null) {
+            return;
+        }
+
         Color tokenColor = Color.BLACK;
-        final ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
+        ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
         if (tokenColorGenerator != null) {
-            // generate token colour
+            // Generate token colour
             tokenColor = tokenColorGenerator.updateColor();
         } else {
-            // combine preset token colours
-            for (final Connection c : stg.getConnections(vt)) {
-                if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
-                    final VisualConnection vc = (VisualConnection) c;
-                    if (vc.isTokenColorPropagator()) {
-                        if (vc.getFirst() instanceof VisualPlace) {
-                            final VisualPlace vp = (VisualPlace) c.getFirst();
-                            tokenColor = ColorUtils.colorise(tokenColor, vp.getTokenColor());
-                        } else if (vc instanceof VisualImplicitPlaceArc) {
-                            final VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc) vc;
-                            tokenColor = ColorUtils.colorise(tokenColor, vipa.getTokenColor());
-                        }
+            // Combine preset token colours
+            for (VisualConnection vc : stg.getConnections(vt)) {
+                if ((vc.getSecond() == vt) && vc.isTokenColorPropagator()) {
+                    if (vc.getFirst() instanceof VisualPlace) {
+                        VisualPlace vp = (VisualPlace) vc.getFirst();
+                        tokenColor = ColorUtils.colorise(tokenColor, vp.getTokenColor());
+                    } else if (vc instanceof VisualImplicitPlaceArc) {
+                        VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc) vc;
+                        tokenColor = ColorUtils.colorise(tokenColor, vipa.getTokenColor());
                     }
                 }
             }
         }
-        // propagate the colour to postset tokens
-        for (final Connection c : stg.getConnections(vt)) {
-            if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
-                final VisualConnection vc = (VisualConnection) c;
-                if (vc.isTokenColorPropagator()) {
-                    if (vc.getSecond() instanceof VisualPlace) {
-                        final VisualPlace vp = (VisualPlace) c.getSecond();
-                        vp.setTokenColor(tokenColor);
-                    } else if (vc instanceof VisualImplicitPlaceArc) {
-                        final VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc) vc;
-                        vipa.setTokenColor(tokenColor);
-                    }
+        // Propagate the colour to postset tokens
+        for (VisualConnection vc : stg.getConnections(vt)) {
+            if ((vc.getFirst() == vt) && vc.isTokenColorPropagator()) {
+                if (vc.getSecond() instanceof VisualPlace) {
+                    VisualPlace vp = (VisualPlace) vc.getSecond();
+                    vp.setTokenColor(tokenColor);
+                } else if (vc instanceof VisualImplicitPlaceArc) {
+                    VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc) vc;
+                    vipa.setTokenColor(tokenColor);
                 }
             }
         }
@@ -662,9 +665,10 @@ public class StgSimulationTool extends PetriSimulationTool {
         VisualModel underlyingVisualModel = getUnderlyingVisualModel();
         if ((connection instanceof VisualImplicitPlaceArc) && (underlyingVisualModel instanceof VisualStg)) {
             String ref = model.getMathReference(connection);
-            for (VisualImplicitPlaceArc underlyingArc : ((VisualStg) underlyingVisualModel).getVisualImplicitPlaceArcs()) {
-                if (ref.equals(underlyingVisualModel.getMathReference(underlyingArc))) {
-                    return underlyingArc;
+            VisualStg underlyingVisualStg = (VisualStg) underlyingVisualModel;
+            for (VisualImplicitPlaceArc underlyingVisualArc : underlyingVisualStg.getVisualImplicitPlaceArcs()) {
+                if (ref.equals(underlyingVisualModel.getMathReference(underlyingVisualArc))) {
+                    return underlyingVisualArc;
                 }
             }
         }
