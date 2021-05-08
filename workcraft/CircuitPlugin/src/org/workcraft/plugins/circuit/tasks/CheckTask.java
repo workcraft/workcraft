@@ -25,6 +25,7 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -397,7 +398,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
         if (checkPersistency) {
             message += getPropertyMessage("output-persistent", checkCount > 1);
         }
-        return message;
+        return TextUtils.wrapText(message);
     }
 
     private String getPropertyMessage(String message, boolean multiline) {
