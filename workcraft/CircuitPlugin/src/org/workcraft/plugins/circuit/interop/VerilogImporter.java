@@ -280,10 +280,7 @@ public class VerilogImporter implements Importer {
     }
 
     private boolean isMutexInstance(VerilogInstance verilogInstance) {
-        Mutex module = CircuitSettings.parseMutexData();
-        String moduleName = module == null ? null : module.name;
-        return MutexUtils.appendProtocolSuffix(moduleName, Mutex.Protocol.LATE).equals(verilogInstance.moduleName) ||
-                MutexUtils.appendProtocolSuffix(moduleName, Mutex.Protocol.EARLY).equals(verilogInstance.moduleName);
+        return MutexUtils.getMutexModuleNames().contains(verilogInstance.moduleName);
     }
 
     private Mutex instanceToMutexWithProtocol(VerilogInstance verilogInstance, Collection<Mutex> mutexes) {

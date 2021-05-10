@@ -8,6 +8,10 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.stg.Mutex;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 public class MutexUtils {
 
     public static BooleanFormula getGrantSet(Mutex.Protocol mutexProtocol, VisualFunctionContact reqContact,
@@ -44,6 +48,13 @@ public class MutexUtils {
             result += CircuitSettings.getMutexEarlySuffix();
         }
         return result;
+    }
+
+    public static Set<String> getMutexModuleNames() {
+        Mutex mutex = CircuitSettings.parseMutexData();
+        return Arrays.stream(Mutex.Protocol.values())
+                .map(protocol -> appendProtocolSuffix(mutex.name, protocol))
+                .collect(Collectors.toSet());
     }
 
 }

@@ -1,9 +1,5 @@
 package org.workcraft.plugins.atacs;
 
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,18 +12,19 @@ import org.workcraft.plugins.atacs.commands.ComplexGateSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.GeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.atacs.commands.StandardCelementSynthesisCommand;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 public class SynthesisCommandsTests {
 
@@ -207,7 +204,7 @@ public class SynthesisCommandsTests {
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
         Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
         Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> srcMutexes = MutexUtils.getMutexPlaceReferences(srcStg);
+        Set<String> srcMutexes = org.workcraft.plugins.stg.utils.MutexUtils.getMutexPlaceReferences(srcStg);
         Set<String> srcPageRefs = new HashSet<>();
         for (PageNode page: Hierarchy.getChildrenOfType(srcStg.getRoot(), PageNode.class)) {
             boolean hasInputs = !srcStg.getSignalNames(Signal.Type.INPUT, page).isEmpty();
@@ -256,9 +253,10 @@ public class SynthesisCommandsTests {
 
     private static Set<String> getMutexComponentReferences(Circuit circuit) {
         HashSet<String> result = new HashSet<>();
-        Mutex mutex = CircuitSettings.parseMutexData();
+        Set<String> mutexModuleNames = org.workcraft.plugins.circuit.utils.MutexUtils.getMutexModuleNames();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
-            if (mutex.name.equals(component.getModule())) {
+            String moduleName = component.getModule();
+            if (mutexModuleNames.contains(moduleName)) {
                 String ref = circuit.getNodeReference(component);
                 result.add(Identifier.truncateNamespaceSeparator(ref));
             }
