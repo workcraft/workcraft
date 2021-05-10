@@ -58,6 +58,7 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
     @Override
     public void afterContraction(VisualModel visualModel, VisualTransition visualTransition,
             HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap) {
+
         super.afterContraction(visualModel, visualTransition, productPlaceMap);
         if (visualModel instanceof VisualStg) {
             VisualStg visualStg = (VisualStg) visualModel;
