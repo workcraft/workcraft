@@ -1,11 +1,15 @@
 package org.workcraft.plugins.petri.utils;
 
 import org.workcraft.dom.Node;
-import org.workcraft.traces.Trace;
+import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.traces.Trace;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
 
@@ -13,7 +17,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PetriUtils {
+public final class PetriUtils {
+
+    private PetriUtils() {
+    }
 
     public static HashMap<Place, Integer> getMarking(PetriModel net) {
         HashMap<Place, Integer> marking = new HashMap<>();
@@ -113,6 +120,26 @@ public class PetriUtils {
             }
         }
         return true;
+    }
+
+    public static HashSet<Place> getIsolatedMarkedPlaces(PetriModel model) {
+        HashSet<Place> result = new HashSet<>();
+        for (Place place: model.getPlaces()) {
+            if ((place.getTokens() > 0) && model.getConnections(place).isEmpty()) {
+                result.add(place);
+            }
+        }
+        return result;
+    }
+
+    public static void removeIsolatedMarkedVisualPlaces(VisualModel visualModel) {
+        MathModel model = visualModel.getMathModel();
+        for (VisualPlace visualPlace: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualPlace.class)) {
+            Place place = visualPlace.getReferencedComponent();
+            if ((place.getTokens() > 0) && model.getConnections(place).isEmpty()) {
+                visualModel.remove(visualPlace);
+            }
+        }
     }
 
 }

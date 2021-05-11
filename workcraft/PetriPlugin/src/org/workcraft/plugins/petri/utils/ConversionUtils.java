@@ -2,11 +2,16 @@ package org.workcraft.plugins.petri.utils;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.*;
-import org.workcraft.dom.visual.connections.*;
+import org.workcraft.dom.visual.connections.ConnectionGraphic;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.VisualReplicaPlace;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 
@@ -20,14 +25,17 @@ public class ConversionUtils {
 
     public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedOrAllDualArcs(final VisualModel visualModel) {
         HashSet<Pair<VisualConnection /* consuming arc */, VisualConnection /* producing arc */>> dualArcs = new HashSet<>();
-        HashSet<VisualConnection> consumingArcs = ConversionUtils.getVisualConsumingArcs(visualModel);
-        HashSet<VisualConnection> producingArcs = ConversionUtils.getVisualProducingArcs(visualModel);
+        HashSet<VisualConnection> consumingArcs = ConnectionUtils.getVisualConsumingArcs(visualModel);
+        HashSet<VisualConnection> producingArcs = ConnectionUtils.getVisualProducingArcs(visualModel);
         for (VisualConnection consumingArc: consumingArcs) {
             for (VisualConnection producingArc: producingArcs) {
                 boolean isDualArcs = (consumingArc.getFirst() == producingArc.getSecond())
                         && (consumingArc.getSecond() == producingArc.getFirst());
+
                 Collection<VisualNode> selection = visualModel.getSelection();
-                boolean selectedArcsOrNoSelection = selection.isEmpty() || selection.contains(consumingArc) || selection.contains(producingArc);
+                boolean selectedArcsOrNoSelection = selection.isEmpty()
+                        || selection.contains(consumingArc) || selection.contains(producingArc);
+
                 if (isDualArcs && selectedArcsOrNoSelection) {
                     dualArcs.add(new Pair<>(consumingArc, producingArc));
                 }
@@ -53,9 +61,9 @@ public class ConversionUtils {
 
     public static VisualReadArc convertDualArcToReadArc(VisualModel visualModel, VisualConnection consumingArc, VisualConnection producingArc) {
         VisualReadArc readArc = null;
-        if (isVisualDualArcs(consumingArc, producingArc)) {
+        if (areVisualDualArcs(consumingArc, producingArc)) {
             VisualConnection connection = consumingArc;
-            if (!isVisualConsumingArc(consumingArc)) {
+            if (!ConnectionUtils.isVisualConsumingArc(consumingArc)) {
                 connection = producingArc;
             }
             VisualNode place = connection.getFirst();
@@ -89,9 +97,9 @@ public class ConversionUtils {
 
     public static VisualReadArc convertDirectedArcToReadArc(VisualModel visualModel, VisualConnection connection) {
         VisualReadArc readArc = null;
-        if (isVisualProducingArc(connection)) {
+        if (ConnectionUtils.isVisualProducingArc(connection)) {
             readArc = convertProducingArcToReadArc(visualModel, connection);
-        } else if (isVisualConsumingArc(connection)) {
+        } else if (ConnectionUtils.isVisualConsumingArc(connection)) {
             readArc = convertConsumingArcToReadArc(visualModel, connection);
         }
         return readArc;
@@ -101,7 +109,7 @@ public class ConversionUtils {
         VisualReadArc readArc = null;
         VisualNode transition;
         VisualNode placeOrReplica;
-        if (isVisualProducingArc(connection)) {
+        if (ConnectionUtils.isVisualProducingArc(connection)) {
             transition = connection.getFirst();
             placeOrReplica = connection.getSecond();
             if (placeOrReplica instanceof VisualReplicaPlace) {
@@ -139,7 +147,7 @@ public class ConversionUtils {
         VisualReadArc readArc = null;
         VisualNode placeOrReplica;
         VisualNode transition;
-        if (isVisualConsumingArc(connection)) {
+        if (ConnectionUtils.isVisualConsumingArc(connection)) {
             placeOrReplica = connection.getFirst();
             if (placeOrReplica instanceof VisualReplicaPlace) {
                 placeOrReplica = copyReplicaPlace(visualModel, (VisualReplicaPlace) placeOrReplica);
@@ -312,182 +320,18 @@ public class ConversionUtils {
         return positionInRootSpace;
     }
 
-    public static boolean hasReadArcConnection(VisualModel visualModel, VisualNode first, VisualNode second) {
-        boolean found = false;
-        VisualPlace place = null;
-        VisualTransition transition = null;
-        if (first instanceof VisualPlace) {
-            place = (VisualPlace) first;
-        } else if (first instanceof VisualReplicaPlace) {
-            VisualReplicaPlace r = (VisualReplicaPlace) first;
-            place = (VisualPlace) r.getMaster();
-        }
-        if (second instanceof VisualTransition) {
-            transition = (VisualTransition) second;
-        }
-        if ((place != null) && (transition != null)) {
-            for (Replica replica: place.getReplicas()) {
-                if (replica instanceof VisualReplicaPlace) {
-                    VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
-                    VisualConnection connection = visualModel.getConnection(replicaPlace, transition);
-                    found = connection instanceof VisualReadArc;
-                }
-            }
-            if (!found) {
-                VisualConnection connection = visualModel.getConnection(place, transition);
-                found = connection instanceof VisualReadArc;
-            }
-        }
-        return found;
-    }
-
-    public static boolean hasProducingArcConnection(VisualModel visualModel, VisualNode first, VisualNode second) {
-        boolean found = false;
-        VisualPlace place = null;
-        VisualTransition transition = null;
-        if (first instanceof VisualTransition) {
-            transition = (VisualTransition) first;
-        }
-        if (second instanceof VisualPlace) {
-            place = (VisualPlace) second;
-        } else if (second instanceof VisualReplicaPlace) {
-            VisualReplicaPlace r = (VisualReplicaPlace) second;
-            place = (VisualPlace) r.getMaster();
-        }
-        if ((transition != null) && (place != null)) {
-            for (Replica replica: place.getReplicas()) {
-                if (replica instanceof VisualReplicaPlace) {
-                    VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
-                    VisualConnection connection = visualModel.getConnection(transition, replicaPlace);
-                    found = (connection != null) && !(connection instanceof VisualReadArc);
-                }
-            }
-            if (!found) {
-                VisualConnection connection = visualModel.getConnection(transition, place);
-                found = (connection != null) && !(connection instanceof VisualReadArc);
-            }
-        }
-        return found;
-    }
-
-    public static boolean hasConsumingArcConnection(VisualModel visualModel, VisualNode first, VisualNode second) {
-        boolean found = false;
-        VisualPlace place = null;
-        VisualTransition transition = null;
-        if (first instanceof VisualPlace) {
-            place = (VisualPlace) first;
-        } else if (first instanceof VisualReplicaPlace) {
-            VisualReplicaPlace r = (VisualReplicaPlace) first;
-            place = (VisualPlace) r.getMaster();
-        }
-        if (second instanceof VisualTransition) {
-            transition = (VisualTransition) second;
-        }
-        if ((place != null) && (transition != null)) {
-            for (Replica replica: place.getReplicas()) {
-                if (replica instanceof VisualReplicaPlace) {
-                    VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
-                    VisualConnection connection = visualModel.getConnection(replicaPlace, transition);
-                    found = (connection != null) && !(connection instanceof VisualReadArc);
-                }
-            }
-            if (!found) {
-                VisualConnection connection = visualModel.getConnection(place, transition);
-                found = (connection != null) && !(connection instanceof VisualReadArc);
-            }
-        }
-        return found;
-    }
-
-    public static boolean hasImplicitPlaceArcConnection(VisualModel visualModel, VisualNode first, VisualNode second) {
-        boolean found = false;
-        VisualTransition predTransition = null;
-        VisualTransition succTransition = null;
-        if (first instanceof VisualTransition) {
-            predTransition = (VisualTransition) first;
-        }
-        if (second instanceof VisualTransition) {
-            succTransition = (VisualTransition) second;
-        }
-        if ((predTransition != null) && (succTransition != null)) {
-            VisualConnection connection = visualModel.getConnection(predTransition, succTransition);
-            found = connection != null;
-        }
-        return found;
-    }
-
-    public static HashSet<VisualConnection> getVisualConsumingArcs(VisualModel visualModel) {
-        HashSet<VisualConnection> connections = new HashSet<>();
-        for (VisualConnection connection: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
-            if (isVisualConsumingArc(connection)) {
-                connections.add(connection);
-            }
-        }
-        return connections;
-    }
-
-    public static HashSet<VisualConnection> getVisualProducingArcs(VisualModel visualModel) {
-        HashSet<VisualConnection> connections = new HashSet<>();
-        for (VisualConnection connection: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
-            if (isVisualProducingArc(connection)) {
-                connections.add(connection);
-            }
-        }
-        return connections;
-    }
-
-    public static HashSet<VisualReadArc> getVisualReadArcs(VisualModel visualModel) {
-        return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualReadArc.class));
-    }
-
-    public static HashSet<VisualReplicaPlace> getVisualReplicaPlaces(VisualModel visualModel) {
-        return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualReplicaPlace.class));
-    }
-
-    public static HashSet<VisualPlace> getVisualPlaces(VisualModel visualModel) {
-        return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualPlace.class));
-    }
-
-    public static HashSet<VisualTransition> getVisualTransitions(VisualModel visualModel) {
-        return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualTransition.class));
-    }
-
-    public static boolean isVisualTransition(VisualNode node) {
-        return node instanceof VisualTransition;
-    }
-
-    public static boolean isVisualPlaceOrReplicaPlace(VisualNode node) {
-        return (node instanceof VisualPlace) || (node instanceof VisualReplicaPlace);
-    }
-
-    public static boolean isVisualProducingArc(VisualNode node) {
-        if ((node instanceof VisualConnection) && !(node instanceof VisualReadArc)) {
-            VisualConnection connection = (VisualConnection) node;
-            return isVisualTransition(connection.getFirst()) && isVisualPlaceOrReplicaPlace(connection.getSecond());
-        }
-        return false;
-    }
-
-    public static boolean isVisualConsumingArc(VisualNode node) {
-        if ((node instanceof VisualConnection) && !(node instanceof VisualReadArc)) {
-            VisualConnection connection = (VisualConnection) node;
-            return isVisualPlaceOrReplicaPlace(connection.getFirst()) && isVisualTransition(connection.getSecond());
-        }
-        return false;
-    }
-
-    public static boolean isVisualDualArcs(VisualNode node1, VisualNode node2) {
+    private static boolean areVisualDualArcs(VisualConnection connection1, VisualConnection connection2) {
         VisualConnection consumingArc = null;
         VisualConnection producingArc = null;
-        if (isVisualConsumingArc(node1)) {
-            consumingArc = (VisualConnection) node1;
-        } else if (isVisualProducingArc(node1)) {
-            producingArc = (VisualConnection) node1;
+        if (ConnectionUtils.isVisualConsumingArc(connection1)) {
+            consumingArc = connection1;
+        } else if (ConnectionUtils.isVisualProducingArc(connection1)) {
+            producingArc = connection1;
         }
-        if (isVisualConsumingArc(node2)) {
-            consumingArc = (VisualConnection) node2;
-        } else if (isVisualProducingArc(node2)) {
-            producingArc = (VisualConnection) node2;
+        if (ConnectionUtils.isVisualConsumingArc(connection2)) {
+            consumingArc = connection2;
+        } else if (ConnectionUtils.isVisualProducingArc(connection2)) {
+            producingArc = connection2;
         }
         if ((consumingArc != null) && (producingArc != null)) {
             VisualNode place1 = consumingArc.getFirst();
@@ -505,26 +349,6 @@ public class ConversionUtils {
             return (place1 == place2) && (transition1 == transition2);
         }
         return false;
-    }
-
-    public static HashSet<Place> getIsolatedMarkedPlaces(PetriModel model) {
-        HashSet<Place> result = new HashSet<>();
-        for (Place place: model.getPlaces()) {
-            if ((place.getTokens() > 0) && model.getConnections(place).isEmpty()) {
-                result.add(place);
-            }
-        }
-        return result;
-    }
-
-    public static void removeIsolatedMarkedPlaces(VisualModel visualModel) {
-        MathModel model = visualModel.getMathModel();
-        for (VisualPlace visualPlace: getVisualPlaces(visualModel)) {
-            Place place = visualPlace.getReferencedComponent();
-            if ((place.getTokens() > 0) && model.getConnections(place).isEmpty()) {
-                visualModel.remove(visualPlace);
-            }
-        }
     }
 
 }

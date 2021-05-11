@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -51,13 +52,13 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> replicas = new HashSet<>();
         // Collect selected (or all) replicas
-        replicas.addAll(ConversionUtils.getVisualReplicaPlaces(model));
+        replicas.addAll(ConnectionUtils.getVisualReplicaPlaces(model));
         Collection<VisualNode> selection = model.getSelection();
         if (!selection.isEmpty()) {
             replicas.retainAll(selection);
         }
         // Collect replicas on selected (or all) read-arcs
-        HashSet<VisualReadArc> readArcs = ConversionUtils.getVisualReadArcs(model);
+        HashSet<VisualReadArc> readArcs = ConnectionUtils.getVisualReadArcs(model);
         if (!selection.isEmpty()) {
             readArcs.retainAll(selection);
         }

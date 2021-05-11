@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.petri.utils.ConversionUtils;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.utils.LogUtils;
@@ -32,8 +32,8 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
     @Override
     public boolean isApplicableTo(VisualNode node) {
         return (node instanceof VisualImplicitPlaceArc)
-                || ConversionUtils.isVisualConsumingArc(node)
-                || ConversionUtils.isVisualProducingArc(node);
+                || ConnectionUtils.isVisualConsumingArc(node)
+                || ConnectionUtils.isVisualProducingArc(node);
     }
 
     @Override
@@ -57,8 +57,8 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             arcs.addAll(stg.getVisualImplicitPlaceArcs());
-            arcs.addAll(ConversionUtils.getVisualConsumingArcs(stg));
-            arcs.addAll(ConversionUtils.getVisualProducingArcs(stg));
+            arcs.addAll(ConnectionUtils.getVisualConsumingArcs(stg));
+            arcs.addAll(ConnectionUtils.getVisualProducingArcs(stg));
             arcs.retainAll(stg.getSelection());
         }
         return arcs;

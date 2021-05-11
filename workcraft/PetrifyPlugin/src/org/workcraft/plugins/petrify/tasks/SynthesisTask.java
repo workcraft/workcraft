@@ -10,7 +10,7 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.utils.ConversionUtils;
+import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
@@ -123,7 +123,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
 
         // Check for isolated marked places and temporary remove them if requested
-        HashSet<Place> isolatedPlaces = ConversionUtils.getIsolatedMarkedPlaces(stg);
+        HashSet<Place> isolatedPlaces = PetriUtils.getIsolatedMarkedPlaces(stg);
         if (!isolatedPlaces.isEmpty()) {
             String refStr = ReferenceHelper.getNodesAsWrapString(stg, isolatedPlaces);
             String msg = "Petrify does not support isolated marked places.\n\n"
@@ -134,7 +134,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
             }
             we.captureMemento();
             VisualModel visualModel = we.getModelEntry().getVisualModel();
-            ConversionUtils.removeIsolatedMarkedPlaces(visualModel);
+            PetriUtils.removeIsolatedMarkedVisualPlaces(visualModel);
         }
 
         // Input file

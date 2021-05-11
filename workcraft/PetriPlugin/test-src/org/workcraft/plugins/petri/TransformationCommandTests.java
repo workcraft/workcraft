@@ -7,7 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.petri.commands.*;
-import org.workcraft.plugins.petri.utils.ConversionUtils;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -54,9 +54,9 @@ public class TransformationCommandTests {
     }
 
     private void checkArcCount(VisualPetri petri, int consumingArcCount, int producingArcCount, int readArcCount) {
-        Assertions.assertEquals(consumingArcCount, ConversionUtils.getVisualConsumingArcs(petri).size());
-        Assertions.assertEquals(producingArcCount, ConversionUtils.getVisualProducingArcs(petri).size());
-        Assertions.assertEquals(readArcCount, ConversionUtils.getVisualReadArcs(petri).size());
+        Assertions.assertEquals(consumingArcCount, ConnectionUtils.getVisualConsumingArcs(petri).size());
+        Assertions.assertEquals(producingArcCount, ConnectionUtils.getVisualProducingArcs(petri).size());
+        Assertions.assertEquals(readArcCount, ConnectionUtils.getVisualReadArcs(petri).size());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class TransformationCommandTests {
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         VisualPetri petri = WorkspaceUtils.getAs(we, VisualPetri.class);
-        Assertions.assertEquals(0, ConversionUtils.getVisualReplicaPlaces(petri).size());
+        Assertions.assertEquals(0, ConnectionUtils.getVisualReplicaPlaces(petri).size());
 
         VisualPlace p1 = petri.getVisualComponentByMathReference("p1", VisualPlace.class);
         VisualTransition t2 = petri.getVisualComponentByMathReference("t2", VisualTransition.class);
@@ -77,7 +77,7 @@ public class TransformationCommandTests {
 
         petri.select(readArc);
         new ProxyReadArcPlaceTransformationCommand().execute(we);
-        Assertions.assertEquals(1, ConversionUtils.getVisualReplicaPlaces(petri).size());
+        Assertions.assertEquals(1, ConnectionUtils.getVisualReplicaPlaces(petri).size());
 
         VisualPlace p2 = petri.getVisualComponentByMathReference("p2", VisualPlace.class);
         VisualConnection producingArc = petri.getConnection(t2, p2);
@@ -85,11 +85,11 @@ public class TransformationCommandTests {
 
         petri.select(producingArc);
         new ProxyDirectedArcPlaceTransformationCommand().execute(we);
-        Assertions.assertEquals(2, ConversionUtils.getVisualReplicaPlaces(petri).size());
+        Assertions.assertEquals(2, ConnectionUtils.getVisualReplicaPlaces(petri).size());
 
         petri.selectNone();
         new CollapseProxyTransformationCommand().execute(we);
-        Assertions.assertEquals(0, ConversionUtils.getVisualReplicaPlaces(petri).size());
+        Assertions.assertEquals(0, ConnectionUtils.getVisualReplicaPlaces(petri).size());
 
         framework.closeWork(we);
     }
@@ -104,8 +104,8 @@ public class TransformationCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
         VisualPetri petri = WorkspaceUtils.getAs(we, VisualPetri.class);
         checkArcCount(petri, 3, 3, 1);
-        Assertions.assertEquals(3, ConversionUtils.getVisualPlaces(petri).size());
-        Assertions.assertEquals(3, ConversionUtils.getVisualTransitions(petri).size());
+        Assertions.assertEquals(3, petri.getVisualPlaces().size());
+        Assertions.assertEquals(3, petri.getVisualTransitions().size());
 
         VisualTransition t0 = petri.getVisualComponentByMathReference("t0", VisualTransition.class);
         Assertions.assertNotNull(t0);
@@ -113,8 +113,8 @@ public class TransformationCommandTests {
         petri.select(t0);
         new ContractTransitionTransformationCommand().execute(we);
         checkArcCount(petri, 2, 2, 1);
-        Assertions.assertEquals(2, ConversionUtils.getVisualPlaces(petri).size());
-        Assertions.assertEquals(2, ConversionUtils.getVisualTransitions(petri).size());
+        Assertions.assertEquals(2, petri.getVisualPlaces().size());
+        Assertions.assertEquals(2, petri.getVisualTransitions().size());
 
         framework.closeWork(we);
     }
@@ -129,8 +129,8 @@ public class TransformationCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
         VisualPetri petri = WorkspaceUtils.getAs(we, VisualPetri.class);
         checkArcCount(petri, 3, 3, 1);
-        Assertions.assertEquals(3, ConversionUtils.getVisualPlaces(petri).size());
-        Assertions.assertEquals(3, ConversionUtils.getVisualTransitions(petri).size());
+        Assertions.assertEquals(3, petri.getVisualPlaces().size());
+        Assertions.assertEquals(3, petri.getVisualTransitions().size());
 
         VisualTransition t0 = petri.getVisualComponentByMathReference("t0", VisualTransition.class);
         Assertions.assertNotNull(t0);
@@ -142,8 +142,8 @@ public class TransformationCommandTests {
         petri.addToSelection(t1);
         new MergeTransitionTransformationCommand().execute(we);
         checkArcCount(petri, 3, 3, 1);
-        Assertions.assertEquals(3, ConversionUtils.getVisualPlaces(petri).size());
-        Assertions.assertEquals(2, ConversionUtils.getVisualTransitions(petri).size());
+        Assertions.assertEquals(3, petri.getVisualPlaces().size());
+        Assertions.assertEquals(2, petri.getVisualTransitions().size());
 
         VisualPlace p0 = petri.getVisualComponentByMathReference("p0", VisualPlace.class);
         Assertions.assertNotNull(p0);
@@ -155,8 +155,8 @@ public class TransformationCommandTests {
         petri.addToSelection(p2);
         new MergePlaceTransformationCommand().execute(we);
         checkArcCount(petri, 3, 3, 1);
-        Assertions.assertEquals(2, ConversionUtils.getVisualPlaces(petri).size());
-        Assertions.assertEquals(2, ConversionUtils.getVisualTransitions(petri).size());
+        Assertions.assertEquals(2, petri.getVisualPlaces().size());
+        Assertions.assertEquals(2, petri.getVisualTransitions().size());
 
         framework.closeWork(we);
     }

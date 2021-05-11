@@ -1,7 +1,7 @@
 package org.workcraft.plugins.petri.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -9,13 +9,16 @@ import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
+import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -56,12 +59,12 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> readArcs = new HashSet<>();
-        readArcs.addAll(ConversionUtils.getVisualReadArcs(model));
+        readArcs.addAll(ConnectionUtils.getVisualReadArcs(model));
         Collection<VisualNode> selection = model.getSelection();
         if (!selection.isEmpty()) {
             readArcs.retainAll(selection);
         }
-        HashSet<VisualPlace> places = ConversionUtils.getVisualPlaces(model);
+        Set<VisualPlace> places = new HashSet<>(Hierarchy.getDescendantsOfType(model.getRoot(), VisualPlace.class));
         if (!selection.isEmpty()) {
             places.retainAll(selection);
         }

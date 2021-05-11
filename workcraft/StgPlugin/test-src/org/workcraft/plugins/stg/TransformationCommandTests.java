@@ -10,7 +10,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.commands.MergePlaceTransformationCommand;
 import org.workcraft.plugins.petri.commands.ProxyDirectedArcPlaceTransformationCommand;
-import org.workcraft.plugins.petri.utils.ConversionUtils;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.stg.commands.*;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -416,12 +416,12 @@ public class TransformationCommandTests {
 
         Assertions.assertEquals(explicitPlaceCount, stg.getVisualPlaces().size());
         Assertions.assertEquals(implicitPlaceCount, stg.getVisualImplicitPlaceArcs().size());
-        Assertions.assertEquals(replicaPlaceCount, ConversionUtils.getVisualReplicaPlaces(stg).size());
+        Assertions.assertEquals(replicaPlaceCount, ConnectionUtils.getVisualReplicaPlaces(stg).size());
         Assertions.assertEquals(signalTransitionCount, stg.getVisualSignalTransitions().size());
         Assertions.assertEquals(dummyTransitionCount, stg.getVisualDummyTransitions().size());
-        Assertions.assertEquals(producingArcCount, ConversionUtils.getVisualProducingArcs(stg).size());
-        Assertions.assertEquals(consumingArcCount, ConversionUtils.getVisualConsumingArcs(stg).size());
-        Assertions.assertEquals(readArcCount, ConversionUtils.getVisualReadArcs(stg).size());
+        Assertions.assertEquals(producingArcCount, ConnectionUtils.getVisualProducingArcs(stg).size());
+        Assertions.assertEquals(consumingArcCount, ConnectionUtils.getVisualConsumingArcs(stg).size());
+        Assertions.assertEquals(readArcCount, ConnectionUtils.getVisualReadArcs(stg).size());
     }
 
 }

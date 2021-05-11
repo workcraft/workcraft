@@ -9,6 +9,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -40,9 +41,9 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
             Node place = null;
-            if (ConversionUtils.isVisualConsumingArc(connection)) {
+            if (ConnectionUtils.isVisualConsumingArc(connection)) {
                 place = connection.getFirst();
-            } else if (ConversionUtils.isVisualProducingArc(connection)) {
+            } else if (ConnectionUtils.isVisualProducingArc(connection)) {
                 place = connection.getSecond();
             }
             result = place instanceof VisualPlace;
@@ -63,8 +64,8 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> connections = new HashSet<>();
-        connections.addAll(ConversionUtils.getVisualProducingArcs(model));
-        connections.addAll(ConversionUtils.getVisualConsumingArcs(model));
+        connections.addAll(ConnectionUtils.getVisualProducingArcs(model));
+        connections.addAll(ConnectionUtils.getVisualConsumingArcs(model));
         connections.retainAll(model.getSelection());
         return connections;
     }

@@ -12,7 +12,7 @@ import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fst.interop.SgFormat;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.utils.ConversionUtils;
+import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
@@ -82,7 +82,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             // Check for isolated marked places and temporary remove them is requested
             if (model instanceof PetriModel) {
                 PetriModel petri = (PetriModel) model;
-                HashSet<Place> isolatedPlaces = ConversionUtils.getIsolatedMarkedPlaces(petri);
+                HashSet<Place> isolatedPlaces = PetriUtils.getIsolatedMarkedPlaces(petri);
                 if (!isolatedPlaces.isEmpty()) {
                     String refStr = ReferenceHelper.getNodesAsWrapString(petri, isolatedPlaces);
                     String msg = "Petrify does not support isolated marked places.\n\n"
@@ -93,7 +93,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
                     }
                     we.captureMemento();
                     VisualModel visualModel = we.getModelEntry().getVisualModel();
-                    ConversionUtils.removeIsolatedMarkedPlaces(visualModel);
+                    PetriUtils.removeIsolatedMarkedVisualPlaces(visualModel);
                 }
             }
 

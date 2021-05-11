@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -34,7 +35,7 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        return ConversionUtils.isVisualConsumingArc(node) || ConversionUtils.isVisualProducingArc(node);
+        return ConnectionUtils.isVisualConsumingArc(node) || ConnectionUtils.isVisualProducingArc(node);
     }
 
     @Override
@@ -50,8 +51,8 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> arcs = new HashSet<>();
-        arcs.addAll(ConversionUtils.getVisualConsumingArcs(model));
-        arcs.addAll(ConversionUtils.getVisualProducingArcs(model));
+        arcs.addAll(ConnectionUtils.getVisualConsumingArcs(model));
+        arcs.addAll(ConnectionUtils.getVisualProducingArcs(model));
         Collection<VisualNode> selection = model.getSelection();
         arcs.retainAll(selection);
         return arcs;
