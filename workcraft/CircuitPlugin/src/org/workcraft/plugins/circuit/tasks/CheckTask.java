@@ -3,9 +3,13 @@ package org.workcraft.plugins.circuit.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.MutexUtils;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.*;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
@@ -16,7 +20,6 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
@@ -328,7 +331,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
     private void exposeMutexGrants(Stg stg, LinkedList<Pair<String, String>> grantPairs,
             Map<String, Signal.Type> grantTypes) {
 
-        for (Pair<String, String> grantPair: grantPairs) {
+        for (Pair<String, String> grantPair : grantPairs) {
             String g1SignalName = grantPair.getFirst();
             Signal.Type g1SignalType = stg.getSignalType(g1SignalName);
             if (g1SignalType != Signal.Type.OUTPUT) {
@@ -347,22 +350,21 @@ public class CheckTask implements Task<VerificationChainOutput> {
     private LinkedList<Pair<String, String>> getMutexGrantPairs(WorkspaceEntry we) {
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        Mutex mutex = CircuitSettings.parseMutexData();
-        if ((mutex != null) && (mutex.name != null)) {
-            for (FunctionComponent component: circuit.getFunctionComponents()) {
-                if (mutex.name.equals(component.getModule())) {
-                    Collection<Contact> outputs = component.getOutputs();
-                    if (outputs.size() == 2) {
-                        Iterator<Contact> iterator = outputs.iterator();
-                        Contact contact1 = iterator.next();
-                        Contact signal1 = CircuitUtils.findSignal(circuit, contact1, true);
-                        String name1 = circuit.getNodeReference(signal1);
-                        Contact contact2 = iterator.next();
-                        Contact signal2 = CircuitUtils.findSignal(circuit, contact2, true);
-                        String name2 = circuit.getNodeReference(signal2);
-                        Pair<String, String> grantPair = Pair.of(name1, name2);
-                        grantPairs.add(grantPair);
-                    }
+        Set<String> mutexModuleNames = MutexUtils.getMutexModuleNames();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            String moduleName = component.getModule();
+            if (mutexModuleNames.contains(moduleName)) {
+                Collection<Contact> outputs = component.getOutputs();
+                if (outputs.size() == 2) {
+                    Iterator<Contact> iterator = outputs.iterator();
+                    Contact contact1 = iterator.next();
+                    Contact signal1 = CircuitUtils.findSignal(circuit, contact1, true);
+                    String name1 = circuit.getNodeReference(signal1);
+                    Contact contact2 = iterator.next();
+                    Contact signal2 = CircuitUtils.findSignal(circuit, contact2, true);
+                    String name2 = circuit.getNodeReference(signal2);
+                    Pair<String, String> grantPair = Pair.of(name1, name2);
+                    grantPairs.add(grantPair);
                 }
             }
         }

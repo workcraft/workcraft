@@ -17,10 +17,8 @@ import org.workcraft.plugins.mpsat_synthesis.commands.ComplexGateSynthesisComman
 import org.workcraft.plugins.mpsat_synthesis.commands.GeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.mpsat_synthesis.commands.StandardCelementSynthesisCommand;
 import org.workcraft.plugins.mpsat_synthesis.commands.TechnologyMappingSynthesisCommand;
-import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -244,7 +242,7 @@ public class SynthesisCommandsTests {
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
         Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
         Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> srcMutexes = MutexUtils.getMutexPlaceReferences(srcStg);
+        Set<String> srcMutexes = org.workcraft.plugins.stg.utils.MutexUtils.getMutexPlaceReferences(srcStg);
         Set<String> srcPageRefs = new HashSet<>();
         for (PageNode page: Hierarchy.getChildrenOfType(srcStg.getRoot(), PageNode.class)) {
             boolean hasInputs = !srcStg.getSignalNames(Signal.Type.INPUT, page).isEmpty();
@@ -293,9 +291,10 @@ public class SynthesisCommandsTests {
 
     private Set<String> getMutexComponentReferences(Circuit circuit) {
         HashSet<String> result = new HashSet<>();
-        Mutex mutex = CircuitSettings.parseMutexData();
+        Set<String> mutexModuleNames = org.workcraft.plugins.circuit.utils.MutexUtils.getMutexModuleNames();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
-            if (mutex.name.equals(component.getModule())) {
+            String moduleName = component.getModule();
+            if (mutexModuleNames.contains(moduleName)) {
                 String ref = circuit.getNodeReference(component);
                 result.add(Identifier.truncateNamespaceSeparator(ref));
             }

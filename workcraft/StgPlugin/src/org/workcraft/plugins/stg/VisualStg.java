@@ -351,52 +351,8 @@ public class VisualStg extends AbstractVisualModel {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class);
     }
 
-    public HashSet<VisualConnection> getVisualConsumingArcs() {
-        HashSet<VisualConnection> connections = new HashSet<>();
-        for (VisualConnection connection: Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class)) {
-            if (connection instanceof VisualReadArc) continue;
-            if (connection.getSecond() instanceof VisualTransition) {
-                connections.add(connection);
-            }
-        }
-        return connections;
-    }
-
-    public HashSet<VisualConnection> getVisualProducerArcs() {
-        HashSet<VisualConnection> connections = new HashSet<>();
-        for (VisualConnection connection: Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class)) {
-            if (connection instanceof VisualReadArc) continue;
-            if (connection.getFirst() instanceof VisualTransition) {
-                connections.add(connection);
-            }
-        }
-        return connections;
-    }
-
-    public Collection<VisualReadArc> getVisualReadArcs() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualReadArc.class);
-    }
-
     public Collection<VisualImplicitPlaceArc> getVisualImplicitPlaceArcs() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualImplicitPlaceArc.class);
-    }
-
-    public VisualStgPlace getVisualPlace(StgPlace place) {
-        for (VisualStgPlace vp: getVisualPlaces()) {
-            if (vp.getReferencedComponent() == place) {
-                return vp;
-            }
-        }
-        return null;
-    }
-
-    public VisualTransition getVisualTransition(Transition transition) {
-        for (VisualTransition vt: getVisualTransitions()) {
-            if (vt.getReferencedComponent() == transition) {
-                return vt;
-            }
-        }
-        return null;
     }
 
     public String getSignalReference(VisualSignalTransition transition) {

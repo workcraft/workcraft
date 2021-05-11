@@ -44,7 +44,7 @@ public class ConversionUtils {
             VisualConnection consumingArc = dualArc.getFirst();
             VisualConnection producingArc = dualArc.getSecond();
             VisualReadArc readArc = ConversionUtils.convertDualArcToReadArc(visualModel, consumingArc, producingArc);
-            if (readArc instanceof VisualReadArc) {
+            if (readArc != null) {
                 readArcs.add(readArc);
             }
         }
@@ -99,8 +99,8 @@ public class ConversionUtils {
 
     public static VisualReadArc convertProducingArcToReadArc(VisualModel visualModel, VisualConnection connection) {
         VisualReadArc readArc = null;
-        VisualNode transition = null;
-        VisualNode placeOrReplica = null;
+        VisualNode transition;
+        VisualNode placeOrReplica;
         if (isVisualProducingArc(connection)) {
             transition = connection.getFirst();
             placeOrReplica = connection.getSecond();
@@ -137,8 +137,8 @@ public class ConversionUtils {
 
     public static VisualReadArc convertConsumingArcToReadArc(VisualModel visualModel, VisualConnection connection) {
         VisualReadArc readArc = null;
-        VisualNode placeOrReplica = null;
-        VisualNode transition = null;
+        VisualNode placeOrReplica;
+        VisualNode transition;
         if (isVisualConsumingArc(connection)) {
             placeOrReplica = connection.getFirst();
             if (placeOrReplica instanceof VisualReplicaPlace) {
@@ -172,7 +172,7 @@ public class ConversionUtils {
         return readArc;
     }
 
-    public static Pair<VisualConnection, VisualConnection> converReadArcTotDualArc(VisualModel visualModel, VisualReadArc readArc) {
+    public static Pair<VisualConnection, VisualConnection> convertReadArcTotDualArc(VisualModel visualModel, VisualReadArc readArc) {
         VisualNode first = readArc.getFirst();
         VisualNode second = readArc.getSecond();
         VisualConnection consumingArc = null;
@@ -359,12 +359,12 @@ public class ConversionUtils {
                 if (replica instanceof VisualReplicaPlace) {
                     VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
                     VisualConnection connection = visualModel.getConnection(transition, replicaPlace);
-                    found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
+                    found = (connection != null) && !(connection instanceof VisualReadArc);
                 }
             }
             if (!found) {
                 VisualConnection connection = visualModel.getConnection(transition, place);
-                found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
+                found = (connection != null) && !(connection instanceof VisualReadArc);
             }
         }
         return found;
@@ -388,12 +388,12 @@ public class ConversionUtils {
                 if (replica instanceof VisualReplicaPlace) {
                     VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
                     VisualConnection connection = visualModel.getConnection(replicaPlace, transition);
-                    found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
+                    found = (connection != null) && !(connection instanceof VisualReadArc);
                 }
             }
             if (!found) {
                 VisualConnection connection = visualModel.getConnection(place, transition);
-                found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
+                found = (connection != null) && !(connection instanceof VisualReadArc);
             }
         }
         return found;
@@ -411,7 +411,7 @@ public class ConversionUtils {
         }
         if ((predTransition != null) && (succTransition != null)) {
             VisualConnection connection = visualModel.getConnection(predTransition, succTransition);
-            found = connection instanceof VisualConnection;
+            found = connection != null;
         }
         return found;
     }

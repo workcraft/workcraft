@@ -63,7 +63,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
     public void transformNode(VisualModel model, VisualNode node) {
         if (node instanceof VisualReadArc) {
             VisualReadArc readArc = (VisualReadArc) node;
-            Pair<VisualConnection, VisualConnection> dualArc = ConversionUtils.converReadArcTotDualArc(model, readArc);
+            Pair<VisualConnection, VisualConnection> dualArc = ConversionUtils.convertReadArcTotDualArc(model, readArc);
             VisualConnection consumingArc = dualArc.getFirst();
             if (consumingArc != null) {
                 model.addToSelection(consumingArc);

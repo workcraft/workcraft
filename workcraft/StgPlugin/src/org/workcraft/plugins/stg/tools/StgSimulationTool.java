@@ -591,7 +591,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             return;
         }
 
-        VisualTransition vt = stg.getVisualTransition(t);
+        VisualTransition vt = stg.getVisualComponent(t, VisualTransition.class);
         if (vt == null) {
             return;
         }
