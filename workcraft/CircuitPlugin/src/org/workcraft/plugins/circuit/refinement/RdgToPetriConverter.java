@@ -14,6 +14,7 @@ import java.awt.*;
 import java.io.File;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class RdgToPetriConverter {
 
@@ -62,15 +63,16 @@ public class RdgToPetriConverter {
         }
     }
 
-    private VisualPlace createInitialPlace() {
-        VisualPlace place = petri.createPlace(null, null);
-        place.getReferencedComponent().setTokens(1);
-        for (VisualTransition transition : petri.getVisualTransitions()) {
-            if (petri.getPreset(transition).isEmpty()) {
-                connectIfPossible(petri, place, transition);
-            }
+    private void createInitialPlace() {
+        Collection<VisualTransition> topTransitions = petri.getVisualTransitions().stream()
+                .filter(transition -> petri.getPreset(transition).isEmpty())
+                .collect(Collectors.toSet());
+
+        if (!topTransitions.isEmpty()) {
+            VisualPlace place = petri.createPlace(null, null);
+            place.getReferencedComponent().setTokens(1);
+            topTransitions.forEach(transition -> connectIfPossible(petri, place, transition));
         }
-        return place;
     }
 
     public RefinementDependencyGraph getRdg() {
@@ -86,7 +88,6 @@ public class RdgToPetriConverter {
             try {
                 model.connect(fromNode, toNode);
             } catch (InvalidConnectionException e) {
-                throw new RuntimeException(e);
             }
         }
     }

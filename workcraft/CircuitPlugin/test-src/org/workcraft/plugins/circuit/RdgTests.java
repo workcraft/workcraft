@@ -67,7 +67,10 @@ public class RdgTests {
         VisualPetri petri = converter.getPetri();
         Assertions.assertEquals(vertexCount, Hierarchy.getDescendantsOfType(petri.getRoot(), VisualPage.class).size());
         Assertions.assertEquals(vertexCount, petri.getVisualTransitions().size());
-        Assertions.assertEquals(edgeCount + 1, petri.getVisualPlaces().size());
+
+        int placeCount = noCycles ? edgeCount + 1 : edgeCount;
+        Assertions.assertEquals(placeCount, petri.getVisualPlaces().size());
+
         Assertions.assertEquals(edgeCount, petri.getVisualPlaces().stream()
                 .filter(place -> petri.getPreset(place).size() == 1)
                 .count());
