@@ -26,6 +26,10 @@ public class MpsatTask implements Task<MpsatOutput> {
     private final VerificationParameters verificationParameters;
     private final File directory;
 
+    public MpsatTask(File netFile, VerificationParameters verificationParameters, File directory) {
+        this(null, netFile, verificationParameters, directory);
+    }
+
     public MpsatTask(File unfoldingFile, File netFile, VerificationParameters verificationParameters, File directory) {
         this.unfoldingFile = unfoldingFile;
         this.netFile = netFile;
@@ -48,6 +52,11 @@ public class MpsatTask implements Task<MpsatOutput> {
         // Built-in arguments
         command.addAll(verificationParameters.getMpsatArguments(directory));
 
+        // Global arguments
+        if (MpsatVerificationSettings.getReplicateSelfloopPlaces()) {
+            command.add("-l");
+        }
+
         // Extra arguments (should go before the file parameters)
         String extraArgs = MpsatVerificationSettings.getArgs();
         if (MpsatVerificationSettings.getAdvancedMode()) {
@@ -62,6 +71,8 @@ public class MpsatTask implements Task<MpsatOutput> {
         // Input file
         if (unfoldingFile != null) {
             command.add(unfoldingFile.getAbsolutePath());
+        } else {
+            command.add(netFile.getAbsolutePath());
         }
 
         // Output file

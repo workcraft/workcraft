@@ -23,6 +23,9 @@ public class MpsatVerificationSettingsTests {
         Assertions.assertEquals(Config.toString(MpsatVerificationSettings.getCommand()),
                 framework.getConfigVar(prefix + ".command", false));
 
+        Assertions.assertEquals(Config.toString(MpsatVerificationSettings.getReplicateSelfloopPlaces()),
+                framework.getConfigVar(prefix + ".replicateSelfloopPlaces", false));
+
         Assertions.assertEquals(Config.toString(MpsatVerificationSettings.getSolutionMode()),
                 framework.getConfigVar(prefix + ".solutionMode", false));
 

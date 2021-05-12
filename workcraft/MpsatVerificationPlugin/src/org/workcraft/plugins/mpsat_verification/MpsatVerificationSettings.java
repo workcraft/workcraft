@@ -17,6 +17,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final String prefix = "Tools.mpsatVerification";
 
     private static final String keyCommand = prefix + ".command";
+    private static final String keyReplicateSelfloopPlaces = prefix + ".replicateSelfloopPlaces";
     private static final String keySolutionMode = prefix + ".solutionMode";
     private static final String keyArgs = prefix + ".args";
     private static final String keyAdvancedMode = prefix + ".advancedMode";
@@ -27,6 +28,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final String keyConformationReportStyle = prefix + ".conformationReportStyle";
 
     private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "mpsat");
+    private static final boolean defaultReplicateSelfloopPlaces = true;
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;
@@ -37,6 +39,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final ConformationReportStyle defaultConformationReportStyle = ConformationReportStyle.TABLE;
 
     private static String command = defaultCommand;
+    private static boolean replicateSelfloopPlaces = defaultReplicateSelfloopPlaces;
     private static SolutionMode solutionMode = defaultSolutionMode;
     private static String args = defaultArgs;
     private static Boolean advancedMode = defaultAdvancedMode;
@@ -51,6 +54,11 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
                 "MPSat command for verification",
                 MpsatVerificationSettings::setCommand,
                 MpsatVerificationSettings::getCommand));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Replicate places with multiple self-loops (-l parameter)",
+                MpsatVerificationSettings::setReplicateSelfloopPlaces,
+                MpsatVerificationSettings::getReplicateSelfloopPlaces));
 
         properties.add(new PropertyDeclaration<>(SolutionMode.class,
                 "Solution mode",
@@ -101,6 +109,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     @Override
     public void load(Config config) {
         setCommand(config.getString(keyCommand, defaultCommand));
+        setReplicateSelfloopPlaces(config.getBoolean(keyReplicateSelfloopPlaces, defaultReplicateSelfloopPlaces));
         setSolutionMode(config.getEnum(keySolutionMode, SolutionMode.class, defaultSolutionMode));
         setArgs(config.getString(keyArgs, defaultArgs));
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
@@ -114,6 +123,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     @Override
     public void save(Config config) {
         config.set(keyCommand, getCommand());
+        config.setBoolean(keyReplicateSelfloopPlaces, getReplicateSelfloopPlaces());
         config.setEnum(keySolutionMode, getSolutionMode());
         config.set(keyArgs, getArgs());
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
@@ -137,12 +147,12 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         command = value;
     }
 
-    public static String getArgs() {
-        return args;
+    public static boolean getReplicateSelfloopPlaces() {
+        return replicateSelfloopPlaces;
     }
 
-    public static void setArgs(String value) {
-        args = value;
+    public static void setReplicateSelfloopPlaces(boolean value) {
+        replicateSelfloopPlaces = value;
     }
 
     public static void setSolutionMode(SolutionMode value) {
@@ -155,6 +165,14 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
 
     public static int getSolutionCount() {
         return (solutionMode == SolutionMode.ALL) ? 10 : 1;
+    }
+
+    public static String getArgs() {
+        return args;
+    }
+
+    public static void setArgs(String value) {
+        args = value;
     }
 
     public static Boolean getAdvancedMode() {
