@@ -24,10 +24,7 @@ import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
 import org.workcraft.serialisation.*;
 import org.workcraft.shared.DataAccumulator;
-import org.workcraft.workspace.FileFilters;
-import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Resource;
-import org.workcraft.workspace.Stamp;
+import org.workcraft.workspace.*;
 import org.xml.sax.SAXException;
 
 import java.io.*;
@@ -107,12 +104,17 @@ public final class WorkUtils {
     }
 
     public static ModelEntry loadModel(File file) throws DeserialisationException {
+        Framework framework = Framework.getInstance();
+        WorkspaceEntry we = framework.getWorkspace().getWork(file);
+        if (we != null) {
+            return cloneModel(we.getModelEntry());
+        }
         ModelEntry me = null;
         if (FileUtils.checkAvailability(file, null, false)) {
             // Load (from *.work) or import (other extensions) work.
             if (FileFilters.isWorkFile(file)) {
                 try {
-                    CompatibilityManager cm = Framework.getInstance().getCompatibilityManager();
+                    CompatibilityManager cm = framework.getCompatibilityManager();
                     InputStream is = cm.process(file);
                     me = loadModel(is);
                     String base = FileUtils.getBasePath(file);
