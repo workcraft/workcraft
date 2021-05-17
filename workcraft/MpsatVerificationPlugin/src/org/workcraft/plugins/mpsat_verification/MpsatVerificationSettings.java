@@ -17,6 +17,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final String prefix = "Tools.mpsatVerification";
 
     private static final String keyCommand = prefix + ".command";
+    private static final String keyReplicateSelfloopPlaces = prefix + ".replicateSelfloopPlaces";
     private static final String keySolutionMode = prefix + ".solutionMode";
     private static final String keyArgs = prefix + ".args";
     private static final String keyAdvancedMode = prefix + ".advancedMode";
@@ -25,8 +26,11 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final String keyDebugReach = prefix + ".debugReach";
     private static final String keyDebugCores = prefix + ".debugCores";
     private static final String keyConformationReportStyle = prefix + ".conformationReportStyle";
+    private static final String keyLtl2tgbaCommand = prefix + ".ltl2tgbaCommand";
+    private static final String keyShowSpotInMenu = prefix + ".showSpotInMenu";
 
     private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "mpsat");
+    private static final boolean defaultReplicateSelfloopPlaces = true;
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;
@@ -35,8 +39,11 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final Boolean defaultDebugReach = false;
     private static final Boolean defaultDebugCores = false;
     private static final ConformationReportStyle defaultConformationReportStyle = ConformationReportStyle.TABLE;
+    private static final String defaultLtl2tgbaCommand = BackendUtils.getToolPath("Spot", "ltl2tgba");
+    private static final Boolean defaultShowSpotInMenu = false;
 
     private static String command = defaultCommand;
+    private static boolean replicateSelfloopPlaces = defaultReplicateSelfloopPlaces;
     private static SolutionMode solutionMode = defaultSolutionMode;
     private static String args = defaultArgs;
     private static Boolean advancedMode = defaultAdvancedMode;
@@ -45,12 +52,19 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static Boolean debugReach = defaultDebugReach;
     private static Boolean debugCores = defaultDebugCores;
     private static ConformationReportStyle conformationReportStyle = defaultConformationReportStyle;
+    private static String ltl2tgbaCommand = defaultLtl2tgbaCommand;
+    private static Boolean showSpotInMenu = defaultShowSpotInMenu;
 
     static {
         properties.add(new PropertyDeclaration<>(String.class,
                 "MPSat command for verification",
                 MpsatVerificationSettings::setCommand,
                 MpsatVerificationSettings::getCommand));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Replicate places with multiple self-loops (-l parameter)",
+                MpsatVerificationSettings::setReplicateSelfloopPlaces,
+                MpsatVerificationSettings::getReplicateSelfloopPlaces));
 
         properties.add(new PropertyDeclaration<>(SolutionMode.class,
                 "Solution mode",
@@ -91,6 +105,16 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
                 "Report style for conformation violation",
                 MpsatVerificationSettings::setConformationReportStyle,
                 MpsatVerificationSettings::getConformationReportStyle));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                "Building B\u00FCchi automaton command",
+                MpsatVerificationSettings::setLtl2tgbaCommand,
+                MpsatVerificationSettings::getLtl2tgbaCommand));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Enable SPOT input (experimental)",
+                MpsatVerificationSettings::setShowSpotInMenu,
+                MpsatVerificationSettings::getShowSpotInMenu));
     }
 
     @Override
@@ -101,6 +125,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     @Override
     public void load(Config config) {
         setCommand(config.getString(keyCommand, defaultCommand));
+        setReplicateSelfloopPlaces(config.getBoolean(keyReplicateSelfloopPlaces, defaultReplicateSelfloopPlaces));
         setSolutionMode(config.getEnum(keySolutionMode, SolutionMode.class, defaultSolutionMode));
         setArgs(config.getString(keyArgs, defaultArgs));
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
@@ -109,11 +134,14 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
         setDebugCores(config.getBoolean(keyDebugCores, defaultDebugCores));
         setConformationReportStyle(config.getEnum(keyConformationReportStyle, ConformationReportStyle.class, defaultConformationReportStyle));
+        setLtl2tgbaCommand(config.getString(keyLtl2tgbaCommand, defaultLtl2tgbaCommand));
+        setShowSpotInMenu(config.getBoolean(keyShowSpotInMenu, defaultShowSpotInMenu));
     }
 
     @Override
     public void save(Config config) {
         config.set(keyCommand, getCommand());
+        config.setBoolean(keyReplicateSelfloopPlaces, getReplicateSelfloopPlaces());
         config.setEnum(keySolutionMode, getSolutionMode());
         config.set(keyArgs, getArgs());
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
@@ -122,6 +150,8 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         config.setBoolean(keyDebugReach, getDebugReach());
         config.setBoolean(keyDebugCores, getDebugCores());
         config.setEnum(keyConformationReportStyle, getConformationReportStyle());
+        config.set(keyLtl2tgbaCommand, getLtl2tgbaCommand());
+        config.setBoolean(keyShowSpotInMenu, getShowSpotInMenu());
     }
 
     @Override
@@ -137,12 +167,12 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         command = value;
     }
 
-    public static String getArgs() {
-        return args;
+    public static boolean getReplicateSelfloopPlaces() {
+        return replicateSelfloopPlaces;
     }
 
-    public static void setArgs(String value) {
-        args = value;
+    public static void setReplicateSelfloopPlaces(boolean value) {
+        replicateSelfloopPlaces = value;
     }
 
     public static void setSolutionMode(SolutionMode value) {
@@ -155,6 +185,14 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
 
     public static int getSolutionCount() {
         return (solutionMode == SolutionMode.ALL) ? 10 : 1;
+    }
+
+    public static String getArgs() {
+        return args;
+    }
+
+    public static void setArgs(String value) {
+        args = value;
     }
 
     public static Boolean getAdvancedMode() {
@@ -203,6 +241,22 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
 
     public static ConformationReportStyle getConformationReportStyle() {
         return conformationReportStyle;
+    }
+
+    public static String getLtl2tgbaCommand() {
+        return ltl2tgbaCommand;
+    }
+
+    public static void setLtl2tgbaCommand(String value) {
+        ltl2tgbaCommand = value;
+    }
+
+    public static boolean getShowSpotInMenu() {
+        return showSpotInMenu;
+    }
+
+    public static void setShowSpotInMenu(boolean value) {
+        showSpotInMenu = value;
     }
 
 }

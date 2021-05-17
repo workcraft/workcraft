@@ -15,6 +15,7 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
     private static final String prefix = "Tools.mpsatSynthesis";
 
     private static final String keyCommand = prefix + ".command";
+    private static final String keyReplicateSelfloopPlaces = prefix + ".replicateSelfloopPlaces";
     private static final String keyArgs = prefix + ".args";
     private static final String keyAdvancedMode = prefix + ".advancedMode";
     private static final String keyPrintStdout = prefix + ".printStdout";
@@ -22,6 +23,7 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
     private static final String keyOpenSynthesisStg = prefix + ".openSynthesisStg";
 
     private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "mpsat");
+    private static final boolean defaultReplicateSelfloopPlaces = true;
     private static final String defaultArgs = "";
     private static final boolean defaultAdvancedMode = false;
     private static final boolean defaultPrintStdout = true;
@@ -29,6 +31,7 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
     private static final boolean defaultOpenSynthesisStg = false;
 
     private static String command = defaultCommand;
+    private static boolean replicateSelfloopPlaces = defaultReplicateSelfloopPlaces;
     private static String args = defaultArgs;
     private static boolean advancedMode = defaultAdvancedMode;
     private static boolean printStdout = defaultPrintStdout;
@@ -40,6 +43,11 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
                 "MPSat command for synthesis",
                 MpsatSynthesisSettings::setCommand,
                 MpsatSynthesisSettings::getCommand));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Replicate places with multiple self-loops (-l parameter)",
+                MpsatSynthesisSettings::setReplicateSelfloopPlaces,
+                MpsatSynthesisSettings::getReplicateSelfloopPlaces));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "Additional parameters",
@@ -75,6 +83,7 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
     @Override
     public void load(Config config) {
         setCommand(config.getString(keyCommand, defaultCommand));
+        setReplicateSelfloopPlaces(config.getBoolean(keyReplicateSelfloopPlaces, defaultReplicateSelfloopPlaces));
         setArgs(config.getString(keyArgs, defaultArgs));
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
@@ -85,6 +94,7 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
     @Override
     public void save(Config config) {
         config.set(keyCommand, getCommand());
+        config.setBoolean(keyReplicateSelfloopPlaces, getReplicateSelfloopPlaces());
         config.set(keyArgs, getArgs());
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
         config.setBoolean(keyPrintStdout, getPrintStdout());
@@ -103,6 +113,14 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
 
     public static void setCommand(String value) {
         command = value;
+    }
+
+    public static boolean getReplicateSelfloopPlaces() {
+        return replicateSelfloopPlaces;
+    }
+
+    public static void setReplicateSelfloopPlaces(boolean value) {
+        replicateSelfloopPlaces = value;
     }
 
     public static String getArgs() {

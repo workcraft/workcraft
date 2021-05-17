@@ -22,7 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public class MpsatOutputReader {
+public class SolutionReader {
 
     private static final String SOLUTION_ELEMENT = "solution";
     private static final String TRACE_ELEMENT = "trace";
@@ -37,11 +37,11 @@ public class MpsatOutputReader {
     private final String message;
     private final List<Solution> solutions;
 
-    public MpsatOutputReader(File file) throws ParserConfigurationException, SAXException, IOException {
+    public SolutionReader(File file) throws ParserConfigurationException, SAXException, IOException {
         this(new FileInputStream(file));
     }
 
-    public MpsatOutputReader(InputStream is) throws ParserConfigurationException, IOException, SAXException {
+    public SolutionReader(InputStream is) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         DocumentBuilder db = dbf.newDocumentBuilder();
         Document doc = db.parse(is);

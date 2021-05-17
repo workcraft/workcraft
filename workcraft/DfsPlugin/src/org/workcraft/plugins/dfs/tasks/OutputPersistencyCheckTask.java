@@ -10,8 +10,6 @@ import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.*;
@@ -41,7 +39,7 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
         try {
             VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             DfsToStgConverter converter = new DfsToStgConverter(dfs);
-            StgModel model = (StgModel) converter.getStgModel().getMathModel();
+            StgModel model = converter.getStgModel().getMathModel();
             Exporter exporter = ExportUtils.chooseBestExporter(model, format);
             if (exporter == null) {
                 throw new NoExporterException(model, format);
@@ -59,46 +57,32 @@ public class OutputPersistencyCheckTask implements Task<VerificationChainOutput>
                     return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        exportResult, null, null, null, verificationParameters));
+                        exportResult, null, null, verificationParameters));
             }
             monitor.progressUpdate(0.20);
 
-            File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = taskManager.execute(
-                    punfTask, "Unfolding .g", mon);
-
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        exportResult, null, punfResult, null, verificationParameters));
-            }
-            monitor.progressUpdate(0.40);
-
-            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
+            MpsatTask mpsatTask = new MpsatTask(netFile, verificationParameters, directory);
             Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
-                    mpsatTask, "Running semimodularity checking [MPSat]", mon);
+                    mpsatTask, "Running output persistency check [MPSat]", mon);
 
             if (!mpsatResult.isSuccess()) {
                 if (mpsatResult.isCancel()) {
                     return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        exportResult, null, punfResult, mpsatResult, verificationParameters));
+                        exportResult, null, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.90);
 
             if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
-                        exportResult, null, punfResult, mpsatResult, verificationParameters,
+                        exportResult, null, mpsatResult, verificationParameters,
                         "Dataflow is not output-persistent"));
             }
             monitor.progressUpdate(1.0);
 
             return Result.success(new VerificationChainOutput(
-                    exportResult, null, punfResult, mpsatResult, verificationParameters,
+                    exportResult, null, mpsatResult, verificationParameters,
                     "Dataflow is output-persistent"));
 
         } catch (Throwable e) {

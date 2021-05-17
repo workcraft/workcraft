@@ -80,6 +80,11 @@ public class MpsatTask implements Task<MpsatOutput> {
         // Built-in arguments
         command.addAll(mode.getMpsatArguments(modeParameter));
 
+        // Global arguments
+        if (MpsatSynthesisSettings.getReplicateSelfloopPlaces()) {
+            command.add("-l");
+        }
+
         // Extra arguments (should go before the file parameters)
         String extraArgs = MpsatSynthesisSettings.getArgs();
         if (MpsatSynthesisSettings.getAdvancedMode()) {

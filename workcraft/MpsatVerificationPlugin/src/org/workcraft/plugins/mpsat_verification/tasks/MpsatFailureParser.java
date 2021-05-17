@@ -1,4 +1,4 @@
-package org.workcraft.plugins.punf.tasks;
+package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -7,7 +7,7 @@ import org.workcraft.types.Pair;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PunfOutputParser {
+public class MpsatFailureParser {
 
     public enum Cause {
         INCONSISTENT("inconsistent"),
@@ -57,8 +57,7 @@ public class PunfOutputParser {
             "Error: the net contains (.*) transition\\(s\\) with empty preset: (.*)",
             Pattern.UNIX_LINES);
 
-    public PunfOutputParser(PunfOutput output) {
-        String stderr = output == null ? "" : output.getStderrString();
+    public MpsatFailureParser(String stderr) {
         Matcher inconsistentAlternateMatcher = INCONSISTENT_ALTERNATE_PATTERN.matcher(stderr);
         Matcher inconsistentConflictMatcher = INCONSISTENT_CONFLICT_PATTERN.matcher(stderr);
         Matcher inconsistentInitialMatcher = INCONSISTENT_INITIAL_PATTERN.matcher(stderr);

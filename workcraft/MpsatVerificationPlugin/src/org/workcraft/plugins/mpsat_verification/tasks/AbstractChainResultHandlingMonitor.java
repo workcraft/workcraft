@@ -3,8 +3,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfOutputParser;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.ExternalProcessOutput;
@@ -56,27 +54,32 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
         T chainOutput = chainResult.getPayload();
         Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
-        Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
-
+        Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
+        if ((mpsatResult == null) && (chainOutput instanceof VerificationChainOutput)) {
+            VerificationChainOutput verificationChainOutput = (VerificationChainOutput) chainOutput;
+            mpsatResult = verificationChainOutput.getMpsatResult();
+        }
         // Handle partial failure while building unfolding prefix (e.g. consistency and safeness violations)
-        if ((punfResult != null) && (punfResult.isFailure())) {
-            PunfOutput punfOutput = punfResult.getPayload();
-            PunfOutputParser punfOutputParser = new PunfOutputParser(punfOutput);
-            Pair<Solution, PunfOutputParser.Cause> punfOutcome = punfOutputParser.getOutcome();
-            if (punfOutcome != null) {
+        if ((mpsatResult != null) && (mpsatResult.isFailure())) {
+            MpsatOutput mpsatOutput = mpsatResult.getPayload();
+            Pair<Solution, MpsatFailureParser.Cause> mpsatFailureOutcome = mpsatOutput == null ? null
+                    : new MpsatFailureParser(mpsatOutput.getStderrString()).getOutcome();
+
+            if (mpsatFailureOutcome != null) {
                 ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
                 PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
 
-                Solution solution = punfOutcome.getFirst();
-                PunfOutputParser.Cause cause = punfOutcome.getSecond();
+                Solution solution = mpsatFailureOutcome.getFirst();
+                MpsatFailureParser.Cause cause = mpsatFailureOutcome.getSecond();
 
                 MpsatOutput mpsatFakeOutput = new MpsatOutput(new ExternalProcessOutput(0),
-                        ReachUtils.getConsistencyParameters(), punfOutput.getInputFile(), Collections.singletonList(solution));
+                        ReachUtils.getConsistencyParameters(), mpsatOutput.getNetFile(), mpsatOutput.getUnfoldingFile(),
+                        Collections.singletonList(solution));
 
                 ReachabilityOutputInterpreter interpreter = new ReachabilityOutputInterpreter(we,
                         exportOutput, pcompOutput, mpsatFakeOutput, isInteractive());
 
-                if ((cause == PunfOutputParser.Cause.INCONSISTENT) && isConsistencyCheckMode(chainOutput)) {
+                if ((cause == MpsatFailureParser.Cause.INCONSISTENT) && isConsistencyCheckMode(chainOutput)) {
                     return interpreter.interpret();
                 } else {
                     if (canProcessSolution()) {
@@ -109,7 +112,9 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
             errorMessage += ERROR_CAUSE_PREFIX + genericCause.getMessage();
         } else {
-            Result<? extends MpsatOutput> mpsatResult = getFailedMpsatResult(chainOutput);
+            if ((mpsatResult == null) || !mpsatResult.isFailure()) {
+                mpsatResult = getFailedMpsatResult(chainOutput);
+            }
             if ((exportResult != null) && (exportResult.isFailure())) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 Throwable exportCause = exportResult.getCause();
@@ -126,18 +131,6 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> 
                     if (pcompOutput != null) {
                         String pcompError = pcompOutput.getErrorsHeadAndTail();
                         errorMessage += ERROR_CAUSE_PREFIX + pcompError;
-                    }
-                }
-            } else if ((punfResult != null) && (punfResult.isFailure())) {
-                errorMessage += "\n\nPunf could not build the unfolding prefix.";
-                Throwable punfCause = punfResult.getCause();
-                if (punfCause != null) {
-                    errorMessage += ERROR_CAUSE_PREFIX + punfCause.getMessage();
-                } else {
-                    PunfOutput punfOutput = punfResult.getPayload();
-                    if (punfOutput != null) {
-                        String punfErrorMessage = punfOutput.getErrorsHeadAndTail();
-                        errorMessage += ERROR_CAUSE_PREFIX + punfErrorMessage;
                     }
                 }
             } else if ((mpsatResult != null) && (mpsatResult.isFailure())) {

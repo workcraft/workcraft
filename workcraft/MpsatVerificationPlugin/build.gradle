@@ -3,7 +3,6 @@ dependencies {
     implementation project(':PetriPlugin')
     implementation project(':StgPlugin')
     implementation project(':PcompPlugin')
-    implementation project(':PunfPlugin')
 }
 
 ext.excludeFromCoverage = [

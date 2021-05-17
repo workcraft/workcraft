@@ -10,8 +10,6 @@ import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.utils.PcompUtils;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -69,12 +67,12 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                     return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        devExportResult, null, null, null, preparationParameters));
+                        devExportResult, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.10);
 
             // Generating system .g for custom property check (only if needed)
-            File sysStgFile = null;
+            File sysStgFile;
             Result<? extends PcompOutput>  pcompResult = null;
             if (envStg == null) {
                 sysStgFile = devStgFile;
@@ -86,7 +84,7 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                         return Result.cancel();
                     }
                     return Result.failure(new VerificationChainOutput(
-                            envExportResult, null, null, null, preparationParameters));
+                            envExportResult, null, null, preparationParameters));
                 }
 
                 // Generating .g for the whole system (circuit and environment)
@@ -96,29 +94,14 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                         return Result.cancel();
                     }
                     return Result.failure(new VerificationChainOutput(
-                            devExportResult, pcompResult, null, null, preparationParameters));
+                            devExportResult, pcompResult, null, preparationParameters));
                 }
                 sysStgFile = pcompResult.getPayload().getOutputFile();
             }
             monitor.progressUpdate(0.20);
 
-            // Generate unfolding (only if needed)
-            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
-            SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
-
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        devExportResult, pcompResult, punfResult, null, preparationParameters));
-            }
-            monitor.progressUpdate(0.40);
-
             // Check custom property (if requested)
-            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, sysStgFile, verificationParameters, directory);
+            MpsatTask mpsatTask = new MpsatTask(sysStgFile, verificationParameters, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends MpsatOutput> mpsatResult = manager.execute(
                     mpsatTask, "Running custom property check [MPSat]", mpsatMonitor);
@@ -128,20 +111,20 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
                     return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters));
+                        devExportResult, pcompResult, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.50);
 
             if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
-                        devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
+                        devExportResult, pcompResult, mpsatResult, verificationParameters,
                         "Property is violated after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
             return Result.success(new VerificationChainOutput(
-                    devExportResult, pcompResult, punfResult, mpsatResult, verificationParameters,
+                    devExportResult, pcompResult, mpsatResult, verificationParameters,
                     "Property holds"));
 
         } catch (Throwable e) {

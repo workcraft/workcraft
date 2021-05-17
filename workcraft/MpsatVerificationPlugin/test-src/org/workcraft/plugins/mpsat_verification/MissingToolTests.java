@@ -7,7 +7,6 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.CombinedVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -25,23 +24,14 @@ public class MissingToolTests {
     @Test
     public void testMissingPcompVerification() throws DeserialisationException {
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp-missing"));
-        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
         testMissingTool();
     }
 
-    @Test
-    public void testMissingPunfVerification() throws DeserialisationException {
-        PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
-        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf-missing"));
-        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
-        testMissingTool();
-    }
 
     @Test
     public void testMissingMpsatVerification() throws DeserialisationException {
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
-        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat-missing"));
         testMissingTool();
     }

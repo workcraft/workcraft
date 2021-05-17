@@ -9,8 +9,6 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
@@ -55,7 +53,6 @@ public class ConformationTask implements Task<VerificationChainOutput> {
             chain.andOnSuccess(payload -> exportInterfaces(payload, monitor, directory), 0.1);
             chain.andOnSuccess(payload -> composeInterfaces(payload, monitor, directory), 0.2);
             chain.andOnSuccess(payload -> exportComposition(payload, monitor, directory), 0.3);
-            chain.andOnSuccess(payload -> unfoldComposition(payload, monitor, directory), 0.5);
             chain.andOnSuccess(payload -> verifyProperty(payload, monitor, directory), 1.0);
             chain.andThen(() -> FileUtils.deleteOnExitRecursively(directory));
             result = chain.process();
@@ -176,24 +173,12 @@ public class ConformationTask implements Task<VerificationChainOutput> {
                 .applyVerificationParameters(verificationParameters));
     }
 
-    private Result<? extends VerificationChainOutput> unfoldComposition(VerificationChainOutput payload,
-            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
-
-        File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
-        PunfTask punfTask = new PunfTask(modSysStgFile, directory);
-        Result<? extends PunfOutput> punfResult = Framework.getInstance().getTaskManager().execute(
-                punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
-
-        return new Result<>(punfResult.getOutcome(), payload.applyPunfResult(punfResult));
-    }
-
     private Result<? extends VerificationChainOutput> verifyProperty(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
-        File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
         File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
         VerificationParameters verificationParameters = payload.getVerificationParameters();
-        MpsatTask mpsatTask = new MpsatTask(unfoldingFile, modSysStgFile, verificationParameters, directory);
+        MpsatTask mpsatTask = new MpsatTask(modSysStgFile, verificationParameters, directory);
         Result<? extends MpsatOutput>  mpsatResult = Framework.getInstance().getTaskManager().execute(
                 mpsatTask, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
 

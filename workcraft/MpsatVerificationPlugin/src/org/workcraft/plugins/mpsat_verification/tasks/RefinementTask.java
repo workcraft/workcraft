@@ -11,8 +11,6 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
@@ -92,7 +90,6 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             chain.andOnSuccess(payload -> exportInterfaces(payload, monitor, directory), 0.1);
             chain.andOnSuccess(payload -> composeInterfaces(payload, monitor, directory), 0.2);
             chain.andOnSuccess(payload -> exportComposition(payload, monitor, directory), 0.3);
-            chain.andOnSuccess(payload -> unfoldComposition(payload, monitor, directory), 0.5);
             chain.andOnSuccess(payload -> verifyProperty(payload, monitor, directory), 1.0);
             chain.andThen(() -> FileUtils.deleteOnExitRecursively(directory));
             result = chain.process();
@@ -291,24 +288,12 @@ public class RefinementTask implements Task<VerificationChainOutput> {
                 reach, true);
     }
 
-    private Result<? extends VerificationChainOutput> unfoldComposition(VerificationChainOutput payload,
-            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
-
-        File stgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
-        PunfTask punfTask = new PunfTask(stgFile, directory);
-        Result<? extends PunfOutput> result = Framework.getInstance().getTaskManager().execute(
-                punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
-
-        return new Result<>(result.getOutcome(), payload.applyPunfResult(result));
-    }
-
     private Result<? extends VerificationChainOutput> verifyProperty(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
-        File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
         File compositionStgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
         VerificationParameters verificationParameters = payload.getVerificationParameters();
-        MpsatTask mpsatTask = new MpsatTask(unfoldingFile, compositionStgFile, verificationParameters, directory);
+        MpsatTask mpsatTask = new MpsatTask(compositionStgFile, verificationParameters, directory);
         Result<? extends MpsatOutput>  result = Framework.getInstance().getTaskManager().execute(
                 mpsatTask, "Running refinement check [MPSat]", new SubtaskMonitor<>(monitor));
 

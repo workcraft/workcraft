@@ -23,6 +23,9 @@ public class MpsatSynthesisSettingsTests {
         Assertions.assertEquals(Config.toString(MpsatSynthesisSettings.getCommand()),
                 framework.getConfigVar(prefix + ".command", false));
 
+        Assertions.assertEquals(Config.toString(MpsatSynthesisSettings.getReplicateSelfloopPlaces()),
+                framework.getConfigVar(prefix + ".replicateSelfloopPlaces", false));
+
         Assertions.assertEquals(Config.toString(MpsatSynthesisSettings.getArgs()),
                 framework.getConfigVar(prefix + ".args", false));
 

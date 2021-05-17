@@ -9,7 +9,6 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.RefinementVerificationCommand;
 import org.workcraft.plugins.mpsat_verification.commands.RelaxedRefinementVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
@@ -30,7 +29,6 @@ public class RefinementVerificationCommandTests {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
-        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 

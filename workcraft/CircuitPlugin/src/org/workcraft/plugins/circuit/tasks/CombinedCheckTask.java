@@ -7,10 +7,9 @@ import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat_verification.tasks.MpsatUnfoldingTask;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.utils.PcompUtils;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -109,17 +108,17 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
             monitor.progressUpdate(0.20);
 
             // Generate unfolding (only if needed)
-            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
-            SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
+            File unfoldingFile = new File(directory, MpsatUnfoldingTask.UNFOLDING_FILE_NAME);
+            MpsatUnfoldingTask unfoldingTask = new MpsatUnfoldingTask(sysStgFile, unfoldingFile, directory);
+            SubtaskMonitor<Object> unfoldingMonitor = new SubtaskMonitor<>(monitor);
+            Result<? extends MpsatOutput> unfoldingResult = manager.execute(unfoldingTask, "Unfolding .g", unfoldingMonitor);
 
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
+            if (!unfoldingResult.isSuccess()) {
+                if (unfoldingResult.isCancel()) {
                     return Result.cancel();
                 }
                 return Result.failure(new CombinedChainOutput(
-                        devExportResult, pcompResult, punfResult, null, verificationParametersList));
+                        devExportResult, pcompResult, unfoldingResult, null, verificationParametersList));
             }
             monitor.progressUpdate(0.40);
 
@@ -130,19 +129,20 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
                 MpsatTask mpsatTask = new MpsatTask(unfoldingFile, sysStgFile, verificationParameters, directory);
                 Result<? extends MpsatOutput> mpsatResult = manager.execute(
                         mpsatTask, "Running verification [MPSat]", mpsatMonitor);
+
                 mpsatResultList.add(mpsatResult);
                 if (!mpsatResult.isSuccess()) {
                     if (mpsatResult.isCancel()) {
                         return Result.cancel();
                     }
                     return Result.failure(new CombinedChainOutput(
-                            devExportResult, pcompResult, punfResult, mpsatResultList, verificationParametersList));
+                            devExportResult, pcompResult, unfoldingResult, mpsatResultList, verificationParametersList));
                 }
             }
             monitor.progressUpdate(1.0);
 
             return Result.success(new CombinedChainOutput(
-                    devExportResult, pcompResult, punfResult, mpsatResultList, verificationParametersList));
+                    devExportResult, pcompResult, unfoldingResult, mpsatResultList, verificationParametersList));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {

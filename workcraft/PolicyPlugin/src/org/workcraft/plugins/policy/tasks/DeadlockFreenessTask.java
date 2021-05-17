@@ -11,8 +11,6 @@ import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.petri.Petri;
 import org.workcraft.plugins.policy.VisualPolicy;
 import org.workcraft.plugins.policy.converters.PolicyToPetriConverter;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.*;
 import org.workcraft.utils.ExportUtils;
@@ -39,7 +37,7 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
         try {
             VisualPolicy policy = WorkspaceUtils.getAs(we, VisualPolicy.class);
             PolicyToPetriConverter converter = new PolicyToPetriConverter(policy);
-            Petri model = (Petri) converter.getPetriNet().getMathModel();
+            Petri model = converter.getPetriNet().getMathModel();
             StgFormat format = StgFormat.getInstance();
             Exporter exporter = ExportUtils.chooseBestExporter(model, format);
             if (exporter == null) {
@@ -58,25 +56,11 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
                     return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        exportResult, null, null, null, verificationParameters));
+                        exportResult, null, null, verificationParameters));
             }
             monitor.progressUpdate(0.20);
 
-            File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = taskManager.execute(
-                    punfTask, "Unfolding .g", mon);
-
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        exportResult, null, punfResult, null, verificationParameters));
-            }
-            monitor.progressUpdate(0.70);
-
-            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
+            MpsatTask mpsatTask = new MpsatTask(netFile, verificationParameters, directory);
             Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
                     mpsatTask, "Running deadlock checking [MPSat]", mon);
 
@@ -86,18 +70,18 @@ public class DeadlockFreenessTask implements Task<VerificationChainOutput> {
                 }
                 String errorMessage = mpsatResult.getPayload().getErrorsHeadAndTail();
                 return Result.failure(new VerificationChainOutput(
-                        exportResult, null, punfResult, mpsatResult, verificationParameters, errorMessage));
+                        exportResult, null, mpsatResult, verificationParameters, errorMessage));
             }
             monitor.progressUpdate(0.90);
 
             if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
-                        exportResult, null, punfResult, mpsatResult, verificationParameters, "Policy net has a deadlock"));
+                        exportResult, null, mpsatResult, verificationParameters, "Policy net has a deadlock"));
             }
             monitor.progressUpdate(1.0);
 
             return Result.success(new VerificationChainOutput(
-                    exportResult, null, punfResult, mpsatResult, verificationParameters, "Policy net is deadlock-free"));
+                    exportResult, null, mpsatResult, verificationParameters, "Policy net is deadlock-free"));
 
         } catch (Throwable e) {
             return new Result<>(e);

@@ -11,8 +11,6 @@ import java.util.ArrayList;
 
 public class MpsatSyntaxCheckTask implements Task<ExternalProcessOutput> {
 
-    public static final String OUTPUT_FILE_NAME = "solutions.xml";
-
     private final VerificationParameters verificationParameters;
     private final File directory;
 
@@ -34,9 +32,7 @@ public class MpsatSyntaxCheckTask implements Task<ExternalProcessOutput> {
         command.add(toolName);
 
         // Built-in arguments
-        for (String arg : verificationParameters.getMpsatArguments(directory)) {
-            command.add(arg);
-        }
+        command.addAll(verificationParameters.getMpsatArguments(directory));
 
         // Option for exit early, after checking the predicate syntax
         command.add("-q");
@@ -61,7 +57,6 @@ public class MpsatSyntaxCheckTask implements Task<ExternalProcessOutput> {
         }
 
         return Result.exception(result.getCause());
-
     }
 
 }

@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 
@@ -21,22 +20,22 @@ public class CombinedChainOutput extends ChainOutput {
     public CombinedChainOutput(
             Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
-            Result<? extends PunfOutput> punfResult,
+            Result<? extends MpsatOutput> mpsatUnfoldingResult,
             List<Result<? extends MpsatOutput>> mpsatResultList,
             List<VerificationParameters> verificationParametersList) {
 
-        this(exportResult, pcompResult, punfResult, mpsatResultList, verificationParametersList, null);
+        this(exportResult, pcompResult, mpsatUnfoldingResult, mpsatResultList, verificationParametersList, null);
     }
 
     public CombinedChainOutput(
             Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
-            Result<? extends PunfOutput> punfResult,
+            Result<? extends MpsatOutput> mpsatUnfoldingResult,
             List<Result<? extends MpsatOutput>> mpsatResultList,
             List<VerificationParameters> verificationParametersList,
             String message) {
 
-        super(exportResult, pcompResult, punfResult);
+        super(exportResult, pcompResult, mpsatUnfoldingResult);
         this.mpsatResultList = mpsatResultList;
         this.verificationParametersList = verificationParametersList;
         this.message = message;
@@ -55,32 +54,32 @@ public class CombinedChainOutput extends ChainOutput {
     }
 
     public CombinedChainOutput applyExportResult(Result<? extends ExportOutput> exportResult) {
-        return new CombinedChainOutput(exportResult, getPcompResult(), getPunfResult(),
+        return new CombinedChainOutput(exportResult, getPcompResult(), getMpsatResult(),
                 getMpsatResultList(), getVerificationParametersList(), getMessage());
     }
 
     public CombinedChainOutput applyPcompResult(Result<? extends PcompOutput> pcompResult) {
-        return new CombinedChainOutput(getExportResult(), pcompResult, getPunfResult(),
+        return new CombinedChainOutput(getExportResult(), pcompResult, getMpsatResult(),
                 getMpsatResultList(), getVerificationParametersList(), getMessage());
     }
 
-    public CombinedChainOutput applyPunfResult(Result<? extends PunfOutput> punfResult) {
-        return new CombinedChainOutput(getExportResult(), getPcompResult(), punfResult,
+    public CombinedChainOutput applyMpsatResult(Result<? extends MpsatOutput> mpsatResult) {
+        return new CombinedChainOutput(getExportResult(), getPcompResult(), mpsatResult,
                 getMpsatResultList(), getVerificationParametersList(), getMessage());
     }
 
     public CombinedChainOutput applyMpsatResultList(List<Result<? extends MpsatOutput>> mpsatResultList) {
-        return new CombinedChainOutput(getExportResult(), getPcompResult(), getPunfResult(),
+        return new CombinedChainOutput(getExportResult(), getPcompResult(), getMpsatResult(),
                 mpsatResultList, getVerificationParametersList(), getMessage());
     }
 
     public CombinedChainOutput applyVerificationParametersList(List<VerificationParameters> verificationParametersList) {
-        return new CombinedChainOutput(getExportResult(), getPcompResult(), getPunfResult(),
+        return new CombinedChainOutput(getExportResult(), getPcompResult(), getMpsatResult(),
                 getMpsatResultList(), verificationParametersList, getMessage());
     }
 
     public CombinedChainOutput applyMessage(String message) {
-        return new CombinedChainOutput(getExportResult(), getPcompResult(), getPunfResult(),
+        return new CombinedChainOutput(getExportResult(), getPcompResult(), getMpsatResult(),
                 getMpsatResultList(), getVerificationParametersList(), message);
     }
 

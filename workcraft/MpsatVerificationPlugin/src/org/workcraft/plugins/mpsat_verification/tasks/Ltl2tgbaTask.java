@@ -1,6 +1,6 @@
-package org.workcraft.plugins.punf.tasks;
+package org.workcraft.plugins.mpsat_verification.tasks;
 
-import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.tasks.*;
 import org.workcraft.utils.ExecutableUtils;
 
@@ -9,13 +9,13 @@ import java.util.ArrayList;
 
 public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
 
-    private static final String OUTPUT_FILE_NAME = "assertion.hoa";
+    private static final String HOA_FILE_NAME = "assertion.hoa";
 
-    private final File inputFile;
+    private final File spotFile;
     private final File directory;
 
-    public Ltl2tgbaTask(File inputFile, File directory) {
-        this.inputFile = inputFile;
+    public Ltl2tgbaTask(File spotFile, File directory) {
+        this.spotFile = spotFile;
         this.directory = directory;
     }
 
@@ -24,7 +24,7 @@ public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ExecutableUtils.getAbsoluteCommandPath(PunfSettings.getLtl2tgbaCommand());
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatVerificationSettings.getLtl2tgbaCommand());
         command.add(toolName);
 
         // Built-in arguments
@@ -33,22 +33,22 @@ public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
         command.add("--check=stutter-invariant");
         command.add("--check=stutter-sensitive-example");
         command.add("-F");
-        command.add(inputFile.getAbsolutePath());
+        command.add(spotFile.getAbsolutePath());
 
-        File outputFile = new File(directory, OUTPUT_FILE_NAME);
+        File hoaFile = new File(directory, HOA_FILE_NAME);
         command.add("-o");
-        command.add(outputFile.getAbsolutePath());
-        outputFile.deleteOnExit();
+        command.add(hoaFile.getAbsolutePath());
+        hoaFile.deleteOnExit();
 
-        boolean printStdout = PunfSettings.getPrintStdout();
-        boolean printStderr = PunfSettings.getPrintStderr();
+        boolean printStdout = MpsatVerificationSettings.getPrintStdout();
+        boolean printStderr = MpsatVerificationSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
         ExternalProcessOutput output = result.getPayload();
         if (result.isSuccess() && (output != null)) {
-            Ltl2tgbaOutput ltl2tgbaOutput = new Ltl2tgbaOutput(output, inputFile, outputFile);
+            Ltl2tgbaOutput ltl2tgbaOutput = new Ltl2tgbaOutput(output, spotFile, hoaFile);
             int returnCode = output.getReturnCode();
             if ((returnCode == 0) || (returnCode == 1)) {
                 return Result.success(ltl2tgbaOutput);

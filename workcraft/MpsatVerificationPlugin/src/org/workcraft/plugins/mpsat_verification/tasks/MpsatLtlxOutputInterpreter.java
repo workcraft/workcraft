@@ -1,21 +1,20 @@
-package org.workcraft.plugins.punf.tasks;
+package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ReachabilityDialog;
 import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.traces.Solution;
-import org.workcraft.traces.Trace;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class PunfLtlxOutputInterpreter extends AbstractOutputInterpreter<PunfOutput, Boolean> {
+public class MpsatLtlxOutputInterpreter extends AbstractOutputInterpreter<MpsatOutput, Boolean> {
 
     private static final String TITLE = "Verification results";
 
@@ -23,26 +22,8 @@ public class PunfLtlxOutputInterpreter extends AbstractOutputInterpreter<PunfOut
             "Warning: the automaton does not declare the `stutter-invariant' property, "
             + "on which the verification relies");
 
-    private static final Pattern SOLUTION_PATTERN = Pattern.compile(
-            "The property is violated:\\s*\\R\\s*Prefix: (.+)\\R\\s*Loop: (.+)",
-            Pattern.UNIX_LINES);
-
-    public PunfLtlxOutputInterpreter(WorkspaceEntry we, PunfOutput output, boolean interactive) {
+    public MpsatLtlxOutputInterpreter(WorkspaceEntry we, MpsatOutput output, boolean interactive) {
         super(we, output, interactive);
-    }
-
-    private Solution getSolution() {
-        String mpsatStdout = getOutput().getStdoutString();
-        Matcher matcher = SOLUTION_PATTERN.matcher(mpsatStdout);
-        if (matcher.find()) {
-            Trace trace = TraceUtils.deserialiseTrace(matcher.group(1));
-            int loopPosition = trace.size();
-            trace.addAll(TraceUtils.deserialiseTrace(matcher.group(2)));
-            Solution solution = new Solution(trace);
-            solution.setLoopPosition(loopPosition);
-            return solution;
-        }
-        return null;
     }
 
     public String getMessage(boolean propertyHolds) {
@@ -62,7 +43,8 @@ public class PunfLtlxOutputInterpreter extends AbstractOutputInterpreter<PunfOut
         if (getOutput() == null) {
             return null;
         }
-        Solution solution = getSolution();
+        List<Solution> solutions = getOutput().getSolutions();
+        Solution solution = (solutions == null) || solutions.isEmpty() ? null : solutions.iterator().next();
         boolean propertyHolds = solution == null;
         String message = getMessage(propertyHolds);
         if (propertyHolds) {

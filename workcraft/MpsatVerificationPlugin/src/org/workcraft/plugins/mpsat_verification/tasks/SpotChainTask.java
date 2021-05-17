@@ -1,11 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutput;
-import org.workcraft.plugins.punf.tasks.Ltl2tgbaTask;
-import org.workcraft.plugins.punf.tasks.PunfLtlxTask;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.utils.SpotUtils;
+import org.workcraft.plugins.mpsat_verification.utils.SpotUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.serialisation.SerialiserUtils;
@@ -56,11 +52,11 @@ public class SpotChainTask implements Task<SpotChainOutput> {
                 if (ltl2tgbaResult.isCancel()) {
                     return Result.cancel();
                 }
-                return Result.failure(new SpotChainOutput(ltl2tgbaResult, null));
+                return Result.failure(new SpotChainOutput(ltl2tgbaResult));
             }
             // Failure if assertion is stutter-sensitive
             if (SpotUtils.extractStutterExample(ltl2tgbaResult.getPayload()) != null) {
-                return Result.failure(new SpotChainOutput(ltl2tgbaResult, null));
+                return Result.failure(new SpotChainOutput(ltl2tgbaResult));
             }
             monitor.progressUpdate(0.1);
 
@@ -72,21 +68,21 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             gStream.close();
             monitor.progressUpdate(0.3);
 
-            // Generate unfolding
-            File hoaFile = ltl2tgbaResult.getPayload().getOutputFile();
-            PunfLtlxTask punfTask = new PunfLtlxTask(gFile, hoaFile, directory);
-            SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
+            // Check a stutter-invariant temporal property
+            File hoaFile = ltl2tgbaResult.getPayload().getHoaFile();
+            MpsatLtlxTask mpsatTask = new MpsatLtlxTask(gFile, hoaFile, directory);
+            SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
+            Result<? extends MpsatOutput> mpsatResult = manager.execute(mpsatTask, "Checking temporal property", mpsatMonitor);
 
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
+            if (!mpsatResult.isSuccess()) {
+                if (mpsatResult.isCancel()) {
                     return Result.cancel();
                 }
-                return Result.failure(new SpotChainOutput(ltl2tgbaResult, punfResult));
+                return Result.failure(new SpotChainOutput(ltl2tgbaResult, mpsatResult));
             }
             monitor.progressUpdate(1.0);
 
-            return Result.success(new SpotChainOutput(ltl2tgbaResult, punfResult));
+            return Result.success(new SpotChainOutput(ltl2tgbaResult, mpsatResult));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {

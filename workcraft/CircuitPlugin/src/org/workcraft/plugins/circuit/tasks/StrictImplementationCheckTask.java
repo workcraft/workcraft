@@ -16,8 +16,6 @@ import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -78,6 +76,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
     @Override
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         Framework framework = Framework.getInstance();
+        TaskManager taskManager = framework.getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         String stgFileExtension = StgFormat.getInstance().getExtension();
@@ -102,26 +101,9 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                     return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        envExportResult, null, null, null, preparationParameters));
+                        envExportResult, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.20);
-
-            // Generate unfolding
-            Result<? extends PunfOutput> punfResult = null;
-            final TaskManager taskManager = framework.getTaskManager();
-            File unfoldingFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(envStgFile, unfoldingFile, directory);
-            SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
-            punfResult = taskManager.execute(punfTask, "Unfolding .g", punfMonitor);
-
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        envExportResult, null, punfResult, null, preparationParameters));
-            }
-            monitor.progressUpdate(0.50);
 
             // Check for strict implementation
             Collection<SignalInfo> signalInfos = new ArrayList<>();
@@ -138,7 +120,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                 }
             }
             VerificationParameters verificationParameters = getVerificationParameters(signalInfos);
-            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, envStgFile, verificationParameters, directory);
+            MpsatTask mpsatTask = new MpsatTask(envStgFile, verificationParameters, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running strict implementation check [MPSat]", mpsatMonitor);
@@ -148,20 +130,20 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                     return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        envExportResult, null, punfResult, mpsatResult, verificationParameters));
+                        envExportResult, null, mpsatResult, verificationParameters));
             }
             monitor.progressUpdate(0.80);
 
             if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
-                        envExportResult, null, punfResult, mpsatResult, verificationParameters,
+                        envExportResult, null, mpsatResult, verificationParameters,
                         "Circuit does not strictly implement the environment after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
             return Result.success(new VerificationChainOutput(
-                    envExportResult, null, punfResult, mpsatResult, verificationParameters,
+                    envExportResult, null, mpsatResult, verificationParameters,
                     "The circuit strictly implements its environment."));
 
         } catch (Throwable e) {

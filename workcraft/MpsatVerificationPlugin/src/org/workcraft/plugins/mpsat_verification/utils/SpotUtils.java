@@ -1,10 +1,10 @@
-package org.workcraft.plugins.punf.utils;
+package org.workcraft.plugins.mpsat_verification.utils;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.controls.CodePanel;
-import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutput;
-import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutputInterpreter;
-import org.workcraft.plugins.punf.tasks.Ltl2tgbaTask;
+import org.workcraft.plugins.mpsat_verification.tasks.Ltl2tgbaOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.Ltl2tgbaOutputInterpreter;
+import org.workcraft.plugins.mpsat_verification.tasks.Ltl2tgbaTask;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.types.Pair;
@@ -36,7 +36,7 @@ public class SpotUtils {
     private static final int MESSAGE_GROUP = 4;
 
     public static Pair<String, String> extractStutterExample(Ltl2tgbaOutput output) throws IOException {
-        String text = FileUtils.readAllText(output.getOutputFile());
+        String text = FileUtils.readAllText(output.getHoaFile());
         return extractStutterExample(text);
     }
 

@@ -4,8 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.petri.PetriModel;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
@@ -35,7 +33,6 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
             File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(we.getTitle()));
             Chain<VerificationChainOutput> chain = new Chain<>(this::init, monitor);
             chain.andOnSuccess(payload -> exportNet(payload, monitor, directory), 0.1);
-            chain.andOnSuccess(payload -> unfoldNet(payload, monitor, directory), 0.5);
             chain.andOnSuccess(payload -> verifyProperty(payload, monitor, directory), 1.0);
             chain.andThen(() -> FileUtils.deleteOnExitRecursively(directory));
             result = chain.process();
@@ -59,7 +56,6 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
         return Result.success(new VerificationChainOutput().applyVerificationParameters(verificationParameters));
     }
 
-
     private Result<? extends VerificationChainOutput> exportNet(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
@@ -67,32 +63,19 @@ public class VerificationChainTask implements Task<VerificationChainOutput> {
         PetriModel net = WorkspaceUtils.getAs(we, PetriModel.class);
         File netFile = new File(directory, NET_FILE_NAME);
         Result<? extends ExportOutput> exportResult = StgUtils.exportStg(net, netFile, monitor);
-        return new Result(exportResult.getOutcome(), payload.applyExportResult(exportResult));
-    }
-
-    private Result<? extends VerificationChainOutput> unfoldNet(VerificationChainOutput payload,
-            ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
-
-        File netFile = new File(directory, NET_FILE_NAME);
-        PunfTask punfTask = new PunfTask(netFile, directory);
-        Result<? extends PunfOutput> punfResult = Framework.getInstance().getTaskManager().execute(
-                punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
-
-        // Add verification parameters in case Punf detects consistency violation
-        return new Result<>(punfResult.getOutcome(), payload.applyPunfResult(punfResult)
-                .applyVerificationParameters(verificationParameters));
+        return new Result<>(exportResult.getOutcome(), payload.applyExportResult(exportResult));
     }
 
     private Result<? extends VerificationChainOutput> verifyProperty(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
-        File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
         File netFile = new File(directory, NET_FILE_NAME);
-        MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
+        MpsatTask mpsatTask = new MpsatTask(netFile, verificationParameters, directory);
         Result<? extends MpsatOutput>  mpsatResult = Framework.getInstance().getTaskManager().execute(
                 mpsatTask, "Running verification [MPSat]", new SubtaskMonitor<>(monitor));
 
-        return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult));
+        return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult)
+                .applyVerificationParameters(verificationParameters));
     }
 
 }
