@@ -6,9 +6,9 @@ import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.SpotChainTask;
+import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.tasks.SpotChainResultHandlingMonitor;
-import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.plugins.punf.utils.SpotUtils;
+import org.workcraft.plugins.mpsat_verification.utils.SpotUtils;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.TextDataSerialiser;
 import org.workcraft.presets.TextPresetDialog;
@@ -39,7 +39,7 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
 
     @Override
     public boolean isVisibleInMenu() {
-        return PunfSettings.getShowSpotInMenu();
+        return MpsatVerificationSettings.getShowSpotInMenu();
     }
 
     @Override

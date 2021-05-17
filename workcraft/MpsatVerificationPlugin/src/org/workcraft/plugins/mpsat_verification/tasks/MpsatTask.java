@@ -92,10 +92,10 @@ public class MpsatTask implements Task<MpsatOutput> {
             int returnCode = output.getReturnCode();
             if ((returnCode == 0) || (returnCode == 1)) {
                 try {
-                    MpsatOutputReader outputReader = new MpsatOutputReader(solutionsFile);
+                    SolutionReader outputReader = new SolutionReader(solutionsFile);
                     if (outputReader.isSuccess()) {
                         List<Solution> solutions = outputReader.getSolutions();
-                        return Result.success(new MpsatOutput(output, verificationParameters, netFile, solutions));
+                        return Result.success(new MpsatOutput(output, verificationParameters, netFile, unfoldingFile, solutions));
                     }
                     return Result.exception(outputReader.getMessage());
                 } catch (ParserConfigurationException | SAXException | IOException e) {
@@ -103,7 +103,7 @@ public class MpsatTask implements Task<MpsatOutput> {
                 }
 
             }
-            return Result.failure(new MpsatOutput(output, verificationParameters));
+            return Result.failure(new MpsatOutput(output, verificationParameters, netFile, unfoldingFile, null));
         }
 
         if (result.isCancel()) {

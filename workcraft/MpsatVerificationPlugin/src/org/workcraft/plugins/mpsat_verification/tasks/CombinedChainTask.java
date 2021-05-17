@@ -4,8 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.petri.PetriModel;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
@@ -83,17 +81,17 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             ProgressMonitor<? super CombinedChainOutput> monitor, File directory) {
 
         File netFile = new File(directory, NET_FILE_NAME);
-        PunfTask punfTask = new PunfTask(netFile, directory);
-        Result<? extends PunfOutput> punfResult = Framework.getInstance().getTaskManager().execute(
-                punfTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
+        MpsatUnfoldingTask mpsatUnfoldingTask = new MpsatUnfoldingTask(netFile, directory);
+        Result<? extends MpsatOutput> mpsatUnfoldingResult = Framework.getInstance().getTaskManager().execute(
+                mpsatUnfoldingTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
 
-        return new Result<>(punfResult.getOutcome(), payload.applyPunfResult(punfResult));
+        return new Result<>(mpsatUnfoldingResult.getOutcome(), payload.applyMpsatResult(mpsatUnfoldingResult));
     }
 
     private Result<? extends CombinedChainOutput> verifyPropertyList(CombinedChainOutput payload,
             ProgressMonitor<? super CombinedChainOutput> monitor, File directory) {
 
-        File unfoldingFile = payload.getPunfResult().getPayload().getOutputFile();
+        File unfoldingFile = payload.getMpsatResult().getPayload().getUnfoldingFile();
         File netFile = new File(directory, NET_FILE_NAME);
         ArrayList<Result<? extends MpsatOutput>> mpsatResultList = new ArrayList<>(verificationParametersList.size());
         for (VerificationParameters verificationParameters : verificationParametersList) {

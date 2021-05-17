@@ -18,8 +18,6 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.utils.PcompUtils;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
@@ -87,7 +85,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return Result.cancel();
                     }
                     return Result.failure(new VerificationChainOutput(
-                            envExportResult, null, null, null, preparationParameters));
+                            envExportResult, null, null, preparationParameters));
                 }
             }
 
@@ -100,7 +98,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                     return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        devExportResult, null, null, null, preparationParameters));
+                        devExportResult, null, null, preparationParameters));
             }
             monitor.progressUpdate(0.1);
 
@@ -116,7 +114,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return Result.cancel();
                     }
                     return Result.failure(new VerificationChainOutput(
-                            modEnvExportResult, null, null, null, preparationParameters));
+                            modEnvExportResult, null, null, preparationParameters));
                 }
                 monitor.progressUpdate(0.2);
 
@@ -130,7 +128,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return Result.cancel();
                     }
                     return Result.failure(new VerificationChainOutput(
-                            devExportResult, modPcompResult, null, null, preparationParameters));
+                            devExportResult, modPcompResult, null, preparationParameters));
                 }
                 monitor.progressUpdate(0.3);
 
@@ -168,21 +166,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + "-shadow" + stgFileExtension);
                 StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
 
-                File modUnfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + "-shadow" + PunfTask.PNML_FILE_EXTENSION);
-                PunfTask modPunfTask = new PunfTask(modSysStgFile, modUnfoldingFile, directory);
-                Result<? extends PunfOutput> modPunfResult = manager.execute(modPunfTask,
-                        "Unfolding .g", new SubtaskMonitor<Object>(monitor));
-
-                if (!modPunfResult.isSuccess()) {
-                    if (modPunfResult.isCancel()) {
-                        return Result.cancel();
-                    }
-                    return Result.failure(new VerificationChainOutput(
-                            devExportResult, modPcompResult, modPunfResult, null, preparationParameters));
-                }
-                monitor.progressUpdate(0.4);
-
-                MpsatTask conformationMpsatTask = new MpsatTask(modUnfoldingFile, modSysStgFile, conformationParameters, directory);
+                MpsatTask conformationMpsatTask = new MpsatTask(modSysStgFile, conformationParameters, directory);
                 Result<? extends MpsatOutput>  conformationMpsatResult = manager.execute(
                         conformationMpsatTask, "Running conformation check [MPSat]", new SubtaskMonitor<Object>(monitor));
 
@@ -193,13 +177,13 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return Result.cancel();
                     }
                     return Result.failure(new VerificationChainOutput(
-                            compositionExportResult, modPcompResult, modPunfResult, conformationMpsatResult, conformationParameters));
+                            compositionExportResult, modPcompResult, conformationMpsatResult, conformationParameters));
                 }
                 monitor.progressUpdate(0.5);
 
                 if (conformationMpsatResult.getPayload().hasSolutions()) {
                     return Result.success(new VerificationChainOutput(
-                            compositionExportResult, modPcompResult, modPunfResult, conformationMpsatResult, conformationParameters,
+                            compositionExportResult, modPcompResult, conformationMpsatResult, conformationParameters,
                             "Circuit does not conform to the environment after the following trace(s):"));
                 }
             }
@@ -219,7 +203,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                             return Result.cancel();
                         }
                         return Result.failure(new VerificationChainOutput(
-                                devExportResult, pcompResult, null, null, preparationParameters));
+                                devExportResult, pcompResult, null, preparationParameters));
                     }
                     sysStgFile = pcompResult.getPayload().getOutputFile();
                 }
@@ -232,17 +216,17 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 }
                 monitor.progressUpdate(0.2);
 
-                File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-                PunfTask punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
-                SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
+                File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + MpsatUnfoldingTask.PNML_FILE_EXTENSION);
+                MpsatUnfoldingTask unfoldingTask = new MpsatUnfoldingTask(sysStgFile, unfoldingFile, directory);
+                SubtaskMonitor<Object> unfoldingMonitor = new SubtaskMonitor<>(monitor);
+                Result<? extends MpsatOutput> unfoldingResult = manager.execute(unfoldingTask, "Unfolding .g", unfoldingMonitor);
 
-                if (!punfResult.isSuccess()) {
-                    if (punfResult.isCancel()) {
+                if (!unfoldingResult.isSuccess()) {
+                    if (unfoldingResult.isCancel()) {
                         return Result.cancel();
                     }
                     return Result.failure(new VerificationChainOutput(
-                            devExportResult, pcompResult, punfResult, null, preparationParameters));
+                            devExportResult, pcompResult, unfoldingResult, preparationParameters));
                 }
 
                 // Check for deadlock (if requested)
@@ -258,13 +242,13 @@ public class CheckTask implements Task<VerificationChainOutput> {
                             return Result.cancel();
                         }
                         return Result.failure(new VerificationChainOutput(
-                                devExportResult, pcompResult, punfResult, deadlockMpsatResult, deadlockParameters));
+                                devExportResult, pcompResult, deadlockMpsatResult, deadlockParameters));
                     }
                     monitor.progressUpdate(0.7);
 
                     if (deadlockMpsatResult.getPayload().hasSolutions()) {
                         return Result.success(new VerificationChainOutput(
-                                devExportResult, pcompResult, punfResult, deadlockMpsatResult, deadlockParameters,
+                                devExportResult, pcompResult, deadlockMpsatResult, deadlockParameters,
                                 "Circuit has a deadlock after the following trace(s):"));
                     }
                 }
@@ -283,13 +267,13 @@ public class CheckTask implements Task<VerificationChainOutput> {
                             return Result.cancel();
                         }
                         return Result.failure(new VerificationChainOutput(
-                                devExportResult, pcompResult, punfResult, persistencyMpsatResult, persistencyParameters));
+                                devExportResult, pcompResult, persistencyMpsatResult, persistencyParameters));
                     }
                     monitor.progressUpdate(0.9);
 
                     if (persistencyMpsatResult.getPayload().hasSolutions()) {
                         return Result.success(new VerificationChainOutput(
-                                devExportResult, pcompResult, punfResult, persistencyMpsatResult, persistencyParameters,
+                                devExportResult, pcompResult, persistencyMpsatResult, persistencyParameters,
                                 "Circuit is not output-persistent after the following trace(s):"));
                     }
                 }
@@ -297,12 +281,11 @@ public class CheckTask implements Task<VerificationChainOutput> {
             }
 
             // Success
-            Result<? extends PunfOutput>  punfResult = Result.success();
             Result<? extends MpsatOutput>  mpsatResult = Result.success();
             VerificationParameters completionParameters = ReachUtils.getToolchainCompletionParameters();
             String message = getSuccessMessage(envFile);
             return Result.success(new VerificationChainOutput(
-                    devExportResult, pcompResult, punfResult, mpsatResult, completionParameters, message));
+                    devExportResult, pcompResult, mpsatResult, completionParameters, message));
 
         } catch (Throwable e) {
             return new Result<>(e);

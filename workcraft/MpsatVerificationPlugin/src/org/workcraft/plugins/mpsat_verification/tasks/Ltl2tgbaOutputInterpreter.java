@@ -1,7 +1,7 @@
-package org.workcraft.plugins.punf.tasks;
+package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.plugins.punf.utils.SpotUtils;
+import org.workcraft.plugins.mpsat_verification.utils.SpotUtils;
 import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;

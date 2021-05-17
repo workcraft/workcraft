@@ -8,7 +8,6 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.*;
 import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.BackendUtils;
@@ -31,7 +30,6 @@ public class VerificationCommandTests {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
-        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 

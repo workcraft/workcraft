@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.SpotAssertionVerificationCommand;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
@@ -26,8 +25,8 @@ public class SpotAssertionVerificationCommandTests {
     public static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        PunfSettings.setLtl2tgbaCommand(BackendUtils.getTemplateToolPath("Spot", "ltl2tgba"));
-        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
+        MpsatVerificationSettings.setLtl2tgbaCommand(BackendUtils.getTemplateToolPath("Spot", "ltl2tgba"));
+        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test

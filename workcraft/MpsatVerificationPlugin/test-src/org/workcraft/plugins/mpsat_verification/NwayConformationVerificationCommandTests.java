@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat_verification.commands.NwayConformationVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
@@ -28,7 +27,6 @@ public class NwayConformationVerificationCommandTests {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
-        PunfSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "punf"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 

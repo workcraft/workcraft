@@ -1,10 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutput;
-import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutputInterpreter;
-import org.workcraft.plugins.punf.tasks.PunfLtlxOutputInterpreter;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
@@ -27,17 +23,17 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
     @Override
     public Boolean handle(final Result<? extends SpotChainOutput> chainResult) {
         SpotChainOutput chainOutput = chainResult.getPayload();
-        Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
+        Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
         if (chainResult.isSuccess()) {
-            PunfOutput punfOutput = (punfResult == null) ? null : punfResult.getPayload();
-            return new PunfLtlxOutputInterpreter(we, punfOutput, interactive).interpret();
+            MpsatOutput mpsatOutput = (mpsatResult == null) ? null : mpsatResult.getPayload();
+            return new MpsatLtlxOutputInterpreter(we, mpsatOutput, interactive).interpret();
         }
 
         if (chainResult.isFailure()) {
             Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = (chainOutput == null) ? null : chainOutput.getLtl2tgbaResult();
             // Process starter-sensitivity failure
-            if ((punfResult == null) && (ltl2tgbaResult != null) && ltl2tgbaResult.isSuccess()) {
-                Ltl2tgbaOutput ltl2tgbaOutput = (ltl2tgbaResult == null) ? null : ltl2tgbaResult.getPayload();
+            if ((mpsatResult == null) && (ltl2tgbaResult != null) && ltl2tgbaResult.isSuccess()) {
+                Ltl2tgbaOutput ltl2tgbaOutput = ltl2tgbaResult.getPayload();
                 new Ltl2tgbaOutputInterpreter(we, ltl2tgbaOutput, interactive).interpret();
                 return null;
             }
@@ -65,7 +61,7 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
             Result<? extends Ltl2tgbaOutput> ltl2tgbaResult = (chainOutput == null) ? null : chainOutput.getLtl2tgbaResult();
             Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
             Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
-            Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
+            Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
             if ((ltl2tgbaResult != null) && (ltl2tgbaResult.isFailure())) {
                 message += "\n\nCould not derive B\u00FCchi automaton.";
                 Throwable ltl2tgbaCause = ltl2tgbaResult.getCause();
@@ -90,11 +86,17 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
                         message += ERROR_CAUSE_PREFIX + pcompError;
                     }
                 }
-            } else if ((punfResult != null) && (punfResult.isFailure())) {
-                message += "\n\nPunf could not verify LTL-X property.";
-                Throwable punfCause = punfResult.getCause();
-                if (punfCause != null) {
-                    message += ERROR_CAUSE_PREFIX + punfCause.getMessage();
+            } else if ((mpsatResult != null) && (mpsatResult.isFailure())) {
+                message += "\n\nMPSat could not verify temporal property property.";
+                Throwable mpsatCause = mpsatResult.getCause();
+                if (mpsatCause != null) {
+                    message += ERROR_CAUSE_PREFIX + mpsatCause.getMessage();
+                } else {
+                    MpsatOutput mpsatOutput = mpsatResult.getPayload();
+                    if (mpsatOutput != null) {
+                        String mpsatError = mpsatOutput.getErrorsHeadAndTail();
+                        message += ERROR_CAUSE_PREFIX + mpsatError;
+                    }
                 }
             } else {
                 message += "\n\nSPOT chain task returned failure status without further explanation.";

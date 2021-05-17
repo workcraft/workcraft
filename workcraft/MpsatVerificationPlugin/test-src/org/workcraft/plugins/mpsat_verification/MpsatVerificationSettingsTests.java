@@ -49,6 +49,12 @@ public class MpsatVerificationSettingsTests {
 
         Assertions.assertEquals(Config.toString(MpsatVerificationSettings.getConformationReportStyle()),
                 framework.getConfigVar(prefix + ".conformationReportStyle", false));
+
+        Assertions.assertEquals(Config.toString(MpsatVerificationSettings.getLtl2tgbaCommand()),
+                framework.getConfigVar(prefix + ".ltl2tgbaCommand", false));
+
+        Assertions.assertEquals(Config.toString(MpsatVerificationSettings.getShowSpotInMenu()),
+                framework.getConfigVar(prefix + ".showSpotInMenu", false));
     }
 
 }

@@ -11,8 +11,6 @@ import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.*;
@@ -62,27 +60,13 @@ public class DeadlockFreenessCheckTask implements Task<VerificationChainOutput> 
                     return Result.cancel();
                 }
                 return Result.failure(new VerificationChainOutput(
-                        exportResult, null, null, null, verificationParameters));
+                        exportResult, null, null, verificationParameters));
             }
             monitor.progressUpdate(0.20);
 
-            File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
-            Result<? extends PunfOutput> punfResult = taskManager.execute(
-                    punfTask, "Unfolding .g", mon);
-
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
-                    return Result.cancel();
-                }
-                return Result.failure(new VerificationChainOutput(
-                        exportResult, null, punfResult, null, verificationParameters));
-            }
-            monitor.progressUpdate(0.70);
-
-            MpsatTask mpsatTask = new MpsatTask(unfoldingFile, netFile, verificationParameters, directory);
+            MpsatTask mpsatTask = new MpsatTask(netFile, verificationParameters, directory);
             Result<? extends MpsatOutput> mpsatResult = taskManager.execute(
-                    mpsatTask, "Running deadlock checking [MPSat]", mon);
+                    mpsatTask, "Running deadlock check [MPSat]", mon);
 
             if (!mpsatResult.isSuccess()) {
                 if (mpsatResult.isCancel()) {
@@ -90,19 +74,19 @@ public class DeadlockFreenessCheckTask implements Task<VerificationChainOutput> 
                 }
                 String errorMessage = mpsatResult.getPayload().getErrorsHeadAndTail();
                 return Result.failure(new VerificationChainOutput(
-                        exportResult, null, punfResult, mpsatResult, verificationParameters, errorMessage));
+                        exportResult, null, mpsatResult, verificationParameters, errorMessage));
             }
             monitor.progressUpdate(0.90);
 
             if (mpsatResult.getPayload().hasSolutions()) {
                 return Result.success(new VerificationChainOutput(
-                        exportResult, null, punfResult, mpsatResult, verificationParameters,
+                        exportResult, null, mpsatResult, verificationParameters,
                         "Dataflow has a deadlock"));
             }
             monitor.progressUpdate(1.0);
 
             return Result.success(new VerificationChainOutput(
-                    exportResult, null, punfResult, mpsatResult, verificationParameters,
+                    exportResult, null, mpsatResult, verificationParameters,
                     "Dataflow is deadlock-free"));
         } catch (Throwable e) {
             return new Result<>(e);

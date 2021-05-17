@@ -3,14 +3,10 @@ package org.workcraft.plugins.circuit.tasks;
 import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
-import org.workcraft.plugins.mpsat_verification.tasks.SpotChainOutput;
+import org.workcraft.plugins.mpsat_verification.tasks.*;
+import org.workcraft.plugins.mpsat_verification.utils.SpotUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.utils.PcompUtils;
-import org.workcraft.plugins.punf.tasks.Ltl2tgbaOutput;
-import org.workcraft.plugins.punf.tasks.Ltl2tgbaTask;
-import org.workcraft.plugins.punf.tasks.PunfLtlxTask;
-import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.punf.utils.SpotUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -67,7 +63,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             }
             // Failure if assertion is stutter-sensitive
             if (SpotUtils.extractStutterExample(ltl2tgbaResult.getPayload()) != null) {
-                return Result.failure(new SpotChainOutput(ltl2tgbaResult, null));
+                return Result.failure(new SpotChainOutput(ltl2tgbaResult));
             }
             monitor.progressUpdate(0.1);
 
@@ -101,7 +97,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             monitor.progressUpdate(0.10);
 
             // Generating system .g for custom property check (only if needed)
-            File sysStgFile = null;
+            File sysStgFile;
             Result<? extends PcompOutput>  pcompResult = null;
             if (envStg == null) {
                 sysStgFile = devStgFile;
@@ -136,20 +132,20 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             monitor.progressUpdate(0.30);
 
             // Generate unfolding
-            File hoaFile = ltl2tgbaResult.getPayload().getOutputFile();
-            PunfLtlxTask punfTask = new PunfLtlxTask(sysModStgFile, hoaFile, directory);
-            SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
+            File hoaFile = ltl2tgbaResult.getPayload().getHoaFile();
+            MpsatLtlxTask mpsatTask = new MpsatLtlxTask(sysModStgFile, hoaFile, directory);
+            SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
+            Result<? extends MpsatOutput> mpsatResult = manager.execute(mpsatTask, "Unfolding .g", mpsatMonitor);
 
-            if (!punfResult.isSuccess()) {
-                if (punfResult.isCancel()) {
+            if (!mpsatResult.isSuccess()) {
+                if (mpsatResult.isCancel()) {
                     return Result.cancel();
                 }
-                return Result.failure(new SpotChainOutput(ltl2tgbaResult, devExportResult, pcompResult, punfResult));
+                return Result.failure(new SpotChainOutput(ltl2tgbaResult, devExportResult, pcompResult, mpsatResult));
             }
             monitor.progressUpdate(1.0);
 
-            return Result.success(new SpotChainOutput(ltl2tgbaResult, devExportResult, pcompResult, punfResult));
+            return Result.success(new SpotChainOutput(ltl2tgbaResult, devExportResult, pcompResult, mpsatResult));
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {

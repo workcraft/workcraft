@@ -12,24 +12,26 @@ import java.util.List;
 public class MpsatOutput extends ExternalProcessOutput {
 
     private final VerificationParameters verificationParameters;
-    private final File stgFile;
+    private final File netFile;
+    private final File unfoldingFile;
     private final List<Solution> solutions;
 
-    public MpsatOutput(ExternalProcessOutput output, VerificationParameters verificationParameters) {
-        this(output, verificationParameters, null, null);
-    }
-
     public MpsatOutput(ExternalProcessOutput output, VerificationParameters verificationParameters,
-            File stgFile, List<Solution> solutions) {
+            File netFile, File unfoldingFile, List<Solution> solutions) {
 
         super(output.getReturnCode(), output.getStdout(), output.getStderr());
-        this.stgFile = stgFile;
+        this.netFile = netFile;
+        this.unfoldingFile = unfoldingFile;
         this.solutions = solutions == null ? null : new ArrayList<>(solutions);
         this.verificationParameters = verificationParameters;
     }
 
-    public File getStgFile() {
-        return stgFile;
+    public File getNetFile() {
+        return netFile;
+    }
+
+    public File getUnfoldingFile() {
+        return unfoldingFile;
     }
 
     public List<Solution> getSolutions() {
