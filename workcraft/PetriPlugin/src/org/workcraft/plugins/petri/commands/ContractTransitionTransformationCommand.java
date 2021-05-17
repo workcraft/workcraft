@@ -18,6 +18,7 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
@@ -76,7 +77,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> transitions = new HashSet<>(ConversionUtils.getVisualTransitions(model));
+        Collection<VisualNode> transitions = new HashSet<>(Hierarchy.getDescendantsOfType(model.getRoot(), VisualTransition.class));
         transitions.retainAll(model.getSelection());
         return transitions;
     }
@@ -366,7 +367,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             }
         }
         convertedReplicaConnections.clear();
-        for (VisualReplicaPlace visualReplicaPlace : ConversionUtils.getVisualReplicaPlaces(visualModel)) {
+        for (VisualReplicaPlace visualReplicaPlace : ConnectionUtils.getVisualReplicaPlaces(visualModel)) {
             if (affectedPlaces.contains(visualReplicaPlace.getReferencedPlace())) {
                 VisualConnection newConnection = ConversionUtils.collapseReplicaPlace(visualModel, visualReplicaPlace);
                 convertedReplicaConnections.add(newConnection);

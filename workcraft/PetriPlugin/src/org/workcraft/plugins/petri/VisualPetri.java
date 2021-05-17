@@ -11,7 +11,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.plugins.petri.tools.*;
-import org.workcraft.plugins.petri.utils.ConversionUtils;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
@@ -77,13 +77,13 @@ public class VisualPetri extends AbstractVisualModel {
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
             throw new InvalidConnectionException("Arcs between transitions are not allowed.");
         }
-        if (ConversionUtils.hasReadArcConnection(this, first, second) || ConversionUtils.hasReadArcConnection(this, second, first)) {
+        if (ConnectionUtils.hasReadArcConnection(this, first, second) || ConnectionUtils.hasReadArcConnection(this, second, first)) {
             throw new InvalidConnectionException("Nodes are already connected by a read-arc.");
         }
-        if (ConversionUtils.hasProducingArcConnection(this, first, second)) {
+        if (ConnectionUtils.hasProducingArcConnection(this, first, second)) {
             throw new InvalidConnectionException("This producing arc already exists.");
         }
-        if (ConversionUtils.hasConsumingArcConnection(this, first, second)) {
+        if (ConnectionUtils.hasConsumingArcConnection(this, first, second)) {
             throw new InvalidConnectionException("This consuming arc already exists.");
         }
     }
@@ -101,12 +101,12 @@ public class VisualPetri extends AbstractVisualModel {
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
             throw new InvalidConnectionException("Read-arcs between transitions are not allowed.");
         }
-        if (ConversionUtils.hasReadArcConnection(this, first, second)
-                || ConversionUtils.hasReadArcConnection(this, second, first)
-                || ConversionUtils.hasProducingArcConnection(this, first, second)
-                || ConversionUtils.hasProducingArcConnection(this, second, first)
-                || ConversionUtils.hasConsumingArcConnection(this, first, second)
-                || ConversionUtils.hasConsumingArcConnection(this, second, first)) {
+        if (ConnectionUtils.hasReadArcConnection(this, first, second)
+                || ConnectionUtils.hasReadArcConnection(this, second, first)
+                || ConnectionUtils.hasProducingArcConnection(this, first, second)
+                || ConnectionUtils.hasProducingArcConnection(this, second, first)
+                || ConnectionUtils.hasConsumingArcConnection(this, first, second)
+                || ConnectionUtils.hasConsumingArcConnection(this, second, first)) {
             throw new InvalidConnectionException("Nodes are already connected.");
         }
     }

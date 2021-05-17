@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.workspace.ModelEntry;
@@ -51,7 +52,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> readArcs = new HashSet<>();
-        readArcs.addAll(ConversionUtils.getVisualReadArcs(model));
+        readArcs.addAll(ConnectionUtils.getVisualReadArcs(model));
         Collection<VisualNode> selection = model.getSelection();
         if (!selection.isEmpty()) {
             readArcs.retainAll(selection);

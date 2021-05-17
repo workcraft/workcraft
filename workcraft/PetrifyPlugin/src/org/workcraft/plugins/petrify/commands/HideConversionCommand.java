@@ -2,9 +2,9 @@ package org.workcraft.plugins.petrify.commands;
 
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
@@ -28,12 +28,12 @@ public class HideConversionCommand extends AbstractConversionCommand {
         ArrayList<String> args = super.getArgs(we);
 
         VisualModel visualModel = we.getModelEntry().getVisualModel();
-        HashSet<VisualTransition> transitions = ConversionUtils.getVisualTransitions(visualModel);
+        Set<VisualTransition> transitions = new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualTransition.class));
         transitions.retainAll(visualModel.getSelection());
 
         Set<String> names = new HashSet<>();
-        for (VisualTransition transition: transitions) {
-            String name = null;
+        for (VisualTransition transition : transitions) {
+            String name;
             if (transition instanceof VisualSignalTransition) {
                 name = ((VisualSignalTransition) transition).getSignalName();
             } else if (transition instanceof VisualDummyTransition) {
