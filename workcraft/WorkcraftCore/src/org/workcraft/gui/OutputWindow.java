@@ -3,7 +3,7 @@ package org.workcraft.gui;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.controls.LogPanel;
 import org.workcraft.plugins.builtin.settings.LogCommonSettings;
-import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.HighlightUtils;
 import org.workcraft.utils.LogUtils;
 
 import javax.swing.*;
@@ -83,7 +83,7 @@ public class OutputWindow extends LogPanel {
             target.setForeground(textColor);
             target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
 
-            GuiUtils.highlightLines(target, fromPos, toPos, highlightColor);
+            HighlightUtils.highlightLines(target, fromPos, toPos, highlightColor);
         }
     }
 

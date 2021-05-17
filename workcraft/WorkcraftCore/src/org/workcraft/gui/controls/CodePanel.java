@@ -3,7 +3,7 @@ package org.workcraft.gui.controls;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.builtin.settings.LogCommonSettings;
 import org.workcraft.utils.DesktopApi;
-import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.HighlightUtils;
 import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
@@ -63,7 +63,7 @@ public class CodePanel extends JPanel {
     public void highlightError(int fromPos, int toPos, String detail) {
         clearHighlight();
         showErrorStatus(detail);
-        highlight = GuiUtils.highlightText(textArea, fromPos, toPos, LogCommonSettings.getErrorBackground());
+        highlight = HighlightUtils.highlightText(textArea, fromPos, toPos, LogCommonSettings.getErrorBackground());
         textArea.setCaretPosition(fromPos);
         textArea.moveCaretPosition(fromPos);
         textArea.requestFocus();
