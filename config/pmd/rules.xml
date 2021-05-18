@@ -53,6 +53,7 @@
         <exclude name="AtLeastOneConstructor"/> <!-- Interesting to enforce -->
         <exclude name="FieldDeclarationsShouldBeAtStartOfClass"/> <!-- Interesting to enforce -->
         <exclude name="UseUnderscoresInNumericLiterals"/> <!-- Interesting to enforce -->
+	<exclude name="UnnecessaryImport" /> <!-- Good to have, but seems to be broken -->
     </rule>
     <rule ref="category/java/codestyle.xml/ClassNamingConventions">
         <properties>
