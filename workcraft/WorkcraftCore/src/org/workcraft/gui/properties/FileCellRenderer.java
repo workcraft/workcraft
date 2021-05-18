@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
 
-@SuppressWarnings("serial")
 public class FileCellRenderer extends JPanel implements TableCellRenderer {
 
     private final JButton chooseButton;

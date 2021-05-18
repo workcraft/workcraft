@@ -9,7 +9,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-@SuppressWarnings("serial")
 public class FileCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
     private static final String TAG_CHOOSE = "choose";

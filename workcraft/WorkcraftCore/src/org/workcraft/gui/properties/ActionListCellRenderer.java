@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("serial")
 public class ActionListCellRenderer extends JPanel implements TableCellRenderer {
 
     private final Map<Action, JButton> actionButtonMap = new HashMap<>();

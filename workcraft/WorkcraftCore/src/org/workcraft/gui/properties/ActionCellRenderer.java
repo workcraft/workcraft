@@ -6,7 +6,6 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-@SuppressWarnings("serial")
 public class ActionCellRenderer extends JButton implements TableCellRenderer {
 
     @Override

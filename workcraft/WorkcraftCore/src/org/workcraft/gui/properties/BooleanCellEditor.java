@@ -6,7 +6,6 @@ import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-@SuppressWarnings("serial")
 public class BooleanCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener {
 
     private final JCheckBox checkBox;

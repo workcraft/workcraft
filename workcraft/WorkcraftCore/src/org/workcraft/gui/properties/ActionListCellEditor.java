@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
 
-@SuppressWarnings("serial")
 public class ActionListCellEditor extends AbstractCellEditor implements TableCellEditor {
 
     @Override

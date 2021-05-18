@@ -7,7 +7,6 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-@SuppressWarnings("serial")
 public class ColorCellRenderer extends FlatComboBox implements TableCellRenderer {
 
     private static final Color PANEL_BACKGROUND = UIManager.getColor("Panel.background");
