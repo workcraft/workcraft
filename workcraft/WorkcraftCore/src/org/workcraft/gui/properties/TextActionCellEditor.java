@@ -10,7 +10,6 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
-@SuppressWarnings("serial")
 public class TextActionCellEditor extends AbstractCellEditor implements TableCellEditor {
 
     private final JPanel panel = new JPanel(new BorderLayout());
@@ -59,8 +58,9 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
                 leftButton.setText(leftAction.getTitle());
                 leftButton.setToolTipText(ActionUtils.getActionTooltip(leftAction));
                 leftButton.addActionListener(e -> {
-                    leftAction.run();
+                    // Call fireEditingStopped before the action so memento can be saved
                     fireEditingStopped();
+                    leftAction.run();
                 });
             }
 
@@ -83,8 +83,9 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
                 rightButton.setText(rightAction.getTitle());
                 rightButton.setToolTipText(ActionUtils.getActionTooltip(rightAction));
                 rightButton.addActionListener(e -> {
-                    rightAction.run();
+                    // Call fireEditingStopped before the action so memento can be saved
                     fireEditingStopped();
+                    rightAction.run();
                 });
             }
         }

@@ -47,7 +47,7 @@ public class TextAction {
         return foreground;
     }
 
-    public TextAction setBackround(Color value) {
+    public TextAction setBackground(Color value) {
         background = value;
         return this;
     }
