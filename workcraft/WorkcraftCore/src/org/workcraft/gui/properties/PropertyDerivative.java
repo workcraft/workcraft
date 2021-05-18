@@ -31,7 +31,7 @@ public class PropertyDerivative implements PropertyDescriptor {
     }
 
     @Override
-    public Map<? extends Object, String> getChoice() {
+    public Map<?, String> getChoice() {
         return descriptor.getChoice();
     }
 

@@ -39,8 +39,8 @@ public final class PropertyCombiner implements PropertyDescriptor {
     }
 
     @Override
-    public Map<? extends Object, String> getChoice() {
-        Map<? extends Object, String> result = null;
+    public Map<?, String> getChoice() {
+        Map<?, String> result = null;
         for (PropertyDescriptor descriptor: values) {
             result = descriptor.getChoice();
         }
