@@ -9,7 +9,6 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-@SuppressWarnings("serial")
 public class TextActionCellRenderer extends JPanel implements TableCellRenderer {
 
     private final JTextField text = new FlatTextField();

@@ -10,7 +10,6 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 
-@SuppressWarnings("serial")
 public class FileReferenceCellRenderer extends JPanel implements TableCellRenderer {
 
     private final JButton enterButton;

@@ -8,19 +8,19 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-@SuppressWarnings("serial")
 public class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
-    private final FlatComboBox comboBox;
-    private final Color[] colors = {
+    private static final Color[] PALETTE_COLORS = {
             Color.BLACK, Color.DARK_GRAY, Color.GRAY, Color.LIGHT_GRAY, Color.WHITE,
             Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.YELLOW, Color.MAGENTA,
             Color.ORANGE, Color.PINK, new Color(0, 0, 0, 0),
-            };
+    };
+
+    private final FlatComboBox comboBox;
 
     public ColorCellEditor() {
         comboBox = new FlatComboBox();
-        for (Color color: colors) {
+        for (Color color: PALETTE_COLORS) {
             comboBox.addItem(color);
         }
         comboBox.setEditable(true);

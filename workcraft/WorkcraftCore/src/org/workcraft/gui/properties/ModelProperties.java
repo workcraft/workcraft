@@ -18,11 +18,7 @@ public class ModelProperties implements Properties {
         for (PropertyDescriptor descriptor: descriptors) {
             if (descriptor.isCombinable()) {
                 Pair<String, Class<?>> key = new Pair<>(descriptor.getName(), descriptor.getType());
-                Set<PropertyDescriptor> value = categories.get(key);
-                if (value == null) {
-                    value = new HashSet<>();
-                    categories.put(key, value);
-                }
+                Set<PropertyDescriptor> value = categories.computeIfAbsent(key, k -> new HashSet<>());
                 value.add(descriptor);
             }
         }
@@ -45,25 +41,6 @@ public class ModelProperties implements Properties {
     public void addAll(final Collection<PropertyDescriptor> descriptors) {
         if (descriptors != null) {
             propertyDescriptors.addAll(descriptors);
-        }
-    }
-
-    public void insertOrderedByFirstWord(PropertyDescriptor descriptor) {
-        String propertyName = descriptor.getName();
-        int spacePos = propertyName.indexOf(' ');
-        String prefix = (spacePos < 0) ? propertyName : propertyName.substring(0, spacePos);
-        int index = 0;
-        int lastIndex = -1;
-        for (PropertyDescriptor propertyDescriptor : propertyDescriptors) {
-            index++;
-            if (propertyDescriptor.getName().startsWith(prefix)) {
-                lastIndex = index;
-            }
-        }
-        if (lastIndex < 0) {
-            propertyDescriptors.add(descriptor);
-        } else {
-            propertyDescriptors.add(lastIndex, descriptor);
         }
     }
 

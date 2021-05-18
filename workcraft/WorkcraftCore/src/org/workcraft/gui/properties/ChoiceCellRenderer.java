@@ -7,7 +7,6 @@ import java.awt.*;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
-@SuppressWarnings("serial")
 public class ChoiceCellRenderer extends FlatComboBox implements TableCellRenderer {
 
     public ChoiceCellRenderer() {

@@ -14,7 +14,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
-@SuppressWarnings("serial")
 public class FileReferenceCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
     private static final String ENTER_TAG = "enter";
@@ -147,15 +146,13 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
         if (fileReference != null) {
             File file = fileReference.getFile();
             chooseButton.setText(file.getName());
-            if (file != null) {
-                if (file.exists()) {
-                    enterButton.setEnabled(true);
-                    chooseButton.setForeground(Color.BLACK);
-                } else {
-                    chooseButton.setForeground(Color.RED);
-                }
-                clearButton.setEnabled(true);
+            if (file.exists()) {
+                enterButton.setEnabled(true);
+                chooseButton.setForeground(Color.BLACK);
+            } else {
+                chooseButton.setForeground(Color.RED);
             }
+            clearButton.setEnabled(true);
         }
     }
 
