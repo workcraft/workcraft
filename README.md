@@ -16,9 +16,9 @@ https://workcraft.org/.
 
 ### Getting source
 
-Get Workcraft source code and submodules for its platform-specific backend tools
-([workcraft-dist-template](https://github.com/workcraft/workcraft-dist-template) repo)
-and documentation ([workcraft-doc](https://github.com/workcraft/workcraft-doc) repo):
+Get Workcraft source code and a submodule for documentation and
+platform-specific backend tools
+([workcraft-dist-template](https://github.com/workcraft/workcraft-dist-template) repo):
 
     git clone https://github.com/workcraft/workcraft.git
     cd workcraft
