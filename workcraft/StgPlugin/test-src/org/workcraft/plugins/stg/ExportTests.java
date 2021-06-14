@@ -29,7 +29,6 @@ public class ExportTests {
 
     @Test
     public void testVmeCircuitExport() throws DeserialisationException, IOException, SerialisationException {
-
         Framework framework = Framework.getInstance();
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
