@@ -59,11 +59,11 @@ public class StgSimulationTool extends PetriSimulationTool {
     private static final int COLUMN_COLOR = 3;
     private static final String GRAY_CODE = ColorUtils.getHexRGB(Color.GRAY);
 
-    protected HashMap<String, SignalData> signalDataMap = new HashMap<>();
-    protected LinkedList<String> signals = new LinkedList<>();
+    protected Map<String, SignalData> signalDataMap = new HashMap<>();
+    protected List<String> signals = new LinkedList<>();
     protected JTable stateTable;
     private JPanel panel;
-    private HashMap<String, Boolean> initialSignalState = new HashMap<>();
+    private Map<String, Boolean> initialSignalState = new HashMap<>();
     private StgToStgConverter converter;
     private Map<String, MathNode> refToUnderlyingNodeMap;
 
@@ -494,9 +494,9 @@ public class StgSimulationTool extends PetriSimulationTool {
         setStatePaneVisibility(true);
     }
 
-    private HashMap<String, Boolean> getInitialState() {
+    private Map<String, Boolean> getInitialState() {
         Stg stg = getUnderlyingModel();
-        HashMap<String, Boolean> result = StgUtils.guessInitialStateFromSignalPlaces(stg);
+        Map<String, Boolean> result = StgUtils.guessInitialStateFromSignalPlaces(stg);
         Set<String> signalRefs = stg.getSignalReferences();
         if (result.size() < signalRefs.size()) {
             result = StgUtils.getInitialState(stg, 500);

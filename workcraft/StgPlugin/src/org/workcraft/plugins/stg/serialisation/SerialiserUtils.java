@@ -66,7 +66,7 @@ public class SerialiserUtils {
     }
 
     private static void writeInitialState(PrintWriter writer, StgModel stg, Style style) {
-        HashMap<String, Boolean> initialState = StgUtils.getInitialState(stg, 1000);
+        Map<String, Boolean> initialState = StgUtils.getInitialState(stg, 1000);
         if (!initialState.isEmpty()) {
             switch (style) {
             case STG:
@@ -79,7 +79,7 @@ public class SerialiserUtils {
         }
     }
 
-    private static void writeInitialStateLpn(PrintWriter writer, StgModel stg, HashMap<String, Boolean> initialState) {
+    private static void writeInitialStateLpn(PrintWriter writer, StgModel stg, Map<String, Boolean> initialState) {
         writer.write("#@.init_state [");
         for (final Signal.Type type : Signal.Type.values()) {
             for (String signal : sort(stg.getSignalReferences(type))) {
@@ -94,7 +94,7 @@ public class SerialiserUtils {
         writer.write("]\n");
     }
 
-    private static void writeInitialStateStg(PrintWriter writer, StgModel stg, HashMap<String, Boolean> initialState) {
+    private static void writeInitialStateStg(PrintWriter writer, StgModel stg, Map<String, Boolean> initialState) {
         writer.write(".initial state");
         for (final Signal.Type type : Signal.Type.values()) {
             for (String signal : sort(stg.getSignalReferences(type))) {

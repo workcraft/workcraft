@@ -8,7 +8,7 @@ import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationChainResul
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationTask;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.utils.PcompUtils;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
@@ -32,7 +32,7 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return (we == null) || WorkspaceUtils.isApplicable(we, StgModel.class);
+        return (we == null) || WorkspaceUtils.isApplicable(we, Stg.class);
     }
 
     @Override

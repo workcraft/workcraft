@@ -273,8 +273,8 @@ public class StgUtils {
         return null;
     }
 
-    public static HashMap<String, Boolean> getInitialState(StgModel stg, int timeout) {
-        HashMap<String, Boolean> result = new HashMap<>();
+    public static Map<String, Boolean> getInitialState(StgModel stg, int timeout) {
+        Map<String, Boolean> result = new HashMap<>();
         stg = copyStgPreserveSignals(stg);
         Set<String> undefinedSignalRefs = stg.getSignalReferences();
         HashSet<HashMap<Place, Integer>> visitedMarkings = new HashSet<>();

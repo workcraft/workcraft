@@ -3,6 +3,7 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
@@ -58,11 +59,73 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
 
     private Result<? extends VerificationChainOutput> checkTrivialCases() {
         for (WorkspaceEntry we : wes) {
-            if (!WorkspaceUtils.isApplicable(we, StgModel.class)) {
-                return Result.exception("Incorrect model type for " + we.getTitle());
+            if (!WorkspaceUtils.isApplicable(we, Stg.class)) {
+                return Result.exception("Incorrect model type for '" + we.getTitle() + "'");
+            }
+        }
+        Map<WorkspaceEntry, Map<String, Boolean>> initialStateMap = calcInitialStates();
+        Map<String, Boolean> driverInitialState = getDriverInitialState(initialStateMap);
+        // Check initial state consistency for driven signals
+        for (WorkspaceEntry we : wes) {
+            Map<String, Boolean> initialState = initialStateMap.getOrDefault(we, Collections.emptyMap());
+            Collection<String> problems = getInitialStateMismatch(we, initialState, driverInitialState);
+            if (!problems.isEmpty()) {
+                String msg = "Unexpected initial state of input signals in '" + we.getTitle() + "':\n"
+                        + problems.stream()
+                        .map(problem -> PropertyHelper.BULLET_PREFIX + problem)
+                        .collect(Collectors.joining("\n"));
+
+                return Result.exception(msg);
             }
         }
         return null;
+    }
+
+    private Map<WorkspaceEntry, Map<String, Boolean>> calcInitialStates() {
+        Map<WorkspaceEntry, Map<String, Boolean>> result = new HashMap<>();
+        for (WorkspaceEntry we : wes) {
+            Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+            Map<String, Boolean> initialState = StgUtils.getInitialState(stg, 1000);
+            result.put(we, initialState);
+        }
+        return result;
+    }
+
+    private Map<String, Boolean> getDriverInitialState(Map<WorkspaceEntry, Map<String, Boolean>> initialStateMap) {
+        Map<String, Boolean> result = new HashMap<>();
+        for (WorkspaceEntry we : wes) {
+            Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+            Map<String, Boolean> initialState = initialStateMap.getOrDefault(we, Collections.emptyMap());
+            Map<String, String> signalRenames = renames.getOrDefault(we, Collections.emptyMap());
+            for (String signalRef : stg.getSignalReferences(Signal.Type.OUTPUT)) {
+                String driverRef = signalRenames.getOrDefault(signalRef, signalRef);
+                Boolean signalState = initialState.get(signalRef);
+                result.put(driverRef, signalState);
+            }
+        }
+        return result;
+    }
+
+    private Collection<String> getInitialStateMismatch(WorkspaceEntry we,
+            Map<String, Boolean> initialState, Map<String, Boolean> driverInitialState) {
+
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        Map<String, String> signalRenames = renames.getOrDefault(we, Collections.emptyMap());
+        Collection<String> result = new ArrayList<>();
+        for (String signalRef : stg.getSignalReferences(Signal.Type.INPUT)) {
+            Boolean signalState = initialState.get(signalRef);
+            String driverRef = signalRenames.getOrDefault(signalRef, signalRef);
+            Boolean driverState = driverInitialState.get(driverRef);
+            if ((signalState != null) && (driverState != null) && (signalState != driverState)) {
+                result.add("'" + signalRef + "'" + " is " + getLevelString(signalState)
+                        + " while its driver is " + getLevelString(driverState));
+            }
+        }
+        return result;
+    }
+
+    private String getLevelString(boolean state) {
+        return state ? "high" : "low";
     }
 
     private Result<? extends VerificationChainOutput> init() {
