@@ -33,6 +33,6 @@ vme.stg.ps:
 
 vme.stg.dot:
 digraph work {
-  graph [overlap=false, splines=true, nodesep=1.0, ranksep=1.0, rankdir=LR];
+  graph [overlap=false, splines=true, nodesep=1.0, ranksep=1.0, rankdir=TB];
   node [shape=box, fixedsize=true];
 

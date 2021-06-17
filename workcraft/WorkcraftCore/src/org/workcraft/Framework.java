@@ -572,6 +572,7 @@ public final class Framework {
         we.setModelEntry(createVisualIfAbsent(me));
         getWorkspace().addWork(path, we);
         if (open && isInGuiMode()) {
+            // Attempt automatic layout only if the model entry changed (because of creating visual layer)
             if ((me == we.getModelEntry()) || attemptLayout(we.getModelEntry().getVisualModel())) {
                 getMainWindow().createEditorWindow(we);
             }
