@@ -53,14 +53,14 @@ public class RdgTests {
         RefinementDependencyGraph rdg = new RefinementDependencyGraph(srcWe);
         Assertions.assertEquals(vertexCount, rdg.getVertices().size());
         Assertions.assertEquals(edgeCount, rdg.getVertices().stream()
-                .map(rdg::getDependencyMap)
+                .map(rdg::getInstanceDependencyMap)
                 .mapToInt(Map::size)
                 .sum());
 
         Map<File, Set<File>> graph = rdg.getSimpleGraph();
         Assertions.assertEquals(vertexCount, graph.size());
         Assertions.assertEquals(metaEdgeCount, rdg.getVertices().stream()
-                .mapToInt(f -> rdg.getDependencySet(f).size())
+                .mapToInt(f -> rdg.getDependencies(f).size())
                 .sum());
 
         RdgToPetriConverter converter = new RdgToPetriConverter(rdg);
