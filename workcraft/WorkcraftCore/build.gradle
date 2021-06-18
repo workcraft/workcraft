@@ -1,11 +1,11 @@
 dependencies {
-    lib 'org.jetbrains.kotlin:kotlin-stdlib:1.5.0' // for Kotlin support
+    lib 'org.jetbrains.kotlin:kotlin-stdlib:1.5.10' // for Kotlin support
     lib 'org.mozilla:rhino:1.7.13'  // for JavaScript execution
     lib 'com.sun.activation:javax.activation:1.2.0'  // for JavaBeans Activation Framework (JAF)
     lib 'log4j:log4j:1.2.17'  // for configuration of log in FOP
     lib 'net.sf.jga:jga:0.8.3'  // for UnaryFunctor class
     lib 'info.clearthought:table-layout:4.3.0'  // for TableLayout
-    lib 'commons-io:commons-io:2.8.0'  //  for logging in Batik PDF Transcoder
+    lib 'commons-io:commons-io:2.10.0'  //  for logging in Batik PDF Transcoder
     lib 'commons-logging:commons-logging:1.2'  //  for logging in Batik PDF Transcoder
 }
 
