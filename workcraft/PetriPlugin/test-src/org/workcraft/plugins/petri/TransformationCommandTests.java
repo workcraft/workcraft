@@ -14,16 +14,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class TransformationCommandTests {
+class TransformationCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testArcTransformationCommands() throws DeserialisationException {
+    void testArcTransformationCommands() throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String workName = PackageUtils.getPackagePath(getClass(), "basic.pn.work");
@@ -60,7 +60,7 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testProxyTransformationCommands() throws DeserialisationException {
+    void testProxyTransformationCommands() throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String workName = PackageUtils.getPackagePath(getClass(), "basic.pn.work");
@@ -95,7 +95,7 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testContractionTransformationCommands() throws DeserialisationException {
+    void testContractionTransformationCommands() throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String workName = PackageUtils.getPackagePath(getClass(), "basic.pn.work");
@@ -120,7 +120,7 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testMergeTransitionsTransformationCommands() throws DeserialisationException {
+    void testMergeTransitionsTransformationCommands() throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String workName = PackageUtils.getPackagePath(getClass(), "basic.pn.work");

@@ -18,10 +18,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ImportHierarchyTests {
+class ImportHierarchyTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
@@ -29,7 +29,7 @@ public class ImportHierarchyTests {
     }
 
     @Test
-    public void testImportExportHierBuckControl() throws DeserialisationException, SerialisationException, IOException {
+    void testImportExportHierBuckControl() throws DeserialisationException, SerialisationException, IOException {
         testImportExport("hier_buck_control.v");
     }
 

@@ -16,15 +16,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class VerificationCommandTests {
+class VerificationCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
@@ -32,7 +32,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void bufferVerification() throws DeserialisationException {
+    void bufferVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
@@ -45,7 +45,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void withoutEnvironmentVerification() throws DeserialisationException {
+    void withoutEnvironmentVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-without_environment.circuit.work");
         testVerificationCommands(workName,
                 null,  // conformation
@@ -58,7 +58,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void celementVerification() throws DeserialisationException {
+    void celementVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
@@ -71,7 +71,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void mutexBufVerification() throws DeserialisationException {
+    void mutexBufVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "mutex-buf.circuit.work");
         testVerificationCommands(workName,
                 false,  // conformation
@@ -84,7 +84,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void mappedCelementDecomposedVerification() throws DeserialisationException {
+    void mappedCelementDecomposedVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-decomposed-tm.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
@@ -97,7 +97,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void mappedVmeVerification() throws DeserialisationException {
+    void mappedVmeVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
@@ -110,7 +110,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void mappedAbcdBadVerification() throws DeserialisationException {
+    void mappedAbcdBadVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "abcd-bad-tm.circuit.work");
         testVerificationCommands(workName,
                 false,  // conformation
@@ -123,7 +123,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void mappedDlatchVerification() throws DeserialisationException {
+    void mappedDlatchVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch-tm.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
@@ -136,7 +136,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void mappedDlatchConsensusVerification() throws DeserialisationException {
+    void mappedDlatchConsensusVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch-consensus-tm.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation

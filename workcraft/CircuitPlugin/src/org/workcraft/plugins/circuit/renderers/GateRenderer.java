@@ -1,7 +1,12 @@
 package org.workcraft.plugins.circuit.renderers;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.plugins.circuit.naryformula.NaryBooleanFormula;
+import org.workcraft.plugins.circuit.naryformula.NaryBooleanFormulaBuilder;
+import org.workcraft.plugins.circuit.naryformula.NaryBooleanFormulaVisitor;
+
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
@@ -10,12 +15,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.plugins.circuit.naryformula.NaryBooleanFormula;
-import org.workcraft.plugins.circuit.naryformula.NaryBooleanFormulaBuilder;
-import org.workcraft.plugins.circuit.naryformula.NaryBooleanFormulaVisitor;
 
 public class GateRenderer {
 
@@ -108,8 +107,7 @@ public class GateRenderer {
 
                 @Override
                 public Rectangle2D boundingBox() {
-                    Rectangle2D ret = new Rectangle2D.Double(-w / 2, -h / 2, w, h);
-                    return ret;
+                    return new Rectangle2D.Double(-w / 2, -h / 2, w, h);
                 }
             };
         }

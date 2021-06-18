@@ -19,28 +19,28 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.net.URL;
 import java.util.Set;
 
-public class ConversionCommandTests {
+class ConversionCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testCelementPetriConversionCommands() throws DeserialisationException {
+    void testCelementPetriConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
         testPetriConversionCommands(workName);
     }
 
     @Test
-    public void testBuckPetriConversionCommands() throws DeserialisationException {
+    void testBuckPetriConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
         testPetriConversionCommands(workName);
     }
 
     @Test
-    public void testVmePetriConversionCommands() throws DeserialisationException {
+    void testVmePetriConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testPetriConversionCommands(workName);
     }
@@ -84,7 +84,7 @@ public class ConversionCommandTests {
     }
 
     @Test
-    public void testTraceToStgConversionCommands() throws DeserialisationException {
+    void testTraceToStgConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "trace.dtd.work");
         testDtdToStgConversionCommands(workName);
     }

@@ -14,22 +14,22 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class SignalAssertionVerificationCommandTests {
+class SignalAssertionVerificationCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test
-    public void testVmeVerification() throws DeserialisationException {
+    void testVmeVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
 
         final Framework framework = Framework.getInstance();

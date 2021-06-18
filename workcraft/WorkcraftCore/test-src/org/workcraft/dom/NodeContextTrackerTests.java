@@ -8,14 +8,14 @@ import org.workcraft.dom.math.MathNode;
 
 import java.util.Set;
 
-public class NodeContextTrackerTests {
+class NodeContextTrackerTests {
 
     class MockNode extends MathNode {
 
     }
 
     @Test
-    public void testInit() {
+    void testInit() {
         MathGroup group = new MathGroup();
 
         MockNode n1 = new MockNode();
@@ -60,7 +60,7 @@ public class NodeContextTrackerTests {
     }
 
     @Test
-    public void testAddRemove1() {
+    void testAddRemove1() {
         MathGroup group = new MathGroup();
 
         NodeContextTracker nct = new NodeContextTracker();

@@ -13,16 +13,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class MissingToolTests {
+class MissingToolTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testMissingPcompVerification() throws DeserialisationException {
+    void testMissingPcompVerification() throws DeserialisationException {
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp-missing"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
         testMissingTool();
@@ -30,7 +30,7 @@ public class MissingToolTests {
 
 
     @Test
-    public void testMissingMpsatVerification() throws DeserialisationException {
+    void testMissingMpsatVerification() throws DeserialisationException {
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat-missing"));
         testMissingTool();

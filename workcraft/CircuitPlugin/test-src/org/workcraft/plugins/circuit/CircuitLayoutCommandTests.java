@@ -16,29 +16,29 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CircuitLayoutCommandTests {
+class CircuitLayoutCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
     }
 
     @Test
-    public void testBufferTmImport() throws DeserialisationException {
+    void testBufferTmImport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
         testImport(workName);
     }
 
     @Test
-    public void testCelementTmImport() throws DeserialisationException {
+    void testCelementTmImport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-tm.circuit.work");
         testImport(workName);
     }
 
     @Test
-    public void testVmeTmImport() throws DeserialisationException {
+    void testVmeTmImport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testImport(workName);
     }

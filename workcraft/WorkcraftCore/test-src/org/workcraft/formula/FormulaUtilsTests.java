@@ -9,10 +9,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 
-public class FormulaUtilsTests {
+class FormulaUtilsTests {
 
     @Test
-    public void testReplacement() {
+    void testReplacement() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
         BooleanVariable cVar = new FreeVariable("c");
@@ -46,7 +46,7 @@ public class FormulaUtilsTests {
     }
 
     @Test
-    public void testReplaceBinateVariable() {
+    void testReplaceBinateVariable() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
         BooleanVariable sVar = new FreeVariable("s");
@@ -67,7 +67,7 @@ public class FormulaUtilsTests {
     }
 
     @Test
-    public void testExtractVariables() {
+    void testExtractVariables() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
         BooleanVariable cVar = new FreeVariable("c");
@@ -84,7 +84,7 @@ public class FormulaUtilsTests {
     }
 
     @Test
-    public void testInvert() {
+    void testInvert() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
         BooleanVariable cVar = new FreeVariable("c");
@@ -106,7 +106,7 @@ public class FormulaUtilsTests {
     }
 
     @Test
-    public void testDerive() {
+    void testDerive() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
         BooleanVariable cVar = new FreeVariable("c");

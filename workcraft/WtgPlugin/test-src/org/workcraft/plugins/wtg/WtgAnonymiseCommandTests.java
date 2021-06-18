@@ -15,16 +15,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class WtgAnonymiseCommandTests {
+class WtgAnonymiseCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testDlatchWtgAnonymiseCommands() throws DeserialisationException {
+    void testDlatchWtgAnonymiseCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.wtg.work");
         testWtgAnonymiseCommands(workName, new String[]{"s1"}, new String[]{"w1."}, new String[]{"x0", "x1", "x2"});
     }

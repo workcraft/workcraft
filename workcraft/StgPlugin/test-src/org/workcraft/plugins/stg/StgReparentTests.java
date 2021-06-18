@@ -6,10 +6,10 @@ import org.workcraft.dom.math.PageNode;
 
 import java.util.Arrays;
 
-public class StgReparentTests {
+class StgReparentTests {
 
     @Test
-    public void testDummyReparent() {
+    void testDummyReparent() {
         Stg stg = new Stg();
 
         StgPlace place = stg.createPlace("ABC", stg.getRoot());
@@ -44,7 +44,7 @@ public class StgReparentTests {
     }
 
     @Test
-    public void testPlaceReparent() {
+    void testPlaceReparent() {
         Stg stg = new Stg();
 
         DummyTransition dummy = stg.createDummyTransition("ABC", stg.getRoot());
@@ -83,7 +83,7 @@ public class StgReparentTests {
     }
 
     @Test
-    public void testTransitionReparent() {
+    void testTransitionReparent() {
         Stg stg = new Stg();
 
         DummyTransition dummy = stg.createDummyTransition("ABC", stg.getRoot());

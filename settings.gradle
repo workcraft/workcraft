@@ -1,6 +1,6 @@
 pluginManagement {
     plugins {
-        id 'org.jetbrains.kotlin.jvm' version '1.5.0'
+        id 'org.jetbrains.kotlin.jvm' version '1.5.10'
         id 'ca.coglinc.javacc' version '2.4.0'
         id 'com.github.kt3k.coveralls' version '2.12.0'
         id 'de.aaschmid.cpd' version '3.2'
@@ -19,8 +19,8 @@ gradle.ext.javaTargetVersion = JavaVersion.VERSION_1_8
 gradle.ext.javaReleaseVersion = 8  /* Must be integer, e.g. 8 for JDK8*/
 
 // Code quality and coverage tools (Checkstyle, PMD, Jacoco)
-gradle.ext.checkstyleVersion = '8.42'
-gradle.ext.pmdVersion = '6.34.0'
+gradle.ext.checkstyleVersion = '8.43'
+gradle.ext.pmdVersion = '6.35.0'
 gradle.ext.jacocoVersion = '0.8.7'
 
 

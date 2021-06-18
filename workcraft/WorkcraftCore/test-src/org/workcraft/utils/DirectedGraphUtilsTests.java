@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.util.*;
 
-public class DirectedGraphUtilsTests {
+class DirectedGraphUtilsTests {
 
     private static final Map<Integer, Set<Integer>> graph;
 
@@ -25,7 +25,7 @@ public class DirectedGraphUtilsTests {
     }
 
     @Test
-    public void reverseDirectedGraphTest() {
+    void reverseDirectedGraphTest() {
         Map<Integer, Set<Integer>> reversedGraph = new HashMap<>();
         reversedGraph.put(1, new HashSet<>(Arrays.asList(3)));
         reversedGraph.put(2, new HashSet<>(Arrays.asList(1, 3, 5)));
@@ -41,7 +41,7 @@ public class DirectedGraphUtilsTests {
     }
 
     @Test
-    public void projectOddVerticesTest() {
+    void projectOddVerticesTest() {
         Map<Integer, Set<Integer>> oddSubgraph = new HashMap<>();
         oddSubgraph.put(1, new HashSet<>(Arrays.asList(5)));
         oddSubgraph.put(3, new HashSet<>(Arrays.asList(1)));
@@ -52,7 +52,7 @@ public class DirectedGraphUtilsTests {
     }
 
     @Test
-    public void projectEvenVerticesTest() {
+    void projectEvenVerticesTest() {
         Map<Integer, Set<Integer>> evenSubgraph = new HashMap<>();
         evenSubgraph.put(2, new HashSet<>(Arrays.asList()));
         evenSubgraph.put(4, new HashSet<>(Arrays.asList()));
@@ -63,7 +63,7 @@ public class DirectedGraphUtilsTests {
     }
 
     @Test
-    public void findStronglyConnectedComponentsTest() {
+    void findStronglyConnectedComponentsTest() {
         Set<Set<Integer>> components = new HashSet<>();
         components.add(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6)));
         components.add(new HashSet<>(Arrays.asList(7)));
@@ -73,25 +73,25 @@ public class DirectedGraphUtilsTests {
     }
 
     @Test
-    public void findSelfloopVerticesTest() {
+    void findSelfloopVerticesTest() {
         Set<Integer> selfloopVertices = new HashSet<>(Arrays.asList(0, 8));
         Assertions.assertEquals(selfloopVertices, DirectedGraphUtils.findSelfloopVertices(graph));
     }
 
     @Test
-    public void findFeedbackVerticesTest() {
+    void findFeedbackVerticesTest() {
         Set<Integer> feedbackVertices = new HashSet<>(Arrays.asList(0, 3, 8));
         Assertions.assertEquals(feedbackVertices, DirectedGraphUtils.findFeedbackVertices(graph));
     }
 
     @Test
-    public void findLoopedVerticesTest() {
+    void findLoopedVerticesTest() {
         Set<Integer> loopedVertices = new HashSet<>(Arrays.asList(0, 1, 2, 3, 4, 5, 6, 8, 9));
         Assertions.assertEquals(loopedVertices, DirectedGraphUtils.findLoopedVertices(graph));
     }
 
     @Test
-    public void findSimpleCyclesTest() {
+    void findSimpleCyclesTest() {
         Set<List<Integer>> cycles = new HashSet<>();
         cycles.add(Arrays.asList(1, 2, 3));
         cycles.add(Arrays.asList(1, 5, 2, 3));
@@ -105,7 +105,7 @@ public class DirectedGraphUtilsTests {
     }
 
     @Test
-    public void findFileSimpleCyclesTest() {
+    void findFileSimpleCyclesTest() {
         Map<File, Set<File>> fileGraph = new HashMap<>();
         fileGraph.put(new File("1"), new HashSet<>(Arrays.asList(new File("2"), new File("5"), new File("8"))));
         fileGraph.put(new File("2"), new HashSet<>(Arrays.asList(new File("3"), new File("7"), new File("9"))));
@@ -131,7 +131,7 @@ public class DirectedGraphUtilsTests {
     }
 
     @Test
-    public void emptyDirectedGraphTest() {
+    void emptyDirectedGraphTest() {
         Map<Integer, Set<Integer>> emptyGraph = new HashMap<>();
         Assertions.assertEquals(new HashMap<>(), DirectedGraphUtils.reverse(emptyGraph));
         Assertions.assertEquals(new HashMap<>(), DirectedGraphUtils.project(emptyGraph, new HashSet<>()));
@@ -143,7 +143,7 @@ public class DirectedGraphUtilsTests {
     }
 
     @Test
-    public void nullDirectedGraphTest() {
+    void nullDirectedGraphTest() {
         Assertions.assertEquals(null, DirectedGraphUtils.reverse(null));
         Assertions.assertEquals(null, DirectedGraphUtils.project(null, null));
         Assertions.assertEquals(null, DirectedGraphUtils.findStronglyConnectedComponents(null));

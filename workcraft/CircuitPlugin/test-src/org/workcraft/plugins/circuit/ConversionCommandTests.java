@@ -22,34 +22,34 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ConversionCommandTests {
+class ConversionCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
     }
 
     @Test
-    public void testBufferConversionCommands() throws IOException, DeserialisationException {
+    void testBufferConversionCommands() throws IOException, DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
         testConversionCommands(workName, false, 0);
     }
 
     @Test
-    public void testCelementConversionCommands() throws IOException, DeserialisationException {
+    void testCelementConversionCommands() throws IOException, DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
         testConversionCommands(workName, false, 0);
     }
 
     @Test
-    public void testVmeTmConversionCommands() throws IOException, DeserialisationException {
+    void testVmeTmConversionCommands() throws IOException, DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         //testConversionCommands(workName, false, 0);
         testConversionCommands(workName, true, 17);

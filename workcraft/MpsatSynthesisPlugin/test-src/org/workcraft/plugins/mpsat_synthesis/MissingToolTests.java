@@ -13,23 +13,23 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class MissingToolTests {
+class MissingToolTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testMissingMpsatVerification() throws DeserialisationException {
+    void testMissingMpsatVerification() throws DeserialisationException {
         MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat-missing"));
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
         testMissingTool();
     }
 
     @Test
-    public void testMissingGenlibVerification() throws DeserialisationException {
+    void testMissingGenlibVerification() throws DeserialisationException {
         MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib-missing"));
         testMissingTool();

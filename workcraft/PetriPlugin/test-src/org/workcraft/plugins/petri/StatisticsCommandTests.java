@@ -12,15 +12,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class StatisticsCommandTests {
+class StatisticsCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         Framework.getInstance().init();
     }
 
     @Test
-    public void testArcStgStatisticsCommands() throws DeserialisationException {
+    void testArcStgStatisticsCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "basic.pn.work");
         testPetriStatisticsCommands(workName,
                 "Component count:\n" +

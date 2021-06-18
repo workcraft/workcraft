@@ -20,34 +20,34 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CscConflictResolutionCommandTests {
+class CscConflictResolutionCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify"));
     }
 
     @Test
-    public void vmeCscConflictResolution() throws DeserialisationException {
+    void vmeCscConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {"csc0"});
     }
 
     @Test
-    public void arbitrationCscConflictResolution() throws DeserialisationException {
+    void arbitrationCscConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {});
     }
 
     @Test
-    public void togglePageCsc0ConflictResolution() throws DeserialisationException {
+    void togglePageCsc0ConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "toggle-page_csc0.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {"csc0"});
     }

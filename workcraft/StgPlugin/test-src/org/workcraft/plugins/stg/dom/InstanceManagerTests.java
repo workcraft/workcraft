@@ -12,10 +12,10 @@ import org.workcraft.types.Pair;
 import java.util.HashMap;
 import java.util.Map;
 
-public class InstanceManagerTests {
+class InstanceManagerTests {
 
     @Test
-    public void testConstructor() {
+    void testConstructor() {
         new InstanceManager() {
             @Override
             public String getLabel(Node node) {
@@ -38,14 +38,14 @@ public class InstanceManagerTests {
     }
 
     @Test
-    public void testGetReferenceUnknown() {
+    void testGetReferenceUnknown() {
         Map<Node, String> expectedRequests = new HashMap<>();
         final InstanceManager mgr = make(expectedRequests);
         Assertions.assertNull(mgr.getInstance(new DefaultNodeImpl(null)));
     }
 
     @Test
-    public void testAssign() {
+    void testAssign() {
         Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
@@ -63,7 +63,7 @@ public class InstanceManagerTests {
     }
 
     @Test
-    public void testAssignAfterRemove() {
+    void testAssignAfterRemove() {
         Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
@@ -89,7 +89,7 @@ public class InstanceManagerTests {
     }
 
     @Test
-    public void testRemove() {
+    void testRemove() {
         Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
@@ -104,7 +104,7 @@ public class InstanceManagerTests {
     }
 
     @Test
-    public void testDoubleAssign() {
+    void testDoubleAssign() {
         Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         expectedRequests.put(o1, "abc");
@@ -114,7 +114,7 @@ public class InstanceManagerTests {
     }
 
     @Test
-    public void testAssignForced() {
+    void testAssignForced() {
         Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         expectedRequests.put(o1, "abc");
@@ -124,7 +124,7 @@ public class InstanceManagerTests {
     }
 
     @Test
-    public void testAssignForcedExistingId() {
+    void testAssignForcedExistingId() {
         Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
@@ -136,7 +136,7 @@ public class InstanceManagerTests {
     }
 
     @Test
-    public void testNotFound() {
+    void testNotFound() {
         InstanceManager mgr = new InstanceManager() {
             @Override
             public String getLabel(Node node) {

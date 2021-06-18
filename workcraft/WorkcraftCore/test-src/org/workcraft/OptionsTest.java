@@ -11,13 +11,13 @@ import java.util.Collections;
 class OptionsTest {
 
     @Test
-    public void testEmptyOptions() {
+    void testEmptyOptions() {
         testOptions(new Options(Collections.emptyList()), Collections.emptyList(), null, null, null,
                 false, false, false, false);
     }
 
     @Test
-    public void testAllOptions() {
+    void testAllOptions() {
         testOptions(new Options(Arrays.asList("aaa", "bbb", "-dir:abc/def", "-exec:script.js", "-port:12345",
                 "-nogui", "-noconfig", "-help", "-version")),
                 Arrays.asList("aaa", "bbb"), new File("abc/def"), "script.js", 12345,
@@ -25,13 +25,13 @@ class OptionsTest {
     }
 
     @Test
-    public void testWrongOptions() {
+    void testWrongOptions() {
         testOptions(new Options(new String[] {"-skip", "aaa", "-skip", "bbb", ""}), Arrays.asList("aaa", "bbb"),
                 null, null, null, false, false, false, false);
     }
 
     @Test
-    public void testRepeatedOptions() {
+    void testRepeatedOptions() {
         testOptions(new Options(Arrays.asList("-dir:123", "-exec:\"oneliner\"", "-port:0",
                 "aaa", "bbb", "-dir:abc/def", "-exec:script.js", "-port:12345")),
                 Arrays.asList("aaa", "bbb"), new File("abc/def"), "script.js", 12345,
@@ -39,7 +39,7 @@ class OptionsTest {
     }
 
     @Test
-    public void testHelpMessageOptions() {
+    void testHelpMessageOptions() {
         String helpMessage = Options.getHelpMessage();
         Assertions.assertNotNull(helpMessage);
         Assertions.assertFalse(helpMessage.isEmpty());

@@ -22,28 +22,28 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ParallelCompositionCommandTests {
+class ParallelCompositionCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
     }
 
     @Test
-    public void testIncorrectComposition() {
+    void testIncorrectComposition() {
         ParallelCompositionCommand command = new ParallelCompositionCommand();
         Assertions.assertNull(command.execute(null, command.deserialiseData("incorrect work file names")));
     }
 
     @Test
-    public void testCycleAndChargeComposition() {
+    void testCycleAndChargeComposition() {
         String cycleWorkName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
         String chargeWorkName = PackageUtils.getPackagePath(getClass(), "charge.stg.work");
 

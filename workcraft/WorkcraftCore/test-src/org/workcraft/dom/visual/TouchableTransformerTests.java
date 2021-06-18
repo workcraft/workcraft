@@ -7,7 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-public class TouchableTransformerTests {
+class TouchableTransformerTests {
 
     private static class Dummy implements Touchable {
         @Override
@@ -27,7 +27,7 @@ public class TouchableTransformerTests {
     }
 
     @Test
-    public void testHitTestIdentity() {
+    void testHitTestIdentity() {
         testHitTestIdentity(new Point2D.Double(88, 33), true);
         testHitTestIdentity(new Point2D.Double(0, 0), false);
         testHitTestIdentity(new Point2D.Double(-8, 3), false);
@@ -49,7 +49,7 @@ public class TouchableTransformerTests {
     }
 
     @Test
-    public void testBBIdentity() {
+    void testBBIdentity() {
         testBBIdentity(new Rectangle2D.Double(88, 33, 3, 3));
         testBBIdentity(new Rectangle2D.Double(0, 0, 10, 10));
         testBBIdentity(null);
@@ -72,7 +72,7 @@ public class TouchableTransformerTests {
     }
 
     @Test
-    public void testRotateBoundingBox() {
+    void testRotateBoundingBox() {
         final Rectangle2D bb = new Rectangle2D.Double(0, 0, 1, 1);
         AffineTransform transform = AffineTransform.getRotateInstance(3.1415926535897932384626433832795 / 4.0);
 
@@ -95,7 +95,7 @@ public class TouchableTransformerTests {
     }
 
     @Test
-    public void testTranslateHitTest() {
+    void testTranslateHitTest() {
         TouchableTransformer toucher = new TouchableTransformer(
                 new Dummy() {
                     @Override

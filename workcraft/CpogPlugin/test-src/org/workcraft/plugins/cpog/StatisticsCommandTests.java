@@ -12,16 +12,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class StatisticsCommandTests {
+class StatisticsCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testInstructionsScenariopogStatisticsCommands() throws DeserialisationException {
+    void testInstructionsScenariopogStatisticsCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "instructions-scenario.cpog.work");
         testCpogStatisticsCommands(workName,
                 "Component count:"
@@ -37,7 +37,7 @@ public class StatisticsCommandTests {
     }
 
     @Test
-    public void testInstructionsEncodingStatisticsCommands() throws DeserialisationException {
+    void testInstructionsEncodingStatisticsCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "instructions-encoding.cpog.work");
         testCpogStatisticsCommands(workName,
                 "Component count:"

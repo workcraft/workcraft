@@ -339,7 +339,7 @@ public final class WorkUtils {
         ZipEntry ze;
         while ((ze = zis.getNextEntry()) != null) {
             String name = ze.getName();
-            if (name.startsWith(RESOURCES_WORK_ENTRY) && !name.equals(RESOURCES_WORK_ENTRY)) {
+            if (name.startsWith(RESOURCES_WORK_ENTRY) && !RESOURCES_WORK_ENTRY.equals(name)) {
                 String key = name.substring(RESOURCES_WORK_ENTRY.length());
                 result.add(new Resource(key, zis));
             }

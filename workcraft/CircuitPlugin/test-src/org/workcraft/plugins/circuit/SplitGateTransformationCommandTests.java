@@ -16,28 +16,28 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Set;
 
-public class SplitGateTransformationCommandTests {
+class SplitGateTransformationCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testDisconnectedSplitGateTransformationCommand() throws DeserialisationException {
+    void testDisconnectedSplitGateTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "split-disconnected.circuit.work");
         testSplitGateTransformationCommand(workName, 0, 3, 5, 2);
     }
 
     @Test
-    public void testLiteralReuseSplitGateTransformationCommand() throws DeserialisationException {
+    void testLiteralReuseSplitGateTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "split-literal_reuse.circuit.work");
         testSplitGateTransformationCommand(workName, 0, 3, 5, 2);
     }
 
     @Test
-    public void testVmeSplitGateTransformationCommand() throws DeserialisationException {
+    void testVmeSplitGateTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testSplitGateTransformationCommand(workName, 15, 18, 85, 0);
     }

@@ -15,16 +15,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
-public class AnonymiseCommandTests {
+class AnonymiseCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testVmeStgAnonymiseCommands() throws DeserialisationException {
+    void testVmeStgAnonymiseCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testStgAnonymiseCommands(workName, new String[]{"p0", "p1", "p2", "p3"}, new String[]{"in0", "in1", "in2", "out0", "out1", "out2"});
     }

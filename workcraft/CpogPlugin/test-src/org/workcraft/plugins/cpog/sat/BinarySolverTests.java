@@ -7,10 +7,10 @@ import org.workcraft.plugins.cpog.encoding.BinaryNumberProvider;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
-public class BinarySolverTests extends SolverTests {
+class BinarySolverTests extends SolverTests {
 
     @BeforeAll
-    public static void setSatSolver() {
+    static void setSatSolver() {
         if (DesktopApi.getOs().isWindows()) {
             CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
             CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));

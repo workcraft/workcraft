@@ -7,7 +7,7 @@ import org.workcraft.formula.dnf.DnfGenerator;
 import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.utils.SetUtils;
 
-public class NfConverterTests {
+class NfConverterTests {
 
     private static final DumbBooleanWorker WORKER = DumbBooleanWorker.getInstance();
 
@@ -24,7 +24,7 @@ public class NfConverterTests {
     private static BooleanFormula f4 = WORKER.or(WORKER.and(a, b), WORKER.and(WORKER.not(b), c));
 
     @Test
-    public void testDnfConverter() {
+    void testDnfConverter() {
         testDnfConverter(new String[][]{{"a", "b"}}, f1);
         testDnfConverter(new String[][]{{"a", "b"}, {"a", "c"}}, f2);
         testDnfConverter(new String[][]{{"a"}, {"b", "c"}}, f3);
@@ -36,7 +36,7 @@ public class NfConverterTests {
     }
 
     @Test
-    public void testCnfConverter() {
+    void testCnfConverter() {
         testCnfConverter(new String[][]{{"a"}, {"b"}}, f1);
         testCnfConverter(new String[][]{{"a"}, {"b", "c"}}, f2);
         testCnfConverter(new String[][]{{"a", "b"}, {"a", "c"}}, f3);

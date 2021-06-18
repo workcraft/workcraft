@@ -18,15 +18,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class VerificationCommandTests {
+class VerificationCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
@@ -34,7 +34,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void testPhilosophersDeadlockVerification() throws DeserialisationException {
+    void testPhilosophersDeadlockVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "philosophers-deadlock.pn.work");
         testVerificationCommands(workName,
                 null,  // combined
@@ -53,7 +53,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void testPhilosophersNoDeadlockVerification() throws DeserialisationException {
+    void testPhilosophersNoDeadlockVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "philosophers-no_deadlock.pn.work");
         testVerificationCommands(workName,
                 null,  // combined
@@ -72,7 +72,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void testVmeVerification() throws DeserialisationException {
+    void testVmeVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testVerificationCommands(workName,
                 true,  // combined
@@ -91,7 +91,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void testArbitrationVerification() throws DeserialisationException {
+    void testArbitrationVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
         testVerificationCommands(workName,
                 true,  // combined
@@ -110,7 +110,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void testBadVerification() throws DeserialisationException {
+    void testBadVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "bad.stg.work");
         testVerificationCommands(workName,
                 false, // combined
@@ -129,7 +129,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void testCycleVerification() throws DeserialisationException {
+    void testCycleVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle.stg.work");
         testVerificationCommands(workName,
                 null, // combined
@@ -148,7 +148,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void testCycleMutexVerification() throws DeserialisationException {
+    void testCycleMutexVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
         testVerificationCommands(workName,
                 true, // combined
@@ -167,7 +167,7 @@ public class VerificationCommandTests {
     }
 
     @Test
-    public void testInconsistentVerification() throws DeserialisationException {
+    void testInconsistentVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "consistency_violation-no_alternation.stg.work");
         testVerificationCommands(workName,
                 false, // combined

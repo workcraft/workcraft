@@ -20,28 +20,28 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.net.URL;
 import java.util.Set;
 
-public class ConversionCommandsTests {
+class ConversionCommandsTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify"));
     }
 
     @Test
-    public void bufferUntoggleConversion() throws DeserialisationException {
+    void bufferUntoggleConversion() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
         testUntoggleConversion(workName);
     }
 
     @Test
-    public void celementUntoggleConversion() throws DeserialisationException {
+    void celementUntoggleConversion() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
         testUntoggleConversion(workName);
     }
@@ -78,12 +78,12 @@ public class ConversionCommandsTests {
     }
 
     @Test
-    public void toggleCscConflictResolution() throws DeserialisationException {
+    void toggleCscConflictResolution() throws DeserialisationException {
         testCscConflictResolution("org/workcraft/plugins/petrify/toggle.stg.work");
     }
 
     @Test
-    public void vmeCscConflictResolution() throws DeserialisationException {
+    void vmeCscConflictResolution() throws DeserialisationException {
         testCscConflictResolution("org/workcraft/plugins/petrify/vme.stg.work");
     }
 

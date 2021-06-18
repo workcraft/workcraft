@@ -15,15 +15,15 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NwayConformationVerificationCommandTests {
+class NwayConformationVerificationCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
@@ -31,7 +31,7 @@ public class NwayConformationVerificationCommandTests {
     }
 
     @Test
-    public void testHoldNwayConformationVerification() {
+    void testHoldNwayConformationVerification() {
         testConformationNwayVerificationCommand(true,
                 "block1.stg.work",
                 "block2.stg.work",
@@ -39,7 +39,7 @@ public class NwayConformationVerificationCommandTests {
     }
 
     @Test
-    public void testViolateNwayConformationVerification() {
+    void testViolateNwayConformationVerification() {
         testConformationNwayVerificationCommand(false,
                  "block1-bad.stg.work",
                 "block2.stg.work",
@@ -47,13 +47,13 @@ public class NwayConformationVerificationCommandTests {
     }
 
     @Test
-    public void testFailNwayConformationVerification() {
+    void testFailNwayConformationVerification() {
         testConformationNwayVerificationCommand(null,
                 "block1.stg.work");
     }
 
     @Test
-    public void testFailIncorrectNwayConformationVerification() {
+    void testFailIncorrectNwayConformationVerification() {
         testConformationNwayVerificationCommand(null,
                 "block.stg.work",
                 "block.stg.work");

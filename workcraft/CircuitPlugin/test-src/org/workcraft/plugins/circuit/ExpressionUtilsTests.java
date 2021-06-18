@@ -4,10 +4,10 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.plugins.circuit.utils.ExpressionUtils;
 
-public class ExpressionUtilsTests {
+class ExpressionUtilsTests {
 
     @Test
-    public void extractSetTest() {
+    void extractSetTest() {
         Assertions.assertEquals("", ExpressionUtils.extactSetExpression("", "x"));
         Assertions.assertEquals("", ExpressionUtils.extactSetExpression("x", "x"));
         Assertions.assertEquals("SET", ExpressionUtils.extactSetExpression("SET + x * !RESET", "x"));
@@ -22,7 +22,7 @@ public class ExpressionUtilsTests {
     }
 
     @Test
-    public void extractResetTest() {
+    void extractResetTest() {
         Assertions.assertEquals("", ExpressionUtils.extactResetExpression("", "x"));
         Assertions.assertEquals("", ExpressionUtils.extactResetExpression("x", "x"));
         Assertions.assertEquals("RESET", ExpressionUtils.extactResetExpression("SET + x * !RESET", "x"));

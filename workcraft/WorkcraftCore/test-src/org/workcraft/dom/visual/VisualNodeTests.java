@@ -8,14 +8,14 @@ import org.workcraft.utils.Hierarchy;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 
-public class VisualNodeTests {
+class VisualNodeTests {
 
     public static VisualGroup createGroup(VisualGroup parent) {
         return Tools.createGroup(parent);
     }
 
     @Test
-    public void testTransformChangeNotify() {
+    void testTransformChangeNotify() {
         final SquareNode node = new SquareNode(null, new Rectangle2D.Double(0, 0, 1, 1));
         final Boolean[] hit = {false};
         node.addObserver(e -> {
@@ -30,7 +30,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void testParentToAncestorTransform() {
+    void testParentToAncestorTransform() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);
@@ -79,7 +79,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void testGetPath() {
+    void testGetPath() {
         VisualGroup root = createGroup(null);
         Assertions.assertEquals(1, Hierarchy.getPath(root).length);
         VisualGroup node1 = createGroup(root);
@@ -89,7 +89,7 @@ public class VisualNodeTests {
     }
 
     @Test
-    public void testFindCommonParent() {
+    void testFindCommonParent() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         VisualGroup node2 = createGroup(root);

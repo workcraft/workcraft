@@ -5,17 +5,17 @@ import org.junit.jupiter.api.Test;
 
 import java.awt.*;
 
-public class ColorUtilsTests {
+class ColorUtilsTests {
 
     @Test
-    public void fadeTest() {
+    void fadeTest() {
         Color color = ColorUtils.getRandomColor();
         Assertions.assertEquals(Color.BLACK, ColorUtils.fade(color, 0.0));
         Assertions.assertEquals(color, ColorUtils.fade(color, 1.0));
     }
 
     @Test
-    public void coloriseTest() {
+    void coloriseTest() {
         Color color = ColorUtils.getRandomColor();
         Assertions.assertEquals(color, ColorUtils.colorise(color, null));
         Assertions.assertEquals(Color.BLACK, ColorUtils.colorise(Color.BLACK, Color.BLACK));
@@ -24,7 +24,7 @@ public class ColorUtilsTests {
     }
 
     @Test
-    public void mixTest() {
+    void mixTest() {
         Assertions.assertEquals(Color.BLACK, ColorUtils.mix(Color.BLACK, Color.BLACK));
         Assertions.assertEquals(Color.GRAY, ColorUtils.mix(Color.BLACK, Color.WHITE));
         Assertions.assertEquals(new Color(85, 85, 85), ColorUtils.mix(Color.RED, Color.GREEN, Color.BLUE));
@@ -32,13 +32,13 @@ public class ColorUtilsTests {
     }
 
     @Test
-    public void labColorTest() {
+    void labColorTest() {
         Assertions.assertEquals(new Color(174, 168, 188),
                 ColorUtils.getLabColor(0.7f, 0.5f, 0.5f));
     }
 
     @Test
-    public void getHsbPaletteTest() {
+    void getHsbPaletteTest() {
         float[] hs = new float[1];
         float[] ss = new float[2];
         float[] bs = new float[3];
@@ -46,7 +46,7 @@ public class ColorUtilsTests {
     }
 
     @Test
-    public void hexRGBTest() {
+    void hexRGBTest() {
         Assertions.assertEquals("#ffffff", ColorUtils.getHexRGB(Color.WHITE));
         Assertions.assertEquals("#ff0000", ColorUtils.getHexRGB(Color.RED));
         Assertions.assertEquals("#00ff00", ColorUtils.getHexRGB(Color.GREEN));
@@ -54,7 +54,7 @@ public class ColorUtilsTests {
     }
 
     @Test
-    public void hexARGBTest() {
+    void hexARGBTest() {
         Assertions.assertEquals("#ffffffff", ColorUtils.getHexARGB(Color.WHITE));
         Assertions.assertEquals("#ffff0000", ColorUtils.getHexARGB(Color.RED));
         Assertions.assertEquals("#ff00ff00", ColorUtils.getHexARGB(Color.GREEN));

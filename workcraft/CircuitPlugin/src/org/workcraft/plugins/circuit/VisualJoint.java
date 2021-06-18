@@ -18,7 +18,8 @@ import java.awt.geom.Rectangle2D;
 @Hotkey(KeyEvent.VK_J)
 @SVGIcon("images/circuit-node-joint.svg")
 public class VisualJoint extends VisualComponent {
-    public static double size = 0.25;
+
+    private static final double size = 0.25;
     public static final Shape shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);
 
     public VisualJoint(Joint joint) {

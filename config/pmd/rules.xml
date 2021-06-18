@@ -103,6 +103,8 @@
         <exclude name="ExcessiveMethodLength"/> <!-- Interesting to enforce -->
         <exclude name="ExcessiveClassLength"/> <!-- Interesting to enforce -->
         <exclude name="SimplifyBooleanReturns"/> <!-- Interesting to enforce -->
+        <exclude name="CognitiveComplexity"/> <!-- Too restrictive and violated often -->
+        <exclude name="MutableStaticState"/> <!-- Interesting to enforce but used often -->
     </rule>
 
 </ruleset>

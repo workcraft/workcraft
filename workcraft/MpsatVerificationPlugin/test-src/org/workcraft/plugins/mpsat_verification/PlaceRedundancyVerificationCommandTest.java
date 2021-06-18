@@ -15,15 +15,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class PlaceRedundancyVerificationCommandTest {
+class PlaceRedundancyVerificationCommandTest {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
@@ -31,14 +31,14 @@ public class PlaceRedundancyVerificationCommandTest {
     }
 
     @Test
-    public void testPhilosophersPlaceRedundancyVerification() throws DeserialisationException {
+    void testPhilosophersPlaceRedundancyVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "philosophers-deadlock.pn.work");
         testPlaceRedundancyVerificationCommands(workName, "north.p4 south.p5", true);
         testPlaceRedundancyVerificationCommands(workName, " fork1_free  north.p4 ", false);
     }
 
     @Test
-    public void testVmePlaceRedundancyVerification() throws DeserialisationException {
+    void testVmePlaceRedundancyVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testPlaceRedundancyVerificationCommands(workName, "<d+,dtack+>", false);
         testPlaceRedundancyVerificationCommands(workName, "<d+, dtack+>", null);
@@ -46,7 +46,7 @@ public class PlaceRedundancyVerificationCommandTest {
     }
 
     @Test
-    public void testReadArcPlaceRedundancyVerification() throws DeserialisationException {
+    void testReadArcPlaceRedundancyVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "read_arc_place_redundancy.stg.work");
         testPlaceRedundancyVerificationCommands(workName, "essential", false);
         testPlaceRedundancyVerificationCommands(workName, "redundant", true);

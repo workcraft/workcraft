@@ -12,16 +12,16 @@ import org.workcraft.plugins.stg.commands.StgStatisticsCommand;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class StatisticsCommandTests {
+class StatisticsCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testCelementStgStatisticsCommands() throws DeserialisationException {
+    void testCelementStgStatisticsCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
         testStgStatisticsCommands(workName,
                 "Component count:"
@@ -58,7 +58,7 @@ public class StatisticsCommandTests {
     }
 
     @Test
-    public void testBuckStgStatisticsCommands() throws DeserialisationException {
+    void testBuckStgStatisticsCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
         testStgStatisticsCommands(workName,
                 "Component count:"
@@ -95,7 +95,7 @@ public class StatisticsCommandTests {
     }
 
     @Test
-    public void testVmeStgStatisticsCommands() throws DeserialisationException {
+    void testVmeStgStatisticsCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testStgStatisticsCommands(workName,
                 "Component count:"

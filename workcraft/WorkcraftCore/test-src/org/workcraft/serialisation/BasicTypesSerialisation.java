@@ -11,7 +11,7 @@ import org.workcraft.utils.XmlUtils;
 
 import java.awt.geom.AffineTransform;
 
-public class BasicTypesSerialisation {
+class BasicTypesSerialisation {
 
     public enum TestEnum {
         ONE,
@@ -19,7 +19,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void enumTest() {
+    void enumTest() {
         try {
             Document doc = XmlUtils.createDocument();
             EnumSerialiser s = new EnumSerialiser();
@@ -39,7 +39,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void intTest() {
+    void intTest() {
         try {
             Document doc = XmlUtils.createDocument();
             IntSerialiser s = new IntSerialiser();
@@ -59,7 +59,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void doubleTest() {
+    void doubleTest() {
         try {
             Document doc = XmlUtils.createDocument();
             DoubleSerialiser s = new DoubleSerialiser();
@@ -84,7 +84,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void transformTest() {
+    void transformTest() {
         try {
             Document doc = XmlUtils.createDocument();
             AffineTransformSerialiser s = new AffineTransformSerialiser();
@@ -104,7 +104,7 @@ public class BasicTypesSerialisation {
     }
 
     @Test
-    public void stringTest() {
+    void stringTest() {
         try {
             Document doc = XmlUtils.createDocument();
             StringSerialiser s = new StringSerialiser();

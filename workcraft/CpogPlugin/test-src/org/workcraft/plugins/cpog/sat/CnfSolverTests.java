@@ -9,10 +9,10 @@ import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
 @Disabled // This only works with MINISAT solver which is not supported in Travis OSX
-public class CnfSolverTests extends SolverTests {
+class CnfSolverTests extends SolverTests {
 
     @BeforeAll
-    public static void setSatSolver() {
+    static void setSatSolver() {
         if (DesktopApi.getOs().isWindows()) {
             CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
             CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));

@@ -17,16 +17,16 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-public class ExportTests {
+class ExportTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testVmeCircuitExport() throws DeserialisationException, IOException, SerialisationException {
+    void testVmeCircuitExport() throws DeserialisationException, IOException, SerialisationException {
 
         Framework framework = Framework.getInstance();
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();

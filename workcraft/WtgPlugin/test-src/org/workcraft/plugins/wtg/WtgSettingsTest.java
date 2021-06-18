@@ -7,17 +7,17 @@ import org.workcraft.Config;
 import org.workcraft.Framework;
 import org.workcraft.plugins.dtd.DtdSettings;
 
-public class WtgSettingsTest {
+class WtgSettingsTest {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         framework.resetConfig();
     }
 
     @Test
-    public void dtdSettingsTest() {
+    void dtdSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "DtdSettings";
 
@@ -29,7 +29,7 @@ public class WtgSettingsTest {
     }
 
     @Test
-    public void wtgSettingsTest() {
+    void wtgSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "WtgSettings";
 

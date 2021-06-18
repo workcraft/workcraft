@@ -16,17 +16,17 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class ConversionCommandTests {
+class ConversionCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         framework.resetConfig();
     }
 
     @Test
-    public void testVmeConversionCommands() throws DeserialisationException {
+    void testVmeConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.fst.work");
         testConversionCommands(workName);
     }

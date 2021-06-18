@@ -13,16 +13,16 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EditTests {
+class EditTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testCreateCircuit() throws InvalidConnectionException {
+    void testCreateCircuit() throws InvalidConnectionException {
         VisualCircuit circuit = new VisualCircuit(new Circuit());
 
         VisualContact westPort = circuit.getOrCreatePort("in1", Contact.IOType.INPUT);

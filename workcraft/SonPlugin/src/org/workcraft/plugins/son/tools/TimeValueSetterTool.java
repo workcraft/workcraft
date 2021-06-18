@@ -129,13 +129,13 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
     private void setValue(Node node, String title, JTextField field, boolean isMin) {
         autoComplete(field);
-        if (title.equals(timeLabel)) {
+        if (timeLabel.equals(title)) {
             setTimeLabelValue(node, field, isMin);
-        } else if (title.equals(startLabel)) {
+        } else if (startLabel.equals(title)) {
             setStartLabel(node, field, isMin);
-        } else if (title.equals(durationLabel)) {
+        } else if (durationLabel.equals(title)) {
             setDurationLabel(node, field, isMin);
-        } else if (title.equals(endLabel)) {
+        } else if (endLabel.equals(title)) {
             setEndLabel(node, field, isMin);
         }
     }

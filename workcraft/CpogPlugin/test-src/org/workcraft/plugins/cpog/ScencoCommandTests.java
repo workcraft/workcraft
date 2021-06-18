@@ -19,22 +19,22 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.net.URL;
 import java.util.Collection;
 
-public class ScencoCommandTests {
+class ScencoCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         CpogSettings.setScencoCommand(BackendUtils.getTemplateToolPath("ScEnco", "scenco"));
     }
 
     @Test
-    public void cpogSettingsTest() throws DeserialisationException {
+    void cpogSettingsTest() throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String workName = PackageUtils.getPackagePath(getClass(), "instructions-scenario.cpog.work");

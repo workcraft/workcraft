@@ -8,13 +8,13 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.MockMathModel;
 import org.workcraft.exceptions.InvalidConnectionException;
 
-public class ModelUtilsTests {
+class ModelUtilsTests {
 
     static class MockNode extends MathNode {
     }
 
     @Test
-    public void testGroupWithEmptySelection() throws InvalidConnectionException {
+    void testGroupWithEmptySelection() throws InvalidConnectionException {
         MathModel model = new MockMathModel();
 
         MathNode n1 = new MockNode();

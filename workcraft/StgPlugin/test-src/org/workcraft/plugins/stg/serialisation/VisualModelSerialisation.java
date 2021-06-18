@@ -16,10 +16,10 @@ import org.workcraft.shared.DataAccumulator;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class VisualModelSerialisation {
+class VisualModelSerialisation {
 
     @Test
-    public void simpleSaveLoad() throws SerialisationException, DeserialisationException {
+    void simpleSaveLoad() throws SerialisationException, DeserialisationException {
 
         Stg stg = XMLSerialisationTestingUtils.createTestSTG1();
         VisualStg visualstg = new VisualStg(stg);

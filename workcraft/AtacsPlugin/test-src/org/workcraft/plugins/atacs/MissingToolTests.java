@@ -12,16 +12,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class MissingToolTests {
+class MissingToolTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testMissingAtacsVerification() throws DeserialisationException {
+    void testMissingAtacsVerification() throws DeserialisationException {
         AtacsSettings.setCommand(BackendUtils.getTemplateToolPath("ATACS", "atacs-missing"));
         testMissingTool();
     }

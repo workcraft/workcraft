@@ -13,7 +13,7 @@ import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
 @Disabled // This only works with MINISAT solver which is not supported in Travis OSX
-public class ForcedVarsSolverTests {
+class ForcedVarsSolverTests {
 
     private static final boolean DEBUG = false;
     private static final String[] smallTest1 = {"a"};
@@ -60,7 +60,7 @@ public class ForcedVarsSolverTests {
     }
 
     @BeforeAll
-    public static void setSatSolver() {
+    static void setSatSolver() {
         if (DesktopApi.getOs().isWindows()) {
             CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
             CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));
@@ -69,67 +69,67 @@ public class ForcedVarsSolverTests {
     }
 
     @Test
-    public void solveSmall1() {
+    void solveSmall1() {
         testSolve(smallTest1, 0, 0, true);
     }
 
     @Test
-    public void solveSmall200Unsolvable() {
+    void solveSmall200Unsolvable() {
         testSolve(smallTest2, 0, 0, false);
     }
 
     @Test
-    public void solveSmall212Unsolvable() {
+    void solveSmall212Unsolvable() {
         testSolve(smallTest2, 1, 2, false);
     }
 
     @Test
-    public void solveSmall213Solvable() {
+    void solveSmall213Solvable() {
         testSolve(smallTest2, 1, 3, true);
     }
 
     @Test
-    public void solveSmall311Solvable() {
+    void solveSmall311Solvable() {
         testSolve(smallTest3, 1, 1, true);
     }
 
     @Test
-    public void solveSmall310Unsolvable() {
+    void solveSmall310Unsolvable() {
         testSolve(smallTest3, 1, 0, false);
     }
 
     @Test
-    public void solveSmall410Unsolvable() {
+    void solveSmall410Unsolvable() {
         testSolve(smallTest4, 1, 0, false);
     }
 
     @Test
-    public void solveSmall411Solvable() {
+    void solveSmall411Solvable() {
         testSolve(smallTest4, 1, 1, true);
     }
 
     @Test
-    public void solveSmall514Unsolvable() {
+    void solveSmall514Unsolvable() {
         testSolve(smallTest5, 1, 4, false);
     }
 
     @Test
-    public void solveSmall521Unsolvable() {
+    void solveSmall521Unsolvable() {
         testSolve(smallTest5, 2, 1, false);
     }
 
     @Test
-    public void solveSmall522Solvable() {
+    void solveSmall522Solvable() {
         testSolve(smallTest5, 2, 2, true);
     }
 
     @Test
-    public void solveSmall622Unsolvable() {
+    void solveSmall622Unsolvable() {
         testSolve(smallTest6, 2, 2, false);
     }
 
     @Test
-    public void solveSmall623Solvable() {
+    void solveSmall623Solvable() {
         testSolve(smallTest6, 2, 3, true);
     }
 

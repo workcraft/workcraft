@@ -11,16 +11,16 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.ModelPropertyUtils;
 
-public class PropertiesTests {
+class PropertiesTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testProperties() throws VisualModelInstantiationException, InvalidConnectionException {
+    void testProperties() throws VisualModelInstantiationException, InvalidConnectionException {
         StgDescriptor modelDescriptor = new StgDescriptor();
         Stg model = modelDescriptor.createMathModel();
 

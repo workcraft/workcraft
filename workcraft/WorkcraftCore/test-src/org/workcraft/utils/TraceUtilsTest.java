@@ -9,10 +9,10 @@ import org.workcraft.types.Pair;
 import java.util.Arrays;
 import java.util.List;
 
-public class TraceUtilsTest {
+class TraceUtilsTest {
 
     @Test
-    public void hasTraceTest() {
+    void hasTraceTest() {
         Assertions.assertFalse(new Solution(null, null).hasTrace());
         Assertions.assertTrue(new Solution(new Trace()).hasTrace());
         Assertions.assertTrue(new Solution(new Trace(), new Trace()).hasTrace());
@@ -20,7 +20,7 @@ public class TraceUtilsTest {
     }
 
     @Test
-    public void serialiseSolutionTest() {
+    void serialiseSolutionTest() {
         Assertions.assertEquals("[no trace]", new Solution(null).toString());
         Assertions.assertEquals("[empty trace]", new Solution(new Trace()).toString());
         serialiseSolutionCheck(null, -1, null, -1, -1, null);
@@ -53,7 +53,7 @@ public class TraceUtilsTest {
     }
 
     @Test
-    public void deserialiseSolutionTest() {
+    void deserialiseSolutionTest() {
         deserialiseSolutionCheck("", Arrays.asList(), 0, null, -1, -1);
         deserialiseSolutionCheck("a, b, c", Arrays.asList("a", "b", "c"), 0, null, -1, -1);
         deserialiseSolutionCheck("a, b, c\nd, e, f", Arrays.asList("a", "b", "c"), 0, Arrays.asList("d", "e", "f"), 0, -1);
@@ -78,7 +78,7 @@ public class TraceUtilsTest {
     }
 
     @Test
-    public void navigateTraceTest() {
+    void navigateTraceTest() {
         Trace trace = TraceUtils.deserialiseTrace("1: a, b, c");
         Assertions.assertTrue(trace.canProgress());
         Assertions.assertEquals("b", trace.getCurrent());
@@ -116,7 +116,7 @@ public class TraceUtilsTest {
     }
 
     @Test
-    public void processLoopEventTest() {
+    void processLoopEventTest() {
         processLoopEventCheck(null, false, false);
         processLoopEventCheck("a", false, false);
         processLoopEventCheck("a+", false, true);

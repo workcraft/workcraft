@@ -11,12 +11,12 @@ import org.workcraft.plugins.cpog.encoding.onehot.OneHotNumberProvider;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
-public class MaxCpogTest {
+class MaxCpogTest {
 
     private static final String[] cpog = {"-0001", "00011", "11111", "10111", "1z1ZZ"};
 
     @BeforeAll
-    public static void setSatSolver() {
+    static void setSatSolver() {
         if (DesktopApi.getOs().isWindows()) {
             CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
             CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));
@@ -25,7 +25,7 @@ public class MaxCpogTest {
     }
 
     @Test
-    public void testCpogEncoding() {
+    void testCpogEncoding() {
         Optimiser<OneHotIntBooleanFormula> optimiser = new Optimiser<>(new OneHotNumberProvider(), null);
         LegacySolver<BooleanFormula> solver = new LegacySolver<>(optimiser, new CleverCnfGenerator());
         Encoding result = solver.solve(cpog, 3, 4);
