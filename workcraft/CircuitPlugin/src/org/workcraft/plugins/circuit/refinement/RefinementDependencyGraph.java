@@ -6,6 +6,8 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -17,16 +19,16 @@ import java.util.stream.Collectors;
 
 public class RefinementDependencyGraph {
 
-    private final Map<File, Map<String, File>> detailedDependencyMap;
+    private final Map<File, Map<String, File>> detailedDependencyGraph = new HashMap<>();
+    private final Map<File, ModelEntry> fileToModelMap = new HashMap<>();
 
     public RefinementDependencyGraph(WorkspaceEntry we) {
-        detailedDependencyMap = new HashMap<>();
-
         Stack<File> stack = new Stack<>();
         File topFile = Framework.getInstance().getWorkspace().getFile(we);
-        Map<String, File> topDependencyMap = extractRefinementMap(we.getModelEntry());
+        fileToModelMap.put(topFile, we.getModelEntry());
+        Map<String, File> topDependencyMap = extractInstanceDependencyMap(we.getModelEntry());
         stack.addAll(topDependencyMap.values());
-        detailedDependencyMap.put(topFile, topDependencyMap);
+        detailedDependencyGraph.put(topFile, topDependencyMap);
 
         Set<File> visited = new HashSet<>();
         while (!stack.empty()) {
@@ -35,46 +37,58 @@ public class RefinementDependencyGraph {
                 visited.add(file);
                 try {
                     ModelEntry me = WorkUtils.loadModel(file);
-                    Map<String, File> dependencyMap = extractRefinementMap(me);
+                    fileToModelMap.put(file, me);
+                    Map<String, File> dependencyMap = extractInstanceDependencyMap(me);
                     stack.addAll(dependencyMap.values());
-                    detailedDependencyMap.put(file, dependencyMap);
+                    detailedDependencyGraph.put(file, dependencyMap);
                 } catch (DeserialisationException e) {
-                    e.printStackTrace();
+                    String filePath = FileUtils.getFullPath(file);
+                    LogUtils.logError("Cannot read model from file '" + filePath + "':\n" + e.getMessage());
                 }
             }
         }
     }
 
-    private Map<String, File> extractRefinementMap(ModelEntry me) {
+    private Map<String, File> extractInstanceDependencyMap(ModelEntry me) {
         Map<String, File> result = new HashMap<>();
         if (WorkspaceUtils.isApplicable(me, Stg.class)) {
             Stg stg = WorkspaceUtils.getAs(me, Stg.class);
             File refinementFile = stg.getRefinementFile();
             if (refinementFile != null) {
-                result.put(null, refinementFile);
+                String label = getInstanceLabel();
+                result.put(label, refinementFile);
             }
         }
         if (WorkspaceUtils.isApplicable(me, Circuit.class)) {
             Circuit circuit = WorkspaceUtils.getAs(me, Circuit.class);
             for (FunctionComponent component : circuit.getFunctionComponents()) {
+                String label = getInstanceLabel(circuit, component);
                 File refinementFile = component.getRefinementFile();
-                String componentRef = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
-                result.put(componentRef, refinementFile);
+                result.put(label, refinementFile);
             }
         }
         return result;
     }
 
+    public String getInstanceLabel() {
+        return "";
+    }
+
+    public String getInstanceLabel(Circuit circuit, FunctionComponent component) {
+        return Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component))
+                + ":" + component.getModule();
+    }
+
     public Set<File> getVertices() {
-        return detailedDependencyMap.keySet();
+        return detailedDependencyGraph.keySet();
     }
 
-    public Map<String, File> getDependencyMap(File file) {
-        return detailedDependencyMap.getOrDefault(file, Collections.emptyMap());
+    public Map<String, File> getInstanceDependencyMap(File file) {
+        return detailedDependencyGraph.getOrDefault(file, Collections.emptyMap());
     }
 
-    public Set<File> getDependencySet(File file) {
-        return getDependencyMap(file).values().stream()
+    public Set<File> getDependencies(File file) {
+        return getInstanceDependencyMap(file).values().stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
     }
@@ -82,9 +96,24 @@ public class RefinementDependencyGraph {
     public Map<File, Set<File>> getSimpleGraph() {
         Map<File, Set<File>> result = new HashMap<>();
         for (File file : getVertices()) {
-            result.put(file, getDependencySet(file));
+            result.put(file, getDependencies(file));
         }
         return result;
+    }
+
+    public boolean isStg(File file) {
+        ModelEntry me = fileToModelMap.get(file);
+        return WorkspaceUtils.isApplicable(me, Stg.class);
+    }
+
+    public Set<File> getStgFiles() {
+        return getVertices().stream()
+                .filter(this::isStg)
+                .collect(Collectors.toSet());
+    }
+
+    public ModelEntry getModelEntry(File file) {
+        return fileToModelMap.get(file);
     }
 
 }

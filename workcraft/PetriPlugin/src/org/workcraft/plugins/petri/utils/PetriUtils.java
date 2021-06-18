@@ -60,8 +60,8 @@ public final class PetriUtils {
         return true;
     }
 
-    public static HashSet<Transition> getEnabledTransitions(PetriModel net) {
-        HashSet<Transition> result = new HashSet<>();
+    public static Set<Transition> getEnabledTransitions(PetriModel net) {
+        Set<Transition> result = new HashSet<>();
         for (Transition transition: net.getTransitions()) {
             if (net.isEnabled(transition)) {
                 result.add(transition);

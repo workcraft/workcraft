@@ -240,69 +240,96 @@ public class StgUtils {
         // Try to figure out signal states from ZERO and ONE places of circuit STG.
         Set<String> signalRefs = stg.getSignalReferences();
         for (String signalRef : signalRefs) {
-            Node zeroNode = stg.getNodeByReference(SignalStg.appendLowSuffix(signalRef));
-            Node oneNode = stg.getNodeByReference(SignalStg.appendHighSuffix(signalRef));
-            if (!(zeroNode instanceof StgPlace) || !(oneNode instanceof StgPlace)) {
-                continue;
+            Boolean value = guessInitialStateFromSignalPlaces(stg, signalRef);
+            if (value != null) {
+                result.put(signalRef, value);
             }
-
-            StgPlace zeroPlace = (StgPlace) zeroNode;
-            StgPlace onePlace = (StgPlace) oneNode;
-            if (zeroPlace.getTokens() + onePlace.getTokens() != 1) {
-                continue;
-            }
-
-            Collection<SignalTransition> signalTransitions = stg.getSignalTransitions(signalRef);
-
-            Set<MathNode> riseTransitions = new HashSet<>(signalTransitions);
-            riseTransitions.retainAll(stg.getPostset(zeroPlace));
-            riseTransitions.retainAll(stg.getPreset(onePlace));
-
-            Set<MathNode> fallTransitions = new HashSet<>(signalTransitions);
-            fallTransitions.retainAll(stg.getPostset(onePlace));
-            fallTransitions.retainAll(stg.getPreset(zeroPlace));
-
-            if (riseTransitions.isEmpty() || fallTransitions.isEmpty()) {
-                continue;
-            }
-
-            result.put(signalRef, onePlace.getTokens() > 0);
         }
         return result;
     }
 
-    public static HashMap<String, Boolean> getInitialState(StgModel stg, int timeout) {
-        HashMap<String, Boolean> result = new HashMap<>();
+    private static Boolean guessInitialStateFromSignalPlaces(Stg stg, String signalRef) {
+        Node zeroNode = stg.getNodeByReference(SignalStg.appendLowSuffix(signalRef));
+        Node oneNode = stg.getNodeByReference(SignalStg.appendHighSuffix(signalRef));
+        if (zeroNode instanceof StgPlace && oneNode instanceof StgPlace) {
+            StgPlace zeroPlace = (StgPlace) zeroNode;
+            StgPlace onePlace = (StgPlace) oneNode;
+            if (zeroPlace.getTokens() + onePlace.getTokens() == 1) {
+                Collection<SignalTransition> signalTransitions = stg.getSignalTransitions(signalRef);
+
+                Set<MathNode> riseTransitions = new HashSet<>(signalTransitions);
+                riseTransitions.retainAll(stg.getPostset(zeroPlace));
+                riseTransitions.retainAll(stg.getPreset(onePlace));
+
+                Set<MathNode> fallTransitions = new HashSet<>(signalTransitions);
+                fallTransitions.retainAll(stg.getPostset(onePlace));
+                fallTransitions.retainAll(stg.getPreset(zeroPlace));
+
+                if (!riseTransitions.isEmpty() && !fallTransitions.isEmpty()) {
+                    return onePlace.getTokens() > 0;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Map<String, Boolean> getInitialState(StgModel stg, int timeout) {
+        Map<String, Boolean> result = new HashMap<>();
         stg = copyStgPreserveSignals(stg);
-        Set<String> signalRefs = stg.getSignalReferences();
+        Set<String> undefinedSignalRefs = stg.getSignalReferences();
         HashSet<HashMap<Place, Integer>> visitedMarkings = new HashSet<>();
-        Queue<HashMap<Place, Integer>> queue = new LinkedList<>();
+        Queue<HashMap<Place, Integer>> markingQueue = new LinkedList<>();
         HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
-        queue.add(initialMarking);
-        long endTime = System.currentTimeMillis() + timeout;
-        while (!queue.isEmpty() && !signalRefs.isEmpty() && System.currentTimeMillis() < endTime) {
-            HashMap<Place, Integer> curMarking = queue.remove();
+        markingQueue.add(initialMarking);
+        Set<Transition> conflictTransitions = getConflictTransitions(stg);
+        long curTime = System.currentTimeMillis();
+        long endTime = curTime + timeout;
+        int stepCount = 0;
+        while (!markingQueue.isEmpty() && !undefinedSignalRefs.isEmpty() && (curTime < endTime)) {
+            if (stepCount++ > 999) {
+                curTime = System.currentTimeMillis();
+                stepCount = 0;
+            }
+            HashMap<Place, Integer> curMarking = markingQueue.remove();
             visitedMarkings.add(curMarking);
             PetriUtils.setMarking(stg, curMarking);
-            List<Transition> enabledTransitions = new ArrayList<>(PetriUtils.getEnabledTransitions(stg));
+            // Derive state of signals from enabled transitions
+            Set<Transition> enabledTransitions = PetriUtils.getEnabledTransitions(stg);
             for (Transition transition : enabledTransitions) {
                 if (transition instanceof SignalTransition) {
                     SignalTransition signalTransition = (SignalTransition) transition;
                     String signalRef = stg.getSignalReference(signalTransition);
-                    if (signalRefs.remove(signalRef)) {
-                        result.put(signalRef, signalTransition.getDirection() == SignalTransition.Direction.MINUS);
+                    Boolean signalState = getPrecedingState(signalTransition);
+                    if ((signalState != null) && undefinedSignalRefs.remove(signalRef)) {
+                        result.put(signalRef, signalState);
                     }
                 }
-                if (signalRefs.isEmpty() || (System.currentTimeMillis() >= endTime)) break;
+            }
+            // Process concurrently enabled transitions
+            List<Transition> concurrentEnabledTransitions = new ArrayList<>(enabledTransitions);
+            concurrentEnabledTransitions.removeAll(conflictTransitions);
+            for (Transition transition : concurrentEnabledTransitions) {
+                stg.fire(transition);
+            }
+            if (!concurrentEnabledTransitions.isEmpty()) {
+                HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
+                if (!visitedMarkings.contains(marking)) {
+                    markingQueue.add(marking);
+                    continue;
+                }
+            }
+            // Process enabled transitions in conflict
+            List<Transition> conflictEnabledTransitions = new ArrayList<>(enabledTransitions);
+            conflictEnabledTransitions.retainAll(conflictTransitions);
+            for (Transition transition : conflictEnabledTransitions) {
                 stg.fire(transition);
                 HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
                 if (!visitedMarkings.contains(marking)) {
-                    queue.add(marking);
+                    markingQueue.add(marking);
                 }
                 stg.unFire(transition);
             }
         }
-        PetriUtils.setMarking(stg, initialMarking);
         return result;
     }
 
@@ -317,6 +344,27 @@ public class StgUtils {
         Stg result = new Stg();
         copyStgRenameSignals(stg, result, Collections.emptyMap());
         return result;
+    }
+
+    private static Set<Transition> getConflictTransitions(StgModel stg) {
+        Set<Transition> result = new HashSet<>();
+        for (Transition transition : stg.getTransitions()) {
+            for (MathNode predNode : stg.getPreset(transition)) {
+                if (stg.getPostset(predNode).size() > 1) {
+                    result.add(transition);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    private static Boolean getPrecedingState(SignalTransition signalTransition) {
+        switch (signalTransition.getDirection()) {
+        case PLUS: return false;
+        case MINUS: return true;
+        default: return null;
+        }
     }
 
     /**

@@ -40,7 +40,7 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
     private static final String keyImportConnectionsShape = prefix + ".importConnectionsShape";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\GraphvizMinimal\\dot.exe" : "dot";
-    private static final Rankdir defaultRankdir = Rankdir.LR;
+    private static final Rankdir defaultRankdir = Rankdir.TB;
     private static final double defaultNodesep = 1.0;
     private static final double defaultRanksep = 1.0;
     private static final boolean defaultImportConnectionsShape = true;

@@ -137,6 +137,21 @@ public final class RefinementUtils {
                 CircuitUtils.getInputPinNames(component), CircuitUtils.getOutputPinNames(component));
     }
 
+    public static ComponentInterface getRefinementInterface(File file) {
+        try {
+            ModelEntry me = WorkUtils.loadModel(file);
+            return getModelInterface(me);
+        } catch (DeserialisationException e) {
+            String filePath = FileUtils.getFullPath(file);
+            LogUtils.logError("Cannot read model from file '" + filePath + "':\n" + e.getMessage());
+        }
+        return null;
+    }
+
+    public static ComponentInterface getModelInterface(ModelEntry me) {
+        return me == null ? null : getModelInterface(me.getMathModel());
+    }
+
     public static ComponentInterface getModelInterface(MathModel model) {
         return new ComponentInterface(model.getTitle(), getInputSignals(model), getOutputSignals(model));
     }

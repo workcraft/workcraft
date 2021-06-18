@@ -29,7 +29,6 @@ public class ExportTests {
 
     @Test
     public void testVmeCircuitExport() throws DeserialisationException, IOException, SerialisationException {
-
         Framework framework = Framework.getInstance();
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
@@ -98,7 +97,7 @@ public class ExportTests {
         // .dot
         String dotHeader = String.format(
                 "digraph work {%n" +
-                "  graph [overlap=false, splines=true, nodesep=1.0, ranksep=1.0, rankdir=LR];%n" +
+                "  graph [overlap=false, splines=true, nodesep=1.0, ranksep=1.0, rankdir=TB];%n" +
                 "  node [shape=box, fixedsize=true];%n");
 
         File dotFile = new File(directory, "export.dot");

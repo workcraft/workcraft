@@ -18,8 +18,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public final class VerificationUtils {
@@ -60,7 +60,7 @@ public final class VerificationUtils {
 
     private static Set<String> getConflictingInterfaceSignals(Circuit circuit, Stg envStg) {
         Set<String> inconsistentSignals = new HashSet<>();
-        HashMap<String, Boolean> envSignalStates = StgUtils.getInitialState(envStg, 2000);
+        Map<String, Boolean> envSignalStates = StgUtils.getInitialState(envStg, 2000);
         for (Contact port : circuit.getPorts()) {
             String portRef = circuit.getNodeReference(port);
             Boolean envSignalState = envSignalStates.get(portRef);
