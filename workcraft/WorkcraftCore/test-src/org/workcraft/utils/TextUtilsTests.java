@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import java.awt.*;
 import java.util.Arrays;
 
-public class TextUtilsTests {
+class TextUtilsTests {
 
     @Test
-    public void splitWordsTest() {
+    void splitWordsTest() {
         Assertions.assertEquals(Arrays.asList(), TextUtils.splitWords(null));
 
         Assertions.assertEquals(Arrays.asList(), TextUtils.splitWords("    "));
@@ -22,7 +22,7 @@ public class TextUtilsTests {
     }
 
     @Test
-    public void splitLinesTest() {
+    void splitLinesTest() {
         Assertions.assertEquals(Arrays.asList(), TextUtils.splitLines(null));
 
         Assertions.assertEquals(Arrays.asList(""), TextUtils.splitLines(""));
@@ -39,7 +39,7 @@ public class TextUtilsTests {
     }
 
     @Test
-    public void truncateLineTest() {
+    void truncateLineTest() {
         String line = "1 22 333 4444 55555 666666 7777777 88888888";
         Assertions.assertEquals("1 22\u2026",
                 TextUtils.truncateLine(line, 5));
@@ -49,14 +49,14 @@ public class TextUtilsTests {
     }
 
     @Test
-    public void truncateTextTest() {
+    void truncateTextTest() {
         String text = "1 22 333 \r\n  4444 55555 666666 7777777 88888888\n  999999999";
         Assertions.assertEquals("1 22 333 \n  4444 55555\u2026\n999999999",
                 TextUtils.truncateText(text, 10));
     }
 
     @Test
-    public void wrapLineTest() {
+    void wrapLineTest() {
         String line = "1 22 333 4444 55555 666666 7777777 88888888";
         Assertions.assertEquals("1 22\n333\n4444\n55555\n666666\n7777777\n88888888",
                 TextUtils.wrapLine(line, 5));
@@ -73,7 +73,7 @@ public class TextUtilsTests {
     }
 
     @Test
-    public void wrapTextTest() {
+    void wrapTextTest() {
         String text = "1 22 333 \r\n 4444 55555 666666 7777777 88888888\n999999999";
         Assertions.assertEquals("1 22 333 \n4444 55555\n666666\n7777777\n88888888\n999999999",
                 TextUtils.wrapText(text, 10));
@@ -88,7 +88,7 @@ public class TextUtilsTests {
     }
 
     @Test
-    public void wrapItemsTest() {
+    void wrapItemsTest() {
         Assertions.assertEquals("",
                 TextUtils.wrapItems(Arrays.asList()));
 
@@ -97,7 +97,7 @@ public class TextUtilsTests {
     }
 
     @Test
-    public void wrapMessageWithItemsTest() {
+    void wrapMessageWithItemsTest() {
         Assertions.assertEquals("Nothing",
                 TextUtils.wrapMessageWithItems("Nothing", Arrays.asList()));
 
@@ -115,21 +115,21 @@ public class TextUtilsTests {
     }
 
     @Test
-    public void getHeadAndTailTest() {
+    void getHeadAndTailTest() {
         String text = "1\n22\n333\n4444\n55555\n666666\n7777777\n88888888\n999999999";
         Assertions.assertEquals("1\n22\n333\n\u2026\n88888888\n999999999",
                 TextUtils.getHeadAndTail(text, 3, 2));
     }
 
     @Test
-    public void escapeHtmlTest() {
+    void escapeHtmlTest() {
         String text = "(a < b) & (c > d) = \"true\"";
         Assertions.assertEquals("(a &lt; b) &amp; (c &gt; d) = &quot;true&quot;",
                 TextUtils.escapeHtml(text));
     }
 
     @Test
-    public void getHtmlSpan() {
+    void getHtmlSpan() {
         String text = "abc123";
         Color foregroundColor = new Color(0x12, 0x34, 0x56);
         Color backgroundColor = new Color(0xab, 0xcd, 0xef);
@@ -145,21 +145,21 @@ public class TextUtilsTests {
     }
 
     @Test
-    public void replaceLinebreaksTest() {
+    void replaceLinebreaksTest() {
         Assertions.assertNull(TextUtils.replaceLinebreaks(null, " "));
         Assertions.assertEquals("aaa bbb ccc",
                 TextUtils.replaceLinebreaks("aaa\nbbb\r\nccc", " "));
     }
 
     @Test
-    public void removeLinebreaksTest() {
+    void removeLinebreaksTest() {
         Assertions.assertNull(TextUtils.removeLinebreaks(null));
         Assertions.assertEquals("aaabbbccc",
                 TextUtils.removeLinebreaks("aaa\nbbb\r\nccc"));
     }
 
     @Test
-    public void abbreviateTest() {
+    void abbreviateTest() {
         Assertions.assertEquals("", TextUtils.abbreviate(null));
         Assertions.assertEquals("abc", TextUtils.abbreviate("aaa bbb ccc"));
         Assertions.assertEquals("ABC", TextUtils.abbreviate("Aaa Bbb Ccc"));
@@ -167,7 +167,7 @@ public class TextUtilsTests {
     }
 
     @Test
-    public void isXmlElementTest() {
+    void isXmlElementTest() {
         Assertions.assertFalse(TextUtils.isXmlElement(null));
         Assertions.assertFalse(TextUtils.isXmlElement(""));
         Assertions.assertFalse(TextUtils.isXmlElement("abc"));

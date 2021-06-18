@@ -21,7 +21,7 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import java.util.Collection;
 import java.util.Iterator;
 
-public class SerialisationTestingUtils {
+class SerialisationTestingUtils {
 
     public static void comparePlaces(Place p1, Place p2) {
         Assertions.assertEquals(p1.getTokens(), p2.getTokens());

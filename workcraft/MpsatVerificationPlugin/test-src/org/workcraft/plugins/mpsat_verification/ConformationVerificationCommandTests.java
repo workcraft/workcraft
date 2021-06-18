@@ -16,15 +16,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.net.URL;
 
-public class ConformationVerificationCommandTests {
+class ConformationVerificationCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
@@ -32,28 +32,28 @@ public class ConformationVerificationCommandTests {
     }
 
     @Test
-    public void testCycleConformationVerification() throws DeserialisationException {
+    void testCycleConformationVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
         String envName = PackageUtils.getPackagePath(getClass(), "charge.stg.work");
         testConformationVerificationCommands(workName, envName, true);
     }
 
     @Test
-    public void testDevConformationVerification() throws DeserialisationException {
+    void testDevConformationVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dev.stg.work");
         String envName = PackageUtils.getPackagePath(getClass(), "env.stg.work");
         testConformationVerificationCommands(workName, envName, true);
     }
 
     @Test
-    public void testDevBadConformationVerification() throws DeserialisationException {
+    void testDevBadConformationVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dev-bad.stg.work");
         String envName = PackageUtils.getPackagePath(getClass(), "env.stg.work");
         testConformationVerificationCommands(workName, envName, false);
     }
 
     @Test
-    public void testDevFailConformationVerification() throws DeserialisationException {
+    void testDevFailConformationVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dev-bad.stg.work");
         String envName = PackageUtils.getPackagePath(getClass(), null);
         testConformationVerificationCommands(workName, envName, null);

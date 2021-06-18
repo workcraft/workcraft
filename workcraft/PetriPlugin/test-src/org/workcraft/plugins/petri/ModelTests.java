@@ -3,10 +3,10 @@ package org.workcraft.plugins.petri;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class ModelTests {
+class ModelTests {
 
     @Test
-    public void testTransitionsAndPlacesCollections() {
+    void testTransitionsAndPlacesCollections() {
         Petri petriNet = new Petri();
 
         Transition tr = new Transition();

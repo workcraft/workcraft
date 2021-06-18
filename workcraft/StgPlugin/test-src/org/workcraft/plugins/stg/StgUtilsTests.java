@@ -13,30 +13,30 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.net.URL;
 import java.util.*;
 
-public class StgUtilsTests {
+class StgUtilsTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testVmeInitialState() throws DeserialisationException {
+    void testVmeInitialState() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testInitialState(workName, 10, Collections.emptyList(), Collections.emptyList());
     }
 
     @Test
-    public void testBuckInitialState() throws DeserialisationException {
+    void testBuckInitialState() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
         testInitialState(workName, 10, Arrays.asList("gn", "gn_ack"), Collections.emptyList());
     }
 
     @Test
-    public void testChoice9InitialState() throws DeserialisationException {
+    void testChoice9InitialState() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "choice9.stg.work");
-        testInitialState(workName, 200, Collections.emptyList(), Collections.singletonList("out"));
+        testInitialState(workName, 300, Collections.emptyList(), Collections.singletonList("out"));
     }
 
     private void testInitialState(String workName, int timeout,

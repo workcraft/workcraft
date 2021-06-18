@@ -25,28 +25,28 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class StgToFstConversionCommandTests {
+class StgToFstConversionCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify"));
     }
 
     @Test
-    public void unsafeStgToFstConversion() throws DeserialisationException {
+    void unsafeStgToFstConversion() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "unsafe.stg.work");
         testStgToFstConversionCommand(workName, 13, 19,  null);
     }
 
     @Test
-    public void vmeStgToBinaryFstConversion() throws DeserialisationException {
+    void vmeStgToBinaryFstConversion() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testStgToFstConversionCommand(workName, 24, 33,
                 new String[] {"011101_csc", "011001_csc", "101001_csc"});

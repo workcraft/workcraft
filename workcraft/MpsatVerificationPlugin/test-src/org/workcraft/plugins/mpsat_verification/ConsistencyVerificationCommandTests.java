@@ -15,15 +15,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class ConsistencyVerificationCommandTests {
+class ConsistencyVerificationCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
@@ -31,13 +31,13 @@ public class ConsistencyVerificationCommandTests {
     }
 
     @Test
-    public void testInconsistentAlternationVerification() throws DeserialisationException {
+    void testInconsistentAlternationVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "consistency_violation-no_alternation.stg.work");
         testConsistencyVerificationCommand(workName, false);
     }
 
     @Test
-    public void testInconsistentConflictVerification() throws DeserialisationException {
+    void testInconsistentConflictVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "consistency_violation-conflict.stg.work");
         testConsistencyVerificationCommand(workName, false);
     }

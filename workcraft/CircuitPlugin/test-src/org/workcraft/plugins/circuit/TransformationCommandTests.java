@@ -21,15 +21,15 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class TransformationCommandTests {
+class TransformationCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
@@ -37,7 +37,7 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testVmeTransformationCommand() throws DeserialisationException {
+    void testVmeTransformationCommand() throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");

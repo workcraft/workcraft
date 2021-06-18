@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.types.Triple;
 
-public class LabelParserTests {
+class LabelParserTests {
 
     @Test
-    public void testNoInstance() {
+    void testNoInstance() {
         Triple<String, SignalTransition.Direction, Integer> result = LabelParser.parseSignalTransition("a+");
 
         Assertions.assertEquals("a", result.getFirst());
@@ -17,7 +17,7 @@ public class LabelParserTests {
     }
 
     @Test
-    public void testInstance() {
+    void testInstance() {
         Triple<String, SignalTransition.Direction, Integer> result = LabelParser.parseSignalTransition("a+/4");
 
         Assertions.assertEquals("a", result.getFirst());
@@ -26,17 +26,17 @@ public class LabelParserTests {
     }
 
     @Test
-    public void testWrongFormat1() {
+    void testWrongFormat1() {
         Assertions.assertNull(LabelParser.parseSignalTransition("x/"));
     }
 
     @Test
-    public void testWrongFormat2() {
+    void testWrongFormat2() {
         Assertions.assertNull(LabelParser.parseSignalTransition("x@/3"));
     }
 
     @Test
-    public void testWrongFormat3() {
+    void testWrongFormat3() {
         Assertions.assertNull(LabelParser.parseSignalTransition("x-/fifty"));
     }
 

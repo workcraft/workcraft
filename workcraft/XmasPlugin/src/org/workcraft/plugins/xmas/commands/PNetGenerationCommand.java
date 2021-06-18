@@ -27,8 +27,8 @@ import java.util.Scanner;
 
 public class PNetGenerationCommand implements Command {
 
-    private static int dl = 1;
-    private static boolean printoutput = true;
+    private static final int dl = 1;
+    private static final boolean printoutput = true;
 
     private static class Ids {
         public final String a;
@@ -123,8 +123,10 @@ public class PNetGenerationCommand implements Command {
     private static String searchList(String id) {
         String str = "";
 
-        for (int i = 0; i < lst.size(); i++) {
-            if (id.equals(lst.get(i).a)) str = lst.get(i).b;
+        for (Info info : lst) {
+            if (info.a.equals(id)) {
+                str = info.b;
+            }
         }
         return str;
     }
@@ -132,8 +134,10 @@ public class PNetGenerationCommand implements Command {
     private static String searchList2(String id) {
         String str = "";
 
-        for (int i = 0; i < lst.size(); i++) {
-            if (id.equals(lst.get(i).a)) str = lst.get(i).c;
+        for (Info info : lst) {
+            if (info.a.equals(id)) {
+                str = info.c;
+            }
         }
         return str;
     }
@@ -141,8 +145,10 @@ public class PNetGenerationCommand implements Command {
     private static String searchList3(String id) {
         String str = "";
 
-        for (int i = 0; i < lst2.size(); i++) {
-            if (id.equals(lst2.get(i).a)) str = lst2.get(i).b;
+        for (Ids ids : lst2) {
+            if (ids.a.equals(id)) {
+                str = ids.b;
+            }
         }
         return str;
     }
@@ -153,7 +159,7 @@ public class PNetGenerationCommand implements Command {
 
         int i = 0;
         while (i < lst.size() && tst == 0) {
-            if (id.equals(lst.get(i).a)) {
+            if (lst.get(i).a.equals(id)) {
                 if ("0".equals(lst.get(i).d)) {
                     str = lst.get(i).b;
                     tst = 1;
@@ -170,7 +176,7 @@ public class PNetGenerationCommand implements Command {
 
         int i = 0;
         while (i < lst.size() && tst == 0) {
-            if (id.equals(lst.get(i).a)) {
+            if (lst.get(i).a.equals(id)) {
                 if ("1".equals(lst.get(i).d)) {
                     str = lst.get(i).b;
                     tst = 1;
@@ -187,7 +193,7 @@ public class PNetGenerationCommand implements Command {
 
         int i = 0;
         while (i < lst.size() && tst == 0) {
-            if (id.equals(lst.get(i).a)) {
+            if (lst.get(i).a.equals(id)) {
                 if ("0".equals(lst.get(i).d)) {
                     str = lst.get(i).c;
                     tst = 1;
@@ -204,7 +210,7 @@ public class PNetGenerationCommand implements Command {
 
         int i = 0;
         while (i < lst.size() && tst == 0) {
-            if (id.equals(lst.get(i).a)) {
+            if (lst.get(i).a.equals(id)) {
                 if ("1".equals(lst.get(i).d)) {
                     str = lst.get(i).c;
                     tst = 1;
@@ -278,7 +284,7 @@ public class PNetGenerationCommand implements Command {
         }
     }
 
-    private static void writemarking(String id, String label, PrintWriter writer) {
+    private static void writeMarking(String id, String label, PrintWriter writer) {
         if (printoutput) {
             System.out.println("marking p_" + id + label + "0 1");
             System.out.println("marking p_" + id + label + "1 0");
@@ -296,7 +302,7 @@ public class PNetGenerationCommand implements Command {
         writer.println("marking p_" + id + label + "1 1");
     }
 
-    private static void gensource(String id, String id1, String idp, int fieldgr, PrintWriter writer) {
+    private static void genSource(String id, String id1, String idp, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//gensource " + id);
         }
@@ -305,16 +311,16 @@ public class PNetGenerationCommand implements Command {
             System.out.println("//gr " + fieldgr);
             writer.println("//gr " + fieldgr);
         }
-        writemarking(id, "_oracle", writer);
+        writeMarking(id, "_oracle", writer);
         writeblock(id, "_oracle", writer);
-        writemarking(id, "o_irdy", writer);
+        writeMarking(id, "o_irdy", writer);
         writeblock(id, "o_irdy", writer);
         writebidir(id, "_oracle0", "o_irdyminus", writer);
         writebidir(id, "_oracle1", "o_irdyplus", writer);
         writelinkp(id, id1, "_trdy1", "o_irdyminus", idp, writer);
     }
 
-    private static void gensink(String id, int fieldgr, PrintWriter writer) {
+    private static void genSink(String id, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//gensink " + id);
         }
@@ -323,9 +329,9 @@ public class PNetGenerationCommand implements Command {
             System.out.println("//gr " + fieldgr);
             writer.println("//gr " + fieldgr);
         }
-        writemarking(id, "_oracle", writer);
+        writeMarking(id, "_oracle", writer);
         writeblock(id, "_oracle", writer);
-        writemarking(id, "i_trdy", writer);
+        writeMarking(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
         writebidir(id, "_oracle0", "i_trdyminus", writer);
         writebidir(id, "_oracle1", "i_trdyplus", writer);
@@ -340,7 +346,7 @@ public class PNetGenerationCommand implements Command {
         }
     }
 
-    private static void genfunction(String id, String id1, String idp, int fieldgr, PrintWriter writer) {
+    private static void genFunction(String id, String id1, String idp, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genfunction " + id);
         }
@@ -349,9 +355,9 @@ public class PNetGenerationCommand implements Command {
             System.out.println("//gr " + fieldgr);
             writer.println("//gr " + fieldgr);
         }
-        writemarking(id, "o_irdy", writer);
+        writeMarking(id, "o_irdy", writer);
         writeblock(id, "o_irdy", writer);
-        writemarking(id, "i_trdy", writer);
+        writeMarking(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
         String id2 = searchList(id);
         String id3 = searchList2(id);
@@ -375,7 +381,7 @@ public class PNetGenerationCommand implements Command {
 
     }
 
-    private static void genfork(String id, String id1, String id2, String idp1, String idp2, int fieldgr, PrintWriter writer) {
+    private static void genFork(String id, String id1, String id2, String idp1, String idp2, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genfork " + id);
         }
@@ -384,7 +390,7 @@ public class PNetGenerationCommand implements Command {
             System.out.println("//gr " + fieldgr);
             writer.println("//gr " + fieldgr);
         }
-        writemarking(id, "a_irdy", writer);
+        writeMarking(id, "a_irdy", writer);
         writeblock(id, "a_irdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "a_irdy1  t_" + id + "a_irdyminus1");
@@ -392,7 +398,7 @@ public class PNetGenerationCommand implements Command {
         }
         writer.println("p_" + id + "a_irdy1  t_" + id + "a_irdyminus1");
         writer.println("t_" + id + "a_irdyminus1  p_" + id + "a_irdy0");
-        writemarking(id, "b_irdy", writer);
+        writeMarking(id, "b_irdy", writer);
         writeblock(id, "b_irdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "b_irdy1  t_" + id + "b_irdyminus1");
@@ -400,7 +406,7 @@ public class PNetGenerationCommand implements Command {
         }
         writer.println("p_" + id + "b_irdy1  t_" + id + "b_irdyminus1");
         writer.println("t_" + id + "b_irdyminus1  p_" + id + "b_irdy0");
-        writemarking(id, "i_trdy", writer);
+        writeMarking(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "i_trdy1  t_" + id + "i_trdyminus1");
@@ -449,7 +455,7 @@ public class PNetGenerationCommand implements Command {
 
     }
 
-    private static void genjoin(String id, String id1, String idp, int fieldgr, PrintWriter writer) {
+    private static void genJoin(String id, String id1, String idp, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genjoin " + id);
         }
@@ -458,7 +464,7 @@ public class PNetGenerationCommand implements Command {
             System.out.println("//gr " + fieldgr);
             writer.println("//gr " + fieldgr);
         }
-        writemarking(id, "a_trdy", writer);
+        writeMarking(id, "a_trdy", writer);
         writeblock(id, "a_trdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "a_trdy1  t_" + id + "a_trdyminus1");
@@ -466,7 +472,7 @@ public class PNetGenerationCommand implements Command {
         }
         writer.println("p_" + id + "a_trdy1  t_" + id + "a_trdyminus1");
         writer.println("t_" + id + "a_trdyminus1  p_" + id + "a_trdy0");
-        writemarking(id, "b_trdy", writer);
+        writeMarking(id, "b_trdy", writer);
         writeblock(id, "b_trdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "b_trdy1  t_" + id + "b_trdyminus1");
@@ -474,7 +480,7 @@ public class PNetGenerationCommand implements Command {
         }
         writer.println("p_" + id + "b_trdy1  t_" + id + "b_trdyminus1");
         writer.println("t_" + id + "b_trdyminus1  p_" + id + "b_trdy0");
-        writemarking(id, "o_irdy", writer);
+        writeMarking(id, "o_irdy", writer);
         writeblock(id, "o_irdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "o_irdy1  t_" + id + "o_irdyminus1");
@@ -501,7 +507,7 @@ public class PNetGenerationCommand implements Command {
 
     }
 
-    private static void genswitch(String id, String id1, String id2, String idp1, String idp2, int fieldgr, PrintWriter writer) {
+    private static void genSwitch(String id, String id1, String id2, String idp1, String idp2, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genswitch " + id);
         }
@@ -510,17 +516,17 @@ public class PNetGenerationCommand implements Command {
             System.out.println("//gr " + fieldgr);
             writer.println("//gr " + fieldgr);
         }
-        writemarking(id, "_sw", writer);
+        writeMarking(id, "_sw", writer);
         writeblock(id, "_sw", writer);
-        writemarking(id, "a_irdy", writer);
+        writeMarking(id, "a_irdy", writer);
         writeblock(id, "a_irdy", writer);
         writer.println("p_" + id + "a_irdy1  t_" + id + "a_irdyminus1");
         writer.println("t_" + id + "a_irdyminus1  p_" + id + "a_irdy0");
-        writemarking(id, "b_irdy", writer);
+        writeMarking(id, "b_irdy", writer);
         writeblock(id, "b_irdy", writer);
         writer.println("p_" + id + "b_irdy1  t_" + id + "b_irdyminus1");
         writer.println("t_" + id + "b_irdyminus1  p_" + id + "b_irdy0");
-        writemarking(id, "i_trdy", writer);
+        writeMarking(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "i_trdy0  t_" + id + "i_trdyplus1");
@@ -595,7 +601,7 @@ public class PNetGenerationCommand implements Command {
 
     }
 
-    private static void genmerge(String id, String id1, String idp, int fieldgr, PrintWriter writer) {
+    private static void genMerge(String id, String id1, String idp, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genmerge " + id);
         }
@@ -604,9 +610,9 @@ public class PNetGenerationCommand implements Command {
             System.out.println("//gr " + fieldgr);
             writer.println("//gr " + fieldgr);
         }
-        writemarking(id, "_u", writer);
+        writeMarking(id, "_u", writer);
         writeblock(id, "_u", writer);
-        writemarking(id, "a_trdy", writer);
+        writeMarking(id, "a_trdy", writer);
         writeblock(id, "a_trdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "a_trdy1  t_" + id + "a_trdyminus1");
@@ -620,7 +626,7 @@ public class PNetGenerationCommand implements Command {
         }
         writer.println("p_" + id + "a_trdy1  t_" + id + "a_trdyminus2");
         writer.println("t_" + id + "a_trdyminus2  p_" + id + "a_trdy0");
-        writemarking(id, "b_trdy", writer);
+        writeMarking(id, "b_trdy", writer);
         writeblock(id, "b_trdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "b_trdy1  t_" + id + "b_trdyminus1");
@@ -634,7 +640,7 @@ public class PNetGenerationCommand implements Command {
         }
         writer.println("p_" + id + "b_trdy1  t_" + id + "b_trdyminus2");
         writer.println("t_" + id + "b_trdyminus2  p_" + id + "b_trdy0");
-        writemarking(id, "o_irdy", writer);
+        writeMarking(id, "o_irdy", writer);
         writeblock(id, "o_irdy", writer);
         if (printoutput) {
             System.out.println("p_" + id + "o_irdy0  t_" + id + "o_irdyplus1");
@@ -669,7 +675,7 @@ public class PNetGenerationCommand implements Command {
 
     }
 
-    private static void genqueue(String id, String id1, String idp, int init, String gpf, int fieldgr, PrintWriter writer) {
+    private static void genQueue(String id, String id1, String idp, int init, String gpf, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genqueue " + id + " " + gpf);
         }
@@ -678,13 +684,13 @@ public class PNetGenerationCommand implements Command {
             System.out.println("//g " + fieldgr);
             writer.println("//g " + fieldgr);
         }
-        if (init == 0) writemarking(id, "o_irdy", writer);
+        if (init == 0) writeMarking(id, "o_irdy", writer);
         else writeMarking2(id, "o_irdy", writer);
         writeblock(id, "o_irdy", writer);
         if (init == 0) writeMarking2(id, "i_trdy", writer);
-        else writemarking(id, "i_trdy", writer);
+        else writeMarking(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
-        if (init == 0) writemarking(id, "_q", writer);
+        if (init == 0) writeMarking(id, "_q", writer);
         else writeMarking2(id, "_q", writer);
         writeblock(id, "_q", writer);
         writebidir(id, "_q0", "o_irdyminus", writer);
@@ -708,7 +714,7 @@ public class PNetGenerationCommand implements Command {
         }
     }
 
-    private static void genqueue2p(int size, String id, String id1, String idp, int init, String gpf, int fieldgr, PrintWriter writer) {
+    private static void genQueue2p(int size, String id, String id1, String idp, int init, String gpf, int fieldgr, PrintWriter writer) {
         int inc = 0;
         if (printoutput) {
             if (size == 2) System.out.println("//genqueue2p " + id + " " + gpf);
@@ -725,7 +731,7 @@ public class PNetGenerationCommand implements Command {
             writer.println("//g " + fieldgr);
         }
         if (init > 0) writeMarking2(id, "o_irdy", writer);
-        else writemarking(id, "o_irdy", writer);
+        else writeMarking(id, "o_irdy", writer);
         writeblock(id, "o_irdy", writer);
         for (int i = 1; i < size; i++) {
             if (printoutput) {
@@ -735,7 +741,7 @@ public class PNetGenerationCommand implements Command {
             writer.println("p_" + id + "o_irdy0  t_" + id + "o_irdyplus" + i);
             writer.println("t_" + id + "o_irdyplus" + i + " p_" + id + "o_irdy1");
         }
-        if (init >= size) writemarking(id, "i_trdy", writer);
+        if (init >= size) writeMarking(id, "i_trdy", writer);
         else writeMarking2(id, "i_trdy", writer);
         writeblock(id, "i_trdy", writer);
         for (int i = 1; i < size; i++) {
@@ -748,19 +754,19 @@ public class PNetGenerationCommand implements Command {
         }
         for (int i = 1; i <= size; i++) {
             if (init >= i) writeMarking2(id, "_q" + i, writer);
-            else writemarking(id, "_q" + i, writer);
+            else writeMarking(id, "_q" + i, writer);
             writeblock(id, "_q" + i, writer);
         }
         for (int i = 1; i <= size; i++) {
             if (i == init + 1) writeMarking2(id, "_hd" + i, writer);
-            else writemarking(id, "_hd" + i, writer);
+            else writeMarking(id, "_hd" + i, writer);
             writeblock(id, "_hd" + i, writer);
         }
         for (int i = 1; i <= size; i++) {
             if (i == 1) {
-                if (init <= 0) writemarking(id, "_tl" + i, writer);
+                if (init <= 0) writeMarking(id, "_tl" + i, writer);
                 else writeMarking2(id, "_tl" + i, writer);
-            } else writemarking(id, "_tl" + i, writer);
+            } else writeMarking(id, "_tl" + i, writer);
             writeblock(id, "_tl" + i, writer);
         }
         for (int i = 1; i <= size; i++) {
@@ -918,7 +924,7 @@ public class PNetGenerationCommand implements Command {
 
     @Override
     public void run(WorkspaceEntry we) {
-        System.out.println("");
+        System.out.println();
         final Xmas cnet = WorkspaceUtils.getAs(we, Xmas.class);
         srcNodes = cnet.getSourceComponents();
         //funNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
@@ -1047,23 +1053,23 @@ public class PNetGenerationCommand implements Command {
                                 }
                             }
 
-                            if ("source".equals(typeName)) gensource(idName, idName1, idNamep1, fieldgr, writer);
-                            if ("function".equals(typeName)) genfunction(idName, idName1, idNamep1, fieldgr, writer);
-                            if ("xfork".equals(typeName)) genfork(idName, idName1, idName2, idNamep1, idNamep2, fieldgr, writer);
-                            if ("join".equals(typeName)) genjoin(idName, idName1, idNamep1, fieldgr, writer);
-                            if ("xswitch".equals(typeName)) genswitch(idName, idName1, idName2, idNamep1, idNamep2, fieldgr, writer);
-                            if ("merge".equals(typeName)) genmerge(idName, idName1, idNamep1, fieldgr, writer);
+                            if ("source".equals(typeName)) genSource(idName, idName1, idNamep1, fieldgr, writer);
+                            if ("function".equals(typeName)) genFunction(idName, idName1, idNamep1, fieldgr, writer);
+                            if ("xfork".equals(typeName)) genFork(idName, idName1, idName2, idNamep1, idNamep2, fieldgr, writer);
+                            if ("join".equals(typeName)) genJoin(idName, idName1, idNamep1, fieldgr, writer);
+                            if ("xswitch".equals(typeName)) genSwitch(idName, idName1, idName2, idNamep1, idNamep2, fieldgr, writer);
+                            if ("merge".equals(typeName)) genMerge(idName, idName1, idNamep1, fieldgr, writer);
                             if ("queue".equals(typeName)) {
                                 int size = Integer.parseInt(fieldsize);
                                 //if ("1".equals(fieldsize)) genqueue(idName, idName1, idNamep1, fieldinit, writer);
                                 //else genqueue2p(2, idName, idName1, idNamep1, writer);
                                 if (size <= 1) {
-                                    genqueue(idName, idName1, idNamep1, fieldinit, fieldgpf, fieldgr, writer);
-                                } else if (size > 0) {
-                                    genqueue2p(size, idName, idName1, idNamep1, fieldinit, fieldgpf, fieldgr, writer);
+                                    genQueue(idName, idName1, idNamep1, fieldinit, fieldgpf, fieldgr, writer);
+                                } else {
+                                    genQueue2p(size, idName, idName1, idNamep1, fieldinit, fieldgpf, fieldgr, writer);
                                 }
                             }
-                            if ("sink".equals(typeName)) gensink(idName, fieldgr, writer);
+                            if ("sink".equals(typeName)) genSink(idName, fieldgr, writer);
                         }
                     } else {
                         LogUtils.logError("Records should be an array: skipping.");
@@ -1083,7 +1089,7 @@ public class PNetGenerationCommand implements Command {
                 new PNetExt(srcNodes, funNodes, swNodes);
             }
         }
-        System.out.println("");
+        System.out.println();
     }
 
 }

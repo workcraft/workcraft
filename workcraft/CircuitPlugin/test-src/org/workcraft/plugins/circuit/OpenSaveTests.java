@@ -10,22 +10,22 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class OpenSaveTests {
+class OpenSaveTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testCelementNotChangedAfterOpen() throws DeserialisationException {
+    void testCelementNotChangedAfterOpen() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
         testNotChangedAfterOpen(workName);
     }
 
     @Test
-    public void testVmeTmNotChangedAfterOpen() throws DeserialisationException {
+    void testVmeTmNotChangedAfterOpen() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testNotChangedAfterOpen(workName);
     }

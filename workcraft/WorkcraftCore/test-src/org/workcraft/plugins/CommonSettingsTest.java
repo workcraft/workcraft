@@ -7,17 +7,17 @@ import org.workcraft.Config;
 import org.workcraft.Framework;
 import org.workcraft.plugins.builtin.settings.*;
 
-public class CommonSettingsTest {
+class CommonSettingsTest {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         framework.resetConfig();
     }
 
     @Test
-    public void commonCommentSettingsTest() {
+    void commonCommentSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonCommentSettings";
 
@@ -44,7 +44,7 @@ public class CommonSettingsTest {
     }
 
     @Test
-    public void commonDebugSettingsTest() {
+    void commonDebugSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonDebugSettings";
 
@@ -62,7 +62,7 @@ public class CommonSettingsTest {
     }
 
     @Test
-    public void commonEditorSettingsTest() {
+    void commonEditorSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonEditorSettings";
 
@@ -127,7 +127,7 @@ public class CommonSettingsTest {
     }
 
     @Test
-    public void commonFavoriteSettingsTest() {
+    void commonFavoriteSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonFavoriteSettings";
 
@@ -136,7 +136,7 @@ public class CommonSettingsTest {
     }
 
     @Test
-    public void commonLogSettingsTest() {
+    void commonLogSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonLogSettings";
 
@@ -160,7 +160,7 @@ public class CommonSettingsTest {
     }
 
     @Test
-    public void commonSignalSettingsTest() {
+    void commonSignalSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonSignalSettings";
 
@@ -184,7 +184,7 @@ public class CommonSettingsTest {
     }
 
     @Test
-    public void commonVisualSettingsTest() {
+    void commonVisualSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonVisualSettings";
 

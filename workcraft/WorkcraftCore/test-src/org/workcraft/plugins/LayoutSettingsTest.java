@@ -8,17 +8,17 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.builtin.settings.DotLayoutSettings;
 import org.workcraft.plugins.builtin.settings.RandomLayoutSettings;
 
-public class LayoutSettingsTest {
+class LayoutSettingsTest {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         framework.resetConfig();
     }
 
     @Test
-    public void dotLayoutSettingsTest() {
+    void dotLayoutSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "DotLayoutSettings";
 
@@ -39,7 +39,7 @@ public class LayoutSettingsTest {
     }
 
     @Test
-    public void randomLayoutSettingsTest() {
+    void randomLayoutSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "RandomLayoutSettings";
 

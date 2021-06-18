@@ -10,30 +10,30 @@ import org.workcraft.utils.PackageUtils;
 
 import java.io.InputStream;
 
-public class ImportTests {
+class ImportTests {
 
     @Test
-    public void emptyTest() throws DeserialisationException {
+    void emptyTest() throws DeserialisationException {
         testStg("empty.g", 0, 0, 0, 0);
     }
 
     @Test
-    public void seqMixTest() throws DeserialisationException {
+    void seqMixTest() throws DeserialisationException {
         testStg("seq_mix.g", 17, 0, 18, 2);
     }
 
     @Test
-    public void dlatchSplitPlaceHierarchyTest() throws DeserialisationException {
+    void dlatchSplitPlaceHierarchyTest() throws DeserialisationException {
         testStg("dlatch-split_place-hierarchy.g", 8, 0, 8, 4);
     }
 
     @Test
-    public void dlatchSplitPlaceReverseTest() throws DeserialisationException {
+    void dlatchSplitPlaceReverseTest() throws DeserialisationException {
         testStg("dlatch-split_place-reverse.g", 8, 0, 8, 4);
     }
 
     @Test
-    public void bufferNameClashTest() throws DeserialisationException {
+    void bufferNameClashTest() throws DeserialisationException {
         testStg("buffer-name_clash.g", 2, 0, 2, 1);
     }
 

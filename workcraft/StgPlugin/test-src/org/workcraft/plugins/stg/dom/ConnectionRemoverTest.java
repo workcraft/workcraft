@@ -12,10 +12,10 @@ import org.workcraft.plugins.stg.VisualStg;
 
 import java.util.LinkedList;
 
-public class ConnectionRemoverTest {
+class ConnectionRemoverTest {
 
     @Test
-    public void removeMany() throws InvalidConnectionException {
+    void removeMany() throws InvalidConnectionException {
         Stg stg = new Stg();
 
         SignalTransition t1 = stg.createSignalTransition(null, null);

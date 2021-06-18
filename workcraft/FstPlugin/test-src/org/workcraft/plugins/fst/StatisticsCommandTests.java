@@ -11,16 +11,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class StatisticsCommandTests {
+class StatisticsCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testInstructionsScenariopogStatisticsCommands() throws DeserialisationException {
+    void testInstructionsScenariopogStatisticsCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.fst.work");
         testCpogStatisticsCommands(workName,
                 "Component count:"

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.utils.Hierarchy;
 
-public class HierarchyHelperTests {
+class HierarchyHelperTests {
 
     static class MockHierarchyNode implements Node {
         private final Node parent;
@@ -29,7 +29,7 @@ public class HierarchyHelperTests {
     }
 
     @Test
-    public void testGetPath() {
+    void testGetPath() {
         MockHierarchyNode node1 = new MockHierarchyNode(null);
         MockHierarchyNode node2 = new MockHierarchyNode(node1);
         MockHierarchyNode node3 = new MockHierarchyNode(node2);

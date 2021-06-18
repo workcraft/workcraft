@@ -14,28 +14,28 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class WtgVerificationCommandTests {
+class WtgVerificationCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testDlatchVerificationCommands() throws DeserialisationException {
+    void testDlatchVerificationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.wtg.work");
         testVerificationCommands(workName, true, true, true, false);
     }
 
     @Test
-    public void testBuckVerificationCommands() throws DeserialisationException {
+    void testBuckVerificationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.wtg.work");
         testVerificationCommands(workName, true, true, true, true);
     }
 
     @Test
-    public void testGuardsVerificationCommands() throws DeserialisationException {
+    void testGuardsVerificationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "instruction_decoder.wtg.work");
         testVerificationCommands(workName, true, true, true, true);
     }

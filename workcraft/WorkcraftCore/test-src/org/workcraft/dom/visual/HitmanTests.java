@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
-public class HitmanTests {
+class HitmanTests {
 
     class DummyNode implements Node {
         private final Collection<Node> children;
@@ -62,7 +62,7 @@ public class HitmanTests {
     }
 
     @Test
-    public void testHitDeepestSkipNulls() {
+    void testHitDeepestSkipNulls() {
         final HitableNode toHit = new HitableNode();
         Node node = new DummyNode(
                 new Node[]{

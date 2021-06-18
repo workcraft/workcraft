@@ -7,7 +7,7 @@ import org.workcraft.types.Pair;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-public class HierarchicalUniqueNameReferenceManagerTest {
+class HierarchicalUniqueNameReferenceManagerTest {
 
     private static HashMap<String, Pair<String, String>> headTails = new HashMap<String, Pair<String, String>>() {
         private static final long serialVersionUID = -2931077011392124649L;
@@ -21,7 +21,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
     };
 
     @Test
-    public void testGetReferenceHead() {
+    void testGetReferenceHead() {
         for (Entry<String, Pair<String, String>> en: headTails.entrySet()) {
             String reference = en.getKey();
             String head = en.getValue().getFirst();
@@ -31,7 +31,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
     }
 
     @Test
-    public void testGetReferenceTail() {
+    void testGetReferenceTail() {
         for (Entry<String, Pair<String, String>> en: headTails.entrySet()) {
             String reference = en.getKey();
             String tail = en.getValue().getSecond();
@@ -53,7 +53,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
     };
 
     @Test
-    public void testReferencePaths() {
+    void testReferencePaths() {
         for (Entry<String, String> en: referencePaths.entrySet()) {
             String reference = en.getKey();
             String path = en.getValue();

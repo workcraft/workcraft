@@ -16,28 +16,28 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-public class WtgConversionCommandTests {
+class WtgConversionCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testDlatchConversionCommands() throws DeserialisationException {
+    void testDlatchConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.wtg.work");
         testConversionCommands(workName);
     }
 
     @Test
-    public void testBuckConversionCommands() throws DeserialisationException {
+    void testBuckConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.wtg.work");
         testConversionCommands(workName);
     }
 
     @Test
-    public void testGuardsConversionCommands() throws DeserialisationException {
+    void testGuardsConversionCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "instruction_decoder.wtg.work");
         testConversionCommands(workName);
     }

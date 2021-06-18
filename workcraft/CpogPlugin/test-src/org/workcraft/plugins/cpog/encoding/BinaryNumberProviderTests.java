@@ -6,10 +6,10 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.FreeVariable;
 import org.workcraft.formula.visitors.StringGenerator;
 
-public class BinaryNumberProviderTests {
+class BinaryNumberProviderTests {
 
     @Test
-    public void testBigConstraint() {
+    void testBigConstraint() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("x", 25);
         BooleanFormula formula = p.getConstraints();
@@ -18,14 +18,14 @@ public class BinaryNumberProviderTests {
     }
 
     @Test
-    public void testValuesCount() {
+    void testValuesCount() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 9);
         Assertions.assertEquals(9, num.getValuesCount());
     }
 
     @Test
-    public void testBigSelect() {
+    void testBigSelect() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 9);
         BooleanFormula[] f = new BooleanFormula[9];
@@ -44,7 +44,7 @@ public class BinaryNumberProviderTests {
     }
 
     @Test
-    public void testEmptyConstraint() {
+    void testEmptyConstraint() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("x", 2);
         BooleanFormula formula = p.getConstraints();
@@ -53,14 +53,14 @@ public class BinaryNumberProviderTests {
     }
 
     @Test
-    public void testZeroBitEmptyConstraint() {
+    void testZeroBitEmptyConstraint() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("", 1);
         Assertions.assertEquals("1", p.getConstraints().accept(new StringGenerator()));
     }
 
     @Test
-    public void testSelectZeroBit() {
+    void testSelectZeroBit() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 1);
         BooleanFormula[] f = new BooleanFormula[1];
@@ -70,7 +70,7 @@ public class BinaryNumberProviderTests {
     }
 
     @Test
-    public void testSelectOneBit() {
+    void testSelectOneBit() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 2);
         BooleanFormula[] f = new BooleanFormula[2];
@@ -82,7 +82,7 @@ public class BinaryNumberProviderTests {
     }
 
     @Test
-    public void testSelectThreeValues() {
+    void testSelectThreeValues() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 3);
         BooleanFormula[] f = new BooleanFormula[3];

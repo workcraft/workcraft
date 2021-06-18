@@ -16,33 +16,32 @@ import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Set;
 
-public class TransformationCommandTests {
+class TransformationCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testCelementMirrorSignalTransformationCommand() throws DeserialisationException {
+    void testCelementMirrorSignalTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
         testMirrorSignalTransformationCommand(workName);
     }
 
     @Test
-    public void testBuckMirrorSignalTransformationCommand() throws DeserialisationException {
+    void testBuckMirrorSignalTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
         testMirrorSignalTransformationCommand(workName);
     }
 
     @Test
-    public void testVmeMirrorSignalTransformationCommand() throws DeserialisationException {
+    void testVmeMirrorSignalTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testMirrorSignalTransformationCommand(workName);
     }
@@ -71,19 +70,19 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testCelementMirrorTransitionTransformationCommand() throws DeserialisationException {
+    void testCelementMirrorTransitionTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
         testMirrorTransitionTransformationCommand(workName);
     }
 
     @Test
-    public void testBuckMirrorTransitionTransformationCommand() throws DeserialisationException {
+    void testBuckMirrorTransitionTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
         testMirrorTransitionTransformationCommand(workName);
     }
 
     @Test
-    public void testVmeMirrorTransitionTransformationCommand() throws DeserialisationException {
+    void testVmeMirrorTransitionTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testMirrorTransitionTransformationCommand(workName);
     }
@@ -138,19 +137,19 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testCelementPlaceTransformationCommands() throws DeserialisationException {
+    void testCelementPlaceTransformationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
         testPlaceTransformationCommands(workName);
     }
 
     @Test
-    public void testBuckPlaceTransformationCommands() throws DeserialisationException {
+    void testBuckPlaceTransformationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
         testPlaceTransformationCommands(workName);
     }
 
     @Test
-    public void testVmePlaceTransformationCommands() throws DeserialisationException {
+    void testVmePlaceTransformationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testPlaceTransformationCommands(workName);
     }
@@ -192,18 +191,18 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testHandshakes2ExpandHandshakeTransformationCommand() throws IOException, DeserialisationException {
+    void testHandshakes2ExpandHandshakeTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "handshakes-2.stg.work");
         testExpandHandshakeTransformationCommand(workName);
     }
 
     @Test
-    public void testHandshakes3ExpandHandshakeTransformationCommand() throws IOException, DeserialisationException {
+    void testHandshakes3ExpandHandshakeTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "handshakes-3.stg.work");
         testExpandHandshakeTransformationCommand(workName);
     }
 
-    private void testExpandHandshakeTransformationCommand(String workName) throws IOException, DeserialisationException {
+    private void testExpandHandshakeTransformationCommand(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         URL url = classLoader.getResource(workName);
@@ -234,7 +233,7 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testVmeSelectAllSignalTransitionsTransformationCommand() throws DeserialisationException {
+    void testVmeSelectAllSignalTransitionsTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testSelectAllSignalTransitionsTransformationCommand(workName, new String[]{"dsr+", "dtack+/1"}, 5);
     }
@@ -259,7 +258,7 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testVmeSignalToDummyTransitionTransformationCommand() throws DeserialisationException {
+    void testVmeSignalToDummyTransitionTransformationCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testSignalToDummyTransitionTransformationCommand(workName, new String[]{"dsw+", "dtack+/1"});
     }
@@ -301,7 +300,7 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testTransitionTransformationCommand() throws DeserialisationException, InvalidConnectionException {
+    void testTransitionTransformationCommand() throws DeserialisationException, InvalidConnectionException {
         String workName = PackageUtils.getPackagePath(getClass(), "inv.stg.work");
 
         final Framework framework = Framework.getInstance();
@@ -371,7 +370,7 @@ public class TransformationCommandTests {
     }
 
     @Test
-    public void testTransitionContractionCommand() throws DeserialisationException, InvalidConnectionException {
+    void testTransitionContractionCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "inv.stg.work");
 
         final Framework framework = Framework.getInstance();

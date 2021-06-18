@@ -12,28 +12,28 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class WtgTransformationCommandTests {
+class WtgTransformationCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testDlatchTransformationCommands() throws DeserialisationException {
+    void testDlatchTransformationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.wtg.work");
         testTransformationCommands(workName);
     }
 
     @Test
-    public void testBuckTransformationCommands() throws DeserialisationException {
+    void testBuckTransformationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.wtg.work");
         testTransformationCommands(workName);
     }
 
     @Test
-    public void testGuardsTransformationCommands() throws DeserialisationException {
+    void testGuardsTransformationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "instruction_decoder.wtg.work");
         testTransformationCommands(workName);
     }

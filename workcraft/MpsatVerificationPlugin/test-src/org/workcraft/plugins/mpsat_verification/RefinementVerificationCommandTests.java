@@ -17,15 +17,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.net.URL;
 
-public class RefinementVerificationCommandTests {
+class RefinementVerificationCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
@@ -33,7 +33,7 @@ public class RefinementVerificationCommandTests {
     }
 
     @Test
-    public void testModelSelectorCscRefinementVerification() throws DeserialisationException {
+    void testModelSelectorCscRefinementVerification() throws DeserialisationException {
         String specificationFileName = PackageUtils.getPackagePath(getClass(), "mode_selector.stg.work");
         String implementationFileName = PackageUtils.getPackagePath(getClass(), "mode_selector-csc.stg.work");
         testRefinementVerificationCommands(specificationFileName, implementationFileName, false, true);
@@ -41,7 +41,7 @@ public class RefinementVerificationCommandTests {
     }
 
     @Test
-    public void testModelSelectorCrRefinementVerification() throws DeserialisationException {
+    void testModelSelectorCrRefinementVerification() throws DeserialisationException {
         String specificationFileName = PackageUtils.getPackagePath(getClass(), "mode_selector.stg.work");
         String implementationFileName = PackageUtils.getPackagePath(getClass(), "mode_selector-cr.stg.work");
         testRefinementVerificationCommands(specificationFileName, implementationFileName, false, false);
@@ -49,7 +49,7 @@ public class RefinementVerificationCommandTests {
     }
 
     @Test
-    public void testModelSelectorCrCscDumRefinementVerification() throws DeserialisationException {
+    void testModelSelectorCrCscDumRefinementVerification() throws DeserialisationException {
         String specificationFileName = PackageUtils.getPackagePath(getClass(), "mode_selector-csc-dum.stg.work");
         String implementationFileName = PackageUtils.getPackagePath(getClass(), "mode_selector-cr-dum.stg.work");
         testRefinementVerificationCommands(specificationFileName, implementationFileName, false, false);
@@ -57,7 +57,7 @@ public class RefinementVerificationCommandTests {
     }
 
     @Test
-    public void testReadCompletionTaRefinementVerification() throws DeserialisationException {
+    void testReadCompletionTaRefinementVerification() throws DeserialisationException {
         String specificationFileName = PackageUtils.getPackagePath(getClass(), "read_completion.stg.work");
         String implementationFileName = PackageUtils.getPackagePath(getClass(), "read_completion-ta.stg.work");
         testRefinementVerificationCommands(specificationFileName, implementationFileName, false, false);
@@ -65,7 +65,7 @@ public class RefinementVerificationCommandTests {
     }
 
     @Test
-    public void testMissingSpecificationRefinementVerification() throws DeserialisationException {
+    void testMissingSpecificationRefinementVerification() throws DeserialisationException {
         String specificationFileName = PackageUtils.getPackagePath(getClass(), null);
         String implementationFileName = PackageUtils.getPackagePath(getClass(), "read_completion-ta.stg.work");
         testRefinementVerificationCommands(specificationFileName, implementationFileName, false, null);

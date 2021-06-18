@@ -6,7 +6,7 @@ import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
 
-public class MathGroupTests {
+class MathGroupTests {
 
     static class MockNode extends MathNode {
     }
@@ -20,7 +20,7 @@ public class MathGroupTests {
     private final MockNode n2 = new MockNode();
 
     @Test
-    public void observationTest() {
+    void observationTest() {
         MathGroup group = new MathGroup();
 
         group.addObserver((HierarchyObserver) e -> {

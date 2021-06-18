@@ -3,10 +3,10 @@ package org.workcraft.utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class LogUtilsTests {
+class LogUtilsTests {
 
     @Test
-    public void prefixTest() {
+    void prefixTest() {
         Assertions.assertNull(LogUtils.getTextWithoutPrefix(null));
         String text = "This is text without prefix";
         Assertions.assertEquals(text, LogUtils.getTextWithoutPrefix(text));

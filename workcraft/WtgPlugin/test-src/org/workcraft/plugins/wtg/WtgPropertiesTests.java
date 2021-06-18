@@ -14,16 +14,16 @@ import org.workcraft.plugins.dtd.TransitionEvent;
 import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.dtd.VisualTransitionEvent;
 
-public class WtgPropertiesTests {
+class WtgPropertiesTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testProperties() throws VisualModelInstantiationException, InvalidConnectionException {
+    void testProperties() throws VisualModelInstantiationException, InvalidConnectionException {
         WtgDescriptor modelDescriptor = new WtgDescriptor();
         Wtg model = modelDescriptor.createMathModel();
 

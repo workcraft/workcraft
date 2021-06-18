@@ -16,22 +16,22 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class CycleCommandTests {
+class CycleCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testCycleTmLoopbreakerCommands() throws DeserialisationException {
+    void testCycleTmLoopbreakerCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-tm.circuit.work");
         testLoopbreakerCommands(workName, 0, true);
     }
 
     @Test
-    public void testChargeTmLoopbreakerCommands() throws DeserialisationException {
+    void testChargeTmLoopbreakerCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "charge-tm.circuit.work");
         testLoopbreakerCommands(workName, 3, true);
     }

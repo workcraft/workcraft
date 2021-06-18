@@ -8,10 +8,10 @@ import org.workcraft.plugins.stg.references.StgReferenceManager;
 
 import java.util.Collections;
 
-public class StgReferenceManagerTests {
+class StgReferenceManagerTests {
 
     @Test
-    public void testGenerateSignalName() {
+    void testGenerateSignalName() {
         MathGroup root = new MathGroup();
         SignalTransition transition = new SignalTransition();
         root.add(transition);
@@ -21,7 +21,7 @@ public class StgReferenceManagerTests {
     }
 
     @Test
-    public void testGenerateSignalNameFromNull() {
+    void testGenerateSignalNameFromNull() {
         MathGroup root = new MathGroup();
         SignalTransition transition = new SignalTransition();
         root.add(transition);
@@ -32,7 +32,7 @@ public class StgReferenceManagerTests {
     }
 
     @Test
-    public void testGenerateSignalNameFromEmpty() {
+    void testGenerateSignalNameFromEmpty() {
         MathGroup root = new MathGroup();
         SignalTransition transition = new SignalTransition();
         root.add(transition);
@@ -43,7 +43,7 @@ public class StgReferenceManagerTests {
     }
 
     @Test
-    public void testGenerateSignalNameTwice() {
+    void testGenerateSignalNameTwice() {
         MathGroup root = new MathGroup();
         SignalTransition transition1 = new SignalTransition();
         SignalTransition transition2 = new SignalTransition();

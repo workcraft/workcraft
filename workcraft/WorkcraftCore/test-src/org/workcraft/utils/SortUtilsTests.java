@@ -8,10 +8,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class SortUtilsTests {
+class SortUtilsTests {
 
     @Test
-    public void compareNaturalTest() {
+    void compareNaturalTest() {
         Assertions.assertEquals(0, SortUtils.compareNatural(null, null));
         Assertions.assertEquals(-1, SortUtils.compareNatural(null, "a1"));
         Assertions.assertEquals(1, SortUtils.compareNatural("a1", null));
@@ -27,7 +27,7 @@ public class SortUtilsTests {
     }
 
     @Test
-    public void sortNaturalTest() {
+    void sortNaturalTest() {
         List<String> sortedList = Arrays.asList(
                 "1", "2", "13", "22",
                 "a", "a1", "a2", "a13", "a22",

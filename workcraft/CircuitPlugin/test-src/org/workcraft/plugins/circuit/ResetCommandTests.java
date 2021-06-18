@@ -12,22 +12,22 @@ import org.workcraft.utils.WorkspaceUtils;
 
 import java.net.URL;
 
-public class ResetCommandTests {
+class ResetCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testCycleTmResetCommands() throws DeserialisationException {
+    void testCycleTmResetCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-tm.circuit.work");
         testResetCommands(workName, 2, -1, -1, 0, 2, 1, true, true);
     }
 
     @Test
-    public void testChargeTmResetCommands() throws DeserialisationException {
+    void testChargeTmResetCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "charge-tm.circuit.work");
         testResetCommands(workName, 5, 5, 7, 7, 7, 6, false, true);
     }

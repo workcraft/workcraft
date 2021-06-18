@@ -5,10 +5,10 @@ import java.awt.geom.Point2D;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-public class VisualPlaceTests {
+class VisualPlaceTests {
 
     @Test
-    public void testHitTest() {
+    void testHitTest() {
         Place p = new Place();
         VisualPlace vp = new VisualPlace(p);
 

@@ -9,7 +9,7 @@ import org.workcraft.plugins.cpog.encoding.Encoding;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
-public abstract class SolverTests {
+abstract class SolverTests {
 
     private static final String[] smallScenarios = {"110", "101", "011"};
     private static final String[] xorScenarios = {"000", "011", "101", "110"};
@@ -21,7 +21,7 @@ public abstract class SolverTests {
     }
 
     @BeforeAll
-    public static void setSatSolver() {
+    static void setSatSolver() {
         if (DesktopApi.getOs().isWindows()) {
             CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
             CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));
@@ -30,44 +30,44 @@ public abstract class SolverTests {
     }
 
     @Test
-    public void testSmall10() {
+    void testSmall10() {
         Encoding solution = createSolver().solve(smallScenarios, 1, 0);
         Assertions.assertNull(solution);
     }
 
     @Disabled
     @Test
-    public void testSmall20() {
+    void testSmall20() {
         Encoding solution = createSolver().solve(smallScenarios, 2, 0);
         Assertions.assertNull(solution);
     }
 
     @Test
-    public void testSmall21() {
+    void testSmall21() {
         Encoding solution = createSolver().solve(smallScenarios, 2, 1);
         Assertions.assertNotNull(solution);
     }
 
     @Test
-    public void testSmall22() {
+    void testSmall22() {
         Encoding solution = createSolver().solve(smallScenarios, 2, 2);
         Assertions.assertNotNull(solution);
     }
 
     @Test
-    public void testSmall23() {
+    void testSmall23() {
         Encoding solution = createSolver().solve(smallScenarios, 2, 3);
         Assertions.assertNotNull(solution);
     }
 
     @Test
-    public void testSmall30() {
+    void testSmall30() {
         Encoding solution = createSolver().solve(smallScenarios, 3, 0);
         Assertions.assertNotNull(solution);
     }
 
     @Test
-    public void testXor() {
+    void testXor() {
         Encoding solution = createSolver().solve(xorScenarios, 2, 1);
         Assertions.assertNull(solution);
     }

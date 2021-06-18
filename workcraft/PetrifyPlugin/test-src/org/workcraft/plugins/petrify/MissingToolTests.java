@@ -13,23 +13,23 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class MissingToolTests {
+class MissingToolTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testMissingPetrifyVerification() throws DeserialisationException {
+    void testMissingPetrifyVerification() throws DeserialisationException {
         PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify-missing"));
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
         testMissingTool();
     }
 
     @Test
-    public void testMissingGenlibVerification() throws DeserialisationException {
+    void testMissingGenlibVerification() throws DeserialisationException {
         PetrifySettings.setCommand(BackendUtils.getTemplateToolPath("PetrifyTools", "petrify"));
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib-missing"));
         testMissingTool();

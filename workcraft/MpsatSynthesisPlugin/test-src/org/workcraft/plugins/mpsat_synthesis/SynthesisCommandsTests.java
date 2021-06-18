@@ -27,15 +27,15 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SynthesisCommandsTests {
+class SynthesisCommandsTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
@@ -44,43 +44,43 @@ public class SynthesisCommandsTests {
     }
 
     @Test
-    public void bufferComplexGateSynthesis() {
+    void bufferComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
         testComplexGateSynthesisCommand(workName, 1);
     }
 
     @Test
-    public void celementComplexGateSynthesis() {
+    void celementComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
         testComplexGateSynthesisCommand(workName, 1);
     }
 
     @Test
-    public void constComplexGateSynthesis() {
+    void constComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "const.stg.work");
         testComplexGateSynthesisCommand(workName, 3);
     }
 
     @Test
-    public void busCtrlComplexGateSynthesis() {
+    void busCtrlComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
         testComplexGateSynthesisCommand(workName, 2);
     }
 
     @Test
-    public void edcComplexGateSynthesis() {
+    void edcComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
         testComplexGateSynthesisCommand(workName, 7);
     }
 
     @Test
-    public void arbitrationComplexGateSynthesis() {
+    void arbitrationComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testComplexGateSynthesisCommand(workName, 6);
     }
 
     @Test
-    public void duplicatorCscHierComplexGateSynthesis() {
+    void duplicatorCscHierComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testComplexGateSynthesisCommand(workName, 4);
     }
@@ -95,25 +95,25 @@ public class SynthesisCommandsTests {
     }
 
     @Test
-    public void busCtrlGeneralisedCelementSynthesis() {
+    void busCtrlGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 2);
     }
 
     @Test
-    public void edcGeneralisedCelementSynthesis() {
+    void edcGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 7);
     }
 
     @Test
-    public void arbitrationGeneralisedCelementSynthesis() {
+    void arbitrationGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 6);
     }
 
     @Test
-    public void duplicatorCscHierGeneralisedCelementSynthesis() {
+    void duplicatorCscHierGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 4);
     }
@@ -128,25 +128,25 @@ public class SynthesisCommandsTests {
     }
 
     @Test
-    public void busCtrlStandardCelementSynthesis() {
+    void busCtrlStandardCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
         testStandardCelementSynthesisCommand(workName, 4);
     }
 
     @Test
-    public void edcStandardCelementSynthesis() {
+    void edcStandardCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
         testStandardCelementSynthesisCommand(workName, 7);
     }
 
     @Test
-    public void arbitrationStandardCelementSynthesis() {
+    void arbitrationStandardCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testStandardCelementSynthesisCommand(workName, 7);
     }
 
     @Test
-    public void duplicatorCscHierStandardCelementSynthesis() {
+    void duplicatorCscHierStandardCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testStandardCelementSynthesisCommand(workName, 11);
     }
@@ -161,55 +161,55 @@ public class SynthesisCommandsTests {
     }
 
     @Test
-    public void bufferTechnologyMappingSynthesis() {
+    void bufferTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 1);
     }
 
     @Test
-    public void celementTechnologyMappingSynthesis() {
+    void celementTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 1);
     }
 
     @Test
-    public void constTechnologyMappingSynthesis() {
+    void constTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "const.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 5);
     }
 
     @Test
-    public void busCtrlTechnologyMappingSynthesis() {
+    void busCtrlTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "bus_ctrl.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 4);
     }
 
     @Test
-    public void edcTechnologyMappingSynthesis() {
+    void edcTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 7);
     }
 
     @Test
-    public void arbitrationTechnologyMappingSynthesis() {
+    void arbitrationTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 6);
     }
 
     @Test
-    public void duplicatorCscHierTechnologyMappingSynthesis() {
+    void duplicatorCscHierTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 11);
     }
 
     @Test
-    public void dlatchSplitPlaceTechnologyMappingSynthesis() {
+    void dlatchSplitPlaceTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 2);
     }
 
     @Test
-    public void dlatchHierSplitPlaceTechnologyMappingSynthesis() {
+    void dlatchHierSplitPlaceTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch-hier.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 2);
     }

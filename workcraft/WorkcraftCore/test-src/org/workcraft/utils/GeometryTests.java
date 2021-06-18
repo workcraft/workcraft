@@ -11,10 +11,10 @@ import java.awt.geom.Rectangle2D;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class GeometryTests {
+class GeometryTests {
 
     @Test
-    public void emptyCurveTest() {
+    void emptyCurveTest() {
         Geometry.splitCubicCurve(new CubicCurve2D.Double(), 0.5);
     }
 
@@ -23,7 +23,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void bordersTest1() {
+    void bordersTest1() {
         CubicCurve2D curve = getSimpleCurve();
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 0);
         Assertions.assertEquals(0.0, split.curve1.getX2(), 1e-8);
@@ -35,7 +35,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void bordersTest2() {
+    void bordersTest2() {
         CubicCurve2D curve = getSimpleCurve();
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 1);
         Assertions.assertEquals(1.0, split.curve1.getX2(), 1e-8);
@@ -47,7 +47,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void centerTest() {
+    void centerTest() {
         CubicCurve2D curve = getSimpleCurve();
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 0.5);
         Assertions.assertEquals(0.5, split.curve1.getX2(), 1e-8);
@@ -59,7 +59,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void centerTest2() {
+    void centerTest2() {
         CubicCurve2D curve = new CubicCurve2D.Double(-1, -2, -1, -1, 1, 1, 1, 2);
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 0.5);
         Assertions.assertEquals(0.0, split.curve1.getX2(), 1e-8);
@@ -71,7 +71,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void oneThirdTest() {
+    void oneThirdTest() {
         CubicCurve2D curve = new CubicCurve2D.Double(0, 0, 1, 1, 2, 2, 3, 3);
         CurveSplitResult split = Geometry.splitCubicCurve(curve, 0.3);
         Assertions.assertEquals(0.9, split.curve1.getX2(), 1e-8);
@@ -83,7 +83,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void segmentFrameIntersectionTest() {
+    void segmentFrameIntersectionTest() {
         Rectangle2D frame = new Rectangle2D.Double(-1.0, -1.0, 2.0, 2.0);
 
         Line2D segmentInside = new Line2D.Double(-0.5, -0.5, 0.5, 0.5);
@@ -142,7 +142,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void derivativeTest() {
+    void derivativeTest() {
         CubicCurve2D curve = getSimpleCurve();
 
         Assertions.assertEquals(new Point2D.Double(0.0, 3.0),
@@ -165,7 +165,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void changeBaseTest() {
+    void changeBaseTest() {
         Assertions.assertThrows(RuntimeException.class,
                 () -> Geometry.changeBasis(new Point2D.Double(0.0, 0.0),
                         new Point2D.Double(0.0, 0.0), new Point2D.Double(0.0, 0.0)));
@@ -180,7 +180,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void crossProductTest() {
+    void crossProductTest() {
         Assertions.assertEquals(0.0, Geometry.crossProduct(
                 new Point2D.Double(0.0, 0.0), new Point2D.Double(0.0, 0.0)));
 
@@ -192,7 +192,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void cubicCurveBoundingBoxTest() {
+    void cubicCurveBoundingBoxTest() {
         CubicCurve2D curve1 = new CubicCurve2D.Double(-0.5, -0.5, -1.0, -1.0, 1.0, 1.0, 0.5, 0.5);
         Assertions.assertEquals(new Rectangle2D.Double(-0.5809475019311126, -0.5809475019311126, 1.161895003862225, 1.161895003862225),
                 Geometry.getBoundingBoxOfCubicCurve(curve1));
@@ -215,7 +215,7 @@ public class GeometryTests {
     }
 
     @Test
-    public void cubicCurveFrameIntersectionTest() {
+    void cubicCurveFrameIntersectionTest() {
         Rectangle2D frame = new Rectangle2D.Double(-1.0, -1.0, 2.0, 2.0);
 
         CubicCurve2D curveInside = new CubicCurve2D.Double(-0.5, -0.5, -1.0, -1.0, 1.0, 1.0, 0.5, 0.5);

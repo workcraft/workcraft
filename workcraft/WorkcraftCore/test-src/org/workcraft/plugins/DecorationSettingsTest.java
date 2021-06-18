@@ -9,17 +9,17 @@ import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
 import org.workcraft.plugins.builtin.settings.SelectionDecorationSettings;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 
-public class DecorationSettingsTest {
+class DecorationSettingsTest {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         framework.resetConfig();
     }
 
     @Test
-    public void selectionDecorationSettingsTest() {
+    void selectionDecorationSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "SelectionDecorationSettings";
 
@@ -34,7 +34,7 @@ public class DecorationSettingsTest {
     }
 
     @Test
-    public void simulationDecorationSettingsTest() {
+    void simulationDecorationSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "SimulationDecorationSettings";
 
@@ -46,7 +46,7 @@ public class DecorationSettingsTest {
     }
 
     @Test
-    public void analysisDecorationSettingsTest() {
+    void analysisDecorationSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "AnalysisDecorationSettings";
 

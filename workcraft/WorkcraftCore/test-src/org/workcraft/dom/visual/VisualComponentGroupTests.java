@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-public class VisualComponentGroupTests {
+class VisualComponentGroupTests {
     class MockTransformObservingNode implements Node, TransformObserver {
         private Node parent = null;
 
@@ -48,7 +48,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void testHitComponent() {
+    void testHitComponent() {
         VisualGroup root = createGroup(null);
         VisualGroup node1 = createGroup(root);
         node1.setX(5);
@@ -65,7 +65,7 @@ public class VisualComponentGroupTests {
 
     @Disabled
     @Test
-    public void testHitConnection() {
+    void testHitConnection() {
         VisualGroup root = createGroup(null);
         VisualGroup group = createGroup(root);
         group.setX(5);
@@ -87,7 +87,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void testHitNode() {
+    void testHitNode() {
         VisualGroup group = new VisualGroup();
 
         Rectangle2D.Double r1 = new Rectangle2D.Double();
@@ -129,7 +129,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void testHitSubGroup() {
+    void testHitSubGroup() {
         VisualGroup root = new VisualGroup();
 
         VisualGroup node1 = new VisualGroup();
@@ -143,7 +143,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void testUngroup() {
+    void testUngroup() {
         VisualGroup root = new VisualGroup();
 
         VisualGroup node1 = new VisualGroup();
@@ -193,7 +193,7 @@ public class VisualComponentGroupTests {
     }
 
     @Test
-    public void testTransformChangeNotification() {
+    void testTransformChangeNotification() {
         TransformEventPropagator p = new TransformEventPropagator();
 
         VisualGroup root = createGroup(null);

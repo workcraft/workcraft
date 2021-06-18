@@ -14,12 +14,12 @@ import org.workcraft.utils.SetUtils;
 
 import java.util.Set;
 
-public class CleverCnfGeneratorTests {
+class CleverCnfGeneratorTests {
 
     private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
     @Test
-    public void testSimpleCnfPrinter() {
+    void testSimpleCnfPrinter() {
         CleverCnfGenerator generator = new CleverCnfGenerator();
         BooleanVariable a = new FreeVariable("a");
         BooleanVariable b = new FreeVariable("b");

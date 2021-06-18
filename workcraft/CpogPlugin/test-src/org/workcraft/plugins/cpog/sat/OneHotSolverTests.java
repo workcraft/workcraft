@@ -7,10 +7,10 @@ import org.workcraft.plugins.cpog.encoding.onehot.OneHotNumberProvider;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
-public class OneHotSolverTests extends SolverTests {
+class OneHotSolverTests extends SolverTests {
 
     @BeforeAll
-    public static void setSatSolver() {
+    static void setSatSolver() {
         if (DesktopApi.getOs().isWindows()) {
             CpogSettings.setClaspCommand(BackendUtils.getTemplateToolPath("clasp", "clasp"));
             CpogSettings.setMinisatCommand(BackendUtils.getTemplateToolPath("minisat", "minisat"));

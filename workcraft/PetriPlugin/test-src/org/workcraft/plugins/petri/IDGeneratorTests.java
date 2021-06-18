@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.dom.references.IDGenerator;
 import org.workcraft.exceptions.DuplicateIDException;
 
-public class IDGeneratorTests {
+class IDGeneratorTests {
 
     @Test
-    public void testReserveID() {
+    void testReserveID() {
         IDGenerator generator = new IDGenerator();
         generator.reserveID(8);
         Assertions.assertEquals(0, generator.getNextID());
@@ -19,7 +19,7 @@ public class IDGeneratorTests {
     }
 
     @Test
-    public void testReleaseID() {
+    void testReleaseID() {
         IDGenerator generator = new IDGenerator();
         generator.reserveID(8);
         Assertions.assertEquals(0, generator.getNextID());
@@ -48,7 +48,7 @@ public class IDGeneratorTests {
     }
 
     @Test
-    public void testGetNextID() {
+    void testGetNextID() {
         IDGenerator generator = new IDGenerator();
         Assertions.assertEquals(0, generator.getNextID());
         Assertions.assertEquals(1, generator.getNextID());

@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class MethodParametersMatcherTests {
+class MethodParametersMatcherTests {
     class A {
     }
 
@@ -46,7 +46,7 @@ public class MethodParametersMatcherTests {
     }
 
     @Test
-    public void testSimple() throws InvocationTargetException, IllegalAccessException {
+    void testSimple() throws InvocationTargetException, IllegalAccessException {
         Assertions.assertEquals(1, match(Simple.class));
         Assertions.assertEquals(-1, match(Simple.class, Object.class));
     }
@@ -70,7 +70,7 @@ public class MethodParametersMatcherTests {
     }
 
     @Test
-    public void testMostSpecific() throws InvocationTargetException, IllegalAccessException {
+    void testMostSpecific() throws InvocationTargetException, IllegalAccessException {
         Assertions.assertEquals(1, match(Advanced.class));
         Assertions.assertEquals(2, match(Advanced.class, A.class));
         Assertions.assertEquals(3, match(Advanced.class, ABq.class));
@@ -89,7 +89,7 @@ public class MethodParametersMatcherTests {
     }
 
     @Test
-    public void testAmbiguous() throws InvocationTargetException, IllegalAccessException {
+    void testAmbiguous() throws InvocationTargetException, IllegalAccessException {
         Assertions.assertEquals(1, match(Ambiguous.class, A.class, AC.class));
         Assertions.assertEquals(-1, match(Ambiguous.class, AB.class, A.class));
         Assertions.assertEquals(2, match(Ambiguous.class, ABq.class, A.class));

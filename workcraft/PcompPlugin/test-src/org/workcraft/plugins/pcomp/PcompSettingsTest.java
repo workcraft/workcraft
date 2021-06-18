@@ -6,17 +6,17 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.Config;
 import org.workcraft.Framework;
 
-public class PcompSettingsTest {
+class PcompSettingsTest {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         framework.resetConfig();
     }
 
     @Test
-    public void pcompSettingsTest() {
+    void pcompSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "Tools.pcomp";
 

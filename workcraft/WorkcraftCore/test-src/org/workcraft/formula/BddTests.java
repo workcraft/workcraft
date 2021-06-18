@@ -4,12 +4,12 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.formula.bdd.BddManager;
 
-public class BddTests {
+class BddTests {
 
     private static final BddManager BDD_MANAGER = new BddManager();
 
     @Test
-    public void testUnatness() {
+    void testUnatness() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
         BooleanVariable cVar = new FreeVariable("c");
@@ -35,7 +35,7 @@ public class BddTests {
     }
 
     @Test
-    public void testEquality() {
+    void testEquality() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
         BooleanVariable cVar = new FreeVariable("c");

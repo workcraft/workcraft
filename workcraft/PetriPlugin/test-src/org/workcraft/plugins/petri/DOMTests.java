@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.InvalidConnectionException;
 
-public class DOMTests {
+class DOMTests {
 
     @Test
-    public void test1() throws InvalidConnectionException {
+    void test1() throws InvalidConnectionException {
         Petri petri = new Petri();
 
         Place p1 = new Place();

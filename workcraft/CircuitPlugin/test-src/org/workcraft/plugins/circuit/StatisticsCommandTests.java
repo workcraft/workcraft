@@ -13,17 +13,17 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
 
-public class StatisticsCommandTests {
+class StatisticsCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
     }
 
     @Test
-    public void testBufferTmStatisticsCommand() throws DeserialisationException {
+    void testBufferTmStatisticsCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
         testStatisticsCommand(workName,
                 "Component count:"
@@ -44,7 +44,7 @@ public class StatisticsCommandTests {
     }
 
     @Test
-    public void testCelementDecomposedTmStatisticsCommand() throws DeserialisationException {
+    void testCelementDecomposedTmStatisticsCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-decomposed-tm.circuit.work");
         testStatisticsCommand(workName,
                 "Component count:"
@@ -65,7 +65,7 @@ public class StatisticsCommandTests {
     }
 
     @Test
-    public void testVmeTmStatisticsCommand() throws DeserialisationException {
+    void testVmeTmStatisticsCommand() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testStatisticsCommand(workName,
                 "Component count:"

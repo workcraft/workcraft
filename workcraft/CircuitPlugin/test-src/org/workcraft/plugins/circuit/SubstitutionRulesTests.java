@@ -16,10 +16,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.io.IOException;
 
-public class SubstitutionRulesTests {
+class SubstitutionRulesTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
@@ -27,7 +27,7 @@ public class SubstitutionRulesTests {
     }
 
     @Test
-    public void testVmeWorkcraftSubstitution() throws DeserialisationException, SerialisationException, IOException {
+    void testVmeWorkcraftSubstitution() throws DeserialisationException, SerialisationException, IOException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         File tmpDirectory = FileUtils.createTempDirectory(FileUtils.getTempPrefix("vme-tm"));

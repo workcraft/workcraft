@@ -16,16 +16,16 @@ import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
 
-public class JointTransformationCommandTests {
+class JointTransformationCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testVmeJointTransformationCommands() throws DeserialisationException {
+    void testVmeJointTransformationCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testJointTransformationCommands(workName, new String[] {"lds"});
     }

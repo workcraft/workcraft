@@ -14,16 +14,16 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class AnonymiseCommandTests {
+class AnonymiseCommandTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testBufferTmAnonymiseCommands() throws DeserialisationException {
+    void testBufferTmAnonymiseCommands() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
         testAnonymiseCommands(workName, new String[]{"in0", "out0", "g0.i0", "g0.o0"});
     }

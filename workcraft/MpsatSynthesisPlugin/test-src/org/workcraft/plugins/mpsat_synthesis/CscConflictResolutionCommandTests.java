@@ -21,28 +21,28 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class CscConflictResolutionCommandTests {
+class CscConflictResolutionCommandTests {
 
     @BeforeAll
-    public static void skipOnMac() {
+    static void skipOnMac() {
         Assumptions.assumeFalse(DesktopApi.getOs().isMac());
     }
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         MpsatSynthesisSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test
-    public void testVmeCscConflictResolution() throws DeserialisationException {
+    void testVmeCscConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testCscConflictResolutionCommand(workName, new String[]{"csc1", "csc"});
     }
 
     @Test
-    public void testCycleCscConflictResolution() throws DeserialisationException {
+    void testCycleCscConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {});
     }

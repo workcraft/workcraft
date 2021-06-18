@@ -6,10 +6,10 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 import java.util.HashSet;
 
-public class EquationUtilsTests {
+class EquationUtilsTests {
 
     @Test
-    public void solveLinearEquationTest() {
+    void solveLinearEquationTest() {
         Assertions.assertEquals(new HashSet<>(),
                 EquationUtils.solveLinearEquation(0.0, 0.0));
 
@@ -24,7 +24,7 @@ public class EquationUtilsTests {
     }
 
     @Test
-    public void solveQuadraticEquationTest() {
+    void solveQuadraticEquationTest() {
         Assertions.assertEquals(new HashSet<>(),
                 EquationUtils.solveQuadraticEquation(0.0, 0.0, 0.0));
 
@@ -45,7 +45,7 @@ public class EquationUtilsTests {
     }
 
     @Test
-    public void solveCubicEquationTest() {
+    void solveCubicEquationTest() {
         Assertions.assertEquals(new HashSet<>(),
                 EquationUtils.solveCubicEquation(0.0, 0.0, 0.0, 0.0));
 

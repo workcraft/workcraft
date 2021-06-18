@@ -21,22 +21,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class RdgTests {
+class RdgTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
     }
 
     @Test
-    public void testAcyclicRdg() throws DeserialisationException {
+    void testAcyclicRdg() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "rdg-acyclic/top.circuit.work");
         testRdg(workName, 4, 6, 4, true);
     }
 
     @Test
-    public void testCyclicRdg() throws DeserialisationException {
+    void testCyclicRdg() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "rdg-cyclic/top.circuit.work");
         testRdg(workName, 4, 6, 5, false);
     }

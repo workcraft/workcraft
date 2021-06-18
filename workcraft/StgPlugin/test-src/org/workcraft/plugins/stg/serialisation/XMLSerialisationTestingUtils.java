@@ -18,7 +18,7 @@ import org.workcraft.serialisation.XMLSerialiser;
 import java.util.ArrayList;
 import java.util.Collection;
 
-public class XMLSerialisationTestingUtils {
+class XMLSerialisationTestingUtils {
 
     static class MockPluginManager implements PluginProvider {
 

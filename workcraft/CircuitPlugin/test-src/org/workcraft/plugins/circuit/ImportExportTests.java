@@ -19,61 +19,61 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ImportExportTests {
+class ImportExportTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
     }
 
     @Test
-    public void testBufferImportExport() throws DeserialisationException {
+    void testBufferImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
         testImportExport(workName, null);
     }
 
     @Test
-    public void testCelementImportExport() throws DeserialisationException {
+    void testCelementImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
         testImportExport(workName, null);
     }
 
     @Test
-    public void testBufferTmImportExport() throws DeserialisationException {
+    void testBufferTmImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
         testImportExport(workName, null);
     }
 
     @Test
-    public void testCelementTmImportExport() throws DeserialisationException {
+    void testCelementTmImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-tm.circuit.work");
         testImportExport(workName, null);
     }
 
     @Test
-    public void testVmeTmImportExport() throws DeserialisationException {
+    void testVmeTmImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testImportExport(workName, null);
     }
 
     @Test
-    public void testBusImportExport() throws DeserialisationException {
+    void testBusImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "bus.circuit.work");
         String verilogName = PackageUtils.getPackagePath(getClass(), "bus.circuit.v");
         testImportExport(workName, verilogName);
     }
 
     @Test
-    public void testMutexImportExport() throws DeserialisationException {
+    void testMutexImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "mutex-buf.circuit.work");
         String verilogName = PackageUtils.getPackagePath(getClass(), "mutex-buf.circuit.v");
         testImportExport(workName, verilogName);
     }
 
     @Test
-    public void testSkippedConnectionsImportExport() throws DeserialisationException {
+    void testSkippedConnectionsImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "skipped_connections.circuit.work");
         String verilogName = PackageUtils.getPackagePath(getClass(), "skipped_connections.circuit.v");
         testImportExport(workName, verilogName);

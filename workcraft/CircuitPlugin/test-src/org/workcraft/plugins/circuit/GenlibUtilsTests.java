@@ -21,17 +21,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class GenlibUtilsTests {
+class GenlibUtilsTests {
 
     @BeforeAll
-    public static void init() {
+    static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
     }
 
     @Test
-    public void testReadLibrary() {
+    void testReadLibrary() {
         Set<String> gateNames = new HashSet<>(Arrays.asList(
                 "BUF", "INV",
                 "AND2", "NAND2", "NAND2B", "AND3", "NAND3", "NAND3B", "AND4", "NAND4", "NAND4B", "NAND4BB",
@@ -45,7 +45,7 @@ public class GenlibUtilsTests {
     }
 
     @Test
-    public void testMapping() throws ParseException {
+    void testMapping() throws ParseException {
         Library gateLibrary = LibraryManager.getLibrary();
         checkMapping(BooleanFormulaParser.parse("1"), gateLibrary, gateLibrary.get("LOGIC1"));
         checkMapping(BooleanFormulaParser.parse("0"), gateLibrary, gateLibrary.get("LOGIC0"));
@@ -85,7 +85,7 @@ public class GenlibUtilsTests {
     }
 
     @Test
-    public void testPinCount() {
+    void testPinCount() {
         Library gateLibrary = LibraryManager.getLibrary();
         Assertions.assertEquals(0, GenlibUtils.getPinCount(null));
         Assertions.assertEquals(2, GenlibUtils.getPinCount(gateLibrary.get("BUF")));
