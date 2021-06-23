@@ -47,6 +47,12 @@ class CscConflictResolutionCommandTests {
         testCscConflictResolutionCommand(workName, new String[] {});
     }
 
+    @Test
+    void testIrreducibleConflictResolution() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "irreducible_conflict.stg.work");
+        testCscConflictResolutionCommand(workName, null);
+    }
+
     private void testCscConflictResolutionCommand(String workName, String[] cscSignals)
             throws DeserialisationException {
 
@@ -64,19 +70,23 @@ class CscConflictResolutionCommandTests {
         CscConflictResolutionCommand command = new CscConflictResolutionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
 
-        Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
-        Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
-        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> dstMutexes = MutexUtils.getMutexPlaceReferences(dstStg);
+        if (cscSignals == null) {
+            Assertions.assertNull(dstWe);
+        } else {
+            Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
+            Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
+            Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
+            Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
+            Set<String> dstMutexes = MutexUtils.getMutexPlaceReferences(dstStg);
 
-        Set<String> expInternals = new HashSet<>(srcInternals);
-        expInternals.addAll(Arrays.asList(cscSignals));
+            Set<String> expInternals = new HashSet<>(srcInternals);
+            expInternals.addAll(Arrays.asList(cscSignals));
 
-        Assertions.assertEquals(srcInputs, dstInputs);
-        Assertions.assertEquals(expInternals, dstInternals);
-        Assertions.assertEquals(srcOutputs, dstOutputs);
-        Assertions.assertEquals(srcMutexes, dstMutexes);
+            Assertions.assertEquals(srcInputs, dstInputs);
+            Assertions.assertEquals(expInternals, dstInternals);
+            Assertions.assertEquals(srcOutputs, dstOutputs);
+            Assertions.assertEquals(srcMutexes, dstMutexes);
+        }
     }
 
 }

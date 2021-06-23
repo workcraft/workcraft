@@ -10,7 +10,7 @@ import org.workcraft.workspace.FileFilters;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -105,19 +105,17 @@ public final class VerilogUtils {
     }
 
     public static VerilogModule importTopVerilogModule(File file) {
-        try {
-            FileInputStream is = new FileInputStream(file);
+        try (FileInputStream is = new FileInputStream(file)) {
             return getTopModule(importVerilogModules(is));
-        } catch (FileNotFoundException | DeserialisationException e) {
+        } catch (IOException | DeserialisationException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     public static Collection<VerilogModule> importVerilogModules(InputStream in)
             throws DeserialisationException {
 
-        Collection<VerilogModule> result = null;
+        Collection<VerilogModule> result;
         try {
             VerilogParser parser = new VerilogParser(in);
             if (DebugCommonSettings.getParserTracing()) {
@@ -156,7 +154,7 @@ public final class VerilogUtils {
         for (VerilogInstance verilogInstance : verilogModule.instances) {
             String instanceName = (verilogInstance.name == null) ? "" : verilogInstance.name;
             String pinNames = verilogInstance.connections.stream()
-                    .map(verilogConnection -> getConnectionString(verilogConnection))
+                    .map(VerilogUtils::getConnectionString)
                     .collect(Collectors.joining(", "));
             LogUtils.logMessage("    " + verilogInstance.moduleName + " " + instanceName + " (" + pinNames + ");");
         }

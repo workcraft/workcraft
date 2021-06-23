@@ -35,21 +35,27 @@ class CscConflictResolutionCommandTests {
     }
 
     @Test
-    void vmeCscConflictResolution() throws DeserialisationException {
+    void testVmeCscConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {"csc0"});
     }
 
     @Test
-    void arbitrationCscConflictResolution() throws DeserialisationException {
+    void testArbitrationCscConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {});
     }
 
     @Test
-    void togglePageCsc0ConflictResolution() throws DeserialisationException {
+    void testTogglePageCsc0ConflictResolution() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "toggle-page_csc0.stg.work");
         testCscConflictResolutionCommand(workName, new String[] {"csc0"});
+    }
+
+    @Test
+    void testIrreducibleConflictResolution() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "irreducible_conflict.stg.work");
+        testCscConflictResolutionCommand(workName, null);
     }
 
     private void testCscConflictResolutionCommand(String workName, String[] cscSignals)
@@ -69,24 +75,28 @@ class CscConflictResolutionCommandTests {
         CscConflictResolutionCommand command = new CscConflictResolutionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
 
-        Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
-        Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
-        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> dstMutexes = MutexUtils.getMutexPlaceReferences(dstStg);
+        if (cscSignals == null) {
+            Assertions.assertNull(dstWe);
+        } else {
+            Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
+            Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
+            Set<String> dstInternals = dstStg.getSignalReferences(Signal.Type.INTERNAL);
+            Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
+            Set<String> dstMutexes = MutexUtils.getMutexPlaceReferences(dstStg);
 
-        Set<String> expInternals = new HashSet<>();
-        expInternals.addAll(srcInternals);
-        if (cscSignals != null) {
-            for (String cscSignal: cscSignals) {
-                expInternals.add(cscSignal);
+            Set<String> expInternals = new HashSet<>();
+            expInternals.addAll(srcInternals);
+            if (cscSignals != null) {
+                for (String cscSignal : cscSignals) {
+                    expInternals.add(cscSignal);
+                }
             }
-        }
 
-        Assertions.assertEquals(srcInputs, dstInputs);
-        Assertions.assertEquals(expInternals, dstInternals);
-        Assertions.assertEquals(srcOutputs, dstOutputs);
-        Assertions.assertEquals(srcMutexes.size(), dstMutexes.size());
+            Assertions.assertEquals(srcInputs, dstInputs);
+            Assertions.assertEquals(expInternals, dstInternals);
+            Assertions.assertEquals(srcOutputs, dstOutputs);
+            Assertions.assertEquals(srcMutexes.size(), dstMutexes.size());
+        }
     }
 
 }
