@@ -24,12 +24,12 @@ import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class TransformationTask implements Task<TransformationOutput>, ExternalProcessListener {
+
+    private static final Pattern FAILURE_PATTERN = Pattern.compile(">>> ERROR: Cannot solve CSC.\\R");
 
     private static final String STG_FILE_NAME = "petrify.g";
 
@@ -109,8 +109,8 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
 
             if (result.isSuccess()) {
                 ExternalProcessOutput output = result.getPayload();
-                String errorMessage = output.getStderrString();
-                if ((output.getReturnCode() != 0) || errorMessage.contains(">>> ERROR: Cannot solve CSC.\n")) {
+                boolean failureFound = FAILURE_PATTERN.matcher(output.getStderrString()).find();
+                if ((output.getReturnCode() != 0) || failureFound) {
                     return Result.failure(new TransformationOutput(output, null));
                 }
 
@@ -172,12 +172,12 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
 
     @Override
     public void errorData(byte[] data) {
-        System.out.print(data);
+        System.out.print(Arrays.toString(data));
     }
 
     @Override
     public void outputData(byte[] data) {
-        System.out.print(data);
+        System.out.print(Arrays.toString(data));
     }
 
 }

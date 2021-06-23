@@ -16,7 +16,6 @@ import org.workcraft.utils.TextUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MpsatTask implements Task<MpsatOutput> {
@@ -35,9 +34,10 @@ public class MpsatTask implements Task<MpsatOutput> {
             /* Synthesis and technology mapping */
             "Original Num Var/Cl/Lit\\s+\\d+/\\d+/\\d+\\R" +
             "\\s*SAT/Total time:\\s+(\\d+\\.)?\\d+/(\\d+\\.)?\\d+" +
-            ")",
-            Pattern.UNIX_LINES);
+            ")");
 
+    private static final Pattern FAILURE_PATTERN = Pattern.compile(
+            "Warning: failed to resolve some of the encoding conflicts\\R");
 
     private final File file;
     private final SynthesisMode mode;
@@ -116,9 +116,10 @@ public class MpsatTask implements Task<MpsatOutput> {
         ExternalProcessOutput output = result.getPayload();
         if (result.isSuccess() && (output != null)) {
             int returnCode = output.getReturnCode();
-            // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
-            Matcher matcherSuccess = SUCCESS_PATTERN.matcher(output.getStdoutString());
-            if ((returnCode != 0) && (returnCode != 1) || !matcherSuccess.find()) {
+            // Even if the return code is 0 or 1, still test MPSat stdout and stderr to make sure it has completed successfully.
+            boolean successFound = SUCCESS_PATTERN.matcher(output.getStdoutString()).find();
+            boolean failureFound = FAILURE_PATTERN.matcher(output.getStderrString()).find();
+            if ((returnCode != 0) && (returnCode != 1) || !successFound || failureFound) {
                 return Result.failure(new MpsatOutput(output, null, null));
             }
 
