@@ -1,8 +1,8 @@
 Initialisation check: true
 Combined check: true
 Circuit analysis:
-  Component count (mapped + unmapped) -  16 (16 + 0)
-  Area of mapped components -  176.0 + C2R
+  Component count (mapped + unmapped) -  16 (15 + 1)
+  Area of mapped components -  176.0
   Driver pin count (combinational + sequential + undefined) -  16 (15 + 1 + 0)
   Literal count combinational / sequential (set + reset) -  30 / 6 (3 + 3)
   Port count (input + output) -  11 (6 + 5)
