@@ -76,7 +76,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     public SignalTransition createSignalTransition(String signalRef, SignalTransition.Direction direction, Container container) {
         String ref = null;
         if ((signalRef != null) && (direction != null)) {
-            ref = signalRef + direction.toString();
+            ref = signalRef + direction;
         }
         return createSignalTransition(ref, container);
     }
@@ -127,7 +127,7 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public final Collection<StgPlace> getMutexPlaces() {
-        return Hierarchy.getDescendantsOfType(getRoot(), StgPlace.class, place -> place.isMutex());
+        return Hierarchy.getDescendantsOfType(getRoot(), StgPlace.class, StgPlace::isMutex);
     }
 
     @Override
@@ -261,7 +261,7 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public void setName(Node node, String name) {
-        this.setName(node, name, false);
+        this.setName(node, name, true);
     }
 
     private void setName(Node node, String name, boolean forceInstance) {
@@ -435,12 +435,10 @@ public class Stg extends AbstractMathModel implements StgModel {
         if (getReferenceManager() == null) {
             return false;
         }
-        NamespaceProvider dstProvider = null;
-        if (dstContainer instanceof NamespaceProvider) {
-            dstProvider = (NamespaceProvider) dstContainer;
-        } else {
-            dstProvider = getReferenceManager().getNamespaceProvider(dstContainer);
-        }
+        NamespaceProvider dstProvider = dstContainer instanceof NamespaceProvider
+                ? (NamespaceProvider) dstContainer
+                : getReferenceManager().getNamespaceProvider(dstContainer);
+
         NameManager dstNameManager = getReferenceManager().getNameManager(dstProvider);
         for (MathNode srcChild: srcChildren) {
             if (srcChild instanceof SignalTransition) {
@@ -495,7 +493,7 @@ public class Stg extends AbstractMathModel implements StgModel {
                     getReferenceManager().setDefaultName(signalTransition);
                     newName = signalTransition.getSignalName();
                 } else {
-                    setName(signalTransition, newName);
+                    setName(signalTransition, newName, false);
                 }
             }
         }
