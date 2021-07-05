@@ -1,8 +1,8 @@
 package org.workcraft.plugins.stg.references;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchyReferenceManager;
+import org.workcraft.plugins.stg.NamedTransition;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.serialisation.References;
 
@@ -23,23 +23,23 @@ public class StgReferenceManager extends HierarchyReferenceManager {
         super.setExistingReference(node);
     }
 
-    private StgNameManager getNameManager(Node node) {
-        NamespaceProvider namespaceProvider = getNamespaceProvider(node);
-        return (StgNameManager) getNameManager(namespaceProvider);
+    @Override
+    public StgNameManager getNameManager(Node node) {
+        return (StgNameManager) super.getNameManager(node);
     }
 
-    public int getInstanceNumber(Node node) {
-        StgNameManager mgr = getNameManager(node);
+    public int getInstanceNumber(NamedTransition namedTransition) {
+        StgNameManager mgr = getNameManager(namedTransition);
         int result = 0;
-        if (mgr.isNamed(node)) {
-            result = mgr.getInstanceNumber(node);
+        if (mgr.isNamed(namedTransition)) {
+            result = mgr.getInstanceNumber(namedTransition);
         }
         return result;
     }
 
-    public void setInstanceNumber(Node node, int number) {
-        StgNameManager mgr = getNameManager(node);
-        mgr.setInstanceNumber(node, number);
+    public void setInstanceNumber(NamedTransition namedTransition, int number) {
+        StgNameManager mgr = getNameManager(namedTransition);
+        mgr.setInstanceNumber(namedTransition, number);
     }
 
     public void setDefaultNameIfUnnamed(Node node) {
@@ -47,9 +47,10 @@ public class StgReferenceManager extends HierarchyReferenceManager {
         mgr.setDefaultNameIfUnnamed(node);
     }
 
-    public void setName(Node node, String name, boolean forceInstance) {
+    @Override
+    public void setName(Node node, String name, boolean force) {
         StgNameManager mgr = getNameManager(node);
-        mgr.setName(node, name, forceInstance);
+        mgr.setName(node, name, force);
     }
 
 }

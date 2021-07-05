@@ -48,8 +48,7 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
     }
 
     public void setNamespaceProvider(Collection<Node> nodes,
-            HierarchyReferenceManager srcRefManager,
-            NamespaceProvider dstProvider) {
+            HierarchyReferenceManager srcRefManager, NamespaceProvider dstProvider) {
 
         if (dstProvider == null) {
             dstProvider = topProvider;
@@ -71,10 +70,11 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
                     Node clashingNode = dstNameManager.getNode(name);
                     if (nodes.contains(clashingNode)) {
                         String newName = dstNameManager.getDerivedName(clashingNode, name);
-                        dstNameManager.setName(clashingNode, newName);
+                        dstNameManager.setName(clashingNode, newName, true);
                     }
                     String newName = dstNameManager.getDerivedName(node, name);
-                    dstNameManager.setName(node, newName);
+                    // Allow flexibility on naming nodes in case there is name clash in dstNameManager
+                    dstNameManager.setName(node, newName, false);
                 }
             }
         }
@@ -103,6 +103,10 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
             managers.put(provider, man);
         }
         return man;
+    }
+
+    public NameManager getNameManager(Node node) {
+        return getNameManager(getNamespaceProvider(node));
     }
 
     protected NameManager createNameManager() {
@@ -164,16 +168,13 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
             for (Node node : e.getAffectedNodes()) {
                 if (node.getParent() != null) {
                     // if it is not a root node
-                    NamespaceProvider provider = getNamespaceProvider(node);
-                    NameManager man = getNameManager(provider);
+                    NameManager man = getNameManager(node);
                     man.setDefaultNameIfUnnamed(node);
-                    String name = man.getName(node);
                     // additional call to propagate the name data after calling setDefaultNameIfUnnamed
-                    setName(node, name);
+                    setName(node, man.getName(node));
                 }
                 for (Node childNode : Hierarchy.getDescendantsOfType(node, Node.class)) {
-                    NamespaceProvider provider = getNamespaceProvider(childNode);
-                    NameManager mgr = getNameManager(provider);
+                    NameManager mgr = getNameManager(childNode);
                     mgr.setDefaultNameIfUnnamed(childNode);
                     // additional call to propagate the name data after calling setDefaultNameIfUnnamed
                     setName(childNode, mgr.getName(childNode));
@@ -183,10 +184,10 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
 
         if (e instanceof NodesDeletedEvent) {
             for (Node node : e.getAffectedNodes()) {
-                getNameManager(getNamespaceProvider(node)).remove(node);
+                getNameManager(node).remove(node);
                 node2namespace.remove(node);
                 for (Node childNode : Hierarchy.getDescendantsOfType(node, Node.class)) {
-                    getNameManager(getNamespaceProvider(childNode)).remove(childNode);
+                    getNameManager(childNode).remove(childNode);
                     node2namespace.remove(childNode);
                 }
             }
@@ -194,20 +195,21 @@ public class HierarchyReferenceManager extends HierarchySupervisor implements Re
     }
 
     public void setName(Node node, String name) {
-        NamespaceProvider provider = getNamespaceProvider(node);
-        NameManager mgr = getNameManager(provider);
-        mgr.setName(node, name);
+        setName(node, name, true);
+    }
+
+    public void setName(Node node, String name, boolean force) {
+        NameManager mgr = getNameManager(node);
+        mgr.setName(node, name, force);
     }
 
     public String getName(Node node) {
-        NamespaceProvider provider = getNamespaceProvider(node);
-        NameManager mgr = getNameManager(provider);
+        NameManager mgr = getNameManager(node);
         return mgr.getName(node);
     }
 
     public void setDefaultName(MathNode node) {
-        NamespaceProvider namespaceProvider = getNamespaceProvider(node);
-        NameManager nameManager = getNameManager(namespaceProvider);
+        NameManager nameManager = getNameManager(node);
         nameManager.setDefaultName(node);
     }
 

@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg.references;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.IDGenerator;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -55,7 +54,7 @@ public class InstanceManager {
      * Manually assign a new name to <i>t</i>, auto-generating instance number.
      */
     public void assign(Node node, String name) {
-        assign(node, Pair.of(name, (Integer) null), false);
+        assign(node, Pair.of(name, null), false);
     }
 
     /**
@@ -71,7 +70,7 @@ public class InstanceManager {
      */
     public void assign(Node node, Pair<String, Integer> reference, boolean forceInstance) {
         final Pair<String, Integer> assigned = instances.getValue(node);
-        if (reference.getSecond() == null || !forceInstance) {
+        if ((reference.getSecond() == null) || !forceInstance) {
             if (assigned != null) {
                 if (assigned.getFirst().equals(reference.getFirst())) {
                     // already registered with same name, just return
@@ -92,7 +91,8 @@ public class InstanceManager {
                 return;
             } else if (refHolder != null) {
                 // requested instance taken by somebody else
-                throw new DuplicateIDException(reference.getSecond());
+                throw new ArgumentException("Transition '" + reference.getFirst() + "' with the same instance number "
+                        + reference.getSecond() + " already exists");
             } else if (assigned != null) {
                 // release old instance
                 remove(node);

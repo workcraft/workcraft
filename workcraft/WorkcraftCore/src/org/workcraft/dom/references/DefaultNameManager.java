@@ -41,31 +41,31 @@ public class DefaultNameManager implements NameManager {
 
     @Override
     public Integer getPrefixCount(String prefix) {
-        if (prefixCount.containsKey(prefix)) {
-            return prefixCount.get(prefix);
-        } else {
-            return 0;
-        }
+        return prefixCount.getOrDefault(prefix, 0);
     }
 
     @Override
-    public void setName(Node node, String name) {
+    public void setName(Node node, String name, boolean force) {
         if (node instanceof NamespaceProvider) {
             name = Identifier.appendNamespaceSeparator(name);
         }
         Node occupant = getNode(name);
-        if (node != occupant) {
-            if (isUnusedName(name)) {
-                nodes.removeValue(node);
-                nodes.put(name, node);
+        if (node == occupant) {
+            return;
+        }
+        if (isUnusedName(name)) {
+            nodes.removeValue(node);
+            nodes.put(name, node);
+        } else {
+            String msg = "Name '" + name + "' is already taken by another node.";
+            if (force) {
+                DialogUtils.showError(msg);
             } else {
                 String derivedName = getDerivedName(occupant, name);
-                String msg = "The name '" + name + "' is already taken by another node.\n" +
-                        "Rename that node to '" + derivedName + "' and continue?";
-
+                msg += "\nRename that node to '" + derivedName + "' and continue?";
                 if (DialogUtils.showConfirmWarning(msg)) {
-                    setName(occupant, derivedName);
-                    setName(node, name);
+                    setName(occupant, derivedName, true);
+                    setName(node, name, true);
                 }
             }
         }
@@ -107,7 +107,7 @@ public class DefaultNameManager implements NameManager {
             name = Identifier.compose(prefix, (count++).toString());
         } while (!isUnusedName(name));
         setPrefixCount(prefix, count);
-        setName(node, name);
+        setName(node, name, true);
     }
 
     @Override
@@ -132,12 +132,12 @@ public class DefaultNameManager implements NameManager {
     }
 
     private static String codeToString(int code) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         do {
-            result += (char) ('a' + code % 26);
+            result.append((char) ('a' + code % 26));
             code /= 26;
         } while (code > 0);
-        return result;
+        return result.toString();
     }
 
 }
