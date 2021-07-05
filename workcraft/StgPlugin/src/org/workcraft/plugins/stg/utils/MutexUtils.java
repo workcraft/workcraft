@@ -130,7 +130,7 @@ public class MutexUtils {
                     }
 
                     // Request must be rising edge
-                    if (!isGoodMutexRequest(stg, predTransition)) {
+                    if (!isGoodMutexRequest(stg, requestTransition)) {
                         return null;
                     }
 
@@ -146,13 +146,13 @@ public class MutexUtils {
         return result;
     }
 
-    private static boolean isGoodMutexRequest(Stg stg, MathNode transition) {
-        return stg.getDirection(transition) == SignalTransition.Direction.PLUS;
+    private static boolean isGoodMutexRequest(Stg stg, SignalTransition signalTransition) {
+        return stg.getDirection(signalTransition) == SignalTransition.Direction.PLUS;
     }
 
-    private static boolean isGoodMutexGrant(Stg stg, SignalTransition transition) {
-        return (stg.getDirection(transition) == SignalTransition.Direction.PLUS)
-                && (transition.getSignalType() != Signal.Type.INPUT);
+    private static boolean isGoodMutexGrant(Stg stg, SignalTransition signalTransition) {
+        return (stg.getDirection(signalTransition) == SignalTransition.Direction.PLUS)
+                && (signalTransition.getSignalType() != Signal.Type.INPUT);
     }
 
     public static void factoroutMutexes(StgModel model, Collection<Mutex> mutexes) {

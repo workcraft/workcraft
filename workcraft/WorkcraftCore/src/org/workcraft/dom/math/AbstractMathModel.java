@@ -124,9 +124,8 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
         srcRoot.reparent(nodes, dstContainer);
 
         // Propagate the name data into the nodes. This may be necessary after setDefaultNameIfUnnamed was called.
-        for (Node node: nodes) {
-            String name = dstRefManager.getName(node);
-            dstRefManager.setName(node, name);
+        for (Node node : nodes) {
+            dstRefManager.setName(node, dstRefManager.getName(node));
         }
 
         for (Node node: nodes) {
