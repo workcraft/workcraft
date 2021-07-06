@@ -69,14 +69,14 @@ public class Stg extends AbstractMathModel implements StgModel {
             ref = transition.getName();
         }
         String name = NamespaceHelper.getReferenceName(ref);
-        setName(transition, name, forceInstance);
+        getReferenceManager().setName(transition, name, forceInstance);
         return transition;
     }
 
     public SignalTransition createSignalTransition(String signalRef, SignalTransition.Direction direction, Container container) {
         String ref = null;
         if ((signalRef != null) && (direction != null)) {
-            ref = signalRef + direction.toString();
+            ref = signalRef + direction;
         }
         return createSignalTransition(ref, container);
     }
@@ -91,7 +91,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             ref = transition.getName();
         }
         String name = NamespaceHelper.getReferenceName(ref);
-        setName(transition, name, forceInstance);
+        getReferenceManager().setName(transition, name, forceInstance);
         return transition;
     }
 
@@ -127,7 +127,7 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public final Collection<StgPlace> getMutexPlaces() {
-        return Hierarchy.getDescendantsOfType(getRoot(), StgPlace.class, place -> place.isMutex());
+        return Hierarchy.getDescendantsOfType(getRoot(), StgPlace.class, StgPlace::isMutex);
     }
 
     @Override
@@ -198,16 +198,16 @@ public class Stg extends AbstractMathModel implements StgModel {
         return result;
     }
 
-    public String getDummyReference(DummyTransition t) {
-        String ref = getReferenceManager().getNodeReference(null, t);
+    public String getDummyReference(DummyTransition dummyTransition) {
+        String ref = getReferenceManager().getNodeReference(null, dummyTransition);
         String parentRef = NamespaceHelper.getParentReference(ref);
-        return NamespaceHelper.getReference(parentRef, t.getName());
+        return NamespaceHelper.getReference(parentRef, dummyTransition.getName());
     }
 
     @Override
     public Set<String> getSignalReferences() {
         Set<String> result = new HashSet<>();
-        for (SignalTransition t: getSignalTransitions()) {
+        for (SignalTransition t : getSignalTransitions()) {
             result.add(getSignalReference(t));
         }
         return result;
@@ -216,42 +216,42 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public Set<String> getSignalReferences(Signal.Type type) {
         Set<String> result = new HashSet<>();
-        for (SignalTransition t: getSignalTransitions(type)) {
+        for (SignalTransition t : getSignalTransitions(type)) {
             result.add(getSignalReference(t));
         }
         return result;
     }
 
     @Override
-    public String getSignalReference(SignalTransition st) {
-        String ref = getReferenceManager().getNodeReference(null, st);
+    public String getSignalReference(SignalTransition signalTransition) {
+        String ref = getReferenceManager().getNodeReference(null, signalTransition);
         String parentRef = NamespaceHelper.getParentReference(ref);
-        return NamespaceHelper.getReference(parentRef, st.getSignalName());
+        return NamespaceHelper.getReference(parentRef, signalTransition.getSignalName());
     }
 
     @Override
-    public int getInstanceNumber(NamedTransition nt) {
-        return getReferenceManager().getInstanceNumber(nt);
+    public int getInstanceNumber(NamedTransition namedTransition) {
+        return getReferenceManager().getInstanceNumber(namedTransition);
     }
 
     @Override
-    public void setInstanceNumber(NamedTransition nt, int number) {
-        getReferenceManager().setInstanceNumber(nt, number);
+    public void setInstanceNumber(NamedTransition namedTransition, int number) {
+        getReferenceManager().setInstanceNumber(namedTransition, number);
     }
 
-    public SignalTransition.Direction getDirection(Node t) {
+    public SignalTransition.Direction getDirection(SignalTransition signalTransition) {
         SignalTransition.Direction result = null;
-        String name = getReferenceManager().getName(t);
+        String name = getReferenceManager().getName(signalTransition);
         if (name != null) {
             result = LabelParser.parseSignalTransition(name).getSecond();
         }
         return result;
     }
 
-    public void setDirection(Node t, SignalTransition.Direction direction) {
-        String name = getReferenceManager().getName(t);
+    public void setDirection(SignalTransition signalTransition, SignalTransition.Direction direction) {
+        String name = getReferenceManager().getName(signalTransition);
         Triple<String, SignalTransition.Direction, Integer> old = LabelParser.parseSignalTransition(name);
-        getReferenceManager().setName(t, old.getFirst() + direction.toString());
+        getReferenceManager().setName(signalTransition, old.getFirst() + direction.toString());
     }
 
     @Override
@@ -261,11 +261,7 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public void setName(Node node, String name) {
-        this.setName(node, name, false);
-    }
-
-    private void setName(Node node, String name, boolean forceInstance) {
-        getReferenceManager().setName(node, name, forceInstance);
+        getReferenceManager().setName(node, name, true);
     }
 
     public Collection<SignalTransition> getSignalTransitions(String signalReference) {
@@ -435,14 +431,12 @@ public class Stg extends AbstractMathModel implements StgModel {
         if (getReferenceManager() == null) {
             return false;
         }
-        NamespaceProvider dstProvider = null;
-        if (dstContainer instanceof NamespaceProvider) {
-            dstProvider = (NamespaceProvider) dstContainer;
-        } else {
-            dstProvider = getReferenceManager().getNamespaceProvider(dstContainer);
-        }
+        NamespaceProvider dstProvider = dstContainer instanceof NamespaceProvider
+                ? (NamespaceProvider) dstContainer
+                : getReferenceManager().getNamespaceProvider(dstContainer);
+
         NameManager dstNameManager = getReferenceManager().getNameManager(dstProvider);
-        for (MathNode srcChild: srcChildren) {
+        for (MathNode srcChild : srcChildren) {
             if (srcChild instanceof SignalTransition) {
                 SignalTransition srcTransition = (SignalTransition) srcChild;
                 String signalName = srcTransition.getSignalName();
@@ -482,20 +476,21 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public void anonymise() {
         setTitle("");
+        StgReferenceManager referenceManager = getReferenceManager();
         for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
             String name = getName(node);
             if ((name != null) && !Identifier.isInternal(name) && !(node instanceof SignalTransition)) {
-                getReferenceManager().setDefaultName(node);
+                referenceManager.setDefaultName(node);
             }
         }
         for (String signalRef : getSignalReferences()) {
             String newName = null;
             for (SignalTransition signalTransition : getSignalTransitions(signalRef)) {
                 if (newName == null) {
-                    getReferenceManager().setDefaultName(signalTransition);
+                    referenceManager.setDefaultName(signalTransition);
                     newName = signalTransition.getSignalName();
                 } else {
-                    setName(signalTransition, newName);
+                    referenceManager.setName(signalTransition, newName, false);
                 }
             }
         }

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.dom.DefaultNodeImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.exceptions.DuplicateIDException;
 import org.workcraft.plugins.stg.references.InstanceManager;
 import org.workcraft.types.Pair;
 
@@ -132,7 +131,7 @@ class InstanceManagerTests {
         expectedRequests.put(o2, "abc");
         final InstanceManager mgr = make(expectedRequests);
         mgr.assign(o1, 8);
-        Assertions.assertThrows(DuplicateIDException.class, () -> mgr.assign(o2, 8));
+        Assertions.assertThrows(ArgumentException.class, () -> mgr.assign(o2, 8));
     }
 
     @Test

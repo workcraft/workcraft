@@ -8,7 +8,7 @@ public interface NameManager {
     void setPrefixCount(String prefix, Integer count);
     Integer getPrefixCount(String prefix);
 
-    void setName(Node node, String name);
+    void setName(Node node, String name, boolean force);
     String getName(Node node);
     boolean isNamed(Node node);
     boolean isUnusedName(String name);

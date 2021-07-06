@@ -27,7 +27,7 @@ public class CircuitNameManager extends DefaultNameManager {
     }
 
     @Override
-    public void setName(Node node, String name) {
+    public void setName(Node node, String name, boolean force) {
         if (isSignalNode(node)) {
             if (node instanceof Contact) {
                 Contact contact = (Contact) node;
@@ -42,7 +42,7 @@ public class CircuitNameManager extends DefaultNameManager {
                 setSignalName(node, name);
             }
         } else {
-            super.setName(node, name);
+            super.setName(node, name, force);
         }
     }
 
@@ -80,13 +80,13 @@ public class CircuitNameManager extends DefaultNameManager {
                 throw new ArgumentException("Name '" + name + "' is unavailable.");
             }
             String derivedName = getDerivedName(occupant, name);
-            String msg = "The name '" + name + "' is already taken by a component.\n" +
+            String msg = "Name '" + name + "' is already taken by a component.\n" +
                     "Rename that component to '" + derivedName + "' and continue?";
 
             if (!DialogUtils.showConfirmWarning(msg)) {
                 return false;
             }
-            setName(occupant, derivedName);
+            setName(occupant, derivedName, true);
         }
         return true;
     }

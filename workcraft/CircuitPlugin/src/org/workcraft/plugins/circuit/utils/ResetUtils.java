@@ -350,27 +350,28 @@ public final class ResetUtils {
         }
     }
 
-    private static Collection<VisualFunctionComponent> resetComponent(VisualCircuit circuit, VisualFunctionComponent component,
-            VisualFunctionContact resetPort, boolean isActiveLow, boolean clearMapping) {
+    private static Collection<VisualFunctionComponent> resetComponent(VisualCircuit circuit,
+            VisualFunctionComponent component, VisualFunctionContact resetPort,
+            boolean isActiveLow, boolean clearMapping) {
 
         Collection<VisualFunctionComponent> result = new HashSet<>();
 
-        boolean isSimpleGate = component.isGate() && (component.getVisualInputs().size() < 3);
-        Collection<VisualFunctionContact> forceInitGateContacts = new HashSet<>();
-        Collection<VisualFunctionContact> forceInitFuncContacts = new HashSet<>();
+        Collection<VisualFunctionContact> sequentialForceInitOutputs = new HashSet<>();
+        Collection<VisualFunctionContact> combinationalForceInitOutputs = new HashSet<>();
         for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
             if (contact.isOutput() && contact.isPin() && contact.getForcedInit()) {
-                if (isSimpleGate || contact.getReferencedComponent().isSequential()) {
-                    forceInitFuncContacts.add(contact);
+                if (contact.getReferencedComponent().isSequential()) {
+                    sequentialForceInitOutputs.add(contact);
                 } else {
-                    forceInitGateContacts.add(contact);
+                    combinationalForceInitOutputs.add(contact);
                 }
             }
         }
-        if (!forceInitFuncContacts.isEmpty()) {
+        if (!sequentialForceInitOutputs.isEmpty()) {
+            // Modify set/reset functions of sequential output contacts
             VisualFunctionContact setContact = null;
             VisualFunctionContact clearContact = null;
-            for (VisualFunctionContact contact : forceInitFuncContacts) {
+            for (VisualFunctionContact contact : sequentialForceInitOutputs) {
                 if (contact.getInitToOne()) {
                     setContact = getOrCreateResetPin(circuit, component, CircuitSettings.getSetPin());
                     insertResetFunction(contact, setContact, isActiveLow);
@@ -379,24 +380,15 @@ public final class ResetUtils {
                     insertResetFunction(contact, clearContact, isActiveLow);
                 }
             }
-            // Modify module name by adding set/clear suffix
-            String moduleName = component.getReferencedComponent().getModule();
-            if (!moduleName.isEmpty()) {
-                if (setContact != null) {
-                    moduleName += CircuitSettings.getSetPin();
-                }
-                if (clearContact != null) {
-                    moduleName += CircuitSettings.getClearPin();
-                }
-                component.getReferencedComponent().setModule(moduleName);
-            }
-            // Connect set/clear pins to reset port
+            // Clear module name and connect set/clear pins to reset port
+            component.clearMapping();
             connectIfPossible(circuit, resetPort, setContact);
             connectIfPossible(circuit, resetPort, clearContact);
             result.add(component);
         }
 
-        for (VisualFunctionContact contact : forceInitGateContacts) {
+        // Add reset gate after combinational output contacts
+        for (VisualFunctionContact contact : combinationalForceInitOutputs) {
             VisualFunctionComponent resetGate = insertResetGate(circuit, resetPort, contact, isActiveLow);
             result.add(resetGate);
             if (clearMapping) {

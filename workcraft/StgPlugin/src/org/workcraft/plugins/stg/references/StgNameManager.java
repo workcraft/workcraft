@@ -55,12 +55,10 @@ public class StgNameManager extends DefaultNameManager {
     }
 
     private void setSignalTransitionName(SignalTransition st, String name, boolean forceInstance) {
-        String signalName = st.getSignalName();
+        String signalName = name;
         SignalTransition.Direction direction = st.getDirection();
-        Integer instance = 0;
-        if (Identifier.isValid(name)) {
-            signalName = name;
-        } else {
+        Integer instance = null;
+        if (!Identifier.isValid(name)) {
             final Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(name);
             signalName = r == null ? null : r.getFirst();
             if (!Identifier.isValid(signalName)) {
@@ -91,7 +89,7 @@ public class StgNameManager extends DefaultNameManager {
     private void setPlaceName(StgPlace p, String name) {
         if (!p.isImplicit()) {
             if (isUnusedName(name) || renameOccupantIfDifferent(p, name)) {
-                super.setName(p, name);
+                super.setName(p, name, true);
             }
         }
     }
@@ -103,31 +101,27 @@ public class StgNameManager extends DefaultNameManager {
                 throw new ArgumentException("Name '" + name + "' is unavailable.");
             }
             String derivedName = getDerivedName(occupant, name);
-            String msg = "The name '" + name + "' is already taken by a place.\n" +
+            String msg = "Name '" + name + "' is already taken by a place.\n" +
                     "Rename that place to '" + derivedName + "' and continue?";
             if (!DialogUtils.showConfirmWarning(msg)) {
                 return false;
             }
-            setName(occupant, derivedName);
+            setName(occupant, derivedName, true);
         }
         return true;
     }
 
-    public void setName(Node node, String name, boolean forceInstance) {
+    @Override
+    public void setName(Node node, String name, boolean force) {
         if (node instanceof StgPlace) {
             setPlaceName((StgPlace) node, name);
         } else if (node instanceof SignalTransition) {
-            setSignalTransitionName((SignalTransition) node, name, forceInstance);
+            setSignalTransitionName((SignalTransition) node, name, force);
         } else if (node instanceof DummyTransition) {
-            setDummyTransitionName((DummyTransition) node, name, forceInstance);
+            setDummyTransitionName((DummyTransition) node, name, force);
         } else {
-            super.setName(node, name);
+            super.setName(node, name, force);
         }
-    }
-
-    @Override
-    public void setName(Node node, String s) {
-        setName(node, s, false);
     }
 
     @Override
