@@ -701,6 +701,7 @@ public class MainWindow extends JFrame {
         if (FileUtils.checkAvailability(file, null, true)) {
             try {
                 we = framework.loadWork(file);
+                requestFocus(we);
                 framework.setLastDirectory(file);
                 framework.pushRecentFilePath(file);
                 menu.updateRecentMenu();
