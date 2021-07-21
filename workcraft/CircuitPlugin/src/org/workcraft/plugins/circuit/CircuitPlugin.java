@@ -70,6 +70,8 @@ public class CircuitPlugin implements Plugin {
                 "transform the Circuit 'work' by splitting selected (or all) complex gates into simple gates");
         ScriptableCommandUtils.registerCommand(PropagateInversionTransformationCommand.class, "transformCircuitPropagateInversion",
                 "transform the Circuit 'work' by propagating inversion through selected (or all) gates");
+        ScriptableCommandUtils.registerCommand(SquashComponentTransformationCommand.class, "transformCircuitSSquashComponent",
+                "transform the Circuit 'work' by replacing selected (or all) components with their implementations");
 
         // Statistics commands
         ScriptableCommandUtils.registerCommand(StatisticsCommand.class, "statCircuit",

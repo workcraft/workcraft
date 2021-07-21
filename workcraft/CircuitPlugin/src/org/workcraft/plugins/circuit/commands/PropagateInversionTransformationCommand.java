@@ -86,7 +86,7 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
 
         BooleanFormula setFunction = outputContact.getSetFunction();
         if (setFunction == null) {
-            LogUtils.logWarning("Gate " + gateStr + " cannot be transformed as it does not have set functions defined");
+            LogUtils.logWarning("Gate " + gateStr + " cannot be transformed as it does not have set function defined");
             return;
         }
         BooleanFormula newSetFunction = propagateInversion(setFunction);

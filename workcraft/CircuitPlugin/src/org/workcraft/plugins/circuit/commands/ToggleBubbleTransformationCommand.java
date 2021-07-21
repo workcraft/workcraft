@@ -45,22 +45,28 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
 
     @Override
     public boolean isEnabled(ModelEntry me, VisualNode node) {
-        boolean result = false;
         if (node instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) node;
-            if (!component.getVisualOutputs().isEmpty()) {
-                result = true;
-            }
-        } else if (node instanceof VisualFunctionContact) {
-            FunctionContact contact = ((VisualFunctionContact) node).getReferencedComponent();
-            for (FunctionContact dependantContact: getDependantContacts(contact)) {
-                if ((dependantContact.getSetFunction() != null) || (dependantContact.getResetFunction() != null)) {
-                    result = true;
-                    break;
-                }
+            FunctionComponent component = ((VisualFunctionComponent) node).getReferencedComponent();
+            if (checkSetResetFunctions(component.getFunctionOutputs())) {
+                return true;
             }
         }
-        return result;
+        if (node instanceof VisualFunctionContact) {
+            FunctionContact contact = ((VisualFunctionContact) node).getReferencedComponent();
+            if (checkSetResetFunctions(getDependantContacts(contact))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkSetResetFunctions(Collection<FunctionContact> contacts) {
+        for (FunctionContact contact : contacts) {
+            if ((contact.getSetFunction() != null) || (contact.getResetFunction() != null)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private HashSet<FunctionContact> getDependantContacts(FunctionContact contact) {
@@ -111,7 +117,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
             if (contact.isOutput()) {
                 BooleanFormula setFunction = contact.getSetFunction();
                 BooleanFormula resetFunction = contact.getResetFunction();
-                if (resetFunction == null) {
+                if ((setFunction != null) && (resetFunction == null)) {
                     contact.setSetFunction(FormulaUtils.invert(setFunction));
                 } else {
                     contact.setSetFunction(resetFunction);
