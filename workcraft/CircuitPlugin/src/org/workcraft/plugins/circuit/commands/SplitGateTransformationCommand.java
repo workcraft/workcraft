@@ -53,7 +53,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         BooleanFormula setFunction = outputContact.getSetFunction();
         String str = CircuitUtils.gateToString(circuit, gate);
         if (setFunction == null) {
-            LogUtils.logWarning("Gate " + str + " cannot be split as it does not have set functions defined");
+            LogUtils.logWarning("Gate " + str + " cannot be split as it does not have set function defined");
             return;
         }
 
