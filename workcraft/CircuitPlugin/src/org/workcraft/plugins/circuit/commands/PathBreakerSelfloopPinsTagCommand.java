@@ -13,7 +13,7 @@ public class PathBreakerSelfloopPinsTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return circuit -> CycleUtils.tagPathBreakerSelfloopPins(circuit);
+        return CycleUtils::tagPathBreakerSelfloopPins;
     }
 
     @Override
