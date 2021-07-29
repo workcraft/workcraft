@@ -13,7 +13,7 @@ public class ForceInitAutoAppendTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return circuit -> ResetUtils.tagForceInitAutoAppend(circuit);
+        return ResetUtils::tagForceInitAutoAppend;
     }
 
     @Override

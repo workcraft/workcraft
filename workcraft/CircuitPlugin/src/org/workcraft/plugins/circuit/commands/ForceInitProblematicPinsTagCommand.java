@@ -13,7 +13,7 @@ public class ForceInitProblematicPinsTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return circuit -> ResetUtils.tagForceInitProblematicPins(circuit);
+        return ResetUtils::tagForceInitProblematicPins;
     }
 
     @Override

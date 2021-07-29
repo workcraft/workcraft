@@ -14,20 +14,20 @@ public final class CycleUtils {
     private CycleUtils() {
     }
 
-    public static Collection<Contact> tagPathBreakerClearAll(Circuit circuit) {
+    public static Set<Contact> tagPathBreakerClearAll(Circuit circuit) {
         Collection<Contact> contacts = Hierarchy.getDescendantsOfType(circuit.getRoot(),
-                Contact.class, contact -> contact.isPin());
+                Contact.class, Contact::isPin);
 
         return setPathBreaker(contacts, false);
     }
 
-    public static Collection<Contact> tagPathBreakerSelfloopPins(Circuit circuit) {
+    public static Set<Contact> tagPathBreakerSelfloopPins(Circuit circuit) {
         Map<Contact, Set<Contact>> graph = buildGraph(circuit);
         Set<Contact> contacts = DirectedGraphUtils.findSelfloopVertices(graph);
         return setPathBreaker(contacts, true);
     }
 
-    public static Collection<Contact> tagPathBreakerAutoAppend(Circuit circuit) {
+    public static Set<Contact> tagPathBreakerAutoAppend(Circuit circuit) {
         Map<Contact, Set<Contact>> graph = buildGraph(circuit);
         Set<Contact> contacts = DirectedGraphUtils.findFeedbackVertices(graph);
         return setPathBreaker(contacts, true);
@@ -44,7 +44,7 @@ public final class CycleUtils {
         return result;
     }
 
-    public static Collection<Contact> tagPathBreakerAutoDiscard(Circuit circuit) {
+    public static Set<Contact> tagPathBreakerAutoDiscard(Circuit circuit) {
         Set<Contact> result = new HashSet<>();
         boolean progress = true;
         int initCount = getCycledDrivers(circuit).size();

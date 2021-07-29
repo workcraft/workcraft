@@ -13,7 +13,7 @@ public class ForceInitSequentialPinsTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return circuit -> ResetUtils.tagForceInitSequentialPins(circuit);
+        return ResetUtils::tagForceInitSequentialPins;
     }
 
     @Override

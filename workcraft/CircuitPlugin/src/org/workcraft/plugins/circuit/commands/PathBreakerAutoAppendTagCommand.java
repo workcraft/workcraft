@@ -13,7 +13,7 @@ public class PathBreakerAutoAppendTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return circuit -> CycleUtils.tagPathBreakerAutoAppend(circuit);
+        return CycleUtils::tagPathBreakerAutoAppend;
     }
 
     @Override

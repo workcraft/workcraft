@@ -164,8 +164,8 @@ subprojects {
 
     jacocoTestReport {
         reports {
-            xml.enabled = true
-            html.enabled = false
+            xml.required = true    // XML report for coveralls
+            html.required = false  // skip human readable report
         }
     }
 
@@ -229,8 +229,8 @@ task jacocoRootReport(type: JacocoReport) {
     executionData.from = coverageProjects.jacocoTestReport.executionData
 
     reports {
-        html.enabled = true // human readable
-        xml.enabled = true // required by coveralls
+        xml.required = true   // XML report for coveralls
+        html.required = true  // human readable report
     }
 
     afterEvaluate {

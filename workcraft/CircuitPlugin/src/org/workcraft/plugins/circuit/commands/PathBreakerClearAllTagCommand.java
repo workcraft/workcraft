@@ -13,7 +13,7 @@ public class PathBreakerClearAllTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return circuit -> CycleUtils.tagPathBreakerClearAll(circuit);
+        return CycleUtils::tagPathBreakerClearAll;
     }
 
     @Override

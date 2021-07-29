@@ -13,7 +13,7 @@ public class ForceInitAutoDiscardTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return circuit -> ResetUtils.tagForceInitAutoDiscard(circuit);
+        return ResetUtils::tagForceInitAutoDiscard;
     }
 
     @Override

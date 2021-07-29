@@ -13,7 +13,7 @@ public class ForceInitClearAllTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return circuit -> ResetUtils.tagForceInitClearAll(circuit);
+        return ResetUtils::tagForceInitClearAll;
     }
 
     @Override

@@ -115,9 +115,7 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
         if (issueTimer == null) {
             issueTimer = new Timer(EditorCommonSettings.getFlashInterval(), event -> {
                 issueText = null;
-                if (editor != null) {
-                    editor.repaint();
-                }
+                editor.repaint();
             });
         }
         issueTimer.setRepeats(false);

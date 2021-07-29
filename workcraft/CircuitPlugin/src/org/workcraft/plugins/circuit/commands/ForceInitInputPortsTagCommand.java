@@ -13,7 +13,7 @@ public class ForceInitInputPortsTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return circuit -> ResetUtils.tagForceInitInputPorts(circuit);
+        return ResetUtils::tagForceInitInputPorts;
     }
 
     @Override
