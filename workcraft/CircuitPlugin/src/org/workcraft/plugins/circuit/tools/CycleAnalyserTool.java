@@ -146,7 +146,13 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private void insertScan(GraphEditor editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
-        ScanUtils.insertScan(we);
+        VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+        we.captureMemento();
+        boolean isModified = ScanUtils.insertScan(circuit);
+        if (isModified) {
+            we.saveMemento();
+        }
+        we.uncaptureMemento();
         editor.requestFocus();
     }
 
@@ -318,7 +324,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                     return getComponentDecoration((FunctionComponent) mathNode);
                 }
             }
-            return (mathNode instanceof Contact) ? StateDecoration.Empty.INSTANCE : null;
+            return null;
         };
     }
 

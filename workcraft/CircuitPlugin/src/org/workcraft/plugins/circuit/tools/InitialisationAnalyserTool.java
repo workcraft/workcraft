@@ -18,6 +18,7 @@ import org.workcraft.plugins.circuit.utils.ResetUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.TextUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
@@ -145,7 +146,13 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     private void insertReset(final GraphEditor editor, boolean isActiveLow) {
-        ResetUtils.insertReset(editor.getWorkspaceEntry(), isActiveLow);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+        we.captureMemento();
+        if (ResetUtils.insertReset(circuit, isActiveLow)) {
+            we.saveMemento();
+        }
+        we.uncaptureMemento();
         editor.requestFocus();
     }
 
