@@ -7,7 +7,6 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
@@ -50,14 +49,9 @@ public class ResetVerificationCommand extends AbstractVerificationCommand
             return null;
         }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        Set<Contact> problematicContacts = ResetUtils.getInitialisationProblemContacts(circuit);
-        for (FunctionContact contact : circuit.getFunctionContacts()) {
-            if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
-                problematicContacts.add(contact);
-            }
-        }
+        Set<Contact> problematicPins = ResetUtils.getInitialisationProblemPins(circuit);
 
-        if (problematicContacts.isEmpty()) {
+        if (problematicPins.isEmpty()) {
             DialogUtils.showInfo("The circuit is fully initialised via the currently forced input ports.", TITLE);
             return true;
         }
@@ -68,7 +62,7 @@ public class ResetVerificationCommand extends AbstractVerificationCommand
             toolbox.selectTool(toolbox.getToolInstance(InitialisationAnalyserTool.class));
         }
 
-        Collection<String> refs = ReferenceHelper.getReferenceList(circuit, problematicContacts);
+        Collection<String> refs = ReferenceHelper.getReferenceList(circuit, problematicPins);
         String msg = "The currently forced input ports are insufficient to fully initialised the circuit.\n" +
                 TextUtils.wrapMessageWithItems("Problematic signal", refs);
 

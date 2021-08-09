@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.Zero;
 import org.workcraft.plugins.circuit.*;
@@ -9,8 +10,7 @@ import org.workcraft.plugins.circuit.genlib.UnaryGateInterface;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.utils.LogUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -71,26 +71,7 @@ public class ScanUtils {
         return null;
     }
 
-    public static boolean insertScan(WorkspaceEntry we) {
-        boolean result = false;
-        if (WorkspaceUtils.isApplicable(we, VisualCircuit.class)) {
-            VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-            we.captureMemento();
-            try {
-                result = ScanUtils.insertScan(circuit);
-            } catch (InvalidConnectionException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (result) {
-            we.saveMemento();
-        } else {
-            we.uncaptureMemento();
-        }
-        return result;
-    }
-
-    public static boolean insertScan(VisualCircuit circuit) throws InvalidConnectionException {
+    public static boolean insertScan(VisualCircuit circuit) {
         String ckName = CircuitSettings.parseScanckPortPin().getFirst();
         String enName = CircuitSettings.parseScanenPortPin().getFirst();
         String tmName = CircuitSettings.parseScantmPortPin().getFirst();
@@ -208,10 +189,13 @@ public class ScanUtils {
 
     private static void connectIfPossible(VisualCircuit circuit, VisualContact fromContact, VisualContact toContact) {
         if (circuit.getConnections(toContact).isEmpty()) {
-            try {
-                circuit.connect(fromContact, toContact);
-            } catch (InvalidConnectionException e) {
-                throw new RuntimeException(e);
+            VisualConnection connection = circuit.getConnection(fromContact, toContact);
+            if (connection == null) {
+                try {
+                    circuit.connect(fromContact, toContact);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarning(e.getMessage());
+                }
             }
         }
     }

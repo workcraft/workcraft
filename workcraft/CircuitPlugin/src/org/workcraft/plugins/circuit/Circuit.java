@@ -67,7 +67,11 @@ public class Circuit extends AbstractMathModel {
     }
 
     public Collection<Contact> getPorts() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, contact -> contact.isPort());
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, Contact::isPort);
+    }
+
+    public Collection<Contact> getPins() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, Contact::isPin);
     }
 
     public Collection<Contact> getInputPorts() {
@@ -79,7 +83,7 @@ public class Circuit extends AbstractMathModel {
     }
 
     public Collection<Contact> getDrivers() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, contact -> contact.isDriver());
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, Contact::isDriver);
     }
 
     @Override

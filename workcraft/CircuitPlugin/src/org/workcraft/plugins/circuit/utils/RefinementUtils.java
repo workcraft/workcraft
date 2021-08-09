@@ -191,8 +191,7 @@ public final class RefinementUtils {
         return (aSignals != null)  && aSignals.equals(bSignals);
     }
 
-    public static void updateInterface(WorkspaceEntry we, Set<File> changedRefinementFiles) {
-        VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+    public static void updateInterface(VisualCircuit circuit, Set<File> changedRefinementFiles) {
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             Pair<File, Circuit> refinementFileCircuitPair = getRefinementCircuit(component.getReferencedComponent());
             if (refinementFileCircuitPair != null) {

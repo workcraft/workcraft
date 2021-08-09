@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.workers.BooleanWorker;
@@ -12,8 +13,7 @@ import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.utils.LogUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -74,10 +74,11 @@ public final class ResetUtils {
         }
         BooleanFormula setFunction = FormulaUtils.replace(contact.getSetFunction(), variables, values, CLEVER_WORKER);
         BooleanFormula resetFunction = FormulaUtils.replace(contact.getResetFunction(), variables, values, CLEVER_WORKER);
-        if (isEvaluatedHigh(setFunction, resetFunction) && contact.getInitToOne()) {
+        if ((setFunction == null) && (resetFunction == null)) {
             return false;
         }
-        return !isEvaluatedLow(setFunction, resetFunction) || contact.getInitToOne();
+        return (!isEvaluatedHigh(setFunction, resetFunction) || !contact.getInitToOne())
+                && (!isEvaluatedLow(setFunction, resetFunction) || contact.getInitToOne());
     }
 
     public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
@@ -152,21 +153,6 @@ public final class ResetUtils {
         return simplifyForceInit(circuit, contacts);
     }
 
-    public static boolean insertReset(WorkspaceEntry we, boolean isActiveLow) {
-        boolean result = false;
-        if (WorkspaceUtils.isApplicable(we, VisualCircuit.class)) {
-            VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-            we.captureMemento();
-            result = insertReset(circuit, isActiveLow);
-        }
-        if (result) {
-            we.saveMemento();
-        } else {
-            we.uncaptureMemento();
-        }
-        return result;
-    }
-
     public static boolean insertReset(VisualCircuit circuit, boolean isActiveLow) {
         String portName = isActiveLow ? CircuitSettings.getResetActiveLowPort() : CircuitSettings.getResetActiveHighPort();
         List<VisualFunctionComponent> resetComponents = circuit.getVisualFunctionComponents().stream()
@@ -210,10 +196,13 @@ public final class ResetUtils {
 
     private static void connectIfPossible(VisualCircuit circuit, VisualContact fromContact, VisualContact toContact) {
         if ((fromContact != null) && (toContact != null)) {
-            try {
-                circuit.connect(fromContact, toContact);
-            } catch (InvalidConnectionException e) {
-                throw new RuntimeException(e);
+            VisualConnection connection = circuit.getConnection(fromContact, toContact);
+            if (connection == null) {
+                try {
+                    circuit.connect(fromContact, toContact);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarning(e.getMessage());
+                }
             }
         }
     }
@@ -486,12 +475,12 @@ public final class ResetUtils {
         }
     }
 
-    public static Set<Contact> getInitialisationProblemContacts(Circuit circuit) {
+    public static Set<Contact> getInitialisationProblemPins(Circuit circuit) {
         InitialisationState initState = new InitialisationState(circuit);
         Set<Contact> result = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver()) {
-                if (!initState.isInitialisedPin(contact)) {
+                if (!initState.isInitialisedPin(contact) || contact.getForcedInit()) {
                     result.add(contact);
                 }
             }
