@@ -20,6 +20,8 @@ import java.util.Collection;
 public class CycleFreenessVerificationCommand extends AbstractVerificationCommand
         implements ScriptableCommand<Boolean> {
 
+    private static final String TITLE = "Verification result";
+
     @Override
     public String getDisplayName() {
         return "Absence of unbroken cycles";
@@ -48,7 +50,7 @@ public class CycleFreenessVerificationCommand extends AbstractVerificationComman
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         Collection<FunctionComponent> cycledComponents = CycleUtils.getCycledComponents(circuit);
         if (cycledComponents.isEmpty()) {
-            DialogUtils.showInfo("The circuit does not have unbroken cycles.");
+            DialogUtils.showInfo("The circuit does not have unbroken cycles.", TITLE);
             return true;
         } else {
             final Framework framework = Framework.getInstance();
@@ -60,7 +62,7 @@ public class CycleFreenessVerificationCommand extends AbstractVerificationComman
             String msg = "The circuit has unbroken cycles.\n" +
                     TextUtils.wrapMessageWithItems("Problematic components", loopedComponentRefs);
 
-            DialogUtils.showError(msg);
+            DialogUtils.showError(msg, TITLE);
             return false;
         }
     }

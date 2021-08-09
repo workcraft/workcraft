@@ -74,10 +74,11 @@ public final class ResetUtils {
         }
         BooleanFormula setFunction = FormulaUtils.replace(contact.getSetFunction(), variables, values, CLEVER_WORKER);
         BooleanFormula resetFunction = FormulaUtils.replace(contact.getResetFunction(), variables, values, CLEVER_WORKER);
-        if (isEvaluatedHigh(setFunction, resetFunction) && contact.getInitToOne()) {
+        if ((setFunction == null) && (resetFunction == null)) {
             return false;
         }
-        return !isEvaluatedLow(setFunction, resetFunction) || contact.getInitToOne();
+        return (!isEvaluatedHigh(setFunction, resetFunction) || !contact.getInitToOne())
+                && (!isEvaluatedLow(setFunction, resetFunction) || contact.getInitToOne());
     }
 
     public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
@@ -474,12 +475,12 @@ public final class ResetUtils {
         }
     }
 
-    public static Set<Contact> getInitialisationProblemContacts(Circuit circuit) {
+    public static Set<Contact> getInitialisationProblemPins(Circuit circuit) {
         InitialisationState initState = new InitialisationState(circuit);
         Set<Contact> result = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver()) {
-                if (!initState.isInitialisedPin(contact)) {
+                if (!initState.isInitialisedPin(contact) || contact.getForcedInit()) {
                     result.add(contact);
                 }
             }
