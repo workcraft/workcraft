@@ -45,12 +45,15 @@ public class ResetVerificationCommand extends AbstractVerificationCommand
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        if (!checkPrerequisites(we)) {
+        if (!isApplicableTo(we)) {
             return null;
         }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        Set<Contact> problematicPins = ResetUtils.getInitialisationProblemPins(circuit);
+        if (!VerificationUtils.checkBlackboxComponents(circuit)) {
+            return null;
+        }
 
+        Set<Contact> problematicPins = ResetUtils.getInitialisationProblemPins(circuit);
         if (problematicPins.isEmpty()) {
             DialogUtils.showInfo("The circuit is fully initialised via the currently forced input ports.", TITLE);
             return true;
@@ -68,10 +71,6 @@ public class ResetVerificationCommand extends AbstractVerificationCommand
 
         DialogUtils.showError(msg, TITLE);
         return false;
-    }
-
-    private boolean checkPrerequisites(WorkspaceEntry we) {
-        return isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we);
     }
 
 }

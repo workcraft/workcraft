@@ -44,10 +44,14 @@ public class CycleFreenessVerificationCommand extends AbstractVerificationComman
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        if (!checkPrerequisites(we)) {
+        if (!isApplicableTo(we)) {
             return null;
         }
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        if (!VerificationUtils.checkBlackboxComponents(circuit)) {
+            return null;
+        }
+
         Collection<FunctionComponent> cycledComponents = CycleUtils.getCycledComponents(circuit);
         if (cycledComponents.isEmpty()) {
             DialogUtils.showInfo("The circuit does not have unbroken cycles.", TITLE);
@@ -65,10 +69,6 @@ public class CycleFreenessVerificationCommand extends AbstractVerificationComman
             DialogUtils.showError(msg, TITLE);
             return false;
         }
-    }
-
-    private boolean checkPrerequisites(WorkspaceEntry we) {
-        return isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we);
     }
 
 }
