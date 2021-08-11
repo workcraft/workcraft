@@ -36,12 +36,10 @@ public class FunctionContact extends Contact {
         }
     }
 
-    public boolean setSetFunctionQuiet(BooleanFormula value) {
+    public void setSetFunctionQuiet(BooleanFormula value) {
         if (setFunction != value) {
             setFunction = value;
-            return true;
         }
-        return false;
     }
 
     public BooleanFormula getResetFunction() {
@@ -59,12 +57,14 @@ public class FunctionContact extends Contact {
         }
     }
 
-    public boolean setResetFunctionQuiet(BooleanFormula value) {
+    public void setResetFunctionQuiet(BooleanFormula value) {
         if (resetFunction != value) {
             resetFunction = value;
-            return true;
         }
-        return false;
+    }
+
+    public boolean hasFunction() {
+        return (setFunction != null) || (resetFunction != null);
     }
 
     public boolean isSequential() {

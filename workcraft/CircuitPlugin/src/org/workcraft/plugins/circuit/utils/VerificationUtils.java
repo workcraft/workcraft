@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class VerificationUtils {
 
@@ -152,7 +153,7 @@ public final class VerificationUtils {
     }
 
     private static Set<String> getUnconstrainedInputSignals(Stg envStg, Circuit circuit) {
-        Set<String> result = new HashSet();
+        Set<String> result = new HashSet<>();
         for (Contact contact : circuit.getInputPorts()) {
             if (!(contact instanceof FunctionContact)) continue;
             FunctionContact inputPort = (FunctionContact) contact;
@@ -169,7 +170,7 @@ public final class VerificationUtils {
     }
 
     private static Set<String> getUnusedOutputSignals(Stg envStg, Circuit circuit) {
-        Set<String> result = new HashSet();
+        Set<String> result = new HashSet<>();
         Set<BooleanVariable> literals = GateUtils.getUsedPortVariables(circuit);
         for (Contact contact : circuit.getOutputPorts()) {
             if (literals.contains(contact)) continue;
@@ -191,6 +192,21 @@ public final class VerificationUtils {
             }
         }
         return result;
+    }
+
+    public static boolean checkBlackboxComponents(Circuit circuit) {
+        Set<FunctionComponent> blackboxComponents = circuit.getFunctionComponents().stream()
+                .filter(FunctionComponent::isBlackbox)
+                .collect(Collectors.toSet());
+
+        if (!blackboxComponents.isEmpty()) {
+            Collection<String> refs = ReferenceHelper.getReferenceList(circuit, blackboxComponents);
+            String msg = TextUtils.wrapMessageWithItems("Circuit has blackbox component", refs)
+                    + "\n\nProceed anyway?";
+
+            return DialogUtils.showConfirmWarning(msg);
+        }
+        return true;
     }
 
 }
