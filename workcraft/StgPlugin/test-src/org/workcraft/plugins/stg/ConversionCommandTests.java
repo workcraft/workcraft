@@ -101,21 +101,21 @@ class ConversionCommandTests {
         WorkspaceEntry dstWe = command.execute(srcWe);
         VisualStg dstStg = WorkspaceUtils.getAs(dstWe, VisualStg.class);
 
-        Set<String> srcInputSignalRefs = ReferenceHelper.getReferenceSet(srcDtd,
+        Set<String> srcInputSignalRefs = ReferenceHelper.getReferenceSet(srcDtd.getMathModel(),
                 srcDtd.getMathModel().getSignals(org.workcraft.plugins.dtd.Signal.Type.INPUT));
         Set<String> dstInputSignalRefs = dstStg.getMathModel().getSignalReferences(Type.INPUT);
-        Assertions.assertNotEquals(srcInputSignalRefs, dstInputSignalRefs);
+        Assertions.assertEquals(srcInputSignalRefs, dstInputSignalRefs);
 
-        Set<String> srcOutputSignalRefs = ReferenceHelper.getReferenceSet(srcDtd,
+        Set<String> srcOutputSignalRefs = ReferenceHelper.getReferenceSet(srcDtd.getMathModel(),
                 srcDtd.getMathModel().getSignals(org.workcraft.plugins.dtd.Signal.Type.OUTPUT));
 
         Set<String> dstOutputSignalRefs = dstStg.getMathModel().getSignalReferences(Type.OUTPUT);
-        Assertions.assertNotEquals(srcOutputSignalRefs, dstOutputSignalRefs);
+        Assertions.assertEquals(srcOutputSignalRefs, dstOutputSignalRefs);
 
-        Set<String> srcInternalSignalRefs = ReferenceHelper.getReferenceSet(srcDtd,
-                srcDtd.getMathModel().getSignals(org.workcraft.plugins.dtd.Signal.Type.INPUT));
+        Set<String> srcInternalSignalRefs = ReferenceHelper.getReferenceSet(srcDtd.getMathModel(),
+                srcDtd.getMathModel().getSignals(org.workcraft.plugins.dtd.Signal.Type.INTERNAL));
         Set<String> dstInternalSignalRefs = dstStg.getMathModel().getSignalReferences(Type.INTERNAL);
-        Assertions.assertNotEquals(srcInternalSignalRefs, dstInternalSignalRefs);
+        Assertions.assertEquals(srcInternalSignalRefs, dstInternalSignalRefs);
 
         int dstPlaceCount = dstStg.getVisualPlaces().size();
         Assertions.assertEquals(8, dstPlaceCount);
