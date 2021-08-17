@@ -28,7 +28,7 @@ platform-specific backend tools
 
 Workcraft requires Java JDK 8 or newer for a successful build and is
 assembled via [Gradle](https://gradle.org/).
-It is tested with both [Open JDK](http://openjdk.java.net/) and
+It is tested with both [Open JDK](https://adoptium.net/) and
 [Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
 These instructions use `gradlew`, a wrapper that downloads and runs
