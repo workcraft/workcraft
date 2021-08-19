@@ -79,6 +79,7 @@
         <exclude name="AvoidCatchingThrowable"/> <!-- Interesting to enforce -->
         <exclude name="AvoidBranchingStatementAsLastInLoop"/> <!-- Interesting to enforce -->
         <exclude name="ConstructorCallsOverridableMethod"/> <!-- Interesting to enforce -->
+        <exclude name="ReturnEmptyCollectionRatherThanNull"/> <!-- Interesting to enforce, but some exceptions -->
     </rule>
 
     <rule ref="category/java/design.xml">

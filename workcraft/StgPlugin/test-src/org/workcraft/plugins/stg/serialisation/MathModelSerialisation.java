@@ -2,7 +2,7 @@ package org.workcraft.plugins.stg.serialisation;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.workcraft.dom.Model;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.PluginProvider;
@@ -30,15 +30,15 @@ class MathModelSerialisation {
             // serialise
             XMLModelSerialiser serialiser = new XMLModelSerialiser(mock);
 
-            DataAccumulator accum = new DataAccumulator();
-            serialiser.serialise(stg, accum, null);
+            DataAccumulator accumulator = new DataAccumulator();
+            serialiser.serialise(stg, accumulator, null);
 
-            System.out.println(new String(accum.getData()));
+            System.out.println(new String(accumulator.getData()));
 
             // deserialise
             XMLModelDeserialiser deserisaliser = new XMLModelDeserialiser(mock);
 
-            Stg stg2 = (Stg) deserisaliser.deserialise(accum.getInputStream(), null, null).model;
+            Stg stg2 = (Stg) deserisaliser.deserialise(accumulator.getInputStream(), null, null).model;
 
             compareMathModels(stg, stg2);
         } catch (SerialisationException | DeserialisationException e) {
@@ -46,8 +46,8 @@ class MathModelSerialisation {
         }
     }
 
-    private static void compareMathModels(Model model1, Model model2) {
-        Assertions.assertTrue(model1.getTitle().equals(model2.getTitle()));
+    private static void compareMathModels(MathModel model1, MathModel model2) {
+        Assertions.assertEquals(model1.getTitle(), model2.getTitle());
         SerialisationTestingUtils.compareNodes(model1.getRoot(), model2.getRoot());
     }
 
