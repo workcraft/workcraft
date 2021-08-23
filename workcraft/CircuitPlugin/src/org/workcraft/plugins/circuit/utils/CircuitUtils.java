@@ -241,7 +241,7 @@ public class CircuitUtils {
                 // If a single output port is driven, then take its name.
                 result = circuit.getNodeReference(outputPort);
             } else {
-                // If the component has a single output, use the component name. Otherwise append the contact.
+                // If the component has a single output, use the component name. Otherwise, append the contact.
                 if (component.getOutputs().size() == 1) {
                     result = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
                 } else {
@@ -255,12 +255,12 @@ public class CircuitUtils {
     public static Contact getDrivenOutputPort(Circuit circuit, Contact contact) {
         Contact result = null;
         boolean multipleOutputPorts = false;
-        for (Contact vc: findDriven(circuit, contact, true)) {
-            if (vc.isPort() && vc.isOutput()) {
+        for (Contact driven : findDriven(circuit, contact, true)) {
+            if (driven.isPort() && driven.isOutput()) {
                 if (result != null) {
                     multipleOutputPorts = true;
                 }
-                result = vc;
+                result = driven;
             }
         }
         if (multipleOutputPorts) {
@@ -307,41 +307,41 @@ public class CircuitUtils {
         Node parent = contact.getParent();
         if (parent instanceof VisualFunctionComponent) {
             VisualFunctionComponent component = (VisualFunctionComponent) parent;
-            return parsePinFuncton(circuit, component, function);
+            return parsePinFunction(circuit, component, function);
         } else {
-            return parsePortFuncton(circuit, function);
+            return parsePortFunction(circuit, function);
         }
     }
 
-    public static BooleanFormula parsePinFuncton(VisualCircuit circuit, VisualFunctionComponent component, String function) throws ParseException {
+    public static BooleanFormula parsePinFunction(VisualCircuit circuit, VisualFunctionComponent component, String function) throws ParseException {
         if ((function == null) || function.isEmpty()) {
             return null;
         }
         return BooleanFormulaParser.parse(function, name -> {
             BooleanFormula result = null;
             VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
-            if ((contact != null) && (contact.getReferencedComponent() instanceof BooleanFormula)) {
+            if ((contact != null) && (contact.getReferencedComponent() != null)) {
                 result = contact.getReferencedComponent();
             }
             return result;
         });
     }
 
-    public static BooleanFormula parsePortFuncton(VisualCircuit circuit, String function) throws ParseException {
+    public static BooleanFormula parsePortFunction(VisualCircuit circuit, String function) throws ParseException {
         if ((function == null) || function.isEmpty()) {
             return null;
         }
         return BooleanFormulaParser.parse(function, name -> {
             BooleanFormula result = null;
             VisualFunctionContact port = circuit.getOrCreatePort(name, IOType.OUTPUT);
-            if ((port != null) && (port.getReferencedComponent() instanceof BooleanFormula)) {
+            if ((port != null) && (port.getReferencedComponent() != null)) {
                 result = port.getReferencedComponent();
             }
             return result;
         });
     }
 
-    public static BooleanFormula parsePinFuncton(Circuit circuit, FunctionComponent component, String function) throws ParseException {
+    public static BooleanFormula parsePinFunction(Circuit circuit, FunctionComponent component, String function) throws ParseException {
         if ((function == null) || function.isEmpty()) {
             return null;
         }
@@ -407,7 +407,6 @@ public class CircuitUtils {
         Node firstParent = connection.getFirst().getParent();
         Node secondParent = connection.getSecond().getParent();
         return ((firstParent instanceof VisualCircuitComponent) || (firstParent instanceof CircuitComponent))
-                && ((secondParent instanceof VisualCircuitComponent) || (secondParent instanceof CircuitComponent))
                 && (firstParent == secondParent);
     }
 
@@ -427,7 +426,7 @@ public class CircuitUtils {
             result += " [" + outputName + " = " + setString + "]";
         } else if (setString.isEmpty() && !resetString.isEmpty()) {
             result += " [" + outputName + "\u2193 = " + resetString + "]";
-        } else if (!setString.isEmpty() && !resetString.isEmpty()) {
+        } else if (!setString.isEmpty()) {
             result += " [" + outputName + "\u2191 = " + setString + "; " + outputName + "\u2193 = " + resetString + "]";
         }
         return result;

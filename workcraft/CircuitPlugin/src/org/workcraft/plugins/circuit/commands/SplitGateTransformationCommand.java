@@ -207,8 +207,8 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         VisualFunctionContact outputContact = circuit.getOrCreateContact(component, outputName, Contact.IOType.OUTPUT);
         try {
             String formulaString = StringGenerator.toString(function);
-            BooleanFormula setFuncton = CircuitUtils.parsePinFuncton(circuit, component, formulaString);
-            outputContact.setSetFunction(setFuncton);
+            BooleanFormula setFunction = CircuitUtils.parsePinFunction(circuit, component, formulaString);
+            outputContact.setSetFunction(setFunction);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }

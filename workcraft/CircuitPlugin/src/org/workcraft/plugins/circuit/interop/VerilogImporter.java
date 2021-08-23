@@ -364,9 +364,9 @@ public class VerilogImporter implements Importer {
 
         if (outContact != null) {
             try {
-                BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, assignGate.setFunction);
+                BooleanFormula setFormula = CircuitUtils.parsePinFunction(circuit, component, assignGate.setFunction);
                 outContact.setSetFunctionQuiet(setFormula);
-                BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, assignGate.resetFunction);
+                BooleanFormula resetFormula = CircuitUtils.parsePinFunction(circuit, component, assignGate.resetFunction);
                 outContact.setResetFunctionQuiet(resetFormula);
             } catch (org.workcraft.formula.jj.ParseException e) {
                 throw new RuntimeException(e);

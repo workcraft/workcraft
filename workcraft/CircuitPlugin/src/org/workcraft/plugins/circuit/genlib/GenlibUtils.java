@@ -46,9 +46,9 @@ public class GenlibUtils {
             LogUtils.logInfo("  Reset function: " + resetFunction);
         }
         try {
-            BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setFunction);
+            BooleanFormula setFormula = CircuitUtils.parsePinFunction(circuit, component, setFunction);
             contact.setSetFunctionQuiet(setFormula);
-            BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, resetFunction);
+            BooleanFormula resetFormula = CircuitUtils.parsePinFunction(circuit, component, resetFunction);
             contact.setResetFunctionQuiet(resetFormula);
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
@@ -66,9 +66,9 @@ public class GenlibUtils {
         String setFunction = getSetFunction(gate);
         String resetFunction = getResetFunction(gate);
         try {
-            BooleanFormula setFormula = CircuitUtils.parsePinFuncton(circuit, component, setFunction);
+            BooleanFormula setFormula = CircuitUtils.parsePinFunction(circuit, component, setFunction);
             contact.setSetFunction(setFormula);
-            BooleanFormula resetFormula = CircuitUtils.parsePinFuncton(circuit, component, resetFunction);
+            BooleanFormula resetFormula = CircuitUtils.parsePinFunction(circuit, component, resetFunction);
             contact.setResetFunction(resetFormula);
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
