@@ -254,10 +254,10 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
             if (projectionEvent != null) {
                 switch (projectionEvent.tag) {
                 case VIOLATION:
-                    violationEvent = projectionEvent.ref;
+                    violationEvent = violationEvent == null ? projectionEvent.ref : violationEvent;
                     break;
                 case OUTPUT:
-                    outputEvent = projectionEvent.ref;
+                    outputEvent = outputEvent == null ? projectionEvent.ref : outputEvent;
                     break;
                 case INPUT:
                     inputEvent = projectionEvent.ref;
