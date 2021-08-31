@@ -13,7 +13,9 @@ import java.util.Scanner;
 
 public class FileUtils {
 
-    public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
+    private static final String UNIX_FILE_SEPARATOR = "/";
+    private static final String WINDOWS_FILE_SEPARATOR = "\\";
+    private static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
 
     public static void copyFile(File inFile, File outFile) throws IOException {
         outFile.getParentFile().mkdirs();
@@ -30,10 +32,6 @@ public class FileUtils {
         String name = file.getName();
         int i = compoundExtension ? name.indexOf('.') : name.lastIndexOf('.');
         return i == -1 ? name : name.substring(0, i);
-    }
-
-    public static String getFileExtension(File file) {
-        return getFileExtension(file, false);
     }
 
     public static String getFileExtension(File file, boolean compoundExtension) {
@@ -88,7 +86,7 @@ public class FileUtils {
     }
 
     public static File createTempFile(String prefix, String suffix, File directory) {
-        File tempFile = null;
+        File tempFile;
         prefix = getCorrectTempPrefix(prefix);
         String errorMessage = "Cannot create a temporary file with prefix '" + prefix + "'";
         if (suffix == null) {
@@ -119,7 +117,7 @@ public class FileUtils {
     }
 
     public static File createTempDirectory(String prefix) {
-        File tempDir = null;
+        File tempDir;
         String errorMessage = "Cannot create a temporary directory with prefix '" + prefix + "'.";
         try {
             tempDir = File.createTempFile(getCorrectTempPrefix(prefix), "");
@@ -140,15 +138,20 @@ public class FileUtils {
         }
         File target = new File(targetDir, source.getName());
 
-        if (source.isDirectory()) {
+        if (source.isFile()) {
+            copyFile(source, target);
+        } else {
             if (!target.mkdir()) {
                 throw new RuntimeException("Cannot create directory " + target.getAbsolutePath());
             }
-            for (File f : source.listFiles()) {
-                copyAll(f, target);
+            File[] files = source.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    if (file != null) {
+                        copyAll(file, target);
+                    }
+                }
             }
-        } else {
-            copyFile(source, target);
         }
     }
 
@@ -211,8 +214,8 @@ public class FileUtils {
         try {
             return containsKeyword(new FileInputStream(file), keyword);
         } catch (FileNotFoundException e1) {
+            return false;
         }
-        return false;
     }
 
     public static boolean containsKeyword(InputStream is, String keyword) {
@@ -240,6 +243,10 @@ public class FileUtils {
                 }
             }
         }
+    }
+
+    public static boolean checkAvailability(File file) {
+        return checkAvailability(file, null, false);
     }
 
     public static boolean checkAvailability(File file, String title, boolean showMessageDialog) {
@@ -282,30 +289,19 @@ public class FileUtils {
     }
 
     public static String getFullPath(File file) {
-        if (file != null) {
-            try {
-                return file.getCanonicalPath();
-            } catch (IOException e) {
-            }
-        }
-        return null;
+        return file == null ? null : file.getAbsolutePath();
     }
 
     public static String getBasePath(File file) {
-        if (file != null) {
-            try {
-                return file.getCanonicalFile().getParent();
-            } catch (IOException e) {
-            }
-        }
-        return null;
+        return file == null ? null : file.getAbsoluteFile().getParent();
     }
 
     public static String stripBase(String path, String base) {
-        path = fixSeparator(path);
+        path = useUnixFileSeparator(path);
+        base = appendUnixFileSeparator(useUnixFileSeparator(base));
         if ((base != null) && (path != null) && path.startsWith(base)) {
             String result = path.substring(base.length());
-            while (result.startsWith("/")) {
+            while (result.startsWith(UNIX_FILE_SEPARATOR)) {
                 result = result.substring(1);
             }
             return result;
@@ -313,8 +309,12 @@ public class FileUtils {
         return path;
     }
 
-    public static String fixSeparator(String path) {
-        return path == null ? null : path.replace("\\", "/");
+    public static String useUnixFileSeparator(String path) {
+        return path == null ? null : path.replace(WINDOWS_FILE_SEPARATOR, UNIX_FILE_SEPARATOR);
+    }
+
+    public static String appendUnixFileSeparator(String path) {
+        return (path == null) || path.endsWith(UNIX_FILE_SEPARATOR) ? path : path + UNIX_FILE_SEPARATOR;
     }
 
     public static File getFileByPathAndBase(String path, String base) {
