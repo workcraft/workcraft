@@ -70,6 +70,7 @@ public class GenlibUtils {
             contact.setSetFunction(setFormula);
             BooleanFormula resetFormula = CircuitUtils.parsePinFunction(circuit, component, resetFunction);
             contact.setResetFunction(resetFormula);
+            contact.setInitToOne(CircuitUtils.cannotFall(contact.getReferencedComponent()));
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }
