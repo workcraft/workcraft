@@ -28,7 +28,7 @@ public class InitialisationState {
     public InitialisationState(Circuit circuit) {
         Queue<MathConnection> queue = new LinkedList<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
-            if (contact.isDriver() && contact.getForcedInit()) {
+            if (contact.isDriver() && isForcedOrConstant(contact)) {
                 Set<MathNode> initSet = contact.getInitToOne() ? highSet : lowSet;
                 if (initSet.add(contact)) {
                     queue.addAll(circuit.getConnections(contact));
@@ -58,6 +58,10 @@ public class InitialisationState {
             }
         }
         problematicSet.addAll(ResetUtils.getProblematicPins(circuit));
+    }
+
+    private boolean isForcedOrConstant(FunctionContact contact) {
+        return contact.getForcedInit() || CircuitUtils.isConstant0(contact) || CircuitUtils.isConstant1(contact);
     }
 
     private void fillVariableValues(FunctionComponent component,
