@@ -39,10 +39,13 @@ public class MixUtils {
     public static Point2D middlePoint(Collection<Point2D> points) {
         double x = 0.0;
         double y = 0.0;
-        int count = points.size();
-        for (Point2D point: points) {
-            x += point.getX();
-            y += point.getY();
+        int count = 0;
+        for (Point2D point : points) {
+            if (point != null) {
+                x += point.getX();
+                y += point.getY();
+                count++;
+            }
         }
         return (count > 0) ? new Point2D.Double(x / count, y / count) : null;
     }
