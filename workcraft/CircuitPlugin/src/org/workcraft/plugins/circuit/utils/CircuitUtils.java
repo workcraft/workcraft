@@ -619,4 +619,30 @@ public class CircuitUtils {
                 .allMatch(contactName -> circuit.getNodeByReference(component, contactName) != null);
     }
 
+    public static boolean isConstant0(FunctionContact contact) {
+        return !contact.getInitToOne() && cannotRise(contact);
+    }
+
+    public static boolean cannotRise(FunctionContact contact) {
+        BooleanFormula setFunction = contact.getSetFunction();
+        if (setFunction != null) {
+            return Zero.getInstance().equals(setFunction);
+        }
+        BooleanFormula resetFunction = contact.getResetFunction();
+        return One.getInstance().equals(resetFunction);
+    }
+
+    public static boolean isConstant1(FunctionContact contact) {
+        return contact.getInitToOne() && cannotFall(contact);
+    }
+
+    public static boolean cannotFall(FunctionContact contact) {
+        BooleanFormula resetFunction = contact.getResetFunction();
+        if (resetFunction != null) {
+            return Zero.getInstance().equals(resetFunction);
+        }
+        BooleanFormula setFunction = contact.getSetFunction();
+        return One.getInstance().equals(setFunction);
+    }
+
 }

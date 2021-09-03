@@ -216,10 +216,10 @@ public class GateUtils {
     }
 
     public static void propagateInitialState(Circuit circuit, FunctionComponent component) {
-        Pair<List<BooleanVariable>, List<BooleanFormula>> variableAsignment = getVariableAssignment(circuit, component);
+        Pair<List<BooleanVariable>, List<BooleanFormula>> variableAssignment = getVariableAssignment(circuit, component);
         for (FunctionContact output : component.getFunctionOutputs()) {
             BooleanFormula setFunction = FormulaUtils.replace(output.getSetFunction(),
-                    variableAsignment.getFirst(), variableAsignment.getSecond(), CLEVER_WORKER);
+                    variableAssignment.getFirst(), variableAssignment.getSecond(), CLEVER_WORKER);
 
             boolean isOne = One.getInstance().equals(setFunction);
             output.setInitToOne(isOne);
@@ -227,14 +227,14 @@ public class GateUtils {
     }
 
     public static boolean isExcitedComponent(Circuit circuit, FunctionComponent component) {
-        Pair<List<BooleanVariable>, List<BooleanFormula>> variableAsignment = getVariableAssignment(circuit, component);
+        Pair<List<BooleanVariable>, List<BooleanFormula>> variableAssignment = getVariableAssignment(circuit, component);
         for (FunctionContact output : component.getFunctionOutputs()) {
             BooleanFormula setFunction = FormulaUtils.replace(output.getSetFunction(),
-                    variableAsignment.getFirst(), variableAsignment.getSecond(), CLEVER_WORKER);
+                    variableAssignment.getFirst(), variableAssignment.getSecond(), CLEVER_WORKER);
 
             if ((setFunction != null) && (One.getInstance().equals(setFunction) != output.getInitToOne())) {
                 BooleanFormula resetFunction = FormulaUtils.replace(output.getResetFunction(),
-                        variableAsignment.getFirst(), variableAsignment.getSecond(), CLEVER_WORKER);
+                        variableAssignment.getFirst(), variableAssignment.getSecond(), CLEVER_WORKER);
 
                 if ((resetFunction == null) || (One.getInstance().equals(resetFunction) == output.getInitToOne())) {
                     return true;

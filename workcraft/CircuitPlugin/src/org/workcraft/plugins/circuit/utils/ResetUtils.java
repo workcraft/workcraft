@@ -369,8 +369,18 @@ public final class ResetUtils {
                     insertResetFunction(contact, clearContact, isActiveLow);
                 }
             }
-            // Clear module name and connect set/clear pins to reset port
-            component.clearMapping();
+            // Modify module name by adding set/clear suffix
+            String moduleName = component.getReferencedComponent().getModule();
+            if (!moduleName.isEmpty()) {
+                if (setContact != null) {
+                    moduleName += CircuitSettings.getSetPin();
+                }
+                if (clearContact != null) {
+                    moduleName += CircuitSettings.getClearPin();
+                }
+                component.getReferencedComponent().setModule(moduleName);
+            }
+            // Connect set/clear pins to reset port
             connectIfPossible(circuit, resetPort, setContact);
             connectIfPossible(circuit, resetPort, clearContact);
             result.add(component);

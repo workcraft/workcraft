@@ -32,6 +32,12 @@ class ResetCommandTests {
         testResetCommands(workName, 5, 5, 7, 7, 7, 6, false, true);
     }
 
+    @Test
+    void testConstResetCommands() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "const.circuit.work");
+        testResetCommands(workName, 0, -1, 0, 0, 0, 0, false, true);
+    }
+
     private void testResetCommands(String workName, int initNum, int inputNum, int problematicNum,
             int autoDiscardNum, int autoAppendNum, int finalNum, boolean activeLow, boolean pass)
             throws DeserialisationException {
