@@ -17,6 +17,7 @@ import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
@@ -256,26 +257,43 @@ public class VerilogImporter implements Importer {
         }
         insertMutexes(mutexes, circuit, wires);
         createConnections(circuit, wires);
-        setInitialState(wires, verilogModule.signalStates);
+        Map<String, Boolean> signalStates = verilogModule.signalStates;
+        setInitialState(wires, signalStates);
         setZeroDelayAttribute(instanceComponentMap);
-        checkImportResult(circuit);
+        Set<String> initialisedSignals = signalStates == null ? Collections.emptySet() : signalStates.keySet();
+        checkImportResult(circuit, wires.keySet(), initialisedSignals);
         return circuit;
     }
 
-    private void checkImportResult(Circuit circuit) {
+    private void checkImportResult(Circuit circuit, Set<String> usedSignals, Set<String> initialisedSignals) {
         String msg = "";
+        // Check circuit for no components
         if (circuit.getFunctionComponents().isEmpty()) {
-            msg += "has no components";
+            msg += "\n" + PropertyHelper.BULLET_PREFIX + "No components";
         }
+        // Check circuit for hanging contacts
         Set<String> hangingSignals = VerificationUtils.getHangingSignals(circuit);
         if (!hangingSignals.isEmpty()) {
-            if (!msg.isEmpty()) {
-                msg += " and ";
-            }
-            msg += TextUtils.wrapMessageWithItems("hanging contact", hangingSignals);
+            msg += TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
+                    + "Hanging contact", hangingSignals);
         }
+        // Check circuit for uninitialised signals
+        Set<String> uninitialisedSignals = new HashSet<>(usedSignals);
+        uninitialisedSignals.removeAll(initialisedSignals);
+        if (!uninitialisedSignals.isEmpty()) {
+            msg += TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
+                    + "Missing initial state declaration (assuming low) for signal", uninitialisedSignals);
+        }
+        // Check circuit for uninitialised signals
+        Set<String> unusedSignals = new HashSet<>(initialisedSignals);
+        unusedSignals.removeAll(usedSignals);
+        if (!unusedSignals.isEmpty()) {
+            msg += TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
+                    + "Initial state declaration for unused signal", unusedSignals);
+        }
+        // Produce warning
         if (!msg.isEmpty()) {
-            DialogUtils.showWarning("The imported circuit " + msg);
+            DialogUtils.showWarning("The imported circuit has the following issues:" + msg);
         }
     }
 
@@ -947,14 +965,14 @@ public class VerilogImporter implements Importer {
     }
 
     private void setInitialState(Map<String, Wire> wires, Map<String, Boolean> signalStates) {
-        // Set all signals first to 1 and then to 0, to make sure a switch and initiates switching of the neighbours.
-        for (String signalName: wires.keySet()) {
+        // Set all signals first to 1 and then to 0, to make sure they switch and trigger the neighbours.
+        for (String signalName : wires.keySet()) {
             Wire wire = wires.get(signalName);
             if (wire.source != null) {
                 wire.source.setInitToOne(true);
             }
         }
-        for (String signalName: wires.keySet()) {
+        for (String signalName : wires.keySet()) {
             Wire wire = wires.get(signalName);
             if (wire.source != null) {
                 wire.source.setInitToOne(false);
@@ -962,7 +980,7 @@ public class VerilogImporter implements Importer {
         }
         // Set all signals specified as high to 1.
         if (signalStates != null) {
-            for (String signalName: wires.keySet()) {
+            for (String signalName : wires.keySet()) {
                 Wire wire = wires.get(signalName);
                 if ((wire.source != null) && signalStates.containsKey(signalName)) {
                     boolean signalState = signalStates.get(signalName);
