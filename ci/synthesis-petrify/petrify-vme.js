@@ -8,10 +8,11 @@ gcCircuitWork = synthGeneralisedCelementPetrify(stgWork);
 gcStat = statCircuit(gcCircuitWork);
 write(gcStat, "petrify-vme-gc.circuit.stat");
 
-stdcCircuitWork = synthStandardCelementPetrify(stgWork);
-stdcStat = statCircuit(stdcCircuitWork);
-// Note: Petrify produces significantly different stdC implementation
-// in Github Actions Linux runner -- skip for now.
+// Note: Petrify produces significantly different stdC implementation in
+// Github Actions Linux runner and sometimes segfaults in Windows runner.
+// Skip Petrify stdC integration test for now.
+//stdcCircuitWork = synthStandardCelementPetrify(stgWork);
+//stdcStat = statCircuit(stdcCircuitWork);
 //write(stdcStat, "petrify-vme-stdc.circuit.stat");
 
 tmCircuitWork = synthTechnologyMappingPetrify(stgWork);

@@ -8,7 +8,6 @@ import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 
 public class FileReferenceCellRenderer extends JPanel implements TableCellRenderer {
 
@@ -65,10 +64,7 @@ public class FileReferenceCellRenderer extends JPanel implements TableCellRender
                 }
 
                 chooseButton.setText(file.getName());
-                try {
-                    chooseButton.setToolTipText(file.getCanonicalPath());
-                } catch (IOException e) {
-                }
+                chooseButton.setToolTipText(file.getAbsolutePath());
                 clearButton.setEnabled(true);
             }
 

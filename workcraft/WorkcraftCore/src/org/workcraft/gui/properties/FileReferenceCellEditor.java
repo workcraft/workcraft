@@ -145,8 +145,9 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
         clearButton.setEnabled(false);
         if (fileReference != null) {
             File file = fileReference.getFile();
-            chooseButton.setText(file.getName());
-            if (file.exists()) {
+            String fileName = file == null ? null : file.getName();
+            chooseButton.setText(fileName);
+            if (FileUtils.checkAvailability(file)) {
                 enterButton.setEnabled(true);
                 chooseButton.setForeground(Color.BLACK);
             } else {

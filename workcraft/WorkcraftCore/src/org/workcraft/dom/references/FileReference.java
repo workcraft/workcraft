@@ -15,7 +15,7 @@ public class FileReference {
 
     public void setBase(String base) {
         File file = getFile();
-        this.base = FileUtils.fixSeparator(base);
+        this.base = FileUtils.appendUnixFileSeparator(FileUtils.useUnixFileSeparator(base));
         if (file != null) {
             setPath(file.getPath());
         }
