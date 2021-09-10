@@ -214,7 +214,9 @@ public class VerilogImporter implements Importer {
         for (FunctionComponent component : topCircuit.getFunctionComponents()) {
             FileReference refinement = component.getRefinement();
             if (refinement != null) {
-                refinement.setBase(base);
+                File file = FileUtils.getFileByPathAndBase(refinement.getPath(), base);
+                String path = FileUtils.getFullPath(file);
+                refinement.setPath(path);
             }
         }
     }
