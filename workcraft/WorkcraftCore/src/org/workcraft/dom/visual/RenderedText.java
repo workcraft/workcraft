@@ -1,15 +1,14 @@
 package org.workcraft.dom.visual;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
+
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
-
-import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 
 public class RenderedText {
     private final double spacingRatio = VisualCommonSettings.getLineSpacing();
@@ -35,7 +34,7 @@ public class RenderedText {
         if (text != null) {
             lines = text.split("\\|");
         }
-        for (String line: lines) {
+        for (String line : lines) {
             final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
             final GlyphVector glyphVector = font.createGlyphVector(context, line.trim());
             glyphVectors.add(glyphVector);
@@ -44,6 +43,9 @@ public class RenderedText {
                 textBounds = BoundingBoxHelper.move(textBounds, 0.0, -lineBounds.getHeight());
             }
             textBounds = BoundingBoxHelper.union(textBounds, lineBounds);
+        }
+        if (textBounds == null) {
+            textBounds = new Rectangle2D.Double(0.0, 0.0, 0.0, 0.0);
         }
         int lineCount = lines.length;
         spacing = (lineCount < 2) ? 0.0 : (spacingRatio * textBounds.getHeight() / (lineCount - 1));
