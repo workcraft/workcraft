@@ -45,7 +45,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         @Override
         public void actionPerformed(ActionEvent arg0) {
             if (updateEditorPanelRequested) {
-                SwingUtilities.invokeLater(() -> updateEditor());
+                SwingUtilities.invokeLater(GraphEditorPanel.this::updateEditor);
             }
         }
     }
@@ -54,7 +54,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         @Override
         public void actionPerformed(ActionEvent arg0) {
             if (updatePropertyViewRequested) {
-                SwingUtilities.invokeLater(() -> updatePropertyView());
+                SwingUtilities.invokeLater(GraphEditorPanel.this::updatePropertyView);
             }
         }
     }
@@ -450,6 +450,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return overlay;
     }
 
+    @Override
     public Toolbox getToolBox() {
         return toolbox;
     }
