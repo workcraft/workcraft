@@ -149,7 +149,7 @@ public class DesktopApi {
                 parts.add(part.trim());
             }
         }
-        return parts.toArray(new String[parts.size()]);
+        return parts.toArray(new String[0]);
     }
 
     public enum OsType {
@@ -216,38 +216,23 @@ public class DesktopApi {
     }
 
     public static int getMenuKeyMask() {
-        if (getOs().isMac()) {
-            return ActionEvent.META_MASK;
-        }
-        return ActionEvent.CTRL_MASK;
+        return getOs().isMac() ? ActionEvent.META_MASK : ActionEvent.CTRL_MASK;
     }
 
     public static String getMenuKeyName() {
-        if (getMenuKeyMask() == ActionEvent.META_MASK) {
-            return "Cmd";
-        }
-        return "Ctrl";
+        return getMenuKeyMask() == ActionEvent.META_MASK ? "Cmd" : "Ctrl";
     }
 
     public static int getMenuKeyMouseMask() {
-        if (getOs().isMac()) {
-            return MouseEvent.META_DOWN_MASK;
-        }
-        return MouseEvent.CTRL_DOWN_MASK;
+        return getOs().isMac() ? MouseEvent.META_DOWN_MASK : MouseEvent.CTRL_DOWN_MASK;
     }
 
     public static boolean isMenuKeyDown(InputEvent e) {
-        if (getOs().isMac()) {
-            return e.isMetaDown();
-        }
-        return e.isControlDown();
+        return getOs().isMac() ? e.isMetaDown() : e.isControlDown();
     }
 
     public static int getMenuKeyCode() {
-        if (getOs().isMac()) {
-            return KeyEvent.VK_META;
-        }
-        return KeyEvent.VK_CONTROL;
+        return getOs().isMac() ? KeyEvent.VK_META : KeyEvent.VK_CONTROL;
     }
 
     public static KeyStroke getUndoKeyStroke() {
