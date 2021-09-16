@@ -2,6 +2,7 @@ package org.workcraft.gui.tools;
 
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.editor.Overlay;
 import org.workcraft.gui.editor.Viewport;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -13,6 +14,7 @@ public interface GraphEditor {
     Viewport getViewport();
     Overlay getOverlay();
     WorkspaceEntry getWorkspaceEntry();
+    Toolbox getToolBox();
     VisualModel getModel();
     int getWidth();
     int getHeight();

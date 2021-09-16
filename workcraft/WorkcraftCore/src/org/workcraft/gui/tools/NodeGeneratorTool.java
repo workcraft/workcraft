@@ -20,8 +20,8 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
 
     private final NodeGenerator generator;
     private final boolean topLevelOnly;
-
     private Container currentLevel = null;
+    private VisualNode generatedNode = null;
 
     public NodeGeneratorTool(NodeGenerator generator) {
         this(generator, false);
@@ -64,6 +64,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
 
     private void resetState(GraphEditor editor) {
         editor.getModel().selectNone();
+        generatedNode = null;
     }
 
     @Override
@@ -124,17 +125,22 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() == 1)) {
             GraphEditor editor = e.getEditor();
             Point2D position = e.getPosition();
-            VisualModel model = e.getModel();
             Point2D snapPosition = editor.snap(position, null);
+            VisualModel model = e.getModel();
             VisualNode node = HitMan.hitFirstInCurrentLevel(snapPosition, model);
             if (node == null) {
                 editor.getWorkspaceEntry().saveMemento();
-                VisualNode visualNode = generateNode(model, snapPosition);
-                visualNode.copyStyle(getTemplateNode());
+                generatedNode = generateNode(model, snapPosition);
+                generatedNode.copyStyle(getTemplateNode());
             } else {
                 Toolkit.getDefaultToolkit().beep();
             }
         }
+    }
+
+    @Override
+    public void mouseReleased(GraphEditorMouseEvent e) {
+        generatedNode = null;
     }
 
     private String getIssueText(VisualNode node) {
@@ -199,6 +205,10 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
             }
             return null;
         };
+    }
+
+    public VisualNode getGeneratedNode() {
+        return generatedNode;
     }
 
 }

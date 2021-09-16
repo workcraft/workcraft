@@ -1,12 +1,15 @@
 package org.workcraft.gui.tools.editors;
 
-import org.workcraft.dom.visual.*;
+import org.workcraft.Framework;
+import org.workcraft.dom.visual.Alignment;
+import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.editor.Viewport;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -17,7 +20,6 @@ import java.awt.event.FocusListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.regex.Pattern;
 
 public abstract class AbstractInplaceEditor {
 
@@ -30,7 +32,6 @@ public abstract class AbstractInplaceEditor {
     private static final KeyStroke enter = KeyStroke.getKeyStroke("ENTER");
     private static final KeyStroke shiftEnter = KeyStroke.getKeyStroke("shift ENTER");
 
-    @SuppressWarnings("serial")
     private final class TextCancelAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -39,7 +40,6 @@ public abstract class AbstractInplaceEditor {
         }
     }
 
-    @SuppressWarnings("serial")
     private final class TextSubmitAction extends AbstractAction {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -50,11 +50,11 @@ public abstract class AbstractInplaceEditor {
 
     private final class FocusListenerImplementation implements FocusListener {
         private final JTextPane textPane;
-        private final JComponent panel;
+        private final JDialog dialog;
 
-        private FocusListenerImplementation(JTextPane textPane, JComponent panel) {
+        private FocusListenerImplementation(JTextPane textPane, JDialog dialog) {
             this.textPane = textPane;
-            this.panel = panel;
+            this.dialog = dialog;
         }
 
         @Override
@@ -68,7 +68,7 @@ public abstract class AbstractInplaceEditor {
             if (!cancelChanges) {
                 processResult(textPane.getText().replace("\n", NEWLINE_SEPARATOR));
             }
-            getEditor().getOverlay().remove(panel);
+            dialog.dispose();
             afterEdit();
         }
     }
@@ -90,22 +90,6 @@ public abstract class AbstractInplaceEditor {
         return component;
     }
 
-    private double getExtraHeight(String text, double height) {
-        int lineCount = 0;
-        int neLineCount = 0;
-        for (String line: text.split(Pattern.quote(NEWLINE_SEPARATOR))) {
-            if (!line.trim().isEmpty()) {
-                neLineCount++;
-            }
-            lineCount++;
-        }
-        double lineHeight = height;
-        if (neLineCount > 0) {
-            lineHeight /= neLineCount;
-        }
-        return lineHeight * (lineCount - neLineCount + 1);
-    }
-
     public void edit(final String text, final Font font, final Point2D offset, final Alignment alignment, boolean multiline) {
         // Create a text pane without wrapping
         final JTextPane textPane = new JTextPane() {
@@ -114,7 +98,6 @@ public abstract class AbstractInplaceEditor {
                 return getUI().getPreferredSize(this).width <= getParent().getSize().width;
             }
         };
-        textPane.setText(text.replace(NEWLINE_SEPARATOR, "\n"));
 
         // Align the text
         SimpleAttributeSet attributes = new SimpleAttributeSet();
@@ -140,41 +123,42 @@ public abstract class AbstractInplaceEditor {
 
         // Add vertical scroll (if necessary)
         final JScrollPane scrollPane = new JScrollPane(textPane);
-        if (multiline) {
-            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        } else {
-            scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
-            scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        }
+        scrollPane.setHorizontalScrollBarPolicy(multiline ? ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED
+                : ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        scrollPane.setVerticalScrollBarPolicy(multiline ? ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED
+                : ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
 
         // Show the text editor panel
         JPanel panel = new JPanel(new BorderLayout());
-        getEditor().getOverlay().add(panel);
-        panel.setBorder(new EmptyBorder(0, 0, 0, 0));
         panel.add(scrollPane, BorderLayout.CENTER);
         if (multiline) {
-            JLabel label = new JLabel("Press Shift-Enter for a new line ");
+            JLabel label = new JLabel(" Press Shift-Enter for a new line ");
             label.setBorder(GuiUtils.getEmptyBorder());
             label.setHorizontalAlignment(SwingConstants.RIGHT);
             panel.add(label, BorderLayout.SOUTH);
         }
 
-        // Set the size of the text editor panel
+        // Create undecorated dialog
+        JDialog dialog = new JDialog(Framework.getInstance().getMainWindow(), false);
+        textPane.addFocusListener(new FocusListenerImplementation(textPane, dialog));
+        dialog.setUndecorated(true);
+        dialog.add(panel);
+        // Set dialog size, so it fits the text well and adds an extra vertical space for multiline
+        String processedText = text.replace(NEWLINE_SEPARATOR, "\n");
+        textPane.setText(processedText + (multiline ? "\n" : ""));
+        dialog.pack();
+        textPane.setText(processedText);
+        // Position and display dialog
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(getComponent());
-        Rectangle2D bbRoot = TransformHelper.transform(getComponent(), localToRootTransform).getBoundingBox();
-        bbRoot = BoundingBoxHelper.move(bbRoot, offset);
-        double dw = 1.0;
-        double dh = 0.5;
-        if (multiline) {
-            dw += bbRoot.getWidth();
-            dh += getExtraHeight(text, bbRoot.getHeight());
-        }
-        Rectangle bbScreen = viewport.userToScreen(BoundingBoxHelper.expand(bbRoot, dw, dh));
-        panel.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-
+        Rectangle2D rootBox = TransformHelper.transform(getComponent(), localToRootTransform).getBoundingBox();
+        Rectangle screenBox = viewport.userToScreen(BoundingBoxHelper.move(rootBox, offset));
+        Point editorScreenPosition = Framework.getInstance().getMainWindow().getCurrentEditor().getLocationOnScreen();
+        int xPosition = editorScreenPosition.x + screenBox.x + (screenBox.width - dialog.getWidth()) / 2;
+        int yPosition = editorScreenPosition.y + screenBox.y + (screenBox.height - dialog.getHeight()) / 2;
+        dialog.setLocation(xPosition, yPosition);
+        dialog.setVisible(true);
         textPane.requestFocusInWindow();
-        textPane.addFocusListener(new FocusListenerImplementation(textPane, panel));
     }
 
     public void beforeEdit() {

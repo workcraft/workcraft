@@ -1,16 +1,16 @@
 package org.workcraft.plugins.circuit.tools;
 
-import java.awt.Cursor;
-
+import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.utils.GuiUtils;
+
+import java.awt.*;
 
 public class ContactGeneratorTool extends NodeGeneratorTool {
 

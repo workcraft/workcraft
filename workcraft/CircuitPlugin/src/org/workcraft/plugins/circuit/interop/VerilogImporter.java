@@ -214,7 +214,9 @@ public class VerilogImporter implements Importer {
         for (FunctionComponent component : topCircuit.getFunctionComponents()) {
             FileReference refinement = component.getRefinement();
             if (refinement != null) {
-                refinement.setBase(base);
+                File file = FileUtils.getFileByPathAndBase(refinement.getPath(), base);
+                String path = FileUtils.getFullPath(file);
+                refinement.setPath(path);
             }
         }
     }
@@ -293,7 +295,8 @@ public class VerilogImporter implements Importer {
         }
         // Produce warning
         if (!msg.isEmpty()) {
-            DialogUtils.showWarning("The imported circuit has the following issues:" + msg);
+            String title = circuit.getTitle().isEmpty() ? "" : "'" + circuit.getTitle() + "' ";
+            DialogUtils.showWarning("The imported circuit " + title + "has the following issues:" + msg);
         }
     }
 
