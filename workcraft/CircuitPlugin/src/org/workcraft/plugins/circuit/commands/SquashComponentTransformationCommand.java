@@ -1,6 +1,5 @@
 package org.workcraft.plugins.circuit.commands;
 
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.Circuit;
@@ -10,6 +9,7 @@ import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.circuit.utils.SquashUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.WorkUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 import java.io.File;
@@ -43,7 +43,8 @@ public class SquashComponentTransformationCommand extends AbstractComponentTrans
         if (refinementCircuit != null) {
             try {
                 ModelEntry me = WorkUtils.loadModel(refinementCircuit.getFirst());
-                VisualModel componentModel = me.getVisualModel();
+                VisualCircuit componentModel = WorkspaceUtils.getAs(me, VisualCircuit.class);
+                SquashUtils.inheritInitialState(circuit, component, componentModel);
                 SquashUtils.squashComponent(circuit, component, componentModel);
             } catch (DeserialisationException e) {
                 throw new RuntimeException(e);
