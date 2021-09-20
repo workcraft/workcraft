@@ -63,8 +63,9 @@ public class Console {
 
         // NOTE: Config needs to be loaded before scripts and saved on exit
         if (!options.hasNoConfigFlag()) {
-            framework.loadConfig();
-            Runtime.getRuntime().addShutdownHook(new Thread(framework::saveConfig));
+            File configFile = framework.getFileByAbsoluteOrRelativePath(options.getConfig());
+            framework.loadConfig(configFile);
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> framework.saveConfig(configFile)));
         }
 
         // NOTE: Resource scripts should run after config (and possibly before GUI)

@@ -44,9 +44,8 @@ public final class Framework {
     private static final String SETTINGS_DIRECTORY_NAME = "workcraft";
     private static final String CONFIG_FILE_NAME = "config.xml";
     private static final String UILAYOUT_FILE_NAME = "uilayout.xml";
-
-    public static final String SETTINGS_DIRECTORY_PATH = DesktopApi.getConfigPath() + File.separator + SETTINGS_DIRECTORY_NAME;
-    public static final String CONFIG_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
+    private static final String SETTINGS_DIRECTORY_PATH = DesktopApi.getConfigPath() + File.separator + SETTINGS_DIRECTORY_NAME;
+    private static final String CONFIG_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
     public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
 
     private static final String FRAMEWORK_VARIABLE = "framework";
@@ -222,18 +221,22 @@ public final class Framework {
         savePluginsSettings();
     }
 
-    public void loadConfig() {
-        File file = new File(CONFIG_FILE_PATH);
+    public void loadConfig(File file) {
+        if (file == null) {
+            file = new File(CONFIG_FILE_PATH);
+        }
         LogUtils.logMessage("Loading global preferences from " + file.getAbsolutePath());
         config.load(file);
         loadPluginsSettings();
         loadRecentFilesFromConfig();
     }
 
-    public void saveConfig() {
+    public void saveConfig(File file) {
         saveRecentFilesToConfig();
         savePluginsSettings();
-        File file = new File(CONFIG_FILE_PATH);
+        if (file == null) {
+            file = new File(CONFIG_FILE_PATH);
+        }
         LogUtils.logMessage("Saving global preferences to " + file.getAbsolutePath());
         config.save(file);
     }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<workcraft-config>
+  <group name="AnalysisDecorationSettings">
+    <var name="dontTouchColor" value="#888888"/>
+  </group>
+  <group name="CircuitSettings">
+    <var name="gateLibrary" value="/path/to/gate/library"/>
+  </group>
+</workcraft-config>
