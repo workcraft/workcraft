@@ -32,8 +32,9 @@ public class GateRenderer {
         @Override
         public ComponentRenderingResult visit(final BooleanVariable var) {
 
-            final Rectangle2D bb =
-                    isBuffer ? new Rectangle2D.Double(-0.5, -0.5, 1.0, 1.0) : new Rectangle2D.Double(0.0, -0.25, 0.0, 0.5);
+            final Rectangle2D bb = isBuffer
+                    ? new Rectangle2D.Double(-0.5, -0.5, 1.0, 1.0)
+                    : new Rectangle2D.Double(0.0, -0.25, 0.0, 0.5);
 
             return new ComponentRenderingResult() {
                 @Override
@@ -155,7 +156,8 @@ public class GateRenderer {
                             Rectangle2D rec = res.boundingBox();
                             for (String v : res.contactPositions().keySet()) {
                                 Point2D p = res.contactPositions().get(v);
-                                positions.put(v, new Point2D.Double(p.getX() + x - rec.getWidth() / 2, p.getY() + y + rec.getHeight() / 2));
+                                positions.put(v + res, new Point2D.Double(p.getX() + x - rec.getWidth() / 2, p.getY() + y + rec.getHeight() / 2));
+                                System.out.println(v + res + " : " + new Point2D.Double(p.getX() + x - rec.getWidth() / 2, p.getY() + y + rec.getHeight() / 2));
                             }
                             y += rec.getHeight();
                         }
@@ -167,8 +169,8 @@ public class GateRenderer {
                 @Override
                 public void draw(Graphics2D g) {
 
-                    double h = boundingBox().getHeight();
-                    double x = boundingBox().getMaxX() - h * ANDGateAspectRatio;
+                    double s = boundingBox().getHeight();
+                    double x = boundingBox().getMaxX() - s * ANDGateAspectRatio;
                     double y = boundingBox().getMinY();
 
                     for (ComponentRenderingResult res: results) {
@@ -183,12 +185,11 @@ public class GateRenderer {
 
                     Path2D.Double path = new Path2D.Double();
                     y = boundingBox().getMinY();
-                    double w = h * (ANDGateAspectRatio / 0.8125);
 
                     path.moveTo(x, y);
-                    path.lineTo(x + h / 4, y);
-                    path.curveTo(x + w, y, x + w, y + h, x + h / 4, y + h);
-                    path.lineTo(x, y + h);
+                    path.lineTo(x + s / 4, y);
+                    path.curveTo(x + s, y, x + s, y + s, x + s / 4, y + s);
+                    path.lineTo(x, y + s);
                     path.closePath();
 
                     g.setColor(background);
@@ -233,8 +234,8 @@ public class GateRenderer {
                     if (cachedPositions == null) {
                         Map<String, Point2D> positions = new HashMap<>();
 
-                        double h = boundingBox().getHeight();
-                        double x = boundingBox().getMaxX() - h;
+                        double s = boundingBox().getHeight();
+                        double x = boundingBox().getMaxX() - s;
                         double y1 = boundingBox().getMinY();
                         double y2 = boundingBox().getMaxY();
                         double y = y1;
@@ -243,12 +244,12 @@ public class GateRenderer {
                             Rectangle2D rec = res.boundingBox();
                             for (String v : res.contactPositions().keySet()) {
                                 Point2D p = res.contactPositions().get(v);
-                                double xofs = 0;
+                                double xOffset = 0;
                                 if (res.boundingBox().getHeight() <= 0.5) {
-                                    xofs = +getXFromY((y2 - (y + rec.getHeight() / 2)) / (y2 - y1), h / 3);
+                                    xOffset = getXFromY((y2 - (y + rec.getHeight() / 2)) / (y2 - y1), s / 3);
                                 }
                                 positions.put(v, new Point2D.Double(
-                                        p.getX() + x - rec.getWidth() / 2 + xofs,
+                                        p.getX() + x - rec.getWidth() / 2 + xOffset,
                                         p.getY() + y + rec.getHeight() / 2));
                             }
                             y += rec.getHeight();
@@ -260,8 +261,8 @@ public class GateRenderer {
 
                 @Override
                 public void draw(Graphics2D g) {
-                    double h = boundingBox().getHeight();
-                    double x = boundingBox().getMaxX() - h;
+                    double s = boundingBox().getHeight();
+                    double x = boundingBox().getMaxX() - s;
                     double y = boundingBox().getMinY();
                     double y1 = boundingBox().getMinY();
                     double y2 = boundingBox().getMaxY();
@@ -269,9 +270,9 @@ public class GateRenderer {
                     Path2D.Double path = new Path2D.Double();
 
                     path.moveTo(x, y);
-                    path.curveTo(x + h / 2, y, x + 0.85 * h, y + h / 4, x + h, y + h / 2);
-                    path.curveTo(x + 0.85 * h, y + 0.75 * h, x + h / 2, y + h, x, y + h);
-                    path.quadTo(x + h / 3, y + h / 2, x, y);
+                    path.curveTo(x + s / 2, y, x + 0.85 * s, y + s / 4, x + s, y + s / 2);
+                    path.curveTo(x + 0.85 * s, y + 0.75 * s, x + s / 2, y + s, x, y + s);
+                    path.quadTo(x + s / 3, y + s / 2, x, y);
                     path.closePath();
 
                     g.setColor(background);
@@ -281,13 +282,13 @@ public class GateRenderer {
 
                     for (ComponentRenderingResult res: results) {
                         Rectangle2D rec = res.boundingBox();
-                        double xofs = 0;
+                        double xOffset = 0;
                         if (rec.getHeight() <= 0.5) {
-                            xofs = getXFromY((y2 - (y + rec.getHeight() / 2)) / (y2 - y1), h / 3);
+                            xOffset = getXFromY((y2 - (y + rec.getHeight() / 2)) / (y2 - y1), s / 3);
                         }
-                        g.translate(x - rec.getWidth() / 2 + xofs, y + rec.getHeight() / 2);
+                        g.translate(x - rec.getWidth() / 2 + xOffset, y + rec.getHeight() / 2);
                         res.draw(g);
-                        g.translate(-x + rec.getWidth() / 2 - xofs, -y - rec.getHeight() / 2);
+                        g.translate(-x + rec.getWidth() / 2 - xOffset, -y - rec.getHeight() / 2);
                         y += rec.getHeight();
                     }
                 }
@@ -327,21 +328,20 @@ public class GateRenderer {
                     if (cachedPositions == null) {
                         Map<String, Point2D> positions = new HashMap<>();
 
-                        double h = boundingBox().getHeight();
-                        double x = boundingBox().getMaxX() - h - XORGateAspectRatio + 1;
+                        double s = boundingBox().getHeight();
+                        double x = boundingBox().getMaxX() - s - XORGateAspectRatio + 1;
+                        double y = boundingBox().getMinY();
                         double y1 = boundingBox().getMinY();
                         double y2 = boundingBox().getMaxY();
-                        double y = y1;
-
                         for (ComponentRenderingResult res: results) {
                             Rectangle2D rec = res.boundingBox();
                             for (String v : res.contactPositions().keySet()) {
-                                double xofs = 0;
+                                double xOffset = 0;
                                 if (res.boundingBox().getHeight() <= 0.5) {
-                                    xofs = +getXFromY((y2 - (y + rec.getHeight() / 2)) / (y2 - y1), h / 3);
+                                    xOffset = getXFromY((y2 - (y + rec.getHeight() / 2)) / (y2 - y1), s / 3);
                                 }
                                 Point2D p = res.contactPositions().get(v);
-                                positions.put(v, new Point2D.Double(p.getX() + x - rec.getWidth() / 2 + xofs, p.getY() + y + rec.getHeight() / 2));
+                                positions.put(v, new Point2D.Double(p.getX() + x - rec.getWidth() / 2 + xOffset, p.getY() + y + rec.getHeight() / 2));
                             }
                             y += rec.getHeight();
                         }
@@ -352,17 +352,15 @@ public class GateRenderer {
 
                 @Override
                 public void draw(Graphics2D g) {
-                    double h = boundingBox().getHeight();
-                    double x = boundingBox().getMaxX() - h;
-                    double y1 = boundingBox().getMinY();
-                    double y2 = boundingBox().getMaxY();
-                    double y = y1;
+                    double s = boundingBox().getHeight();
+                    double x = boundingBox().getMaxX() - s;
+                    double y = boundingBox().getMinY();
+
                     Path2D.Double path = new Path2D.Double();
-                    y = boundingBox().getMinY();
                     path.moveTo(x, y);
-                    path.curveTo(x + h / 2, y, x + 0.85 * h, y + h / 4, x + h, y + h / 2);
-                    path.curveTo(x + 0.85 * h, y + 0.75 * h, x + h / 2, y + h, x, y + h);
-                    path.quadTo(x + h / 3, y + h / 2, x, y);
+                    path.curveTo(x + s / 2, y, x + 0.85 * s, y + s / 4, x + s, y + s / 2);
+                    path.curveTo(x + 0.85 * s, y + 0.75 * s, x + s / 2, y + s, x, y + s);
+                    path.quadTo(x + s / 3, y + s / 2, x, y);
                     path.closePath();
 
                     g.setColor(background);
@@ -370,24 +368,24 @@ public class GateRenderer {
                     g.setColor(foreground);
                     g.draw(path);
 
-                    Path2D.Double path2 = new Path2D.Double();
-
                     x -= XORGateAspectRatio - 1;
-
-                    path2.moveTo(x, y + h);
-                    path2.quadTo(x + h / 3, y + h / 2, x, y);
+                    Path2D.Double path2 = new Path2D.Double();
+                    path2.moveTo(x, y + s);
+                    path2.quadTo(x + s / 3, y + s / 2, x, y);
 
                     g.draw(path2);
 
+                    double y1 = boundingBox().getMinY();
+                    double y2 = boundingBox().getMaxY();
                     for (ComponentRenderingResult res: results) {
                         Rectangle2D rec = res.boundingBox();
-                        double xofs = 0;
+                        double xOffset = 0;
                         if (res.boundingBox().getHeight() <= 0.5) {
-                            xofs = +getXFromY((y2 - (y + rec.getHeight() / 2)) / (y2 - y1), h / 3);
+                            xOffset = getXFromY((y2 - (y + rec.getHeight() / 2)) / (y2 - y1), s / 3);
                         }
-                        g.translate(x - rec.getWidth() / 2 + xofs, y + rec.getHeight() / 2);
+                        g.translate(x - rec.getWidth() / 2 + xOffset, y + rec.getHeight() / 2);
                         res.draw(g);
-                        g.translate(-x + rec.getWidth() / 2 - xofs, -y - rec.getHeight() / 2);
+                        g.translate(-x + rec.getWidth() / 2 - xOffset, -y - rec.getHeight() / 2);
                         y += rec.getHeight();
                     }
                 }
