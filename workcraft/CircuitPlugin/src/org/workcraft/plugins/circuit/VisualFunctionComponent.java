@@ -5,6 +5,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.formula.BooleanFormula;
@@ -28,6 +29,9 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.*;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @DisplayName("Function Component")
 @Hotkey(KeyEvent.VK_F)
@@ -190,8 +194,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                 renderingResult = null;
                 break;
             case GATE:
-                GateRenderer.foreground = getForegroundColor();
-                GateRenderer.background = getFillColor();
+                GateRenderer.foregroundColor = getForegroundColor();
+                GateRenderer.backgroundColor = getFillColor();
                 BooleanFormula setFunction = gateOutput.getSetFunction();
                 if ((setFunction == null) || setFunction.equals(Zero.getInstance()) || setFunction.equals(One.getInstance())) {
                     renderingResult = null;
@@ -278,8 +282,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                     bt.setTransform(at);
                     if (contact.isInput()) {
                         String vcName = contact.getName();
-                        Point2D position = res.contactPositions().get(vcName);
-                        if (position != null) {
+                        List<Point2D> positions = res.contactPositions().get(vcName);
+                        if (positions != null) {
+                            Point2D position = MixUtils.minPoint(positions);
                             bt.translate(inputPositionX, position.getY());
                         }
                     } else {
@@ -334,9 +339,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         Point2D pinPosition = null;
         if (vc.isInput()) {
             String cname = vc.getReferencedComponent().getName();
-            Point2D p = rr.contactPositions().get(cname);
-            if (p != null) {
-                pinPosition = new Point2D.Double(p.getX(), p.getY());
+            List<Point2D> positions = rr.contactPositions().get(cname);
+            if (positions != null) {
+                Point2D position = MixUtils.minPoint(positions);
+                pinPosition = new Point2D.Double(position.getX(), position.getY());
             }
         } else {
             pinPosition = new Point2D.Double(rr.boundingBox().getMaxX(), 0.0);
@@ -346,41 +352,47 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     private void drawContactLines(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
         g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
-        g.setColor(GateRenderer.foreground);
-        for (Node node: this.getChildren()) {
+        g.setColor(GateRenderer.foregroundColor);
+        Map<String, List<Point2D>> contactToPositions = rr.contactPositions();
+        for (Node node : this.getChildren()) {
             if (node instanceof VisualFunctionContact) {
-                VisualFunctionContact vc = (VisualFunctionContact) node;
-                Point2D p1 = getContactLinePositionInLocalSpace(vc, rr);
-                if (p1 != null) {
-                    at.transform(p1, p1);
-                    Point2D p2 = vc.getPosition();
-                    Line2D line = new Line2D.Double(p1, p2);
+                VisualFunctionContact contact = (VisualFunctionContact) node;
+                Point2D contactPosition = contact.getPosition();
+                String literal = contact.getName();
+                List<Point2D> positions = contact.isInput() ? contactToPositions.getOrDefault(literal, Collections.emptyList())
+                        : Collections.singletonList(new Point2D.Double(rr.boundingBox().getMaxX(), 0.0));
+
+                for (Point2D position : positions) {
+                    Point2D transformPosition = at.transform(position, null);
+                    Line2D line = new Line2D.Double(contactPosition, transformPosition);
                     g.draw(line);
+                }
+                if (positions.size() > 1) {
+                    AffineTransform bt = new AffineTransform();
+                    bt.translate(contactPosition.getX(), contactPosition.getY());
+                    g.fill(bt.createTransformedShape(VisualJoint.shape));
                 }
             }
         }
     }
 
-    private void drawCelementSymbols(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
-        if (rr instanceof CElementRenderingResult) {
-            CElementRenderingResult cr = (CElementRenderingResult) rr;
-            Point2D labelPosition = cr.getLabelPosition();
-            if (labelPosition != null) {
-                at.transform(labelPosition, labelPosition);
-                g.draw(getCShape(labelPosition));
-            }
+    private void drawCelementSymbols(Graphics2D g, CElementRenderingResult cr, AffineTransform at) {
+        Point2D labelPosition = cr.getLabelPosition();
+        if (labelPosition != null) {
+            at.transform(labelPosition, labelPosition);
+            g.draw(getCShape(labelPosition));
+        }
 
-            Point2D plusPosition = cr.getPlusPosition();
-            if (plusPosition != null) {
-                at.transform(plusPosition, plusPosition);
-                g.draw(getPlusShape(plusPosition));
-            }
+        Point2D plusPosition = cr.getPlusPosition();
+        if (plusPosition != null) {
+            at.transform(plusPosition, plusPosition);
+            g.draw(getPlusShape(plusPosition));
+        }
 
-            Point2D minusPosition = cr.getMinusPosition();
-            if (minusPosition != null) {
-                at.transform(minusPosition, minusPosition);
-                g.draw(getMinusShape(minusPosition));
-            }
+        Point2D minusPosition = cr.getMinusPosition();
+        if (minusPosition != null) {
+            at.transform(minusPosition, minusPosition);
+            g.draw(getMinusShape(minusPosition));
         }
     }
 
@@ -419,7 +431,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
                     BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 
-            g.setColor(GateRenderer.foreground);
+            g.setColor(GateRenderer.foregroundColor);
             at.transform(inputPos, inputPos);
             at.transform(outputPos, outputPos);
             Line2D line = new Line2D.Double(inputPos, outputPos);
@@ -442,8 +454,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
             // Draw the component in its coordinates
             g.transform(at);
-            GateRenderer.foreground = ColorUtils.colorise(getForegroundColor(), r.getDecoration().getColorisation());
-            GateRenderer.background = ColorUtils.colorise(getFillColor(), r.getDecoration().getBackground());
+            GateRenderer.foregroundColor = ColorUtils.colorise(getForegroundColor(), r.getDecoration().getColorisation());
+            GateRenderer.backgroundColor = ColorUtils.colorise(getFillColor(), r.getDecoration().getBackground());
             setStroke(g);
             rr.draw(g);
             AffineTransform bt = getMainContactRotateTransform(true);
@@ -454,7 +466,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             }
 
             drawContactLines(g, rr, at);
-            drawCelementSymbols(g, rr, at);
+            if (rr instanceof CElementRenderingResult) {
+                drawCelementSymbols(g, (CElementRenderingResult) rr, at);
+            }
             drawLabelInLocalSpace(r);
             drawNameInLocalSpace(r);
 
