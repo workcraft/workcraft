@@ -9,8 +9,6 @@ import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.One;
-import org.workcraft.formula.Zero;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -21,6 +19,7 @@ import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
@@ -40,6 +39,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     private RenderType renderType = RenderType.GATE;
     private ComponentRenderingResult renderingResult = null;
+    private boolean isValidRenderingCache = false;
 
     public VisualFunctionComponent(FunctionComponent component) {
         super(component);
@@ -181,25 +181,18 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         return result;
     }
 
-    private ComponentRenderingResult getRenderingResult() {
-        if (groupImpl == null) return null;
-        if (renderingResult != null) {
-            return renderingResult;
+    public ComponentRenderingResult getRenderingResult() {
+        if (groupImpl == null) {
+            return null;
         }
-        VisualFunctionContact gateOutput = getGateOutput();
-        // If gate output found render its visual representation according to the set and reset functions
-        if (gateOutput != null) {
-            switch (getRenderType()) {
-            case BOX:
-                renderingResult = null;
-                break;
-            case GATE:
+        if (!isValidRenderingCache) {
+            renderingResult = null;
+            if ((getRenderType() == RenderType.GATE) && isGate()) {
                 GateRenderer.foregroundColor = getForegroundColor();
                 GateRenderer.backgroundColor = getFillColor();
+                VisualFunctionContact gateOutput = getGateOutput();
                 BooleanFormula setFunction = gateOutput.getSetFunction();
-                if ((setFunction == null) || setFunction.equals(Zero.getInstance()) || setFunction.equals(One.getInstance())) {
-                    renderingResult = null;
-                } else {
+                if ((setFunction != null) && !CircuitUtils.isConstant(setFunction)) {
                     BooleanFormula resetFunction = gateOutput.getResetFunction();
                     if (resetFunction == null) {
                         renderingResult = GateRenderer.renderGate(setFunction);
@@ -207,13 +200,14 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                         renderingResult = CElementRenderer.renderGate(setFunction, resetFunction);
                     }
                 }
-                break;
             }
+            isValidRenderingCache = true;
         }
         return renderingResult;
     }
 
     public void invalidateRenderingResult() {
+        isValidRenderingCache = false;
         renderingResult = null;
     }
 
@@ -284,7 +278,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                         String vcName = contact.getName();
                         List<Point2D> positions = res.contactPositions().get(vcName);
                         if (positions != null) {
-                            Point2D position = MixUtils.minPoint(positions);
+                            Point2D position = MixUtils.bestPoint(positions, Math::min);
                             bt.translate(inputPositionX, position.getY());
                         }
                     } else {
@@ -341,7 +335,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             String cname = vc.getReferencedComponent().getName();
             List<Point2D> positions = rr.contactPositions().get(cname);
             if (positions != null) {
-                Point2D position = MixUtils.minPoint(positions);
+                Point2D position = MixUtils.bestPoint(positions, Math::min);
                 pinPosition = new Point2D.Double(position.getX(), position.getY());
             }
         } else {

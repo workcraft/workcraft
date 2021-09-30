@@ -3,6 +3,7 @@ package org.workcraft.dom.visual;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.function.BinaryOperator;
 
 public class MixUtils {
 
@@ -48,6 +49,18 @@ public class MixUtils {
             }
         }
         return (count > 0) ? new Point2D.Double(x / count, y / count) : null;
+    }
+
+    public static Point2D bestPoint(Collection<Point2D> points, BinaryOperator<Double> binaryOperator) {
+        Point2D result = null;
+        for (Point2D point : points) {
+            if (point != null) {
+                double x = result == null ? point.getX() : binaryOperator.apply(result.getX(), point.getX());
+                double y = result == null ? point.getY() : binaryOperator.apply(result.getY(), point.getY());
+                result = new Point2D.Double(x, y);
+            }
+        }
+        return result;
     }
 
     public static Point2D middleRootspacePosition(Collection<? extends VisualTransformableNode> nodes) {
