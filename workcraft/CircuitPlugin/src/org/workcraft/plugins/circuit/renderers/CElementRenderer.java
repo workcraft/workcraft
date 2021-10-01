@@ -180,7 +180,7 @@ public class CElementRenderer extends GateRenderer {
             }
 
             @Override
-            public Rectangle2D boundingBox() {
+            public Rectangle2D getBoundingBox() {
                 if (cachedBox == null) {
                     // Output bubble
                     if (isGlobalNegation) {
@@ -212,12 +212,12 @@ public class CElementRenderer extends GateRenderer {
             }
 
             @Override
-            public Map<String, List<Point2D>> contactPositions() {
+            public Map<String, List<Point2D>> getContactPositions() {
                 if (cachedPositions == null) {
                     cachedPositions = new HashMap<>();
                     final double s = getCenterLength();
                     final double s2 = s / 2;
-                    final double x = boundingBox().getMaxX() - s * GateRenderer.ANDGateAspectRatio;
+                    final double x = getBoundingBox().getMaxX() - s * GateRenderer.ANDGateAspectRatio;
                     cachedPositions.putAll(getContactPositions(new Point2D.Double(x, -s2 - getPlusLength()), plusVars));
                     cachedPositions.putAll(getContactPositions(new Point2D.Double(x, -getCommonLength() / 2), commonVars));
                     cachedPositions.putAll(getContactPositions(new Point2D.Double(x, s2), minusVars));
@@ -246,7 +246,7 @@ public class CElementRenderer extends GateRenderer {
             public void draw(Graphics2D g) {
                 final double s = getCenterLength();
                 final double s2 = s / 2;
-                final double x = boundingBox().getMaxX() - s * GateRenderer.ANDGateAspectRatio - bubbleOffset;
+                final double x = getBoundingBox().getMaxX() - s * GateRenderer.ANDGateAspectRatio - bubbleOffset;
 
                 // Common part
                 Path2D.Double path = new Path2D.Double();
@@ -278,9 +278,9 @@ public class CElementRenderer extends GateRenderer {
 
                 // Output bubble
                 if (bubbleOffset != 0) {
-                    g.translate(boundingBox().getMaxX() - bubbleOffset / 2, 0);
+                    g.translate(getBoundingBox().getMaxX() - bubbleOffset / 2, 0);
                     drawBubble(g);
-                    g.translate(-boundingBox().getMaxX() + bubbleOffset / 2, 0);
+                    g.translate(-getBoundingBox().getMaxX() + bubbleOffset / 2, 0);
                 }
             }
 

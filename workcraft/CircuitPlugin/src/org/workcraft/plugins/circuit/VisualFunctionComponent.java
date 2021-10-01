@@ -217,7 +217,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         if (renderingResult == null) {
             return super.getInternalBoundingBoxInLocalSpace();
         } else {
-            Rectangle2D boundingBox = renderingResult.boundingBox();
+            Rectangle2D boundingBox = renderingResult.getBoundingBox();
             AffineTransform at = getMainContactRotateTransform(false);
             return at.createTransformedShape(boundingBox).getBounds2D();
         }
@@ -250,7 +250,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         if (res == null) {
             return super.hitTestInLocalSpace(pointInLocalSpace);
         } else {
-            return res.boundingBox().contains(pointInLocalSpace);
+            return res.getBoundingBox().contains(pointInLocalSpace);
         }
     }
 
@@ -267,8 +267,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                 Direction direction = mainOutput.getDirection();
                 at = direction != null ? direction.getTransform() : new AffineTransform();
             }
-            double inputPositionX = TransformHelper.snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
-            double outputPositionX = TransformHelper.snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
+            double inputPositionX = TransformHelper.snapP5(res.getBoundingBox().getMinX() - GateRenderer.contactMargin);
+            double outputPositionX = TransformHelper.snapP5(res.getBoundingBox().getMaxX() + GateRenderer.contactMargin);
 
             for (Node node: this.getChildren()) {
                 if (node instanceof VisualFunctionContact) {
@@ -276,7 +276,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                     bt.setTransform(at);
                     if (contact.isInput()) {
                         String vcName = contact.getName();
-                        List<Point2D> positions = res.contactPositions().get(vcName);
+                        List<Point2D> positions = res.getContactPositions().get(vcName);
                         if (positions != null) {
                             Point2D position = MixUtils.bestPoint(positions, Math::min);
                             bt.translate(inputPositionX, position.getY());
@@ -333,13 +333,13 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         Point2D pinPosition = null;
         if (vc.isInput()) {
             String cname = vc.getReferencedComponent().getName();
-            List<Point2D> positions = rr.contactPositions().get(cname);
+            List<Point2D> positions = rr.getContactPositions().get(cname);
             if (positions != null) {
                 Point2D position = MixUtils.bestPoint(positions, Math::min);
                 pinPosition = new Point2D.Double(position.getX(), position.getY());
             }
         } else {
-            pinPosition = new Point2D.Double(rr.boundingBox().getMaxX(), 0.0);
+            pinPosition = new Point2D.Double(rr.getBoundingBox().getMaxX(), 0.0);
         }
         return pinPosition;
     }
@@ -347,14 +347,14 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     private void drawContactLines(Graphics2D g, ComponentRenderingResult rr, AffineTransform at) {
         g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
         g.setColor(GateRenderer.foregroundColor);
-        Map<String, List<Point2D>> contactToPositions = rr.contactPositions();
+        Map<String, List<Point2D>> contactToPositions = rr.getContactPositions();
         for (Node node : this.getChildren()) {
             if (node instanceof VisualFunctionContact) {
                 VisualFunctionContact contact = (VisualFunctionContact) node;
                 Point2D contactPosition = contact.getPosition();
                 String literal = contact.getName();
                 List<Point2D> positions = contact.isInput() ? contactToPositions.getOrDefault(literal, Collections.emptyList())
-                        : Collections.singletonList(new Point2D.Double(rr.boundingBox().getMaxX(), 0.0));
+                        : Collections.singletonList(new Point2D.Double(rr.getBoundingBox().getMaxX(), 0.0));
 
                 for (Point2D position : positions) {
                     Point2D transformPosition = at.transform(position, null);

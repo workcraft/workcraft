@@ -24,7 +24,7 @@ public interface ComponentRenderingResult {
         }
     }
 
-    Rectangle2D boundingBox();
-    Map<String, List<Point2D>> contactPositions();
+    Rectangle2D getBoundingBox();
+    Map<String, List<Point2D>> getContactPositions();
     void draw(Graphics2D graphics);
 }
