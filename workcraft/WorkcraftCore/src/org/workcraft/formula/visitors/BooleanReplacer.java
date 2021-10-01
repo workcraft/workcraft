@@ -44,62 +44,74 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
 
     @Override
     public BooleanFormula visit(BooleanVariable node) {
-        BooleanFormula replacement = map.get(node);
-        return replacement != null ? replacement : node;
+        return map.getOrDefault(node, node);
     }
 
     @Override
     public BooleanFormula visit(Not node) {
-        BooleanFormula result = map.get(node);
-        if (result == null) {
-            BooleanFormula x = node.getX().accept(this);
-            if (node.getX() == x) {
-                result = node;
-            } else {
-                result = worker.not(x);
-            }
-            map.put(node, result);
+        if (map.containsKey(node)) {
+            return map.get(node);
         }
+        BooleanFormula result = null;
+        BooleanFormula x = node.getX();
+        if (x != null) {
+            BooleanFormula evalX = x.accept(this);
+            if (evalX != null) {
+                result = (x == evalX) ? node : worker.not(evalX);
+            }
+        }
+        map.put(node, result);
         return result;
     }
 
     @Override
     public BooleanFormula visit(And node) {
-        return visitBinaryFunc(node, (x, y) -> worker.and(x, y));
+        return visitBinaryFunc(node, worker::and);
     }
 
     @Override
     public BooleanFormula visit(Or node) {
-        return visitBinaryFunc(node, (x, y) -> worker.or(x, y));
+        return visitBinaryFunc(node, worker::or);
     }
 
     @Override
     public BooleanFormula visit(Xor node) {
-        return visitBinaryFunc(node, (x, y) -> worker.xor(x, y));
+        return visitBinaryFunc(node, worker::xor);
     }
 
     @Override
     public BooleanFormula visit(Imply node) {
-        return visitBinaryFunc(node, (x, y) -> worker.imply(x, y));
+        return visitBinaryFunc(node, worker::imply);
     }
 
     @Override
     public BooleanFormula visit(Iff node) {
-        return visitBinaryFunc(node, (x, y) -> worker.iff(x, y));
+        return visitBinaryFunc(node, worker::iff);
     }
 
     private BooleanFormula visitBinaryFunc(BinaryBooleanFormula node, BinaryOperation op) {
-        BooleanFormula result = map.get(node);
-        if (result == null) {
-            BooleanFormula x = node.getX().accept(this);
-            BooleanFormula y = node.getY().accept(this);
-            if ((node.getX() == x) && (node.getY() == y)) {
-                result = node;
-            } else {
-                result = op.apply(x, y);
-            }
-            map.put(node, result);
+        if (map.containsKey(node)) {
+            return map.get(node);
         }
+        BooleanFormula x = node.getX();
+        BooleanFormula y = node.getY();
+        BooleanFormula result = null;
+        if (x == null) {
+            result = y;
+        } else if (y == null) {
+            result = x;
+        } else {
+            BooleanFormula evalX = x.accept(this);
+            BooleanFormula evalY = y.accept(this);
+            if (evalX == null) {
+                result = evalY;
+            } else if (evalY == null) {
+                result = evalX;
+            } else {
+                result = ((x == evalX) && (y == evalY)) ? node : op.apply(evalX, evalY);
+            }
+        }
+        map.put(node, result);
         return result;
     }
 

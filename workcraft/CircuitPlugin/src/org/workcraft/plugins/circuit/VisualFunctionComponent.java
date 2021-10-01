@@ -316,8 +316,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                     setContactsDefaultPosition();
                 }
             }
-            if (propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
-                    || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
+            if (propertyName.equals(FunctionContact.PROPERTY_FUNCTION)) {
                 setContactsDefaultPosition();
                 for (Node node : getChildren()) {
                     if (node instanceof VisualFunctionContact) {

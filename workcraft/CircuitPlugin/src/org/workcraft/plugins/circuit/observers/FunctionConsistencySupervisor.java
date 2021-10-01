@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.observers;
 
 import org.workcraft.dom.Node;
+import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.FormulaUtils;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
@@ -31,12 +32,9 @@ public class FunctionConsistencySupervisor extends HierarchySupervisor {
                 Hierarchy.getChildrenOfType(getRoot(), FunctionContact.class));
 
         for (final FunctionContact functionContact : functionContacts) {
-
-            functionContact.setSetFunction(FormulaUtils.replaceZero(
-                    functionContact.getSetFunction(), contact));
-
-            functionContact.setResetFunction(FormulaUtils.replaceZero(
-                    functionContact.getResetFunction(), contact));
+            BooleanFormula setFunction = FormulaUtils.remove(functionContact.getSetFunction(), contact);
+            BooleanFormula resetFunction = FormulaUtils.remove(functionContact.getResetFunction(), contact);
+            functionContact.setBothFunctions(setFunction, resetFunction);
         }
     }
 

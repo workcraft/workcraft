@@ -331,7 +331,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         if (e instanceof PropertyChangedEvent) {
             PropertyChangedEvent pc = (PropertyChangedEvent) e;
             String propertyName = pc.getPropertyName();
-            if (propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION) || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
+            if (propertyName.equals(FunctionContact.PROPERTY_FUNCTION)) {
                 invalidateRenderedFormula();
             }
             if (propertyName.equals(Contact.PROPERTY_NAME)) {
