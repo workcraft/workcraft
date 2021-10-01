@@ -5,8 +5,6 @@ import java.util.Set;
 
 public class EquationUtils {
 
-
-
     /*
      * Find roots of equation: a * x + b = 0
      */
@@ -34,6 +32,7 @@ public class EquationUtils {
         }
         return result;
     }
+
     /*
      * Find roots of equation: a * x^3 + b * x^2 + c * x + d = 0
      */

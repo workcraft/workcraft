@@ -41,8 +41,9 @@ public class FunctionComponent extends CircuitComponent {
 
         private void removeContactFromFunctions(final Contact contact) {
             for (FunctionContact fc: new ArrayList<>(getFunctionContacts())) {
-                fc.setSetFunction(FormulaUtils.replaceZero(fc.getSetFunction(), contact));
-                fc.setResetFunction(FormulaUtils.replaceZero(fc.getResetFunction(), contact));
+                BooleanFormula setFunction = FormulaUtils.remove(fc.getSetFunction(), contact);
+                BooleanFormula resetFunction = FormulaUtils.remove(fc.getResetFunction(), contact);
+                fc.setBothFunctions(setFunction, resetFunction);
             }
         }
     }

@@ -134,5 +134,4 @@ public class AssertionCheckTask implements Task<VerificationChainOutput> {
         }
     }
 
-
 }

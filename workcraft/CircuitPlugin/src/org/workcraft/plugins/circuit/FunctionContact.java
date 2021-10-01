@@ -9,6 +9,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 public class FunctionContact extends Contact {
     public static final String PROPERTY_SET_FUNCTION = "Set function";
     public static final String PROPERTY_RESET_FUNCTION = "Reset function";
+    // Use for notification when either Set or Reset function is changed
+    public static final String PROPERTY_FUNCTION = "Function";
 
     private BooleanFormula setFunction = null;
     private BooleanFormula resetFunction = null;
@@ -21,25 +23,33 @@ public class FunctionContact extends Contact {
         super();
     }
 
+    public void setBothFunctions(BooleanFormula newSetFunction, BooleanFormula newResetFunction) {
+        boolean updated = false;
+        if (setFunction != newSetFunction) {
+            setSetFunctionQuiet(newSetFunction);
+            updated = true;
+        }
+        if (resetFunction != newResetFunction) {
+            setResetFunctionQuiet(newResetFunction);
+            updated = true;
+        }
+        if (updated) {
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FUNCTION));
+        }
+    }
     public BooleanFormula getSetFunction() {
         return setFunction;
     }
 
     public void setSetFunction(BooleanFormula value) {
-        if (setFunction != value) {
-            String setFunctionString = StringGenerator.toString(setFunction);
-            String valueString = StringGenerator.toString(value);
-            if (!setFunctionString.equals(valueString)) {
-                setSetFunctionQuiet(value);
-                sendNotification(new PropertyChangedEvent(this, PROPERTY_SET_FUNCTION));
-            }
+        if ((setFunction != value) && !StringGenerator.toString(setFunction).equals(StringGenerator.toString(value))) {
+            setSetFunctionQuiet(value);
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FUNCTION));
         }
     }
 
     public void setSetFunctionQuiet(BooleanFormula value) {
-        if (setFunction != value) {
-            setFunction = value;
-        }
+        setFunction = value;
     }
 
     public BooleanFormula getResetFunction() {
@@ -47,20 +57,14 @@ public class FunctionContact extends Contact {
     }
 
     public void setResetFunction(BooleanFormula value) {
-        if (resetFunction != value) {
-            String resetFunctionString = StringGenerator.toString(resetFunction);
-            String valueString = StringGenerator.toString(value);
-            if (!resetFunctionString.equals(valueString)) {
-                setResetFunctionQuiet(value);
-                sendNotification(new PropertyChangedEvent(this, PROPERTY_RESET_FUNCTION));
-            }
+        if ((resetFunction != value) && !StringGenerator.toString(resetFunction).equals(StringGenerator.toString(value))) {
+            setResetFunctionQuiet(value);
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FUNCTION));
         }
     }
 
     public void setResetFunctionQuiet(BooleanFormula value) {
-        if (resetFunction != value) {
-            resetFunction = value;
-        }
+        resetFunction = value;
     }
 
     public boolean hasFunction() {

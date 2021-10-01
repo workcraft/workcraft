@@ -626,10 +626,10 @@ public class CircuitUtils {
     public static boolean cannotRise(FunctionContact contact) {
         BooleanFormula setFunction = contact.getSetFunction();
         if (setFunction != null) {
-            return Zero.getInstance().equals(setFunction);
+            return isConstant0(setFunction);
         }
         BooleanFormula resetFunction = contact.getResetFunction();
-        return One.getInstance().equals(resetFunction);
+        return isConstant1(resetFunction);
     }
 
     public static boolean isConstant1(FunctionContact contact) {
@@ -639,10 +639,22 @@ public class CircuitUtils {
     public static boolean cannotFall(FunctionContact contact) {
         BooleanFormula resetFunction = contact.getResetFunction();
         if (resetFunction != null) {
-            return Zero.getInstance().equals(resetFunction);
+            return isConstant0(resetFunction);
         }
         BooleanFormula setFunction = contact.getSetFunction();
-        return One.getInstance().equals(setFunction);
+        return isConstant1(setFunction);
+    }
+
+    public static boolean isConstant(BooleanFormula formula) {
+        return isConstant0(formula) || isConstant1(formula);
+    }
+
+    public static boolean isConstant0(BooleanFormula formula) {
+        return Zero.getInstance().equals(formula);
+    }
+
+    public static boolean isConstant1(BooleanFormula formula) {
+        return One.getInstance().equals(formula);
     }
 
 }

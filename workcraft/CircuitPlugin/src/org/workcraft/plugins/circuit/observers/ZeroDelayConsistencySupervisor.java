@@ -25,12 +25,13 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
             if ((sender instanceof FunctionContact)
-                    && (propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
-                        || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION))) {
+                    && (propertyName.equals(FunctionContact.PROPERTY_FUNCTION))) {
+
                 handleFunctionChange((FunctionContact) sender);
             }
             if ((sender instanceof FunctionComponent)
                     && propertyName.equals(FunctionComponent.PROPERTY_IS_ZERO_DELAY)) {
+
                 handleZeroDelayChange((FunctionComponent) sender);
             }
         }

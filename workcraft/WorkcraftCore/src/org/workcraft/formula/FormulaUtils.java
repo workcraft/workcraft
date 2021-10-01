@@ -9,6 +9,10 @@ import java.util.*;
 
 public class FormulaUtils {
 
+    public static BooleanFormula remove(BooleanFormula formula, BooleanVariable variable) {
+        return replace(formula, variable, null, CleverBooleanWorker.getInstance());
+    }
+
     public static BooleanFormula replaceOne(BooleanFormula formula, BooleanVariable variable) {
         return replace(formula, variable, One.getInstance(), CleverBooleanWorker.getInstance());
     }

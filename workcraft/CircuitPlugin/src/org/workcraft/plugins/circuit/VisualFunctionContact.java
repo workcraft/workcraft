@@ -13,7 +13,6 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
@@ -32,7 +31,7 @@ import java.util.HashSet;
 public class VisualFunctionContact extends VisualContact implements StateObserver {
 
     private static final double size = 0.3;
-    private static FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
+    private static final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
     private static Font functionFont;
 
     private FormulaRenderingResult renderedSetFunction = null;
@@ -300,7 +299,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             // Output port of a BOX-rendered component
             if ((parent instanceof VisualFunctionComponent) && isOutput()) {
                 VisualFunctionComponent component = (VisualFunctionComponent) parent;
-                if (component.getRenderType() == RenderType.BOX) {
+                if (component.getRenderingResult() == null) {
                     result = true;
                 }
             }
@@ -332,7 +331,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         if (e instanceof PropertyChangedEvent) {
             PropertyChangedEvent pc = (PropertyChangedEvent) e;
             String propertyName = pc.getPropertyName();
-            if (propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION) || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)) {
+            if (propertyName.equals(FunctionContact.PROPERTY_FUNCTION)) {
                 invalidateRenderedFormula();
             }
             if (propertyName.equals(Contact.PROPERTY_NAME)) {
