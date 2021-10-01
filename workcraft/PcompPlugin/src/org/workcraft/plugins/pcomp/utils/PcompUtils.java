@@ -25,20 +25,20 @@ public class PcompUtils {
     public static List<WorkspaceEntry> deserealiseData(String data) {
         List<WorkspaceEntry> wes = new ArrayList<>();
         Framework framework = Framework.getInstance();
-        String msg = "";
+        StringBuilder msg = new StringBuilder();
         for (String word : TextUtils.splitWords(data)) {
             try {
                 WorkspaceEntry we = framework.loadWork(word);
                 if (we == null) {
-                    msg += "\n  * " + word;
+                    msg.append("\n  * ").append(word);
                 } else {
                     wes.add(we);
                 }
             } catch (DeserialisationException e) {
-                msg += "\n  * " + word;
+                msg.append("\n  * ").append(word);
             }
         }
-        if (!msg.isEmpty()) {
+        if (msg.length() > 0) {
             wes.clear();
             LogUtils.logError("Could not load the following files:" + msg);
         }
