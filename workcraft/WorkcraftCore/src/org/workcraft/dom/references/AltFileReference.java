@@ -29,7 +29,7 @@ public class AltFileReference extends FileReference {
     }
 
     public boolean add(String path) {
-        path = FileUtils.stripBase(path, getBase());
+        path = FileUtils.getUnixRelativePath(path, getBase());
         if (path != null) {
             return paths.add(path);
         }
@@ -47,7 +47,7 @@ public class AltFileReference extends FileReference {
     }
 
     public boolean remove(String path) {
-        path = FileUtils.stripBase(path, getBase());
+        path = FileUtils.getUnixRelativePath(path, getBase());
         if (path != null) {
             if (path.equals(getPath())) {
                 setPath(null);
