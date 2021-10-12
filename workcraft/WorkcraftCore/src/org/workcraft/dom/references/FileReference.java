@@ -26,7 +26,7 @@ public class FileReference {
     }
 
     public void setPath(String path) {
-        this.path = FileUtils.stripBase(path, base);
+        this.path = FileUtils.getUnixRelativePath(path, base);
     }
 
     public File getFile() {

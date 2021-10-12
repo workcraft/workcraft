@@ -29,9 +29,9 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
         CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
         File envWorkFile = circuit.getMathModel().getEnvironmentFile();
         if (envWorkFile == null) {
-            DialogUtils.showWarning("Envioronment STG is not specified.");
+            DialogUtils.showWarning("Environment STG is not specified.");
         } else if (!envWorkFile.exists()) {
-            DialogUtils.showWarning("Envioronment STG file does not exist:\n" + envWorkFile.getAbsolutePath());
+            DialogUtils.showWarning("Environment STG file does not exist:\n" + envWorkFile.getAbsolutePath());
         } else {
             Stg devStg = converter.getStg().getMathModel();
             String title = circuit.getTitle();

@@ -6,6 +6,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -300,11 +302,20 @@ public class FileUtils {
         path = useUnixFileSeparator(path);
         base = appendUnixFileSeparator(useUnixFileSeparator(base));
         if ((base != null) && (path != null) && path.startsWith(base)) {
-            String result = path.substring(base.length());
-            while (result.startsWith(UNIX_FILE_SEPARATOR)) {
-                result = result.substring(1);
-            }
-            return result;
+            return path.substring(base.length());
+        }
+        return path;
+    }
+
+    public static String getUnixRelativePath(String path, String base) {
+        path = useUnixFileSeparator(path);
+        base = appendUnixFileSeparator(useUnixFileSeparator(base));
+        String root = base == null ? null : base.substring(0, base.indexOf(UNIX_FILE_SEPARATOR) + 1);
+        if ((path != null) && (root != null) && path.startsWith(root)) {
+            Path pathPath = Paths.get(path);
+            Path basePath = Paths.get(base);
+            Path relativePath = basePath.relativize(pathPath);
+            return useUnixFileSeparator(relativePath.toString());
         }
         return path;
     }
@@ -314,7 +325,11 @@ public class FileUtils {
     }
 
     public static String appendUnixFileSeparator(String path) {
-        return (path == null) || path.endsWith(UNIX_FILE_SEPARATOR) ? path : path + UNIX_FILE_SEPARATOR;
+        return appendFileSeparator(path, UNIX_FILE_SEPARATOR);
+    }
+
+    public static String appendFileSeparator(String path, String separator) {
+        return (path == null) || path.endsWith(separator) ? path : path + separator;
     }
 
     public static File getFileByPathAndBase(String path, String base) {
