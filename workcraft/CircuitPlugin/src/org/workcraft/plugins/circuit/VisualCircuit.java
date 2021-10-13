@@ -215,9 +215,6 @@ public class VisualCircuit extends AbstractVisualModel {
             VisualComponent vComponent1 = (VisualComponent) first;
             VisualComponent vComponent2 = (VisualComponent) second;
 
-            Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
-            Container vContainer = (Container) Hierarchy.getNearestAncestor(vParent,
-                    node -> (node instanceof VisualGroup) || (node instanceof VisualPage));
             if (mConnection == null) {
                 MathNode mComponent1 = vComponent1.getReferencedComponent();
                 MathNode mComponent2 = vComponent2.getReferencedComponent();
@@ -225,7 +222,14 @@ public class VisualCircuit extends AbstractVisualModel {
             }
             vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
             vConnection.setArrowLength(0.0);
-            vContainer.add(vConnection);
+
+            Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
+            Container vContainer = (Container) Hierarchy.getNearestAncestor(vParent,
+                    node -> (node instanceof VisualGroup) || (node instanceof VisualPage));
+
+            if (vContainer != null) {
+                vContainer.add(vConnection);
+            }
         }
         return vConnection;
     }

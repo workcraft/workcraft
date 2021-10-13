@@ -20,6 +20,7 @@ import java.awt.geom.*;
 import java.io.File;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
 
@@ -179,28 +180,48 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         }
     }
 
-    public void setPositionByDirection(VisualContact vc, Direction direction, boolean reverseProgression) {
-        vc.setDirection(direction);
-        Rectangle2D bb = getContactExpandedBox();
-        switch (vc.getDirection()) {
+    public void setPositionByDirection(VisualContact contact, Direction direction, boolean reverseProgression) {
+        contact.setDirection(direction);
+        Collection<VisualContact> contacts = Hierarchy.getChildrenOfType(this, VisualContact.class);
+        contacts.remove(contact);
+        double contactOffset = getContactBestOffset(contacts, direction);
+        switch (direction) {
         case WEST:
-            vc.setX(TransformHelper.snapP5(bb.getMinX() - contactLength));
-            positionVertical(vc, reverseProgression);
+        case EAST:
+            contact.setX(contactOffset);
+            positionVertical(contact, reverseProgression);
             break;
         case NORTH:
-            vc.setY(TransformHelper.snapP5(bb.getMinY() - contactLength));
-            positionHorizontal(vc, reverseProgression);
-            break;
-        case EAST:
-            vc.setX(TransformHelper.snapP5(bb.getMaxX() + contactLength));
-            positionVertical(vc, reverseProgression);
-            break;
         case SOUTH:
-            vc.setY(TransformHelper.snapP5(bb.getMaxY() + contactLength));
-            positionHorizontal(vc, reverseProgression);
+            contact.setY(contactOffset);
+            positionHorizontal(contact, reverseProgression);
             break;
         }
         invalidateBoundingBox();
+    }
+
+    private double getContactBestOffset(Collection<VisualContact> contacts, Direction direction) {
+        Rectangle2D bb = getContactExpandedBox(contacts);
+        contacts = contacts.stream()
+                .filter(contact -> contact.getDirection() == direction)
+                .collect(Collectors.toSet());
+
+        switch (direction) {
+        case WEST:
+            double westOffset = contacts.stream().mapToDouble(VisualTransformableNode::getX).max().orElse(0.0);
+            return Math.min(TransformHelper.snapP5(bb.getMinX() - contactLength), westOffset);
+        case NORTH:
+            double northOffset = contacts.stream().mapToDouble(VisualTransformableNode::getY).max().orElse(0.0);
+            return Math.min(TransformHelper.snapP5(bb.getMinY() - contactLength), northOffset);
+        case EAST:
+            double eastOffset = contacts.stream().mapToDouble(VisualTransformableNode::getX).min().orElse(0.0);
+            return Math.max(TransformHelper.snapP5(bb.getMaxX() + contactLength), eastOffset);
+        case SOUTH:
+            double southOffset = contacts.stream().mapToDouble(VisualTransformableNode::getY).min().orElse(0.0);
+            return Math.max(TransformHelper.snapP5(bb.getMaxY() + contactLength), southOffset);
+        default:
+            return 0.0;
+        }
     }
 
     private void positionHorizontal(VisualContact vc, boolean reverseProgression) {
@@ -255,34 +276,34 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         internalBB = null;
     }
 
-    private Rectangle2D getContactMinimalBox() {
+    private Rectangle2D getContactMinimalBox(Collection<VisualContact> contacts) {
         double size = VisualCommonSettings.getNodeSize();
         double xMin = -size / 2;
         double yMin = -size / 2;
         double xMax = size / 2;
         double yMax = size / 2;
-        for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-            switch (vc.getDirection()) {
+        for (VisualContact contact : contacts) {
+            switch (contact.getDirection()) {
             case WEST:
-                double xWest = vc.getX() + contactLength;
+                double xWest = contact.getX() + contactLength;
                 if ((xWest < -size / 2) && (xWest > xMin)) {
                     xMin = xWest;
                 }
                 break;
             case NORTH:
-                double yNorth = vc.getY() + contactLength;
+                double yNorth = contact.getY() + contactLength;
                 if ((yNorth < -size / 2) && (yNorth > yMin)) {
                     yMin = yNorth;
                 }
                 break;
             case EAST:
-                double xEast = vc.getX() - contactLength;
+                double xEast = contact.getX() - contactLength;
                 if ((xEast > size / 2) && (xEast < xMax)) {
                     xMax = xEast;
                 }
                 break;
             case SOUTH:
-                double ySouth = vc.getY() - contactLength;
+                double ySouth = contact.getY() - contactLength;
                 if ((ySouth > size / 2) && (ySouth < yMax)) {
                     yMax = ySouth;
                 }
@@ -292,36 +313,36 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         return new Rectangle2D.Double(xMin, yMin, xMax - xMin, yMax - yMin);
     }
 
-    private Rectangle2D getContactExpandedBox() {
-        Rectangle2D minBox = getContactMinimalBox();
+    private Rectangle2D getContactExpandedBox(Collection<VisualContact> contacts) {
+        Rectangle2D minBox = getContactMinimalBox(contacts);
         double x1 = minBox.getMinX();
         double y1 = minBox.getMinY();
         double x2 = minBox.getMaxX();
         double y2 = minBox.getMaxY();
-        for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-            double x = vc.getX();
-            double y = vc.getY();
-            switch (vc.getDirection()) {
+        for (VisualContact contact : contacts) {
+            double x = contact.getX();
+            double y = contact.getY();
+            switch (contact.getDirection()) {
             case WEST:
-                if (vc.getX() < minBox.getMinX()) {
+                if (contact.getX() < minBox.getMinX()) {
                     y1 = Math.min(y1, y - contactMargin);
                     y2 = Math.max(y2, y + contactMargin);
                 }
                 break;
             case NORTH:
-                if (vc.getY() < minBox.getMinY()) {
+                if (contact.getY() < minBox.getMinY()) {
                     x1 = Math.min(x1, x - contactMargin);
                     x2 = Math.max(x2, x + contactMargin);
                 }
                 break;
             case EAST:
-                if (vc.getX() > minBox.getMaxX()) {
+                if (contact.getX() > minBox.getMaxX()) {
                     y1 = Math.min(y1, y - contactMargin);
                     y2 = Math.max(y2, y + contactMargin);
                 }
                 break;
             case SOUTH:
-                if (vc.getY() > minBox.getMaxY()) {
+                if (contact.getY() > minBox.getMaxY()) {
                     x1 = Math.min(x1, x - contactMargin);
                     x2 = Math.max(x2, x + contactMargin);
                 }
@@ -332,21 +353,22 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     private Rectangle2D getContactBestBox() {
-        Rectangle2D expBox = getContactExpandedBox();
-        double x1 = expBox.getMinX();
-        double y1 = expBox.getMinY();
-        double x2 = expBox.getMaxX();
-        double y2 = expBox.getMaxY();
+        Collection<VisualContact> contacts = Hierarchy.getChildrenOfType(this, VisualContact.class);
+        Rectangle2D bb = getContactExpandedBox(contacts);
+        double x1 = bb.getMinX();
+        double y1 = bb.getMinY();
+        double x2 = bb.getMaxX();
+        double y2 = bb.getMaxY();
 
         boolean westFirst = true;
         boolean northFirst = true;
         boolean eastFirst = true;
         boolean southFirst = true;
 
-        for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-            double x = vc.getX();
-            double y = vc.getY();
-            switch (vc.getDirection()) {
+        for (VisualContact contact : contacts) {
+            double x = contact.getX();
+            double y = contact.getY();
+            switch (contact.getDirection()) {
             case WEST:
                 if (westFirst) {
                     x1 = x + contactLength;
@@ -389,7 +411,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
             y1 = y2 = (y1 + y2) / 2;
         }
         Rectangle2D maxBox = new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
-        return BoundingBoxHelper.union(expBox, maxBox);
+        return BoundingBoxHelper.union(bb, maxBox);
     }
 
     private Point2D getContactLinePosition(VisualContact vc) {
@@ -672,7 +694,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
                 AffineTransform at = t.sender.getTransform();
                 double x = at.getTranslateX();
                 double y = at.getTranslateY();
-                Rectangle2D bb = getContactExpandedBox();
+                Collection<VisualContact> contacts = Hierarchy.getChildrenOfType(this, VisualContact.class);
+                Rectangle2D bb = getContactExpandedBox(contacts);
                 if ((x <= bb.getMinX()) && (y > bb.getMinY()) && (y < bb.getMaxY())) {
                     vc.setDirection(Direction.WEST);
                 }
