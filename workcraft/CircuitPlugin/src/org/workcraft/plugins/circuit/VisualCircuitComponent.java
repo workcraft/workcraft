@@ -576,7 +576,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         }
     }
 
-    protected void drawRefinement(DrawRequest r) {
+    private void drawRefinement(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         File file = getReferencedComponent().getRefinementFile();
