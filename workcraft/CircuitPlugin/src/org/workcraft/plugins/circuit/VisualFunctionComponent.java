@@ -13,6 +13,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.renderers.CElementRenderer;
 import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
@@ -182,7 +183,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     public ComponentRenderingResult getRenderingResult() {
-        if (groupImpl == null) {
+        if ((groupImpl == null) || getReferencedComponent().getIsArbitrationPrimitive()) {
             return null;
         }
         if (!isValidRenderingCache) {
@@ -437,6 +438,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         ComponentRenderingResult rr = getRenderingResult();
         if (rr == null) {
             super.draw(r);
+            if (getReferencedComponent().getIsArbitrationPrimitive()) {
+                drawShield(r);
+            }
         } else {
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
@@ -467,6 +471,32 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
             // External decorations
             d.decorate(g);
+        }
+    }
+
+    private void drawShield(DrawRequest r) {
+        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+        if (bb != null) {
+            Decoration d = r.getDecoration();
+            Graphics2D g = r.getGraphics();
+            g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
+
+            double x = bb.getCenterX();
+            double y = bb.getCenterY() - VisualCommonSettings.getNodeSize() / 5;
+            double w = VisualCommonSettings.getNodeSize() / 2;
+            double w2 = w / 2;
+            double b = VisualCommonSettings.getNodeSize() / 2;
+            double t = b / 5;
+            g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
+
+            Path2D.Double path = new Path2D.Double();
+            path.moveTo(x, y);
+            path.curveTo(x + 0.5 * w2, y - 0.2 * b, x + w2, y - 0.5 * b, x + w2, y - b);
+            path.curveTo(x + 0.5 * w2, y - b, x + 0.5 * w2, y - b, x, y - b - t);
+            path.curveTo(x - 0.5 * w2, y - b, x - 0.5 * w2, y - b, x - w2, y - b);
+            path.curveTo(x - w2, y - 0.5 * b, x - 0.5 * w2, y - 0.2 * b, x, y);
+            path.closePath();
+            g.draw(path);
         }
     }
 

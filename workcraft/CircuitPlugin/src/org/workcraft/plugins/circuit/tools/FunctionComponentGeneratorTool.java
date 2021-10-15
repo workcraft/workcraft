@@ -364,7 +364,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     private LibraryItem createWaitItem() {
         Wait module = CircuitSettings.parseWaitData();
         Instantiator instantiator = (circuit, component) -> {
-            component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+            component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);
 
             VisualFunctionContact sigContact = component.createContact(IOType.INPUT);
@@ -392,7 +392,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     private LibraryItem createWait0Item() {
         Wait module = CircuitSettings.parseWait0Data();
         Instantiator instantiator = (circuit, component) -> {
-            component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+            component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);
 
             VisualFunctionContact sigContact = component.createContact(IOType.INPUT);
@@ -420,7 +420,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     private LibraryItem createMutexItem(Mutex.Protocol protocol) {
         Mutex module = CircuitSettings.parseMutexData();
         Instantiator instantiator = (circuit, component) -> {
-            component.setRenderType(ComponentRenderingResult.RenderType.BOX);
+            component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);
 
             VisualFunctionContact r1Contact = component.createContact(IOType.INPUT);
