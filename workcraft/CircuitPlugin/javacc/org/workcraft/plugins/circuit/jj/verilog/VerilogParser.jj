@@ -106,6 +106,8 @@ TOKEN:
 |
     <INTEGER : ([ "0"-"9" ])+>
 |
+    <DELAY: ("#" ([ "0"-"9" ])* (["."])? ([ "0"-"9" ])+) | ("#(" (~["(", ")"])* ")")>
+|
     <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <WS> <NL>>
 |
     <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <WS> <NL>>
@@ -443,7 +445,7 @@ VerilogAssign parseAssign():
     Token formulaToken;
 }
 {
-    <ASSIGN> ["#"<INTEGER>] nameToken = <NAME> formulaToken = <FORMULA>
+    <ASSIGN> [<DELAY>] nameToken = <NAME> formulaToken = <FORMULA>
     {
         String formula = formulaToken.image
                 .replaceAll("^=", "")  // start of assign expression
