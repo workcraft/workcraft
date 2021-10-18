@@ -194,8 +194,9 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     private String getDelayParameter() {
-        int assignDelay = CircuitSettings.getVerilogAssignDelay();
-        return assignDelay > 0 ? " " + KEYWORD_ASSIGN_DELAY + assignDelay : "";
+        String assignDelay = CircuitSettings.getVerilogAssignDelay();
+        return (assignDelay == null) || assignDelay.isEmpty() || "0".equals(assignDelay.trim())
+                ? "" : " " + KEYWORD_ASSIGN_DELAY + assignDelay;
     }
 
     private void writeInstance(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {

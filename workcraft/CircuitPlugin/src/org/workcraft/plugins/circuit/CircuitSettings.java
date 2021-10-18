@@ -27,6 +27,9 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static final String GATE_LIBRARY_TITLE = "Gate library for technology mapping";
 
+    private static final Pattern NUMBER_DELAY_PATTERN = Pattern.compile("\\d*\\.?\\d+");
+    private static final Pattern STRING_DELAY_PATTERN = Pattern.compile("\\([^\\(\\)]*\\)");
+
     private static final Pattern MUTEX_DATA_PATTERN = Pattern.compile(
             "(\\w+)\\(\\((\\w+),(\\w+)\\),\\((\\w+),(\\w+)\\)\\)");
 
@@ -118,7 +121,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultInvertExportSubstitutionRules = false;
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
-    private static final int defaultVerilogAssignDelay = 0;
+    private static final String defaultVerilogAssignDelay = "";
     private static final String defaultBusSuffix = "__$";
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
@@ -161,7 +164,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
     private static String busSuffix = defaultBusSuffix;
-    private static int verilogAssignDelay = defaultVerilogAssignDelay;
+    private static String verilogAssignDelay = defaultVerilogAssignDelay;
     // Reset
     private static String resetActiveHighPort = defaultResetActiveHighPort;
     private static String resetActiveLowPort = defaultResetActiveLowPort;
@@ -299,8 +302,8 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::setInvertImportSubstitutionRules,
                 CircuitSettings::getInvertImportSubstitutionRules));
 
-        properties.add(new PropertyDeclaration<>(Integer.class,
-                PropertyHelper.BULLET_PREFIX + "Delay for assign statements in Verilog export (0 to suppress)",
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Delay for assign statements in Verilog export (empty to suppress)",
                 CircuitSettings::setVerilogAssignDelay,
                 CircuitSettings::getVerilogAssignDelay));
 
@@ -428,7 +431,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
         setImportSubstitutionLibrary(config.getString(keyImportSubstitutionLibrary, defaultImportSubstitutionLibrary));
         setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
-        setVerilogAssignDelay(config.getInt(keyVerilogAssignDelay, defaultVerilogAssignDelay));
+        setVerilogAssignDelay(config.getString(keyVerilogAssignDelay, defaultVerilogAssignDelay));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         // Reset
         setResetActiveHighPort(config.getString(keyResetActiveHighPort, defaultResetActiveHighPort));
@@ -470,7 +473,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
         config.set(keyImportSubstitutionLibrary, getImportSubstitutionLibrary());
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
-        config.setInt(keyVerilogAssignDelay, getVerilogAssignDelay());
+        config.set(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyBusSuffix, getBusSuffix());
         // Reset
         config.set(keyResetActiveHighPort, getResetActiveHighPort());
@@ -653,12 +656,23 @@ public class CircuitSettings extends AbstractModelSettings {
         invertImportSubstitutionRules = value;
     }
 
-    public static int getVerilogAssignDelay() {
+    public static String getVerilogAssignDelay() {
         return verilogAssignDelay;
     }
 
-    public static void setVerilogAssignDelay(int value) {
-        verilogAssignDelay = value;
+    public static void setVerilogAssignDelay(String value) {
+        if (value == null) {
+            value = "";
+        }
+        value = value.trim();
+        if (value.isEmpty() || NUMBER_DELAY_PATTERN.matcher(value).matches() || STRING_DELAY_PATTERN.matcher(value).matches()) {
+            verilogAssignDelay = value;
+        } else {
+            DialogUtils.showError("Delay for Verilog assign statement must be one of these:\n" +
+                    PropertyHelper.BULLET_PREFIX + "empty string\n" +
+                    PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n" +
+                    PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(deal1, delay2)`");
+        }
     }
 
     public static String getBusSuffix() {
