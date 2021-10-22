@@ -8,6 +8,7 @@ package org.workcraft.plugins.circuit.serialisation;
 
 import org.workcraft.Info;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -56,7 +57,7 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
     private void writeInstance(PrintWriter out, Circuit circuit, FunctionComponent component,
             HashMap<String, SubstitutionRule> substitutionRules) {
 
-        String instanceRef = circuit.getNodeReference(component);
+        String instanceRef = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
         String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
         String msg = "Processing instance '" + instanceFlatName + "': ";
         if (!component.isMapped()) {
