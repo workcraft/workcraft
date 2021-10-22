@@ -57,12 +57,12 @@ public class NamespaceHelper {
     }
 
     public static String getParentReference(String reference) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         LinkedList<String> path = splitReference(reference);
         for (int i = 0; i < path.size() - 1; i++) {
-            result += path.get(i);
+            result.append(path.get(i));
         }
-        return result;
+        return result.toString();
     }
 
     public static String getReferenceHead(String reference) {
