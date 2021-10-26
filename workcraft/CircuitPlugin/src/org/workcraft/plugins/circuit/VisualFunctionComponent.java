@@ -482,11 +482,11 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
 
             double x = bb.getCenterX();
-            double y = bb.getCenterY() - VisualCommonSettings.getNodeSize() / 5;
-            double w = VisualCommonSettings.getNodeSize() / 2;
+            double y = bb.getCenterY() - 0.4 * VisualCommonSettings.getNodeSize();
+            double w = 0.4 * VisualCommonSettings.getNodeSize();
             double w2 = w / 2;
-            double b = VisualCommonSettings.getNodeSize() / 2;
-            double t = b / 5;
+            double b = 0.4 * VisualCommonSettings.getNodeSize();
+            double t = b / 4;
             g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
 
             Path2D.Double path = new Path2D.Double();
