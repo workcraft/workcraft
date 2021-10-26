@@ -24,11 +24,9 @@ public class MutexUtils {
     public static BooleanFormula getGrantSet(Mutex.Protocol mutexProtocol, BooleanFormula reqContact,
             BooleanFormula otherGrantContact, BooleanFormula otherReqContact) {
 
-        BooleanFormula result = new And(reqContact, new Not(otherGrantContact));
-        if (mutexProtocol == Mutex.Protocol.EARLY) {
-            result = new Or(result, new And(reqContact, new Not(otherReqContact)));
-        }
-        return result;
+        return mutexProtocol == Mutex.Protocol.EARLY
+                ? new And(reqContact, new Or(new Not(otherGrantContact), new Not(otherReqContact)))
+                : new And(reqContact, new Not(otherGrantContact));
     }
 
     public static BooleanFormula getGrantReset(VisualFunctionContact reqContact) {
