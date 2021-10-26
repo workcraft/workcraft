@@ -37,6 +37,7 @@ public class FunctionContact extends Contact {
             sendNotification(new PropertyChangedEvent(this, PROPERTY_FUNCTION));
         }
     }
+
     public BooleanFormula getSetFunction() {
         return setFunction;
     }
