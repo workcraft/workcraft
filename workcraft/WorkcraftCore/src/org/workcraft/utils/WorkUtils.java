@@ -117,9 +117,9 @@ public final class WorkUtils {
                     CompatibilityManager cm = framework.getCompatibilityManager();
                     InputStream is = cm.process(file);
                     me = loadModel(is);
-                    String base = FileUtils.getBasePath(file);
+                    String base = file.getCanonicalFile().getParent();
                     adjustPropertyFilePaths(me.getVisualModel(), base, true);
-                } catch (OperationCancelledException e) {
+                } catch (OperationCancelledException | IOException e) {
                     // Operation cancelled by the user
                 }
             } else {
@@ -324,7 +324,7 @@ public final class WorkUtils {
     public static Collection<Resource> loadResources(File file) throws DeserialisationException {
         try (InputStream is = new FileInputStream(file)) {
             Collection<Resource> resources = loadResources(is);
-            String base = FileUtils.getBasePath(file);
+            String base = file.getAbsoluteFile().getParent();
             return adjustResourceFilePaths(resources, base, true);
         } catch (IOException e) {
             throw new DeserialisationException(e);
@@ -354,7 +354,7 @@ public final class WorkUtils {
 
         try {
             FileOutputStream os = new FileOutputStream(file);
-            String base = FileUtils.getBasePath(file);
+            String base = file.getCanonicalFile().getParent();
             adjustPropertyFilePaths(me.getVisualModel(), base, false);
             Collection<Resource> adjustedResources = adjustResourceFilePaths(resources, base, false);
             saveModel(me, adjustedResources, os);

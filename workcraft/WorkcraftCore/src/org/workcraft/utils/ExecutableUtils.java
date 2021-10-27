@@ -1,22 +1,20 @@
 package org.workcraft.utils;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ExecutableUtils {
 
     public static String getAbsoluteCommandPath(String toolName) {
-        return getAbsoluteCommandPath(new File(toolName));
-    }
-
-    public static String getAbsoluteCommandPath(File file) {
-        String result = null;
-        if (file != null) {
-            result = file.getPath();
-            if (file.exists()) {
-                result = FileUtils.getFullPath(file);
+        File toolFile = new File(toolName);
+        if (toolFile.exists()) {
+            try {
+                return toolFile.getCanonicalPath();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        return result;
+        return toolFile.getPath();
     }
 
 }
