@@ -213,13 +213,9 @@ public class CircuitUtils {
     }
 
     public static String getSignalReference(Circuit circuit, Contact contact) {
-        String result = null;
-        if (contact.isPort() || contact.isInput()) {
-            result = getContactReference(circuit, contact);
-        } else {
-            result = getOutputContactReference(circuit, contact);
-        }
-        return result;
+        return contact.isPort() || contact.isInput()
+                ? getContactReference(circuit, contact)
+                : getOutputContactReference(circuit, contact);
     }
 
     public static String getSignalReference(VisualCircuit circuit, VisualContact contact) {
@@ -301,8 +297,8 @@ public class CircuitUtils {
         return result;
     }
 
-    public static BooleanFormula parseContactFunction(VisualCircuit circuit, VisualFunctionContact contact, String function)
-            throws ParseException {
+    public static BooleanFormula parseContactFunction(VisualCircuit circuit, VisualFunctionContact contact,
+            String function) throws ParseException {
 
         Node parent = contact.getParent();
         if (parent instanceof VisualFunctionComponent) {
@@ -313,35 +309,29 @@ public class CircuitUtils {
         }
     }
 
-    public static BooleanFormula parsePinFunction(VisualCircuit circuit, VisualFunctionComponent component, String function) throws ParseException {
+    public static BooleanFormula parsePinFunction(VisualCircuit circuit, VisualFunctionComponent component,
+            String function) throws ParseException {
+
         if ((function == null) || function.isEmpty()) {
             return null;
         }
-        return BooleanFormulaParser.parse(function, name -> {
-            BooleanFormula result = null;
-            VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
-            if ((contact != null) && (contact.getReferencedComponent() != null)) {
-                result = contact.getReferencedComponent();
-            }
-            return result;
-        });
+        return BooleanFormulaParser.parse(function, name -> circuit
+                .getExistingPinOrCreateInputPin(component, name)
+                .getReferencedComponent());
     }
 
     public static BooleanFormula parsePortFunction(VisualCircuit circuit, String function) throws ParseException {
         if ((function == null) || function.isEmpty()) {
             return null;
         }
-        return BooleanFormulaParser.parse(function, name -> {
-            BooleanFormula result = null;
-            VisualFunctionContact port = circuit.getOrCreatePort(name, IOType.OUTPUT);
-            if ((port != null) && (port.getReferencedComponent() != null)) {
-                result = port.getReferencedComponent();
-            }
-            return result;
-        });
+        return BooleanFormulaParser.parse(function, name -> circuit
+                .getOrCreatePort(name, IOType.OUTPUT)
+                .getReferencedComponent());
     }
 
-    public static BooleanFormula parsePinFunction(Circuit circuit, FunctionComponent component, String function) throws ParseException {
+    public static BooleanFormula parsePinFunction(Circuit circuit, FunctionComponent component, String function)
+            throws ParseException {
+
         if ((function == null) || function.isEmpty()) {
             return null;
         }

@@ -266,6 +266,14 @@ public class VisualCircuit extends AbstractVisualModel {
         return result;
     }
 
+    public VisualFunctionContact getExistingPinOrCreateInputPin(VisualFunctionComponent component, String name) {
+        VisualFunctionContact result = getPin(component, name);
+        if (result == null) {
+            result = createPin(component, name, Contact.IOType.INPUT);
+        }
+        return result;
+    }
+
     public boolean hasPort(String ref) {
         return getMathModel().hasPort(ref);
     }

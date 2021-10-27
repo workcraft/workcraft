@@ -38,7 +38,7 @@ public class IOTypeConsistencySupervisor extends StateSupervisor {
             } else {
                 if (!circuit.getPostset(contact).isEmpty()) {
                     contact.setIOType(IOType.INPUT);
-                    throw new ArgumentException("Primary ouput cannot be a driver.");
+                    throw new ArgumentException("Primary output cannot be a driver.");
                 }
             }
         } else {

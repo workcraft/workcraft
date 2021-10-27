@@ -11,7 +11,9 @@ import java.awt.geom.Rectangle2D;
 import java.util.LinkedList;
 
 public class RenderedText {
-    private final double spacingRatio = VisualCommonSettings.getLineSpacing();
+
+    private static final double MIN_LINE_HEIGHT = 0.35;
+
     private final String text;
     private final Font font;
     private final Positioning positioning;
@@ -38,16 +40,17 @@ public class RenderedText {
             final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
             final GlyphVector glyphVector = font.createGlyphVector(context, line.trim());
             glyphVectors.add(glyphVector);
-            Rectangle2D lineBounds = glyphVector.getVisualBounds();
+            Rectangle2D lineBox = glyphVector.getVisualBounds();
             if (textBounds != null) {
-                textBounds = BoundingBoxHelper.move(textBounds, 0.0, -lineBounds.getHeight());
+                textBounds = BoundingBoxHelper.move(textBounds, 0.0, -Math.max(lineBox.getHeight(), MIN_LINE_HEIGHT));
             }
-            textBounds = BoundingBoxHelper.union(textBounds, lineBounds);
+            textBounds = BoundingBoxHelper.union(textBounds, lineBox);
         }
         if (textBounds == null) {
             textBounds = new Rectangle2D.Double(0.0, 0.0, 0.0, 0.0);
         }
         int lineCount = lines.length;
+        double spacingRatio = VisualCommonSettings.getLineSpacing();
         spacing = (lineCount < 2) ? 0.0 : (spacingRatio * textBounds.getHeight() / (lineCount - 1));
         textBounds = BoundingBoxHelper.transform(textBounds, AffineTransform.getScaleInstance(1.0, 1.0 + spacingRatio));
         double x = xOffset + positioning.xOffset + 0.5 * positioning.xSign * textBounds.getWidth() - textBounds.getCenterX();
@@ -70,22 +73,22 @@ public class RenderedText {
     public void draw(Graphics2D g, Alignment alignment) {
         g.setFont(font);
         float y = (float) boundingBox.getMinY();
-        for (GlyphVector glyphVector: glyphVectors) {
-            final Rectangle2D lineBoundingBox = glyphVector.getVisualBounds();
-            double xMargin = 0.0;
+        for (GlyphVector glyphVector : glyphVectors) {
+            final Rectangle2D lineBox = glyphVector.getVisualBounds();
+            double xMargin;
             switch (alignment) {
             case CENTER :
-                xMargin = (boundingBox.getWidth() - lineBoundingBox.getWidth()) / 2.0;
+                xMargin = (boundingBox.getWidth() - lineBox.getWidth()) / 2.0;
                 break;
             case RIGHT:
-                xMargin = boundingBox.getWidth() - lineBoundingBox.getWidth();
+                xMargin = boundingBox.getWidth() - lineBox.getWidth();
                 break;
             default:
                 xMargin = 0.0;
                 break;
             }
-            double x = boundingBox.getX() - lineBoundingBox.getX() + xMargin * (1.0 - positioning.xSign);
-            y += lineBoundingBox.getHeight();
+            double x = boundingBox.getX() - lineBox.getX() + xMargin * (1.0 - positioning.xSign);
+            y += Math.max(lineBox.getHeight(), MIN_LINE_HEIGHT);
             g.drawGlyphVector(glyphVector, (float) x, y);
             y += spacing;
         }

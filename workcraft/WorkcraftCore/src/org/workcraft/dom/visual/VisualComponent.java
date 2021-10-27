@@ -6,7 +6,6 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
-import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.ColorUtils;
@@ -30,7 +29,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     public static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 1);
     public static final Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
 
-    private MathNode refNode = null;
+    private final MathNode refNode;
     private Color foregroundColor = VisualCommonSettings.getBorderColor();
     private Color fillColor = VisualCommonSettings.getFillColor();
 
@@ -53,8 +52,8 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         super();
         this.refNode = refNode;
 
-        if (refNode instanceof ObservableState) {
-            ((ObservableState) refNode).addObserver(e -> observableStateImpl.sendNotification(e));
+        if (refNode != null) {
+            refNode.addObserver(e -> observableStateImpl.sendNotification(e));
         }
         if (hasColorProperties) {
             addColorPropertyDeclarations();
@@ -196,9 +195,9 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         return result;
     }
 
-    public void centerPivotPoint(boolean horisontal, boolean vertical) {
+    public void centerPivotPoint(boolean horizontal, boolean vertical) {
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        if (horisontal) {
+        if (horizontal) {
             setX(getX() + bb.getCenterX());
         }
         if (vertical) {
@@ -207,7 +206,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         for (Node node: getChildren()) {
             if (node instanceof VisualTransformableNode) {
                 VisualTransformableNode vc = (VisualTransformableNode) node;
-                if (horisontal) {
+                if (horizontal) {
                     vc.setX(vc.getX() - bb.getCenterX());
                 }
                 if (vertical) {
@@ -458,7 +457,6 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         LinkedList<Color> labelColors = new LinkedList<>();
         LinkedList<Positioning> namePositioning = new LinkedList<>();
         LinkedList<Positioning> labelPositioning = new LinkedList<>();
-        String label = "";
         for (Stylable src: srcs) {
             if (src instanceof VisualComponent) {
                 VisualComponent srcComponent = (VisualComponent) src;
@@ -466,11 +464,8 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
                 fillColors.add(srcComponent.getFillColor());
                 nameColors.add(srcComponent.getNameColor());
                 labelColors.add(srcComponent.getLabelColor());
-                namePositioning.add(srcComponent.getLabelPositioning());
+                namePositioning.add(srcComponent.getNamePositioning());
                 labelPositioning.add(srcComponent.getLabelPositioning());
-                if (srcComponent.getLabel() != null) {
-                    label = label + "|" + srcComponent.getLabel();
-                }
             }
         }
         setForegroundColor(ColorUtils.mix(foregroundColors));
@@ -479,7 +474,6 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         setLabelColor(ColorUtils.mix(labelColors));
         setNamePositioning(MixUtils.vote(namePositioning, Positioning.CENTER));
         setLabelPositioning(MixUtils.vote(labelPositioning, Positioning.CENTER));
-        //setLabel(label);
     }
 
     @Override

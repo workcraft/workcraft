@@ -8,6 +8,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.editor.Viewport;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
 import javax.swing.text.SimpleAttributeSet;
@@ -139,14 +140,16 @@ public abstract class AbstractInplaceEditor {
             panel.add(label, BorderLayout.SOUTH);
         }
 
-        // Create undecorated dialog
+        // Create non-modal dialog (so it can lose focus and close)
         JDialog dialog = new JDialog(Framework.getInstance().getMainWindow(), false);
         textPane.addFocusListener(new FocusListenerImplementation(textPane, dialog));
         dialog.setUndecorated(true);
+        // Use FRAME decoration for multi-line editor or NONE for single-line editor
+        dialog.getRootPane().setWindowDecorationStyle(multiline ? JRootPane.FRAME : JRootPane.NONE);
         dialog.add(panel);
-        // Set dialog size, so it fits the text well and adds an extra vertical space for multiline
         String processedText = text.replace(NEWLINE_SEPARATOR, "\n");
-        textPane.setText(processedText + (multiline ? "\n" : ""));
+        // Set dialog size, so the text fits well: add 8 spaces for single-line editor, as it cannot be resized
+        textPane.setText(processedText + (multiline ? "" : TextUtils.repeat(" ", 8)));
         dialog.pack();
         textPane.setText(processedText);
         // Position and display dialog
