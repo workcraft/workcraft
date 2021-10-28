@@ -117,9 +117,9 @@ public final class WorkUtils {
                     CompatibilityManager cm = framework.getCompatibilityManager();
                     InputStream is = cm.process(file);
                     me = loadModel(is);
-                    String base = file.getCanonicalFile().getParent();
+                    String base = FileUtils.getBasePath(file);
                     adjustPropertyFilePaths(me.getVisualModel(), base, true);
-                } catch (OperationCancelledException | IOException e) {
+                } catch (OperationCancelledException e) {
                     // Operation cancelled by the user
                 }
             } else {
@@ -354,7 +354,7 @@ public final class WorkUtils {
 
         try {
             FileOutputStream os = new FileOutputStream(file);
-            String base = file.getCanonicalFile().getParent();
+            String base = FileUtils.getBasePath(file);
             adjustPropertyFilePaths(me.getVisualModel(), base, false);
             Collection<Resource> adjustedResources = adjustResourceFilePaths(resources, base, false);
             saveModel(me, adjustedResources, os);
