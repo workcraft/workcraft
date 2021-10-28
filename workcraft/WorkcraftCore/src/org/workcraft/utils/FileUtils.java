@@ -291,24 +291,11 @@ public class FileUtils {
     }
 
     public static String getFullPath(File file) {
-        if (file == null) {
-            return null;
-        }
-        if (file.exists()) {
-            try {
-                return file.getCanonicalPath();
-            } catch (IOException e) {
-            }
-        }
-        return file.getAbsolutePath();
+        return file == null ? null : Paths.get(file.getAbsolutePath()).normalize().toString();
     }
 
     public static String getBasePath(File file) {
-        try {
-            return file.getCanonicalFile().getParent();
-        } catch (IOException e) {
-            return null;
-        }
+        return file == null ? null : Paths.get(file.getAbsolutePath()).normalize().getParent().toString();
     }
 
     public static String stripBase(String path, String base) {
@@ -349,17 +336,11 @@ public class FileUtils {
         if (path == null) {
             return null;
         }
-        File result = new File(path);
-        if (!result.isAbsolute()) {
-            result = new File(base, path);
+        Path result = Paths.get(path);
+        if (!result.isAbsolute() && (base != null)) {
+            result = Paths.get(base, path);
         }
-        if (result.exists()) {
-            try {
-                return result.getCanonicalFile();
-            } catch (IOException e) {
-            }
-        }
-        return result;
+        return result.normalize().toFile();
     }
 
     public static File getFileByAbsoluteOrRelativePath(String path, File directory) {
