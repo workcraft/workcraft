@@ -160,29 +160,35 @@ public final class ResetUtils {
                         || (CircuitUtils.getFunctionContact(circuit, component, portName) != null))
                 .collect(Collectors.toList());
 
-        VisualFunctionContact resetPort = resetComponents.isEmpty() ? null
-                : CircuitUtils.getOrCreatePort(circuit, portName, Contact.IOType.INPUT, VisualContact.Direction.WEST);
+        if (resetComponents.isEmpty()) {
+            return circuit.getVisualComponentByMathReference(portName, VisualContact.class) != null;
+        }
 
-        if (resetPort != null) {
-            boolean clearMapping = !hasMappedComponents(circuit);
-            for (VisualFunctionComponent component : resetComponents) {
-                if (component.isBuffer()) {
-                    resetBuffer(circuit, component, resetPort, isActiveLow, clearMapping);
-                } else if (component.isInverter()) {
-                    resetInverter(circuit, component, resetPort, isActiveLow, clearMapping);
+        VisualFunctionContact resetPort = CircuitUtils.getOrCreatePort(circuit, portName,
+                Contact.IOType.INPUT, VisualContact.Direction.WEST);
+
+        if (resetPort == null) {
+            return false;
+        }
+
+        boolean clearMapping = !hasMappedComponents(circuit);
+        for (VisualFunctionComponent component : resetComponents) {
+            if (component.isBuffer()) {
+                resetBuffer(circuit, component, resetPort, isActiveLow, clearMapping);
+            } else if (component.isInverter()) {
+                resetInverter(circuit, component, resetPort, isActiveLow, clearMapping);
+            } else {
+                VisualFunctionContact resetContact = CircuitUtils.getFunctionContact(circuit, component, portName);
+                if (resetContact == null) {
+                    resetComponent(circuit, component, resetPort, isActiveLow, clearMapping);
                 } else {
-                    VisualFunctionContact resetContact = CircuitUtils.getFunctionContact(circuit, component, portName);
-                    if (resetContact == null) {
-                        resetComponent(circuit, component, resetPort, isActiveLow, clearMapping);
-                    } else {
-                        connectIfPossible(circuit, resetPort, resetContact);
-                    }
+                    connectIfPossible(circuit, resetPort, resetContact);
                 }
             }
-            SpaceUtils.positionPort(circuit, resetPort, false);
-            forceInitResetCircuit(circuit, resetPort, isActiveLow);
         }
-        return !resetComponents.isEmpty();
+        SpaceUtils.positionPort(circuit, resetPort, false);
+        forceInitResetCircuit(circuit, resetPort, isActiveLow);
+        return true;
     }
 
     public static boolean hasForceInitOutput(CircuitComponent component) {
