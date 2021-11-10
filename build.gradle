@@ -191,15 +191,19 @@ subprojects {
 
 apply plugin: 'com.github.jk1.dependency-license-report'
 
+import com.github.jk1.license.filter.*
+
 licenseReport {
     configurations = ['runtimeClasspath', 'compileClasspath']
     renderers = [new com.github.jk1.license.render.InventoryHtmlReportRenderer()]
     allowedLicensesFile = new File("${project.rootDir}/config/license/allowed.json")
+    filters = [new ReduceDuplicateLicensesFilter(), new LicenseBundleNormalizer()]
 }
 
 checkLicense.group = 'Verification'
 generateLicenseReport.group = 'Verification'
 checkLicensePreparation.group = null
+// check.dependsOn checkLicense  // It takes too long (>2min), has depricated calls and runs out of memory sometimes
 
 
 cpdCheck {

@@ -4,7 +4,7 @@ import org.workcraft.observation.*;
 
 import java.util.*;
 
-public class NodeContextTracker<N    extends Node, C extends Connection> extends HierarchySupervisor implements NodeContext<N, C> {
+public class NodeContextTracker<N extends Node, C extends Connection> extends HierarchySupervisor implements NodeContext<N, C> {
     private final HashMap<N, LinkedHashSet<N>> presets = new HashMap<>();
     private final HashMap<N, LinkedHashSet<N>> postsets = new HashMap<>();
     private final HashMap<N, LinkedHashSet<C>> connections = new HashMap<>();

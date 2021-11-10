@@ -21,10 +21,6 @@
             "moduleName": "com.sun.activation:javax.activation"
         },
         {
-            "moduleLicense": "COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0",
-            "moduleName": "net.sf.jga:jga"
-        },
-        {
             "moduleLicense": "The Clearthought Software License, Version 2.0",
             "moduleName": "info.clearthought:table-layout"
         }

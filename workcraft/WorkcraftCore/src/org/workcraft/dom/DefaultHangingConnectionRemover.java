@@ -1,6 +1,5 @@
 package org.workcraft.dom;
 
-import net.sf.jga.fn.UnaryFunctor;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
@@ -8,34 +7,29 @@ import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.function.Function;
 
 public class DefaultHangingConnectionRemover extends HierarchySupervisor {
+
     private final NodeContext nct;
 
     public DefaultHangingConnectionRemover(NodeContext nct) {
         this.nct = nct;
     }
 
-    @SuppressWarnings("serial")
     @Override
     public void handleEvent(final HierarchyEvent e) {
         if (e instanceof NodesDeletingEvent) {
             HashSet<Connection> hangingConnections = new HashSet<>();
-            UnaryFunctor<Connection, Boolean> hanging = new UnaryFunctor<Connection, Boolean>() {
-                @Override
-                public Boolean fn(Connection arg0) {
-                    return !isConnectionInside(e.getAffectedNodes(), arg0);
-                }
-            };
 
             for (Node node : e.getAffectedNodes()) {
-                findHangingConnections(node, hangingConnections, hanging);
+                findHangingConnections(node, hangingConnections, c -> isConnectionOutside(e.getAffectedNodes(), c));
             }
 
-            for (Connection con : hangingConnections) {
-                Node parent = con.getParent();
+            for (Connection connection : hangingConnections) {
+                Node parent = connection.getParent();
                 if (parent instanceof Container) {
-                    ((Container) parent).remove(con);
+                    ((Container) parent).remove(connection);
                 } else if (parent != null) {
                     throw new RuntimeException("Cannot remove a hanging connection because its parent is not a Container.");
                 }
@@ -43,27 +37,29 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
         }
     }
 
-    public static boolean isConnectionInside(Collection<Node> nodes, Connection con) {
+    public static boolean isConnectionOutside(Collection<Node> nodes, Connection connection) {
         for (Node node : nodes) {
-            if (node == con || Hierarchy.isDescendant(con, node)) {
-                return true;
+            if ((node == connection) || Hierarchy.isDescendant(connection, node)) {
+                return false;
             }
         }
-        return false;
+        return true;
     }
 
-    public void findHangingConnections(Node node, HashSet<Connection> hangingConnections, UnaryFunctor<Connection, Boolean> hanging) {
+    public void findHangingConnections(Node node, HashSet<Connection> hangingConnections,
+            Function<Connection, Boolean> hanging) {
+
         // need only to remove those connections that are not already being deleted
-        for (Object o : nct.getConnections(node)) {
-            if (o instanceof Connection) {
-                Connection connection = (Connection) o;
-                if (hanging.fn(connection)) {
+        for (Object object : nct.getConnections(node)) {
+            if (object instanceof Connection) {
+                Connection connection = (Connection) object;
+                if (hanging.apply(connection)) {
                     hangingConnections.add(connection);
                 }
             }
         }
-        for (Node nn : node.getChildren()) {
-            findHangingConnections(nn, hangingConnections, hanging);
+        for (Node childNode : node.getChildren()) {
+            findHangingConnections(childNode, hangingConnections, hanging);
         }
     }
 

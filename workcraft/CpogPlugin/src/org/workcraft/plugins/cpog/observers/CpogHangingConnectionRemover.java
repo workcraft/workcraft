@@ -1,7 +1,9 @@
 package org.workcraft.plugins.cpog.observers;
 
-import net.sf.jga.fn.UnaryFunctor;
-import org.workcraft.dom.*;
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.DefaultHangingConnectionRemover;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.NodeContext;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.observation.HierarchyEvent;
@@ -15,28 +17,20 @@ public class CpogHangingConnectionRemover extends DefaultHangingConnectionRemove
         super(nct);
     }
 
-    @SuppressWarnings("serial")
     @Override
     public void handleEvent(final HierarchyEvent e) {
         if (e instanceof NodesDeletingEvent) {
             HashSet<Connection> hangingConnections = new HashSet<>();
-            UnaryFunctor<Connection, Boolean> hanging = new UnaryFunctor<Connection, Boolean>() {
-                @Override
-                public Boolean fn(Connection arg0) {
-                    return !isConnectionInside(e.getAffectedNodes(), arg0);
-                }
-            };
-
             for (Node node : e.getAffectedNodes()) {
-                findHangingConnections(node, hangingConnections, hanging);
+                findHangingConnections(node, hangingConnections, c -> isConnectionOutside(e.getAffectedNodes(), c));
             }
 
-            for (Connection con : hangingConnections) {
-                if (con.getParent() instanceof VisualPage) {
-                    ((VisualPage) con.getParent()).removeWithoutNotify(con);
-                } else if (con.getParent() instanceof VisualGroup) {
-                    ((VisualGroup) con.getParent()).removeWithoutNotify(con);
-                } else if (con.getParent() != null) {
+            for (Connection connection : hangingConnections) {
+                if (connection.getParent() instanceof VisualPage) {
+                    ((VisualPage) connection.getParent()).removeWithoutNotify(connection);
+                } else if (connection.getParent() instanceof VisualGroup) {
+                    ((VisualGroup) connection.getParent()).removeWithoutNotify(connection);
+                } else if (connection.getParent() != null) {
                     throw new RuntimeException("Cannot remove a hanging connection because its parent is not a Container.");
                 }
             }
