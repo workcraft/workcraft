@@ -1,11 +1,6 @@
 SPECIAL_LINE=" == expected js line"
-
 SCRIPT="print('$SPECIAL_LINE'); exit();"
-if [[ $OSTYPE == msys* ]]; then
-    ARGS="-exec:\\\"$SCRIPT\\\""
-else
-    ARGS="-exec:\"$SCRIPT\""
-fi
+ARGS="-exec:\"$SCRIPT\""
 
 # Development version
 ./gradlew run --args="$ARGS" \
