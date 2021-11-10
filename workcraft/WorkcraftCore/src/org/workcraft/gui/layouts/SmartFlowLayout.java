@@ -1,17 +1,12 @@
 package org.workcraft.gui.layouts;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.LayoutManager;
+import org.workcraft.exceptions.NotSupportedException;
+
+import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-
-import org.workcraft.exceptions.NotSupportedException;
-
-import net.sf.jga.fn.UnaryFunctor;
+import java.util.function.Function;
 
 public class SmartFlowLayout implements LayoutManager, Serializable {
     public static final int LEFT     = 0;
@@ -19,6 +14,7 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
     public static final int RIGHT    = 2;
     public static final int LEADING  = 3;
     public static final int TRAILING = 4;
+    private static final int MAX_DIMENSION = 1_000_000;
 
     private int align;          // This is for 1.1 serialization compatibility
     private int newAlign;       // This is the one we actually use
@@ -206,34 +202,15 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
     }
 
     private void stretch(Container target, int x, int y, int width, int height, int start, int end, boolean ltr) {
-        UnaryFunctor<Component, Dimension> maximumExtremeProvider = new UnaryFunctor<Component, Dimension>() {
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public Dimension fn(Component c) {
-                Dimension size = c.getMaximumSize();
-                return new Dimension(cap(size.width), cap(size.height));
-            }
-
-            private int cap(int width) {
-                return Math.min(1000000, width);
-            }
-        };
-
-        resize(target, start, end, width, maximumExtremeProvider);
+        resize(target, start, end, width, c -> {
+            Dimension size = c.getMaximumSize();
+            return new Dimension(Math.min(MAX_DIMENSION, size.width), Math.min(MAX_DIMENSION, size.height));
+        });
         moveComponents(target, x, y, 0, height, start, end, ltr);
     }
 
-    @SuppressWarnings("serial")
     private boolean fit(Container target, int x, int y, int width, int height, int start, int end, boolean ltr) {
-        UnaryFunctor<Component, Dimension> minimumExtremeProvider = new UnaryFunctor<Component, Dimension>() {
-            @Override
-            public Dimension fn(Component c) {
-                return c.getMinimumSize();
-            }
-        };
-
-        if (!resize(target, start, end, width, minimumExtremeProvider)) {
+        if (!resize(target, start, end, width, Component::getMinimumSize)) {
             return false;
         } else {
             if (applyLayout) {
@@ -243,14 +220,15 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
         }
     }
 
-    private boolean resize(Container target, int start, int end, int width, UnaryFunctor<Component, Dimension> extremeProvider) {
+    private boolean resize(Container target, int start, int end, int width,
+            Function<Component, Dimension> extremeProvider) {
+
         int totalFreedom = 0;
         int extremeWidth = 0;
-
         for (int i = start; i < end; i++) {
             Component component = target.getComponent(i);
             if (component.isVisible()) {
-                Dimension extreme = extremeProvider.fn(component);
+                Dimension extreme = extremeProvider.apply(component);
                 Dimension pref = component.getPreferredSize();
                 if (i > start) {
                     extremeWidth += hgap;
@@ -273,7 +251,7 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
         for (int i = start; i < end; i++) {
             Component component = target.getComponent(i);
             if (component.isVisible() && totalFreedom != 0) {
-                Dimension extreme = extremeProvider.fn(component);
+                Dimension extreme = extremeProvider.apply(component);
                 Dimension pref = component.getPreferredSize();
 
                 int freedom = extreme.width - pref.width;
@@ -301,8 +279,8 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
     /**
      * This represent the <code>currentSerialVersion</code>
      * which is bein used.  It will be one of two values :
-     * <code>0</code> versions before Java 2 platform v1.2..
-     * <code>1</code> versions after  Java 2 platform v1.2..
+     * <code>0</code> versions before Java 2 platform v1.2.
+     * <code>1</code> versions after  Java 2 platform v1.2.
      *
      * @serial
      * @since 1.2
@@ -311,8 +289,8 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
 
     /**
      * Reads this object out of a serialization stream, handling
-     * objects written by older versions of the class that didn't contain all
-     * of the fields we use now..
+     * objects written by older versions of the class that didn't contain
+     * all the fields we use now.
      */
     private void readObject(ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
