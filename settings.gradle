@@ -1,10 +1,10 @@
 pluginManagement {
     plugins {
-        id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+        id 'org.jetbrains.kotlin.jvm' version '1.5.31'
         id 'ca.coglinc.javacc' version '2.4.0'
         id 'com.github.kt3k.coveralls' version '2.12.0'
-        id 'de.aaschmid.cpd' version '3.2'
-        id 'com.github.jk1.dependency-license-report' version '1.17'
+        id 'de.aaschmid.cpd' version '3.3'
+        id 'com.github.jk1.dependency-license-report' version '2.0'
     }
 }
 
@@ -19,8 +19,8 @@ gradle.ext.javaTargetVersion = JavaVersion.VERSION_1_8
 gradle.ext.javaReleaseVersion = 8  /* Must be integer, e.g. 8 for JDK8*/
 
 // Code quality and coverage tools (Checkstyle, PMD, Jacoco)
-gradle.ext.checkstyleVersion = '8.45.1'
-gradle.ext.pmdVersion = '6.37.0'
+gradle.ext.checkstyleVersion = '9.1'
+gradle.ext.pmdVersion = '6.40.0'
 gradle.ext.jacocoVersion = '0.8.7'
 
 
@@ -29,7 +29,7 @@ gradle.ext.jacocoVersion = '0.8.7'
  */
 
 // Unit testing
-gradle.ext.junit = 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+gradle.ext.junit = 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
 
 // JavaCC parser generator
 gradle.ext.javacc = 'net.java.dev.javacc:javacc:7.0.10'
