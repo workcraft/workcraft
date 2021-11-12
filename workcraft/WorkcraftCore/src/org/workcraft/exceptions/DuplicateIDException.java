@@ -1,6 +1,5 @@
 package org.workcraft.exceptions;
 
-@SuppressWarnings("serial")
 public class DuplicateIDException extends RuntimeException {
 
     private final int id;

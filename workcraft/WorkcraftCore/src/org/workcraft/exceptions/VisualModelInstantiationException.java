@@ -1,6 +1,5 @@
 package org.workcraft.exceptions;
 
-@SuppressWarnings("serial")
 public class VisualModelInstantiationException extends java.lang.Exception {
 
     public VisualModelInstantiationException() {

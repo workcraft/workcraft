@@ -3,7 +3,6 @@ package org.workcraft.exceptions;
 import org.workcraft.dom.Model;
 import org.workcraft.interop.Format;
 
-@SuppressWarnings("serial")
 public class NoExporterException extends RuntimeException {
 
     public NoExporterException(Model model, Format format) {

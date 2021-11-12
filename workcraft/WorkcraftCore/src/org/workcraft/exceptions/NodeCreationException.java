@@ -1,6 +1,5 @@
 package org.workcraft.exceptions;
 
-@SuppressWarnings("serial")
 public class NodeCreationException extends Exception {
 
     public NodeCreationException() {
