@@ -167,6 +167,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             exporter.export(circuit, file);
             Framework.getInstance().setLastDirectory(fc.getCurrentDirectory());
         } catch (OperationCancelledException e) {
+            // Operation cancelled by the user
         }
     }
 

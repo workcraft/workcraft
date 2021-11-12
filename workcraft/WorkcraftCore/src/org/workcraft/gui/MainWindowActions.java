@@ -64,7 +64,9 @@ public class MainWindowActions {
             () -> {
                 try {
                     Framework.getInstance().shutdownGUI();
-                } catch (OperationCancelledException e) { }
+                } catch (OperationCancelledException e) {
+                    // Operation cancelled by the user
+                }
             });
 
     public static final Action EXIT_ACTION = new Action("Exit",

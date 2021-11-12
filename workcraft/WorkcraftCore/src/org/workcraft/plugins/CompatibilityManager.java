@@ -183,7 +183,7 @@ public class CompatibilityManager {
                 String msgFull = msg + ".\nProceed with loading of work file '" + file.getAbsolutePath() + "' anyway?";
                 boolean proceed = DialogUtils.showConfirmWarning(msgFull, "Open file", true);
                 if (!proceed) {
-                    throw new OperationCancelledException(msg);
+                    throw new OperationCancelledException();
                 }
             }
             FileInputStream fis = new FileInputStream(file);
