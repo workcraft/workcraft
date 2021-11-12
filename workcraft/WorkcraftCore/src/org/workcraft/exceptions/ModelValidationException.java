@@ -2,7 +2,6 @@ package org.workcraft.exceptions;
 
 import java.util.LinkedList;
 
-@SuppressWarnings("serial")
 public class ModelValidationException extends Exception {
 
     private final LinkedList<String> errors = new LinkedList<>();

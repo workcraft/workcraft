@@ -1,6 +1,5 @@
 package org.workcraft.exceptions;
 
-@SuppressWarnings("serial")
 public class FormatException extends RuntimeException {
 
     public FormatException() {

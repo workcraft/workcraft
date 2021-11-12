@@ -1,6 +1,5 @@
 package org.workcraft.exceptions;
 
-@SuppressWarnings("serial")
 public class NotSupportedException extends RuntimeException {
 
     public NotSupportedException() {

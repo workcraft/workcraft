@@ -345,6 +345,7 @@ public class MainWindow extends JFrame {
             DockingManager.unregisterDockable(editorWindow);
             editorWindow.setClosed(true);
         } catch (OperationCancelledException e) {
+            // Operation cancelled by the user
         }
     }
 
@@ -754,6 +755,7 @@ public class MainWindow extends JFrame {
         try {
             saveWorkOrCancel(we);
         } catch (OperationCancelledException e) {
+            // Operation cancelled by the user
         }
     }
     public void saveWorkOrCancel(WorkspaceEntry we) throws OperationCancelledException {
@@ -778,6 +780,7 @@ public class MainWindow extends JFrame {
         try {
             saveWorkAsOrCancel(we);
         } catch (OperationCancelledException e) {
+            // Operation cancelled by the user
         }
     }
 
@@ -833,8 +836,10 @@ public class MainWindow extends JFrame {
                 final Framework framework = Framework.getInstance();
                 framework.createWork(me, file.getName());
                 framework.setLastDirectory(file);
-            } catch (IOException | DeserialisationException | OperationCancelledException e) {
+            } catch (IOException | DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
+            } catch (OperationCancelledException e) {
+                // Operation cancelled by the user
             }
         }
     }
@@ -854,6 +859,7 @@ public class MainWindow extends JFrame {
             taskManager.queue(exportTask, description, monitor);
             Framework.getInstance().setLastDirectory(fc.getCurrentDirectory());
         } catch (OperationCancelledException e) {
+            // Operation cancelled by the user
         }
     }
 
@@ -1051,6 +1057,7 @@ public class MainWindow extends JFrame {
                 file.delete();
                 framework.startGUI();
             } catch (OperationCancelledException e) {
+                // Operation cancelled by the user
             }
         }
     }

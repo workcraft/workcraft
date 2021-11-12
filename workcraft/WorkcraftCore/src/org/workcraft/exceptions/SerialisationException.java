@@ -1,6 +1,5 @@
 package org.workcraft.exceptions;
 
-@SuppressWarnings("serial")
 public class SerialisationException extends Exception {
 
     public SerialisationException() {

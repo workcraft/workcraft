@@ -94,6 +94,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                 }
                 throw new PlatoException(result);
             } catch (OperationCancelledException e) {
+                // Operation cancelled by the user
             } catch (PlatoException e) {
                 e.handleConceptsError();
             } catch (IOException | DeserialisationException e) {
