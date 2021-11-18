@@ -85,17 +85,17 @@ public class Workspace {
     private Path<String> getRelative(File ancestor, File descendant) {
         ancestor = ancestor.getAbsoluteFile();
         descendant = descendant.getAbsoluteFile();
-
-        List<String> strs = new ArrayList<>();
+        List<String> strings = new ArrayList<>();
         while (descendant != null) {
             if (descendant.equals(ancestor)) {
                 Path<String> result = Path.empty();
-                for (int i = 0; i < strs.size(); i++) {
-                    result = Path.append(result, strs.get(strs.size() - 1 - i));
+                for (int i = 0; i < strings.size(); i++) {
+                    String suffix = strings.get(strings.size() - 1 - i);
+                    result = Path.append(result, suffix);
                 }
                 return result;
             }
-            strs.add(descendant.getName());
+            strings.add(descendant.getName());
             descendant = descendant.getParentFile();
         }
         return null;
@@ -177,12 +177,12 @@ public class Workspace {
         this.workspaceFile = workspaceFile;
         try {
             Document doc = XmlUtils.loadDocument(workspaceFile);
-            Element xmlroot = doc.getDocumentElement();
+            Element root = doc.getDocumentElement();
 
-            if (!"workcraft-workspace".equals(xmlroot.getNodeName())) {
+            if (!"workcraft-workspace".equals(root.getNodeName())) {
                 throw new DeserialisationException("not a Workcraft workspace file");
             }
-            List<Element> mounts = XmlUtils.getChildElements("mount", xmlroot);
+            List<Element> mounts = XmlUtils.getChildElements("mount", root);
             for (Element mountElement : mounts) {
                 final String mountPoint = mountElement.getAttribute("mountPoint");
                 final String filePath = mountElement.getAttribute("filePath");
@@ -395,13 +395,16 @@ public class Workspace {
 
     public void deleteEntry(Path<String> path) {
         final File file = getFile(path);
-        if (file.exists()) {
+        if ((file != null) && file.exists()) {
+            File[] childFiles = file.listFiles();
             if (file.isDirectory()) {
-                for (File f : file.listFiles()) {
-                    deleteEntry(getPath(f));
+                if (childFiles != null) {
+                    for (File childFile : childFiles) {
+                        deleteEntry(getPath(childFile));
+                    }
                 }
                 if (!file.delete()) {
-                    DialogUtils.showError("Deletion failed");
+                    DialogUtils.showError("Deletion failed for file '" + file.getAbsolutePath() + "'");
                 }
             } else {
                 deleteFile(path);
@@ -418,7 +421,7 @@ public class Workspace {
         openFiles.removeValue(openFile);
         final File file = getFile(path);
         if (file.exists() && !file.delete()) {
-            DialogUtils.showError("Deletion failed");
+            DialogUtils.showError("Deletion failed for file '" + file.getAbsolutePath() + "'");
         }
     }
 
