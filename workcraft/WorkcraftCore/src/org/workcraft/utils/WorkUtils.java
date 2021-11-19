@@ -473,8 +473,7 @@ public final class WorkUtils {
     }
 
     private static void adjustPropertyFilePaths(VisualModel model, String base, boolean absolute) {
-        Set<PropertyDescriptor> properties = new HashSet<>();
-        properties.addAll(model.getProperties(null).getDescriptors());
+        Set<PropertyDescriptor> properties = new HashSet<>(model.getProperties(null).getDescriptors());
         for (VisualNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
             properties.addAll(node.getDescriptors());
             properties.addAll(model.getProperties(node).getDescriptors());
@@ -497,11 +496,13 @@ public final class WorkUtils {
 
     private static Collection<Resource> adjustResourceFilePaths(Collection<Resource> resources, String base, boolean absolute) {
         Collection<Resource> result = new HashSet<>();
-        for (Resource resource : resources) {
-            try {
-                result.add(adjustResourceFilePath(resource, base, absolute));
-            } catch (IOException e) {
-                LogUtils.logError("Failed loading resource '" + resource.getName() + "'");
+        if (resources != null) {
+            for (Resource resource : resources) {
+                try {
+                    result.add(adjustResourceFilePath(resource, base, absolute));
+                } catch (IOException e) {
+                    LogUtils.logError("Failed loading resource '" + resource.getName() + "'");
+                }
             }
         }
         return result;

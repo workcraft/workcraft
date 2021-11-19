@@ -194,6 +194,10 @@ public final class VerificationUtils {
         return result;
     }
 
+    public static boolean checkBlackboxComponents(WorkspaceEntry we) {
+        return checkBlackboxComponents(WorkspaceUtils.getAs(we, Circuit.class));
+    }
+
     public static boolean checkBlackboxComponents(Circuit circuit) {
         Set<FunctionComponent> blackboxComponents = circuit.getFunctionComponents().stream()
                 .filter(FunctionComponent::isBlackbox)

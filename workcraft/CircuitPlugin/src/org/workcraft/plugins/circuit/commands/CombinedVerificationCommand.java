@@ -110,6 +110,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
     private boolean checkPrerequisites(WorkspaceEntry we) {
         return isApplicableTo(we)
             && VerificationUtils.checkCircuitHasComponents(we)
+            && VerificationUtils.checkBlackboxComponents(we)
             && VerificationUtils.checkInterfaceInitialState(we)
             && VerificationUtils.checkInterfaceConstrains(we, true);
     }

@@ -116,11 +116,11 @@ public abstract class Path<T> {
         if (parent.isEmpty()) {
             return node.toString();
         }
-        return parent.toString() + "/" + node.toString();
+        return parent + "/" + node;
     }
 
     private static class EmptyPath<T> extends Path<T> {
-        private static EmptyPath<?> instance = new EmptyPath<>();
+        private static final EmptyPath<?> instance = new EmptyPath<>();
         @SuppressWarnings("unchecked")
         public static <T> EmptyPath<T> getInstance() {
             return (EmptyPath<T>) instance;
