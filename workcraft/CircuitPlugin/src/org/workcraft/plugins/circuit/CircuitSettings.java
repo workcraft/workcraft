@@ -60,7 +60,6 @@ public class CircuitSettings extends AbstractModelSettings {
      */
     private static final String keyShowContacts = prefix + ".showContacts";
     private static final String keyContactFontSize = prefix + ".contactFontSize";
-    private static final String keyFunctionFontSize = prefix + ".functionFontSize";
     private static final String keyShowZeroDelayNames = prefix + ".showZeroDelayNames";
     private static final String keyBorderWidth = prefix + ".borderWidth";
     private static final String keyWireWidth = prefix + ".wireWidth";
@@ -102,7 +101,6 @@ public class CircuitSettings extends AbstractModelSettings {
      */
     private static final boolean defaultShowContacts = false;
     private static final double defaultContactFontSize = 0.4f;
-    private static final double defaultFunctionFontSize = 0.5f;
     private static final boolean defaultShowZeroDelayNames = false;
     private static final Double defaultBorderWidth = 0.06;
     private static final Double defaultWireWidth = 0.04;
@@ -144,7 +142,6 @@ public class CircuitSettings extends AbstractModelSettings {
      */
     private static boolean showContacts = defaultShowContacts;
     private static double contactFontSize = defaultContactFontSize;
-    private static double functionFontSize = defaultFunctionFontSize;
     private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
     private static Double borderWidth = defaultBorderWidth;
     private static Double wireWidth = defaultWireWidth;
@@ -191,11 +188,6 @@ public class CircuitSettings extends AbstractModelSettings {
                 "Contact font size (cm)",
                 CircuitSettings::setContactFontSize,
                 CircuitSettings::getContactFontSize));
-
-        properties.add(new PropertyDeclaration<>(Double.class,
-                "Function font size (cm)",
-                CircuitSettings::setFunctionFontSize,
-                CircuitSettings::getFunctionFontSize));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 "Show names of zero-delay components",
@@ -412,7 +404,6 @@ public class CircuitSettings extends AbstractModelSettings {
     public void load(Config config) {
         setShowContacts(config.getBoolean(keyShowContacts, defaultShowContacts));
         setContactFontSize(config.getDouble(keyContactFontSize, defaultContactFontSize));
-        setFunctionFontSize(config.getDouble(keyFunctionFontSize, defaultFunctionFontSize));
         setShowZeroDelayNames(config.getBoolean(keyShowZeroDelayNames, defaultShowZeroDelayNames));
         setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
         setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
@@ -454,7 +445,6 @@ public class CircuitSettings extends AbstractModelSettings {
     public void save(Config config) {
         config.setBoolean(keyShowContacts, getShowContacts());
         config.setDouble(keyContactFontSize, getContactFontSize());
-        config.setDouble(keyFunctionFontSize, getFunctionFontSize());
         config.setBoolean(keyShowZeroDelayNames, getShowZeroDelayNames());
         config.setDouble(keyBorderWidth, getBorderWidth());
         config.setDouble(keyWireWidth, getWireWidth());
@@ -506,14 +496,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setContactFontSize(double value) {
         contactFontSize = value;
-    }
-
-    public static double getFunctionFontSize() {
-        return functionFontSize;
-    }
-
-    public static void setFunctionFontSize(double value) {
-        functionFontSize = value;
     }
 
     public static boolean getShowZeroDelayNames() {
