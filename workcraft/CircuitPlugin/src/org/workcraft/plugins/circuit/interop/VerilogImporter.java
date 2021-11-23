@@ -796,6 +796,7 @@ public class VerilogImporter implements Importer {
         FunctionComponent component = new FunctionComponent();
         circuit.add(component);
         component.setModule(moduleName);
+        component.setIsArbitrationPrimitive(true);
 
         reparentAndRenameComponent(circuit, component, instance.name);
         FunctionContact r1Contact = addMutexPin(circuit, component, module.r1, instance.r1, wires);

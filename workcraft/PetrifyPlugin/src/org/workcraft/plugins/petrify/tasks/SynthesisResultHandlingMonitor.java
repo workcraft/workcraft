@@ -22,7 +22,6 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -123,20 +122,10 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit) {
-        HashSet<String> mutexNames = new HashSet<>();
-        for (Mutex me: mutexes) {
-            mutexNames.add(me.name);
-        }
-        for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
-            String componentRef = visualCircuit.getMathReference(component);
-            if (mutexNames.contains(componentRef)) {
-                component.setRenderType(RenderType.BOX);
-            } else if (component.isSequentialGate()) {
-                if (boxSequentialComponents) {
-                    component.setRenderType(RenderType.BOX);
-                }
-            } else {
-                if (boxCombinationalComponents) {
+        for (VisualFunctionComponent component : visualCircuit.getVisualFunctionComponents()) {
+            if (!component.getReferencedComponent().getIsArbitrationPrimitive()) {
+                boolean isSequential = component.isSequentialGate();
+                if ((isSequential && boxSequentialComponents) || (!isSequential && boxCombinationalComponents)) {
                     component.setRenderType(RenderType.BOX);
                 }
             }
