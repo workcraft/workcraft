@@ -425,19 +425,19 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
             VisualFunctionContact r1Contact = component.createContact(IOType.INPUT);
             circuit.setMathName(r1Contact, module.r1.name);
-            r1Contact.setPosition(new Point2D.Double(-1.5, -1.0));
+            r1Contact.setPosition(new Point2D.Double(-1.5, -0.5));
 
             VisualFunctionContact g1Contact = component.createContact(IOType.OUTPUT);
             circuit.setMathName(g1Contact, module.g1.name);
-            g1Contact.setPosition(new Point2D.Double(1.5, -1.0));
+            g1Contact.setPosition(new Point2D.Double(1.5, -0.5));
 
             VisualFunctionContact r2Contact = component.createContact(IOType.INPUT);
             circuit.setMathName(r2Contact, module.r2.name);
-            r2Contact.setPosition(new Point2D.Double(-1.5, 1.0));
+            r2Contact.setPosition(new Point2D.Double(-1.5, 0.5));
 
             VisualFunctionContact g2Contact = component.createContact(IOType.OUTPUT);
             circuit.setMathName(g2Contact, module.g2.name);
-            g2Contact.setPosition(new Point2D.Double(1.5, 1.0));
+            g2Contact.setPosition(new Point2D.Double(1.5, 0.5));
 
             BooleanFormula g1SetFormula = MutexUtils.getGrantSet(protocol, r1Contact, g2Contact, r2Contact);
             g1Contact.getReferencedComponent().setSetFunctionQuiet(g1SetFormula);

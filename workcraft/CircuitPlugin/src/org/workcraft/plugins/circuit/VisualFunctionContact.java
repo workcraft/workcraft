@@ -36,7 +36,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private FormulaRenderingResult renderedSetFunction = null;
     private FormulaRenderingResult renderedResetFunction = null;
-    private static double functionFontSize = CircuitSettings.getFunctionFontSize();
+    private static double functionFontSize = CircuitSettings.getContactFontSize();
 
     static {
         try {
@@ -111,11 +111,11 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private Font getFunctionFont() {
-        return functionFont.deriveFont((float) CircuitSettings.getFunctionFontSize());
+        return functionFont.deriveFont((float) CircuitSettings.getContactFontSize());
     }
 
     private FormulaRenderingResult getRenderedSetFunction() {
-        if (Math.abs(CircuitSettings.getFunctionFontSize() - functionFontSize) > 0.001) {
+        if (Math.abs(CircuitSettings.getContactFontSize() - functionFontSize) > 0.001) {
             functionFontSize = CircuitSettings.getContactFontSize();
             renderedSetFunction = null;
         }
@@ -163,7 +163,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private FormulaRenderingResult getRenderedResetFunction() {
-        if (Math.abs(CircuitSettings.getFunctionFontSize() - functionFontSize) > 0.001) {
+        if (Math.abs(CircuitSettings.getContactFontSize() - functionFontSize) > 0.001) {
             functionFontSize = CircuitSettings.getContactFontSize();
             renderedResetFunction = null;
         }
@@ -212,7 +212,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private void drawArrow(Graphics2D g, int arrowType, double arrX, double arrY) {
-        double s = CircuitSettings.getFunctionFontSize();
+        double s = CircuitSettings.getContactFontSize();
         g.setStroke(new BasicStroke((float) s / 25));
         double s1 = 0.75 * s;
         double s2 = 0.45 * s;

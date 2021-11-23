@@ -26,9 +26,6 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getContactFontSize()),
                 framework.getConfigVar(prefix + ".contactFontSize", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getFunctionFontSize()),
-                framework.getConfigVar(prefix + ".functionFontSize", false));
-
         Assertions.assertEquals(Config.toString(CircuitSettings.getShowZeroDelayNames()),
                 framework.getConfigVar(prefix + ".showZeroDelayNames", false));
 
