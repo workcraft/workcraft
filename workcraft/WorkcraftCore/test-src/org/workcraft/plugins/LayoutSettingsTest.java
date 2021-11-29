@@ -23,16 +23,16 @@ class LayoutSettingsTest {
         String prefix = "DotLayoutSettings";
 
         Assertions.assertEquals(Config.toString(DotLayoutSettings.getCommand()),
-                framework.getConfigVar(prefix + ".command", false));
+                framework.getConfigVar(prefix + ".dotCommand", false));
 
         Assertions.assertEquals(Config.toString(DotLayoutSettings.getRankdir()),
                 framework.getConfigVar(prefix + ".rankdir", false));
 
         Assertions.assertEquals(Config.toString(DotLayoutSettings.getNodesep()),
-                framework.getConfigVar(prefix + ".sepNodesep", false));
+                framework.getConfigVar(prefix + ".nodesep", false));
 
         Assertions.assertEquals(Config.toString(DotLayoutSettings.getRanksep()),
-                framework.getConfigVar(prefix + ".sepRanksep", false));
+                framework.getConfigVar(prefix + ".ranksep", false));
 
         Assertions.assertEquals(Config.toString(DotLayoutSettings.getImportConnectionsShape()),
                 framework.getConfigVar(prefix + ".importConnectionsShape", false));

@@ -17,10 +17,10 @@ public class RandomLayoutSettings extends AbstractLayoutSettings {
     private static final String keyRangeX = prefix + ".rangeX";
     private static final String keyRangeY = prefix + ".rangeY";
 
-    private static double defaultStartX = -25;
-    private static double defaultStartY = -15;
-    private static double defaultRangeX = 50;
-    private static double defaultRangeY = 30;
+    private static final double defaultStartX = -25;
+    private static final double defaultStartY = -15;
+    private static final double defaultRangeX = 50;
+    private static final double defaultRangeY = 30;
 
     private static double startX = defaultStartX;
     private static double startY = defaultStartY;

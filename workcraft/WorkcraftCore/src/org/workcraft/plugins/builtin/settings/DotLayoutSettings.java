@@ -3,7 +3,7 @@ package org.workcraft.plugins.builtin.settings;
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.utils.DesktopApi;
+import org.workcraft.utils.BackendUtils;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,13 +33,13 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "DotLayoutSettings";
 
-    private static final String keyCommand = prefix + ".command";
+    private static final String keyCommand = prefix + ".dotCommand";
     private static final String keyRankdir = prefix + ".rankdir";
-    private static final String keyNodesep = prefix + ".sepNodesep";
-    private static final String keyRanksep = prefix + ".sepRanksep";
+    private static final String keyNodesep = prefix + ".nodesep";
+    private static final String keyRanksep = prefix + ".ranksep";
     private static final String keyImportConnectionsShape = prefix + ".importConnectionsShape";
 
-    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\GraphvizMinimal\\dot.exe" : "dot";
+    private static final String defaultCommand = BackendUtils.getToolPath("GraphvizDot", "dot");
     private static final Rankdir defaultRankdir = Rankdir.TB;
     private static final double defaultNodesep = 1.0;
     private static final double defaultRanksep = 1.0;
