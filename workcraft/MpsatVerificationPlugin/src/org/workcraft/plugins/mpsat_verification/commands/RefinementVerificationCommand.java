@@ -9,7 +9,6 @@ import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkUtils;
@@ -44,13 +43,11 @@ public class RefinementVerificationCommand extends org.workcraft.commands.Abstra
         JFileChooser fc = DialogUtils.createFileOpener("Select specification STG file", true, format);
         if (DialogUtils.showFileOpener(fc)) {
             File data = fc.getSelectedFile();
-            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-            run(we, data, monitor);
+            queueTask(we, data);
         }
     }
 
-    @Override
-    public void run(WorkspaceEntry we, File data, ProgressMonitor monitor) {
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, File data) {
         // Clone implementation STG as its internal signals will need to be converted to dummies
         ModelEntry me = WorkUtils.cloneModel(we.getModelEntry());
         Stg stg = WorkspaceUtils.getAs(me, Stg.class);
@@ -58,7 +55,9 @@ public class RefinementVerificationCommand extends org.workcraft.commands.Abstra
         TaskManager manager = Framework.getInstance().getTaskManager();
         RefinementTask task = new RefinementTask(we, stg, data, getAllowConcurrencyReduction(), getAssumeInputReceptiveness());
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     public boolean getAllowConcurrencyReduction() {
@@ -76,8 +75,8 @@ public class RefinementVerificationCommand extends org.workcraft.commands.Abstra
 
     @Override
     public Boolean execute(WorkspaceEntry we, File data) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        run(we, data, monitor);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, data);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 

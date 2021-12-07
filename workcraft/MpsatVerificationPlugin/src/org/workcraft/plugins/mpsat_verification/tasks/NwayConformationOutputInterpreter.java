@@ -165,7 +165,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
                 projectionSlice.add(projectedEvent);
                 line.append(convertTagToString(projectedEvent.tag)).append(" ");
             }
-            String suggestedEvent = getSuggestedEvent(projectionSlice);
+            String suggestedEvent = getSuggestedEventRef(projectionSlice);
             if (suggestedEvent != null) {
                 line.append(" ").append(suggestedEvent);
             }
@@ -229,7 +229,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
                     }
                 }
             }
-            String prefix = getSuggestedEvent(projectionSlice);
+            String prefix = getSuggestedEventRef(projectionSlice);
             String suffix  = !internalWorkTitles.isEmpty() ? String.join(", ", internalWorkTitles)
                     : (String.join(", ", outputWorkTitles) + " " + RIGHT_ARROW_SYMBOL
                         + " " + String.join(", ", inputWorkTitles));
@@ -244,39 +244,39 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
         }
     }
 
-    private String getSuggestedEvent(Collection<ProjectionEvent> projectionSlice) {
-        String violationEvent = null;
-        String outputEvent = null;
-        String inputEvent = null;
-        String internalEvent = null;
-        String dummyEvent = null;
+    private String getSuggestedEventRef(Collection<ProjectionEvent> projectionSlice) {
+        String violationEventRef = null;
+        String outputEventRef = null;
+        String inputEventRef = null;
+        String internalEventRef = null;
+        String dummyEventRef = null;
         for (ProjectionEvent projectionEvent : projectionSlice) {
             if (projectionEvent != null) {
                 switch (projectionEvent.tag) {
                 case VIOLATION:
-                    violationEvent = violationEvent == null ? projectionEvent.ref : violationEvent;
+                    violationEventRef = violationEventRef == null ? projectionEvent.ref : violationEventRef;
                     break;
                 case OUTPUT:
-                    outputEvent = outputEvent == null ? projectionEvent.ref : outputEvent;
+                    outputEventRef = outputEventRef == null ? projectionEvent.ref : outputEventRef;
                     break;
                 case INPUT:
-                    inputEvent = projectionEvent.ref;
+                    inputEventRef = projectionEvent.ref;
                     break;
                 case INTERNAL:
-                    internalEvent = projectionEvent.ref;
+                    internalEventRef = projectionEvent.ref;
                     break;
                 case DUMMY:
-                    dummyEvent = projectionEvent.ref;
+                    dummyEventRef = projectionEvent.ref;
                     break;
                 }
             }
         }
 
-        return violationEvent != null ? violationEvent
-                : outputEvent != null ? outputEvent
-                : inputEvent != null ? inputEvent
-                : internalEvent != null ? internalEvent
-                : dummyEvent;
+        return violationEventRef != null ? violationEventRef
+                : outputEventRef != null ? outputEventRef
+                : inputEventRef != null ? inputEventRef
+                : internalEventRef != null ? internalEventRef
+                : dummyEventRef;
     }
 
     private String convertTagToString(ProjectionEvent.Tag tag) {

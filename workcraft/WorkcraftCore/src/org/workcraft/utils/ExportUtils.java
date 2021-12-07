@@ -81,7 +81,7 @@ public class ExportUtils {
         if ((title == null) || title.isEmpty()) {
             title = "Untitled";
         }
-        // If the title start with a number then prepend it with an underscore.
+        // If the title start with a number, then prepend it with an underscore.
         if (Character.isDigit(title.charAt(0))) {
             title = "_" + title;
         }
@@ -97,9 +97,9 @@ public class ExportUtils {
         String result = description;
         String title = model.getTitle();
         if (!title.isEmpty()) {
-            result += "\'" + title + "\' ";
+            result += "'" + title + "' ";
         }
-        result += "to file \'" + file.getAbsolutePath() + "\'.";
+        result += "to file '" + file.getAbsolutePath() + "'.";
         return result;
     }
 

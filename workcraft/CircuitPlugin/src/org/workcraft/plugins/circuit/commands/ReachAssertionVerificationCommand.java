@@ -14,7 +14,6 @@ import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.presets.PresetManager;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -53,17 +52,17 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
         ReachAssertionDialog dialog = new ReachAssertionDialog(mainWindow, presetManager);
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-            run(we, preservedData, monitor);
+            queueTask(we, preservedData);
         }
     }
 
-    @Override
-    public void run(WorkspaceEntry we, VerificationParameters data, ProgressMonitor monitor) {
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, VerificationParameters data) {
         TaskManager manager = Framework.getInstance().getTaskManager();
         AssertionCheckTask task = new AssertionCheckTask(we, data);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
@@ -84,8 +83,8 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
         if (!checkPrerequisites(we)) {
             return null;
         }
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        run(we, data, monitor);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, data);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 

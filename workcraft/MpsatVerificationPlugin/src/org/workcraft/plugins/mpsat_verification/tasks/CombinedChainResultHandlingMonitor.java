@@ -17,8 +17,8 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
 
     private boolean vacuousMutexImplementability = false;
 
-    public CombinedChainResultHandlingMonitor(WorkspaceEntry we, boolean interactive) {
-        super(we, interactive);
+    public CombinedChainResultHandlingMonitor(WorkspaceEntry we) {
+        super(we);
     }
 
     public void setVacuousMutexImplementability(boolean value) {

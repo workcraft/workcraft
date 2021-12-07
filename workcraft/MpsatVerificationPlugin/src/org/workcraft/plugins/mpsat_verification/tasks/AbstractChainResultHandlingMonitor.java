@@ -1,6 +1,5 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
-import org.workcraft.Framework;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
@@ -15,24 +14,19 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collections;
 
-public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput> extends AbstractResultHandlingMonitor<T, Boolean> {
+public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
+        extends AbstractResultHandlingMonitor<T, Boolean> {
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     private final WorkspaceEntry we;
-    private final boolean interactive;
 
-    public AbstractChainResultHandlingMonitor(WorkspaceEntry we, boolean interactive) {
+    public AbstractChainResultHandlingMonitor(WorkspaceEntry we) {
         this.we = we;
-        this.interactive = interactive;
     }
 
     public WorkspaceEntry getWorkspaceEntry() {
         return we;
-    }
-
-    public boolean isInteractive() {
-        return interactive && Framework.getInstance().isInGuiMode();
     }
 
     @Override

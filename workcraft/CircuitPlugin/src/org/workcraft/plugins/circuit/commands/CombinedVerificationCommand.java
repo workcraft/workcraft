@@ -38,22 +38,23 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
 
     @Override
     public void run(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-        queueVerification(we, monitor);
+        queueTask(we);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        queueVerification(we, monitor);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 
-    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         if (!checkPrerequisites(we)) {
             monitor.isFinished(Result.cancel());
-            return;
+            return monitor;
         }
+
         // Adjust the set of checked properties depending on availability of environment STG
         boolean checkConformation = checkConformation();
         boolean checkDeadlock = checkDeadlock();
@@ -69,12 +70,12 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
                 if (!checkConformation && !checkDeadlock) {
                     DialogUtils.showError(msg);
                     monitor.isFinished(Result.cancel());
-                    return;
+                    return monitor;
                 } else {
                     msg += "\n\nProceed with verification of other properties?";
                     if (!DialogUtils.showConfirmWarning(msg)) {
                         monitor.isFinished(Result.cancel());
-                        return;
+                        return monitor;
                     }
                     checkPersistency = false;
                 }
@@ -98,13 +99,15 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
         }
         if (!checkConformation && !checkDeadlock && !checkPersistency) {
             monitor.isFinished(Result.cancel());
-            return;
+            return monitor;
         }
+
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         CheckTask task = new CheckTask(we, checkConformation, checkDeadlock, checkPersistency);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {

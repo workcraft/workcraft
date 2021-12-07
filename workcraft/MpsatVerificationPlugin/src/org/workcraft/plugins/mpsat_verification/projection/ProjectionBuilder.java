@@ -151,7 +151,7 @@ public class ProjectionBuilder {
         return result;
     }
 
-    private String getCompositionViolationEvent() {
+    private String getCompositionViolationEventRef() {
         return compositionViolation.getFirst();
     }
 
@@ -213,7 +213,10 @@ public class ProjectionBuilder {
 
     public Trace getCompositionTraceWithViolationEvent() {
         Trace result = new Trace(getCompositionViolationTrace());
-        result.add(getCompositionViolationEvent());
+        String compositionViolationEventRef = getCompositionViolationEventRef();
+        if (compositionViolationEventRef != null) {
+            result.add(compositionViolationEventRef);
+        }
         return result;
     }
 
@@ -229,30 +232,34 @@ public class ProjectionBuilder {
     private ProjectionTrace calcComponentProjectionTrace(WorkspaceEntry we) {
         ProjectionTrace result = new ProjectionTrace();
         StgModel stg = getComponentStg(we);
+        ComponentData componentData = getComponentData(we);
         Trace trace = getComponentViolationTrace(we);
         for (String ref : trace) {
             ProjectionEvent.Tag tag = getNodeTag(stg, ref);
-            result.add(new ProjectionEvent(tag, ref));
+            ProjectionEvent projectionEvent = new ProjectionEvent(tag, ref);
+            result.add(projectionEvent);
         }
 
-        ProjectionEvent projectionEvent = new ProjectionEvent(ProjectionEvent.Tag.NONE, null);
-        ComponentData componentData = getComponentData(we);
-        String violationEvent = componentData.getSrcTransition(getCompositionViolationEvent());
-        if (violationEvent != null) {
-            Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(violationEvent);
-            if (r != null) {
-                String signal = r.getFirst();
-                Set<String> outputs = stg.getSignalReferences(Signal.Type.OUTPUT);
-                if (outputs.contains(signal)) {
-                    projectionEvent = new ProjectionEvent(ProjectionEvent.Tag.OUTPUT, violationEvent);
-                } else if (stg.getSignalReferences(Signal.Type.INPUT).contains(signal)) {
-                    SignalTransition.Direction direction = r.getSecond();
-                    ProjectionEvent.Tag tag = getInputEventTag(we, trace, signal, direction);
-                    projectionEvent = new ProjectionEvent(tag, violationEvent);
+        String compositionViolationEventRef = getCompositionViolationEventRef();
+        if (compositionViolationEventRef != null) {
+            ProjectionEvent projectionEvent = new ProjectionEvent(ProjectionEvent.Tag.NONE, null);
+            String projectionViolationEventRef = componentData.getSrcTransition(compositionViolationEventRef);
+            if (projectionViolationEventRef != null) {
+                Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(projectionViolationEventRef);
+                if (r != null) {
+                    String signal = r.getFirst();
+                    Set<String> outputs = stg.getSignalReferences(Signal.Type.OUTPUT);
+                    if (outputs.contains(signal)) {
+                        projectionEvent = new ProjectionEvent(ProjectionEvent.Tag.OUTPUT, projectionViolationEventRef);
+                    } else if (stg.getSignalReferences(Signal.Type.INPUT).contains(signal)) {
+                        SignalTransition.Direction direction = r.getSecond();
+                        ProjectionEvent.Tag tag = getInputEventTag(we, trace, signal, direction);
+                        projectionEvent = new ProjectionEvent(tag, projectionViolationEventRef);
+                    }
                 }
             }
+            result.add(projectionEvent);
         }
-        result.add(projectionEvent);
         return result;
     }
 

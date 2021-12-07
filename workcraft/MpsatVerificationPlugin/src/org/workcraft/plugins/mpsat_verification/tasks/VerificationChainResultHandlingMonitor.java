@@ -9,8 +9,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class VerificationChainResultHandlingMonitor extends AbstractChainResultHandlingMonitor<VerificationChainOutput> {
 
-    public VerificationChainResultHandlingMonitor(WorkspaceEntry we, boolean interactive) {
-        super(we, interactive);
+    public VerificationChainResultHandlingMonitor(WorkspaceEntry we) {
+        super(we);
     }
 
     @Override

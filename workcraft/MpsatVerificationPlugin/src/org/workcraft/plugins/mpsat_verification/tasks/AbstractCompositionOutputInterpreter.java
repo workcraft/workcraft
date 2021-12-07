@@ -41,7 +41,7 @@ abstract class AbstractCompositionOutputInterpreter extends ReachabilityOutputIn
                 result += TextUtils.wrapMessageWithItems("\nYet composition has dead signal", signals);
                 result += "\n\nWarning: dead signals may indicate design issues!";
             } else {
-                result += " Also composition has dead signals.";
+                result += " Composition has dead signals.";
             }
         }
         return result;

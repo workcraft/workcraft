@@ -1,6 +1,7 @@
 package org.workcraft.plugins.pcomp;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.utils.XmlUtils;
 
 import java.util.HashMap;
@@ -18,6 +19,7 @@ public class ComponentData {
     private final String fileName;
     private final Map<String, String> src2dstPlaceMap = new HashMap<>();
     private final Map<String, String> dst2srcTransitionMap = new HashMap<>();
+    private String componentTitle;
 
     public ComponentData(Element fileElement, Element placesElement, Element transitionsElement) {
         fileName = fileElement.getTextContent();
@@ -87,6 +89,14 @@ public class ComponentData {
                 entry.setValue(value);
             }
         }
+    }
+
+    public void setComponentTitle(String value) {
+        componentTitle = value;
+    }
+
+    public String getComponentPrefix() {
+        return componentTitle == null ? "" : Identifier.appendNamespaceSeparator(componentTitle);
     }
 
 }

@@ -58,47 +58,48 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
 
     @Override
     public void run(WorkspaceEntry we) {
-        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, true);
-        queueVerification(we, monitor);
+        queueTask(we);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, false);
-        queueVerification(we, monitor);
+        CombinedChainResultHandlingMonitor monitor = queueTask(we);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 
-    private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {
+    private CombinedChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we);
         if (!checkPrerequisites(we)) {
             monitor.isFinished(Result.cancel());
-            return;
-        }
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        Collection<BinateData> binateItems = getBinateData(circuit);
-        List<VerificationParameters> verificationParametersList = new ArrayList<>();
-        boolean isFirstItem = true;
-        for (BinateData binateItem : binateItems) {
-            if (isFirstItem) {
-                LogUtils.logInfo("Verifying binate consensus for functions:");
+        } else {
+            Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+            Collection<BinateData> binateItems = getBinateData(circuit);
+            List<VerificationParameters> verificationParametersList = new ArrayList<>();
+            boolean isFirstItem = true;
+            for (BinateData binateItem : binateItems) {
+                if (isFirstItem) {
+                    LogUtils.logInfo("Verifying binate consensus for functions:");
+                }
+                isFirstItem = false;
+                String signal = CircuitUtils.getSignalReference(circuit, binateItem.contact);
+                VerificationParameters verificationParameters = getBinateImplementationReachSettings(
+                        signal, binateItem.formula, binateItem.variable);
+
+                verificationParametersList.add(verificationParameters);
+                String formulaStr = StringGenerator.toString(binateItem.formula);
+                String variableLabel = binateItem.variable.getLabel();
+                LogUtils.logMessage("  " + signal + " = " + formulaStr + "   [binate in " + variableLabel + "]");
             }
-            isFirstItem = false;
-            String signal = CircuitUtils.getSignalReference(circuit, binateItem.contact);
-            VerificationParameters verificationParameters = getBinateImplementationReachSettings(
-                    signal, binateItem.formula, binateItem.variable);
 
-            verificationParametersList.add(verificationParameters);
-            String formulaStr = StringGenerator.toString(binateItem.formula);
-            String variableLabel = binateItem.variable.getLabel();
-            LogUtils.logMessage("  " + signal + " = " + formulaStr + "   [binate in " + variableLabel + "]");
+            TaskManager manager = Framework.getInstance().getTaskManager();
+            CombinedCheckTask task = new CombinedCheckTask(we, verificationParametersList,
+                    "Binate consensus vacuously holds");
+
+            String description = MpsatUtils.getToolchainDescription(we.getTitle());
+            manager.queue(task, description, monitor);
         }
-
-        TaskManager manager = Framework.getInstance().getTaskManager();
-        CombinedCheckTask task = new CombinedCheckTask(we, verificationParametersList,
-                "Binate consensus vacuously holds");
-
-        String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        manager.queue(task, description, monitor);
+        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {

@@ -13,11 +13,9 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     private final WorkspaceEntry we;
-    private final boolean interactive;
 
-    public SpotChainResultHandlingMonitor(WorkspaceEntry we,  boolean interactive) {
+    public SpotChainResultHandlingMonitor(WorkspaceEntry we) {
         this.we = we;
-        this.interactive = interactive;
     }
 
     @Override
@@ -26,7 +24,7 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
         Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
         if (chainResult.isSuccess()) {
             MpsatOutput mpsatOutput = (mpsatResult == null) ? null : mpsatResult.getPayload();
-            return new MpsatLtlxOutputInterpreter(we, mpsatOutput, interactive).interpret();
+            return new MpsatLtlxOutputInterpreter(we, mpsatOutput, isInteractive()).interpret();
         }
 
         if (chainResult.isFailure()) {
@@ -34,13 +32,13 @@ public class SpotChainResultHandlingMonitor extends AbstractResultHandlingMonito
             // Process starter-sensitivity failure
             if ((mpsatResult == null) && (ltl2tgbaResult != null) && ltl2tgbaResult.isSuccess()) {
                 Ltl2tgbaOutput ltl2tgbaOutput = ltl2tgbaResult.getPayload();
-                new Ltl2tgbaOutputInterpreter(we, ltl2tgbaOutput, interactive).interpret();
+                new Ltl2tgbaOutputInterpreter(we, ltl2tgbaOutput, isInteractive()).interpret();
                 return null;
             }
             // Process other failures
             String message = buildFailureMessage(chainResult);
             if (message != null) {
-                if (interactive) {
+                if (isInteractive()) {
                     DialogUtils.showError(message);
                 } else {
                     LogUtils.logError(message);
