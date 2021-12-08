@@ -88,16 +88,16 @@ public class CompositionUtils {
         return getExtendedViolatorSolutions(trace, enabledViolators, enabledness, "Unexpected enabling of signal");
     }
 
-    public static List<Solution> getExtendedViolatorSolutions(Trace trace, Set<String> violators,
+    public static List<Solution> getExtendedViolatorSolutions(Trace trace, Set<String> violatorEvents,
             Enabledness enabledness, String message) {
 
         List<Solution> result = new LinkedList<>();
-        if (!violators.isEmpty()) {
-            LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, violators));
+        if (!violatorEvents.isEmpty()) {
+            LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, violatorEvents));
         }
 
         Map<Trace, Set<String>> continuationToEventsMap = new HashMap<>();
-        for (String event : violators) {
+        for (String event : violatorEvents) {
             Trace continuation = enabledness.get(event);
             if (continuation != null) {
                 Set<String> events = continuationToEventsMap.computeIfAbsent(continuation, HashSet::new);

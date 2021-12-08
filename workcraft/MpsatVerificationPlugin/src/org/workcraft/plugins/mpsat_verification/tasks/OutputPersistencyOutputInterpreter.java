@@ -1,6 +1,5 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
-import org.workcraft.plugins.mpsat_verification.projection.Enabledness;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -47,19 +46,21 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
                 throw new RuntimeException("Cannot execute trace: " + trace);
             }
             // Check if any local signal gets disabled by firing continuations
-            Enabledness enabledness = CompositionUtils.getEnabledness(solution.getContinuations(), data);
-            for (String enabledTransitionRef : enabledness.keySet()) {
-                HashSet<String> nonpersistentLocalSignals = getNonpersistentLocalSignals(stg,
-                        enabledness.get(enabledTransitionRef), enabledTransitionRef);
+            for (Trace compositionContinuation : solution.getContinuations()) {
+                Trace projectedContinuation = CompositionUtils.projectTrace(compositionContinuation, data);
+                if ((projectedContinuation != null) && !projectedContinuation.isEmpty()) {
+                    HashSet<String> nonpersistentLocalSignals = getNonpersistentLocalSignals(stg, projectedContinuation);
+                    if (!nonpersistentLocalSignals.isEmpty()) {
+                        String enabledTransitionRef = projectedContinuation.get(projectedContinuation.size() - 1);
+                        String comment = getMessageWithList("Non-persistent signal", nonpersistentLocalSignals);
+                        String msg = getMessageWithList("Transition '" + enabledTransitionRef + "' disables signal",
+                                nonpersistentLocalSignals);
 
-                if (!nonpersistentLocalSignals.isEmpty()) {
-                    String comment = getMessageWithList("Non-persistent signal", nonpersistentLocalSignals);
-                    String msg = getMessageWithList("Event '" + enabledTransitionRef + "' disables signal", nonpersistentLocalSignals);
-                    LogUtils.logWarning(msg);
-                    Trace processedTrace = new Trace(trace);
-                    processedTrace.add(enabledTransitionRef);
-                    Solution processedSolution = new Solution(processedTrace, null, comment);
-                    result.add(processedSolution);
+                        LogUtils.logWarning(msg);
+                        Trace processedTrace = new Trace(trace);
+                        processedTrace.add(enabledTransitionRef);
+                        result.add(new Solution(processedTrace, null, comment));
+                    }
                 }
             }
             PetriUtils.setMarking(stg, initialMarking);
@@ -67,14 +68,14 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
         return result;
     }
 
-    private HashSet<String> getNonpersistentLocalSignals(StgModel stg, Trace continuationTrace, String enabledTransitionRef) {
+    private HashSet<String> getNonpersistentLocalSignals(StgModel stg, Trace continuationTrace) {
         HashSet<String> result = new HashSet<>();
-        continuationTrace.add(enabledTransitionRef);
         HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (PetriUtils.fireTrace(stg, continuationTrace)) {
             result.addAll(enabledLocalSignals);
-            Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(enabledTransitionRef);
+            String lastTransitionRef = continuationTrace.get(continuationTrace.size() - 1);
+            Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(lastTransitionRef);
             if (r != null) {
                 result.remove(r.getFirst());
             }
