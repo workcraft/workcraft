@@ -8,7 +8,6 @@ import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHan
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -41,17 +40,17 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
         JFileChooser fc = DialogUtils.createFileOpener("Select environment STG file", true, format);
         if (DialogUtils.showFileOpener(fc)) {
             File data = fc.getSelectedFile();
-            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-            run(we, data, monitor);
+            queueTask(we, data);
         }
     }
 
-    @Override
-    public void run(WorkspaceEntry we, File data, ProgressMonitor monitor) {
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, File data) {
         TaskManager manager = Framework.getInstance().getTaskManager();
         ConformationTask task = new ConformationTask(we, data);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     @Override
@@ -61,8 +60,8 @@ public class ConformationVerificationCommand extends org.workcraft.commands.Abst
 
     @Override
     public Boolean execute(WorkspaceEntry we, File data) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        run(we, data, monitor);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, data);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 

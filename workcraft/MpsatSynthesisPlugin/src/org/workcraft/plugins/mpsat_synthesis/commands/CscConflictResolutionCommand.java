@@ -36,16 +36,15 @@ public class CscConflictResolutionCommand implements ScriptableCommand<Workspace
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueCscConflictResolution(we);
+        queueTask(we);
     }
 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
-        SynthesisChainResultHandlingMonitor monitor = queueCscConflictResolution(we);
-        return monitor.waitForHandledResult();
+        return queueTask(we).waitForHandledResult();
     }
 
-    private SynthesisChainResultHandlingMonitor queueCscConflictResolution(WorkspaceEntry we) {
+    private SynthesisChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         SynthesisChainResultHandlingMonitor monitor = new SynthesisChainResultHandlingMonitor(we, mutexes);

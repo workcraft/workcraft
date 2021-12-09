@@ -47,21 +47,21 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
 
     @Override
     public void run(WorkspaceEntry we) {
-        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, true);
-        queueVerification(we, monitor);
+        queueTask(we);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, false);
-        queueVerification(we, monitor);
+        CombinedChainResultHandlingMonitor monitor = queueTask(we);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 
-    private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {
+    private CombinedChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we);
         if (!checkPrerequisites(we)) {
             monitor.isFinished(Result.cancel());
-            return;
+            return monitor;
         }
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
@@ -73,13 +73,13 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
                     "Proceed with verification of other properties?";
             if (!DialogUtils.showConfirmWarning(msg)) {
                 monitor.isFinished(Result.cancel());
-                return;
+                return monitor;
             }
         }
 
         if (!MpsatUtils.mutexStructuralCheck(stg, true)) {
             monitor.isFinished(Result.cancel());
-            return;
+            return monitor;
         }
 
         ArrayList<VerificationParameters> verificationParametersList = new ArrayList<>();
@@ -105,6 +105,7 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
 
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {

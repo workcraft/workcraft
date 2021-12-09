@@ -17,7 +17,6 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.MutexUtils;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.types.Pair;
@@ -64,35 +63,34 @@ public class ParallelCompositionCommand
             }
             PcompParameters parameters = dialog.getPcompParameters();
             Pair<Collection<WorkspaceEntry>, PcompParameters> data = Pair.of(wes, parameters);
-            PcompResultHandlingMonitor monitor = new PcompResultHandlingMonitor();
-            run(we, data, monitor);
+            queueTask(data);
         }
     }
 
-    @Override
-    public void run(WorkspaceEntry we, Pair<Collection<WorkspaceEntry>, PcompParameters> data, ProgressMonitor monitor) {
+    private PcompResultHandlingMonitor queueTask(Pair<Collection<WorkspaceEntry>, PcompParameters> data) {
+        PcompResultHandlingMonitor monitor = new PcompResultHandlingMonitor();
         Collection<WorkspaceEntry> wes = data.getFirst();
         if (wes.size() < 2) {
             monitor.isFinished(Result.exception("At least 2 STGs are required for parallel composition."));
-            return;
-        }
+        } else {
+            Collection<Mutex> mutexes = new HashSet<>();
+            File directory = FileUtils.createTempDirectory();
+            ArrayList<File> inputFiles = new ArrayList<>();
+            for (WorkspaceEntry inputWe : wes) {
+                Stg stg = WorkspaceUtils.getAs(inputWe, Stg.class);
+                mutexes.addAll(MutexUtils.getMutexes(stg));
+                File inputFile = exportStg(inputWe, directory);
+                inputFiles.add(inputFile);
+            }
+            MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
+            monitor.setMutexes(mutexes);
 
-        Collection<Mutex> mutexes = new HashSet<>();
-        File directory = FileUtils.createTempDirectory();
-        ArrayList<File> inputFiles = new ArrayList<>();
-        for (WorkspaceEntry inputWe : wes) {
-            Stg stg = WorkspaceUtils.getAs(inputWe, Stg.class);
-            mutexes.addAll(MutexUtils.getMutexes(stg));
-            File inputFile = exportStg(inputWe, directory);
-            inputFiles.add(inputFile);
+            PcompParameters parameters = data.getSecond();
+            PcompTask pcompTask = new PcompTask(inputFiles, parameters, directory);
+            TaskManager taskManager = Framework.getInstance().getTaskManager();
+            taskManager.queue(pcompTask, "Running parallel composition [PComp]", monitor);
         }
-        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        ((PcompResultHandlingMonitor) monitor).setMutexes(mutexes);
-
-        PcompParameters parameters = data.getSecond();
-        PcompTask pcompTask = new PcompTask(inputFiles, parameters, directory);
-        TaskManager taskManager = Framework.getInstance().getTaskManager();
-        taskManager.queue(pcompTask, "Running parallel composition [PComp]", monitor);
+        return monitor;
     }
 
     @Override
@@ -104,9 +102,7 @@ public class ParallelCompositionCommand
 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we, Pair<Collection<WorkspaceEntry>, PcompParameters> data) {
-        PcompResultHandlingMonitor monitor = new PcompResultHandlingMonitor();
-        run(we, data, monitor);
-        return monitor.waitForHandledResult();
+        return queueTask(data).waitForHandledResult();
     }
 
     public File exportStg(WorkspaceEntry we, File directory) {

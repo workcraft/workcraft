@@ -40,8 +40,7 @@ public class CscConflictResolutionCommand implements ScriptableCommand<Workspace
 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
-        TransformationResultHandlingMonitor monitor = queueCscConflictResolution(we);
-        return monitor.waitForHandledResult();
+        return queueCscConflictResolution(we).waitForHandledResult();
     }
 
     private TransformationResultHandlingMonitor queueCscConflictResolution(WorkspaceEntry we) {

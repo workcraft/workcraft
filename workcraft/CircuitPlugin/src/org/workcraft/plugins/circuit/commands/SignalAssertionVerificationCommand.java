@@ -14,7 +14,6 @@ import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.TextDataSerialiser;
 import org.workcraft.presets.TextPresetDialog;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -63,13 +62,11 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
 
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-            run(we, preservedData, monitor);
+            queueTask(we, preservedData);
         }
     }
 
-    @Override
-    public void run(WorkspaceEntry we, String data, ProgressMonitor monitor) {
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, String data) {
         TaskManager manager = Framework.getInstance().getTaskManager();
         VerificationParameters verificationParameters = new VerificationParameters(null,
                 VerificationMode.ASSERTION, 0,
@@ -79,7 +76,9 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
 
         AssertionCheckTask task = new AssertionCheckTask(we, verificationParameters);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
@@ -107,8 +106,8 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
         if (!checkPrerequisites(we)) {
             return null;
         }
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        run(we, data, monitor);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, data);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 

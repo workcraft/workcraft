@@ -12,7 +12,6 @@ import org.workcraft.plugins.mpsat_verification.utils.SpotUtils;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.TextDataSerialiser;
 import org.workcraft.presets.TextPresetDialog;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -61,17 +60,17 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
 
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            SpotChainResultHandlingMonitor monitor = new SpotChainResultHandlingMonitor(we, true);
-            run(we, preservedData, monitor);
+            queueTask(we, preservedData);
         }
     }
 
-    @Override
-    public void run(WorkspaceEntry we, String data, ProgressMonitor monitor) {
+    private SpotChainResultHandlingMonitor queueTask(WorkspaceEntry we, String data) {
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         SpotChainTask task = new SpotChainTask(we, data);
+        SpotChainResultHandlingMonitor monitor = new SpotChainResultHandlingMonitor(we);
         manager.queue(task, "Running SPOT assertion [LTL2TGBA]", monitor);
+        return monitor;
     }
 
     @Override
@@ -81,8 +80,8 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
 
     @Override
     public Boolean execute(WorkspaceEntry we, String data) {
-        SpotChainResultHandlingMonitor monitor = new SpotChainResultHandlingMonitor(we, false);
-        run(we, data, monitor);
+        SpotChainResultHandlingMonitor monitor = queueTask(we, data);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 

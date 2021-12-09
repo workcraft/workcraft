@@ -16,7 +16,7 @@ public class NwayConformationChainResultHandlingMonitor
     private final ArrayList<WorkspaceEntry> wes = new ArrayList<>();
 
     public NwayConformationChainResultHandlingMonitor(List<WorkspaceEntry> wes) {
-        super(wes.isEmpty() ? null : wes.get(0), true);
+        super(wes.isEmpty() ? null : wes.get(0));
         this.wes.addAll(wes);
     }
 

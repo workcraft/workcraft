@@ -4,12 +4,13 @@ import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat_verification.gui.NwayConformationDialog;
+import org.workcraft.plugins.mpsat_verification.tasks.AbstractChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationTask;
+import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.SortUtils;
@@ -52,15 +53,15 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
                     .sorted((we1, we2) -> SortUtils.compareNatural(we1.getTitle(), we2.getTitle()))
                     .collect(Collectors.toList());
 
-            run(we, wes, getMonitor(wes));
+            queueTask(wes);
         }
     }
 
-    @Override
-    public void run(WorkspaceEntry we, List<WorkspaceEntry> wes, ProgressMonitor monitor) {
+    private AbstractChainResultHandlingMonitor<VerificationChainOutput> queueTask(List<WorkspaceEntry> wes) {
+        AbstractChainResultHandlingMonitor<VerificationChainOutput> monitor = getMonitor(wes);
         if (wes.size() < 2) {
             monitor.isFinished(Result.exception("At least two STGs are required for N-way conformation."));
-            return;
+            return monitor;
         }
 
         NwayConformationTask task = new NwayConformationTask(wes, getRenames());
@@ -68,6 +69,7 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
         String titles = wes.stream().map(WorkspaceEntry::getTitle).collect(Collectors.joining(", "));
         String description = MpsatUtils.getToolchainDescription(titles);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     @Override
@@ -77,12 +79,12 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
 
     @Override
     public Boolean execute(WorkspaceEntry we, List<WorkspaceEntry> wes) {
-        NwayConformationChainResultHandlingMonitor monitor = getMonitor(wes);
-        run(we, wes, monitor);
+        AbstractChainResultHandlingMonitor<VerificationChainOutput> monitor = queueTask(wes);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 
-    public NwayConformationChainResultHandlingMonitor getMonitor(List<WorkspaceEntry> wes) {
+    public AbstractChainResultHandlingMonitor<VerificationChainOutput> getMonitor(List<WorkspaceEntry> wes) {
         return new NwayConformationChainResultHandlingMonitor(wes);
     }
 

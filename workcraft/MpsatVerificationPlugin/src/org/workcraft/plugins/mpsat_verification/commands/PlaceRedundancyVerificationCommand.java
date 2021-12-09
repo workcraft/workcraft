@@ -14,7 +14,6 @@ import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
@@ -94,16 +93,15 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
             DialogUtils.showWarning("At least one place must be selected for redundancy check.");
             return;
         }
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-        run(we, data, monitor);
+        queueTask(we, data);
     }
 
-    @Override
-    public void run(WorkspaceEntry we, Collection<String> data, ProgressMonitor monitor) {
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, Collection<String> data) {
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         if (data.isEmpty()) {
             DialogUtils.showWarning("No places specified for redundancy check.");
             monitor.isFinished(Result.cancel());
-            return;
+            return monitor;
         }
 
         String str = data.stream().map(ref -> "\"" + ref + "\", ").collect(Collectors.joining());
@@ -125,6 +123,7 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
         VerificationChainTask task = new VerificationChainTask(we, verificationParameters);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     @Override
@@ -134,8 +133,8 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
 
     @Override
     public Boolean execute(WorkspaceEntry we, Collection<String> data) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        run(we, data, monitor);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, data);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 

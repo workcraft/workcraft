@@ -13,7 +13,6 @@ import org.workcraft.plugins.mpsat_verification.tasks.HandshakeChainTask;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.PresetManager;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -56,17 +55,17 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
         HandshakeWizardDialog dialog = new HandshakeWizardDialog(mainWindow, presetManager);
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, true);
-            run(we, preservedData, monitor);
+            queueTask(we, preservedData);
         }
     }
 
-    @Override
-    public void run(WorkspaceEntry we, HandshakeParameters data, ProgressMonitor monitor) {
+    private CombinedChainResultHandlingMonitor queueTask(WorkspaceEntry we, HandshakeParameters data) {
         TaskManager manager = Framework.getInstance().getTaskManager();
         HandshakeChainTask task = new HandshakeChainTask(we, data);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     @Override
@@ -93,8 +92,8 @@ public class HandshakeVerificationCommand extends org.workcraft.commands.Abstrac
 
     @Override
     public Boolean execute(WorkspaceEntry we, HandshakeParameters data) {
-        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, false);
-        run(we, data, monitor);
+        CombinedChainResultHandlingMonitor monitor = queueTask(we, data);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 

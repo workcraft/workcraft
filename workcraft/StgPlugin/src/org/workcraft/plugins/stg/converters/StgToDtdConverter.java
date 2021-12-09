@@ -161,10 +161,15 @@ public class StgToDtdConverter {
 
     private void createCausalityArcs(Collection<SignalEvent> predEvents, SignalEvent curEvent) {
         for (SignalEvent predEvent : predEvents) {
-            try {
-                dtd.connect(predEvent.edge, curEvent.edge);
-            } catch (InvalidConnectionException e) {
-                LogUtils.logWarning(e.getMessage());
+            // Prevent adding level arcs (all non-redundant ones are already created)
+            if ((predEvent.edge != null) && (curEvent.edge != null)
+                    && (predEvent.edge.getParent() != curEvent.edge.getParent())) {
+
+                try {
+                    dtd.connect(predEvent.edge, curEvent.edge);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarning(e.getMessage());
+                }
             }
         }
     }

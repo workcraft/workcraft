@@ -241,10 +241,12 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
             }
             fullExpression = prefix + fullExpression + suffix;
 
-            VerificationParameters param = new VerificationParameters(null, VerificationMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 10, fullExpression, true);
-            final VerificationChainTask mpsatTask = new VerificationChainTask(we, param);
-            final TaskManager taskManager = Framework.getInstance().getTaskManager();
-            final VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
+            VerificationParameters param = new VerificationParameters(null, VerificationMode.STG_REACHABILITY,
+                    0, SolutionMode.MINIMUM_COST, 10, fullExpression, true);
+
+            VerificationChainTask mpsatTask = new VerificationChainTask(we, param);
+            TaskManager taskManager = Framework.getInstance().getTaskManager();
+            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
             taskManager.queue(mpsatTask, "Verify invariant of translated concepts", monitor);
         }
     }

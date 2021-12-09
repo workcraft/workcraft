@@ -36,18 +36,17 @@ public class RefinementVerificationCommand extends AbstractVerificationCommand
 
     @Override
     public void run(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-        queueVerification(we, monitor);
+        queueTask(we);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        queueVerification(we, monitor);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 
-    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
         Stg devStg = converter.getStg().getMathModel();
@@ -56,7 +55,9 @@ public class RefinementVerificationCommand extends AbstractVerificationCommand
         TaskManager manager = Framework.getInstance().getTaskManager();
         RefinementTask task = new RefinementTask(we, devStg, envFile, false, true);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
 }

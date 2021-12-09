@@ -14,7 +14,6 @@ import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.presets.PresetManager;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -51,17 +50,17 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
         ReachAssertionDialog dialog = new ReachAssertionDialog(mainWindow, presetManager);
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-            run(we, preservedData, monitor);
+            queueTask(we, preservedData);
         }
     }
 
-    @Override
-    public void run(WorkspaceEntry we, VerificationParameters data, ProgressMonitor monitor) {
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, VerificationParameters data) {
         TaskManager manager = Framework.getInstance().getTaskManager();
         VerificationChainTask task = new VerificationChainTask(we, data);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     @Override
@@ -72,8 +71,8 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
 
     @Override
     public Boolean execute(WorkspaceEntry we, VerificationParameters data) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        run(we, data, monitor);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, data);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 

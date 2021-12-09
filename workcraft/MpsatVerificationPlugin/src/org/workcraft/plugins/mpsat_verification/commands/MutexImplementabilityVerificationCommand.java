@@ -44,27 +44,29 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
 
     @Override
     public void run(WorkspaceEntry we) {
-        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, true);
-        queueVerification(we, monitor);
+        queueTask(we);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we, false);
-        queueVerification(we, monitor);
+        CombinedChainResultHandlingMonitor monitor = queueTask(we);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 
-    private void queueVerification(WorkspaceEntry we, CombinedChainResultHandlingMonitor monitor) {
+    private CombinedChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we);
         if (!isApplicableTo(we)) {
             monitor.isFinished(Result.cancel());
-            return;
+            return monitor;
         }
+
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (!MpsatUtils.mutexStructuralCheck(stg, false)) {
             monitor.isFinished(Result.cancel());
-            return;
+            return monitor;
         }
+
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
@@ -73,6 +75,7 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
         CombinedChainTask task = new CombinedChainTask(we, verificationParametersList);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
 }

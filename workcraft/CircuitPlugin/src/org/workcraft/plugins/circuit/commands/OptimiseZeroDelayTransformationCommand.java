@@ -160,7 +160,8 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         CheckTask task = new CheckTask(we, checkConformation, false, checkPersistence);
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
+        monitor.setInteractive(false);
         // FIXME: Execute synchronously (asynchronous queueing blocks when called from the main menu)
         manager.execute(task, description, monitor);
         return monitor.waitForHandledResult();

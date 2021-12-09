@@ -22,27 +22,28 @@ public abstract class AbstractVerificationCommand extends org.workcraft.commands
 
     @Override
     public void run(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, true);
-        queueVerification(we, monitor);
+        queueTask(we);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we, false);
-        queueVerification(we, monitor);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we);
+        monitor.setInteractive(false);
         return monitor.waitForHandledResult();
     }
 
-    private void queueVerification(WorkspaceEntry we, VerificationChainResultHandlingMonitor monitor) {
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         if (!checkPrerequisites(we)) {
             monitor.isFinished(Result.cancel());
-            return;
+        } else {
+            TaskManager manager = Framework.getInstance().getTaskManager();
+            VerificationParameters verificationParameters = getVerificationParameters(we);
+            VerificationChainTask task = new VerificationChainTask(we, verificationParameters);
+            String description = MpsatUtils.getToolchainDescription(we.getTitle());
+            manager.queue(task, description, monitor);
         }
-        TaskManager manager = Framework.getInstance().getTaskManager();
-        VerificationParameters verificationParameters = getVerificationParameters(we);
-        VerificationChainTask task = new VerificationChainTask(we, verificationParameters);
-        String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        manager.queue(task, description, monitor);
+        return monitor;
     }
 
     public boolean checkPrerequisites(WorkspaceEntry we) {
