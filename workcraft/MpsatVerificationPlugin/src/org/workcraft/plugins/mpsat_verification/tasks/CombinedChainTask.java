@@ -121,7 +121,9 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             VerificationChainOutput extraPayload = taskResult.getPayload();
             payload.getMpsatResultList().add(extraPayload.getMpsatResult());
             payload.getVerificationParametersList().add(extraPayload.getVerificationParameters());
-            return new Result<>(taskResult.getOutcome(), payload);
+            return new Result<>(taskResult.getOutcome(), payload
+                    .applyExportResult(extraPayload.getExportResult())
+                    .applyPcompResult(extraPayload.getPcompResult()));
         }
         return Result.success(payload);
     }

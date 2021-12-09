@@ -2,11 +2,11 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.projection.Enabledness;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
-import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.FixToggleUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -35,7 +35,7 @@ class OutputDeterminacyOutputInterpreter extends AbstractCompositionOutputInterp
 
         List<Solution> result = new LinkedList<>();
         for (Solution solution : solutions) {
-            Solution compositionSolution = MpsatUtils.fixSolutionToggleEvents(compositionStg, solution);
+            Solution compositionSolution = FixToggleUtils.fixSolutionToggleEvents(compositionStg, solution);
             Trace compositionTrace = compositionSolution.getMainTrace();
             LogUtils.logMessage("Violation trace of the auto-composition: " + compositionTrace);
 

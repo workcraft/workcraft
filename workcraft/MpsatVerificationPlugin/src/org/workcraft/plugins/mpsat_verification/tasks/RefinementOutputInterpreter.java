@@ -2,18 +2,21 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.projection.Enabledness;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
-import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.FixToggleUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 class RefinementOutputInterpreter extends AbstractCompositionOutputInterpreter {
 
@@ -40,7 +43,7 @@ class RefinementOutputInterpreter extends AbstractCompositionOutputInterpreter {
         List<Solution> result = new LinkedList<>();
         for (Solution solution : solutions) {
             // Get unique projection trace
-            Solution compositionSolution = MpsatUtils.fixSolutionToggleEvents(compositionStg, solution);
+            Solution compositionSolution = FixToggleUtils.fixSolutionToggleEvents(compositionStg, solution);
             Trace implementationTrace = CompositionUtils.projectTrace(compositionSolution.getMainTrace(), implementationData);
             String traceText = implementationTrace.toString();
             if (!visitedTraces.contains(traceText)) {

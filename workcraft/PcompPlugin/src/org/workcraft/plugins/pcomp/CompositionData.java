@@ -20,9 +20,9 @@ public class CompositionData {
 
     private static final String STG_ELEMENT_NAME = "STG";
     private static final String FILE_ELEMENT_NAME = "file";
+    private static final String SIGNALS_ELEMENT_NAME = "signals";
     private static final String PLACES_ELEMENT_NAME = "places";
     private static final String TRANSITIONS_ELEMENT_NAME = "transitions";
-
 
     private final LinkedHashMap<String, ComponentData> fileToComponent = new LinkedHashMap<>();
 
@@ -49,9 +49,10 @@ public class CompositionData {
                 Element element = (Element) item;
                 if (STG_ELEMENT_NAME.equals(element.getTagName())) {
                     Element fileElement = XmlUtils.getChildElement(FILE_ELEMENT_NAME, element);
+                    Element signalsElement = XmlUtils.getChildElement(SIGNALS_ELEMENT_NAME, element);
                     Element placesElement = XmlUtils.getChildElement(PLACES_ELEMENT_NAME, element);
                     Element transitionsElement = XmlUtils.getChildElement(TRANSITIONS_ELEMENT_NAME, element);
-                    ComponentData componentData = new ComponentData(fileElement, placesElement, transitionsElement);
+                    ComponentData componentData = new ComponentData(fileElement, signalsElement, placesElement, transitionsElement);
                     fileToComponent.put(componentData.getFileName(), componentData);
                 }
             }

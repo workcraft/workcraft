@@ -39,16 +39,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 null,  // combined
                 null,  // consistency
-                false,  // deadlock freeness
+                false, // deadlock freeness
                 null,  // input properness
                 null,  // output persistency
                 null,  // output determinacy
-                null, // CSC
-                null, // USC
+                null,  // CSC
+                null,  // USC
                 null,  // DI interface
-                null, // normalcy
+                null,  // normalcy
                 null,  // mutex implementability (late protocol)
-                null  // mutex implementability (early protocol)
+                null   // mutex implementability (early protocol)
         );
     }
 
@@ -62,12 +62,12 @@ class VerificationCommandTests {
                 null,  // input properness
                 null,  // output persistency
                 null,  // output determinacy
-                null, // CSC
-                null, // USC
+                null,  // CSC
+                null,  // USC
                 null,  // DI interface
-                null, // normalcy
+                null,  // normalcy
                 null,  // mutex implementability (late protocol)
-                null  // mutex implementability (early protocol)
+                null   // mutex implementability (early protocol)
         );
     }
 
@@ -86,7 +86,7 @@ class VerificationCommandTests {
                 true,  // DI interface
                 false, // normalcy
                 null,  // mutex implementability (late protocol)
-                null  // mutex implementability (early protocol)
+                null   // mutex implementability (early protocol)
         );
     }
 
@@ -124,7 +124,7 @@ class VerificationCommandTests {
                 false, // DI interface
                 false, // normalcy
                 null,  // mutex implementability (late protocol)
-                null  // mutex implementability (early protocol)
+                null   // mutex implementability (early protocol)
         );
     }
 
@@ -143,7 +143,7 @@ class VerificationCommandTests {
                 true,  // DI interface
                 true,  // normalcy
                 null,  // mutex implementability (late protocol)
-                null  // mutex implementability (early protocol)
+                null   // mutex implementability (early protocol)
         );
     }
 
@@ -160,7 +160,7 @@ class VerificationCommandTests {
                 true,  // CSC
                 true,  // USC
                 true,  // DI interface
-                false,  // normalcy
+                false, // normalcy
                 true,  // mutex implementability (late protocol)
                 false  // mutex implementability (early protocol)
         );
@@ -171,7 +171,7 @@ class VerificationCommandTests {
         String workName = PackageUtils.getPackagePath(getClass(), "consistency_violation-no_alternation.stg.work");
         testVerificationCommands(workName,
                 false, // combined
-                false,  // consistency
+                false, // consistency
                 null,  // deadlock freeness
                 null,  // input properness
                 null,  // output persistency
@@ -181,7 +181,28 @@ class VerificationCommandTests {
                 null,  // DI interface
                 null,  // normalcy
                 null,  // mutex implementability (late protocol)
-                null  // mutex implementability (early protocol)
+                null   // mutex implementability (early protocol)
+        );
+    }
+
+    @Test
+    void testToggleSignalVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(),
+                "toggle_signals-no_input_properness-no_output_determinacy.stg.work");
+
+        testVerificationCommands(workName,
+                false, // combined
+                true,  // consistency
+                true,  // deadlock freeness
+                false, // input properness
+                true,  // output persistency
+                false, // output determinacy
+                false, // CSC
+                false, // USC
+                true,  // DI interface
+                false, // normalcy
+                null,  // mutex implementability (late protocol)
+                null   // mutex implementability (early protocol)
         );
     }
 
