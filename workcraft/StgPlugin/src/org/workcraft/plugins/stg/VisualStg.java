@@ -47,10 +47,10 @@ public class VisualStg extends AbstractVisualModel {
 
         // Hide implicit places
         // FIXME: Implicit places should not appear in the first place.
-        for (VisualStgPlace vp: getVisualPlaces()) {
+        for (VisualStgPlace vp : getVisualPlaces()) {
             StgPlace place = vp.getReferencedComponent();
             if ((place != null) && place.isImplicit()) {
-                maybeMakeImplicit(vp, false);
+                makeImplicitIfPossible(vp, false);
             }
         }
     }
@@ -178,21 +178,9 @@ public class VisualStg extends AbstractVisualModel {
     @Override
     public VisualConnection connectUndirected(VisualNode first, VisualNode second) throws InvalidConnectionException {
         validateUndirectedConnection(first, second);
-
-        VisualNode place = null;
-        VisualNode transition = null;
-        if (first instanceof VisualTransition) {
-            place = second;
-            transition = first;
-        } else if (second instanceof VisualTransition) {
-            place = first;
-            transition = second;
-        }
-        VisualConnection connection = null;
-        if ((place != null) && (transition != null)) {
-            connection = createReadArcConnection(place, transition);
-        }
-        return connection;
+        VisualNode place = (first instanceof VisualPlace) ? first : second;
+        VisualNode transition = (first instanceof VisualTransition) ? first : second;
+        return (place == null) || (transition == null) ? null : createReadArcConnection(place, transition);
     }
 
     private VisualReadArc createReadArcConnection(VisualNode place, VisualNode transition)
@@ -248,7 +236,7 @@ public class VisualStg extends AbstractVisualModel {
         return place;
     }
 
-    public VisualImplicitPlaceArc maybeMakeImplicit(VisualStgPlace place, boolean preserveConnectionShape) {
+    public VisualImplicitPlaceArc makeImplicitIfPossible(VisualStgPlace place, boolean preserveConnectionShape) {
         VisualImplicitPlaceArc connection = null;
         Collection<VisualNode> preset = getPreset(place);
         Collection<VisualNode> postset = getPostset(place);
@@ -257,8 +245,8 @@ public class VisualStg extends AbstractVisualModel {
             VisualComponent first = (VisualComponent) preset.iterator().next();
             VisualComponent second = (VisualComponent) postset.iterator().next();
             if (!ConnectionUtils.hasImplicitPlaceArcConnection(this, first, second)) {
-                final StgPlace stgPlace = (StgPlace) place.getReferencedComponent();
-                stgPlace.setImplicit(true);
+                StgPlace explicitPlace = place.getReferencedComponent();
+                getMathModel().makeImplicitIfPossible(explicitPlace);
 
                 VisualConnection con1 = null;
                 VisualConnection con2 = null;
@@ -270,14 +258,16 @@ public class VisualStg extends AbstractVisualModel {
                         con1 = (VisualConnection) con;
                     }
                 }
-                MathConnection refCon1 = con1.getReferencedConnection();
-                MathConnection refCon2 = con2.getReferencedConnection();
-                connection = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (StgPlace) place.getReferencedComponent());
-                Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
-                parent.add(connection);
-                if (preserveConnectionShape) {
-                    LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(place, con1, con2);
-                    ConnectionHelper.addControlPoints(connection, locations);
+                if ((con1 != null) && (con2 != null)) {
+                    MathConnection refCon1 = con1.getReferencedConnection();
+                    MathConnection refCon2 = con2.getReferencedConnection();
+                    connection = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, place.getReferencedComponent());
+                    Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
+                    parent.add(connection);
+                    if (preserveConnectionShape) {
+                        LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(place, con1, con2);
+                        ConnectionHelper.addControlPoints(connection, locations);
+                    }
                 }
                 // Remove explicit place, all its connections will get removed automatically by the hanging connection remover
                 remove(place);
@@ -325,7 +315,7 @@ public class VisualStg extends AbstractVisualModel {
             throw new RuntimeException("Cannot create a transition of a signal with the hierarchical name '" + signalName + "'.");
         }
 
-        String transitionName = (signalName == null) || (direction == null) ? null : signalName + direction.toString();
+        String transitionName = (signalName == null) || (direction == null) ? null : signalName + direction;
         Container mathContainer = NamespaceHelper.getMathContainer(this, container);
         SignalTransition mathTransition = getMathModel().createSignalTransition(transitionName, mathContainer);
         mathTransition.setSignalType(type);
