@@ -69,7 +69,7 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
                 if ((productPlace instanceof VisualStgPlace)
                         && convertedImplicitPlaces.contains(predPlace)
                         && convertedImplicitPlaces.contains(succPlace)) {
-                    VisualConnection connection = visualStg.maybeMakeImplicit((VisualStgPlace) productPlace, true);
+                    VisualConnection connection = visualStg.makeImplicitIfPossible((VisualStgPlace) productPlace, true);
                     filterControlPoints(connection);
                 }
             }

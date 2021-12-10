@@ -79,7 +79,7 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
         if ((model instanceof VisualStg) && (node instanceof VisualStgPlace)) {
             VisualStg stg = (VisualStg) model;
             VisualStgPlace place = (VisualStgPlace) node;
-            VisualImplicitPlaceArc connection = stg.maybeMakeImplicit(place, true);
+            VisualImplicitPlaceArc connection = stg.makeImplicitIfPossible(place, true);
             if (connection != null) {
                 model.addToSelection(connection);
             }

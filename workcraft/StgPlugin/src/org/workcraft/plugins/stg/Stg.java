@@ -369,6 +369,14 @@ public class Stg extends AbstractMathModel implements StgModel {
         getReferenceManager().setDefaultNameIfUnnamed(implicitPlace);
     }
 
+
+    public void makeImplicitIfPossible(StgPlace stgPlace) {
+        if ((getPreset(stgPlace).size() == 1) && (getPostset(stgPlace).size() == 1)) {
+            stgPlace.setImplicit(true);
+            getReferenceManager().getNameManager(stgPlace).remove(stgPlace);
+        }
+    }
+
     @Override
     public <T extends MathNode> T createMergedNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
         T result = super.createMergedNode(srcNodes, container, type);
