@@ -9,12 +9,12 @@ import org.workcraft.plugins.mpsat_verification.projection.ProjectionBuilder;
 import org.workcraft.plugins.mpsat_verification.projection.ProjectionEvent;
 import org.workcraft.plugins.mpsat_verification.projection.ProjectionTrace;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
-import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.FixToggleUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -106,7 +106,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
         List<Solution> result = new LinkedList<>();
         for (Solution solution : solutions) {
             // Get unique projection trace
-            Solution compositionSolution = MpsatUtils.fixSolutionToggleEvents(compositionStg, solution);
+            Solution compositionSolution = FixToggleUtils.fixSolutionToggleEvents(compositionStg, solution);
             Trace componentTrace = CompositionUtils.projectTrace(compositionSolution.getMainTrace(), componentData);
             String traceText = componentTrace.toString();
             if (!visitedTraces.contains(traceText)) {

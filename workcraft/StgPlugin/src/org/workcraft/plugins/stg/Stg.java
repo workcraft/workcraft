@@ -334,7 +334,7 @@ public class Stg extends AbstractMathModel implements StgModel {
                 }
                 String predNodeRef = getReferenceManager().getNodeReference(null, preset.iterator().next());
                 String succNodeRef = getReferenceManager().getNodeReference(null, postset.iterator().next());
-                return "<" + predNodeRef + "," + succNodeRef + ">";
+                return LabelParser.getImplicitPlaceReference(predNodeRef, succNodeRef);
             }
         }
         return super.getNodeReference(provider, node);

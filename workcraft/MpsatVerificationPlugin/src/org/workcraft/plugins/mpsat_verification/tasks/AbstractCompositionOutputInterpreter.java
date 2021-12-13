@@ -1,8 +1,8 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
-import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.FixToggleUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
@@ -60,7 +60,7 @@ abstract class AbstractCompositionOutputInterpreter extends ReachabilityOutputIn
         }
         StgModel compositionStg = getCompositionStg();
         for (Solution solution : solutions) {
-            Trace compositionTrace = MpsatUtils.fixTraceToggleEvents(compositionStg, solution.getMainTrace());
+            Trace compositionTrace = FixToggleUtils.fixTraceToggleEvents(compositionStg, solution.getMainTrace());
             if (needsMultiLineMessage) {
                 LogUtils.logMessage("  " + compositionTrace);
             } else {

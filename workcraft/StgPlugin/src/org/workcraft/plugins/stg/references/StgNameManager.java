@@ -135,7 +135,7 @@ public class StgNameManager extends DefaultNameManager {
                 if (instance.getSecond().equals(0)) {
                     result = instance.getFirst();
                 } else {
-                    result = instance.getFirst() + "/" + instance.getSecond();
+                    result = LabelParser.getInstancedTransitionReference(instance.getFirst(), instance.getSecond());
                 }
             }
         } else {

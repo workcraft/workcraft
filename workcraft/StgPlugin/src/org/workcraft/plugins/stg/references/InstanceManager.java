@@ -6,6 +6,7 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.types.GeneralTwoWayMap;
 import org.workcraft.types.Pair;
 import org.workcraft.types.TwoWayMap;
@@ -43,7 +44,7 @@ public class InstanceManager {
         final Pair<String, Integer> assigned = instances.getValue(node);
         if (assigned != null) {
             throw new ArgumentException("Instance already assigned to '"
-                    + getLabel(node) + "/" + assigned.getSecond() + "'");
+                    + LabelParser.getInstancedTransitionReference(getLabel(node), assigned.getSecond()) + "'");
         }
         final String label = getLabel(node);
         final Integer instance = getGenerator(label).getNextID();

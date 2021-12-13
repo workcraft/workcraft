@@ -46,17 +46,14 @@ public class Pair<S, T> {
             return false;
         }
         if (second == null) {
-            if (other.second != null) {
-                return false;
-            }
-        } else if (!second.equals(other.second)) {
-            return false;
+            return other.second == null;
+        } else {
+            return second.equals(other.second);
         }
-        return true;
     }
 
     public static <T1, T2> Pair<T1, T2> of(T1 o1, T2 o2) {
-        return new Pair<T1, T2>(o1, o2);
+        return new Pair<>(o1, o2);
     }
 
     @Override

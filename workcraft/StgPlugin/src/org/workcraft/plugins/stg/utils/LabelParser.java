@@ -98,4 +98,17 @@ public class LabelParser {
         return result;
     }
 
+    public static String getSignalTransitionReference(Triple<String, SignalTransition.Direction, Integer> r) {
+        String eventRef = r.getFirst() + r.getSecond();
+        return r.getThird() == null ? eventRef : getInstancedTransitionReference(eventRef, r.getThird());
+    }
+
+    public static String getInstancedTransitionReference(String transitionRef, int instance) {
+        return transitionRef + "/" + instance;
+    }
+
+    public static String getImplicitPlaceReference(String predTransitionRef, String succTransitionRef) {
+        return "<" + predTransitionRef + "," + succTransitionRef + ">";
+    }
+
 }

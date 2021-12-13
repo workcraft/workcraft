@@ -6,15 +6,13 @@ import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatSyntaxCheckTask;
-import org.workcraft.plugins.stg.*;
-import org.workcraft.plugins.stg.utils.LabelParser;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.traces.Solution;
-import org.workcraft.traces.Trace;
-import org.workcraft.types.Triple;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -78,47 +76,6 @@ public class MpsatUtils {
             SyntaxUtils.processBisonSyntaxError("Error: incorrect syntax of the expression: ",
                     result.getPayload(), codePanel);
         }
-    }
-
-    public static Solution fixSolutionToggleEvents(StgModel stg, Solution solution) {
-        Trace mainTrace = fixTraceToggleEvents(stg, solution.getMainTrace());
-        Trace branchTrace = fixTraceToggleEvents(stg, solution.getBranchTrace());
-        Solution result = new Solution(mainTrace, branchTrace, solution.getComment());
-        for (Trace continuation : solution.getContinuations()) {
-            result.addContinuation(fixTraceToggleEvents(stg, continuation));
-        }
-        return result;
-    }
-
-    public static Trace fixTraceToggleEvents(StgModel stg, Trace trace) {
-        if ((trace == null) || trace.isEmpty()) {
-            return trace;
-        }
-        Trace result = new Trace();
-        for (String ref : trace) {
-            String fixedRef = fixToggleEvent(stg, ref);
-            if (fixedRef != null) {
-                result.add(fixedRef);
-            }
-        }
-        return result;
-    }
-
-    private static String fixToggleEvent(StgModel stg, String ref) {
-        if (stg.getNodeByReference(ref) != null) {
-            return ref;
-        }
-        Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
-        if (r != null) {
-            String fixedRef = r.getFirst() + r.getSecond();
-            if (r.getThird() != null) {
-                fixedRef += "/" + r.getThird();
-            }
-            if (stg.getNodeByReference(fixedRef) != null) {
-                return fixedRef;
-            }
-        }
-        return null;
     }
 
 }

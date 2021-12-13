@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg.serialisation;
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
@@ -11,6 +10,7 @@ import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.utils.ExportUtils;
 
@@ -109,10 +109,10 @@ public class SerialiserUtils {
         writer.write("\n");
     }
 
-    private static boolean hasInstanceNumbers(PetriModel petriModel) {
-        if (petriModel instanceof StgModel) {
-            StgModel stg = (StgModel) petriModel;
-            for (SignalTransition st: stg.getSignalTransitions()) {
+    private static boolean hasInstanceNumbers(PetriModel petri) {
+        if (petri instanceof StgModel) {
+            StgModel stg = (StgModel) petri;
+            for (SignalTransition st : stg.getSignalTransitions()) {
                 if (stg.getInstanceNumber(st) != 0) {
                     return true;
                 }
@@ -121,11 +121,11 @@ public class SerialiserUtils {
         return false;
     }
 
-    private static String getReference(MathModel model, Node node, boolean needInstanceNumbers) {
-        String result = model.getNodeReference(node);
-        if (needInstanceNumbers && (model instanceof StgModel) && (node instanceof NamedTransition)) {
+    private static String getReference(PetriModel petri, Node node, boolean needInstanceNumbers) {
+        String result = petri.getNodeReference(node);
+        if (needInstanceNumbers && (petri instanceof StgModel) && (node instanceof NamedTransition)) {
             NamedTransition nt = (NamedTransition) node;
-            StgModel stg = (StgModel) model;
+            StgModel stg = (StgModel) petri;
             if (stg.getInstanceNumber(nt) == 0) {
                 result += "/0";
             }
@@ -144,30 +144,30 @@ public class SerialiserUtils {
         }
     }
 
-    private static Iterable<MathNode> sortNodes(Collection<? extends MathNode> nodes, final MathModel model) {
+    private static Iterable<MathNode> sortNodes(Collection<? extends MathNode> nodes, PetriModel petri) {
         List<MathNode> result = new ArrayList<>(nodes);
-        result.sort(Comparator.comparing(model::getNodeReference));
+        result.sort(Comparator.comparing(petri::getNodeReference));
         return result;
     }
 
-    private static void writeGraphEntry(PrintWriter out, MathModel model, MathNode node, boolean needInstanceNumbers) {
+    private static void writeGraphEntry(PrintWriter out, PetriModel petri, MathNode node, boolean needInstanceNumbers) {
         if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
             return;
         }
-        String nodeRef = getReference(model, node, needInstanceNumbers);
+        String nodeRef = getReference(petri, node, needInstanceNumbers);
         out.write(nodeRef);
-        Set<MathNode> postset = model.getPostset(node);
-        for (MathNode succNode : sortNodes(postset, model)) {
-            String succNodeRef = getReference(model, succNode, needInstanceNumbers);
+        Set<MathNode> postset = petri.getPostset(node);
+        for (MathNode succNode : sortNodes(postset, petri)) {
+            String succNodeRef = getReference(petri, succNode, needInstanceNumbers);
             if (succNode instanceof StgPlace) {
                 StgPlace succPlace = (StgPlace) succNode;
                 if (succPlace.isImplicit()) {
-                    Collection<MathNode> succPostset = model.getPostset(succNode);
+                    Collection<MathNode> succPostset = petri.getPostset(succNode);
                     if (succPostset.size() > 1) {
                         throw new FormatException("Implicit place cannot have more than one node in postset");
                     }
                     Node succTransition = succPostset.iterator().next();
-                    String succTransitionRef = getReference(model, succTransition, needInstanceNumbers);
+                    String succTransitionRef = getReference(petri, succTransition, needInstanceNumbers);
                     out.write(" " + succTransitionRef);
                 } else {
                     out.write(" " + succNodeRef);
@@ -207,24 +207,27 @@ public class SerialiserUtils {
         return result;
     }
 
-    private static void writeMarking(PrintWriter out, MathModel model, Collection<? extends Place> places, boolean needInstanceNumbers) {
+    private static void writeMarking(PrintWriter out, PetriModel petri, Collection<? extends Place> places,
+            boolean needInstanceNumbers) {
+
         ArrayList<String> markingEntries = new ArrayList<>();
-        for (Place p: places) {
-            final int tokens = p.getTokens();
+        for (Place place : places) {
             final String reference;
-            if (p instanceof StgPlace) {
-                if (((StgPlace) p).isImplicit()) {
-                    MathNode predNode = model.getPreset(p).iterator().next();
-                    String predRef = getReference(model, predNode, needInstanceNumbers);
-                    MathNode succNode = model.getPostset(p).iterator().next();
-                    String succRef = getReference(model, succNode, needInstanceNumbers);
-                    reference = "<" + predRef + "," + succRef + ">";
+            if (place instanceof StgPlace) {
+                StgPlace stgPlace = (StgPlace) place;
+                if (stgPlace.isImplicit()) {
+                    MathNode predNode = petri.getPreset(place).iterator().next();
+                    String predRef = getReference(petri, predNode, needInstanceNumbers);
+                    MathNode succNode = petri.getPostset(place).iterator().next();
+                    String succRef = getReference(petri, succNode, needInstanceNumbers);
+                    reference = LabelParser.getImplicitPlaceReference(predRef, succRef);
                 } else {
-                    reference = getReference(model, p, needInstanceNumbers);
+                    reference = getReference(petri, place, needInstanceNumbers);
                 }
             } else {
-                reference = getReference(model, p, needInstanceNumbers);
+                reference = getReference(petri, place, needInstanceNumbers);
             }
+            int tokens = place.getTokens();
             if (tokens == 1) {
                 markingEntries.add(reference);
             } else if (tokens > 1) {
@@ -246,7 +249,7 @@ public class SerialiserUtils {
         StringBuilder capacity = new StringBuilder();
         for (Place p : places) {
             if (p.getCapacity() != 1) {
-                String placeRef = getReference(model, p, needInstanceNumbers);
+                String placeRef = getReference(petri, p, needInstanceNumbers);
                 capacity.append(" ").append(placeRef).append("=").append(p.getCapacity());
             }
         }
@@ -255,21 +258,21 @@ public class SerialiserUtils {
         }
     }
 
-    private static void writePetri(PrintWriter out, PetriModel petriModel) {
+    private static void writePetri(PrintWriter out, PetriModel petri) {
         LinkedList<String> transitions = new LinkedList<>();
-        for (Transition t : petriModel.getTransitions()) {
-            String transitionRef = petriModel.getNodeReference(t);
+        for (Transition t : petri.getTransitions()) {
+            String transitionRef = petri.getNodeReference(t);
             transitions.add(transitionRef);
         }
         writeSignalDeclaration(out, transitions, KEYWORD_DUMMY);
         out.write(KEYWORD_GRAPH + "\n");
-        for (Transition t : petriModel.getTransitions()) {
-            writeGraphEntry(out, petriModel, t, false);
+        for (Transition t : petri.getTransitions()) {
+            writeGraphEntry(out, petri, t, false);
         }
-        for (Place p : petriModel.getPlaces()) {
-            writeGraphEntry(out, petriModel, p, false);
+        for (Place p : petri.getPlaces()) {
+            writeGraphEntry(out, petri, p, false);
         }
-        writeMarking(out, petriModel, petriModel.getPlaces(), false);
+        writeMarking(out, petri, petri.getPlaces(), false);
     }
 
 }

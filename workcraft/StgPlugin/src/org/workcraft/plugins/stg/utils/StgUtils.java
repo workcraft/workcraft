@@ -446,7 +446,7 @@ public class StgUtils {
 
     public static Collection<String> getSignalsWithToggleTransitions(Stg stg, Signal.Type type) {
         Set<String> result = new HashSet<>();
-        for (SignalTransition st: stg.getSignalTransitions(type)) {
+        for (SignalTransition st : stg.getSignalTransitions(type)) {
             if (st.getDirection() == SignalTransition.Direction.TOGGLE) {
                 String signalRef = stg.getSignalReference(st);
                 result.add(signalRef);
