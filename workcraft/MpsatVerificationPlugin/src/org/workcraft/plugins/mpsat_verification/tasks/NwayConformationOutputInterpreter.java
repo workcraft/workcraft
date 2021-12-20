@@ -13,8 +13,6 @@ import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.utils.FixToggleUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -94,7 +92,6 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
     public List<Solution> processSolutions(List<Solution> solutions, WorkspaceEntry we) {
         String title = we.getTitle();
-        StgModel compositionStg = getCompositionStg();
         ComponentData componentData = getComponentData(we);
 
         HashSet<String> visitedTraces = new HashSet<>();
@@ -106,8 +103,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
         List<Solution> result = new LinkedList<>();
         for (Solution solution : solutions) {
             // Get unique projection trace
-            Solution compositionSolution = FixToggleUtils.fixSolutionToggleEvents(compositionStg, solution);
-            Trace componentTrace = CompositionUtils.projectTrace(compositionSolution.getMainTrace(), componentData);
+            Trace componentTrace = CompositionUtils.projectTrace(solution.getMainTrace(), componentData);
             String traceText = componentTrace.toString();
             if (!visitedTraces.contains(traceText)) {
                 visitedTraces.add(traceText);
@@ -117,7 +113,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
                     LogUtils.logMessage("Projection to '" + title + "': " + traceText);
                 }
 
-                ProjectionBuilder projectionBuilder = new ProjectionBuilder(compositionSolution, getCompositionData(), wes);
+                ProjectionBuilder projectionBuilder = new ProjectionBuilder(solution, getCompositionData(), wes);
                 Set<String> unexpectedlyEnabledOutputEvents = projectionBuilder.getUnexpectedlyEnabledOutputEvents(we);
                 Enabledness componentEnabledness = projectionBuilder.getComponentEnabledness(we);
                 result.addAll(CompositionUtils.getEnabledViolatorSolutions(componentTrace,

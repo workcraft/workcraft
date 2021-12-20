@@ -25,7 +25,7 @@ public class ResetVerificationCommand extends AbstractVerificationCommand
 
     @Override
     public String getDisplayName() {
-        return "Initialisation via currently forced input ports";
+        return "Initialisation via forced input ports";
     }
 
     @Override

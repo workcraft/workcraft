@@ -5,7 +5,7 @@ checkCircuitCycles(work) - check if the Circuit 'work' is free from cyclic paths
 checkCircuitDeadlockFreeness(work) - check the Circuit 'work' for deadlock freeness
 checkCircuitOutputPersistency(work) - check the Circuit 'work' for output persistency
 checkCircuitReachAssertion(work, data) - check the Circuit 'work' for REACH assertion 'data'
-checkCircuitReset(work) - check if the Circuit 'work' is correctly initialised via currently forced input ports
+checkCircuitReset(work) - check if the Circuit 'work' is correctly initialised via forced input ports
 checkCircuitSignalAssertion(work, data) - check the Circuit 'work' for signal assertion 'data'
 checkCircuitStrictImplementation(work) - check the Circuit 'work' for strict implementation of its signals according to the environment
 checkDfsCombined(work) -  combined check of the DFS 'work' for deadlock freeness and output persistency

@@ -45,7 +45,7 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
     public Result<? extends VerificationChainOutput> run(ProgressMonitor<? super VerificationChainOutput> monitor) {
         Result<? extends VerificationChainOutput> result = checkTrivialCases();
         if (result == null) {
-            File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix("-nway_conformation"));
+            File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix("nway_conformation"));
             Chain<VerificationChainOutput> chain = new Chain<>(this::init, monitor);
             chain.andOnSuccess(payload -> exportInterfaces(payload, monitor, directory), 0.1);
             chain.andOnSuccess(payload -> composeInterfaces(payload, monitor, directory), 0.2);
