@@ -2,6 +2,9 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.utils.ToggleUtils;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.ExternalProcessOutput;
@@ -12,7 +15,9 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.TraceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.io.File;
 import java.util.Collections;
+import java.util.Set;
 
 public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
         extends AbstractResultHandlingMonitor<T, Boolean> {
@@ -63,16 +68,18 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
                 ExportOutput exportOutput = (exportResult == null) ? null : exportResult.getPayload();
                 PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
 
-                Solution solution = mpsatFailureOutcome.getFirst();
-                MpsatFailureParser.Cause cause = mpsatFailureOutcome.getSecond();
-
+                File netFile = mpsatOutput.getNetFile();
+                Stg stg = StgUtils.importStg(netFile);
+                Set<String> signals = stg == null ? Collections.emptySet() : stg.getSignalReferences();
+                Solution solution = ToggleUtils.toggleSignalTransitions(mpsatFailureOutcome.getFirst(), signals);
                 MpsatOutput mpsatFakeOutput = new MpsatOutput(new ExternalProcessOutput(0),
-                        ReachUtils.getConsistencyParameters(), mpsatOutput.getNetFile(), mpsatOutput.getUnfoldingFile(),
+                        ReachUtils.getConsistencyParameters(), netFile, mpsatOutput.getUnfoldingFile(),
                         Collections.singletonList(solution));
 
                 ReachabilityOutputInterpreter interpreter = new ReachabilityOutputInterpreter(we,
                         exportOutput, pcompOutput, mpsatFakeOutput, isInteractive());
 
+                MpsatFailureParser.Cause cause = mpsatFailureOutcome.getSecond();
                 if ((cause == MpsatFailureParser.Cause.INCONSISTENT) && isConsistencyCheckMode(chainOutput)) {
                     return interpreter.interpret();
                 } else {

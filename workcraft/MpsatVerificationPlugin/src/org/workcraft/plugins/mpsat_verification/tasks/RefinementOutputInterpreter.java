@@ -5,8 +5,6 @@ import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.utils.FixToggleUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -29,7 +27,6 @@ class RefinementOutputInterpreter extends AbstractCompositionOutputInterpreter {
     @Override
     public List<Solution> processSolutions(List<Solution> solutions) {
         String title = getWorkspaceEntry().getTitle();
-        StgModel compositionStg = getCompositionStg();
         CompositionData compositionData = getCompositionData();
         ComponentData implementationData = compositionData.getComponentData(0);
         ComponentData specificationData = compositionData.getComponentData(1);
@@ -43,8 +40,7 @@ class RefinementOutputInterpreter extends AbstractCompositionOutputInterpreter {
         List<Solution> result = new LinkedList<>();
         for (Solution solution : solutions) {
             // Get unique projection trace
-            Solution compositionSolution = FixToggleUtils.fixSolutionToggleEvents(compositionStg, solution);
-            Trace implementationTrace = CompositionUtils.projectTrace(compositionSolution.getMainTrace(), implementationData);
+            Trace implementationTrace = CompositionUtils.projectTrace(solution.getMainTrace(), implementationData);
             String traceText = implementationTrace.toString();
             if (!visitedTraces.contains(traceText)) {
                 visitedTraces.add(traceText);
@@ -54,7 +50,7 @@ class RefinementOutputInterpreter extends AbstractCompositionOutputInterpreter {
                     LogUtils.logMessage("Projection to '" + title + "': " + traceText);
                 }
 
-                Set<Trace> compositionContinuations = compositionSolution.getContinuations();
+                Set<Trace> compositionContinuations = solution.getContinuations();
                 Enabledness implementationEnabledness = CompositionUtils.getEnabledness(compositionContinuations, implementationData);
                 Enabledness specificationEnabledness = CompositionUtils.getEnabledness(compositionContinuations, specificationData);
 

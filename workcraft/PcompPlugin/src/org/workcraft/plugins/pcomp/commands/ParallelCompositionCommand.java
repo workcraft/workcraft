@@ -74,7 +74,7 @@ public class ParallelCompositionCommand
             monitor.isFinished(Result.exception("At least 2 STGs are required for parallel composition."));
         } else {
             Collection<Mutex> mutexes = new HashSet<>();
-            File directory = FileUtils.createTempDirectory();
+            File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix("parallel_composition"));
             ArrayList<File> inputFiles = new ArrayList<>();
             for (WorkspaceEntry inputWe : wes) {
                 Stg stg = WorkspaceUtils.getAs(inputWe, Stg.class);

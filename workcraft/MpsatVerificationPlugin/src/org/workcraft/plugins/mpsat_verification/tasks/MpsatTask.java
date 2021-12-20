@@ -2,6 +2,9 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.utils.ToggleUtils;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.traces.Solution;
 import org.workcraft.utils.DialogUtils;
@@ -14,7 +17,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class MpsatTask implements Task<MpsatOutput> {
 
@@ -94,14 +99,15 @@ public class MpsatTask implements Task<MpsatOutput> {
                 try {
                     SolutionReader outputReader = new SolutionReader(solutionsFile);
                     if (outputReader.isSuccess()) {
-                        List<Solution> solutions = outputReader.getSolutions();
+                        Stg stg = StgUtils.importStg(netFile);
+                        Set<String> signals = stg == null ? Collections.emptySet() : stg.getSignalReferences();
+                        List<Solution> solutions = ToggleUtils.toggleSignalTransitions(outputReader.getSolutions(), signals);
                         return Result.success(new MpsatOutput(output, verificationParameters, netFile, unfoldingFile, solutions));
                     }
                     return Result.exception(outputReader.getMessage());
                 } catch (ParserConfigurationException | SAXException | IOException e) {
                     return Result.exception(e);
                 }
-
             }
             return Result.failure(new MpsatOutput(output, verificationParameters, netFile, unfoldingFile, null));
         }

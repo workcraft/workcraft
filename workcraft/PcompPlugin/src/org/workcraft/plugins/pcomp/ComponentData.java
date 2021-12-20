@@ -2,7 +2,7 @@ package org.workcraft.plugins.pcomp;
 
 import org.w3c.dom.Element;
 import org.workcraft.dom.references.Identifier;
-import org.workcraft.plugins.stg.utils.FixToggleUtils;
+import org.workcraft.plugins.stg.utils.ToggleUtils;
 import org.workcraft.utils.XmlUtils;
 
 import java.util.HashMap;
@@ -47,9 +47,9 @@ public class ComponentData {
         // Track mapping of each src place to one or many dst places
         for (Element placeElement : XmlUtils.getChildElements(MAP_ELEMENT_NAME, placesElement)) {
             for (Element srcElement : XmlUtils.getChildElements(SRC_ELEMENT_NAME, placeElement)) {
-                String srcPlaceRef = FixToggleUtils.fixToggleIfImplicitPlace(srcElement.getTextContent(), srcSignals);
+                String srcPlaceRef = ToggleUtils.toggleIfImplicitPlace(srcElement.getTextContent(), srcSignals);
                 for (Element dstElement : XmlUtils.getChildElements(DST_ELEMENT_NAME, placeElement)) {
-                    String dstPlaceRef = FixToggleUtils.fixToggleIfImplicitPlace(dstElement.getTextContent(), dstSignals);
+                    String dstPlaceRef = ToggleUtils.toggleIfImplicitPlace(dstElement.getTextContent(), dstSignals);
                     src2dstPlaceMap.put(srcPlaceRef, dstPlaceRef);
                 }
             }
@@ -57,9 +57,9 @@ public class ComponentData {
         // Track mapping of each dst transition to one or many src transitions
         for (Element transitionElement : XmlUtils.getChildElements(MAP_ELEMENT_NAME, transitionsElement)) {
             for (Element srcElement : XmlUtils.getChildElements(SRC_ELEMENT_NAME, transitionElement)) {
-                String srcTransitionRef = FixToggleUtils.fixToggleIfSignalTransition(srcElement.getTextContent(), srcSignals);
+                String srcTransitionRef = ToggleUtils.toggleIfSignalTransition(srcElement.getTextContent(), srcSignals);
                 for (Element dstElement : XmlUtils.getChildElements(DST_ELEMENT_NAME, transitionElement)) {
-                    String dstTransitionRef = FixToggleUtils.fixToggleIfSignalTransition(dstElement.getTextContent(), dstSignals);
+                    String dstTransitionRef = ToggleUtils.toggleIfSignalTransition(dstElement.getTextContent(), dstSignals);
                     dst2srcTransitionMap.put(dstTransitionRef, srcTransitionRef);
                 }
             }

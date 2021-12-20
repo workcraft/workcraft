@@ -7,7 +7,6 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.utils.FixToggleUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
@@ -48,8 +47,7 @@ public class ConformationOutputInterpreter extends AbstractCompositionOutputInte
         List<Solution> result = new LinkedList<>();
         for (Solution solution : solutions) {
             // Get unique projection trace
-            Solution compositionSolution = FixToggleUtils.fixSolutionToggleEvents(compositionStg, solution);
-            Trace devTrace = CompositionUtils.projectTrace(compositionSolution.getMainTrace(), devData);
+            Trace devTrace = CompositionUtils.projectTrace(solution.getMainTrace(), devData);
             String traceText = devTrace.toString();
             if (!visitedTraces.contains(traceText)) {
                 visitedTraces.add(traceText);
@@ -59,7 +57,7 @@ public class ConformationOutputInterpreter extends AbstractCompositionOutputInte
                     LogUtils.logMessage("Projection to '" + title + "': " + traceText);
                 }
 
-                Set<Trace> compositionContinuations = compositionSolution.getContinuations();
+                Set<Trace> compositionContinuations = solution.getContinuations();
                 Enabledness devEnabledness = CompositionUtils.getEnabledness(compositionContinuations, devData);
                 Enabledness envEnabledness = CompositionUtils.getEnabledness(compositionContinuations, envData);
 

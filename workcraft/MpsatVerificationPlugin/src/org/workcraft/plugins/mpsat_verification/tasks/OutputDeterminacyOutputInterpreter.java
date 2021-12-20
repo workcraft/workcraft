@@ -5,8 +5,6 @@ import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.utils.FixToggleUtils;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -28,22 +26,20 @@ class OutputDeterminacyOutputInterpreter extends AbstractCompositionOutputInterp
 
     @Override
     public List<Solution> processSolutions(List<Solution> solutions) {
-        StgModel compositionStg = getCompositionStg();
         CompositionData compositionData = getCompositionData();
         ComponentData devData = compositionData.getComponentData(0);
         ComponentData envData = compositionData.getComponentData(1);
 
         List<Solution> result = new LinkedList<>();
         for (Solution solution : solutions) {
-            Solution compositionSolution = FixToggleUtils.fixSolutionToggleEvents(compositionStg, solution);
-            Trace compositionTrace = compositionSolution.getMainTrace();
+            Trace compositionTrace = solution.getMainTrace();
             LogUtils.logMessage("Violation trace of the auto-composition: " + compositionTrace);
 
             Trace devTrace = CompositionUtils.projectTrace(compositionTrace, devData);
             Trace envTrace = CompositionUtils.projectTrace(compositionTrace, envData);
             LogUtils.logMessage("Projected pair of traces:\n    " + devTrace + "\n    " + envTrace);
 
-            Set<Trace> compositionContinuations = compositionSolution.getContinuations();
+            Set<Trace> compositionContinuations = solution.getContinuations();
             Enabledness devEnabledness = CompositionUtils.getEnabledness(compositionContinuations, devData);
             Enabledness envEnabledness = CompositionUtils.getEnabledness(compositionContinuations, envData);
             Set<String> nondeterministicEnabledEvents = new HashSet<>(devEnabledness.keySet());
