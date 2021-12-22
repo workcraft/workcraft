@@ -10,14 +10,18 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NwayConformationChainResultHandlingMonitor
+public class CompositionChainResultHandlingMonitor
         extends AbstractChainResultHandlingMonitor<VerificationChainOutput> {
 
-    private final ArrayList<WorkspaceEntry> wes = new ArrayList<>();
+    private final List<WorkspaceEntry> wes = new ArrayList<>();
 
-    public NwayConformationChainResultHandlingMonitor(List<WorkspaceEntry> wes) {
+    public CompositionChainResultHandlingMonitor(List<WorkspaceEntry> wes) {
         super(wes.isEmpty() ? null : wes.get(0));
         this.wes.addAll(wes);
+    }
+
+    public List<WorkspaceEntry> getWorkspaceEntries() {
+        return wes;
     }
 
     @Override
@@ -35,10 +39,10 @@ public class NwayConformationChainResultHandlingMonitor
         return getInterpreter(exportOutput, pcompOutput, mpsatOutput).interpret();
     }
 
-    public ConformationOutputInterpreter getInterpreter(ExportOutput exportOutput, PcompOutput pcompOutput,
+    public CompositionOutputInterpreter getInterpreter(ExportOutput exportOutput, PcompOutput pcompOutput,
             MpsatOutput mpsatOutput) {
 
-        return new NwayConformationOutputInterpreter(wes, exportOutput, pcompOutput, mpsatOutput, isInteractive());
+        return new CompositionOutputInterpreter(wes, exportOutput, pcompOutput, mpsatOutput, isInteractive());
     }
 
     @Override

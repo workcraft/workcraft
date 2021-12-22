@@ -4,10 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.dialogs.ReachabilityDialog;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.mpsat_verification.projection.Enabledness;
-import org.workcraft.plugins.mpsat_verification.projection.ProjectionBuilder;
-import org.workcraft.plugins.mpsat_verification.projection.ProjectionEvent;
-import org.workcraft.plugins.mpsat_verification.projection.ProjectionTrace;
+import org.workcraft.plugins.mpsat_verification.projection.*;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -23,10 +20,12 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
-public class NwayConformationOutputInterpreter extends ConformationOutputInterpreter {
+import static org.workcraft.plugins.mpsat_verification.projection.ProjectionEvent.Tag.VIOLATION;
+
+public class CompositionOutputInterpreter extends AbstractCompositionOutputInterpreter {
 
     // Right arrow symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
-    public static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
+    private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
 
     public enum ConformationReportStyle {
         BRIEF("Brief"),
@@ -47,8 +46,8 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
     private final List<WorkspaceEntry> wes;
 
-    public NwayConformationOutputInterpreter(ArrayList<WorkspaceEntry> wes, ExportOutput exportOutput,
-            PcompOutput pcompOutput, MpsatOutput mpsatOutput,  boolean interactive) {
+    public CompositionOutputInterpreter(List<WorkspaceEntry> wes, ExportOutput exportOutput,
+            PcompOutput pcompOutput, MpsatOutput mpsatOutput, boolean interactive) {
 
         super(wes.get(0), exportOutput, pcompOutput, mpsatOutput, interactive);
         this.wes = wes;
@@ -152,13 +151,13 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
         for (int i = 0; i < compositionViolationTrace.size(); i++) {
             StringBuilder line = new StringBuilder(indent);
-            Collection<ProjectionEvent> projectionSlice = new ArrayList<>();
+            ProjectionSlice projectionSlice = new ProjectionSlice();
             for (WorkspaceEntry we : wes) {
                 ProjectionTrace projectionTrace = componentProjectionTraceMap.get(we);
                 ProjectionEvent projectedEvent = i < projectionTrace.size() ? projectionTrace.get(i)
                         : new ProjectionEvent(ProjectionEvent.Tag.NONE, null);
 
-                projectionSlice.add(projectedEvent);
+                projectionSlice.put(we, projectedEvent);
                 line.append(convertTagToString(projectedEvent.tag)).append(" ");
             }
             String suggestedEvent = getSuggestedEventRef(projectionSlice);
@@ -202,13 +201,13 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
             List<String> inputWorkTitles = new ArrayList<>();
             List<String> outputWorkTitles = new ArrayList<>();
             List<String> internalWorkTitles = new ArrayList<>();
-            Collection<ProjectionEvent> projectionSlice = new ArrayList<>();
+            ProjectionSlice projectionSlice = new ProjectionSlice();
             for (WorkspaceEntry we : wes) {
                 ProjectionTrace projectionTrace = componentProjectionTraceMap.get(we);
                 String title = we.getTitle();
                 if (i < projectionTrace.size()) {
                     ProjectionEvent projectionEvent = projectionTrace.get(i);
-                    projectionSlice.add(projectionEvent);
+                    projectionSlice.put(we, projectionEvent);
                     if (projectionEvent.tag == ProjectionEvent.Tag.OUTPUT) {
                         outputWorkTitles.add(title);
                     }
@@ -220,7 +219,7 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
 
                         internalWorkTitles.add(title);
                     }
-                    if (projectionEvent.tag == ProjectionEvent.Tag.VIOLATION) {
+                    if (projectionEvent.tag == VIOLATION) {
                         inputWorkTitles.add(title + " (unexpected)");
                     }
                 }
@@ -240,29 +239,32 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
         }
     }
 
-    private String getSuggestedEventRef(Collection<ProjectionEvent> projectionSlice) {
+    private String getSuggestedEventRef(ProjectionSlice projectionSlice) {
         String violationEventRef = null;
         String outputEventRef = null;
         String inputEventRef = null;
         String internalEventRef = null;
         String dummyEventRef = null;
-        for (ProjectionEvent projectionEvent : projectionSlice) {
+        for (Map.Entry<WorkspaceEntry, ProjectionEvent> projectionEntry : projectionSlice.entrySet()) {
+            ProjectionEvent projectionEvent = projectionEntry.getValue();
             if (projectionEvent != null) {
+                WorkspaceEntry we = projectionEntry.getKey();
+                String projectionEventRef = getProjectionEventReference(we, projectionEvent.ref);
                 switch (projectionEvent.tag) {
                 case VIOLATION:
-                    violationEventRef = violationEventRef == null ? projectionEvent.ref : violationEventRef;
+                    violationEventRef = violationEventRef == null ? projectionEventRef : violationEventRef;
                     break;
                 case OUTPUT:
-                    outputEventRef = outputEventRef == null ? projectionEvent.ref : outputEventRef;
+                    outputEventRef = outputEventRef == null ? projectionEventRef : outputEventRef;
                     break;
                 case INPUT:
-                    inputEventRef = projectionEvent.ref;
+                    inputEventRef = projectionEventRef;
                     break;
                 case INTERNAL:
-                    internalEventRef = projectionEvent.ref;
+                    internalEventRef = projectionEventRef;
                     break;
                 case DUMMY:
-                    dummyEventRef = projectionEvent.ref;
+                    dummyEventRef = projectionEventRef;
                     break;
                 }
             }
@@ -273,6 +275,10 @@ public class NwayConformationOutputInterpreter extends ConformationOutputInterpr
                 : inputEventRef != null ? inputEventRef
                 : internalEventRef != null ? internalEventRef
                 : dummyEventRef;
+    }
+
+    public String getProjectionEventReference(WorkspaceEntry we, String projectionEvent) {
+        return projectionEvent;
     }
 
     private String convertTagToString(ProjectionEvent.Tag tag) {

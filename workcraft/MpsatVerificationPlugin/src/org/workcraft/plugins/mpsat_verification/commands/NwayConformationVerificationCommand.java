@@ -5,7 +5,7 @@ import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat_verification.gui.NwayConformationDialog;
 import org.workcraft.plugins.mpsat_verification.tasks.AbstractChainResultHandlingMonitor;
-import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.tasks.CompositionChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.NwayConformationTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainOutput;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
@@ -85,7 +85,7 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
     }
 
     public AbstractChainResultHandlingMonitor<VerificationChainOutput> getMonitor(List<WorkspaceEntry> wes) {
-        return new NwayConformationChainResultHandlingMonitor(wes);
+        return new CompositionChainResultHandlingMonitor(wes);
     }
 
     public Map<WorkspaceEntry, Map<String, String>> getRenames() {
