@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-abstract class AbstractCompositionOutputInterpreter extends ReachabilityOutputInterpreter {
+public class AbstractCompositionOutputInterpreter extends ReachabilityOutputInterpreter {
 
     private static final Pattern DEAD_SIGNAL_PATTERN = Pattern.compile(
             "Warning: signal (\\w+) is dead");
