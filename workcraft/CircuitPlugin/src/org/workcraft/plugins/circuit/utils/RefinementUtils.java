@@ -159,7 +159,7 @@ public final class RefinementUtils {
         return new ComponentInterface(model.getTitle(), getInputSignals(model), getOutputSignals(model));
     }
 
-    private static Set<String> getInputSignals(MathModel model) {
+    public static Set<String> getInputSignals(MathModel model) {
         if (model instanceof Circuit) {
             return CircuitUtils.getInputPortNames((Circuit) model);
         }
@@ -169,7 +169,7 @@ public final class RefinementUtils {
         return null;
     }
 
-    private static Set<String> getOutputSignals(MathModel model) {
+    public static Set<String> getOutputSignals(MathModel model) {
         if (model instanceof Circuit) {
             return CircuitUtils.getOutputPortNames((Circuit) model);
         }
@@ -182,15 +182,20 @@ public final class RefinementUtils {
     public static boolean isCompatible(ComponentInterface ci1, ComponentInterface ci2) {
         return (ci1 != null) && (ci2 != null)
                 && isCompatibleName(ci1.getName(), ci2.getName())
+                && isCompatibleSignals(ci1, ci2);
+    }
+
+    public static boolean isCompatibleName(String aName, String bName) {
+        return (aName != null) && aName.equals(bName);
+    }
+
+    public static boolean isCompatibleSignals(ComponentInterface ci1, ComponentInterface ci2) {
+        return (ci1 != null) && (ci2 != null)
                 && isCompatibleSignals(ci1.getInputs(), ci2.getInputs())
                 && isCompatibleSignals(ci1.getOutputs(), ci2.getOutputs());
     }
 
-    private static boolean isCompatibleName(String aName, String bName) {
-        return (aName != null) && aName.equals(bName);
-    }
-
-    private static boolean isCompatibleSignals(Set<String> aSignals, Set<String> bSignals) {
+    public static boolean isCompatibleSignals(Set<String> aSignals, Set<String> bSignals) {
         return (aSignals != null)  && aSignals.equals(bSignals);
     }
 
@@ -221,7 +226,6 @@ public final class RefinementUtils {
                 component.remove(contact);
             }
         }
-        component.getReferencedComponent().setModule(componentInterface.getName());
         for (String signal : inputs) {
             circuit.getOrCreateContact(component, signal, Contact.IOType.INPUT);
         }

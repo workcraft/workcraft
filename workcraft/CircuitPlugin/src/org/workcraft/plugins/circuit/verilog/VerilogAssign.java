@@ -1,11 +1,11 @@
 package org.workcraft.plugins.circuit.verilog;
 
 public class VerilogAssign {
-    public final String name;
+    public final VerilogNet net;
     public final String formula;
 
-    public VerilogAssign(String name, String formula) {
-        this.name = name;
+    public VerilogAssign(VerilogNet net, String formula) {
+        this.net = net;
         this.formula = formula;
     }
 

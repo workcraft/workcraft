@@ -10,7 +10,7 @@ public class ExpressionUtils {
     private static final char NEGATION_DELIMITER = '!';
 
     // Extract SET term from an expression SET + seq * RESET'
-    public static String extactSetExpression(String expression, String seqLiteral) {
+    public static String extractSetExpression(String expression, String seqLiteral) {
         String result = "";
         for (String term: getTerms(expression)) {
             if (!isResetTerm(term, seqLiteral)) {
@@ -24,7 +24,7 @@ public class ExpressionUtils {
     }
 
     // Extract RESET term from an expression SET + seq * RESET'
-    public static String extactResetExpression(String expression, String seqLiteral) {
+    public static String extractResetExpression(String expression, String seqLiteral) {
         String result = "";
         for (String term: getTerms(expression)) {
             if (isResetTerm(term, seqLiteral)) {

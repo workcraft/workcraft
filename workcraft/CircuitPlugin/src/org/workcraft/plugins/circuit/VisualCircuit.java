@@ -19,6 +19,7 @@ import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
@@ -32,25 +33,20 @@ import org.workcraft.plugins.circuit.tools.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.WorkUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
 public class VisualCircuit extends AbstractVisualModel {
 
     public static final String PROPERTY_ENVIRONMENT = "Environment";
+    private static final String REFINEMENT_MODEL_TITLE = "Refinement model";
 
     public VisualCircuit(Circuit model) {
         this(model, null);
@@ -416,25 +412,47 @@ public class VisualCircuit extends AbstractVisualModel {
             refinementModel = me.getMathModel();
         } catch (DeserialisationException e) {
             String path = FileUtils.getFullPath(file);
-            DialogUtils.showError("Cannot read refinement model from '" + path + "':\n " + e.getMessage());
+            DialogUtils.showError("Cannot read refinement model from '" + path + "':\n " + e.getMessage(),
+                    REFINEMENT_MODEL_TITLE);
             return;
         }
 
-        ComponentInterface refinementInterface;
-        if ((refinementModel instanceof Stg) || (refinementModel instanceof Circuit)) {
-            refinementInterface = RefinementUtils.getModelInterface(refinementModel);
-        } else {
-            DialogUtils.showError("Incompatible refinement model type: " + refinementModel.getDisplayName());
+        if (!(refinementModel instanceof Stg) && !(refinementModel instanceof Circuit)) {
+            DialogUtils.showError("Incompatible refinement model type: " + refinementModel.getDisplayName(),
+                    REFINEMENT_MODEL_TITLE);
             return;
         }
 
-        ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component.getReferencedComponent());
-        if (!RefinementUtils.isCompatible(componentInterface, refinementInterface)) {
+        String refinementTitle = refinementModel.getTitle();
+        String componentLabel = component.getLabel();
+        if (!RefinementUtils.isCompatibleName(refinementTitle, componentLabel)) {
             int answer = DialogUtils.showYesNoCancel(
-                    "Component interface is incompatible with the reference model."
-                    + "\n\nUpdate component pins to match the reference model signals?",
-                    "Reference model", 0);
+                    "Refinement title does not match component label."
+                            + "\n" + getBulletPair("Refinement title", refinementTitle)
+                            + "\n" + getBulletPair("Component label", componentLabel)
+                            + "\n\nUpdate component label to match refinement title?",
+                    REFINEMENT_MODEL_TITLE, 0);
 
+            if (answer == 2) {
+                return;
+            }
+            if (answer == 0) {
+                component.getReferencedComponent().setModule(refinementTitle);
+            }
+        }
+
+        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementModel);
+        ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component.getReferencedComponent());
+        if (!RefinementUtils.isCompatibleSignals(refinementInterface, componentInterface)) {
+            Set<String> missingPins = componentInterface.getMissingSignals(refinementInterface);
+            Set<String> extraPins = componentInterface.getExtraSignals(refinementInterface);
+            Set<String> mismatchPins = componentInterface.getMismatchSignals(refinementInterface);
+            int answer = DialogUtils.showYesNoCancel("Refinement interface signals do not match component pins."
+                    + getBulletPair("Missing component pin", missingPins)
+                    + getBulletPair("Unexpected component pin", extraPins)
+                    + getBulletPair("Incorrect I/O type pin", mismatchPins)
+                    + "\n\nUpdate component pins to match refinement model signals?",
+                    REFINEMENT_MODEL_TITLE, 0);
             if (answer == 2) {
                 return;
             }
@@ -443,6 +461,17 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
         component.getReferencedComponent().setRefinement(value);
+    }
+
+    private String getBulletPair(String key, String value) {
+        return PropertyHelper.BULLET_PREFIX + key + ((value == null) || value.isEmpty() ? " is empty" : (": " + value));
+    }
+
+    private String getBulletPair(String key, Set<String> value) {
+        if (value.isEmpty()) {
+            return "";
+        }
+        return "\n" + PropertyHelper.BULLET_PREFIX + key + (value.size() > 1 ? "s: " : ": ") + TextUtils.wrapItems(value);
     }
 
     private PropertyDescriptor getSetFunctionProperty(VisualFunctionContact contact) {

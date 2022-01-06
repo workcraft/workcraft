@@ -59,9 +59,16 @@ class ImportExportTests {
     }
 
     @Test
-    void testBusImportExport() throws DeserialisationException {
+    void testBusDetailedImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "bus.circuit.work");
-        String verilogName = PackageUtils.getPackagePath(getClass(), "bus.circuit.v");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "bus-detailed.circuit.v");
+        testImportExport(workName, verilogName);
+    }
+
+    @Test
+    void testBusCompactImportExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "bus-compact.circuit.v");
         testImportExport(workName, verilogName);
     }
 
