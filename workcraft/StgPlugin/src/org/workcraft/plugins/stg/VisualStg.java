@@ -3,6 +3,7 @@ package org.workcraft.plugins.stg;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
@@ -372,7 +373,7 @@ public class VisualStg extends AbstractVisualModel {
             properties.addAll(StgPropertyHelper.getSignalProperties(this));
         } else if (node instanceof VisualSignalTransition) {
             SignalTransition transition = ((VisualSignalTransition) node).getReferencedComponent();
-            properties.removeByName(AbstractVisualModel.PROPERTY_NAME);
+            properties.removeByName(Model.PROPERTY_NAME);
             properties.add(StgPropertyHelper.getSignalNameProperty(stg, transition));
             properties.add(StgPropertyHelper.getSignalTypeProperty(stg, transition));
             properties.add(StgPropertyHelper.getDirectionProperty(stg, transition));

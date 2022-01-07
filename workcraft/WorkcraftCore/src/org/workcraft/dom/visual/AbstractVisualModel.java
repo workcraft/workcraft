@@ -37,7 +37,6 @@ import java.util.*;
 public abstract class AbstractVisualModel extends AbstractModel<VisualNode, VisualConnection> implements VisualModel {
 
     public static final String PROPERTY_TITLE = "Title";
-    public static final String PROPERTY_NAME = "Name";
 
     private MathModel mathModel;
     private Container currentLevel;
@@ -756,7 +755,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
     private PropertyDescriptor getNameProperty(VisualNode node) {
         String name = getMathName(node);
-        return new PropertyDeclaration<>(String.class, PROPERTY_NAME,
+        return new PropertyDeclaration<>(String.class, Model.PROPERTY_NAME,
                 value -> {
                     Identifier.validate(value);
                     if (node instanceof VisualComponent) {
@@ -767,7 +766,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
                     }
                     if (!value.equals(name)) {
                         setMathName(node, value);
-                        node.sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+                        node.sendNotification(new PropertyChangedEvent(node, Model.PROPERTY_NAME));
                     }
                 },
                 () -> name == null ? null : Identifier.truncateNamespaceSeparator(name));
