@@ -58,7 +58,7 @@ public class VerilogImporter implements Importer {
         public final String outputName;
         public final String setFunction;
         public final String resetFunction;
-        public final HashMap<String, String> connections; // (portName -> wireName)
+        public final HashMap<String, String> connections; // (portName -> netName)
 
         AssignGate(String outputName, String setFunction, String resetFunction, HashMap<String, String> connections) {
             this.outputName = outputName;
@@ -68,7 +68,7 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private static class Wire {
+    private static class Net {
         public FunctionContact source = null;
         public HashSet<FunctionContact> sinks = new HashSet<>();
         public HashSet<FunctionContact> undefined = new HashSet<>();
@@ -140,8 +140,10 @@ public class VerilogImporter implements Importer {
         moduleFileNames = dialog.getModuleFileNames();
         Collection<String> badSaveFilePaths = getBadSaveFilePaths(descendantModules, dir);
         if (!badSaveFilePaths.isEmpty()) {
-            String msg = "The following files already exist:\n"
-                    + String.join("\n", badSaveFilePaths) + "\nOverwrite?";
+            String delimiter = "\n" + PropertyHelper.BULLET_PREFIX;
+            String msg = "The following files already exist:" + delimiter
+                    + String.join(delimiter, badSaveFilePaths)
+                    + "\n\nOverwrite these files and proceed with import?";
 
             if (!DialogUtils.showConfirmWarning(msg, "Import hierarchical Verilog", false)) {
                 throw new OperationCancelledException();
@@ -227,9 +229,9 @@ public class VerilogImporter implements Importer {
         Circuit circuit = new Circuit();
         circuit.setTitle(verilogModule.name);
         HashMap<VerilogInstance, FunctionComponent> instanceComponentMap = new HashMap<>();
-        HashMap<String, Wire> wires = createPorts(circuit, verilogModule);
+        HashMap<String, Net> nets = createPorts(circuit, verilogModule);
         for (VerilogAssign verilogAssign : verilogModule.assigns) {
-            createAssignGate(circuit, verilogAssign, wires);
+            createAssignGate(circuit, verilogAssign, nets);
         }
         for (VerilogInstance verilogInstance : verilogModule.instances) {
             SubstitutionRule substitutionRule = null;
@@ -248,23 +250,35 @@ public class VerilogImporter implements Importer {
             }
             FunctionComponent component;
             if (gate != null) {
-                component = createLibraryGate(circuit, verilogInstance, wires, gate, substitutionRule);
+                component = createLibraryGate(circuit, verilogInstance, nets, gate, substitutionRule);
             } else if (isMutexInstance(verilogInstance)) {
                 Mutex mutexInstance = instanceToMutexWithProtocol(verilogInstance, mutexes);
-                component = createMutex(circuit, mutexInstance, wires);
+                component = createMutex(circuit, mutexInstance, nets);
             } else {
-                component = createBlackBox(circuit, verilogInstance, wires, descendantModules);
+                component = createBlackBox(circuit, verilogInstance, nets, descendantModules);
             }
             instanceComponentMap.put(verilogInstance, component);
         }
-        insertMutexes(mutexes, circuit, wires);
-        createConnections(circuit, wires);
-        Map<String, Boolean> signalStates = verilogModule.signalStates;
-        setInitialState(wires, signalStates);
+        insertMutexes(mutexes, circuit, nets);
+        createConnections(circuit, nets);
+        Map<String, Boolean> signalStates = getSignalState(verilogModule.initialState);
+        setInitialState(nets, signalStates);
         setZeroDelayAttribute(instanceComponentMap);
-        Set<String> initialisedSignals = signalStates == null ? Collections.emptySet() : signalStates.keySet();
-        checkImportResult(circuit, wires.keySet(), initialisedSignals);
+        checkImportResult(circuit, nets.keySet(), signalStates.keySet());
         return circuit;
+    }
+
+    private Map<String, Boolean> getSignalState(Map<VerilogNet, Boolean> netStates) {
+        Map<String, Boolean> result = new HashMap<>();
+        if (netStates != null) {
+            for (Map.Entry<VerilogNet, Boolean> entry : netStates.entrySet()) {
+                VerilogNet verilogNet = entry.getKey();
+                Boolean state = entry.getValue();
+                String netName = VerilogUtils.getNetBusSuffixName(verilogNet);
+                result.put(netName, state);
+            }
+        }
+        return result;
     }
 
     private void checkImportResult(Circuit circuit, Set<String> usedSignals, Set<String> initialisedSignals) {
@@ -349,13 +363,15 @@ public class VerilogImporter implements Importer {
         if (!useNamedConnections && (portIndexIfNoPortName < verilogInstance.connections.size())) {
             verilogConnection = verilogInstance.connections.get(portIndexIfNoPortName);
         }
-        return verilogConnection == null ? null : new Signal(getWireName(verilogConnection), Signal.Type.INTERNAL);
+        return verilogConnection == null ? null
+                : new Signal(VerilogUtils.getNetBusSuffixName(verilogConnection.net), Signal.Type.INTERNAL);
     }
 
-    private FunctionComponent createAssignGate(Circuit circuit, VerilogAssign verilogAssign, HashMap<String, Wire> wires) {
+    private FunctionComponent createAssignGate(Circuit circuit, VerilogAssign verilogAssign, HashMap<String, Net> nets) {
         final FunctionComponent component = new FunctionComponent();
         circuit.add(component);
-        reparentAndRenameComponent(circuit, component, verilogAssign.name);
+        String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
+        reparentAndRenameComponent(circuit, component, netName);
 
         AssignGate assignGate;
         if ((celementAssign && isCelementAssign(verilogAssign))
@@ -367,15 +383,15 @@ public class VerilogImporter implements Importer {
         }
         FunctionContact outContact = null;
         for (Map.Entry<String, String> connection: assignGate.connections.entrySet()) {
-            Wire wire = getOrCreateWire(connection.getValue(), wires);
+            Net net = getOrCreateNet(connection.getValue(), nets);
             FunctionContact contact = new FunctionContact();
             if (connection.getKey().equals(assignGate.outputName)) {
                 contact.setIOType(IOType.OUTPUT);
                 outContact = contact;
-                wire.source = contact;
+                net.source = contact;
             } else {
                 contact.setIOType(IOType.INPUT);
-                wire.sinks.add(contact);
+                net.sinks.add(contact);
             }
             component.add(contact);
             if (connection.getKey() != null) {
@@ -397,19 +413,22 @@ public class VerilogImporter implements Importer {
     }
 
     private boolean isSequentialAssign(VerilogAssign verilogAssign) {
-        Expression expression = convertStringToExpression(verilogAssign.formula);
+        String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
+        String formula = VerilogUtils.getFormulaWithBusSuffixNames(verilogAssign.formula);
+        Expression expression = convertFormulaToExpression(formula);
         LinkedList<Literal> literals = new LinkedList<>(expression.getLiterals());
-        return literals.stream().anyMatch(literal -> verilogAssign.name.equals(literal.name));
+        return literals.stream().anyMatch(literal -> netName.equals(literal.name));
     }
 
     private boolean isCelementAssign(VerilogAssign verilogAssign) {
         try {
-            BooleanFormula formula = BooleanFormulaParser.parse(verilogAssign.formula);
+            BooleanFormula formula = BooleanFormulaParser.parse(VerilogUtils.getFormulaWithBusSuffixNames(verilogAssign.formula));
             List<BooleanVariable> variables = FormulaUtils.extractOrderedVariables(formula);
             if (variables.size() != 3) {
                 return false;
             }
-            if (variables.stream().noneMatch(var -> verilogAssign.name.equals(var.getLabel()))) {
+            String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
+            if (variables.stream().noneMatch(var -> netName.equals(var.getLabel()))) {
                 return false;
             }
             BooleanVariable aVar = variables.get(0);
@@ -422,40 +441,44 @@ public class VerilogImporter implements Importer {
     }
 
     private AssignGate createCombinationalAssignGate(VerilogAssign verilogAssign) {
-        Expression expression = convertStringToExpression(verilogAssign.formula);
+        String formula = VerilogUtils.getFormulaWithBusSuffixNames(verilogAssign.formula);
+        Expression expression = convertFormulaToExpression(formula);
         int index = 0;
         HashMap<String, String> connections = new HashMap<>(); // (port -> net)
         String outputName = getPrimitiveGatePinName(0);
-        connections.put(outputName, verilogAssign.name);
+        String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
+        connections.put(outputName, netName);
         LinkedList<Literal> literals = new LinkedList<>(expression.getLiterals());
         Collections.reverse(literals);
         for (Literal literal: literals) {
-            String netName = literal.name;
+            String literalName = literal.name;
             String name = getPrimitiveGatePinName(++index);
             literal.name = name;
-            connections.put(name, netName);
+            connections.put(name, literalName);
         }
         return new AssignGate(outputName, expression.toString(), null, connections);
     }
 
     private AssignGate createSequentialAssignGate(VerilogAssign verilogAssign) {
-        Expression expression = convertStringToExpression(verilogAssign.formula);
+        String formula = VerilogUtils.getFormulaWithBusSuffixNames(verilogAssign.formula);
+        Expression expression = convertFormulaToExpression(formula);
         String function = expression.toString();
 
-        String setFunction = ExpressionUtils.extactSetExpression(function, verilogAssign.name);
-        Expression setExpression = convertStringToExpression(setFunction);
+        String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
+        String setFunction = ExpressionUtils.extractSetExpression(function, netName);
+        Expression setExpression = convertFormulaToExpression(setFunction);
 
-        String resetFunction = ExpressionUtils.extactResetExpression(function, verilogAssign.name);
-        Expression resetExpression = convertStringToExpression(resetFunction);
+        String resetFunction = ExpressionUtils.extractResetExpression(function, netName);
+        Expression resetExpression = convertFormulaToExpression(resetFunction);
         if (DebugCommonSettings.getVerboseImport()) {
-            LogUtils.logInfo("Extracting SET and RESET from assign " + verilogAssign.name + " = " + verilogAssign.formula);
+            LogUtils.logInfo("Extracting SET and RESET from assign " + netName + " = " + formula);
             LogUtils.logInfo("  Function: " + function);
             LogUtils.logInfo("  Set function: " + setFunction);
             LogUtils.logInfo("  Reset function: " + resetFunction);
         }
         HashMap<String, String> connections = new HashMap<>();
         String outputName = getPrimitiveGatePinName(0);
-        connections.put(outputName, verilogAssign.name);
+        connections.put(outputName, netName);
 
         LinkedList<Literal> literals = new LinkedList<>();
         literals.addAll(setExpression.getLiterals());
@@ -464,19 +487,19 @@ public class VerilogImporter implements Importer {
         int index = 0;
         HashMap<String, String> netToPortMap = new HashMap<>();
         for (Literal literal: literals) {
-            String netName = literal.name;
-            String name = netToPortMap.get(netName);
+            String literalName = literal.name;
+            String name = netToPortMap.get(literalName);
             if (name == null) {
                 name = getPrimitiveGatePinName(++index);
-                netToPortMap.put(netName, name);
+                netToPortMap.put(literalName, name);
             }
             literal.name = name;
-            connections.put(name, netName);
+            connections.put(name, literalName);
         }
         return new AssignGate(outputName, setExpression.toString(), resetExpression.toString(), connections);
     }
 
-    private Expression convertStringToExpression(String formula) {
+    private Expression convertFormulaToExpression(String formula) {
         InputStream expressionStream = new ByteArrayInputStream(formula.getBytes());
         ExpressionParser expressionParser = new ExpressionParser(expressionStream);
         if (DebugCommonSettings.getParserTracing()) {
@@ -493,30 +516,30 @@ public class VerilogImporter implements Importer {
         return expression;
     }
 
-    private HashMap<String, Wire> createPorts(Circuit circuit, VerilogModule verilogModule) {
-        HashMap<String, Wire> wires = new HashMap<>();
+    private HashMap<String, Net> createPorts(Circuit circuit, VerilogModule verilogModule) {
+        HashMap<String, Net> nets = new HashMap<>();
         for (VerilogPort verilogPort: verilogModule.ports) {
             List<String> portNames = getPortNames(verilogPort);
             if (verilogPort.range != null) {
-                LogUtils.logInfo("Bus " + verilogPort.name + verilogPort.range + " is split to wires: "
+                LogUtils.logInfo("Bus " + verilogPort.name + verilogPort.range + " is split to nets: "
                         + String.join(", ", portNames));
             }
             for (String portName: portNames) {
-                createPort(circuit, wires, portName, verilogPort.isInput());
+                createPort(circuit, nets, portName, verilogPort.isInput());
             }
         }
-        return wires;
+        return nets;
     }
 
-    private void createPort(Circuit circuit, HashMap<String, Wire> wires, String portName, boolean isInput) {
+    private void createPort(Circuit circuit, HashMap<String, Net> nets, String portName, boolean isInput) {
         FunctionContact contact = circuit.createNodeWithHierarchy(portName, circuit.getRoot(), FunctionContact.class);
-        Wire wire = getOrCreateWire(portName, wires);
+        Net net = getOrCreateNet(portName, nets);
         if (isInput) {
             contact.setIOType(IOType.INPUT);
-            wire.source = contact;
+            net.source = contact;
         } else {
             contact.setIOType(IOType.OUTPUT);
-            wire.sinks.add(contact);
+            net.sinks.add(contact);
         }
     }
 
@@ -529,19 +552,17 @@ public class VerilogImporter implements Importer {
             int second = verilogPort.range.getSecond();
             if (first < second) {
                 for (int i = first; i <= second; i++) {
-                    result.add(verilogPort.name + getBusSuffix(i));
+                    VerilogNet verilogNet = new VerilogNet(verilogPort.name, i);
+                    result.add(VerilogUtils.getNetBusSuffixName(verilogNet));
                 }
             } else {
                 for (int i = first; i >= second; i--) {
-                    result.add(verilogPort.name + getBusSuffix(i));
+                    VerilogNet verilogNet = new VerilogNet(verilogPort.name, i);
+                    result.add(VerilogUtils.getNetBusSuffixName(verilogNet));
                 }
             }
         }
         return result;
-    }
-
-    private String getBusSuffix(Integer index) {
-        return (index == null) ? "" : CircuitSettings.getBusSuffix().replace("$", Integer.toString(index));
     }
 
     private Gate createPrimitiveGate(VerilogInstance verilogInstance) {
@@ -612,7 +633,7 @@ public class VerilogImporter implements Importer {
     }
 
     private FunctionComponent createLibraryGate(Circuit circuit, VerilogInstance verilogInstance,
-            HashMap<String, Wire> wires, Gate gate, SubstitutionRule substitutionRule) {
+            HashMap<String, Net> nets, Gate gate, SubstitutionRule substitutionRule) {
 
         String msg = "Processing instance '" + verilogInstance.name + "' in module '" + circuit.getTitle() + "': ";
         FunctionComponent component = GenlibUtils.instantiateGate(gate, verilogInstance.name, circuit);
@@ -624,8 +645,8 @@ public class VerilogImporter implements Importer {
                 continue;
             }
 
-            String wireName = getWireName(verilogConnection);
-            Wire wire = getOrCreateWire(wireName, wires);
+            String netName = VerilogUtils.getNetBusSuffixName(verilogConnection.net);
+            Net net = getOrCreateNet(netName, nets);
 
             String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index)
                     : SubstitutionUtils.getContactSubstitutionName(verilogConnection.name, substitutionRule, msg);
@@ -634,9 +655,9 @@ public class VerilogImporter implements Importer {
             if (node instanceof FunctionContact) {
                 FunctionContact contact = (FunctionContact) node;
                 if (contact.isInput()) {
-                    wire.sinks.add(contact);
+                    net.sinks.add(contact);
                 } else {
-                    wire.source = contact;
+                    net.source = contact;
                 }
             }
         }
@@ -659,12 +680,8 @@ public class VerilogImporter implements Importer {
         return result;
     }
 
-    private String getWireName(VerilogConnection verilogConnection) {
-        return verilogConnection.netName + getBusSuffix(verilogConnection.netIndex);
-    }
-
     private FunctionComponent createBlackBox(Circuit circuit, VerilogInstance verilogInstance,
-            HashMap<String, Wire> wires, Collection<VerilogModule> verilogModules) {
+            HashMap<String, Net> nets, Collection<VerilogModule> verilogModules) {
 
         final FunctionComponent component = new FunctionComponent();
         VerilogModule verilogModule = getVerilogModule(verilogModules, verilogInstance.moduleName);
@@ -690,17 +707,18 @@ public class VerilogImporter implements Importer {
                 continue;
             }
             VerilogPort verilogPort = instancePorts.get(verilogConnection.name);
-            Wire wire = getOrCreateWire(verilogConnection.netName, wires);
+            String netName = VerilogUtils.getNetBusSuffixName(verilogConnection.net);
+            Net net = getOrCreateNet(netName, nets);
             FunctionContact contact = new FunctionContact();
             if (verilogPort == null) {
-                wire.undefined.add(contact);
+                net.undefined.add(contact);
             } else {
                 if (verilogPort.isInput()) {
                     contact.setIOType(IOType.INPUT);
-                    wire.sinks.add(contact);
+                    net.sinks.add(contact);
                 } else {
                     contact.setIOType(IOType.OUTPUT);
-                    wire.source = contact;
+                    net.source = contact;
                 }
             }
             component.add(contact);
@@ -722,7 +740,7 @@ public class VerilogImporter implements Importer {
         return null;
     }
 
-    private void insertMutexes(Collection<Mutex> mutexes, Circuit circuit, HashMap<String, Wire> wires) {
+    private void insertMutexes(Collection<Mutex> mutexes, Circuit circuit, HashMap<String, Net> nets) {
         LinkedList<String> internalSignals = new LinkedList<>();
         for (Mutex instanceMutex : mutexes == null ? new ArrayList<Mutex>() : mutexes) {
             if (instanceMutex.g1.type == Signal.Type.INTERNAL) {
@@ -731,9 +749,9 @@ public class VerilogImporter implements Importer {
             if (instanceMutex.g2.type == Signal.Type.INTERNAL) {
                 internalSignals.add(instanceMutex.g2.name);
             }
-            createMutex(circuit, instanceMutex, wires);
-            removeTemporaryOutput(circuit, wires, instanceMutex.r1);
-            removeTemporaryOutput(circuit, wires, instanceMutex.r2);
+            createMutex(circuit, instanceMutex, nets);
+            removeTemporaryOutput(circuit, nets, instanceMutex.r1);
+            removeTemporaryOutput(circuit, nets, instanceMutex.r2);
         }
         if (!internalSignals.isEmpty()) {
             DialogUtils.showWarning("Mutex grants will be exposed as output ports: "
@@ -743,7 +761,7 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private void removeTemporaryOutput(Circuit circuit, HashMap<String, Wire> wires, Signal signal) {
+    private void removeTemporaryOutput(Circuit circuit, HashMap<String, Net> nets, Signal signal) {
         if (signal.type == Signal.Type.INTERNAL) {
             Node node = circuit.getNodeByReference(signal.name);
             if (node instanceof FunctionContact) {
@@ -751,11 +769,11 @@ public class VerilogImporter implements Importer {
                 if (contact.isPort() && contact.isOutput()) {
                     LogUtils.logInfo("Signal '" + signal.name + "' is restored as internal.");
                     circuit.remove(contact);
-                    Wire wire = wires.get(signal.name);
-                    if (wire != null) {
-                        wire.sinks.remove(contact);
-                        if ((wire.source != null) && (wire.source.getParent() instanceof FunctionComponent)) {
-                            FunctionComponent component = (FunctionComponent) wire.source.getParent();
+                    Net net = nets.get(signal.name);
+                    if (net != null) {
+                        net.sinks.remove(contact);
+                        if ((net.source != null) && (net.source.getParent() instanceof FunctionComponent)) {
+                            FunctionComponent component = (FunctionComponent) net.source.getParent();
                             reparentAndRenameComponent(circuit, component, signal.name);
                         }
                     }
@@ -786,7 +804,7 @@ public class VerilogImporter implements Importer {
         circuit.setName(component, derivedName);
     }
 
-    private FunctionComponent createMutex(Circuit circuit, Mutex instance, HashMap<String, Wire> wires) {
+    private FunctionComponent createMutex(Circuit circuit, Mutex instance, HashMap<String, Net> nets) {
         Mutex module = CircuitSettings.parseMutexData();
         if ((module == null) || (module.name == null)) {
             return null;
@@ -799,10 +817,10 @@ public class VerilogImporter implements Importer {
         component.setIsArbitrationPrimitive(true);
 
         reparentAndRenameComponent(circuit, component, instance.name);
-        FunctionContact r1Contact = addMutexPin(circuit, component, module.r1, instance.r1, wires);
-        FunctionContact g1Contact = addMutexPin(circuit, component, module.g1, instance.g1, wires);
-        FunctionContact r2Contact = addMutexPin(circuit, component, module.r2, instance.r2, wires);
-        FunctionContact g2Contact = addMutexPin(circuit, component, module.g2, instance.g2, wires);
+        FunctionContact r1Contact = addMutexPin(circuit, component, module.r1, instance.r1, nets);
+        FunctionContact g1Contact = addMutexPin(circuit, component, module.g1, instance.g1, nets);
+        FunctionContact r2Contact = addMutexPin(circuit, component, module.r2, instance.r2, nets);
+        FunctionContact g2Contact = addMutexPin(circuit, component, module.g2, instance.g2, nets);
 
         BooleanFormula g1Set = MutexUtils.getGrantSet(protocol, r1Contact, g2Contact, r2Contact);
         g1Contact.setSetFunctionQuiet(g1Set);
@@ -815,12 +833,12 @@ public class VerilogImporter implements Importer {
         BooleanFormula g2Reset = MutexUtils.getGrantReset(r2Contact);
         g2Contact.setResetFunctionQuiet(g2Reset);
 
-        setMutexGrant(circuit, instance.g1, wires);
-        setMutexGrant(circuit, instance.g2, wires);
+        setMutexGrant(circuit, instance.g1, nets);
+        setMutexGrant(circuit, instance.g2, nets);
         return component;
     }
 
-    private void setMutexGrant(Circuit circuit, Signal signal, HashMap<String, Wire> wires) {
+    private void setMutexGrant(Circuit circuit, Signal signal, HashMap<String, Net> nets) {
         Node node = circuit.getNodeByReference(signal.name);
         if (node instanceof FunctionContact) {
             FunctionContact port = (FunctionContact) node;
@@ -833,13 +851,13 @@ public class VerilogImporter implements Importer {
                 port.setIOType(IOType.OUTPUT);
                 break;
             }
-            Wire wire = getOrCreateWire(signal.name, wires);
+            Net wire = getOrCreateNet(signal.name, nets);
             wire.sinks.add(port);
         }
     }
 
     private FunctionContact addMutexPin(Circuit circuit, FunctionComponent component, Signal port,
-            Signal signal, HashMap<String, Wire> wires) {
+            Signal signal, HashMap<String, Net> nets) {
 
         FunctionContact contact = new FunctionContact();
         if (port.type == Signal.Type.INPUT) {
@@ -849,101 +867,105 @@ public class VerilogImporter implements Importer {
         }
         component.add(contact);
         circuit.setName(contact, port.name);
-        Wire wire = getOrCreateWire(signal.name, wires);
+        Net net = getOrCreateNet(signal.name, nets);
         if (port.type == Signal.Type.INPUT) {
-            wire.sinks.add(contact);
+            net.sinks.add(contact);
         } else {
-            wire.source = contact;
+            net.source = contact;
         }
         return contact;
     }
 
-    private Wire getOrCreateWire(String name, HashMap<String, Wire> wires) {
-        Wire wire = wires.get(name);
-        if (wire == null) {
-            wire = new Wire();
-            wires.put(name, wire);
+    private Net getOrCreateNet(String name, HashMap<String, Net> nets) {
+        Net net = nets.get(name);
+        if (net == null) {
+            net = new Net();
+            nets.put(name, net);
         }
-        return wire;
+        return net;
     }
 
-    private void createConnections(Circuit circuit, Map<String, Wire> wires) {
+    private void createConnections(Circuit circuit, Map<String, Net> nets) {
         boolean finalised = false;
         while (!finalised) {
             finalised = true;
-            for (Wire wire: wires.values()) {
-                finalised &= finaliseWire(circuit, wire);
+            for (Net net : nets.values()) {
+                finalised &= finaliseNet(circuit, net);
             }
         }
-        for (Wire wire: wires.values()) {
-            createConnection(circuit, wire);
+        for (Net net : nets.values()) {
+            createConnection(circuit, net);
         }
     }
 
-    private boolean finaliseWire(Circuit circuit, Wire wire) {
+    private boolean finaliseNet(Circuit circuit, Net net) {
         boolean result = true;
-        if (wire.source == null) {
-            if (wire.undefined.size() == 1) {
-                wire.source = wire.undefined.iterator().next();
-                if (wire.source.isPort()) {
-                    wire.source.setIOType(IOType.INPUT);
+        if (net.source == null) {
+            if (net.undefined.size() == 1) {
+                net.source = net.undefined.iterator().next();
+                if (net.source.isPort()) {
+                    net.source.setIOType(IOType.INPUT);
                 } else {
-                    wire.source.setIOType(IOType.OUTPUT);
+                    net.source.setIOType(IOType.OUTPUT);
                 }
-                String contactRef = circuit.getNodeReference(wire.source);
+                String contactRef = circuit.getNodeReference(net.source);
                 LogUtils.logInfo("Source contact detected: " + contactRef);
-                wire.undefined.clear();
+                net.undefined.clear();
                 result = false;
             }
-        } else if (!wire.undefined.isEmpty()) {
-            wire.sinks.addAll(wire.undefined);
-            for (FunctionContact contact: wire.undefined) {
+        } else if (!net.undefined.isEmpty()) {
+            net.sinks.addAll(net.undefined);
+            for (FunctionContact contact: net.undefined) {
                 if (contact.isPort()) {
                     contact.setIOType(IOType.OUTPUT);
                 } else {
                     contact.setIOType(IOType.INPUT);
                 }
             }
-            String contactRefs = ReferenceHelper.getNodesAsString(circuit, wire.undefined);
+            String contactRefs = ReferenceHelper.getNodesAsString(circuit, net.undefined);
             LogUtils.logInfo("Sink contacts detected: " + contactRefs);
-            wire.undefined.clear();
+            net.undefined.clear();
             result = false;
         }
         return result;
     }
 
-    private void createConnection(Circuit circuit, Wire wire) {
-        Contact sourceContact = wire.source;
+    private void createConnection(Circuit circuit, Net net) {
+        Contact sourceContact = net.source;
+        String title = circuit.getTitle();
+        String prefix = "In the imported module " + (title.isEmpty() ? "" : "'" + title + "' ");
         if (sourceContact == null) {
             HashSet<FunctionContact> contacts = new HashSet<>();
-            contacts.addAll(wire.sinks);
-            contacts.addAll(wire.undefined);
+            contacts.addAll(net.sinks);
+            contacts.addAll(net.undefined);
             if (!contacts.isEmpty()) {
-                String contactRefs = ReferenceHelper.getNodesAsString(circuit, wire.undefined);
-                LogUtils.logError("Wire without a source is connected to the following contacts: " + contactRefs);
+                Set<String> contactRefs = ReferenceHelper.getReferenceSet(circuit, contacts);
+                LogUtils.logError(TextUtils.wrapMessageWithItems(prefix
+                        + "net without a source is connected to contact", contactRefs));
             }
         } else {
             String sourceRef = circuit.getNodeReference(sourceContact);
-            if (!wire.undefined.isEmpty()) {
-                String contactRefs = ReferenceHelper.getNodesAsString(circuit, wire.undefined);
-                LogUtils.logError("Wire from contact '" + sourceRef + "' has undefined sinks: " + contactRefs);
+            if (!net.undefined.isEmpty()) {
+                Set<String> contactRefs = ReferenceHelper.getReferenceSet(circuit, net.undefined);
+                LogUtils.logError(TextUtils.wrapMessageWithItems(prefix
+                        + "net from contact '" + sourceRef + "' has undefined sink", contactRefs));
             }
             if (sourceContact.isPort() && sourceContact.isOutput()) {
                 sourceContact.setIOType(IOType.INPUT);
-                LogUtils.logWarning("Source contact '" + sourceRef + "' is changed to input port.");
+                LogUtils.logWarning(prefix + "source contact '" + sourceRef + "' is changed to input port");
             }
             if (!sourceContact.isPort() && sourceContact.isInput()) {
                 sourceContact.setIOType(IOType.OUTPUT);
-                LogUtils.logWarning("Source contact '" + sourceRef + "' is changed to output pin.");
+                LogUtils.logWarning(prefix + "source contact '" + sourceRef + "' is changed to output pin");
             }
-            for (FunctionContact sinkContact: wire.sinks) {
+            for (FunctionContact sinkContact: net.sinks) {
                 if (sinkContact.isPort() && sinkContact.isInput()) {
                     sinkContact.setIOType(IOType.OUTPUT);
-                    LogUtils.logWarning("Sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to output port.");
+                    LogUtils.logWarning(prefix + "sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to output port");
                 }
                 if (!sinkContact.isPort() && sinkContact.isOutput()) {
                     sinkContact.setIOType(IOType.INPUT);
-                    LogUtils.logWarning("Sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to input pin.");
+                    LogUtils.logWarning(prefix + "sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to input pin");
                 }
                 try {
                     circuit.connect(sourceContact, sinkContact);
@@ -968,28 +990,26 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private void setInitialState(Map<String, Wire> wires, Map<String, Boolean> signalStates) {
-        // Set all signals first to 1 and then to 0, to make sure they switch and trigger the neighbours.
-        for (String signalName : wires.keySet()) {
-            Wire wire = wires.get(signalName);
-            if (wire.source != null) {
-                wire.source.setInitToOne(true);
+    private void setInitialState(Map<String, Net> nets, Map<String, Boolean> signalStates) {
+        // Set all signals first to 1 and then to 0, to make sure they switch and trigger the neighbours
+        for (String signalName : nets.keySet()) {
+            Net net = nets.get(signalName);
+            if (net.source != null) {
+                net.source.setInitToOne(true);
             }
         }
-        for (String signalName : wires.keySet()) {
-            Wire wire = wires.get(signalName);
-            if (wire.source != null) {
-                wire.source.setInitToOne(false);
+        for (String signalName : nets.keySet()) {
+            Net net = nets.get(signalName);
+            if (net.source != null) {
+                net.source.setInitToOne(false);
             }
         }
-        // Set all signals specified as high to 1.
-        if (signalStates != null) {
-            for (String signalName : wires.keySet()) {
-                Wire wire = wires.get(signalName);
-                if ((wire.source != null) && signalStates.containsKey(signalName)) {
-                    boolean signalState = signalStates.get(signalName);
-                    wire.source.setInitToOne(signalState);
-                }
+        // Set all signals specified as high to 1
+        for (String signalName : nets.keySet()) {
+            Net net = nets.get(signalName);
+            if ((net.source != null) && signalStates.containsKey(signalName)) {
+                boolean signalState = signalStates.get(signalName);
+                net.source.setInitToOne(signalState);
             }
         }
     }

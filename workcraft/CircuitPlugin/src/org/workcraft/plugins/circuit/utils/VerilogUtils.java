@@ -3,6 +3,7 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.utils.LogUtils;
@@ -145,10 +146,13 @@ public final class VerilogUtils {
 
         LogUtils.logMessage("module " + verilogModule.name + " (" + portNames + ");");
         for (VerilogPort verilogPort : verilogModule.ports) {
-            LogUtils.logMessage("    " + verilogPort.type + " " + ((verilogPort.range == null) ? "" : verilogPort.range + " ") + verilogPort.name + ";");
+            LogUtils.logMessage("    " + verilogPort.type + " "
+                    + ((verilogPort.range == null) ? "" : verilogPort.range + " ")
+                    + verilogPort.name + ";");
         }
         for (VerilogAssign verilogAssign : verilogModule.assigns) {
-            LogUtils.logMessage("    assign " + verilogAssign.name + " = " + verilogAssign.formula + ";");
+            String wireName = getNetBusIndexName(verilogAssign.net);
+            LogUtils.logMessage("    assign " + wireName + " = " + verilogAssign.formula + ";");
         }
 
         for (VerilogInstance verilogInstance : verilogModule.instances) {
@@ -156,17 +160,32 @@ public final class VerilogUtils {
             String pinNames = verilogInstance.connections.stream()
                     .map(VerilogUtils::getConnectionString)
                     .collect(Collectors.joining(", "));
+
             LogUtils.logMessage("    " + verilogInstance.moduleName + " " + instanceName + " (" + pinNames + ");");
         }
         LogUtils.logMessage("endmodule\n");
     }
 
-    public static String getConnectionString(VerilogConnection verilogConnection) {
-        String result = verilogConnection.netName + ((verilogConnection.netIndex == null) ? "" : "[" + verilogConnection.netIndex + "]");
-        if (verilogConnection.name != null) {
-            result = "." + verilogConnection.name + "(" + result + ")";
-        }
-        return result;
+    private static String getConnectionString(VerilogConnection verilogConnection) {
+        String netName = getNetBusIndexName(verilogConnection.net);
+        return verilogConnection.name == null ? netName : "." + verilogConnection.name + "(" + netName + ")";
+    }
+
+    public static String getNetBusIndexName(VerilogNet net) {
+        return net.getName() + (net.getIndex() == null ? "" : "[" + net.getIndex() + "]");
+    }
+
+    public static String getNetBusSuffixName(VerilogNet net) {
+        return net.getName() + getBusSuffix(net.getIndex());
+    }
+
+    private static String getBusSuffix(Integer index) {
+        return (index == null) ? "" : CircuitSettings.getBusSuffix().replace("$", Integer.toString(index));
+    }
+
+    public static String getFormulaWithBusSuffixNames(String verilogFormula) {
+        String busSuffixReplacement = CircuitSettings.getBusSuffix().replace("$", "$1");
+        return verilogFormula.replaceAll("\\[(\\d+)]", busSuffixReplacement);
     }
 
 }

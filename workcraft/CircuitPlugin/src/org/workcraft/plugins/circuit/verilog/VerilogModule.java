@@ -8,16 +8,16 @@ public class VerilogModule {
     public final List<VerilogPort> ports;
     public final List<VerilogAssign> assigns;
     public final List<VerilogInstance> instances;
-    public final Map<String, Boolean> signalStates;
+    public final Map<VerilogNet, Boolean> initialState;
 
     public VerilogModule(String name, List<VerilogPort> ports, List<VerilogAssign> assigns,
-            List<VerilogInstance> instances, Map<String, Boolean> signalStates) {
+            List<VerilogInstance> instances, Map<VerilogNet, Boolean> initialState) {
 
         this.name = name;
         this.ports = ports;
         this.assigns = assigns;
         this.instances = instances;
-        this.signalStates = signalStates;
+        this.initialState = initialState;
     }
 
     public boolean isEmpty() {

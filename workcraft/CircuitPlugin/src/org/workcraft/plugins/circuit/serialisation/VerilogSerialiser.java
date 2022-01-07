@@ -41,21 +41,22 @@ public class VerilogSerialiser implements ModelSerialiser {
         if (model instanceof Circuit) {
             Circuit circuit = (Circuit) model;
             Set<FunctionComponent> badComponents = RefinementUtils.getIncompatibleRefinementCircuitComponents(circuit);
-            if (badComponents.isEmpty()) {
-                PrintWriter writer = new PrintWriter(out);
-                writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
-                refinementCircuits.clear();
-                substitutionRules.clear();
-                substitutionRules.putAll(SubstitutionUtils.readExportSubstitutionRules());
-                writeCircuit(writer, circuit);
-                writeRefinementCircuits(writer);
-                writer.close();
-            } else {
-                String msg = TextUtils.wrapMessageWithItems("Incompatible refinement interface for component",
+            if (!badComponents.isEmpty()) {
+                String msg = TextUtils.wrapMessageWithItems("Incompatible refinement for component",
                         ReferenceHelper.getReferenceSet(circuit, badComponents));
 
                 DialogUtils.showError(msg);
+                return refs;
             }
+
+            PrintWriter writer = new PrintWriter(out);
+            writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
+            refinementCircuits.clear();
+            substitutionRules.clear();
+            substitutionRules.putAll(SubstitutionUtils.readExportSubstitutionRules());
+            writeCircuit(writer, circuit);
+            writeRefinementCircuits(writer);
+            writer.close();
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }

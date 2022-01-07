@@ -9,6 +9,8 @@ import java.util.Set;
 
 public interface Model<N extends Node, C extends Connection> extends NodeContext<N, C> {
 
+    String PROPERTY_NAME = "Name";
+
     void setTitle(String title);
     String getTitle();
 

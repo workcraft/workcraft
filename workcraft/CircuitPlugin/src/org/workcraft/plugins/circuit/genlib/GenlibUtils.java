@@ -80,7 +80,7 @@ public class GenlibUtils {
     private static String getSetFunction(Gate gate) {
         String result = null;
         if (gate.isSequential()) {
-            result = ExpressionUtils.extactSetExpression(gate.function.formula, gate.seq);
+            result = ExpressionUtils.extractSetExpression(gate.function.formula, gate.seq);
         } else {
             result = gate.function.formula;
         }
@@ -90,7 +90,7 @@ public class GenlibUtils {
     private static String getResetFunction(Gate gate) {
         String result = null;
         if (gate.isSequential()) {
-            result = ExpressionUtils.extactResetExpression(gate.function.formula, gate.seq);
+            result = ExpressionUtils.extractResetExpression(gate.function.formula, gate.seq);
         }
         return result;
     }

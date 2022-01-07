@@ -40,6 +40,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     public static final String TITLE_SUFFIX_SINGLE_ITEM = "single item";
     public static final String TITLE_SUFFIX_SELECTED_ITEMS = " selected items";
     private static final int VIEWPORT_MARGIN = 25;
+    private static final int STEP = 20;
 
     private final class UpdateEditorActionListener implements ActionListener {
         @Override
@@ -511,61 +512,53 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     @Override
-    public void panLeft() {
-        SwingUtilities.invokeLater(() -> {
-            getViewport().pan(20, 0);
-            repaint();
-            requestFocus();
-        });
+    public void panLeft(boolean largeStep) {
+        int step = largeStep ? getWidth() : STEP;
+        panInEventDispatchThread(step, 0);
     }
 
     @Override
-    public void panUp() {
-        SwingUtilities.invokeLater(() -> {
-            getViewport().pan(0, 20);
-            repaint();
-            requestFocus();
-        });
+    public void panUp(boolean largeStep) {
+        int step = largeStep ? getHeight() : STEP;
+        panInEventDispatchThread(0, step);
     }
 
     @Override
-    public void panRight() {
-        SwingUtilities.invokeLater(() -> {
-            getViewport().pan(-20, 0);
-            repaint();
-            requestFocus();
-        });
+    public void panRight(boolean largeStep) {
+        int step = largeStep ? getWidth() : STEP;
+        panInEventDispatchThread(-step, 0);
     }
 
     @Override
-    public void panDown() {
-        SwingUtilities.invokeLater(() -> {
-            getViewport().pan(0, -20);
-            repaint();
-            requestFocus();
-        });
+    public void panDown(boolean largeStep) {
+        int step = largeStep ? getHeight() : STEP;
+        panInEventDispatchThread(0, -step);
     }
 
     @Override
     public void panCenter() {
+        Viewport viewport = getViewport();
+        Rectangle2D viewportBox = viewport.getShape();
+        VisualModel model = getModel();
+        Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
+        if (!model.getSelection().isEmpty()) {
+            nodes.retainAll(model.getSelection());
+        }
+        Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
+        if ((modelBox != null) && (viewportBox != null)) {
+            int viewportCenterX = (int) Math.round(viewportBox.getCenterX());
+            int viewportCenterY = (int) Math.round(viewportBox.getCenterY());
+            Point2D modelCenter = new Point2D.Double(modelBox.getCenterX(), modelBox.getCenterY());
+            Point modelCenterInScreenSpace = viewport.userToScreen(modelCenter);
+            panInEventDispatchThread(viewportCenterX - modelCenterInScreenSpace.x, viewportCenterY - modelCenterInScreenSpace.y);
+        }
+    }
+
+    public void panInEventDispatchThread(int dx, int dy) {
         SwingUtilities.invokeLater(() -> {
-            Viewport viewport = getViewport();
-            Rectangle2D viewportBox = viewport.getShape();
-            VisualModel model = getModel();
-            Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
-            if (!model.getSelection().isEmpty()) {
-                nodes.retainAll(model.getSelection());
-            }
-            Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-            if ((modelBox != null) && (viewportBox != null)) {
-                int viewportCenterX = (int) Math.round(viewportBox.getCenterX());
-                int viewportCenterY = (int) Math.round(viewportBox.getCenterY());
-                Point2D modelCenter = new Point2D.Double(modelBox.getCenterX(), modelBox.getCenterY());
-                Point modelCenterInScreenSpace = viewport.userToScreen(modelCenter);
-                viewport.pan(viewportCenterX - modelCenterInScreenSpace.x, viewportCenterY - modelCenterInScreenSpace.y);
-                repaint();
-                requestFocus();
-            }
+            getViewport().pan(dx, dy);
+            repaint();
+            requestFocus();
         });
     }
 

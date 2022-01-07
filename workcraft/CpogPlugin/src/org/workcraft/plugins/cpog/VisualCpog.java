@@ -2,6 +2,7 @@ package org.workcraft.plugins.cpog;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.PageNode;
@@ -211,7 +212,7 @@ public class VisualCpog extends AbstractVisualModel {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node != null) {
-            properties.removeByName(AbstractVisualModel.PROPERTY_NAME);
+            properties.removeByName(Model.PROPERTY_NAME);
         }
         if (node instanceof VisualRhoClause) {
             properties.add(getRhoClauseFunctionProperty((VisualRhoClause) node));

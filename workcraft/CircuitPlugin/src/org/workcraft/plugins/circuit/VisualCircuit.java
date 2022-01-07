@@ -7,40 +7,26 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.gui.properties.ModelProperties;
-import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
-import org.workcraft.plugins.circuit.refinement.ComponentInterface;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.RouterVisualiser;
 import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.plugins.circuit.tools.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.utils.RefinementUtils;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.utils.WorkUtils;
-import org.workcraft.workspace.ModelEntry;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -49,8 +35,6 @@ import java.util.LinkedList;
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
 public class VisualCircuit extends AbstractVisualModel {
-
-    public static final String PROPERTY_ENVIRONMENT = "Environment";
 
     public VisualCircuit(Circuit model) {
         this(model, null);
@@ -367,18 +351,19 @@ public class VisualCircuit extends AbstractVisualModel {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            properties.add(getEnvironmentProperty());
+            properties.add(CircuitPropertyHelper.getEnvironmentProperty(this));
+            properties.addAll(CircuitPropertyHelper.getComponentProperties(this));
         } else if (node instanceof VisualFunctionContact) {
             VisualFunctionContact contact = (VisualFunctionContact) node;
-            properties.add(getSetFunctionProperty(contact));
-            properties.add(getResetFunctionProperty(contact));
+            properties.add(CircuitPropertyHelper.getSetFunctionProperty(this, contact));
+            properties.add(CircuitPropertyHelper.getResetFunctionProperty(this, contact));
         } else if (node instanceof VisualFunctionComponent) {
             VisualFunctionComponent component = (VisualFunctionComponent) node;
-            properties.add(getRefinementProperty(component));
+            properties.add(CircuitPropertyHelper.getRefinementProperty(this, component));
             VisualFunctionContact mainOutput = component.getMainVisualOutput();
             if (mainOutput != null) {
-                properties.add(getSetFunctionProperty(mainOutput));
-                properties.add(getResetFunctionProperty(mainOutput));
+                properties.add(CircuitPropertyHelper.getSetFunctionProperty(this, mainOutput));
+                properties.add(CircuitPropertyHelper.getResetFunctionProperty(this, mainOutput));
                 for (PropertyDescriptor property : mainOutput.getDescriptors()) {
                     String propertyName = property.getName();
                     if (Contact.PROPERTY_INIT_TO_ONE.equals(propertyName)
@@ -390,93 +375,6 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
         return properties;
-    }
-
-    private PropertyDescriptor getEnvironmentProperty() {
-        return new PropertyDeclaration<>(FileReference.class, PROPERTY_ENVIRONMENT,
-                getMathModel()::setEnvironment, getMathModel()::getEnvironment);
-    }
-
-    private PropertyDescriptor getRefinementProperty(VisualFunctionComponent component) {
-        return new PropertyDeclaration<>(FileReference.class, CircuitComponent.PROPERTY_REFINEMENT,
-                value -> setRefinementIfCompatible(component, value),
-                () -> component.getReferencedComponent().getRefinement());
-    }
-
-    private void setRefinementIfCompatible(VisualFunctionComponent component, FileReference value) {
-        if (value == null) {
-            component.getReferencedComponent().setRefinement(null);
-            return;
-        }
-
-        MathModel refinementModel;
-        File file = value.getFile();
-        try {
-            ModelEntry me = WorkUtils.loadModel(file);
-            refinementModel = me.getMathModel();
-        } catch (DeserialisationException e) {
-            String path = FileUtils.getFullPath(file);
-            DialogUtils.showError("Cannot read refinement model from '" + path + "':\n " + e.getMessage());
-            return;
-        }
-
-        ComponentInterface refinementInterface;
-        if ((refinementModel instanceof Stg) || (refinementModel instanceof Circuit)) {
-            refinementInterface = RefinementUtils.getModelInterface(refinementModel);
-        } else {
-            DialogUtils.showError("Incompatible refinement model type: " + refinementModel.getDisplayName());
-            return;
-        }
-
-        ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component.getReferencedComponent());
-        if (!RefinementUtils.isCompatible(componentInterface, refinementInterface)) {
-            int answer = DialogUtils.showYesNoCancel(
-                    "Component interface is incompatible with the reference model."
-                    + "\n\nUpdate component pins to match the reference model signals?",
-                    "Reference model", 0);
-
-            if (answer == 2) {
-                return;
-            }
-            if (answer == 0) {
-                RefinementUtils.updateInterface(this, component, refinementInterface);
-            }
-        }
-        component.getReferencedComponent().setRefinement(value);
-    }
-
-    private PropertyDescriptor getSetFunctionProperty(VisualFunctionContact contact) {
-        return new PropertyDeclaration<String>(String.class, FunctionContact.PROPERTY_SET_FUNCTION,
-                value -> {
-                    try {
-                        contact.setSetFunction(CircuitUtils.parseContactFunction(this, contact, value));
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                },
-                () -> StringGenerator.toString(contact.getSetFunction())) {
-            @Override
-            public boolean isVisible() {
-                return contact.isDriver();
-            }
-        }.setCombinable();
-    }
-
-    private PropertyDescriptor getResetFunctionProperty(VisualFunctionContact contact) {
-        return new PropertyDeclaration<String>(String.class, FunctionContact.PROPERTY_RESET_FUNCTION,
-                value -> {
-                    try {
-                        contact.setResetFunction(CircuitUtils.parseContactFunction(this, contact, value));
-                    } catch (ParseException e) {
-                        throw new RuntimeException(e);
-                    }
-                },
-                () -> StringGenerator.toString(contact.getResetFunction())) {
-            @Override
-            public boolean isVisible() {
-                return contact.isDriver();
-            }
-        }.setCombinable();
     }
 
 }
