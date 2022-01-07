@@ -160,7 +160,7 @@ public class MainWindowActions {
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
-                    editor.panLeft();
+                    editor.panLeft(false);
                 }
             }, KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, DesktopApi.getMenuKeyMask()));
 
@@ -168,7 +168,7 @@ public class MainWindowActions {
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
-                    editor.panUp();
+                    editor.panUp(false);
                 }
             }, KeyStroke.getKeyStroke(KeyEvent.VK_UP, DesktopApi.getMenuKeyMask()));
 
@@ -176,7 +176,7 @@ public class MainWindowActions {
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
-                    editor.panRight();
+                    editor.panRight(false);
                 }
             }, KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, DesktopApi.getMenuKeyMask()));
 
@@ -184,7 +184,7 @@ public class MainWindowActions {
             () -> {
                 final GraphEditor editor = getCurrentEditor();
                 if (editor != null) {
-                    editor.panDown();
+                    editor.panDown(false);
                 }
             }, KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, DesktopApi.getMenuKeyMask()));
 

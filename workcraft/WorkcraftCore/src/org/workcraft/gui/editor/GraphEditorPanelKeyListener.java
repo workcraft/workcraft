@@ -25,16 +25,16 @@ class GraphEditorPanelKeyListener implements KeyListener {
         if (DesktopApi.isMenuKeyDown(e)) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
-                editor.panLeft();
+                editor.panLeft(e.isShiftDown());
                 break;
             case KeyEvent.VK_UP:
-                editor.panUp();
+                editor.panUp(e.isShiftDown());
                 break;
             case KeyEvent.VK_RIGHT:
-                editor.panRight();
+                editor.panRight(e.isShiftDown());
                 break;
             case KeyEvent.VK_DOWN:
-                editor.panDown();
+                editor.panDown(e.isShiftDown());
                 break;
             case KeyEvent.VK_TAB:
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();

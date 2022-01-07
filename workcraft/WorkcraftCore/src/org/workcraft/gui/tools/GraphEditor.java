@@ -30,10 +30,10 @@ public interface GraphEditor {
     void zoomDefault();
     void zoomFit();
 
-    void panLeft();
-    void panUp();
-    void panRight();
-    void panDown();
+    void panLeft(boolean largeStep);
+    void panUp(boolean largeStep);
+    void panRight(boolean largeStep);
+    void panDown(boolean largeStep);
     void panCenter();
 
 }
