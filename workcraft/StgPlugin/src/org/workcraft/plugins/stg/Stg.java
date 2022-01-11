@@ -284,7 +284,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     public void setSignalType(String signalReference, Signal.Type signalType) {
         for (SignalTransition transition: getSignalTransitions(signalReference)) {
             transition.setSignalType(signalType);
-            // It is sufficient to change the type of a single transition
+            // It is sufficient to change the type of single transition
             // - all the others will be notified.
             break;
         }
@@ -302,7 +302,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     public void setSignalType(String signalName, Signal.Type signalType, Container container) {
         for (SignalTransition transition: getSignalTransitions(signalName, container)) {
             transition.setSignalType(signalType);
-            // It is sufficient to change the type of a single transition
+            // It is sufficient to change the type of single transition
             // - all the others will be notified.
             break;
         }

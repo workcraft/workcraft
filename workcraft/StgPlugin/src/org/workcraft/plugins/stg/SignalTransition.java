@@ -4,10 +4,11 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.stg.references.StgNameManager;
 import org.workcraft.serialisation.NoAutoSerialisation;
 
 @DisplayName("Signal transition")
-@IdentifierPrefix("t")
+@IdentifierPrefix(StgNameManager.INTERNAL_SIGNAL_PREFIX)
 @VisualClass(VisualSignalTransition.class)
 public class SignalTransition extends NamedTransition {
     public static final String PROPERTY_SIGNAL_TYPE = "Signal type";

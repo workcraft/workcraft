@@ -5,7 +5,6 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.plugins.stg.references.StgNameManager;
 
 public final class InsertInternalTransformationCommand extends AbstractInsertTransformationCommand {
 
@@ -21,7 +20,7 @@ public final class InsertInternalTransformationCommand extends AbstractInsertTra
 
     @Override
     public VisualTransition createTransition(VisualStg stg, Container container) {
-        return stg.createVisualSignalTransition(StgNameManager.INTERNAL_SIGNAL_PREFIX,
+        return stg.createVisualSignalTransition(null,
                 Signal.Type.INTERNAL, SignalTransition.Direction.TOGGLE, container);
     }
 
