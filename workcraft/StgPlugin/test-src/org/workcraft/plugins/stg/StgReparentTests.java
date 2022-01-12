@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.dom.math.PageNode;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 class StgReparentTests {
 
@@ -24,21 +24,19 @@ class StgReparentTests {
         stg.add(page1);
         stg.setName(page1, "page1");
         DummyTransition dummy1 = stg.createDummyTransition("ABC", page1);
-
         Assertions.assertEquals("page1.ABC", stg.getNodeReference(dummy1));
 
         PageNode page2 = new PageNode();
         stg.add(page2);
         stg.setName(page2, "page2");
-
         DummyTransition dummy2 = stg.createDummyTransition("ABC", page2);
         Assertions.assertEquals("page2.ABC", stg.getNodeReference(dummy2));
 
-        boolean dummy1ReparentResult = stg.reparent(stg.getRoot(), stg, page1, Arrays.asList(dummy1));
+        boolean dummy1ReparentResult = stg.reparent(stg.getRoot(), stg, page1, Collections.singletonList(dummy1));
         Assertions.assertTrue(dummy1ReparentResult);
         Assertions.assertEquals("ABCb", stg.getNodeReference(dummy1));
 
-        boolean dummy2ReparentResult = stg.reparent(stg.getRoot(), stg, page2, Arrays.asList(dummy2));
+        boolean dummy2ReparentResult = stg.reparent(stg.getRoot(), stg, page2, Collections.singletonList(dummy2));
         Assertions.assertTrue(dummy2ReparentResult);
         Assertions.assertEquals("ABCc", stg.getNodeReference(dummy2));
     }
@@ -50,11 +48,11 @@ class StgReparentTests {
         DummyTransition dummy = stg.createDummyTransition("ABC", stg.getRoot());
         Assertions.assertEquals("ABC", stg.getNodeReference(dummy));
 
-        // Cannot create a transition with the same name name as an existing dummy.
+        // Cannot create a transition with the same name as an existing dummy.
         SignalTransition transition = null;
         try {
             transition = stg.createSignalTransition("ABC", stg.getRoot());
-            Assertions.fail("Unexpected assignemnt of name 'ABC' that is already taken.");
+            Assertions.fail("Unexpected assignment of name 'ABC' that is already taken.");
         } catch (Exception e) {
         }
         Assertions.assertNull(transition);
@@ -73,11 +71,11 @@ class StgReparentTests {
         StgPlace place2 = stg.createPlace("ABC", page2);
         Assertions.assertEquals("page2.ABC", stg.getNodeReference(place2));
 
-        boolean place1ReparentResult = stg.reparent(stg.getRoot(), stg, page1, Arrays.asList(place1));
+        boolean place1ReparentResult = stg.reparent(stg.getRoot(), stg, page1, Collections.singletonList(place1));
         Assertions.assertTrue(place1ReparentResult);
         Assertions.assertEquals("ABCa", stg.getNodeReference(place1));
 
-        boolean place2ReparentResult = stg.reparent(stg.getRoot(), stg, page2, Arrays.asList(place2));
+        boolean place2ReparentResult = stg.reparent(stg.getRoot(), stg, page2, Collections.singletonList(place2));
         Assertions.assertTrue(place2ReparentResult);
         Assertions.assertEquals("ABCb", stg.getNodeReference(place2));
     }
@@ -93,7 +91,7 @@ class StgReparentTests {
         StgPlace place = null;
         try {
             place = stg.createPlace("ABC", stg.getRoot());
-            Assertions.fail("Unexpected assignemnt of name 'ABC' that is already taken.");
+            Assertions.fail("Unexpected assignment of name 'ABC' that is already taken.");
         } catch (Exception e) {
         }
         Assertions.assertNull(place);
@@ -126,16 +124,16 @@ class StgReparentTests {
         transition4.setSignalType(Signal.Type.INTERNAL);
         Assertions.assertEquals("page4.XYZ~", stg.getNodeReference(transition4));
 
-        boolean transition1ReparentResult = stg.reparent(stg.getRoot(), stg, page1, Arrays.asList(transition1));
+        boolean transition1ReparentResult = stg.reparent(stg.getRoot(), stg, page1, Collections.singletonList(transition1));
         Assertions.assertFalse(transition1ReparentResult);
 
-        boolean transition2ReparentResult = stg.reparent(stg.getRoot(), stg, page2, Arrays.asList(transition2));
+        boolean transition2ReparentResult = stg.reparent(stg.getRoot(), stg, page2, Collections.singletonList(transition2));
         Assertions.assertFalse(transition2ReparentResult);
 
-        boolean transition3ReparentResult = stg.reparent(stg.getRoot(), stg, page3, Arrays.asList(transition3));
+        boolean transition3ReparentResult = stg.reparent(stg.getRoot(), stg, page3, Collections.singletonList(transition3));
         Assertions.assertTrue(transition3ReparentResult);
 
-        boolean transition4ReparentResult = stg.reparent(stg.getRoot(), stg, page4, Arrays.asList(transition4));
+        boolean transition4ReparentResult = stg.reparent(stg.getRoot(), stg, page4, Collections.singletonList(transition4));
         Assertions.assertFalse(transition4ReparentResult);
     }
 

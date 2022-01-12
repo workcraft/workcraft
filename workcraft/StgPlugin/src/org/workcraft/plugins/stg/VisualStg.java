@@ -1,16 +1,15 @@
 package org.workcraft.plugins.stg;
 
 import org.workcraft.annotations.DisplayName;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.Model;
-import org.workcraft.dom.Node;
+import org.workcraft.dom.*;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.CommentGeneratorTool;
@@ -317,10 +316,30 @@ public class VisualStg extends AbstractVisualModel {
         }
 
         String transitionName = (signalName == null) || (direction == null) ? null : signalName + direction;
-        Container mathContainer = NamespaceHelper.getMathContainer(this, container);
-        SignalTransition mathTransition = getMathModel().createSignalTransition(transitionName, mathContainer);
-        mathTransition.setSignalType(type);
-        return createVisualComponent(mathTransition, VisualSignalTransition.class, container);
+        try {
+            SignalTransition mathTransition = NodeFactory.createNode(SignalTransition.class);
+            Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+
+            // Set signal type BEFORE adding the transition to its container - this will enable the use
+            // of appropriate default name, which is important for the case when signalName is null
+            mathTransition.setSignalType(type);
+            mathContainer.add(mathTransition);
+
+            if (transitionName != null) {
+                setMathName(mathTransition, transitionName);
+            }
+            return createVisualComponent(mathTransition, VisualSignalTransition.class, container);
+        } catch (NodeCreationException e) {
+            String msg = "Cannot create " + type + " transition";
+            if (transitionName != null) {
+                msg += " '" + transitionName + "'";
+            }
+            String containerRef = getMathReference(container);
+            if ((containerRef != null) && !containerRef.isEmpty()) {
+                msg += " in page '" + Identifier.truncateNamespaceSeparator(containerRef) + "'";
+            }
+            throw new RuntimeException(msg);
+        }
     }
 
     public Collection<VisualStgPlace> getVisualPlaces() {

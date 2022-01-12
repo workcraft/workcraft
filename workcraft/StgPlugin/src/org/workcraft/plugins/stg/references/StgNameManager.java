@@ -67,7 +67,7 @@ public class StgNameManager extends DefaultNameManager {
             direction = r.getSecond();
             instance = r.getThird();
         }
-        if (!signalTransitions.get(signalName).isEmpty() || isUnusedName(signalName) || renameOccupantIfDifferent(st, signalName)) {
+        if (isSignalName(signalName) || isUnusedName(signalName) || renameOccupantIfDifferent(st, signalName)) {
             instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
             st.setDirection(direction);
             renameSignalTransition(st, signalName);
@@ -80,7 +80,7 @@ public class StgNameManager extends DefaultNameManager {
         if (!Identifier.isValid(dummyName)) {
             throw new ArgumentException("Name '" + name + "' is not a valid dummy label.");
         }
-        if (!dummyTransitions.get(dummyName).isEmpty() || isUnusedName(dummyName) || renameOccupantIfDifferent(dt, dummyName)) {
+        if (isDummyName(dummyName) || isUnusedName(dummyName) || renameOccupantIfDifferent(dt, dummyName)) {
             instancedNameManager.assign(dt, r, forceInstance);
             renameDummyTransition(dt, dummyName);
         }
@@ -128,7 +128,7 @@ public class StgNameManager extends DefaultNameManager {
     public String getName(Node node) {
         String result = null;
         if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
-            // Skip implicit places.
+            // Skip implicit places
         } else if (node instanceof NamedTransition) {
             Pair<String, Integer> instance = instancedNameManager.getInstance(node);
             if (instance != null) {
@@ -199,42 +199,37 @@ public class StgNameManager extends DefaultNameManager {
     }
 
     private boolean isGoodSignalName(String name, Signal.Type type) {
-        boolean result = true;
         if (super.getNode(name) != null) {
-            result = false;
-        } else if (isDummyName(name)) {
-            result = false;
-        } else if (isSignalName(name)) {
-            Signal.Type expectedType = getSignalType(name);
-            if ((expectedType != null) && !expectedType.equals(type)) {
-                result = false;
-            }
+            return false;
         }
-        return result;
+        if (isDummyName(name)) {
+            return false;
+        }
+        if (isSignalName(name)) {
+            Signal.Type expectedType = getSignalType(name);
+            return (expectedType == null) || expectedType.equals(type);
+        }
+        return true;
     }
 
     private boolean isGoodDummyName(String name) {
-        boolean result = true;
         if (super.getNode(name) != null) {
-            result = false;
-        } else if (isSignalName(name)) {
-            result = false;
-        } else if (isDummyName(name)) {
-            result = false;
+            return false;
         }
-        return result;
+        if (isSignalName(name)) {
+            return false;
+        }
+        return true;
     }
 
     private void setDefaultSignalTransitionNameIfUnnamed(final SignalTransition st) {
         if (!instancedNameManager.contains(st)) {
             String prefix = getPrefix(st);
             Integer count = getPrefixCount(prefix);
-            String name = prefix;
-            if (count > 0) {
-                name = Identifier.compose(prefix, count.toString());
-            }
+            String name = count <= 0 ? prefix : Identifier.compose(prefix, count.toString());
             while (!isGoodSignalName(name, st.getSignalType())) {
-                name = prefix + (++count);
+                count++;
+                name = Identifier.compose(prefix, count.toString());
             }
             setPrefixCount(prefix, count);
             st.setSignalName(name);
@@ -249,10 +244,12 @@ public class StgNameManager extends DefaultNameManager {
         if (!instancedNameManager.contains(dt)) {
             String prefix = getPrefix(dt);
             Integer count = getPrefixCount(prefix);
-            String name;
-            do {
-                name = Identifier.compose(prefix, (count++).toString());
-            } while (!isGoodDummyName(name));
+            String name = count <= 0 ? prefix : Identifier.compose(prefix, count.toString());
+            while (!isGoodDummyName(name)) {
+                count++;
+                name = Identifier.compose(prefix, count.toString());
+            }
+            setPrefixCount(prefix, count);
             dt.setName(name);
             dummyTransitions.put(name, dt);
             if (instancedNameManager.getInstance(dt) == null) {
@@ -264,7 +261,7 @@ public class StgNameManager extends DefaultNameManager {
     @Override
     public void setDefaultNameIfUnnamed(Node node) {
         if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
-            // Skip implicit places.
+            // Skip implicit places
         } else if (node instanceof SignalTransition) {
             setDefaultSignalTransitionNameIfUnnamed((SignalTransition) node);
         } else if (node instanceof DummyTransition) {
@@ -282,6 +279,9 @@ public class StgNameManager extends DefaultNameManager {
         if (node instanceof DummyTransition) {
             Pair<String, Integer> r = LabelParser.parseDummyTransition(candidate);
             candidate = r.getFirst();
+            if (isDummyName(candidate)) {
+                return candidate;
+            }
         }
         return super.getDerivedName(node, candidate);
     }
