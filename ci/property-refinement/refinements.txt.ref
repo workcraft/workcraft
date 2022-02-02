@@ -1,0 +1,8 @@
+Original component refinement: null
+Modified component refinement: delay.stg.work
+Original STG refinement: null
+Modified STG refinement: delay.circuit.work
+Original environment: null
+Modified environment (set as string): wrong.work
+Modified environment (set as work): delay.stg.work
+Modified environment (set as file): delay.stg.work

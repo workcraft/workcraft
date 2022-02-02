@@ -43,7 +43,7 @@ public class JarUtils {
             }
         } else if (JAR_PROTOCOL.equals(protocol)) {
             String dirPath = dirUrl.getPath();
-            String jarPath = dirPath.substring(5, dirPath.indexOf("!"));
+            String jarPath = dirPath.substring(5, dirPath.lastIndexOf("!"));
             JarFile jarFile = new JarFile(jarPath);
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
