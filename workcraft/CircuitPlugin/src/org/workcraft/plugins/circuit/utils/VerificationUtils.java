@@ -136,20 +136,33 @@ public final class VerificationUtils {
     }
 
     public static Set<String> getHangingSignals(Circuit circuit) {
-        Set<String> hangingSignals = new HashSet<>();
+        Set<String> result = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             String signal = circuit.getNodeReference(contact);
             if (contact.isDriver()) {
                 if (CircuitUtils.findDriven(circuit, contact, false).isEmpty()) {
-                    hangingSignals.add(signal);
+                    result.add(signal);
                 }
             } else {
                 if (CircuitUtils.findDriver(circuit, contact, false) == null) {
-                    hangingSignals.add(signal);
+                    result.add(signal);
                 }
             }
         }
-        return hangingSignals;
+        return result;
+    }
+
+    public static Set<String> getHangingDriverSignals(Circuit circuit) {
+        Set<String> result = new HashSet<>();
+        for (FunctionContact contact : circuit.getFunctionContacts()) {
+            String signal = circuit.getNodeReference(contact);
+            if (contact.isDriver()) {
+                if (CircuitUtils.findDriven(circuit, contact, false).isEmpty()) {
+                    result.add(signal);
+                }
+            }
+        }
+        return result;
     }
 
     private static Set<String> getUnconstrainedInputSignals(Stg envStg, Circuit circuit) {

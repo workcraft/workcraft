@@ -152,7 +152,9 @@ public final class VerilogUtils {
         }
         for (VerilogAssign verilogAssign : verilogModule.assigns) {
             String wireName = getNetBusIndexName(verilogAssign.net);
-            LogUtils.logMessage("    assign " + wireName + " = " + verilogAssign.formula + ";");
+            if (wireName != null) {
+                LogUtils.logMessage("    assign " + wireName + " = " + verilogAssign.formula + ";");
+            }
         }
 
         for (VerilogInstance verilogInstance : verilogModule.instances) {
@@ -172,11 +174,12 @@ public final class VerilogUtils {
     }
 
     public static String getNetBusIndexName(VerilogNet net) {
-        return net.getName() + (net.getIndex() == null ? "" : "[" + net.getIndex() + "]");
+        return net == null ? null : net.getName() + (net.getIndex() == null ? "" : "[" + net.getIndex() + "]");
     }
 
     public static String getNetBusSuffixName(VerilogNet net) {
-        return net.getName() + getBusSuffix(net.getIndex());
+        String name = net == null ? null : net.getName();
+        return name == null ? null : name + getBusSuffix(net.getIndex());
     }
 
     private static String getBusSuffix(Integer index) {
