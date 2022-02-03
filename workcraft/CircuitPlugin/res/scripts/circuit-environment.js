@@ -16,7 +16,7 @@ function setCircuitEnvironment(circuitWork, env) {
         throw "Environment must be specified as File, String or WorkspaceEntry";
     }
 
-    circuitMathModel=circuitWork.getModelEntry().getMathModel();
+    circuitMathModel = circuitWork.getModelEntry().getMathModel();
     envFile = getEnvironmentFile(env);
     circuitMathModel.setEnvironmentFile(envFile);
 }
@@ -26,6 +26,6 @@ framework.addJavaScriptHelp("getCircuitEnvironment", "work",
     "get environment STG file for Circuit 'work'");
 
 function getCircuitEnvironment(circuitWork) {
-    circuitMathModel=circuitWork.getModelEntry().getMathModel();
+    circuitMathModel = circuitWork.getModelEntry().getMathModel();
     return circuitMathModel.getEnvironmentFile();
 }
