@@ -519,7 +519,7 @@ List<VerilogConnection> parseOrderedConnections():
 
 VerilogNet parseOptionalNet():
 {
-    VerilogNet net = new VerilogNet(null, null);
+    VerilogNet net = null;
 }
 {
     [net = parseNet()]

@@ -826,20 +826,24 @@ public class MainWindow extends JFrame {
         if (FileUtils.checkAvailability(file, null, true)
                 && FormatFileFilter.checkFileFormat(file, importer.getFormat())) {
 
+            final Framework framework = Framework.getInstance();
+            File lastDirectory = framework.getLastDirectory();
             try {
+                // Set last directory to the location of the imported file
+                // (in case auxiliary file need to be created there during import of compound files)
+                framework.setLastDirectory(file);
                 ModelEntry me = ImportUtils.importFromFile(importer, file);
                 String title = me.getMathModel().getTitle();
                 if ((title == null) || title.isEmpty()) {
                     title = FileUtils.getFileNameWithoutExtension(file);
                     me.getMathModel().setTitle(title);
                 }
-                final Framework framework = Framework.getInstance();
                 framework.createWork(me, file.getName());
-                framework.setLastDirectory(file);
             } catch (IOException | DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
             } catch (OperationCancelledException e) {
-                // Operation cancelled by the user
+                // Operation cancelled by the user - restore last directory
+                framework.setLastDirectory(lastDirectory);
             }
         }
     }
