@@ -395,6 +395,7 @@ public final class ResetUtils {
         // Add reset gate after combinational output contacts
         for (VisualFunctionContact contact : combinationalForceInitOutputs) {
             VisualFunctionComponent resetGate = insertResetGate(circuit, resetPort, contact, isActiveLow);
+            GateUtils.propagateInitialState(circuit, component);
             result.add(resetGate);
             if (clearMapping) {
                 resetGate.clearMapping();
