@@ -1,6 +1,5 @@
 package org.workcraft.workspace;
 
-import org.workcraft.Version;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -12,7 +11,6 @@ import java.util.UUID;
 public class ModelEntry {
     private final ModelDescriptor descriptor;
     private final Model model;
-    private Version version;
     private Stamp stamp;
 
     public ModelEntry(ModelDescriptor descriptor, Model model) {
@@ -76,14 +74,6 @@ public class ModelEntry {
             }
         }
         return null;
-    }
-
-    public void setVersion(Version version) {
-        this.version = version;
-    }
-
-    public Version getVersion() {
-        return version;
     }
 
     public void setStamp(Stamp stamp) {
