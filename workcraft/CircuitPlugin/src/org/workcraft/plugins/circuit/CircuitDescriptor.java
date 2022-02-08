@@ -1,5 +1,6 @@
 package org.workcraft.plugins.circuit;
 
+import org.workcraft.Version;
 import org.workcraft.dom.ModelDescriptor;
 
 public class CircuitDescriptor implements ModelDescriptor {
@@ -17,6 +18,11 @@ public class CircuitDescriptor implements ModelDescriptor {
     @Override
     public VisualCircuitDescriptor getVisualModelDescriptor() {
         return new VisualCircuitDescriptor();
+    }
+
+    @Override
+    public Version getCompatibilityVersion() {
+        return new Version(3, 2, 0, Version.Status.RELEASE);
     }
 
 }

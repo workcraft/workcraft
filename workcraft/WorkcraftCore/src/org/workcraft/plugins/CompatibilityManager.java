@@ -19,27 +19,23 @@ import java.util.zip.ZipOutputStream;
 
 public class CompatibilityManager {
 
-    @SuppressWarnings("serial")
-    private class Replacement extends HashMap<String, String> {
+    private static class Replacement extends HashMap<String, String> {
     }
 
-    @SuppressWarnings("serial")
-    private class ContextualReplacement extends HashMap<String, Replacement> {
+    private static class ContextualReplacement extends HashMap<String, Replacement> {
     }
 
-    @SuppressWarnings("serial")
-    private class NestedContextualReplacement extends HashMap<String, ContextualReplacement> {
+    private static class NestedContextualReplacement extends HashMap<String, ContextualReplacement> {
     }
 
-    private class ReplacementData {
+    private static class ReplacementData {
         private final Replacement meta = new Replacement();
         private final Replacement model = new Replacement();
         private final ContextualReplacement global = new ContextualReplacement();
         private final NestedContextualReplacement local = new NestedContextualReplacement();
     }
 
-    @SuppressWarnings("serial")
-    private class VersionedReplacementData extends TreeMap<Version, ReplacementData> {
+    private static class VersionedReplacementData extends TreeMap<Version, ReplacementData> {
     }
 
     private final VersionedReplacementData versionedReplacementData = new VersionedReplacementData();
@@ -174,20 +170,20 @@ public class CompatibilityManager {
         ByteArrayInputStream result = null;
         try {
             ZipFile zipFile = new ZipFile(file, StandardCharsets.UTF_8);
-            Version workVersion = WorkUtils.extractVersion(zipFile);
+            Version compatibilityVersion = WorkUtils.extractCompatibilityVersion(zipFile);
             Version currentVersion = Info.getVersion();
-            if ((workVersion != null) && (currentVersion != null) && (currentVersion.compareTo(workVersion) < 0)) {
+            if ((compatibilityVersion != null) && (currentVersion != null) && (currentVersion.compareTo(compatibilityVersion) < 0)) {
                 String msg = "Workcraft v" + currentVersion
-                        + " may incorrectly read a file produced by newer Workcraft v" + workVersion;
+                        + " may incorrectly read a file that is declared to be backward-compatible to v" + compatibilityVersion;
 
-                String msgFull = msg + ".\nProceed with loading of work file '" + file.getAbsolutePath() + "' anyway?";
+                String msgFull = msg + ".\nProceed with loading the file '" + file.getAbsolutePath() + "' anyway?";
                 boolean proceed = DialogUtils.showConfirmWarning(msgFull, "Open file", true);
                 if (!proceed) {
                     throw new OperationCancelledException();
                 }
             }
             FileInputStream fis = new FileInputStream(file);
-            result = process(fis, workVersion);
+            result = process(fis, compatibilityVersion);
             zipFile.close();
         } catch (IOException e) {
             throw new DeserialisationException(e);

@@ -60,16 +60,18 @@ public final class WorkUtils {
     private static final String META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE = "entry-name";
     private static final String META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE = "format-uuid";
     private static final String META_VERSION_WORK_ELEMENT = "version";
-    private static final String META_VERSION_MAJOR_WORK_ATTRIBUTE = "major";
-    private static final String META_VERSION_MINOR_WORK_ATTRIBUTE = "minor";
-    private static final String META_VERSION_REVISION_WORK_ATTRIBUTE = "revision";
-    private static final String META_VERSION_STATUS_WORK_ATTRIBUTE = "status";
-    private static final Pattern META_VERSION_PATTERN = Pattern.compile(
-            "<" + META_VERSION_WORK_ELEMENT + " "
-            + META_VERSION_MAJOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" "
-            + META_VERSION_MINOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" "
-            + META_VERSION_REVISION_WORK_ATTRIBUTE + "=\"([0-9]+)\" "
-            + META_VERSION_STATUS_WORK_ATTRIBUTE + "=\"(.*)\"/>");
+    private static final String MAJOR_WORK_ATTRIBUTE = "major";
+    private static final String MINOR_WORK_ATTRIBUTE = "minor";
+    private static final String REVISION_WORK_ATTRIBUTE = "revision";
+    private static final String STATUS_WORK_ATTRIBUTE = "status";
+
+    private static final String META_COMPATIBILITY_WORK_ELEMENT = "compatibility";
+    private static final Pattern META_COMPATIBILITY_PATTERN = Pattern.compile(
+            "<" + META_COMPATIBILITY_WORK_ELEMENT + " "
+                    + MAJOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" "
+                    + MINOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" "
+                    + REVISION_WORK_ATTRIBUTE + "=\"([0-9]+)\" "
+                    + STATUS_WORK_ATTRIBUTE + "=\"(.*)\"/>");
 
     private static final String STATE_WORK_ELEMENT = "workcraft-state";
     private static final String STATE_LEVEL_WORK_ELEMENT = "level";
@@ -170,11 +172,8 @@ public final class WorkUtils {
             ModelDescriptor descriptor = loadMetaDescriptor(metaDocument);
             ModelEntry me = new ModelEntry(descriptor, model);
 
-            // Load version and time stamp
-            Version version = loadMetaVersion(metaDocument);
-            Stamp stamp = loadMetaStamp(metaDocument);
-            me.setVersion(version);
-            me.setStamp(stamp);
+            // Load time stamp
+            me.setStamp(loadMetaStamp(metaDocument));
             return me;
         } catch (IOException e) {
             throw new DeserialisationException(e);
@@ -244,26 +243,12 @@ public final class WorkUtils {
         }
     }
 
-    private static Version loadMetaVersion(Document document) {
-        Element element = XmlUtils.getChildElement(META_VERSION_WORK_ELEMENT, document.getDocumentElement());
-        if (element != null) {
-            String major = element.getAttribute(META_VERSION_MAJOR_WORK_ATTRIBUTE);
-            String minor = element.getAttribute(META_VERSION_MINOR_WORK_ATTRIBUTE);
-            String revision = element.getAttribute(META_VERSION_REVISION_WORK_ATTRIBUTE);
-            String status = element.getAttribute(META_VERSION_STATUS_WORK_ATTRIBUTE);
-            return new Version(major, minor, revision, status);
-        }
-        return null;
-    }
-
     private static Stamp loadMetaStamp(Document document) {
         Element element = XmlUtils.getChildElement(META_STAMP_WORK_ELEMENT, document.getDocumentElement());
         if (element != null) {
             String time = element.getAttribute(META_STAMP_TIME_WORK_ATTRIBUTE);
             String uuid = element.getAttribute(META_STAMP_UUID_WORK_ATTRIBUTE);
-            if ((time != null) && (uuid != null)) {
-                return new Stamp(time, uuid);
-            }
+            return new Stamp(time, uuid);
         }
         return null;
     }
@@ -440,36 +425,58 @@ public final class WorkUtils {
         Element metaRoot = metaDocument.createElement(META_WORK_ELEMENT);
         metaDocument.appendChild(metaRoot);
 
-        Element metaVersion = metaDocument.createElement(META_VERSION_WORK_ELEMENT);
-        metaVersion.setAttribute(META_VERSION_MAJOR_WORK_ATTRIBUTE, Info.getVersionMajor());
-        metaVersion.setAttribute(META_VERSION_MINOR_WORK_ATTRIBUTE, Info.getVersionMinor());
-        metaVersion.setAttribute(META_VERSION_REVISION_WORK_ATTRIBUTE, Info.getVersionRevision());
-        metaVersion.setAttribute(META_VERSION_STATUS_WORK_ATTRIBUTE, Info.getVersionStatus());
-        metaRoot.appendChild(metaVersion);
+        metaRoot.appendChild(getVersionElement(metaDocument, META_VERSION_WORK_ELEMENT, Info.getVersion()));
 
+        metaRoot.appendChild(getVersionElement(metaDocument, META_COMPATIBILITY_WORK_ELEMENT,
+                modelEntry.getDescriptor().getCompatibilityVersion()));
+
+        metaRoot.appendChild(getStampElement(metaDocument, modelEntry.getStamp()));
+
+        metaRoot.appendChild(getDescriptorElement(metaDocument, modelEntry.getDescriptor()));
+
+        metaRoot.appendChild(getMathElement(metaDocument, uuid));
+
+        if (modelEntry.getVisualModel() != null) {
+            metaRoot.appendChild(getVisualElement(metaDocument, uuid));
+        }
+        XmlUtils.writeDocument(metaDocument, os);
+    }
+
+    private static Element getVersionElement(Document metaDocument, String elementName, Version version) {
+        Element versionElement = metaDocument.createElement(elementName);
+        versionElement.setAttribute(MAJOR_WORK_ATTRIBUTE, String.valueOf(version.major));
+        versionElement.setAttribute(MINOR_WORK_ATTRIBUTE, String.valueOf(version.minor));
+        versionElement.setAttribute(REVISION_WORK_ATTRIBUTE, String.valueOf(version.revision));
+        versionElement.setAttribute(STATUS_WORK_ATTRIBUTE, version.status.toString());
+        return versionElement;
+    }
+
+    private static Element getStampElement(Document metaDocument, Stamp stamp) {
         Element metaStamp = metaDocument.createElement(META_STAMP_WORK_ELEMENT);
-        Stamp stamp = modelEntry.getStamp();
         metaStamp.setAttribute(META_STAMP_TIME_WORK_ATTRIBUTE, stamp.time);
         metaStamp.setAttribute(META_STAMP_UUID_WORK_ATTRIBUTE, stamp.uuid);
-        metaRoot.appendChild(metaStamp);
+        return metaStamp;
+    }
 
+    private static Element getDescriptorElement(Document metaDocument, ModelDescriptor descriptor) {
         Element metaDescriptor = metaDocument.createElement(META_DESCRIPTOR_WORK_ELEMENT);
-        String descriptorClass = modelEntry.getDescriptor().getClass().getCanonicalName();
+        String descriptorClass = descriptor.getClass().getCanonicalName();
         metaDescriptor.setAttribute(META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE, descriptorClass);
-        metaRoot.appendChild(metaDescriptor);
+        return metaDescriptor;
+    }
 
+    private static Element getMathElement(Document metaDocument, String uuid) {
         Element mathElement = metaDocument.createElement(META_MATH_MODEL_WORK_ELEMENT);
         mathElement.setAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, MATH_MODEL_WORK_ENTRY);
         mathElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, uuid);
-        metaRoot.appendChild(mathElement);
+        return mathElement;
+    }
 
-        if (modelEntry.getVisualModel() != null) {
-            Element visualElement = metaDocument.createElement(META_VISUAL_MODEL_WORK_ELEMENT);
-            visualElement.setAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, VISUAL_MODEL_WORK_ENTRY);
-            visualElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, uuid);
-            metaRoot.appendChild(visualElement);
-        }
-        XmlUtils.writeDocument(metaDocument, os);
+    private static Element getVisualElement(Document metaDocument, String uuid) {
+        Element visualElement = metaDocument.createElement(META_VISUAL_MODEL_WORK_ELEMENT);
+        visualElement.setAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, VISUAL_MODEL_WORK_ENTRY);
+        visualElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, uuid);
+        return visualElement;
     }
 
     private static void adjustPropertyFilePaths(VisualModel model, String base, boolean absolute) {
@@ -534,28 +541,28 @@ public final class WorkUtils {
         return new Resource(resource.getName(), os);
     }
 
-    public static Version extractVersion(ZipFile zipFile) throws IOException {
+    public static Version extractCompatibilityVersion(ZipFile zipFile) throws IOException {
         ZipEntry metaZipEntry = zipFile.getEntry(META_WORK_ENTRY);
         if (metaZipEntry != null) {
             InputStream inputStream = zipFile.getInputStream(metaZipEntry);
-            return extractVersion(inputStream);
+            return extractCompatibilityVersion(inputStream);
         }
         return null;
     }
 
-    private static Version extractVersion(InputStream is) throws IOException {
+    private static Version extractCompatibilityVersion(InputStream is) throws IOException {
         Version result = null;
         BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8));
         String line = null;
         while ((result == null) && (line = reader.readLine()) != null) {
-            result = extractVersion(line);
+            result = extractCompatibilityVersion(line);
         }
         return result;
     }
 
-    private static Version extractVersion(String line) {
+    private static Version extractCompatibilityVersion(String line) {
         Version result = null;
-        Matcher matcher = META_VERSION_PATTERN.matcher(line);
+        Matcher matcher = META_COMPATIBILITY_PATTERN.matcher(line);
         if (matcher.find()) {
             String major = matcher.group(1);
             String minor = matcher.group(2);

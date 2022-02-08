@@ -13,7 +13,7 @@ public class Info {
     private static final String subtitle3 = "Return of the Hazard";
     private static final String subtitle4 = "Revenge of the Timing Assumption";
 
-    private static final Version version = new Version(3, 3, 7, Status.BETA);
+    private static final Version version = new Version(3, 3, 7, Status.RC1);
 
     private static final int startYear = 2006;
     private static final int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -23,22 +23,6 @@ public class Info {
 
     public static Version getVersion() {
         return version;
-    }
-
-    public static String getVersionMajor() {
-        return String.valueOf(getVersion().major);
-    }
-
-    public static String getVersionMinor() {
-        return String.valueOf(getVersion().minor);
-    }
-
-    public static String getVersionRevision() {
-        return String.valueOf(getVersion().revision);
-    }
-
-    public static String getVersionStatus() {
-        return getVersion().status.toString();
     }
 
     public static String getTitle() {
