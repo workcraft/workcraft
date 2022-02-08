@@ -53,7 +53,7 @@ public class RefinementVerificationCommand extends AbstractVerificationCommand
         File envFile = circuit.getMathModel().getEnvironmentFile();
 
         TaskManager manager = Framework.getInstance().getTaskManager();
-        RefinementTask task = new RefinementTask(we, devStg, envFile, false, true);
+        RefinementTask task = new RefinementTask(we, devStg, envFile, false, true, false);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         manager.queue(task, description, monitor);

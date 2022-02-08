@@ -3,6 +3,7 @@ package org.workcraft.plugins.stg.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
@@ -12,6 +13,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class MutexUtils {
+
+    private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
 
     public static LinkedList<Pair<String, String>> getMutexGrantPairs(Stg stg) {
         LinkedList<Pair<String, String>> exceptions = new LinkedList<>();
@@ -250,6 +253,50 @@ public class MutexUtils {
             result.add(stg.getNodeReference(place));
         }
         return result;
+    }
+
+    public static Collection<Mutex> getMutexesWithoutMatch(Collection<Mutex> mutexes, Collection<Mutex> otherMutexes) {
+        Collection<Mutex> mismatchMutexes = new ArrayList<>();
+        for (Mutex mutex : mutexes) {
+            Mutex matchMutex = getMutexMatch(mutex, otherMutexes);
+            if (matchMutex == null) {
+                mismatchMutexes.add(mutex);
+            }
+        }
+        return mismatchMutexes;
+    }
+
+    private static Mutex getMutexMatch(Mutex mutex, Collection<Mutex> otherMutexes) {
+        if ((mutex != null) && (mutex.g1 != null) && (mutex.r1 != null) && (mutex.g2 != null) && (mutex.r2 != null)) {
+            for (Mutex otherMutex : otherMutexes) {
+                if (isMutexMatch(mutex, otherMutex)) {
+                    return otherMutex;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static boolean isMutexMatch(Mutex mutex, Mutex otherMutex) {
+        return (mutex.g1.name.equals(otherMutex.g1.name) && mutex.r1.name.equals(otherMutex.r1.name) &&
+                mutex.r2.name.equals(otherMutex.r2.name) && mutex.g2.name.equals(otherMutex.g2.name))
+                ||
+                (mutex.g1.name.equals(otherMutex.g2.name) && mutex.r1.name.equals(otherMutex.r2.name) &&
+                 mutex.g2.name.equals(otherMutex.g1.name) && mutex.r2.name.equals(otherMutex.r1.name));
+    }
+
+    public static String getMutexPlaceExtendedTitle(Mutex mutex) {
+        return "'" + mutex.name + "' ("
+                + mutex.r1.name + RIGHT_ARROW_SYMBOL + mutex.g1.name + ", "
+                + mutex.r2.name + RIGHT_ARROW_SYMBOL + mutex.g2.name + ")";
+    }
+
+    public static String getMutexPlaceExtendedTitles(Collection<Mutex> mutexes) {
+        StringBuilder result = new StringBuilder();
+        for (Mutex mutex : mutexes) {
+            result.append("\n").append(PropertyHelper.BULLET_PREFIX).append(getMutexPlaceExtendedTitle(mutex));
+        }
+        return result.toString();
     }
 
 }
