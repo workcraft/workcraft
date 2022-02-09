@@ -51,7 +51,7 @@ class EditTests {
         VisualFunctionContact westContact = (VisualFunctionContact) westNode;
         checkContact(westContact, "i0", VisualFunctionContact.Direction.WEST, new Point2D.Double(0.0, 0.0));
         ConnectionUtils.moveInternalContacts(westConnection);
-        checkContact(westContact, "i0", VisualFunctionContact.Direction.WEST, new Point2D.Double(-1.0, 0.0));
+        checkContact(westContact, "i0", VisualFunctionContact.Direction.WEST, new Point2D.Double(-2.0, 0.0));
 
         VisualCircuitConnection eastConnection = circuit.connect(component, eastPort, null);
         VisualNode eastNode = eastConnection.getFirst();
@@ -60,7 +60,7 @@ class EditTests {
         VisualFunctionContact eastContact = (VisualFunctionContact) eastNode;
         checkContact(eastContact, "o0", VisualFunctionContact.Direction.EAST, new Point2D.Double(0.0, 0.0));
         ConnectionUtils.moveInternalContacts(eastConnection);
-        checkContact(eastContact, "o0", VisualFunctionContact.Direction.EAST, new Point2D.Double(1.0, 0.0));
+        checkContact(eastContact, "o0", VisualFunctionContact.Direction.EAST, new Point2D.Double(2.0, 0.0));
 
         VisualCircuitConnection northConnection = circuit.connect(northPort, component, null);
         VisualNode northNode = northConnection.getSecond();
@@ -69,7 +69,7 @@ class EditTests {
         VisualFunctionContact northContact = (VisualFunctionContact) northNode;
         checkContact(northContact, "i1", VisualFunctionContact.Direction.WEST, new Point2D.Double(0.0, 0.0));
         ConnectionUtils.moveInternalContacts(northConnection);
-        checkContact(northContact, "i1", VisualFunctionContact.Direction.NORTH, new Point2D.Double(0.0, -1.0));
+        checkContact(northContact, "i1", VisualFunctionContact.Direction.NORTH, new Point2D.Double(0.0, -2.0));
 
         VisualCircuitConnection southConnection = circuit.connect(component, southPort, null);
         VisualNode southNode = southConnection.getFirst();
@@ -78,7 +78,7 @@ class EditTests {
         VisualFunctionContact southContact = (VisualFunctionContact) southNode;
         checkContact(southContact, "o1", VisualFunctionContact.Direction.EAST, new Point2D.Double(0.0, 0.0));
         ConnectionUtils.moveInternalContacts(southConnection);
-        checkContact(southContact, "o1", VisualFunctionContact.Direction.SOUTH, new Point2D.Double(0.0, 1.0));
+        checkContact(southContact, "o1", VisualFunctionContact.Direction.SOUTH, new Point2D.Double(0.0, 2.0));
 
         Assertions.assertTrue(component.getVisualInputs().contains(westContact));
         Assertions.assertTrue(component.getVisualOutputs().contains(eastContact));

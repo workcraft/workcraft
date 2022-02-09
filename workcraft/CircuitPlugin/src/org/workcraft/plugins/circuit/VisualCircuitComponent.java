@@ -28,6 +28,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
     private static final double labelMargin = 0.2;
     private static final double contactLength = 0.5;
+    private static final double contactMinOffset = 2.0;
     private static final double contactStep = 1.0;
     private static final double contactMargin = 0.5;
 
@@ -208,16 +209,16 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
         switch (direction) {
         case WEST:
-            double westOffset = contacts.stream().mapToDouble(VisualTransformableNode::getX).max().orElse(0.0);
+            double westOffset = contacts.stream().mapToDouble(VisualTransformableNode::getX).max().orElse(-contactMinOffset);
             return Math.min(TransformHelper.snapP5(bb.getMinX() - contactLength), westOffset);
         case NORTH:
-            double northOffset = contacts.stream().mapToDouble(VisualTransformableNode::getY).max().orElse(0.0);
+            double northOffset = contacts.stream().mapToDouble(VisualTransformableNode::getY).max().orElse(-contactMinOffset);
             return Math.min(TransformHelper.snapP5(bb.getMinY() - contactLength), northOffset);
         case EAST:
-            double eastOffset = contacts.stream().mapToDouble(VisualTransformableNode::getX).min().orElse(0.0);
+            double eastOffset = contacts.stream().mapToDouble(VisualTransformableNode::getX).min().orElse(contactMinOffset);
             return Math.max(TransformHelper.snapP5(bb.getMaxX() + contactLength), eastOffset);
         case SOUTH:
-            double southOffset = contacts.stream().mapToDouble(VisualTransformableNode::getY).min().orElse(0.0);
+            double southOffset = contacts.stream().mapToDouble(VisualTransformableNode::getY).min().orElse(contactMinOffset);
             return Math.max(TransformHelper.snapP5(bb.getMaxY() + contactLength), southOffset);
         default:
             return 0.0;

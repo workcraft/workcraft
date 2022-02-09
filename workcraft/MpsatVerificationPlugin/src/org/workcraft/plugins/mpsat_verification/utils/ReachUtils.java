@@ -5,6 +5,7 @@ import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.types.Pair;
 
 import java.util.Collection;
@@ -313,8 +314,6 @@ public class ReachUtils {
             "    r1 & g1 & r2 & g2  // mutual exclusion of critical sections\n" +
             "}\n";
 
-    private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
-
     public static List<VerificationParameters> getMutexImplementabilityParameters(Collection<Mutex> mutexes) {
         return mutexes.stream().map(ReachUtils::getMutexImplementabilityParameters).collect(Collectors.toList());
     }
@@ -328,9 +327,7 @@ public class ReachUtils {
 
         String description = "Mutex implementability "
                 + (mutex.getProtocol() == Mutex.Protocol.LATE ? "(late protocol) " : "(early protocol) ")
-                + "for place '" + mutex.name + "' ("
-                + mutex.r1.name + RIGHT_ARROW_SYMBOL + mutex.g1.name + ", "
-                + mutex.r2.name + RIGHT_ARROW_SYMBOL + mutex.g2.name + ")";
+                + "for place " + MutexUtils.getMutexPlaceExtendedTitle(mutex);
 
         return new VerificationParameters(description,
                 VerificationMode.STG_REACHABILITY, 0,

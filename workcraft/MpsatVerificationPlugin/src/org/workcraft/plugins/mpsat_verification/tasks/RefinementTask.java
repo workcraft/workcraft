@@ -11,10 +11,12 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.utils.FileUtils;
@@ -67,18 +69,20 @@ public class RefinementTask implements Task<VerificationChainOutput> {
 
     private final WorkspaceEntry we;
     private final Stg implementationStg;
-    private final File specificationFile;
+    private final File specificationStgFile;
     private final boolean allowConcurrencyReduction;
     private final boolean assumeInputReceptiveness;
+    private final boolean exposeMutexPlaces;
 
-    public RefinementTask(WorkspaceEntry we, Stg implementationStg, File specificationFile,
-            boolean allowConcurrencyReduction, boolean assumeInputReceptiveness) {
+    public RefinementTask(WorkspaceEntry we, Stg implementationStg, File specificationStgFile,
+            boolean allowConcurrencyReduction, boolean assumeInputReceptiveness, boolean exposeMutexPlaces) {
 
         this.we = we;
         this.implementationStg = implementationStg;
-        this.specificationFile = specificationFile;
+        this.specificationStgFile = specificationStgFile;
         this.allowConcurrencyReduction = allowConcurrencyReduction;
         this.assumeInputReceptiveness = assumeInputReceptiveness;
+        this.exposeMutexPlaces = exposeMutexPlaces;
     }
 
     @Override
@@ -98,13 +102,13 @@ public class RefinementTask implements Task<VerificationChainOutput> {
     }
 
     private Result<? extends VerificationChainOutput> checkTrivialCases() {
-        if (specificationFile == null) {
+        if (specificationStgFile == null) {
             return Result.exception("Specification STG is undefined");
         }
 
-        Stg specificationStg = StgUtils.loadStg(specificationFile);
+        Stg specificationStg = StgUtils.loadStg(specificationStgFile);
         if (specificationStg == null) {
-            return Result.exception("Cannot load specification STG from file '" + specificationFile.getAbsolutePath() + "'");
+            return Result.exception("Cannot load specification STG from file '" + specificationStgFile.getAbsolutePath() + "'");
         }
 
         // Make sure that signal types of the specification STG match those of the implementation STG
@@ -115,13 +119,13 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         if (!specificationStg.getSignalReferences(Signal.Type.INPUT).containsAll(implementationInputs)) {
             return Result.success(new VerificationChainOutput()
                     .applyVerificationParameters(TRIVIAL_VIOLATION_PARAMETERS)
-                    .applyMessage("Refinement is violated because\nimplementation has inputs that are not in specification"));
+                    .applyMessage("Refinement is violated: implementation has inputs that are not in specification"));
         }
 
         if (!specificationStg.getSignalReferences(Signal.Type.OUTPUT).equals(implementationOutputs)) {
             return Result.success(new VerificationChainOutput()
                     .applyVerificationParameters(TRIVIAL_VIOLATION_PARAMETERS)
-                    .applyMessage("Refinement is violated because\nimplementation outputs differ from specification"));
+                    .applyMessage("Refinement is violated: implementation outputs differ from specification"));
         }
 
         Collection<String> implementationToggleOutputs = StgUtils.getSignalsWithToggleTransitions(implementationStg, Signal.Type.OUTPUT);
@@ -161,9 +165,32 @@ public class RefinementTask implements Task<VerificationChainOutput> {
     private Result<? extends VerificationChainOutput> exportInterfaces(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
-        Stg specificationStg = StgUtils.loadStg(specificationFile);
+        Stg specificationStg = StgUtils.loadStg(specificationStgFile);
         if (specificationStg == null) {
-            return Result.exception("Cannot load specification STG from file '" + specificationFile.getAbsolutePath() + "'");
+            return Result.exception("Cannot load specification STG from file '" + specificationStgFile.getAbsolutePath() + "'");
+        }
+
+        if (exposeMutexPlaces) {
+            // Check that all mutex places in specification STG and implementation STG match (i.e. have the same request/grant pairs)
+            Collection<Mutex> specificationMutexes = MutexUtils.getMutexes(specificationStg);
+            Collection<Mutex> implementationMutexes = MutexUtils.getMutexes(implementationStg);
+            Collection<Mutex> specificationMismatchMutexes = MutexUtils.getMutexesWithoutMatch(specificationMutexes, implementationMutexes);
+            Collection<Mutex> implementationMismatchMutexes = MutexUtils.getMutexesWithoutMatch(implementationMutexes, specificationMutexes);
+            if (!specificationMismatchMutexes.isEmpty() || !implementationMismatchMutexes.isEmpty()) {
+                String msg = "Mutex places in specification STG and implementation STG do not match on request/grant pairs\n";
+                String specificationMismatchText = MutexUtils.getMutexPlaceExtendedTitles(specificationMismatchMutexes);
+                if (!specificationMismatchText.isEmpty()) {
+                    msg += "\nSpecification unmatched mutex places:" + specificationMismatchText;
+                }
+                String implementationMismatchText = MutexUtils.getMutexPlaceExtendedTitles(implementationMismatchMutexes);
+                if (!implementationMismatchText.isEmpty()) {
+                    msg += "\nImplementation unmatched mutex places:" + implementationMismatchText;
+                }
+                return Result.exception(msg);
+            }
+
+            // Factor out mutexes in implementation STGs
+            MutexUtils.factoroutMutexes(implementationStg, implementationMutexes);
         }
 
         // Make sure that signal types of the specification STG match those of the implementation STG

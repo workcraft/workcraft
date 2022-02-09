@@ -226,11 +226,11 @@ public final class RefinementUtils {
                 component.remove(contact);
             }
         }
-        for (String signal : inputs) {
-            circuit.getOrCreateContact(component, signal, Contact.IOType.INPUT);
+        for (String input : inputs) {
+            circuit.getOrCreateContact(component, input, Contact.IOType.INPUT);
         }
-        for (String outputSignal : outputs) {
-            circuit.getOrCreateContact(component, outputSignal, Contact.IOType.OUTPUT);
+        for (String output : outputs) {
+            circuit.getOrCreateContact(component, output, Contact.IOType.OUTPUT);
         }
     }
 

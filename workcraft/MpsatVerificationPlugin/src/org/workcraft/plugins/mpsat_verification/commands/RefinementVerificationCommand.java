@@ -53,7 +53,7 @@ public class RefinementVerificationCommand extends org.workcraft.commands.Abstra
         Stg stg = WorkspaceUtils.getAs(me, Stg.class);
 
         TaskManager manager = Framework.getInstance().getTaskManager();
-        RefinementTask task = new RefinementTask(we, stg, data, getAllowConcurrencyReduction(), getAssumeInputReceptiveness());
+        RefinementTask task = new RefinementTask(we, stg, data, getAllowConcurrencyReduction(), false, true);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         manager.queue(task, description, monitor);
@@ -61,10 +61,6 @@ public class RefinementVerificationCommand extends org.workcraft.commands.Abstra
     }
 
     public boolean getAllowConcurrencyReduction() {
-        return false;
-    }
-
-    public boolean getAssumeInputReceptiveness() {
         return false;
     }
 
