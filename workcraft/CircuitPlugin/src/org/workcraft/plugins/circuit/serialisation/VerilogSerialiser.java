@@ -126,7 +126,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
             for (FunctionContact contact : component.getFunctionOutputs()) {
                 String signal = circuitInfo.getContactSignal(contact);
-                if (inputPorts.contains(signal) || outputPorts.contains(signal)) continue;
+                if ((signal == null) || inputPorts.contains(signal) || outputPorts.contains(signal)) continue;
                 wires.add(signal);
             }
         }
