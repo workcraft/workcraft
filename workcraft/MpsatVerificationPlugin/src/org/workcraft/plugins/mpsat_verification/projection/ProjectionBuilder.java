@@ -42,6 +42,7 @@ public class ProjectionBuilder {
         compositionViolation = calcCompositionViolation();
         componentViolationTracesMap = calcComponentViolationTraces();
     }
+
     private Map<WorkspaceEntry, Map<String, String>> calcComponentSignalRenameMap() {
         Map<WorkspaceEntry, Map<String, String>> result = new HashMap<>();
         for (WorkspaceEntry we : wes) {

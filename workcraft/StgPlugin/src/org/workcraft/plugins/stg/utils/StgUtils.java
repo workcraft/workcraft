@@ -49,19 +49,10 @@ public class StgUtils {
 
     private static void replaceNamedTransition(Stg stg, NamedTransition oldTransition, NamedTransition newTransition) {
         for (MathNode pred : stg.getPreset(oldTransition)) {
-            try {
-                stg.connect(pred, newTransition);
-            } catch (InvalidConnectionException e) {
-                e.printStackTrace();
-            }
+            connectIfPossible(stg, pred, newTransition);
         }
-
         for (MathNode succ : stg.getPostset(oldTransition)) {
-            try {
-                stg.connect(newTransition, succ);
-            } catch (InvalidConnectionException e) {
-                e.printStackTrace();
-            }
+            connectIfPossible(stg, newTransition, succ);
         }
         stg.remove(oldTransition);
     }
@@ -368,16 +359,20 @@ public class StgUtils {
     }
 
     /**
-     * Copy the given STG renaming signals. Note that STG places are copied without
-     * hierarchy and their names are not preserved.
+     * Copy the given STG renaming signals.
+     * Note that STG places are copied without hierarchy and their names are not preserved.
      *
-     * @param stg an STG to be copied
-     * @param newStg an STG to be populated
-     * @return node mapping from the original stg to newStg
+     * @param stg original STG to be copied
+     * @param newStg new STG to be populated
+     * @param signalRenames signal mapping from original STG to new STG
+     * @return mapping of transition references from new to original STG
      */
-    public static Map<MathNode, MathNode> copyStgRenameSignals(StgModel stg, Stg newStg, Map<String, String> signalRenames) {
-        Map<MathNode, MathNode> result = new HashMap<>();
-        // Copy signal transitions with their hierarchy, renaming their signals if necessary.
+    public static Map<String, String> copyStgRenameSignals(StgModel stg, Stg newStg,
+            Map<String, String> signalRenames) {
+
+        Map<String, String> result = new HashMap<>();
+        Map<MathNode, MathNode> oldToNewNodeMap = new HashMap<>();
+        // Copy signal transitions with their hierarchy, renaming their signals if necessary
         for (SignalTransition signalTransition : stg.getSignalTransitions()) {
             String ref = stg.getNodeReference(signalTransition);
             Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
@@ -388,32 +383,40 @@ public class StgUtils {
             SignalTransition newSignalTransition = newStg.createSignalTransition(ref, null);
             newSignalTransition.setSignalType(signalTransition.getSignalType());
             newSignalTransition.setDirection(signalTransition.getDirection());
-            result.put(signalTransition, newSignalTransition);
+            oldToNewNodeMap.put(signalTransition, newSignalTransition);
+            result.put(newStg.getNodeReference(newSignalTransition), stg.getNodeReference(signalTransition));
         }
-        // Copy dummy transitions with their hierarchy.
+        // Copy dummy transitions with their hierarchy
         for (DummyTransition dummyTransition : stg.getDummyTransitions()) {
             String ref = stg.getNodeReference(dummyTransition);
             DummyTransition newDummyTransition = newStg.createDummyTransition(ref, null);
-            result.put(dummyTransition, newDummyTransition);
+            oldToNewNodeMap.put(dummyTransition, newDummyTransition);
+            result.put(newStg.getNodeReference(newDummyTransition), ref);
         }
-        // Copy places WITHOUT their hierarchy -- implicit places cannot be copied (NOTE that implicit place ref in NOT C-style).
+        // Copy places WITHOUT their hierarchy -- implicit places cannot be copied (NOTE that implicit place ref is NOT C-style)
         for (Place place : stg.getPlaces()) {
             StgPlace newPlace = newStg.createPlace();
             newPlace.setCapacity(place.getCapacity());
             newPlace.setTokens(place.getTokens());
-            result.put(place, newPlace);
+            oldToNewNodeMap.put(place, newPlace);
         }
-        // Connect places and transitions.
+        // Connect places and transitions
         for (Connection connection : stg.getConnections()) {
-            MathNode firstNode = result.get(connection.getFirst());
-            MathNode secondNode = result.get(connection.getSecond());
+            MathNode newFromNode = oldToNewNodeMap.get(connection.getFirst());
+            MathNode newToNode = oldToNewNodeMap.get(connection.getSecond());
+            connectIfPossible(newStg, newFromNode, newToNode);
+        }
+        return result;
+    }
+
+    private static void connectIfPossible(Stg stg, MathNode fromNode, MathNode toNode) {
+        if ((fromNode != null) && (toNode != null)) {
             try {
-                newStg.connect(firstNode, secondNode);
+                stg.connect(fromNode, toNode);
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }
         }
-        return result;
     }
 
     public static Color getTypeColor(Signal.Type type) {
