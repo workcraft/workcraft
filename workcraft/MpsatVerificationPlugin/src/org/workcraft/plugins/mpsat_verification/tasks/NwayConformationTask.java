@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
@@ -141,13 +140,12 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             // Clone component STG as its internal signals will be converted to dummies
             Stg componentStg = WorkspaceUtils.getAs(we, Stg.class);
             Stg processedStg = new Stg();
-            Map<MathNode, MathNode> nodeMap = StgUtils.copyStgRenameSignals(componentStg, processedStg,
+            Map<String, String> substitutions = StgUtils.copyStgRenameSignals(componentStg, processedStg,
                     renames.getOrDefault(we, Collections.emptyMap()));
 
-            // Export component STG (convert internal signals to dummies and keep track of renaming)
-            @SuppressWarnings("PMD.PrematureDeclaration")
-            Map<String, String> substitutions = StgUtils.convertInternalSignalsToDummies(processedStg);
-            substitutions.putAll(getTransitionSubstitutions(componentStg, processedStg, nodeMap));
+            // Convert internal signals to dummies and keep track of renaming
+            Map<String, String> dummySubstitutions = StgUtils.convertInternalSignalsToDummies(processedStg);
+            updateSubstitutions(substitutions, dummySubstitutions);
 
             File stgFile = new File(directory, we.getTitle() + STG_FILE_EXTENSION);
             Result<? extends ExportOutput> exportResult = StgUtils.exportStg(processedStg, stgFile, monitor);
@@ -160,17 +158,16 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
         return Result.success(payload.applyExportResult(extendedExportResult));
     }
 
-    private Map<String, String> getTransitionSubstitutions(Stg srcStg, Stg dstStg, Map<MathNode, MathNode> nodeMap) {
-        Map<String, String> result = new HashMap<>();
-        for (MathNode srcNode : srcStg.getSignalTransitions()) {
-            MathNode dstNode = nodeMap.get(srcNode);
-            if (dstNode instanceof SignalTransition) {
-                String srcRef = srcStg.getNodeReference(srcNode);
-                String dstRef = dstStg.getNodeReference(dstNode);
-                result.put(dstRef, srcRef);
+    private void updateSubstitutions(Map<String, String> substitutions, Map<String, String> update) {
+        for (Map.Entry<String, String> updateEntry : update.entrySet()) {
+            String currentRef = updateEntry.getKey();
+            String previousRef = updateEntry.getValue();
+            String originalRef = substitutions.get(previousRef);
+            if (originalRef != null) {
+                substitutions.remove(previousRef);
+                substitutions.put(currentRef, originalRef);
             }
         }
-        return result;
     }
 
     private Result<? extends VerificationChainOutput> composeInterfaces(VerificationChainOutput payload,

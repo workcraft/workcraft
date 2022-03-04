@@ -48,7 +48,7 @@ jobs:
   osx:
     strategy:
       matrix:
-        os: [macos-latest]
+        os: [macos-10.15]
         java-version: [11]
 
     runs-on: ${{ matrix.os }}
@@ -81,7 +81,7 @@ jobs:
   windows:
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2019]
         java-version: [8, 11]
 
     runs-on: ${{ matrix.os }}
