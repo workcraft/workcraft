@@ -12,10 +12,7 @@ import org.workcraft.utils.Hierarchy;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 
 public class HitMan {
 
@@ -84,7 +81,7 @@ public class HitMan {
     public static Node hitFirstChild(Point2D point, Node parentNode, Func<Node, Boolean> filter) {
         Node result = null;
         Point2D pointInLocalSpace = transformToChildSpace(point, parentNode);
-        for (Node childNode : getHitableChildrenInReverseOrder(parentNode)) {
+        for (Node childNode : getHittableChildrenInReverseOrder(parentNode)) {
             if (filter.eval(childNode)) {
                 Node branchNode = hitBranch(pointInLocalSpace, childNode);
                 if (filter.eval(branchNode)) {
@@ -114,7 +111,7 @@ public class HitMan {
             }
         }
         Point2D pointInLocalSpace = transformToChildSpace(point, node);
-        for (Node childNode : getHitableChildrenInReverseOrder(node)) {
+        for (Node childNode : getHittableChildrenInReverseOrder(node)) {
             if (isBranchHit(pointInLocalSpace, childNode)) {
                 return true;
             }
@@ -153,14 +150,14 @@ public class HitMan {
 
     private static Node hitDeepest(Point2D point, Node node, final Func2<Point2D, Node, Boolean> filter) {
         Point2D pointInLocalSpace = transformToChildSpace(point, node);
-        //Iterable<Node> filteredChildren = getFilteredChildren(pointInLocalSpace, node);
         for (Node childNode : node.getChildren()) {
-            Node result = hitDeepest(pointInLocalSpace, childNode, filter);
-            if (result != null) {
-                return result;
+            Node deepestNode = hitDeepest(pointInLocalSpace, childNode, filter);
+            if (deepestNode != null) {
+                return deepestNode;
             }
         }
-        return filter.eval(point, node) ? hitBranch(point, node) : null;
+        Node branchNode = hitBranch(point, node);
+        return filter.eval(point, branchNode) ? branchNode : null;
     }
 
     private static Point2D transformToChildSpace(Point2D point, Node node) {
@@ -172,11 +169,11 @@ public class HitMan {
         return point;
     }
 
-    private static Collection<Node> getHitableChildrenInReverseOrder(Node parentNode) {
+    private static List<Node> getHittableChildrenInReverseOrder(Node parentNode) {
         if (parentNode instanceof Collapsible) {
             Collapsible collapsible = (Collapsible) parentNode;
             if (collapsible.getIsCollapsed() && !collapsible.isCurrentLevelInside()) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
         }
         final ArrayList<Node> result = new ArrayList<>(parentNode.getChildren());
