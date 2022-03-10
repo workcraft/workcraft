@@ -38,7 +38,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public static final String GROUP_ICON = "images/selection-group.svg";
     public static final String GROUP_HINT = "Group selection (" + DesktopApi.getMenuKeyName() + "-G)";
     public static final String PAGE_ICON = "images/selection-page.svg";
-    public static final String PAGE_HHINT = "Combine selection into a page (Alt-G)";
+    public static final String PAGE_HINT = "Combine selection into a page (Alt-G)";
     public static final String UNGROUP_ICON = "images/selection-ungroup.svg";
     public static final String UNGROUP_HINT = "Ungroup selection (" + DesktopApi.getMenuKeyName() + "+Shift-G)";
     public static final String UP_LEVEL_ICON = "images/selection-level_up.svg";
@@ -124,7 +124,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (enablePaging) {
-            JButton groupPageButton = GuiUtils.createIconButton(PAGE_ICON, PAGE_HHINT, event -> {
+            JButton groupPageButton = GuiUtils.createIconButton(PAGE_ICON, PAGE_HINT, event -> {
                 pageSelection(editor);
                 editor.requestFocus();
             });
@@ -427,8 +427,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 } else {
                     selected.addAll(model.getSelection());
                 }
-            } else if ((e.getKeyModifiers() == 0) || e.isShiftKeyDown()) {
-                // If mouse down either without modifiers or with Ctrl/Menu being pressed and hit something then begin move-drag
+            } else if (e.getKeyModifiers() == 0) {
+                // If mouse down without modifiers and hit something then begin move-drag
                 dragState = DrugState.MOVE;
                 if (!model.getSelection().contains(hitNode)) {
                     model.select(hitNode);
@@ -563,10 +563,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
             e.getEditor().repaint();
         }
         return super.keyReleased(e);
-    }
-
-    public DrugState getDragState() {
-        return dragState;
     }
 
     public SelectionMode getSelectionMode() {
