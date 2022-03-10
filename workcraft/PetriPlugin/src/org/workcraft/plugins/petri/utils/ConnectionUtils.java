@@ -15,95 +15,79 @@ import java.util.HashSet;
 public class ConnectionUtils extends org.workcraft.dom.visual.connections.ConnectionUtils {
 
     public static boolean hasReadArcConnection(VisualModel visualModel, VisualNode first, VisualNode second) {
-        boolean found = false;
-        VisualPlace place = null;
-        VisualTransition transition = null;
-        if (first instanceof VisualPlace) {
-            place = (VisualPlace) first;
-        } else if (first instanceof VisualReplicaPlace) {
-            VisualReplicaPlace r = (VisualReplicaPlace) first;
-            place = (VisualPlace) r.getMaster();
+        VisualPlace place = getVisualPlaceOrNull(first);
+        VisualTransition transition = getVisualTransitionOrNull(second);
+        if ((place == null) || (transition == null)) {
+            return false;
         }
-        if (second instanceof VisualTransition) {
-            transition = (VisualTransition) second;
-        }
-        if ((place != null) && (transition != null)) {
-            for (Replica replica: place.getReplicas()) {
-                if (replica instanceof VisualReplicaPlace) {
-                    VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
-                    VisualConnection connection = visualModel.getConnection(replicaPlace, transition);
-                    found = connection instanceof VisualReadArc;
+        for (Replica replica : place.getReplicas()) {
+            if (replica instanceof VisualReplicaPlace) {
+                VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
+                VisualConnection connection = visualModel.getConnection(replicaPlace, transition);
+                if (connection instanceof VisualReadArc) {
+                    return true;
                 }
             }
-            if (!found) {
-                VisualConnection connection = visualModel.getConnection(place, transition);
-                found = connection instanceof VisualReadArc;
-            }
         }
-        return found;
+        VisualConnection connection = visualModel.getConnection(place, transition);
+        return (connection instanceof VisualReadArc);
     }
 
     public static boolean hasProducingArcConnection(VisualModel visualModel, VisualNode first, VisualNode second) {
-        boolean found = false;
-        VisualPlace place = null;
-        VisualTransition transition = null;
-        if (first instanceof VisualTransition) {
-            transition = (VisualTransition) first;
+        VisualPlace place = getVisualPlaceOrNull(second);
+        VisualTransition transition = getVisualTransitionOrNull(first);
+        if ((place == null) || (transition == null)) {
+            return false;
         }
-        if (second instanceof VisualPlace) {
-            place = (VisualPlace) second;
-        } else if (second instanceof VisualReplicaPlace) {
-            VisualReplicaPlace r = (VisualReplicaPlace) second;
-            place = (VisualPlace) r.getMaster();
-        }
-        if ((transition != null) && (place != null)) {
-            for (Replica replica: place.getReplicas()) {
-                if (replica instanceof VisualReplicaPlace) {
-                    VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
-                    VisualConnection connection = visualModel.getConnection(transition, replicaPlace);
-                    found = (connection != null) && !(connection instanceof VisualReadArc);
+        for (Replica replica : place.getReplicas()) {
+            if (replica instanceof VisualReplicaPlace) {
+                VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
+                VisualConnection connection = visualModel.getConnection(transition, replicaPlace);
+                if ((connection != null) && !(connection instanceof VisualReadArc)) {
+                    return true;
                 }
             }
-            if (!found) {
-                VisualConnection connection = visualModel.getConnection(transition, place);
-                found = (connection != null) && !(connection instanceof VisualReadArc);
-            }
         }
-        return found;
+        VisualConnection connection = visualModel.getConnection(transition, place);
+        return (connection != null) && !(connection instanceof VisualReadArc);
     }
 
     public static boolean hasConsumingArcConnection(VisualModel visualModel, VisualNode first, VisualNode second) {
-        boolean found = false;
-        VisualPlace place = null;
-        VisualTransition transition = null;
-        if (first instanceof VisualPlace) {
-            place = (VisualPlace) first;
-        } else if (first instanceof VisualReplicaPlace) {
-            VisualReplicaPlace r = (VisualReplicaPlace) first;
-            place = (VisualPlace) r.getMaster();
+        VisualPlace place = getVisualPlaceOrNull(first);
+        VisualTransition transition = getVisualTransitionOrNull(second);
+        if ((place == null) || (transition == null)) {
+            return false;
         }
-        if (second instanceof VisualTransition) {
-            transition = (VisualTransition) second;
-        }
-        if ((place != null) && (transition != null)) {
-            for (Replica replica: place.getReplicas()) {
-                if (replica instanceof VisualReplicaPlace) {
-                    VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
-                    VisualConnection connection = visualModel.getConnection(replicaPlace, transition);
-                    found = (connection != null) && !(connection instanceof VisualReadArc);
+        for (Replica replica : place.getReplicas()) {
+            if (replica instanceof VisualReplicaPlace) {
+                VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
+                VisualConnection connection = visualModel.getConnection(replicaPlace, transition);
+                if ((connection != null) && !(connection instanceof VisualReadArc)) {
+                    return true;
                 }
             }
-            if (!found) {
-                VisualConnection connection = visualModel.getConnection(place, transition);
-                found = (connection != null) && !(connection instanceof VisualReadArc);
-            }
         }
-        return found;
+        VisualConnection connection = visualModel.getConnection(place, transition);
+        return (connection != null) && !(connection instanceof VisualReadArc);
+    }
+
+    private static VisualPlace getVisualPlaceOrNull(VisualNode node) {
+        if (node instanceof VisualPlace) {
+            return (VisualPlace) node;
+        } else if (node instanceof VisualReplicaPlace) {
+            VisualReplicaPlace r = (VisualReplicaPlace) node;
+            return  (VisualPlace) r.getMaster();
+        }
+        return null;
+    }
+
+    private static VisualTransition getVisualTransitionOrNull(VisualNode node) {
+        return (node instanceof VisualTransition) ? (VisualTransition) node : null;
     }
 
     public static HashSet<VisualConnection> getVisualConsumingArcs(VisualModel visualModel) {
         HashSet<VisualConnection> connections = new HashSet<>();
-        for (VisualConnection connection: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
+        for (VisualConnection connection : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
             if (isVisualConsumingArc(connection)) {
                 connections.add(connection);
             }
@@ -113,7 +97,7 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
 
     public static HashSet<VisualConnection> getVisualProducingArcs(VisualModel visualModel) {
         HashSet<VisualConnection> connections = new HashSet<>();
-        for (VisualConnection connection: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
+        for (VisualConnection connection : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
             if (isVisualProducingArc(connection)) {
                 connections.add(connection);
             }
