@@ -115,30 +115,26 @@ public class VisualPetri extends AbstractVisualModel {
     public VisualConnection connectUndirected(VisualNode first, VisualNode second) throws InvalidConnectionException {
         validateUndirectedConnection(first, second);
 
-        VisualNode place = null;
+        VisualNode placeOrReplica = null;
         VisualNode transition = null;
         if (first instanceof VisualTransition) {
-            place = second;
+            placeOrReplica = second;
             transition = first;
         } else if (second instanceof VisualTransition) {
-            place = first;
+            placeOrReplica = first;
             transition = second;
         }
-        VisualConnection connection = null;
-        if ((place != null) && (transition != null)) {
-            connection = createReadArcConnection(place, transition);
-        }
-        return connection;
+        return placeOrReplica == null ? null : createReadArcConnection(placeOrReplica, transition);
     }
 
-    private VisualReadArc createReadArcConnection(VisualNode place, VisualNode transition)
+    private VisualReadArc createReadArcConnection(VisualNode placeOrReplica, VisualNode transition)
              throws InvalidConnectionException {
 
         Place mPlace = null;
-        if (place instanceof VisualPlace) {
-            mPlace = ((VisualPlace) place).getReferencedComponent();
-        } else if (place instanceof VisualReplicaPlace) {
-            mPlace = ((VisualReplicaPlace) place).getReferencedPlace();
+        if (placeOrReplica instanceof VisualPlace) {
+            mPlace = ((VisualPlace) placeOrReplica).getReferencedComponent();
+        } else if (placeOrReplica instanceof VisualReplicaPlace) {
+            mPlace = ((VisualReplicaPlace) placeOrReplica).getReferencedPlace();
         }
         Transition mTransition = null;
         if (transition instanceof VisualTransition) {
@@ -150,8 +146,8 @@ public class VisualPetri extends AbstractVisualModel {
             MathConnection mConsumingConnection = getMathModel().connect(mPlace, mTransition);
             MathConnection mProducingConnection = getMathModel().connect(mTransition, mPlace);
 
-            connection = new VisualReadArc(place, transition, mConsumingConnection, mProducingConnection);
-            Hierarchy.getNearestContainer(place, transition).add(connection);
+            connection = new VisualReadArc(placeOrReplica, transition, mConsumingConnection, mProducingConnection);
+            Hierarchy.getNearestContainer(placeOrReplica, transition).add(connection);
         }
         return connection;
     }
