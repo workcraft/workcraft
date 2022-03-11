@@ -59,12 +59,12 @@ public class NaryBooleanFormulaBuilder {
 
         @Override
         public NaryBooleanFormula visit(Zero node) {
-            return NaryUtils.getOr(Collections.<NaryBooleanFormula>emptyList());
+            return NaryUtils.getOr(Collections.emptyList());
         }
 
         @Override
         public NaryBooleanFormula visit(One node) {
-            return NaryUtils.getAnd(Collections.<NaryBooleanFormula>emptyList());
+            return NaryUtils.getAnd(Collections.emptyList());
         }
 
         @Override

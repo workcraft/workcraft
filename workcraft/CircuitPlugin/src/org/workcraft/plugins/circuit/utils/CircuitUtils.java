@@ -401,7 +401,7 @@ public class CircuitUtils {
     }
 
     public static String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
-        String result = circuit.getMathReference(gate);
+        String result = Identifier.truncateNamespaceSeparator(circuit.getMathReference(gate));
 
         VisualFunctionContact outputContact = gate.getGateOutput();
         String outputName = outputContact.getName();
