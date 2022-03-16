@@ -60,7 +60,9 @@ public class CircuitSignalInfo {
     public final String getContactSignal(Contact contact) {
         String result = contactSignalMap.get(contact);
         if (result == null) {
-            if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {
+            if (contact.isPort()) {
+                result = CircuitUtils.getSignalReference(circuit, contact);
+            } else if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {
                 Contact signal = CircuitUtils.findSignal(circuit, contact, false);
                 Node parent = signal.getParent();
                 boolean isAssignOutput = false;

@@ -6,6 +6,7 @@ function removeGeneratedWorkFiles() {
     rm -f ${test_dir}/CYCLE.work
     rm -f ${test_dir}/CHARGE_CTRL.work
     rm -f ${test_dir}/CHARGE.work
+    rm -f ${test_dir}/WAIT2.work
 }
 
 removeGeneratedWorkFiles
