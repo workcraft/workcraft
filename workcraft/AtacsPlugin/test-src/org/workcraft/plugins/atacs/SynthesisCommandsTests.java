@@ -14,6 +14,7 @@ import org.workcraft.plugins.atacs.commands.StandardCelementSynthesisCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.BackendUtils;
@@ -262,7 +263,7 @@ class SynthesisCommandsTests {
 
     private static Set<String> getMutexComponentReferences(Circuit circuit) {
         HashSet<String> result = new HashSet<>();
-        Set<String> mutexModuleNames = org.workcraft.plugins.circuit.utils.MutexUtils.getMutexModuleNames();
+        Set<String> mutexModuleNames = ArbitrationUtils.getMutexModuleNames();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             String moduleName = component.getModule();
             if (mutexModuleNames.contains(moduleName)) {

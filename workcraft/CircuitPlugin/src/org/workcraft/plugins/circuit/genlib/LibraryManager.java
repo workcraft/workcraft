@@ -47,7 +47,7 @@ public final class LibraryManager {
                     } else {
                         genlibParser.disable_tracing();
                     }
-                    LogUtils.logInfo("Reading gate library '" + fileName + "'.");
+                    LogUtils.logInfo("Reading gate library '" + file.getAbsolutePath() + "'.");
                     library = genlibParser.parseGenlib();
                     libraryFileName = fileName;
                 } catch (FileNotFoundException e) {

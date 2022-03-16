@@ -31,6 +31,7 @@ import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
+import org.workcraft.plugins.stg.Wait;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
@@ -138,11 +139,11 @@ public class VerilogImporter implements Importer {
         File dir = dialog.getDirectory();
         Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
         moduleFileNames = dialog.getModuleFileNames();
-        Collection<String> badSaveFilePaths = getBadSaveFilePaths(descendantModules, dir);
-        if (!badSaveFilePaths.isEmpty()) {
+        Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(descendantModules, dir);
+        if (!existingSaveFilePaths.isEmpty()) {
             String delimiter = "\n" + PropertyHelper.BULLET_PREFIX;
             String msg = "The following files already exist:" + delimiter
-                    + String.join(delimiter, badSaveFilePaths)
+                    + String.join(delimiter, existingSaveFilePaths)
                     + "\n\nOverwrite these files and proceed with import?";
 
             if (!DialogUtils.showConfirmWarning(msg, "Import hierarchical Verilog", false)) {
@@ -159,18 +160,17 @@ public class VerilogImporter implements Importer {
         Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
         File dir = Framework.getInstance().getWorkingDirectory();
         moduleFileNames = VerilogUtils.getModuleToFileMap(verilogModules);
-        Collection<String> badSaveFilePaths = getBadSaveFilePaths(descendantModules, dir);
-        if (!badSaveFilePaths.isEmpty()) {
-            String msg = "Cannot import the circuit hierarchy because the following files already exist:\n"
-                    + String.join("\n", badSaveFilePaths);
+        Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(descendantModules, dir);
+        if (!existingSaveFilePaths.isEmpty()) {
+            String msg = "Import of circuit hierarchy overwrites the following files:\n"
+                    + String.join("\n", existingSaveFilePaths);
 
-            LogUtils.logError(msg);
-            throw new DeserialisationException("Clash of file names.");
+            LogUtils.logWarning(msg);
         }
         return createCircuitHierarchy(topVerilogModule, descendantModules, dir);
     }
 
-    private Collection<String> getBadSaveFilePaths(Set<VerilogModule> descendantModules, File dir) {
+    private Collection<String> getExistingSaveFilePaths(Set<VerilogModule> descendantModules, File dir) {
         Collection<String> result = new HashSet<>();
         for (VerilogModule module : descendantModules) {
             String fileName = moduleFileNames.get(module);
@@ -189,11 +189,9 @@ public class VerilogImporter implements Importer {
 
         Map<Circuit, String> circuitFileNames = new HashMap<>();
         for (VerilogModule verilogModule : descendantModules) {
-            if (!verilogModule.isEmpty()) {
-                Circuit descendantCircuit = createCircuit(verilogModule, descendantModules, Collections.emptySet());
-                if (moduleFileNames != null) {
-                    circuitFileNames.put(descendantCircuit, moduleFileNames.get(verilogModule));
-                }
+            Circuit descendantCircuit = createCircuit(verilogModule, descendantModules, Collections.emptySet());
+            if (moduleFileNames != null) {
+                circuitFileNames.put(descendantCircuit, moduleFileNames.get(verilogModule));
             }
         }
         adjustModuleRefinements(circuit, circuitFileNames, dir);
@@ -251,6 +249,9 @@ public class VerilogImporter implements Importer {
             FunctionComponent component;
             if (gate != null) {
                 component = createLibraryGate(circuit, verilogInstance, nets, gate, substitutionRule);
+            } else if (isWaitInstance(verilogInstance)) {
+                Wait waitInstance = instanceToWaitWithType(verilogInstance);
+                component = createWait(circuit, waitInstance, nets);
             } else if (isMutexInstance(verilogInstance)) {
                 Mutex mutexInstance = instanceToMutexWithProtocol(verilogInstance, mutexes);
                 component = createMutex(circuit, mutexInstance, nets);
@@ -315,8 +316,27 @@ public class VerilogImporter implements Importer {
         }
     }
 
+    private boolean isWaitInstance(VerilogInstance verilogInstance) {
+        return ArbitrationUtils.getWaitModuleNames().contains(verilogInstance.moduleName);
+    }
+
     private boolean isMutexInstance(VerilogInstance verilogInstance) {
-        return MutexUtils.getMutexModuleNames().contains(verilogInstance.moduleName);
+        return ArbitrationUtils.getMutexModuleNames().contains(verilogInstance.moduleName);
+    }
+
+    private Wait instanceToWaitWithType(VerilogInstance verilogInstance) {
+        Wait module = ArbitrationUtils.getWaitModule(verilogInstance.moduleName);
+        if ((module == null) || (module.name == null)) {
+            return null;
+        }
+        String name = verilogInstance.name;
+        Signal sig = getPinConnectedSignal(verilogInstance, module.sig.name, 0);
+        Signal ctrl = getPinConnectedSignal(verilogInstance, module.ctrl.name, 2);
+        Signal san = getPinConnectedSignal(verilogInstance, module.san.name, 3);
+
+        Wait result = new Wait(name, sig, ctrl, san);
+        result.setType(module.getType());
+        return result;
     }
 
     private Mutex instanceToMutexWithProtocol(VerilogInstance verilogInstance, Collection<Mutex> mutexes) {
@@ -332,9 +352,9 @@ public class VerilogImporter implements Importer {
 
         // Get fall-back protocol from default preferences and module name
         Mutex.Protocol defaultProtocol = StgSettings.getMutexProtocol();
-        if (MutexUtils.appendProtocolSuffix(module.name, Mutex.Protocol.LATE).equals(verilogInstance.moduleName)) {
+        if (ArbitrationUtils.appendMutexProtocolSuffix(module.name, Mutex.Protocol.LATE).equals(verilogInstance.moduleName)) {
             defaultProtocol = Mutex.Protocol.LATE;
-        } else if (MutexUtils.appendProtocolSuffix(module.name, Mutex.Protocol.EARLY).equals(verilogInstance.moduleName)) {
+        } else if (ArbitrationUtils.appendMutexProtocolSuffix(module.name, Mutex.Protocol.EARLY).equals(verilogInstance.moduleName)) {
             defaultProtocol = Mutex.Protocol.EARLY;
         }
 
@@ -813,34 +833,45 @@ public class VerilogImporter implements Importer {
         circuit.setName(component, derivedName);
     }
 
+    private FunctionComponent createWait(Circuit circuit, Wait instance, HashMap<String, Net> nets) {
+        Wait.Type type = instance.getType();
+        Wait module = CircuitSettings.parseWaitData(type);
+        if ((module == null) || (module.name == null)) {
+            return null;
+        }
+        FunctionComponent component = new FunctionComponent();
+        circuit.add(component);
+        component.setModule(module.name);
+        component.setIsArbitrationPrimitive(true);
+
+        reparentAndRenameComponent(circuit, component, instance.name);
+        FunctionContact sigContact = addComponentPin(circuit, component, module.sig, instance.sig, nets);
+        FunctionContact ctrlContact = addComponentPin(circuit, component, module.ctrl, instance.ctrl, nets);
+        FunctionContact sanContact = addComponentPin(circuit, component, module.san, instance.san, nets);
+
+        ArbitrationUtils.assignWaitFunctions(type, sigContact, ctrlContact, sanContact);
+        return component;
+    }
+
     private FunctionComponent createMutex(Circuit circuit, Mutex instance, HashMap<String, Net> nets) {
         Mutex module = CircuitSettings.parseMutexData();
         if ((module == null) || (module.name == null)) {
             return null;
         }
         Mutex.Protocol protocol = instance.getProtocol();
-        String moduleName = MutexUtils.appendProtocolSuffix(module.name, protocol);
+        String moduleName = ArbitrationUtils.appendMutexProtocolSuffix(module.name, protocol);
         FunctionComponent component = new FunctionComponent();
         circuit.add(component);
         component.setModule(moduleName);
         component.setIsArbitrationPrimitive(true);
 
         reparentAndRenameComponent(circuit, component, instance.name);
-        FunctionContact r1Contact = addMutexPin(circuit, component, module.r1, instance.r1, nets);
-        FunctionContact g1Contact = addMutexPin(circuit, component, module.g1, instance.g1, nets);
-        FunctionContact r2Contact = addMutexPin(circuit, component, module.r2, instance.r2, nets);
-        FunctionContact g2Contact = addMutexPin(circuit, component, module.g2, instance.g2, nets);
+        FunctionContact r1Contact = addComponentPin(circuit, component, module.r1, instance.r1, nets);
+        FunctionContact g1Contact = addComponentPin(circuit, component, module.g1, instance.g1, nets);
+        FunctionContact r2Contact = addComponentPin(circuit, component, module.r2, instance.r2, nets);
+        FunctionContact g2Contact = addComponentPin(circuit, component, module.g2, instance.g2, nets);
 
-        BooleanFormula g1Set = MutexUtils.getGrantSet(protocol, r1Contact, g2Contact, r2Contact);
-        g1Contact.setSetFunctionQuiet(g1Set);
-
-        BooleanFormula g1Reset = MutexUtils.getGrantReset(r1Contact);
-        g1Contact.setResetFunctionQuiet(g1Reset);
-
-        BooleanFormula g2Set = MutexUtils.getGrantSet(protocol, r2Contact, g1Contact, r1Contact);
-        g2Contact.setSetFunctionQuiet(g2Set);
-        BooleanFormula g2Reset = MutexUtils.getGrantReset(r2Contact);
-        g2Contact.setResetFunctionQuiet(g2Reset);
+        ArbitrationUtils.assignMutexFunctions(protocol, r1Contact, g1Contact, r2Contact, g2Contact);
 
         setMutexGrant(circuit, instance.g1, nets);
         setMutexGrant(circuit, instance.g2, nets);
@@ -865,7 +896,7 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private FunctionContact addMutexPin(Circuit circuit, FunctionComponent component, Signal port,
+    private FunctionContact addComponentPin(Circuit circuit, FunctionComponent component, Signal port,
             Signal signal, HashMap<String, Net> nets) {
 
         FunctionContact contact = new FunctionContact();
