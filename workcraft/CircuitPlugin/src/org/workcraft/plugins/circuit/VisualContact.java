@@ -183,7 +183,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     private Shape getForcedShape() {
         Contact contact = getReferencedComponent();
-        return contact.isPort() ? getPortShape() : getForcedContactShape();
+        return ((contact != null) && contact.isPort()) ? getPortShape() : getForcedContactShape();
     }
 
     private Shape getPortShape() {
@@ -246,12 +246,20 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         if (showContact || isPort()) {
             boolean showForcedInit = (d instanceof StateDecoration) && ((StateDecoration) d).showForcedInit();
             Shape shape = showForcedInit && isForcedDriver() ? getForcedShape() : getShape();
+            boolean useBoldOutline = (d instanceof StateDecoration) && ((StateDecoration) d).useBoldOutline();
             float width = (float) CircuitSettings.getBorderWidth();
-            g.setStroke(new BasicStroke(width));
+            if (useBoldOutline) {
+                g.setStroke(new BasicStroke(2.5f * width));
+                g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
+                g.draw(shape);
+            }
             g.setColor(fillColor);
             g.fill(shape);
-            g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
-            g.draw(shape);
+            if (!useBoldOutline) {
+                g.setStroke(new BasicStroke(width));
+                g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
+                g.draw(shape);
+            }
         } else if (r.getModel().getConnections(this).size() > 1) {
             g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
             g.fill(VisualJoint.shape);
