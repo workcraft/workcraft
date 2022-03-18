@@ -252,8 +252,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 return colorisation;
             }
             @Override
-            public boolean showForcedInit() {
-                return false;
+            public boolean useBoldOutline() {
+                return isExcited;
             }
         };
     }
@@ -277,14 +277,6 @@ public class CircuitSimulationTool extends StgSimulationTool {
                     return CircuitSettings.getInactiveWireColor();
                 }
                 return null;
-            }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
-            @Override
-            public boolean showForcedInit() {
-                return false;
             }
         };
     }

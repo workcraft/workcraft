@@ -34,7 +34,7 @@ class VerilogAssignTests {
     private static final String OUTRO =
             "\n" +
             "    // signal values at the initial state:\n" +
-            "    // !out !in\n" +
+            "    // !in !out\n" +
             "endmodule\n";
 
     @BeforeAll

@@ -243,19 +243,21 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     private void writeInitialState(PrintWriter writer, CircuitSignalInfo circuitInfo) {
-        Collection<Contact> drivers = circuitInfo.getCircuit().getDrivers();
-        if (!drivers.isEmpty()) {
+        Set<Contact> driversAndPorts = new HashSet<>(circuitInfo.getCircuit().getDrivers());
+        driversAndPorts.addAll(circuitInfo.getCircuit().getPorts());
+
+        Map<String, Boolean> signalInitState = new TreeMap<>();
+        for (Contact driver : driversAndPorts) {
+            String signalName = circuitInfo.getContactSignal(driver);
+            if ((signalName != null) && !signalName.isEmpty()) {
+                signalInitState.put(signalName, driver.getInitToOne());
+            }
+        }
+        if (!signalInitState.isEmpty()) {
             writer.println("    // signal values at the initial state:");
             writer.print("    //");
-            for (Contact driver: drivers) {
-                String signalName = circuitInfo.getContactSignal(driver);
-                if ((signalName != null) && !signalName.isEmpty()) {
-                    writer.print(" ");
-                    if (!driver.getInitToOne()) {
-                        writer.print("!");
-                    }
-                    writer.print(signalName);
-                }
+            for (Map.Entry<String, Boolean> entry : signalInitState.entrySet()) {
+                writer.print((entry.getValue() ? " " : " !") + entry.getKey());
             }
             writer.println();
         }

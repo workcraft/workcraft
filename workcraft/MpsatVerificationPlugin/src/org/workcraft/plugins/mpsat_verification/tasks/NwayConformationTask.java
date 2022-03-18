@@ -18,6 +18,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -34,6 +35,51 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
 
     private final List<WorkspaceEntry> wes;
     private final Map<WorkspaceEntry, Map<String, String>> renames;
+
+    private static final class SignalPhaseData {
+        private final Map<String, WorkspaceEntry> risingSignalToWorkMap = new HashMap<>();
+        private final Map<String, WorkspaceEntry> fallingSignalToWorkMap = new HashMap<>();
+
+        public void addRisingSignalIfAbsent(String signalRef, WorkspaceEntry we) {
+            risingSignalToWorkMap.computeIfAbsent(signalRef, ref -> we);
+        }
+
+        public void addFallingSignalIfAbsent(String signalRef, WorkspaceEntry we) {
+            fallingSignalToWorkMap.computeIfAbsent(signalRef, ref -> we);
+        }
+
+        public WorkspaceEntry getRisingSignalWork(String signalRef) {
+            return risingSignalToWorkMap.get(signalRef);
+        }
+
+        public WorkspaceEntry getFallingSignalWork(String signalRef) {
+            return fallingSignalToWorkMap.get(signalRef);
+        }
+    }
+
+    private static final class SignalStateData {
+        private final Map<String, WorkspaceEntry> lowSignalToWorkMap = new HashMap<>();
+        private final Map<String, WorkspaceEntry> highSignalToWorkMap = new HashMap<>();
+
+        public void addLowSignalIfAbsent(String signalRef, WorkspaceEntry we) {
+            highSignalToWorkMap.remove(signalRef);
+            lowSignalToWorkMap.computeIfAbsent(signalRef, ref -> we);
+        }
+
+        public void addHighSignalIfAbsent(String signalRef, WorkspaceEntry we) {
+            lowSignalToWorkMap.remove(signalRef);
+            highSignalToWorkMap.computeIfAbsent(signalRef, ref -> we);
+        }
+
+        public WorkspaceEntry getLowSignalWork(String signalRef) {
+            return lowSignalToWorkMap.get(signalRef);
+        }
+
+        public WorkspaceEntry getHighSignalWork(String signalRef) {
+            return highSignalToWorkMap.get(signalRef);
+        }
+    }
+
 
     public NwayConformationTask(List<WorkspaceEntry> wes, Map<WorkspaceEntry, Map<String, String>> renames) {
         this.wes = wes;
@@ -57,27 +103,108 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
     }
 
     private Result<? extends VerificationChainOutput> checkTrivialCases() {
+        // Check that all component models are STGs
         for (WorkspaceEntry we : wes) {
             if (!WorkspaceUtils.isApplicable(we, Stg.class)) {
                 return Result.exception("Incorrect model type for '" + we.getTitle() + "'");
             }
         }
-        Map<WorkspaceEntry, Map<String, Boolean>> initialStateMap = calcInitialStates();
-        Map<String, Boolean> driverInitialState = getDriverInitialState(initialStateMap);
-        // Check initial state consistency for driven signals
+        // Check for input signals with missing phases
+        SignalPhaseData signalPhaseData = getPhasePresenceForInterfaceSignals();
         for (WorkspaceEntry we : wes) {
-            Map<String, Boolean> initialState = initialStateMap.getOrDefault(we, Collections.emptyMap());
-            Collection<String> problems = getInitialStateMismatch(we, initialState, driverInitialState);
+            Collection<String> problems = getMissingPhaseProblems(we, signalPhaseData);
             if (!problems.isEmpty()) {
-                String msg = "Unexpected initial state of input signals in '" + we.getTitle() + "':\n"
-                        + problems.stream()
-                        .map(problem -> PropertyHelper.BULLET_PREFIX + problem)
-                        .collect(Collectors.joining("\n"));
-
-                return Result.exception(msg);
+                String msg = "Model '" + we.getTitle() + "' misses phases of interface signals that are present in other models";
+                return Result.exception(getMessageWithProblemList(msg, problems));
+            }
+        }
+        // Check initial state consistency for the driver and its driven signals
+        Map<WorkspaceEntry, Map<String, Boolean>> workToInitialStateMap = calcInitialStates();
+        SignalStateData signalStateData = getDriverInitialState(workToInitialStateMap);
+        for (WorkspaceEntry we : wes) {
+            Map<String, Boolean> initialState = workToInitialStateMap.getOrDefault(we, Collections.emptyMap());
+            Collection<String> problems = getInitialStateMismatchProblems(we, initialState, signalStateData);
+            if (!problems.isEmpty()) {
+                String msg = "Model '" + we.getTitle() + "' has interface signals whose initial state is different in other models";
+                return Result.exception(getMessageWithProblemList(msg, problems));
             }
         }
         return null;
+    }
+
+    private SignalPhaseData getPhasePresenceForInterfaceSignals() {
+        SignalPhaseData result = new SignalPhaseData();
+        for (WorkspaceEntry we : wes) {
+            Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+            Map<String, String> signalRenames = renames.getOrDefault(we, Collections.emptyMap());
+            Set<String> interfaceSignalRefs = new HashSet<>();
+            interfaceSignalRefs.addAll(stg.getSignalReferences(Signal.Type.INPUT));
+            interfaceSignalRefs.addAll(stg.getSignalReferences(Signal.Type.OUTPUT));
+            for (String signalRef : interfaceSignalRefs) {
+                Pair<Boolean, Boolean> phasePresence = getPhasePresence(stg, signalRef);
+                String driverRef = signalRenames.getOrDefault(signalRef, signalRef);
+                if (phasePresence.getFirst()) {
+                    result.addRisingSignalIfAbsent(driverRef, we);
+                }
+                if (phasePresence.getSecond()) {
+                    result.addFallingSignalIfAbsent(driverRef, we);
+                }
+            }
+        }
+        return result;
+    }
+
+    private Collection<String> getMissingPhaseProblems(WorkspaceEntry we, SignalPhaseData signalPhaseData) {
+        Collection<String> result = new ArrayList<>();
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        Map<String, String> signalRenames = renames.getOrDefault(we, Collections.emptyMap());
+        Set<String> interfaceSignalRefs = new HashSet<>();
+        interfaceSignalRefs.addAll(stg.getSignalReferences(Signal.Type.INPUT));
+        interfaceSignalRefs.addAll(stg.getSignalReferences(Signal.Type.OUTPUT));
+        for (String signalRef : interfaceSignalRefs) {
+            String driverRef = signalRenames.getOrDefault(signalRef, signalRef);
+            Pair<Boolean, Boolean> phasePresence = getPhasePresence(stg, signalRef);
+            boolean hasPlus = phasePresence.getFirst();
+            boolean hasMinus = phasePresence.getSecond();
+            if (!hasPlus && hasMinus) {
+                WorkspaceEntry risingSignalWork = signalPhaseData.getRisingSignalWork(driverRef);
+                if (risingSignalWork != null) {
+                    result.add("there is " + signalRef + SignalTransition.Direction.MINUS
+                            + " but no " + signalRef + SignalTransition.Direction.PLUS
+                            + ", which is present in model '" + risingSignalWork.getTitle() + "'");
+                }
+            }
+            if (hasPlus && !hasMinus) {
+                WorkspaceEntry fallingSignalWork = signalPhaseData.getFallingSignalWork(driverRef);
+                if (fallingSignalWork != null) {
+                    result.add("there is " + signalRef + SignalTransition.Direction.PLUS
+                            + " but no " + signalRef + SignalTransition.Direction.MINUS
+                            + ", which is present in model '" + fallingSignalWork.getTitle() + "'");
+                }
+            }
+        }
+        return result;
+    }
+
+    private Pair<Boolean, Boolean> getPhasePresence(Stg stg, String signalRef) {
+        boolean hasPlus = false;
+        boolean hasMinus = false;
+        for (SignalTransition transition : stg.getSignalTransitions(signalRef)) {
+            if (transition.getDirection() == SignalTransition.Direction.PLUS) {
+                hasPlus = true;
+            }
+            if (transition.getDirection() == SignalTransition.Direction.MINUS) {
+                hasMinus = true;
+            }
+            if (transition.getDirection() == SignalTransition.Direction.TOGGLE) {
+                hasPlus = true;
+                hasMinus = true;
+            }
+            if (hasPlus && hasMinus) {
+                break;
+            }
+        }
+        return Pair.of(hasPlus, hasMinus);
     }
 
     private Map<WorkspaceEntry, Map<String, Boolean>> calcInitialStates() {
@@ -90,8 +217,8 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
         return result;
     }
 
-    private Map<String, Boolean> getDriverInitialState(Map<WorkspaceEntry, Map<String, Boolean>> initialStateMap) {
-        Map<String, Boolean> result = new HashMap<>();
+    private SignalStateData getDriverInitialState(Map<WorkspaceEntry, Map<String, Boolean>> initialStateMap) {
+        SignalStateData result = new SignalStateData();
         for (WorkspaceEntry we : wes) {
             Stg stg = WorkspaceUtils.getAs(we, Stg.class);
             Map<String, Boolean> initialState = initialStateMap.getOrDefault(we, Collections.emptyMap());
@@ -99,32 +226,52 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             for (String signalRef : stg.getSignalReferences(Signal.Type.OUTPUT)) {
                 String driverRef = signalRenames.getOrDefault(signalRef, signalRef);
                 Boolean signalState = initialState.get(signalRef);
-                result.put(driverRef, signalState);
+                if (signalState == Boolean.FALSE) {
+                    result.addLowSignalIfAbsent(driverRef, we);
+                }
+                if (signalState == Boolean.TRUE) {
+                    result.addHighSignalIfAbsent(driverRef, we);
+                }
             }
         }
         return result;
     }
 
-    private Collection<String> getInitialStateMismatch(WorkspaceEntry we,
-            Map<String, Boolean> initialState, Map<String, Boolean> driverInitialState) {
+    private Collection<String> getInitialStateMismatchProblems(WorkspaceEntry we,
+            Map<String, Boolean> initialState, SignalStateData signalStateData) {
 
+        Collection<String> result = new ArrayList<>();
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Map<String, String> signalRenames = renames.getOrDefault(we, Collections.emptyMap());
-        Collection<String> result = new ArrayList<>();
         for (String signalRef : stg.getSignalReferences(Signal.Type.INPUT)) {
             Boolean signalState = initialState.get(signalRef);
             String driverRef = signalRenames.getOrDefault(signalRef, signalRef);
-            Boolean driverState = driverInitialState.get(driverRef);
-            if ((signalState != null) && (driverState != null) && (signalState != driverState)) {
-                result.add("'" + signalRef + "'" + " is " + getLevelString(signalState)
-                        + " while its driver is " + getLevelString(driverState));
+            if (signalState == Boolean.FALSE) {
+                WorkspaceEntry highDriverWork = signalStateData.getHighSignalWork(driverRef);
+                if (highDriverWork == null) {
+                    signalStateData.addLowSignalIfAbsent(driverRef, we);
+                } else {
+                    String driverWorkTitle = highDriverWork.getTitle();
+                    result.add("'" + signalRef + "' is low, but in model '" + driverWorkTitle + "' it is high");
+                }
+            }
+            if (signalState == Boolean.TRUE) {
+                WorkspaceEntry lowDriverWork = signalStateData.getLowSignalWork(driverRef);
+                if (lowDriverWork == null) {
+                    signalStateData.addHighSignalIfAbsent(driverRef, we);
+                } else {
+                    String driverWorkTitle = lowDriverWork.getTitle();
+                    result.add("'" + signalRef + "' is high, but in model '" + driverWorkTitle + "' it is low");
+                }
             }
         }
         return result;
     }
 
-    private String getLevelString(boolean state) {
-        return state ? "high" : "low";
+    private String getMessageWithProblemList(String message, Collection<String> problems) {
+        return message + ":\n" + problems.stream()
+                .map(problem -> PropertyHelper.BULLET_PREFIX + problem)
+                .collect(Collectors.joining("\n"));
     }
 
     private Result<? extends VerificationChainOutput> init() {

@@ -24,10 +24,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ConformationTask implements Task<VerificationChainOutput> {
 
@@ -35,6 +32,11 @@ public class ConformationTask implements Task<VerificationChainOutput> {
     private static final String DEV_STG_FILE_NAME = StgUtils.DEVICE_FILE_PREFIX + STG_FILE_EXTENSION;
     private static final String ENV_STG_FILE_NAME = StgUtils.ENVIRONMENT_FILE_PREFIX + STG_FILE_EXTENSION;
     private static final String MOD_SYS_STG_FILE_NAME = StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + STG_FILE_EXTENSION;
+
+    private static final String RISING_PHASE_PREFIX = "Rising phase for signal '";
+    private static final String FALLING_PHASE_PREFIX = "Falling phase for signal '";
+    private static final String ENV_MISSING_PHASE_SUFFIX = "' is present in environment STG but not in the current model";
+    private static final String DEV_MISSING_PHASE_SUFFIX = "' is present in the current model but not in environment STG";
 
     private final WorkspaceEntry we;
     private final File envFile;
@@ -94,6 +96,25 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         Set<String> devOutputs = devStg.getSignalReferences(Signal.Type.OUTPUT);
         StgUtils.restoreInterfaceSignals(envStg, devInputs, devOutputs);
 
+        // Check that the same phases of signals are present in device and environment STGs
+        Set<String> interfaceSignalRefs = new HashSet<>();
+        interfaceSignalRefs.addAll(devInputs);
+        interfaceSignalRefs.addAll(devOutputs);
+        for (String signalRef : interfaceSignalRefs) {
+            if (hasSignalPhase(devStg, signalRef, true) && missesSignalPhase(envStg, signalRef, true)) {
+                return Result.exception(RISING_PHASE_PREFIX + signalRef + ENV_MISSING_PHASE_SUFFIX);
+            }
+            if (hasSignalPhase(devStg, signalRef, false) && missesSignalPhase(envStg, signalRef, false)) {
+                return Result.exception(FALLING_PHASE_PREFIX + signalRef + ENV_MISSING_PHASE_SUFFIX);
+            }
+            if (hasSignalPhase(envStg, signalRef, true) && missesSignalPhase(devStg, signalRef, true)) {
+                return Result.exception(RISING_PHASE_PREFIX + signalRef + DEV_MISSING_PHASE_SUFFIX);
+            }
+            if (hasSignalPhase(envStg, signalRef, false) && missesSignalPhase(devStg, signalRef, false)) {
+                return Result.exception(FALLING_PHASE_PREFIX + signalRef + DEV_MISSING_PHASE_SUFFIX);
+            }
+        }
+
         // Export environment STG (convert internal signals to dummies and keep track of renaming)
         @SuppressWarnings("PMD.PrematureDeclaration")
         Map<String, String> envSubstitutions = StgUtils.convertInternalSignalsToDummies(envStg);
@@ -117,6 +138,33 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         extendedExportOutput.add(devStgFile, devSubstitutions);
         Result<ExtendedExportOutput> extendedExportResult = Result.success(extendedExportOutput);
         return Result.success(payload.applyExportResult(extendedExportResult));
+    }
+
+    private boolean hasSignalPhase(Stg stg, String signalRef, boolean phase) {
+        Collection<SignalTransition> signalTransitions = stg.getSignalTransitions(signalRef);
+        for (SignalTransition transition : signalTransitions) {
+            if ((transition.getDirection() == SignalTransition.Direction.TOGGLE)
+                    || (phase && (transition.getDirection() == SignalTransition.Direction.PLUS))
+                    || (!phase && (transition.getDirection() == SignalTransition.Direction.MINUS))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean missesSignalPhase(Stg stg, String signalRef, boolean phase) {
+        Collection<SignalTransition> signalTransitions = stg.getSignalTransitions(signalRef);
+        if (signalTransitions.isEmpty()) {
+            return false;
+        }
+        for (SignalTransition transition : signalTransitions) {
+            if ((transition.getDirection() == SignalTransition.Direction.TOGGLE)
+                    || (phase && (transition.getDirection() == SignalTransition.Direction.PLUS))
+                    || (!phase && (transition.getDirection() == SignalTransition.Direction.MINUS))) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private Result<? extends VerificationChainOutput> composeInterfaces(VerificationChainOutput payload,

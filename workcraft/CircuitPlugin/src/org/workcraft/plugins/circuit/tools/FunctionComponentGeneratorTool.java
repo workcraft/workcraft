@@ -4,9 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.formula.And;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.Not;
 import org.workcraft.gui.controls.IntRangeSlider;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
@@ -20,7 +17,7 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
-import org.workcraft.plugins.circuit.utils.MutexUtils;
+import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
@@ -353,16 +350,16 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                 libraryItems.add(new LibraryItem(gateName, type, pinCount, instantiator));
             }
         }
-        libraryItems.add(createWaitItem());
-        libraryItems.add(createWait0Item());
+        libraryItems.add(createWaitItem(Wait.Type.WAIT1));
+        libraryItems.add(createWaitItem(Wait.Type.WAIT0));
         libraryItems.add(createMutexItem(Mutex.Protocol.LATE));
         libraryItems.add(createMutexItem(Mutex.Protocol.EARLY));
         libraryItems.sort((item1, item2) -> SortUtils.compareNatural(item1.toString(), item2.toString()));
         return libraryItems;
     }
 
-    private LibraryItem createWaitItem() {
-        Wait module = CircuitSettings.parseWaitData();
+    private LibraryItem createWaitItem(Wait.Type type) {
+        Wait module = CircuitSettings.parseWaitData(type);
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);
@@ -380,39 +377,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             circuit.setMathName(sanContact, module.san.name);
             sanContact.setPosition(new Point2D.Double(1.5, -0.5));
 
-            BooleanFormula setFormula = new And(ctrlContact.getReferencedComponent(), sigContact.getReferencedComponent());
-            sanContact.getReferencedComponent().setSetFunctionQuiet(setFormula);
-
-            BooleanFormula resetFormula = new Not(ctrlContact.getReferencedComponent());
-            sanContact.getReferencedComponent().setResetFunctionQuiet(resetFormula);
-        };
-        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator);
-    }
-
-    private LibraryItem createWait0Item() {
-        Wait module = CircuitSettings.parseWait0Data();
-        Instantiator instantiator = (circuit, component) -> {
-            component.setRenderType(ComponentRenderingResult.RenderType.GATE);
-            component.getReferencedComponent().setIsArbitrationPrimitive(true);
-
-            VisualFunctionContact sigContact = component.createContact(IOType.INPUT);
-            circuit.setMathName(sigContact, module.sig.name);
-            sigContact.setPosition(new Point2D.Double(-1.5, 0.0));
-
-            VisualFunctionContact ctrlContact = component.createContact(IOType.INPUT);
-            circuit.setMathName(ctrlContact, module.ctrl.name);
-            ctrlContact.setDirection(VisualContact.Direction.EAST);
-            ctrlContact.setPosition(new Point2D.Double(1.5, 0.5));
-
-            VisualFunctionContact sanContact = component.createContact(IOType.OUTPUT);
-            circuit.setMathName(sanContact, module.san.name);
-            sanContact.setPosition(new Point2D.Double(1.5, -0.5));
-
-            BooleanFormula setFormula = new And(ctrlContact.getReferencedComponent(), new Not(sigContact.getReferencedComponent()));
-            sanContact.getReferencedComponent().setSetFunctionQuiet(setFormula);
-
-            BooleanFormula resetFormula = new Not(ctrlContact.getReferencedComponent());
-            sanContact.getReferencedComponent().setResetFunctionQuiet(resetFormula);
+            ArbitrationUtils.assignWaitFunctions(type, sigContact, ctrlContact, sanContact);
         };
         return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator);
     }
@@ -439,19 +404,9 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             circuit.setMathName(g2Contact, module.g2.name);
             g2Contact.setPosition(new Point2D.Double(1.5, 0.5));
 
-            BooleanFormula g1SetFormula = MutexUtils.getGrantSet(protocol, r1Contact, g2Contact, r2Contact);
-            g1Contact.getReferencedComponent().setSetFunctionQuiet(g1SetFormula);
-
-            BooleanFormula g1ResetFormula = MutexUtils.getGrantReset(r1Contact);
-            g1Contact.getReferencedComponent().setResetFunctionQuiet(g1ResetFormula);
-
-            BooleanFormula g2SetFormula = MutexUtils.getGrantSet(protocol, r2Contact, g1Contact, r1Contact);
-            g2Contact.getReferencedComponent().setSetFunctionQuiet(g2SetFormula);
-
-            BooleanFormula g2ResetFormula = MutexUtils.getGrantReset(r2Contact);
-            g2Contact.getReferencedComponent().setResetFunctionQuiet(g2ResetFormula);
+            ArbitrationUtils.assignMutexFunctions(protocol, r1Contact, g1Contact, r2Contact, g2Contact);
         };
-        String moduleName = MutexUtils.appendProtocolSuffix(module.name, protocol);
+        String moduleName = ArbitrationUtils.appendMutexProtocolSuffix(module.name, protocol);
         return new LibraryItem(moduleName, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
     }
 

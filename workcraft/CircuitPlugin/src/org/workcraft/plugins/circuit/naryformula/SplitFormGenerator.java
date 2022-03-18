@@ -27,27 +27,35 @@ public class SplitFormGenerator {
 
         @Override
         public SplitForm visitAnd(List<NaryBooleanFormula> args) {
-            return visitNary(args, (arg0, arg1) -> new And(arg0, arg1));
+            return visitNary(args, And::new);
         }
 
         @Override
         public SplitForm visitOr(List<NaryBooleanFormula> args) {
-            return visitNary(args, (arg0, arg1) -> new Or(arg0, arg1));
+            return visitNary(args, Or::new);
         }
 
         @Override
         public SplitForm visitXor(List<NaryBooleanFormula> args) {
-            return visitNary(args, (arg0, arg1) -> new Xor(arg0, arg1));
+            return visitNary(args, Xor::new);
         }
 
         private SplitForm visitNary(List<NaryBooleanFormula> args,
                 Func2<BooleanFormula, BooleanFormula, BooleanFormula> operation) {
+
             // Build the n-input formula
             Map<NaryBooleanFormula, BooleanVariable> argToVarMap = new HashMap<>();
             BooleanFormula formula = null;
-            char index = 'A';
+
+            // Note that O (15th letter of the alphabet) is reserved for the name of output pin, therefore:
+            //  - if the number of inputs is less than 15, then name the pins as A, B, C,... M, N
+            //  - otherwise name input pins in the form i0, i1, i2,...
+            boolean fewerThan15Inputs = args.size() < ('O' - 'A');
+            int index = 0;
             for (NaryBooleanFormula arg: args) {
-                BooleanVariable variable = new FreeVariable(String.valueOf(index++));
+                String label = fewerThan15Inputs ? String.valueOf((char) ('A' + index)) : ("i" + index);
+                index++;
+                BooleanVariable variable = new FreeVariable(label);
                 argToVarMap.put(arg, variable);
                 BooleanFormula oldFormula  = formula;
                 formula = variable;
@@ -57,7 +65,7 @@ public class SplitFormGenerator {
             }
             if (negated) {
                 formula = new Not(formula);
-                negated = !negated;
+                negated = false;
             }
             // Process the formula operands
             List<SplitForm> operands = new LinkedList<>();

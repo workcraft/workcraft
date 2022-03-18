@@ -8,8 +8,8 @@ import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
+import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.utils.MutexUtils;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.*;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
@@ -333,7 +333,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
     private LinkedList<Pair<String, String>> getMutexGrantPairs(WorkspaceEntry we) {
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        Set<String> mutexModuleNames = MutexUtils.getMutexModuleNames();
+        Set<String> mutexModuleNames = ArbitrationUtils.getMutexModuleNames();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             String moduleName = component.getModule();
             if (mutexModuleNames.contains(moduleName)) {

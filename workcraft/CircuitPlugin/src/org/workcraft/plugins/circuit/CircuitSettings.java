@@ -562,8 +562,8 @@ public class CircuitSettings extends AbstractModelSettings {
         waitData = value;
     }
 
-    public static Wait parseWaitData() {
-        return parseWaitData(getWaitData());
+    public static Wait parseWaitData(Wait.Type type) {
+        return parseWaitData(type == Wait.Type.WAIT0 ? getWait0Data() : getWaitData());
     }
 
     public static String getWait0Data() {
