@@ -59,7 +59,7 @@ final class EncodingConflictOutputHandler extends AbstractOutputInterpreter<Mpsa
                     return 0;
                 });
                 final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                final Toolbox toolbox = mainWindow.getEditor(getWorkspaceEntry()).getToolBox();
+                final Toolbox toolbox = mainWindow.getToolbox(getWorkspaceEntry());
                 final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);
                 toolbox.selectTool(tool);
                 tool.setCores(cores);

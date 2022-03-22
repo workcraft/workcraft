@@ -58,7 +58,7 @@ public abstract class AbstractTagCommand implements ScriptableCommand<Void> {
 
         final Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
-            final Toolbox toolbox = framework.getMainWindow().getEditor(we).getToolBox();
+            final Toolbox toolbox = framework.getMainWindow().getToolbox(we);
             Class<? extends GraphEditorTool> toolClass = getToolClass();
             toolbox.selectTool(toolbox.getToolInstance(toolClass));
         }

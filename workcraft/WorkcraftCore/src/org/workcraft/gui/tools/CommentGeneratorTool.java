@@ -21,9 +21,8 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
         if (generatedNode instanceof VisualComment) {
             VisualComment comment = (VisualComment) generatedNode;
             Toolbox toolbox = e.getEditor().getToolBox();
-            GraphEditorTool defaultTool = toolbox.getDefaultTool();
-            toolbox.selectTool(defaultTool);
-            if (defaultTool instanceof SelectionTool) {
+            toolbox.selectDefaultTool();
+            if (toolbox.getSelectedTool() instanceof SelectionTool) {
                 AbstractInplaceEditor textEditor = new LabelInplaceEditor(e.getEditor(), comment);
                 textEditor.edit(comment.getLabel(), comment.getLabelFont(),
                         comment.getLabelOffset(), comment.getLabelAlignment(), true);

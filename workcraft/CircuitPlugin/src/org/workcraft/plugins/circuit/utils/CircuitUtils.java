@@ -55,22 +55,21 @@ public class CircuitUtils {
     }
 
     public static Pair<Contact, Boolean> findDriverAndInversionSkipZeroDelay(Circuit circuit, Contact contact) {
-        Pair<Contact, Boolean> result = null;
         Contact driver = CircuitUtils.findDriver(circuit, contact, false);
-        boolean inversion = false;
-        if (driver != null) {
-            Node parent = driver.getParent();
-            if (parent instanceof FunctionComponent) {
-                FunctionComponent component = (FunctionComponent) parent;
-                if (component.getIsZeroDelay() && (component.isInverter() || component.isBuffer())) {
-                    Contact input = component.getFirstInput();
-                    driver = CircuitUtils.findDriver(circuit, input, false);
-                    inversion = component.isInverter();
-                }
-            }
-            result = Pair.of(driver, inversion);
+        if (driver == null) {
+            return null;
         }
-        return result;
+        boolean inversion = false;
+        Node parent = driver.getParent();
+        if (parent instanceof FunctionComponent) {
+            FunctionComponent component = (FunctionComponent) parent;
+            if (component.getIsZeroDelay() && (component.isInverter() || component.isBuffer())) {
+                Contact input = component.getFirstInput();
+                driver = CircuitUtils.findDriver(circuit, input, false);
+                inversion = component.isInverter();
+            }
+        }
+        return Pair.of(driver, inversion);
     }
 
     public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
@@ -84,7 +83,7 @@ public class CircuitUtils {
         Queue<MathNode> queue = new LinkedList<>();
         if (curNode instanceof MathConnection) {
             queue.add(((MathConnection) curNode).getFirst());
-        } else {
+        } else if (curNode != null) {
             queue.add(curNode);
         }
         while (!queue.isEmpty()) {
@@ -146,7 +145,7 @@ public class CircuitUtils {
         Queue<MathNode> queue = new LinkedList<>();
         if (curNode instanceof MathConnection) {
             queue.add(((MathConnection) curNode).getSecond());
-        } else {
+        } else if (curNode != null) {
             queue.add(curNode);
         }
         while (!queue.isEmpty()) {
@@ -190,21 +189,19 @@ public class CircuitUtils {
     }
 
     public static Contact findSignal(Circuit circuit, Contact contact, boolean transparentZeroDelayComponents) {
-        Contact result = contact;
         Contact driver = findDriver(circuit, contact, transparentZeroDelayComponents);
-        if (driver != null) {
-            result = driver;
-            for (Contact signal: Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
-                if (signal.isPort() && signal.isOutput()) {
-                    if (driver == CircuitUtils.findDriver(circuit, signal, transparentZeroDelayComponents)) {
-                        signal.setInitToOne(driver.getInitToOne());
-                        result = signal;
-                        break;
-                    }
-                }
+        if (driver == null) {
+            return contact;
+        }
+        for (Contact signal : Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
+            if (signal.isPort() && signal.isOutput()
+                    && (driver == CircuitUtils.findDriver(circuit, signal, transparentZeroDelayComponents))) {
+
+                signal.setInitToOne(driver.getInitToOne());
+                return signal;
             }
         }
-        return result;
+        return driver;
     }
 
     public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
