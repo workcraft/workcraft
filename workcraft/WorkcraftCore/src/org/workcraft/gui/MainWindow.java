@@ -317,7 +317,9 @@ public class MainWindow extends JFrame {
             // Remove the window and close its workspace entry
             weWindowsMap.remove(we, editorWindow);
             if (weWindowsMap.get(we).isEmpty()) {
-                Framework.getInstance().closeWork(we);
+                Framework framework = Framework.getInstance();
+                framework.closeWork(we);
+                framework.updatePropertyView();
             }
             // Remove commands menu and update property window
             if (editorInFocus == editor) {
