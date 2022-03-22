@@ -141,7 +141,7 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
     private void applyEdgeShape(VisualModel model, Pair<String, String> edge, DotParser.Attributes attributes)
             throws ParseException {
 
-        if (DotLayoutSettings.getImportConnectionsShape()) {
+        if (DotLayoutSettings.getUseSplineArcs()) {
             VisualNode fromNode = model.getNodeByReference(edge.getFirst());
             VisualNode toNode = model.getNodeByReference(edge.getSecond());
             VisualConnection connection = model.getConnection(fromNode, toNode);

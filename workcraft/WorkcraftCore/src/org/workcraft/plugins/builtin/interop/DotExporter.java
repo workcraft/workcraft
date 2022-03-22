@@ -36,9 +36,11 @@ public class DotExporter implements Exporter {
         double nodesep = DotLayoutSettings.getNodesep();
         double ranksep = DotLayoutSettings.getRanksep();
         String rankdir = DotLayoutSettings.getRankdir().value;
+        String spline = DotLayoutSettings.getUseSplineArcs() ? "true" : "false";
+
         out.println("digraph work {");
-        out.println(INDENT + "graph [overlap=false, splines=true, " +
-                "nodesep=" + nodesep + ", ranksep=" + ranksep + ", " + "rankdir=" + rankdir + "];");
+        out.println(INDENT + "graph [overlap=false, splines=" + spline + ", nodesep=" + nodesep
+                + ", ranksep=" + ranksep + ", " + "rankdir=" + rankdir + "];");
 
         out.println(INDENT + "node [shape=box, fixedsize=true];");
         out.println();
