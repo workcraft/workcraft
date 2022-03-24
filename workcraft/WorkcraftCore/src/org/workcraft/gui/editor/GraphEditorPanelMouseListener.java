@@ -2,9 +2,9 @@ package org.workcraft.gui.editor;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.GraphEditorTool;
-import org.workcraft.gui.tools.ToolProvider;
 import org.workcraft.utils.DesktopApi;
 
 import java.awt.*;
@@ -14,15 +14,15 @@ import java.awt.geom.Point2D;
 class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListener, MouseWheelListener {
     protected GraphEditorPanel editor;
     protected boolean panDrag = false;
-    private final ToolProvider toolProvider;
+    private final Toolbox toolbox;
 
     protected Point lastMouseCoords = new Point();
     private Point2D prevPosition = new Point2D.Double(0, 0);
     private Point2D startPosition = null;
 
-    GraphEditorPanelMouseListener(GraphEditorPanel editor, ToolProvider toolProvider) {
+    GraphEditorPanelMouseListener(GraphEditorPanel editor, Toolbox toolbox) {
         this.editor = editor;
-        this.toolProvider = toolProvider;
+        this.toolbox = toolbox;
     }
 
     private GraphEditorMouseEvent adaptEvent(MouseEvent e) {
@@ -47,7 +47,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
                     currentMouseCoords.y - lastMouseCoords.y);
             editor.repaint();
         } else {
-            GraphEditorTool tool = toolProvider.getSelectedTool();
+            GraphEditorTool tool = toolbox.getSelectedTool();
             if (tool != null) {
                 if (!tool.isDragging() && startPosition != null) {
                     tool.startDrag(adaptEvent(e));
@@ -66,7 +66,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
             final MainWindow mainWindow = framework.getMainWindow();
             mainWindow.requestFocus(editor);
         }
-        GraphEditorTool tool = toolProvider.getSelectedTool();
+        GraphEditorTool tool = toolbox.getSelectedTool();
         if (tool != null) {
             tool.mouseClicked(adaptEvent(e));
         }
@@ -75,7 +75,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     @Override
     public void mouseEntered(MouseEvent e) {
         if (editor.hasFocus()) {
-            GraphEditorTool tool = toolProvider.getSelectedTool();
+            GraphEditorTool tool = toolbox.getSelectedTool();
             if (tool != null) {
                 tool.mouseEntered(adaptEvent(e));
             }
@@ -85,7 +85,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     @Override
     public void mouseExited(MouseEvent e) {
         if (editor.hasFocus()) {
-            GraphEditorTool tool = toolProvider.getSelectedTool();
+            GraphEditorTool tool = toolbox.getSelectedTool();
             if (tool != null) {
                 tool.mouseExited(adaptEvent(e));
             }
@@ -103,7 +103,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
             panDrag = true;
             editor.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         } else {
-            GraphEditorTool tool = toolProvider.getSelectedTool();
+            GraphEditorTool tool = toolbox.getSelectedTool();
             Viewport viewport = editor.getViewport();
             Point point = e.getPoint();
             if (tool != null) {
@@ -121,10 +121,10 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     public void mouseReleased(MouseEvent e) {
         if (isPanCombo(e) || (e.getButton() == MouseEvent.BUTTON3 && panDrag)) {
             panDrag = false;
-            GraphEditorTool tool = toolProvider.getSelectedTool();
+            GraphEditorTool tool = toolbox.getSelectedTool();
             editor.setCursor(tool.getCursor(false, false, false));
         } else {
-            GraphEditorTool tool = toolProvider.getSelectedTool();
+            GraphEditorTool tool = toolbox.getSelectedTool();
             if (tool != null) {
                 if (tool.isDragging()) {
                     tool.finishDrag(adaptEvent(e));

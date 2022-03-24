@@ -41,6 +41,7 @@ public class WorkspaceEntry implements ObservableState {
 
     private Point2D pastePosition = null;
     private String details = null;
+    private boolean temporary = false;
 
     public void setChanged(boolean changed) {
         if (this.changed != changed) {
@@ -60,6 +61,10 @@ public class WorkspaceEntry implements ObservableState {
 
     public boolean isChanged() {
         return changed;
+    }
+
+    public void setTemporary(boolean temporary) {
+        this.temporary = temporary;
     }
 
     public ModelEntry getModelEntry() {
@@ -168,7 +173,8 @@ public class WorkspaceEntry implements ObservableState {
                 break;
             }
         }
-        return "<html>" + prefix + getTitle() + getDetails() + suffix + "</html>";
+        String formattedTitle = temporary ? "<i>" + getTitle() + "</i>" : getTitle();
+        return "<html>" + prefix + formattedTitle + getDetails() + suffix + "</html>";
     }
 
     public String getFileName() {

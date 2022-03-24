@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualCpogDescriptor;
@@ -50,7 +49,6 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOu
 
     private void handleSuccess(ExternalProcessOutput output) {
         final Framework framework = Framework.getInstance();
-        final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
         if (createNewWindow) {
             final CpogDescriptor cpogModel = new CpogDescriptor();
             final MathModel mathModel = cpogModel.createMathModel();
@@ -67,10 +65,9 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOu
 
         we.captureMemento();
         try {
-            final Toolbox toolbox = editor.getToolBox();
+            final Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
             final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-            for (int i = 0; i < stdout.length; i++) {
-                final String exp = stdout[i];
+            for (String exp : stdout) {
                 tool.insertExpression(exp, visualCpog, false, true, false);
             }
             we.saveMemento();

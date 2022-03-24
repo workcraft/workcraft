@@ -54,3 +54,31 @@ framework.addJavaScriptHelp("closeAllWorks", "",
 function closeAllWorks() {
     return framework.closeAllWorks();
 }
+
+
+framework.addJavaScriptHelp("setWorkingDirectory", "path",
+    "set 'path' as the working directory");
+
+function setWorkingDirectory(path) {
+    // Helper function to convert env to a File object
+    function getPathAsFile(path) {
+        if (path instanceof File) {
+            return path;
+        }
+        if ((path instanceof String) || (typeof path === "string")) {
+            return new File(path);
+        }
+        throw "Path must be specified as File or String";
+    }
+
+    framework.setWorkingDirectory(getPathAsFile(path));
+
+}
+
+
+framework.addJavaScriptHelp("getWorkingDirectory", "",
+    "get the working directory");
+
+function getWorkingDirectory() {
+    return framework.getWorkingDirectory();
+}

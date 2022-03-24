@@ -34,7 +34,6 @@ import org.workcraft.gui.tabs.DockingUtils;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
@@ -302,8 +301,7 @@ public class MainWindow extends JFrame {
         try {
             // Switch to default tool in case there were captured mementos
             Toolbox toolbox = getToolbox(we);
-            GraphEditorTool defaultTool = toolbox.getDefaultTool();
-            toolbox.selectTool(defaultTool, false);
+            toolbox.selectDefaultTool();
             // Prompt to save changes if necessary
             saveChangedOrCancel(we);
             // Un-maximise the editor window
@@ -319,7 +317,9 @@ public class MainWindow extends JFrame {
             // Remove the window and close its workspace entry
             weWindowsMap.remove(we, editorWindow);
             if (weWindowsMap.get(we).isEmpty()) {
-                Framework.getInstance().closeWork(we);
+                Framework framework = Framework.getInstance();
+                framework.closeWork(we);
+                framework.updatePropertyView();
             }
             // Remove commands menu and update property window
             if (editorInFocus == editor) {

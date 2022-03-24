@@ -34,8 +34,8 @@ class LayoutSettingsTest {
         Assertions.assertEquals(Config.toString(DotLayoutSettings.getRanksep()),
                 framework.getConfigVar(prefix + ".ranksep", false));
 
-        Assertions.assertEquals(Config.toString(DotLayoutSettings.getImportConnectionsShape()),
-                framework.getConfigVar(prefix + ".importConnectionsShape", false));
+        Assertions.assertEquals(Config.toString(DotLayoutSettings.getUseSplineArcs()),
+                framework.getConfigVar(prefix + ".useSplineArcs", false));
     }
 
     @Test

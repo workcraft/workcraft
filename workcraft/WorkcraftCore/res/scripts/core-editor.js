@@ -1,6 +1,6 @@
 // Editor helper functions
 
-framework.addJavaScriptHelp("select", "",
+framework.addJavaScriptHelp("select", "ref, ...",
     "select the nodes passed as a list of references");
 
 function select() {

@@ -37,19 +37,19 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
     private static final String keyRankdir = prefix + ".rankdir";
     private static final String keyNodesep = prefix + ".nodesep";
     private static final String keyRanksep = prefix + ".ranksep";
-    private static final String keyImportConnectionsShape = prefix + ".importConnectionsShape";
+    private static final String keyUseSplineArcs = prefix + ".useSplineArcs";
 
     private static final String defaultCommand = BackendUtils.getToolPath("GraphvizDot", "dot");
     private static final Rankdir defaultRankdir = Rankdir.TB;
     private static final double defaultNodesep = 1.0;
     private static final double defaultRanksep = 1.0;
-    private static final boolean defaultImportConnectionsShape = true;
+    private static final boolean defaultUseSplineArcs = true;
 
     private static String dotCommand = defaultCommand;
     private static Rankdir rankdir = defaultRankdir;
     private static double nodesep = defaultNodesep;
     private static double ranksep = defaultRanksep;
-    private static boolean importConnectionsShape = defaultImportConnectionsShape;
+    private static boolean useSplineArcs = defaultUseSplineArcs;
 
     static {
         properties.add(new PropertyDeclaration<>(String.class,
@@ -73,9 +73,9 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
                 DotLayoutSettings::getRanksep));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Import connections shape",
-                DotLayoutSettings::setImportConnectionsShape,
-                DotLayoutSettings::getImportConnectionsShape));
+                "Use spline arcs",
+                DotLayoutSettings::setUseSplineArcs,
+                DotLayoutSettings::getUseSplineArcs));
     }
 
     @Override
@@ -89,7 +89,7 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
         setRankdir(config.getEnum(keyRankdir, Rankdir.class, defaultRankdir));
         setNodesep(config.getDouble(keyNodesep, defaultNodesep));
         setRanksep(config.getDouble(keyRanksep, defaultRanksep));
-        setImportConnectionsShape(config.getBoolean(keyImportConnectionsShape, defaultImportConnectionsShape));
+        setUseSplineArcs(config.getBoolean(keyUseSplineArcs, defaultUseSplineArcs));
     }
 
     @Override
@@ -98,7 +98,7 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
         config.setEnum(keyRankdir, getRankdir());
         config.setDouble(keyNodesep, getNodesep());
         config.setDouble(keyRanksep, getRanksep());
-        config.setBoolean(keyImportConnectionsShape, getImportConnectionsShape());
+        config.setBoolean(keyUseSplineArcs, getUseSplineArcs());
     }
 
     @Override
@@ -150,12 +150,12 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
         ranksep = value;
     }
 
-    public static boolean getImportConnectionsShape() {
-        return importConnectionsShape;
+    public static boolean getUseSplineArcs() {
+        return useSplineArcs;
     }
 
-    public static void setImportConnectionsShape(boolean value) {
-        importConnectionsShape = value;
+    public static void setUseSplineArcs(boolean value) {
+        useSplineArcs = value;
     }
 
 }

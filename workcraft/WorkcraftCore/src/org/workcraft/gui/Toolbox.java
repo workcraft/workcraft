@@ -7,7 +7,6 @@ import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.tools.GraphEditorKeyListener;
 import org.workcraft.gui.tools.GraphEditorTool;
-import org.workcraft.gui.tools.ToolProvider;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -20,7 +19,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 
-public class Toolbox implements ToolProvider, GraphEditorKeyListener {
+public class Toolbox implements GraphEditorKeyListener {
 
     static class ToolTracker {
         private final ArrayList<GraphEditorTool> tools = new ArrayList<>();
@@ -163,11 +162,15 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         return null;
     }
 
+    public void selectDefaultTool() {
+        selectTool(defaultTool, false);
+    }
+
     public void selectTool(GraphEditorTool tool) {
         selectTool(tool, true);
     }
 
-    public void selectTool(GraphEditorTool tool, boolean update) {
+    public void selectTool(GraphEditorTool tool, boolean updateDockableVisibility) {
         if ((tool == null) || tool.checkPrerequisites(editor)) {
             if (selectedTool != null) {
                 ToolTracker oldTracker = hotkeyMap.get(selectedTool.getHotKeyCode());
@@ -195,7 +198,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
                 editor.updateToolsView();
             }
             // Update visibility of Property editor and Tool controls.
-            if (update) {
+            if (updateDockableVisibility) {
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 mainWindow.updateDockableWindowVisibility();
             }
@@ -210,12 +213,6 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         toolbar.addSeparator();
     }
 
-    @Override
-    public GraphEditorTool getDefaultTool() {
-        return defaultTool;
-    }
-
-    @Override
     public GraphEditorTool getSelectedTool() {
         return selectedTool;
     }

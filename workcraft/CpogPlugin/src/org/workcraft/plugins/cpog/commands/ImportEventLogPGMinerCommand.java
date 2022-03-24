@@ -27,7 +27,7 @@ public class ImportEventLogPGMinerCommand extends AbstractPGMinerCommand {
         if (dialog.reveal()) {
             File inputFile = new File(dialog.getFilePath());
             final Framework framework = Framework.getInstance();
-            final Toolbox toolbox = framework.getMainWindow().getEditor(we).getToolBox();
+            final Toolbox toolbox = framework.getMainWindow().getToolbox(we);
             final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
             VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
             try {

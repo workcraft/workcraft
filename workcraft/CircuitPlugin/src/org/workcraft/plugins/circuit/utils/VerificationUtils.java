@@ -1,5 +1,6 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -66,7 +67,7 @@ public final class VerificationUtils {
             String portRef = circuit.getNodeReference(port);
             Boolean envSignalState = envSignalStates.get(portRef);
             Contact driver = CircuitUtils.findDriver(circuit, port, false);
-            if ((envSignalState != null) && (driver.getInitToOne() != envSignalState)) {
+            if ((envSignalState != null) && (driver != null) && (driver.getInitToOne() != envSignalState)) {
                 inconsistentSignals.add(portRef);
             }
         }
@@ -138,13 +139,14 @@ public final class VerificationUtils {
     public static Set<String> getHangingSignals(Circuit circuit) {
         Set<String> result = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
-            String signal = circuit.getNodeReference(contact);
             if (contact.isDriver()) {
                 if (CircuitUtils.findDriven(circuit, contact, false).isEmpty()) {
+                    String signal = circuit.getNodeReference(contact);
                     result.add(signal);
                 }
             } else {
                 if (CircuitUtils.findDriver(circuit, contact, false) == null) {
+                    String signal = circuit.getNodeReference(contact);
                     result.add(signal);
                 }
             }
@@ -200,8 +202,8 @@ public final class VerificationUtils {
         Set<String> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (!component.getIsZeroDelay() && GateUtils.isExcitedComponent(circuit, component)) {
-                String gateRef = circuit.getNodeReference(component);
-                result.add(gateRef);
+                String componentRef = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
+                result.add(componentRef);
             }
         }
         return result;
