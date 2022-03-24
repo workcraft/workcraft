@@ -28,7 +28,7 @@ public class CircuitSettings extends AbstractModelSettings {
     public static final String GATE_LIBRARY_TITLE = "Gate library for technology mapping";
 
     private static final Pattern NUMBER_DELAY_PATTERN = Pattern.compile("\\d*\\.?\\d+");
-    private static final Pattern STRING_DELAY_PATTERN = Pattern.compile("\\([^\\(\\)]*\\)");
+    private static final Pattern STRING_DELAY_PATTERN = Pattern.compile("^\\(.*\\)$");
 
     private static final Pattern MUTEX_DATA_PATTERN = Pattern.compile(
             "(\\w+)\\(\\((\\w+),(\\w+)\\),\\((\\w+),(\\w+)\\)\\)");
