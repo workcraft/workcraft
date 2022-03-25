@@ -129,6 +129,7 @@ public class CircuitPropertyHelper {
                             + getBulletPair("Incorrect I/O type pin", mismatchPins)
                             + "\n\nUpdate component pins to match refinement model signals?",
                     REFINEMENT_MODEL_TITLE, 0);
+
             if (answer == 2) {
                 return;
             }
@@ -136,6 +137,21 @@ public class CircuitPropertyHelper {
                 RefinementUtils.updateInterface(circuit, component, refinementInterface);
             }
         }
+
+        Set<String> constrainedPins = RefinementUtils.getConstrainedPins(component);
+        if (!constrainedPins.isEmpty()) {
+            int answer = DialogUtils.showYesNoCancel("Component has constrained pins that may conflict with the refinement model."
+                            + "\n\nRemove set/reset functions for the component pins?",
+                    REFINEMENT_MODEL_TITLE, 0);
+
+            if (answer == 2) {
+                return;
+            }
+            if (answer == 0) {
+                RefinementUtils.removeComponentFunctions(component);
+            }
+        }
+
         component.getReferencedComponent().setRefinement(value);
     }
 

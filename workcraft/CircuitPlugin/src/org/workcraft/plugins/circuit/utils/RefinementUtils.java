@@ -234,6 +234,23 @@ public final class RefinementUtils {
         }
     }
 
+    public static Set<String> getConstrainedPins(VisualFunctionComponent component) {
+        Set<String> result = new HashSet<>();
+        for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
+            if ((contact.getSetFunction() != null) || (contact.getResetFunction() != null)) {
+                result.add(contact.getName());
+            }
+        }
+        return result;
+    }
+
+    public static void removeComponentFunctions(VisualFunctionComponent component) {
+        for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
+            contact.setSetFunction(null);
+            contact.setResetFunction(null);
+        }
+    }
+
     public static List<File> getOrderedCircuitRefinementFiles(ModelEntry me) {
         List<File> result = new ArrayList<>();
         Stack<File> stack = new Stack<>();
