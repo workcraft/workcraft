@@ -152,7 +152,7 @@ public class DialogUtils {
         if ((mainWindow != null) && framework.isInGuiMode()) {
             String[] options = {yesText, noText, cancelText};
             result = JOptionPane.showOptionDialog(mainWindow, msg, title, JOptionPane.YES_NO_CANCEL_OPTION,
-                    messageType, null, options, defaultChoice);
+                    messageType, null, options, options[defaultChoice]);
         }
         return result;
     }

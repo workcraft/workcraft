@@ -620,7 +620,7 @@ public final class Framework {
                     + "\nlayout (" + nodeCount + " elements)."
                     + "\nPerform layout anyway before opening in editor?";
 
-            answer = DialogUtils.showYesNoCancel(message, "Layout", 2);
+            answer = DialogUtils.showYesNoCancel(message, "Layout", 1);
         }
 
         if (answer > 1) {
