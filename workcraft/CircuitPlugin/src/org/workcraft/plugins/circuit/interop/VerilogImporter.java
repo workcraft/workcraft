@@ -46,13 +46,11 @@ import java.util.*;
 
 public class VerilogImporter implements Importer {
 
-    private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
-    private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
+    private static final String VERILOG_IMPORT_TITLE = "Import of Verilog netlist";
 
     private final boolean celementAssign;
     private final boolean sequentialAssign;
 
-    private Map<String, SubstitutionRule> substitutionRules = null;
     private Map<VerilogModule, String> moduleFileNames = null;
 
     private static class AssignGate {
@@ -94,18 +92,32 @@ public class VerilogImporter implements Importer {
     public ModelEntry importFrom(InputStream in)
             throws OperationCancelledException, DeserialisationException  {
 
-        substitutionRules = null;
         moduleFileNames = null;
         Collection<VerilogModule> verilogModules = VerilogUtils.importVerilogModules(in);
-        Circuit circuit;
         if ((verilogModules == null) || verilogModules.isEmpty()) {
-            circuit = new Circuit();
-        } else if (verilogModules.size() == 1) {
-            VerilogModule verilogModule = verilogModules.iterator().next();
-            circuit = createCircuit(verilogModule);
-        } else {
-            circuit = createCircuitHierarchy(verilogModules);
+            throw new DeserialisationException("No Verilog modules could be imported");
         }
+
+        Set<String> undefinedModules = VerilogUtils.getUndefinedModules(verilogModules);
+        if (!undefinedModules.isEmpty()) {
+            String msg = TextUtils.wrapMessageWithItems("Verilog netlist refers to undefined module", undefinedModules)
+                    + "\n\nInstances of these modules may be interpreted incorrectly due to missing information about input/output pins."
+                    + "\n\nPossible causes of the problem:"
+                    + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect path to gate library GenLib file"
+                    + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect setup for MUTEX and WAIT elements"
+                    + "\n" + PropertyHelper.BULLET_PREFIX + "missing module definition in hierarchical Verilog netlist"
+                    + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect use of substitution rules for Verilog import"
+                    + "\n\nProceed with Verilog import anyway?";
+
+            if (!DialogUtils.showConfirmWarning(msg, VERILOG_IMPORT_TITLE, false)) {
+                throw new OperationCancelledException();
+            }
+        }
+
+        Circuit circuit = (verilogModules.size() == 1)
+                ? createCircuit(verilogModules.iterator().next())
+                : createCircuitHierarchy(verilogModules);
+
         return new ModelEntry(new CircuitDescriptor(), circuit);
     }
 
@@ -146,7 +158,7 @@ public class VerilogImporter implements Importer {
                     + String.join(delimiter, existingSaveFilePaths)
                     + "\n\nOverwrite these files and proceed with import?";
 
-            if (!DialogUtils.showConfirmWarning(msg, "Import hierarchical Verilog", false)) {
+            if (!DialogUtils.showConfirmWarning(msg, VERILOG_IMPORT_TITLE, false)) {
                 throw new OperationCancelledException();
             }
         }
@@ -154,7 +166,7 @@ public class VerilogImporter implements Importer {
     }
 
     private Circuit createCircuitHierarchyAuto(Collection<VerilogModule> verilogModules)
-            throws DeserialisationException {
+            throws DeserialisationException, OperationCancelledException {
 
         VerilogModule topVerilogModule = VerilogUtils.getTopModule(verilogModules);
         Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
@@ -183,7 +195,7 @@ public class VerilogImporter implements Importer {
     }
 
     private Circuit createCircuitHierarchy(VerilogModule topVerilogModule,
-            Collection<VerilogModule> descendantModules, File dir) {
+            Collection<VerilogModule> descendantModules, File dir) throws OperationCancelledException {
 
         Circuit circuit = createCircuit(topVerilogModule, descendantModules, Collections.emptySet());
 
@@ -221,8 +233,8 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private Circuit createCircuit(VerilogModule verilogModule,
-            Collection<VerilogModule> descendantModules, Collection<Mutex> mutexes) {
+    private Circuit createCircuit(VerilogModule verilogModule, Collection<VerilogModule> descendantModules,
+            Collection<Mutex> mutexes) {
 
         Circuit circuit = new Circuit();
         circuit.setTitle(verilogModule.name);
@@ -233,32 +245,34 @@ public class VerilogImporter implements Importer {
         }
         for (VerilogInstance verilogInstance : verilogModule.instances) {
             SubstitutionRule substitutionRule = null;
+            String moduleName = verilogInstance.moduleName;
             Gate gate = createPrimitiveGate(verilogInstance);
             if (gate == null) {
                 Library library = LibraryManager.getLibrary();
                 if (library != null) {
-                    if (substitutionRules == null) {
-                        substitutionRules = SubstitutionUtils.readImportSubstitutionRules();
-                    }
-                    substitutionRule = substitutionRules.get(verilogInstance.moduleName);
+                    Map<String, SubstitutionRule> substitutionRules = LibraryManager.getImportSubstitutionRules();
+                    substitutionRule = substitutionRules.get(moduleName);
                     String msg = "Processing instance '" + verilogInstance.name + "' in module '" + verilogModule.name + "': ";
-                    String gateName = SubstitutionUtils.getModuleSubstitutionName(verilogInstance.moduleName, substitutionRule, msg);
+                    String gateName = SubstitutionUtils.getModuleSubstitutionName(moduleName, substitutionRule, msg);
                     gate = library.get(gateName);
                 }
             }
-            FunctionComponent component;
+
+            FunctionComponent component = null;
             if (gate != null) {
                 component = createLibraryGate(circuit, verilogInstance, nets, gate, substitutionRule);
-            } else if (isWaitInstance(verilogInstance)) {
+            } else if (VerilogUtils.isWaitInstance(moduleName)) {
                 Wait waitInstance = instanceToWaitWithType(verilogInstance);
                 component = createWait(circuit, waitInstance, nets);
-            } else if (isMutexInstance(verilogInstance)) {
+            } else if (VerilogUtils.isMutexInstance(moduleName)) {
                 Mutex mutexInstance = instanceToMutexWithProtocol(verilogInstance, mutexes);
                 component = createMutex(circuit, mutexInstance, nets);
             } else {
-                component = createBlackBox(circuit, verilogInstance, nets, descendantModules);
+                component = createModuleInstance(circuit, verilogInstance, nets, descendantModules);
             }
-            instanceComponentMap.put(verilogInstance, component);
+            if (component != null) {
+                instanceComponentMap.put(verilogInstance, component);
+            }
         }
         insertMutexes(mutexes, circuit, nets);
         createConnections(circuit, nets);
@@ -282,7 +296,9 @@ public class VerilogImporter implements Importer {
         return result;
     }
 
-    private void checkImportResult(Circuit circuit, Set<String> usedSignals, Set<String> initialisedSignals) {
+    private void checkImportResult(Circuit circuit, Set<String> usedSignals,
+            Set<String> initialisedSignals) {
+
         String msg = "";
         // Check circuit for no components
         if (circuit.getFunctionComponents().isEmpty()) {
@@ -314,14 +330,6 @@ public class VerilogImporter implements Importer {
             String title = circuit.getTitle().isEmpty() ? "" : "'" + circuit.getTitle() + "' ";
             DialogUtils.showWarning("The imported circuit " + title + "has the following issues:" + msg);
         }
-    }
-
-    private boolean isWaitInstance(VerilogInstance verilogInstance) {
-        return ArbitrationUtils.getWaitModuleNames().contains(verilogInstance.moduleName);
-    }
-
-    private boolean isMutexInstance(VerilogInstance verilogInstance) {
-        return ArbitrationUtils.getMutexModuleNames().contains(verilogInstance.moduleName);
     }
 
     private Wait instanceToWaitWithType(VerilogInstance verilogInstance) {
@@ -471,14 +479,14 @@ public class VerilogImporter implements Importer {
         Expression expression = convertFormulaToExpression(formula);
         int index = 0;
         HashMap<String, String> connections = new HashMap<>(); // (port -> net)
-        String outputName = getPrimitiveGatePinName(0);
+        String outputName = VerilogUtils.getPrimitiveGatePinName(0);
         String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
         connections.put(outputName, netName);
         LinkedList<Literal> literals = new LinkedList<>(expression.getLiterals());
         Collections.reverse(literals);
         for (Literal literal: literals) {
             String literalName = literal.name;
-            String name = getPrimitiveGatePinName(++index);
+            String name = VerilogUtils.getPrimitiveGatePinName(++index);
             literal.name = name;
             connections.put(name, literalName);
         }
@@ -503,7 +511,7 @@ public class VerilogImporter implements Importer {
             LogUtils.logInfo("  Reset function: " + resetFunction);
         }
         HashMap<String, String> connections = new HashMap<>();
-        String outputName = getPrimitiveGatePinName(0);
+        String outputName = VerilogUtils.getPrimitiveGatePinName(0);
         connections.put(outputName, netName);
 
         LinkedList<Literal> literals = new LinkedList<>();
@@ -516,7 +524,7 @@ public class VerilogImporter implements Importer {
             String literalName = literal.name;
             String name = netToPortMap.get(literalName);
             if (name == null) {
-                name = getPrimitiveGatePinName(++index);
+                name = VerilogUtils.getPrimitiveGatePinName(++index);
                 netToPortMap.put(literalName, name);
             }
             literal.name = name;
@@ -599,7 +607,7 @@ public class VerilogImporter implements Importer {
     }
 
     private Gate createPrimitiveGate(VerilogInstance verilogInstance) {
-        String operator = getPrimitiveOperator(verilogInstance.moduleName);
+        String operator = VerilogUtils.getPrimitiveOperator(verilogInstance.moduleName);
         if (operator == null) {
             return null;
         }
@@ -607,62 +615,21 @@ public class VerilogImporter implements Importer {
         int index;
         for (index = 0; index < verilogInstance.connections.size(); index++) {
             if (index > 0) {
-                String pinName = getPrimitiveGatePinName(index);
+                String pinName = VerilogUtils.getPrimitiveGatePinName(index);
                 if (expression.length() > 0) {
                     expression.append(operator);
                 }
                 expression.append(pinName);
             }
         }
-        if (isInvertingPrimitive(verilogInstance.moduleName)) {
+        if (!VerilogUtils.getPrimitivePolarity(verilogInstance.moduleName)) {
             if (index > 1) {
                 expression = new StringBuilder("(" + expression + ")");
             }
             expression.insert(0, "!");
         }
-        Function function = new Function(PRIMITIVE_GATE_OUTPUT_NAME, expression.toString());
+        Function function = new Function(VerilogUtils.getPrimitiveGatePinName(0), expression.toString());
         return new Gate("", 0.0, function, null, true);
-    }
-
-    private String getPrimitiveOperator(String primitiveName) {
-        switch (primitiveName) {
-        case "buf":
-        case "not":
-            return "";
-        case "and":
-        case "nand":
-            return "*";
-        case "or":
-        case "nor":
-            return "+";
-        case "xnor":
-            return "^";
-        default:
-            return null;
-        }
-    }
-
-    private boolean isInvertingPrimitive(String primitiveName) {
-        switch (primitiveName) {
-        case "buf":
-        case "and":
-        case "or":
-            return false;
-        case "not":
-        case "nand":
-        case "nor":
-        case "xnor":
-        default:
-            return true;
-        }
-    }
-
-    private String getPrimitiveGatePinName(int index) {
-        if (index == 0) {
-            return PRIMITIVE_GATE_OUTPUT_NAME;
-        } else {
-            return PRIMITIVE_GATE_INPUT_PREFIX + index;
-        }
     }
 
     private FunctionComponent createLibraryGate(Circuit circuit, VerilogInstance verilogInstance,
@@ -679,7 +646,7 @@ public class VerilogImporter implements Importer {
             }
             Net net = getOrCreateNet(VerilogUtils.getNetBusSuffixName(verilogConnection.net), nets);
             if (net != null) {
-                String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index)
+                String pinName = gate.isPrimitive() ? VerilogUtils.getPrimitiveGatePinName(index)
                         : SubstitutionUtils.getContactSubstitutionName(verilogConnection.name, substitutionRule, msg);
 
                 Node node = pinName == null ? orderedContacts.get(index) : circuit.getNodeByReference(component, pinName);
@@ -712,7 +679,7 @@ public class VerilogImporter implements Importer {
         return result;
     }
 
-    private FunctionComponent createBlackBox(Circuit circuit, VerilogInstance verilogInstance,
+    private FunctionComponent createModuleInstance(Circuit circuit, VerilogInstance verilogInstance,
             HashMap<String, Net> nets, Collection<VerilogModule> verilogModules) {
 
         final FunctionComponent component = new FunctionComponent();
@@ -834,6 +801,9 @@ public class VerilogImporter implements Importer {
     }
 
     private FunctionComponent createWait(Circuit circuit, Wait instance, HashMap<String, Net> nets) {
+        if (instance == null) {
+            return null;
+        }
         Wait.Type type = instance.getType();
         Wait module = CircuitSettings.parseWaitData(type);
         if ((module == null) || (module.name == null)) {
@@ -854,6 +824,9 @@ public class VerilogImporter implements Importer {
     }
 
     private FunctionComponent createMutex(Circuit circuit, Mutex instance, HashMap<String, Net> nets) {
+        if (instance == null) {
+            return null;
+        }
         Mutex module = CircuitSettings.parseMutexData();
         if ((module == null) || (module.name == null)) {
             return null;
