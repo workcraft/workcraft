@@ -27,7 +27,7 @@ public class RouterClient {
             Rectangle2D bb = getBoundingBoxInRootSpace(component);
             Rectangle internalBoundingBox = new Rectangle(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
             routerTask.addRectangle(internalBoundingBox);
-            for (VisualContact contact: component.getContacts()) {
+            for (VisualContact contact: component.getVisualContacts()) {
                 Point pos = new Point(contact.getRootSpaceX(), contact.getRootSpaceY());
                 RouterPort routerPort = new RouterPort(getDirection(contact), pos, false);
                 contactToRouterPortMap.put(contact, routerPort);

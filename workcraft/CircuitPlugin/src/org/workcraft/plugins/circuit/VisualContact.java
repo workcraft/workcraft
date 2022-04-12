@@ -175,6 +175,26 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }.setCombinable().setTemplatable());
     }
 
+    @NoAutoSerialisation
+    public void setForcedInit(boolean value) {
+        getReferencedComponent().setForcedInit(value);
+    }
+
+    @NoAutoSerialisation
+    public boolean getForcedInit() {
+        return getReferencedComponent().getForcedInit();
+    }
+
+    @NoAutoSerialisation
+    public void setInitToOne(boolean value) {
+        getReferencedComponent().setInitToOne(value);
+    }
+
+    @NoAutoSerialisation
+    public boolean getInitToOne() {
+        return getReferencedComponent().getInitToOne();
+    }
+
     @Override
     public Shape getShape() {
         Contact contact = getReferencedComponent();

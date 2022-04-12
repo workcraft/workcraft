@@ -169,7 +169,7 @@ public class CircuitToStgConverter {
                     VisualContact driver = driverAndInversion.getFirst();
                     boolean isInverting = component.isInverter();
                     driverAndInversion = new Pair<>(driver, isInverting);
-                    for (VisualContact c: component.getContacts()) {
+                    for (VisualContact c: component.getVisualContacts()) {
                         if (c.isOutput()) {
                             node = c;
                             result.put(node, driverAndInversion);

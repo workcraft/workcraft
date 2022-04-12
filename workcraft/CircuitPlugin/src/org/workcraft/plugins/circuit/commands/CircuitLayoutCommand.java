@@ -85,7 +85,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         }
 
         for (VisualFunctionComponent component: circuit.getVisualFunctionComponents()) {
-            for (VisualContact contact : component.getContacts()) {
+            for (VisualContact contact : component.getVisualContacts()) {
                 if (contact.isInput()) {
                     contact.setPosition(new Point2D.Double(-1.5, 0.0));
                 } else {

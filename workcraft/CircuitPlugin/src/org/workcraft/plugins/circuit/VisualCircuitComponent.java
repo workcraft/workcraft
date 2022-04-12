@@ -133,16 +133,12 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         invalidateBoundingBox();
     }
 
-    public Collection<VisualContact> getContacts() {
-        return Hierarchy.getChildrenOfType(this, VisualContact.class);
-    }
-
     public void setContactsDefaultPosition() {
         spreadContactsEvenly();
 
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 
-        Collection<VisualContact> contacts = getContacts();
+        Collection<VisualContact> contacts = getVisualContacts();
         for (VisualContact vc: contacts) {
             switch (vc.getDirection()) {
             case WEST:
@@ -762,7 +758,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     public Collection<VisualContact> getVisualContacts() {
-        return Hierarchy.filterNodesByType(getChildren(), VisualContact.class);
+        return Hierarchy.getChildrenOfType(this, VisualContact.class);
     }
 
     public List<VisualContact> getVisualInputs() {
