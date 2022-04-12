@@ -12,10 +12,7 @@ import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.genlib.BinaryGateInterface;
-import org.workcraft.plugins.circuit.genlib.Gate;
-import org.workcraft.plugins.circuit.genlib.GenlibUtils;
-import org.workcraft.plugins.circuit.genlib.LibraryManager;
+import org.workcraft.plugins.circuit.genlib.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
@@ -23,6 +20,7 @@ import org.workcraft.utils.LogUtils;
 import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class GateUtils {
 
@@ -75,7 +73,7 @@ public class GateUtils {
     }
 
     public static void insertGateWithin(VisualCircuit circuit, VisualCircuitComponent component,
-            VisualCircuitConnection connection) {
+            VisualConnection connection) {
 
         VisualNode fromNode = connection.getFirst();
         VisualNode toNode = connection.getSecond();
@@ -125,12 +123,22 @@ public class GateUtils {
     }
 
     public static VisualFunctionComponent createBufferGate(VisualCircuit circuit) {
-        String gateName = "";
-        String inName = "I";
-        String outName = "O";
+        return createUnaryGate(circuit, new UnaryGateInterface("",  "I", "O"), var -> var);
+    }
+
+    public static VisualFunctionComponent createInverterGate(VisualCircuit circuit) {
+        return createUnaryGate(circuit, new UnaryGateInterface("",  "I", "ON"), Not::new);
+    }
+
+    private static VisualFunctionComponent createUnaryGate(VisualCircuit circuit, UnaryGateInterface defaultGateInterface,
+            Function<FreeVariable, BooleanFormula> func) {
+        String gateName = defaultGateInterface.name;
+        String inName = defaultGateInterface.input;
+        String outName = defaultGateInterface.output;
 
         FreeVariable inVar = new FreeVariable(inName);
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(inVar, LibraryManager.getLibrary());
+        BooleanFormula formula = func.apply(inVar);
+        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
         if (mapping != null) {
             Gate gate = mapping.getFirst();
             gateName = gate.name;
@@ -149,6 +157,8 @@ public class GateUtils {
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
         outputContact.setSetFunction(inputContact.getReferencedComponent());
 
+        BooleanFormula setFunction = FormulaUtils.replace(formula, inVar, inputContact.getReferencedComponent());
+        outputContact.setSetFunction(setFunction);
         return component;
     }
 
@@ -170,7 +180,7 @@ public class GateUtils {
                 (var1, var2) -> new Not(new Or(new Not(var1), var2)));
     }
 
-    public static VisualFunctionComponent createBinaryGate(VisualCircuit circuit, BinaryGateInterface defaultGateInterface,
+    private static VisualFunctionComponent createBinaryGate(VisualCircuit circuit, BinaryGateInterface defaultGateInterface,
             BiFunction<FreeVariable, FreeVariable, BooleanFormula> func) {
 
         String gateName = defaultGateInterface.name;

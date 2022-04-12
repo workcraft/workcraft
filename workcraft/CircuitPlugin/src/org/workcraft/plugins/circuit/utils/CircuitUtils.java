@@ -517,17 +517,6 @@ public class CircuitUtils {
         return result;
     }
 
-    public static VisualFunctionContact getOrCreateContact(VisualCircuit circuit, VisualFunctionComponent component,
-            String contactName, Contact.IOType ioType, VisualContact.Direction direction) {
-
-        VisualFunctionContact result = getFunctionContact(circuit, component, contactName);
-        if (result == null) {
-            result = circuit.getOrCreateContact(component, contactName, ioType);
-            component.setPositionByDirection(result, direction, false);
-        }
-        return result;
-    }
-
     public static VisualFunctionContact getFunctionContact(VisualCircuit circuit,
             VisualFunctionComponent component, String contactName) {
 
@@ -595,15 +584,6 @@ public class CircuitUtils {
                 DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
             }
         }
-    }
-
-    public static boolean hasContacts(VisualCircuit circuit, VisualCircuitComponent component, Collection<String> contactNames) {
-        return hasContacts(circuit.getMathModel(), component.getReferencedComponent(), contactNames);
-    }
-
-    public static boolean hasContacts(Circuit circuit, CircuitComponent component, Collection<String> contactNames) {
-        return contactNames.stream()
-                .allMatch(contactName -> circuit.getNodeByReference(component, contactName) != null);
     }
 
     public static boolean isConstant0(FunctionContact contact) {
