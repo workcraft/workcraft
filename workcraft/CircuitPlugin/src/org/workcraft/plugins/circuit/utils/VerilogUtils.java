@@ -4,8 +4,11 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.genlib.Library;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.verilog.*;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.FileFilters;
 
@@ -17,6 +20,20 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class VerilogUtils {
+
+    private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
+    private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
+
+    private static final Map<String, Pair<Boolean, String>> PRIMITIVE_OPERATOR_MAP = new HashMap<>();
+    static {
+        PRIMITIVE_OPERATOR_MAP.put("buf", Pair.of(true, ""));
+        PRIMITIVE_OPERATOR_MAP.put("not", Pair.of(false, ""));
+        PRIMITIVE_OPERATOR_MAP.put("and", Pair.of(true, "*"));
+        PRIMITIVE_OPERATOR_MAP.put("nand", Pair.of(false, "*"));
+        PRIMITIVE_OPERATOR_MAP.put("or", Pair.of(true, "+"));
+        PRIMITIVE_OPERATOR_MAP.put("nor", Pair.of(false, "+"));
+        PRIMITIVE_OPERATOR_MAP.put("xnor", Pair.of(false, "^"));
+    }
 
     private VerilogUtils() {
     }
@@ -183,12 +200,82 @@ public final class VerilogUtils {
     }
 
     private static String getBusSuffix(Integer index) {
-        return (index == null) ? "" : CircuitSettings.getBusSuffix().replace("$", Integer.toString(index));
+        return (index == null) ? "" : CircuitSettings.getBusSuffix(index);
     }
 
     public static String getFormulaWithBusSuffixNames(String verilogFormula) {
         String busSuffixReplacement = CircuitSettings.getBusSuffix().replace("$", "$1");
         return verilogFormula.replaceAll("\\[(\\d+)]", busSuffixReplacement);
+    }
+
+    public static Set<String> getUndefinedModules(Collection<VerilogModule> verilogModules) {
+
+        Set<String> result = new HashSet<>();
+        Set<String> moduleNames = verilogModules.stream()
+                .map(verilogModule -> verilogModule.name)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        for (VerilogModule verilogModule : verilogModules) {
+            result.addAll(getUndefinedModules(verilogModule.instances, moduleNames));
+        }
+        return result;
+    }
+
+    private static Set<String> getUndefinedModules(Collection<VerilogInstance> verilogInstances, Set<String> moduleNames) {
+        Set<String> result = new HashSet<>();
+        Map<String, SubstitutionRule> substitutionRules = LibraryManager.getImportSubstitutionRules();
+        for (VerilogInstance verilogInstance : verilogInstances) {
+            String moduleName = verilogInstance.moduleName;
+            SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
+            if (substitutionRule != null) {
+                moduleName = substitutionRule.newName;
+            }
+            if (isUndefinedModule(moduleName) && !moduleNames.contains(moduleName)) {
+                result.add(moduleName);
+            }
+        }
+        return result;
+    }
+
+    public static boolean isUndefinedModule(String moduleName) {
+        return !isPrimitiveGate(moduleName)
+                && !isWaitInstance(moduleName)
+                && !isMutexInstance(moduleName)
+                && !isLibraryGate(moduleName);
+    }
+
+    public static boolean isPrimitiveGate(String moduleName) {
+        return PRIMITIVE_OPERATOR_MAP.containsKey(moduleName);
+    }
+
+    public static String getPrimitiveOperator(String moduleName) {
+        return PRIMITIVE_OPERATOR_MAP.getOrDefault(moduleName, Pair.of(null, null)).getSecond();
+    }
+
+    public static Boolean getPrimitivePolarity(String moduleName) {
+        return PRIMITIVE_OPERATOR_MAP.getOrDefault(moduleName, Pair.of(null, null)).getFirst();
+    }
+
+    public static String getPrimitiveGatePinName(int index) {
+        if (index == 0) {
+            return PRIMITIVE_GATE_OUTPUT_NAME;
+        } else {
+            return PRIMITIVE_GATE_INPUT_PREFIX + index;
+        }
+    }
+
+    public static boolean isWaitInstance(String moduleName) {
+        return ArbitrationUtils.getWaitModuleNames().contains(moduleName);
+    }
+
+    public static boolean isMutexInstance(String moduleName) {
+        return ArbitrationUtils.getMutexModuleNames().contains(moduleName);
+    }
+
+    public static boolean isLibraryGate(String moduleName) {
+        Library library = LibraryManager.getLibrary();
+        return library.get(moduleName) != null;
     }
 
 }

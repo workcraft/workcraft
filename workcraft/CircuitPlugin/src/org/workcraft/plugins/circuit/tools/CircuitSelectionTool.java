@@ -150,7 +150,7 @@ public class CircuitSelectionTool extends SelectionTool {
                 }
             } else if (node instanceof VisualCircuitComponent) {
                 VisualCircuitComponent component = (VisualCircuitComponent) node;
-                queue.addAll(component.getContacts());
+                queue.addAll(component.getVisualContacts());
             } else {
                 queue.addAll(model.getConnections(node));
             }

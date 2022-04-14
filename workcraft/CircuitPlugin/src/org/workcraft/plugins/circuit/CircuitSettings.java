@@ -89,12 +89,12 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyTinvData = prefix + ".tinvData";
     private static final String keyScanSuffix = prefix + ".scanSuffix";
-    private static final String keyScaninPortPin = prefix + ".scaninPortPin";
-    private static final String keyScanoutPortPin = prefix + ".scanoutPortPin";
-    private static final String keyScanckPortPin = prefix + ".scanckPortPin";
-    private static final String keyScanenPortPin = prefix + ".scanenPortPin";
-    private static final String keyScantmPortPin = prefix + ".scantmPortPin";
-    private static final String keyStitchScan = prefix + ".stitchScan";
+    private static final String keyScaninData = prefix + ".scaninData";
+    private static final String keyScanoutData = prefix + ".scanoutData";
+    private static final String keyScanenData = prefix + ".scanenData";
+    private static final String keyScanckData = prefix + ".scanckData";
+    private static final String keyScantmData = prefix + ".scantmData";
+    private static final String keyIndividualScan = prefix + ".individualScan";
 
     /*
      * Defaults
@@ -130,12 +130,12 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultTinvData = "TINV (I, ON)";
     private static final String defaultScanSuffix = "_scan";
-    private static final String defaultScaninPortPin = "scanin / SI";
-    private static final String defaultScanoutPortPin = "scanout / SO";
-    private static final String defaultScanckPortPin = "scanck / CK";
-    private static final String defaultScanenPortPin = "scanen / SE";
-    private static final String defaultScantmPortPin = "scantm / TM";
-    private static final boolean defaultStitchScan = true;
+    private static final String defaultScaninData = "scanin / SI";
+    private static final String defaultScanoutData = "scanout / SO";
+    private static final String defaultScanenData = "scanen / SE";
+    private static final String defaultScanckData = "scanck / CK";
+    private static final String defaultScantmData = "scantm / TM";
+    private static final boolean defaultIndividualScan = false;
 
     /*
      * Variables
@@ -171,12 +171,12 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String tbufData = defaultTbufData;
     private static String tinvData = defaultTinvData;
     private static String scanSuffix = defaultScanSuffix;
-    private static String scaninPortPin = defaultScaninPortPin;
-    private static String scanoutPortPin = defaultScanoutPortPin;
-    private static String scanckPortPin = defaultScanckPortPin;
-    private static String scanenPortPin = defaultScanenPortPin;
-    private static String scantmPortPin = defaultScantmPortPin;
-    private static boolean stitchScan = defaultStitchScan;
+    private static String scaninData = defaultScaninData;
+    private static String scanoutData = defaultScanoutData;
+    private static String scanenData = defaultScanenData;
+    private static String scanckData = defaultScanckData;
+    private static String scantmData = defaultScantmData;
+    private static boolean individualScan = defaultIndividualScan;
 
     static {
         properties.add(new PropertyDeclaration<>(Boolean.class,
@@ -249,7 +249,7 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 "MUTEX name and request-grant pairs",
                 value -> {
-                    if (parseMutexData(value) != null) {
+                    if (parseMutexDataOrNull(value) != null) {
                         setMutexData(value);
                     } else {
                         errorDescriptionFormat("MUTEX", defaultMutexData);
@@ -344,34 +344,34 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getScanSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Scan input port / pin names",
-                value -> setPortPinPair(value, CircuitSettings::setScaninPortPin, "Scan input"),
-                                CircuitSettings::getScaninPortPin));
+                PropertyHelper.BULLET_PREFIX + "Scan input port/pin (empty to skip)",
+                value -> setPortPinPair(value, CircuitSettings::setScaninData, "Scan input"),
+                                CircuitSettings::getScaninData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Scan output port / pin (for multi-output component) names",
-                value -> setPortPinPair(value, CircuitSettings::setScanoutPortPin, "Scan output"),
-                CircuitSettings::getScanoutPortPin));
+                PropertyHelper.BULLET_PREFIX + "Scan output port/pin (empty to skip)",
+                value -> setPortPinPair(value, CircuitSettings::setScanoutData, "Scan output"),
+                CircuitSettings::getScanoutData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Scan clock port / pin names",
-                value -> setPortPinPair(value, CircuitSettings::setScanckPortPin, "Scan clock"),
-                CircuitSettings::getScanckPortPin));
+                PropertyHelper.BULLET_PREFIX + "Scan enable port/pin (empty to skip)",
+                value -> setPortPinPair(value, CircuitSettings::setScanenData, "Scan enable"),
+                CircuitSettings::getScanenData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Scan enable port / pin name",
-                value -> setPortPinPair(value, CircuitSettings::setScanenPortPin, "Scan enable"),
-                CircuitSettings::getScanenPortPin));
+                PropertyHelper.BULLET_PREFIX + "Scan clock port/pin (empty to skip)",
+                value -> setPortPinPair(value, CircuitSettings::setScanckData, "Scan clock"),
+                CircuitSettings::getScanckData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Scan test mode port / pin names",
-                value -> setPortPinPair(value, CircuitSettings::setScantmPortPin, "Scan test mode"),
-                CircuitSettings::getScantmPortPin));
+                PropertyHelper.BULLET_PREFIX + "Scan test mode port/pin (empty to skip)",
+                value -> setPortPinPair(value, CircuitSettings::setScantmData, "Scan test mode"),
+                CircuitSettings::getScantmData));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Stitch scan into chain",
-                CircuitSettings::setStitchScan,
-                CircuitSettings::getStitchScan));
+                PropertyHelper.BULLET_PREFIX + "Individual scan control and observation",
+                CircuitSettings::setIndividualScan,
+                CircuitSettings::getIndividualScan));
     }
 
     private static String getBaseRelativePath(File file) {
@@ -433,12 +433,12 @@ public class CircuitSettings extends AbstractModelSettings {
         setTbufData(config.getString(keyTbufData, defaultTbufData));
         setTinvData(config.getString(keyTinvData, defaultTinvData));
         setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
-        setScaninPortPin(config.getString(keyScaninPortPin, defaultScaninPortPin));
-        setScanoutPortPin(config.getString(keyScanoutPortPin, defaultScanoutPortPin));
-        setScanckPortPin(config.getString(keyScanckPortPin, defaultScanckPortPin));
-        setScanenPortPin(config.getString(keyScanenPortPin, defaultScanenPortPin));
-        setScantmPortPin(config.getString(keyScantmPortPin, defaultScantmPortPin));
-        setStitchScan(config.getBoolean(keyStitchScan, defaultStitchScan));
+        setScaninData(config.getString(keyScaninData, defaultScaninData));
+        setScanoutData(config.getString(keyScanoutData, defaultScanoutData));
+        setScanenData(config.getString(keyScanenData, defaultScanenData));
+        setScanckData(config.getString(keyScanckData, defaultScanckData));
+        setScantmData(config.getString(keyScantmData, defaultScantmData));
+        setIndividualScan(config.getBoolean(keyIndividualScan, defaultIndividualScan));
     }
 
     @Override
@@ -474,12 +474,12 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyTbufData, getTbufData());
         config.set(keyTinvData, getTinvData());
         config.set(keyScanSuffix, getScanSuffix());
-        config.set(keyScaninPortPin, getScaninPortPin());
-        config.set(keyScanoutPortPin, getScanoutPortPin());
-        config.set(keyScanckPortPin, getScanckPortPin());
-        config.set(keyScanenPortPin, getScanenPortPin());
-        config.set(keyScantmPortPin, getScantmPortPin());
-        config.setBoolean(keyStitchScan, getStitchScan());
+        config.set(keyScaninData, getScaninData());
+        config.set(keyScanoutData, getScanoutData());
+        config.set(keyScanenData, getScanenData());
+        config.set(keyScanckData, getScanckData());
+        config.set(keyScantmData, getScantmData());
+        config.setBoolean(keyIndividualScan, getIndividualScan());
     }
 
     public static boolean getShowContacts() {
@@ -562,10 +562,6 @@ public class CircuitSettings extends AbstractModelSettings {
         waitData = value;
     }
 
-    public static Wait parseWaitData(Wait.Type type) {
-        return parseWaitData(type == Wait.Type.WAIT0 ? getWait0Data() : getWaitData());
-    }
-
     public static String getWait0Data() {
         return wait0Data;
     }
@@ -574,8 +570,8 @@ public class CircuitSettings extends AbstractModelSettings {
         wait0Data = value;
     }
 
-    public static Wait parseWait0Data() {
-        return parseWaitData(getWait0Data());
+    public static Wait parseWaitData(Wait.Type type) {
+        return parseWaitData(type == Wait.Type.WAIT0 ? getWait0Data() : getWaitData());
     }
 
     public static String getMutexData() {
@@ -587,7 +583,7 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static Mutex parseMutexData() {
-        return parseMutexData(getMutexData());
+        return parseMutexDataOrNull(getMutexData());
     }
 
     public static String getMutexLateSuffix() {
@@ -657,6 +653,10 @@ public class CircuitSettings extends AbstractModelSettings {
         }
     }
 
+    public static String getBusSuffix(int index) {
+        return busSuffix.replace("$", Integer.toString(index));
+    }
+
     public static String getBusSuffix() {
         return busSuffix;
     }
@@ -706,7 +706,7 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static UnaryGateInterface parseTbufData() {
-        return parseGate2Data(getTbufData());
+        return parseGate2DataOrNull(getTbufData());
     }
 
     public static String getTinvData() {
@@ -718,7 +718,7 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static UnaryGateInterface parseTinvData() {
-        return parseGate2Data(getTinvData());
+        return parseGate2DataOrNull(getTinvData());
     }
 
     public static String getScanSuffix() {
@@ -729,83 +729,113 @@ public class CircuitSettings extends AbstractModelSettings {
         scanSuffix = value;
     }
 
-    public static String getScaninPortPin() {
-        return scaninPortPin;
+    public static String getScaninData() {
+        return scaninData;
     }
 
-    public static void setScaninPortPin(String value) {
-        scaninPortPin = value;
+    public static void setScaninData(String value) {
+        scaninData = value;
     }
 
-    public static Pair<String, String> parseScaninPortPin() {
-        return parsePortPinPair(getScaninPortPin());
+    public static String getScaninPort() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScaninData());
+        return pair == null ? null : pair.getFirst();
     }
 
-    public static String getScanoutPortPin() {
-        return scanoutPortPin;
+    public static String getScaninPin() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScaninData());
+        return pair == null ? null : pair.getSecond();
     }
 
-    public static void setScanoutPortPin(String value) {
-        scanoutPortPin = value;
+    public static String getScanoutData() {
+        return scanoutData;
     }
 
-    public static Pair<String, String> parseScanoutPortPin() {
-        return parsePortPinPair(getScanoutPortPin());
+    public static void setScanoutData(String value) {
+        scanoutData = value;
     }
 
-    public static String getScanckPortPin() {
-        return scanckPortPin;
+    public static String getScanoutPort() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScanoutData());
+        return pair == null ? null : pair.getFirst();
     }
 
-    public static void setScanckPortPin(String value) {
-        scanckPortPin = value;
+    public static String getScanoutPin() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScanoutData());
+        return pair == null ? null : pair.getSecond();
     }
 
-    public static Pair<String, String> parseScanckPortPin() {
-        return parsePortPinPair(getScanckPortPin());
+    public static String getScanenData() {
+        return scanenData;
     }
 
-    public static String getScanenPortPin() {
-        return scanenPortPin;
+    public static void setScanenData(String value) {
+        scanenData = value;
     }
 
-    public static void setScanenPortPin(String value) {
-        scanenPortPin = value;
+    public static String getScanenPort() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScanenData());
+        return pair == null ? null : pair.getFirst();
     }
 
-    public static Pair<String, String> parseScanenPortPin() {
-        return parsePortPinPair(getScanenPortPin());
+    public static String getScanenPin() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScanenData());
+        return pair == null ? null : pair.getSecond();
     }
 
-    public static String getScantmPortPin() {
-        return scantmPortPin;
+    public static String getScanckData() {
+        return scanckData;
     }
 
-    public static void setScantmPortPin(String value) {
-        scantmPortPin = value;
+    public static void setScanckData(String value) {
+        scanckData = value;
     }
 
-    public static Pair<String, String> parseScantmPortPin() {
-        return parsePortPinPair(getScantmPortPin());
+    public static String getScanckPort() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScanckData());
+        return pair == null ? null : pair.getFirst();
     }
 
-    public static boolean getStitchScan() {
-        return stitchScan;
+    public static String getScanckPin() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScanckData());
+        return pair == null ? null : pair.getSecond();
     }
 
-    public static void setStitchScan(boolean value) {
-        stitchScan = value;
+    public static String getScantmData() {
+        return scantmData;
+    }
+
+    public static void setScantmData(String value) {
+        scantmData = value;
+    }
+
+    public static String getScantmPort() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScantmData());
+        return pair == null ? null : pair.getFirst();
+    }
+
+    public static String getScantmPin() {
+        Pair<String, String> pair = parsePortPinPairOrNull(getScantmData());
+        return pair == null ? null : pair.getSecond();
+    }
+
+    public static boolean getIndividualScan() {
+        return individualScan;
+    }
+
+    public static void setIndividualScan(boolean value) {
+        individualScan = value;
     }
 
     private static void setGate2Data(String value, Consumer<String> setter, String msg, String defaultValue) {
-        if (parseGate2Data(value) != null) {
+        if (parseGate2DataOrNull(value) != null) {
             setter.accept(value);
         } else {
             errorDescriptionFormat(msg, defaultValue);
         }
     }
 
-    private static UnaryGateInterface parseGate2Data(String value) {
+    private static UnaryGateInterface parseGate2DataOrNull(String value) {
         Matcher matcher = GATE2_DATA_PATTERN.matcher(value.replaceAll("\\s", ""));
         if (matcher.find()) {
             String name = matcher.group(GATE_NAME_GROUP);
@@ -816,7 +846,7 @@ public class CircuitSettings extends AbstractModelSettings {
         return null;
     }
 
-    private static Mutex parseMutexData(String str) {
+    private static Mutex parseMutexDataOrNull(String str) {
         Mutex result = null;
         Matcher matcher = MUTEX_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
         if (matcher.find()) {
@@ -844,21 +874,25 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     private static void setPortPinPair(String value, Consumer<String> setter, String msg) {
-        if (parsePortPinPair(value) != null) {
+        if (parsePortPinPairOrNull(value) != null) {
             setter.accept(value);
         } else {
             errorPortPinFormat(msg);
         }
     }
 
-    public static Pair<String, String> parsePortPinPair(String value) {
-        if ((value != null) && !value.isEmpty()) {
-            String[] split = value.replaceAll("\\s", "").split("/");
-            String portName = (split.length > 0) ? split[0] : null;
-            String pinName = (split.length > 1) ? split[1] : portName;
-            return Pair.of(portName, pinName);
+    private static Pair<String, String> parsePortPinPairOrNull(String value) {
+        if (value == null) {
+            return null;
         }
-        return null;
+        String valueWithoutSpaces = value.replaceAll("\\s", "");
+        if (valueWithoutSpaces.isEmpty()) {
+            return Pair.of(null, null);
+        }
+        String[] split = valueWithoutSpaces.split("/");
+        String portName = (split.length > 0) ? split[0] : null;
+        String pinName = (split.length > 1) ? split[1] : portName;
+        return Pair.of(portName, pinName);
     }
 
 }

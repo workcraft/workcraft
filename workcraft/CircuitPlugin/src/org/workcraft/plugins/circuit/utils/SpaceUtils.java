@@ -12,6 +12,8 @@ import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public final class SpaceUtils {
 
@@ -98,9 +100,11 @@ public final class SpaceUtils {
         return new Point2D.Double(x, y);
     }
 
-    public static void positionPort(VisualCircuit circuit, VisualFunctionContact port, boolean alignToRight) {
-        Collection<Touchable> nodes = new HashSet<>();
-        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualConnection.class));
+    public static void positionPort(VisualCircuit circuit, VisualContact port, boolean alignToRight) {
+        if ((circuit == null) || (port == null)) {
+            return;
+        }
+        Collection<Touchable> nodes = new HashSet<>(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualConnection.class));
         for (VisualConnection connection : circuit.getConnections(port)) {
             nodes.remove(connection);
         }
@@ -142,4 +146,14 @@ public final class SpaceUtils {
             }
         }
     }
+
+    public static List<VisualFunctionComponent> orderComponentsByPosition(List<VisualFunctionComponent> components) {
+        return components.stream()
+                .sorted((o1, o2) -> {
+                    int xComparison = Double.compare(o2.getRootSpaceX(), o1.getRootSpaceX());
+                    return xComparison == 0 ? Double.compare(o2.getRootSpaceY(), o1.getRootSpaceY()) : xComparison;
+                })
+                .collect(Collectors.toList());
+    }
+
 }

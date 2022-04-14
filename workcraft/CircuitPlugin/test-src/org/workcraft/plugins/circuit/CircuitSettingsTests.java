@@ -105,23 +105,23 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getScanSuffix()),
                 framework.getConfigVar(prefix + ".scanSuffix", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getScaninPortPin()),
-                framework.getConfigVar(prefix + ".scaninPortPin", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getScaninData()),
+                framework.getConfigVar(prefix + ".scaninData", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getScanoutPortPin()),
-                framework.getConfigVar(prefix + ".scanoutPortPin", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getScanoutData()),
+                framework.getConfigVar(prefix + ".scanoutData", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getScanckPortPin()),
-                framework.getConfigVar(prefix + ".scanckPortPin", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getScanenData()),
+                framework.getConfigVar(prefix + ".scanenData", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getScanenPortPin()),
-                framework.getConfigVar(prefix + ".scanenPortPin", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getScanckData()),
+                framework.getConfigVar(prefix + ".scanckData", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getScantmPortPin()),
-                framework.getConfigVar(prefix + ".scantmPortPin", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getScantmData()),
+                framework.getConfigVar(prefix + ".scantmData", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getStitchScan()),
-                framework.getConfigVar(prefix + ".stitchScan", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getIndividualScan()),
+                framework.getConfigVar(prefix + ".individualScan", false));
     }
 
 }

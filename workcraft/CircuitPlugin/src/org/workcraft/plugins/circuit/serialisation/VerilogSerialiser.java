@@ -9,6 +9,7 @@ import org.workcraft.formula.Not;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.visitors.StringGenerator.Style;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
@@ -34,7 +35,6 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String KEYWORD_ASSIGN_DELAY = "#";
 
     private final Queue<Pair<File, Circuit>> refinementCircuits = new LinkedList<>();
-    private final Map<String, SubstitutionRule> substitutionRules = new HashMap<>();
 
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
@@ -52,8 +52,6 @@ public class VerilogSerialiser implements ModelSerialiser {
             PrintWriter writer = new PrintWriter(out);
             writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
             refinementCircuits.clear();
-            substitutionRules.clear();
-            substitutionRules.putAll(SubstitutionUtils.readExportSubstitutionRules());
             writeCircuit(writer, circuit);
             writeRefinementCircuits(writer);
             writer.close();
@@ -211,6 +209,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         String moduleName = ExportUtils.asIdentifier(title);
         // Instance name
         String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
+        Map<String, SubstitutionRule> substitutionRules = LibraryManager.getExportSubstitutionRules();
         SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
         String msg = "Processing instance '" + instanceFlatName + "'";
         String circuitTitle = circuitInfo.getCircuit().getTitle();

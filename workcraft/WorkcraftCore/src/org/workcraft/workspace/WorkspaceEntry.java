@@ -121,27 +121,17 @@ public class WorkspaceEntry implements ObservableState {
         return getModelEntry().getModel().getTitle();
     }
 
-    public boolean isWork() {
-        return (modelEntry != null) || FileFilters.isWorkPath(getWorkspacePath().getNode());
-    }
-
     public String getTitle() {
-        String result = null;
         Path<String> workspacePath = getWorkspacePath();
-        if (workspacePath != null) {
-            String name = workspacePath.getNode();
-            if (!isWork()) {
-                result = name;
-            } else {
-                int dot = name.lastIndexOf('.');
-                if (dot == -1) {
-                    result = name;
-                } else {
-                    result = name.substring(0, dot);
-                }
-            }
+        if (workspacePath == null) {
+            return null;
         }
-        return result;
+        String node = workspacePath.getNode();
+        int extensionIndex = node.lastIndexOf(FileFilters.DOCUMENT_EXTENSION);
+        if (extensionIndex < 0) {
+            return node;
+        }
+        return node.substring(0, extensionIndex);
     }
 
     public void setDetails(String value) {

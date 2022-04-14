@@ -78,3 +78,11 @@ module CYCLE (chrg_ack, chrg_req, uv_ctrl, uv_san);
     // signal values at the initial state:
     // me_r1_ON !me_r2_ON uv_ctrl !chrg_req !chrg_ack !uv_san
 endmodule
+
+module WAIT2 (sig, ctrl, san);
+    input sig, ctrl;
+    output san;
+
+    // signal values at the initial state:
+    // !ctrl !san !sig
+endmodule

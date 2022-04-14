@@ -12,6 +12,7 @@ import org.workcraft.dom.references.Identifier;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.interop.SdcFormat;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
@@ -20,7 +21,7 @@ import org.workcraft.utils.LogUtils;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
@@ -48,14 +49,12 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
     }
 
     private void writeCircuit(PrintWriter out, Circuit circuit) {
-        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readExportSubstitutionRules();
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
-            writeInstance(out, circuit, component, substitutionRules);
+            writeInstance(out, circuit, component);
         }
     }
 
-    private void writeInstance(PrintWriter out, Circuit circuit, FunctionComponent component,
-            HashMap<String, SubstitutionRule> substitutionRules) {
+    private void writeInstance(PrintWriter out, Circuit circuit, FunctionComponent component) {
 
         String instanceRef = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
         String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
@@ -64,6 +63,7 @@ public class PathbreakConstraintSerialiser implements PathbreakSerialiser {
             LogUtils.logWarning("Disabling timing arc in unmapped component '" + instanceRef + "'");
         }
         String moduleName = component.getModule();
+        Map<String, SubstitutionRule> substitutionRules = LibraryManager.getExportSubstitutionRules();
         SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
         for (Contact outputContact: component.getOutputs()) {
             String outputName = null;
