@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.Zero;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.genlib.UnaryGateInterface;
+import org.workcraft.plugins.circuit.genlib.GateInterface;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.utils.LogUtils;
 
@@ -14,7 +14,7 @@ import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ScanUtils {
+public final class ScanUtils {
 
     public static Set<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
         Set<VisualFunctionComponent> result = new HashSet<>();
@@ -39,15 +39,17 @@ public class ScanUtils {
             GateUtils.propagateInitialState(circuit, result);
             result.getGateOutput().getReferencedComponent().setPathBreaker(true);
         }
-        UnaryGateInterface testableGateInterface = result.isInverter() ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
-        result.getReferencedComponent().setModule(testableGateInterface.name);
+        GateInterface testableGateInterface = result.isInverter() ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
+        result.getReferencedComponent().setModule(testableGateInterface.getName());
 
         VisualContact inputContact = result.getFirstVisualInput();
         VisualContact outputContact = result.getFirstVisualOutput();
         // Temporary rename gate output, so there is no name clash on renaming gate input
-        circuit.setMathName(outputContact, Identifier.makeInternal(testableGateInterface.output));
-        circuit.setMathName(inputContact, testableGateInterface.input);
-        circuit.setMathName(outputContact, testableGateInterface.output);
+        String inputName = testableGateInterface.getInputs().get(0);
+        String outputName = testableGateInterface.getOutput();
+        circuit.setMathName(outputContact, Identifier.makeInternal(outputName));
+        circuit.setMathName(inputContact, inputName);
+        circuit.setMathName(outputContact, outputName);
         result.getGateOutput().getReferencedComponent().setPathBreaker(true);
         return result;
     }

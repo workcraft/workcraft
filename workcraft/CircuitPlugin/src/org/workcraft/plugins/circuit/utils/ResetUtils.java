@@ -466,9 +466,9 @@ public final class ResetUtils {
 
     private static VisualFunctionComponent createResetGate(VisualCircuit circuit, boolean initToOne, boolean activeLow) {
         if (activeLow) {
-            return initToOne ? GateUtils.createNandbGate(circuit) : GateUtils.createAndGate(circuit);
+            return initToOne ? GateUtils.createNand2bGate(circuit) : GateUtils.createAnd2Gate(circuit);
         } else {
-            return initToOne ? GateUtils.createOrGate(circuit) : GateUtils.createNorbGate(circuit);
+            return initToOne ? GateUtils.createOr2Gate(circuit) : GateUtils.createNor2bGate(circuit);
         }
     }
 
