@@ -708,21 +708,31 @@ public class VerilogImporter implements Importer {
             VerilogPort verilogPort = instancePorts.get(verilogConnection.name);
             FunctionContact contact = new FunctionContact();
             Net net = getOrCreateNet(VerilogUtils.getNetBusSuffixName(verilogConnection.net), nets);
-            if (verilogPort == null) {
-                net.undefined.add(contact);
-            } else if (verilogPort.isOutput()) {
-                contact.setIOType(IOType.OUTPUT);
-                net.source = contact;
-            } else {
-                contact.setIOType(IOType.INPUT);
-                net.sinks.add(contact);
-            }
+            updateContactTypeAndNetConnectivity(verilogPort, contact, net);
             component.add(contact);
             if (verilogConnection.name != null) {
                 circuit.setName(contact, verilogConnection.name);
             }
         }
         return component;
+    }
+
+    private void updateContactTypeAndNetConnectivity(VerilogPort verilogPort, FunctionContact contact, Net net) {
+        if (verilogPort == null) {
+            if (net != null) {
+                net.undefined.add(contact);
+            }
+        } else if (verilogPort.isOutput()) {
+            contact.setIOType(IOType.OUTPUT);
+            if (net != null) {
+                net.source = contact;
+            }
+        } else {
+            contact.setIOType(IOType.INPUT);
+            if (net != null) {
+                net.sinks.add(contact);
+            }
+        }
     }
 
     private VerilogModule getVerilogModule(Collection<VerilogModule> verilogModules, String moduleName) {

@@ -15,7 +15,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 class ImportHierarchyTests {
@@ -60,7 +60,7 @@ class ImportHierarchyTests {
     }
 
     private Map<String, Integer> getModuleData(String text) {
-        Map<String, Integer> result = new HashMap<>();
+        Map<String, Integer> result = new LinkedHashMap<>();
         String moduleHeader = null;
         int lineCount = 0;
         for (String line : text.split("\n")) {

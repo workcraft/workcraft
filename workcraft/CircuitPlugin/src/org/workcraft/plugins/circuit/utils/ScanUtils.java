@@ -314,7 +314,7 @@ public final class ScanUtils {
     }
 
     private static VisualConnection connectFromIndividualPort(VisualCircuit circuit, String portPrefix, int index, VisualContact pin) {
-        String portName = portPrefix + CircuitSettings.getBusSuffix(index);
+        String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
         VisualContact port = getOrCreateAlwaysLowInputPort(circuit, portName, VisualContact.Direction.WEST);
         CircuitUtils.disconnectContact(circuit, pin);
         VisualConnection connection = connectIfPossible(circuit, port, pin);
@@ -323,7 +323,7 @@ public final class ScanUtils {
     }
 
     private static VisualConnection connectToIndividualPort(VisualCircuit circuit, VisualContact pin, String portPrefix, int index) {
-        String portName = portPrefix + CircuitSettings.getBusSuffix(index);
+        String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
         VisualContact port = CircuitUtils.getOrCreatePort(circuit, portName,
                 Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
 

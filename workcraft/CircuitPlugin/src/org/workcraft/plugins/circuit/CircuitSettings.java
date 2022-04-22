@@ -6,6 +6,7 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.plugins.circuit.genlib.GateInterface;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
@@ -121,7 +122,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
     private static final String defaultVerilogAssignDelay = "";
-    private static final String defaultBusSuffix = "__$";
+    private static final String defaultBusSuffix = "__" + VerilogUtils.BUS_INDEX_PLACEHOLDER;
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
     private static final String defaultResetActiveLowPort = "rst_n";
@@ -301,7 +302,8 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getVerilogAssignDelay));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Bus split suffix on Verilog import ($ is replaced by index)",
+                PropertyHelper.BULLET_PREFIX + "Bus split/merge suffix on Verilog import/export ("
+                        + VerilogUtils.BUS_INDEX_PLACEHOLDER + " denotes index)",
                 CircuitSettings::setBusSuffix,
                 CircuitSettings::getBusSuffix));
 
@@ -652,10 +654,6 @@ public class CircuitSettings extends AbstractModelSettings {
                     PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n" +
                     PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(deal1, delay2)`");
         }
-    }
-
-    public static String getBusSuffix(int index) {
-        return busSuffix.replace("$", Integer.toString(index));
     }
 
     public static String getBusSuffix() {

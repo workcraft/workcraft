@@ -17,9 +17,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public final class VerilogUtils {
+
+    public static final String BUS_INDEX_PLACEHOLDER = "$";
 
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
@@ -195,21 +198,35 @@ public final class VerilogUtils {
     }
 
     public static String getNetBusSuffixName(VerilogNet net) {
-        String name = net == null ? null : net.getName();
-        return name == null ? null : name + getBusSuffix(net.getIndex());
+        return (net == null) || (net.getName() == null) ? null : net.getName() + getBusSuffix(net.getIndex());
+    }
+
+    public static String getSignalWithBusSuffix(String name, int index) {
+        return name + getBusSuffix(index);
     }
 
     private static String getBusSuffix(Integer index) {
-        return (index == null) ? "" : CircuitSettings.getBusSuffix(index);
+        String busSuffix = CircuitSettings.getBusSuffix();
+        if ((busSuffix == null) || busSuffix.isEmpty()) {
+            busSuffix = BUS_INDEX_PLACEHOLDER;
+        }
+        return (index == null) ? "" : busSuffix.replace(BUS_INDEX_PLACEHOLDER, Integer.toString(index));
     }
 
     public static String getFormulaWithBusSuffixNames(String verilogFormula) {
-        String busSuffixReplacement = CircuitSettings.getBusSuffix().replace("$", "$1");
+        String busSuffixReplacement = CircuitSettings.getBusSuffix().replace(BUS_INDEX_PLACEHOLDER, "$1");
         return verilogFormula.replaceAll("\\[(\\d+)]", busSuffixReplacement);
     }
 
-    public static Set<String> getUndefinedModules(Collection<VerilogModule> verilogModules) {
+    public static Pattern getBusSignalPatternOrNull() {
+        String busSuffix = CircuitSettings.getBusSuffix();
+        if ((busSuffix != null) && busSuffix.contains(BUS_INDEX_PLACEHOLDER)) {
+            return Pattern.compile("(.+)" + busSuffix.replace(BUS_INDEX_PLACEHOLDER, "(\\d+)"));
+        }
+        return null;
+    }
 
+    public static Set<String> getUndefinedModules(Collection<VerilogModule> verilogModules) {
         Set<String> result = new HashSet<>();
         Set<String> moduleNames = verilogModules.stream()
                 .map(verilogModule -> verilogModule.name)
