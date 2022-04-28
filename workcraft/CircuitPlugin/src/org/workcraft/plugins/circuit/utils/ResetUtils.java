@@ -495,9 +495,12 @@ public final class ResetUtils {
     public static Set<Contact> getInitialisationProblemPins(Circuit circuit) {
         InitialisationState initState = new InitialisationState(circuit);
         Set<Contact> result = new HashSet<>();
-        for (FunctionContact contact : circuit.getFunctionContacts()) {
-            if (contact.isPin() && contact.isDriver()) {
-                if (!initState.isInitialisedPin(contact) || contact.getForcedInit()) {
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getIsZeroDelay()) {
+                continue;
+            }
+            for (FunctionContact contact : component.getFunctionContacts()) {
+                if (contact.isOutput() && (!initState.isInitialisedPin(contact) || contact.getForcedInit())) {
                     result.add(contact);
                 }
             }
