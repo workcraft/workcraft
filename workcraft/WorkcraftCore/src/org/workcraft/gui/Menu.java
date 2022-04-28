@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-@SuppressWarnings("serial")
 public class Menu extends JMenuBar {
 
     private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
@@ -45,6 +44,7 @@ public class Menu extends JMenuBar {
         addEditMenu();
         addViewMenu();
         addHelpMenu();
+        setCommandsMenu(null);
     }
 
     private void addFileMenu() {
@@ -269,7 +269,9 @@ public class Menu extends JMenuBar {
     private void setExportMenu(final WorkspaceEntry we) {
         mnExport.removeAll();
         mnExport.setEnabled(false);
-        addExporters(mnExport, we);
+        if (we != null) {
+            addExporters(mnExport, we);
+        }
     }
 
     public void setExportMenuState(boolean enable) {
@@ -338,18 +340,14 @@ public class Menu extends JMenuBar {
         }
     }
 
-    private void createCommandsMenu(final WorkspaceEntry we) {
-        removeCommandsMenu();
-        if (we == null) {
-            return;
-        }
-
-        List<Command> applicableVisibleCommands = CommandUtils.getApplicableVisibleCommands(we);
-        List<String> sections = CommandUtils.getSections(applicableVisibleCommands);
+    public void setCommandsMenu(final WorkspaceEntry we) {
+        mnCommandsList.forEach(this::remove);
 
         JMenu mnCommands = new JMenu("Tools");
         mnCommands.setMnemonic(KeyEvent.VK_T);
         mnCommandsList.clear();
+        List<Command> applicableVisibleCommands = CommandUtils.getApplicableVisibleCommands(we);
+        List<String> sections = CommandUtils.getSections(applicableVisibleCommands);
         for (String section : sections) {
             JMenu mnSection = mnCommands;
             if (!section.isEmpty()) {
@@ -366,7 +364,12 @@ public class Menu extends JMenuBar {
             List<Command> sectionCommands = CommandUtils.getSectionCommands(section, applicableVisibleCommands);
             addCommandMenuSection(mnSection, sectionCommands);
         }
-        addCommandsMenu();
+
+        mnCommandsList.forEach(this::add);
+
+        remove(mnHelp);
+        add(mnHelp);
+        revalidate();
     }
 
     private void addCommandMenuSection(JMenu mnSection, List<Command> sectionCommands) {
@@ -408,22 +411,6 @@ public class Menu extends JMenuBar {
         return result.trim();
     }
 
-    private void addCommandsMenu() {
-        for (JMenu mnCommands : mnCommandsList) {
-            add(mnCommands);
-        }
-        remove(mnHelp);
-        add(mnHelp);
-        revalidate();
-    }
-
-    public void removeCommandsMenu() {
-        for (JMenu mnCommands : mnCommandsList) {
-            remove(mnCommands);
-        }
-        revalidate();
-    }
-
     public void updateCommandsMenuState(boolean enable) {
         for (JMenu mnCommands : mnCommandsList) {
             mnCommands.setEnabled(enable);
@@ -431,12 +418,13 @@ public class Menu extends JMenuBar {
     }
 
     public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
+        setExportMenu(we);
+        setCommandsMenu(we);
         if (we != null) {
-            createCommandsMenu(we);
-            setExportMenu(we);
             we.updateActionState();
         }
     }
+
     public static void addExporters(JMenu menu, WorkspaceEntry we) {
         VisualModel model = we.getModelEntry().getVisualModel();
         PluginManager pm = Framework.getInstance().getPluginManager();

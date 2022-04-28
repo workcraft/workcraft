@@ -38,14 +38,16 @@ public class CommandUtils {
         for (Command command : pm.getCommands()) {
             try {
                 result.add(type.cast(command));
-            } catch (ClassCastException e) {
+            } catch (ClassCastException ignored) {
             }
         }
         return result;
     }
 
     public static List<Command> getApplicableVisibleCommands(WorkspaceEntry we) {
-        return getCommands(command -> command.isApplicableTo(we) && command.isVisibleInMenu());
+        return getCommands(command -> (command.getMenuVisibility() == Command.MenuVisibility.ALWAYS)
+                || ((command.getMenuVisibility() == Command.MenuVisibility.ACTIVE_APPLICABLE)
+                        && (we != null) && command.isApplicableTo(we)));
     }
 
     public static List<String> getSections(List<Command> commands) {
@@ -100,11 +102,9 @@ public class CommandUtils {
     public static void run(MainWindow mainWindow, Command command) {
         if (mainWindow != null) {
             GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
-            if (currentEditor != null) {
-                WorkspaceEntry we = currentEditor.getWorkspaceEntry();
-                checkCommandApplicability(we, command);
-                command.run(we);
-            }
+            WorkspaceEntry we = currentEditor == null ? null : currentEditor.getWorkspaceEntry();
+            checkCommandApplicability(we, command);
+            command.run(we);
         }
     }
 
@@ -131,10 +131,14 @@ public class CommandUtils {
     private static void checkCommandApplicability(WorkspaceEntry we, Command command) {
         if (!command.isApplicableTo(we)) {
             String commandName = command.getClass().getSimpleName();
-            String displayName = we.getModelEntry().getDescriptor().getDisplayName();
-            Path<String> workspacePath = we.getWorkspacePath();
-            throw new RuntimeException("Command '" + commandName + "' is incompatible with "
-                    + displayName + " (workspace entry '" + workspacePath + "').");
+            if (we == null) {
+                throw new RuntimeException("Command '" + commandName + "' needs active workspace entry.");
+            } else {
+                String displayName = we.getModelEntry().getDescriptor().getDisplayName();
+                Path<String> workspacePath = we.getWorkspacePath();
+                throw new RuntimeException("Command '" + commandName + "' is incompatible with "
+                        + displayName + " (workspace entry '" + workspacePath + "').");
+            }
         }
     }
 

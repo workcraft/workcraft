@@ -38,8 +38,8 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Col
     }
 
     @Override
-    public boolean isVisibleInMenu() {
-        return MsfsmSettings.getShowInMenu();
+    public MenuVisibility getMenuVisibility() {
+        return MsfsmSettings.getShowInMenu() ? MenuVisibility.ACTIVE_APPLICABLE : MenuVisibility.NEVER;
     }
 
     @Override
@@ -49,12 +49,8 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Col
 
     @Override
     public Collection<WorkspaceEntry> execute(WorkspaceEntry we) {
-        Collection<WorkspaceEntry> result = null;
         ConversionResultHandlingMonitor monitor = queueConversion(we);
-        if (monitor != null) {
-            result = monitor.waitForHandledResult();
-        }
-        return result;
+        return monitor.waitForHandledResult();
     }
 
     private ConversionResultHandlingMonitor queueConversion(WorkspaceEntry we) {

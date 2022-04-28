@@ -28,8 +28,8 @@ public abstract class AbstractTagCommand implements ScriptableCommand<Void> {
     }
 
     @Override
-    public boolean isVisibleInMenu() {
-        return false;
+    public MenuVisibility getMenuVisibility() {
+        return MenuVisibility.NEVER;
     }
 
     @Override
