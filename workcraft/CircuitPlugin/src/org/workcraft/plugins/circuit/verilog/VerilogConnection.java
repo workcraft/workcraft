@@ -1,12 +1,14 @@
 package org.workcraft.plugins.circuit.verilog;
 
+import java.util.List;
+
 public class VerilogConnection {
     public final String name;
-    public final VerilogNet net;
+    public final List<VerilogNet> nets;
 
-    public VerilogConnection(String name, VerilogNet net) {
+    public VerilogConnection(String name, List<VerilogNet> nets) {
         this.name = name;
-        this.net = net;
+        this.nets = nets;
     }
 
 }

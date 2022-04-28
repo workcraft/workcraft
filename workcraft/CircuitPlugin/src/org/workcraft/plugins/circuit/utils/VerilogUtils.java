@@ -189,8 +189,17 @@ public final class VerilogUtils {
     }
 
     private static String getConnectionString(VerilogConnection verilogConnection) {
-        String netName = getNetBusIndexName(verilogConnection.net);
-        return verilogConnection.name == null ? netName : "." + verilogConnection.name + "(" + netName + ")";
+        String netNames = getNetsString(verilogConnection.nets);
+        return verilogConnection.name == null ? netNames : "." + verilogConnection.name + "(" + netNames + ")";
+    }
+
+    private static String getNetsString(List<VerilogNet> verilogNets) {
+        List<String> netNames = new ArrayList<>();
+        for (VerilogNet verilogNet : verilogNets) {
+            netNames.add(getNetBusIndexName(verilogNet));
+        }
+        String s = String.join(", ", netNames);
+        return (verilogNets.size() > 1) ? "{" + s + "}" : s;
     }
 
     public static String getNetBusIndexName(VerilogNet net) {
@@ -201,29 +210,34 @@ public final class VerilogUtils {
         return (net == null) || (net.getName() == null) ? null : net.getName() + getBusSuffix(net.getIndex());
     }
 
-    public static String getSignalWithBusSuffix(String name, int index) {
+    public static String getSignalWithBusSuffix(String name, Integer index) {
         return name + getBusSuffix(index);
     }
 
     private static String getBusSuffix(Integer index) {
-        String busSuffix = CircuitSettings.getBusSuffix();
-        if ((busSuffix == null) || busSuffix.isEmpty()) {
-            busSuffix = BUS_INDEX_PLACEHOLDER;
-        }
-        return (index == null) ? "" : busSuffix.replace(BUS_INDEX_PLACEHOLDER, Integer.toString(index));
+        return (index == null) ? "" : getProcessedBusSuffix().replace(BUS_INDEX_PLACEHOLDER, Integer.toString(index));
     }
 
     public static String getFormulaWithBusSuffixNames(String verilogFormula) {
-        String busSuffixReplacement = CircuitSettings.getBusSuffix().replace(BUS_INDEX_PLACEHOLDER, "$1");
+        String busSuffix = getProcessedBusSuffix();
+        String busSuffixReplacement = busSuffix.replace(BUS_INDEX_PLACEHOLDER, "$1");
         return verilogFormula.replaceAll("\\[(\\d+)]", busSuffixReplacement);
     }
 
-    public static Pattern getBusSignalPatternOrNull() {
-        String busSuffix = CircuitSettings.getBusSuffix();
-        if ((busSuffix != null) && busSuffix.contains(BUS_INDEX_PLACEHOLDER)) {
-            return Pattern.compile("(.+)" + busSuffix.replace(BUS_INDEX_PLACEHOLDER, "(\\d+)"));
+    public static Pattern getBusSignalPattern() {
+        String busSuffix = getProcessedBusSuffix();
+        return Pattern.compile("(.+)" + busSuffix.replace(BUS_INDEX_PLACEHOLDER, "(\\d+)"));
+    }
+
+    private static String getProcessedBusSuffix() {
+        String result = CircuitSettings.getBusSuffix();
+        if (result == null) {
+            result = BUS_INDEX_PLACEHOLDER;
         }
-        return null;
+        if (!result.contains(BUS_INDEX_PLACEHOLDER)) {
+            result += BUS_INDEX_PLACEHOLDER;
+        }
+        return result;
     }
 
     public static Set<String> getUndefinedModules(Collection<VerilogModule> verilogModules) {

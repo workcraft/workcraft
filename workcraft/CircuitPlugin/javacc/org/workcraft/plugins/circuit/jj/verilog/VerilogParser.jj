@@ -13,17 +13,9 @@ options {
 PARSER_BEGIN(VerilogParser)
 package org.workcraft.plugins.circuit.jj.verilog;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.HashMap;
+import org.workcraft.plugins.circuit.verilog.*;
 
-import org.workcraft.plugins.circuit.verilog.VerilogModule;
-import org.workcraft.plugins.circuit.verilog.VerilogPort;
-import org.workcraft.plugins.circuit.verilog.VerilogNet;
-import org.workcraft.plugins.circuit.verilog.VerilogAssign;
-import org.workcraft.plugins.circuit.verilog.VerilogInstance;
-import org.workcraft.plugins.circuit.verilog.VerilogConnection;
+import java.util.*;
 
 public class VerilogParser {
 }
@@ -347,15 +339,15 @@ List<VerilogPort> parsePortsDefinition():
 
 VerilogPort.Range parseRange():
 {
-    Token firstToken;
-    Token secondToken;
+    Token topIndexToken;
+    Token bottomIndexToken;
 }
 {
-    "[" firstToken = <INTEGER> ":" secondToken = <INTEGER> "]"
+    "[" topIndexToken = <INTEGER> ":" bottomIndexToken = <INTEGER> "]"
     {
-        Integer first = Integer.parseInt(firstToken.image);
-        Integer second = Integer.parseInt(secondToken.image);
-        return new VerilogPort.Range(first, second);
+        Integer topIndex = Integer.parseInt(topIndexToken.image);
+        Integer bottomIndex = Integer.parseInt(bottomIndexToken.image);
+        return new VerilogPort.Range(topIndex, bottomIndex);
     }
 }
 
@@ -487,12 +479,19 @@ List<VerilogConnection> parseNamedConnections():
 VerilogConnection parseNamedConnection():
 {
     Token nameToken;
-    VerilogNet net;
+    List<VerilogNet> nets;
 }
 {
-    "." nameToken = <NAME> "(" net = parseOptionalNet() ")"
+    "." nameToken = <NAME> "("
+    (
+        LOOKAHEAD("{")
+        "{" nets = parseOptionalNets() "}"
+    |
+        nets = parseOptionalNetOrNetRange()
+    )
+    ")"
     {
-        return new VerilogConnection(nameToken.image, net);
+        return new VerilogConnection(nameToken.image, nets);
     }
 }
 
@@ -504,16 +503,55 @@ List<VerilogConnection> parseOrderedConnections():
 {
     net = parseOptionalNet()
     {
-        connections.add(new VerilogConnection(null, net));
+        connections.add(new VerilogConnection(null, Collections.singletonList(net)));
     }
     (
         "," net = parseOptionalNet()
         {
-            connections.add(new VerilogConnection(null, net));
+            connections.add(new VerilogConnection(null, Collections.singletonList(net)));
         }
     )*
     {
         return connections;
+    }
+}
+
+List<VerilogNet> parseOptionalNets():
+{
+    List<VerilogNet> netRange;
+    List<VerilogNet> nets;
+}
+{
+    nets = parseOptionalNetOrNetRange()
+    (
+        "," netRange = parseOptionalNetOrNetRange()
+        {
+            nets.addAll(netRange);
+        }
+    )*
+    {
+        return nets;
+    }
+}
+
+List<VerilogNet> parseOptionalNetOrNetRange():
+{
+    VerilogNet net;
+    List<VerilogNet> nets;
+}
+{
+    (
+        LOOKAHEAD(parseNetRange())
+        nets = parseNetRange()
+    |
+        net = parseOptionalNet()
+        {
+            nets = new ArrayList<>();
+            nets.add(net);
+        }
+    )
+    {
+        return nets;
     }
 }
 
@@ -552,5 +590,25 @@ Integer parseIndex():
     "[" indexToken = <INTEGER> "]"
     {
         return Integer.parseInt(indexToken.image);
+    }
+}
+
+List<VerilogNet> parseNetRange():
+{
+    Token nameToken;
+    VerilogPort.Range range;
+    List<VerilogNet> nets = new ArrayList<>();
+}
+{
+    nameToken = <NAME> range = parseRange()
+    {
+        int index = range.getTopIndex();
+        String name = nameToken.image;
+        while (index != range.getBottomIndex()) {
+            nets.add(new VerilogNet(name, index));
+            index -= range.getStep();
+        }
+        nets.add(new VerilogNet(name, index));
+        return nets;
     }
 }

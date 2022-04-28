@@ -326,17 +326,15 @@ public class VerilogSerialiser implements ModelSerialiser {
 
     private Set<VerilogBus> extractSignalBuses(Set<String> signalNames) {
         Map<String, Set<Integer>> nameToIndexesMap = new HashMap<>();
-        Pattern pattern = VerilogUtils.getBusSignalPatternOrNull();
-        if (pattern != null) {
-            for (String signalName : new HashSet<>(signalNames)) {
-                Matcher matcher = pattern.matcher(signalName);
-                if (matcher.matches()) {
-                    String busName = matcher.group(1);
-                    Integer netIndex = Integer.valueOf(matcher.group(2));
-                    Set<Integer> indexes = nameToIndexesMap.computeIfAbsent(busName, key -> new HashSet<>());
-                    indexes.add(netIndex);
-                    signalNames.remove(signalName);
-                }
+        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        for (String signalName : new HashSet<>(signalNames)) {
+            Matcher matcher = pattern.matcher(signalName);
+            if (matcher.matches()) {
+                String busName = matcher.group(1);
+                Integer netIndex = Integer.valueOf(matcher.group(2));
+                Set<Integer> indexes = nameToIndexesMap.computeIfAbsent(busName, key -> new HashSet<>());
+                indexes.add(netIndex);
+                signalNames.remove(signalName);
             }
         }
         Set<VerilogBus> result = new LinkedHashSet<>();
@@ -351,35 +349,31 @@ public class VerilogSerialiser implements ModelSerialiser {
 
     private Map<String, Map<Integer, String>> extractContactBuses(Map<String, String> contactToSignalMap) {
         Map<String, Map<Integer, String>> result = new HashMap<>();
-        Pattern pattern = VerilogUtils.getBusSignalPatternOrNull();
-        if (pattern != null) {
-            Set<String> contactNames = new LinkedHashSet<>(contactToSignalMap.keySet());
-            for (String contactName : contactNames) {
-                Matcher matcher = pattern.matcher(contactName);
-                if (matcher.matches()) {
-                    String contactBusName = matcher.group(1);
-                    Integer contactNetIndex = Integer.valueOf(matcher.group(2));
-                    Map<Integer, String> indexedSignals = result.computeIfAbsent(
-                            contactBusName, key -> new HashMap<>());
+        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Set<String> contactNames = new LinkedHashSet<>(contactToSignalMap.keySet());
+        for (String contactName : contactNames) {
+            Matcher matcher = pattern.matcher(contactName);
+            if (matcher.matches()) {
+                String contactBusName = matcher.group(1);
+                Integer contactNetIndex = Integer.valueOf(matcher.group(2));
+                Map<Integer, String> indexedSignals = result.computeIfAbsent(
+                        contactBusName, key -> new HashMap<>());
 
-                    String signalName = contactToSignalMap.get(contactName);
-                    indexedSignals.put(contactNetIndex, signalName);
-                    contactToSignalMap.remove(contactName);
-                }
+                String signalName = contactToSignalMap.get(contactName);
+                indexedSignals.put(contactNetIndex, signalName);
+                contactToSignalMap.remove(contactName);
             }
         }
         return result;
     }
 
     private String convertToBusSignalIfNeeded(String signalName) {
-        Pattern pattern = VerilogUtils.getBusSignalPatternOrNull();
-        if (pattern != null) {
-            Matcher matcher = pattern.matcher(signalName);
-            if (matcher.matches()) {
-                String busName = matcher.group(1);
-                int netIndex = Integer.parseInt(matcher.group(2));
-                return busName + "[" + netIndex + "]";
-            }
+        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Matcher matcher = pattern.matcher(signalName);
+        if (matcher.matches()) {
+            String busName = matcher.group(1);
+            int netIndex = Integer.parseInt(matcher.group(2));
+            return busName + "[" + netIndex + "]";
         }
         return signalName;
     }

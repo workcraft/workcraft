@@ -62,14 +62,18 @@ public final class ScanUtils {
                 return component;
             }
         }
-        if (contact.isOutput()) {
-            Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
-            if (drivenContacts.size() == 1) {
-                VisualContact drivenContact = drivenContacts.iterator().next();
-                return getAdjacentBufferOrInverter(circuit, drivenContact);
-            }
+        if (!contact.isOutput()) {
+            return null;
         }
-        return null;
+        Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
+        if (drivenContacts.size() != 1) {
+            return null;
+        }
+        VisualContact drivenContact = drivenContacts.iterator().next();
+        if (drivenContact == contact) {
+            return null;
+        }
+        return getAdjacentBufferOrInverter(circuit, drivenContact);
     }
 
     public static boolean insertScan(VisualCircuit circuit) {

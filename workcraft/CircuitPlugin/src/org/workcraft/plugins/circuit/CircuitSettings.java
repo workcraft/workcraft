@@ -652,7 +652,7 @@ public class CircuitSettings extends AbstractModelSettings {
             DialogUtils.showError("Delay for Verilog assign statement must be one of these:\n" +
                     PropertyHelper.BULLET_PREFIX + "empty string\n" +
                     PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n" +
-                    PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(deal1, delay2)`");
+                    PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(1ps * $urandom_range(10, 20))`");
         }
     }
 
@@ -661,7 +661,11 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static void setBusSuffix(String value) {
-        busSuffix = value;
+        if ((value == null) || !value.contains(VerilogUtils.BUS_INDEX_PLACEHOLDER)) {
+            DialogUtils.showError("Bus suffix must have index placeholder " + VerilogUtils.BUS_INDEX_PLACEHOLDER);
+        } else {
+            busSuffix = value;
+        }
     }
 
     public static String getResetActiveHighPort() {

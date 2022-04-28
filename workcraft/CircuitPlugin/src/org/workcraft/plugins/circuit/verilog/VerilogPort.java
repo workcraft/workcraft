@@ -25,26 +25,30 @@ public class VerilogPort {
     }
 
     public static class Range extends Pair<Integer, Integer> {
-        public Range(Integer first, Integer second) {
-            super(first, second);
+        public Range(Integer topIndex, Integer bottomIndex) {
+            super(topIndex, bottomIndex);
         }
 
-        public int getMin() {
-            return Math.min(getFirst(), getSecond());
+        public int getTopIndex() {
+            return getFirst();
         }
 
-        public int getMax() {
-            return Math.max(getFirst(), getSecond());
+        public int getBottomIndex() {
+            return getSecond();
+        }
+
+        public int getStep() {
+            return Integer.compare(getTopIndex(), getBottomIndex());
+        }
+
+        public int getSize() {
+            return Math.abs(getTopIndex() - getBottomIndex()) + 1;
         }
 
         @Override
         public String toString() {
-            return "[" + getFirst() + ":" + getSecond() + "]";
+            return "[" + getTopIndex() + ":" + getBottomIndex() + "]";
         }
-    }
-
-    public VerilogPort(String name, Type type) {
-        this(name, type, null);
     }
 
     public VerilogPort(String name, Type type, Range range) {
