@@ -2,6 +2,7 @@ package org.workcraft.plugins.petrify.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -108,8 +109,16 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         if (verilogModule == null) {
             return null;
         }
-        VerilogImporter verilogImporter = new VerilogImporter(celementAssign, sequentialAssign);
-        Circuit circuit = verilogImporter.createCircuit(verilogModule, mutexes);
+
+        Circuit circuit;
+        try {
+            VerilogImporter verilogImporter = new VerilogImporter(celementAssign, sequentialAssign);
+            circuit = verilogImporter.createCircuit(verilogModule, mutexes);
+        } catch (DeserialisationException e) {
+            DialogUtils.showError(e.getMessage());
+            return null;
+        }
+
         ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
         Framework framework = Framework.getInstance();
         WorkspaceEntry dstWe = framework.createWork(dstMe, we.getFileName());

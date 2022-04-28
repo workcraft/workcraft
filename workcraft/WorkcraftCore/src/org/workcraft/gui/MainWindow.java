@@ -323,7 +323,7 @@ public class MainWindow extends JFrame {
             }
             // Remove commands menu and update property window
             if (editorInFocus == editor) {
-                menu.removeCommandsMenu();
+                menu.setCommandsMenu(null);
                 editorInFocus = null;
                 setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
             }

@@ -46,7 +46,9 @@ public abstract class AbstractToStgConverter {
         TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(x, y));
     }
 
-    public VisualConnection createConsumingArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+    public VisualConnection createConsumingArc(VisualPlace p, VisualSignalTransition t)
+            throws InvalidConnectionException {
+
         VisualConnection connection = null;
         if (p != null && t != null) {
             connection = stg.connect(p, t);
@@ -54,7 +56,9 @@ public abstract class AbstractToStgConverter {
         return connection;
     }
 
-    public VisualConnection createConsumingArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor) throws InvalidConnectionException {
+    public VisualConnection createConsumingArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor)
+            throws InvalidConnectionException {
+
         VisualConnection connection = null;
         if (p != null && t != null) {
             connection = stg.connect(p, t);
@@ -63,7 +67,9 @@ public abstract class AbstractToStgConverter {
         return connection;
     }
 
-    public VisualConnection createProducingArc(VisualSignalTransition t, VisualPlace p) throws InvalidConnectionException {
+    public VisualConnection createProducingArc(VisualSignalTransition t, VisualPlace p)
+            throws InvalidConnectionException {
+
         VisualConnection connection = null;
         if (p != null && t != null) {
             connection = stg.connect(t, p);
@@ -71,7 +77,9 @@ public abstract class AbstractToStgConverter {
         return connection;
     }
 
-    public VisualConnection createProducingArc(VisualSignalTransition t, VisualPlace p, boolean propagateTokenColor) throws InvalidConnectionException {
+    public VisualConnection createProducingArc(VisualSignalTransition t, VisualPlace p, boolean propagateTokenColor)
+            throws InvalidConnectionException {
+
         VisualConnection connection = null;
         if (p != null && t != null) {
             connection = stg.connect(t, p);
@@ -80,7 +88,9 @@ public abstract class AbstractToStgConverter {
         return connection;
     }
 
-    public VisualConnection createReadArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
+    public VisualConnection createReadArc(VisualPlace p, VisualSignalTransition t)
+            throws InvalidConnectionException {
+
         VisualConnection connection = null;
         if (p != null && t != null) {
             connection = stg.connectUndirected(p, t);
@@ -88,7 +98,9 @@ public abstract class AbstractToStgConverter {
         return connection;
     }
 
-    public VisualConnection createReadArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor) throws InvalidConnectionException {
+    public VisualConnection createReadArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor)
+            throws InvalidConnectionException {
+
         VisualConnection connection = null;
         if ((p != null) && (t != null)) {
             VisualConnection consumingArc = stg.getConnection(p, t);
@@ -105,7 +117,9 @@ public abstract class AbstractToStgConverter {
         return connection;
     }
 
-    public void createReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts) throws InvalidConnectionException {
+    public void createReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts)
+            throws InvalidConnectionException {
+
         if (ts != null) {
             for (VisualSignalTransition t: ts) {
                 stg.connectUndirected(p, t);
@@ -113,30 +127,31 @@ public abstract class AbstractToStgConverter {
         }
     }
 
-    public void createReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts, boolean propagateTokenColor) throws InvalidConnectionException {
+    public void createReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts, boolean propagateTokenColor)
+            throws InvalidConnectionException {
+
         for (VisualSignalTransition t : new HashSet<>(ts)) {
             createReadArc(p, t, propagateTokenColor);
         }
     }
 
-    public void createReadArcsBetweenSignals(SignalStg from, SignalStg to) throws InvalidConnectionException {
-        if ((from != null) && (to != null)) {
-            createReadArcs(from.one, to.riseList);
-            createReadArcs(from.zero, to.fallList);
-        }
-    }
+    public void createReplicaReadArc(VisualPlace p, VisualSignalTransition t)
+            throws InvalidConnectionException {
 
-    public void createReplicaReadArc(VisualPlace p, VisualSignalTransition t) throws InvalidConnectionException {
         double dx = (p.getRootSpaceX() > t.getRootSpaceX()) ? 6.0 : -6.0;
         createReplicaReadArc(p, t, dx, 0.0);
     }
 
-    public void createReplicaReadArc(VisualPlace p, VisualSignalTransition t, double xOffset, double yOffset) throws InvalidConnectionException {
+    public void createReplicaReadArc(VisualPlace p, VisualSignalTransition t, double xOffset, double yOffset)
+            throws InvalidConnectionException {
+
         Point2D replicaPosition = new Point2D.Double(t.getRootSpaceX() + xOffset, t.getRootSpaceY() + yOffset);
-        createReplicaReadArcs(p, Arrays.asList(t), replicaPosition);
+        createReplicaReadArcs(p, Collections.singletonList(t), replicaPosition);
     }
 
-    public void createReplicaReadArcs(VisualPlace p, List<VisualSignalTransition> ts, double xOffset, double yOffset) throws InvalidConnectionException {
+    public void createReplicaReadArcs(VisualPlace p, List<VisualSignalTransition> ts, double xOffset, double yOffset)
+            throws InvalidConnectionException {
+
         if ((p != null) && (ts != null)) {
             VisualReplicaPlace replicaPlace = null;
             for (VisualSignalTransition t: ts) {
@@ -151,7 +166,9 @@ public abstract class AbstractToStgConverter {
         }
     }
 
-    public void createReplicaReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts, Point2D replicaPosition) throws InvalidConnectionException {
+    public void createReplicaReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts, Point2D replicaPosition)
+            throws InvalidConnectionException {
+
         if ((p != null) && (ts != null)) {
             Container container = Hierarchy.getNearestContainer(new HashSet<Node>(ts));
             VisualReplicaPlace replicaPlace = stg.createVisualReplica(p, VisualReplicaPlace.class, container);
@@ -164,7 +181,9 @@ public abstract class AbstractToStgConverter {
         }
     }
 
-    public void createReplicaReadArcBetweenSignals(SignalStg from, SignalStg to) throws InvalidConnectionException {
+    public void createReplicaReadArcBetweenSignals(SignalStg from, SignalStg to)
+            throws InvalidConnectionException {
+
         double xT = to.fallList.get(0).getRootSpaceX();
         double xP = to.one.getRootSpaceX();
         double yZero = to.zero.getRootSpaceY();
@@ -190,7 +209,9 @@ public abstract class AbstractToStgConverter {
         return new Point2D.Double(x, y);
     }
 
-    public SignalStg generateBasicSignalStg(String signalName, double x, double y, Signal.Type type) throws InvalidConnectionException {
+    public SignalStg generateBasicSignalStg(String signalName, double x, double y, Signal.Type type)
+            throws InvalidConnectionException {
+
         VisualPlace zero = stg.createVisualPlace(SignalStg.appendLowSuffix(signalName));
         zero.getReferencedComponent().setTokens(1);
         zero.setNamePositioning(Positioning.BOTTOM);
@@ -216,17 +237,17 @@ public abstract class AbstractToStgConverter {
         return new SignalStg(zero, one, fall, rise);
     }
 
-    public SignalStg generateSignalStg(SignalLayoutType layoutType, String signalName, Point2D pos, Signal.Type type, int fallCount, int riseCount) throws InvalidConnectionException {
+    public SignalStg generateSignalStg(SignalLayoutType layoutType, String signalName, Point2D pos, Signal.Type type,
+            int fallCount, int riseCount) throws InvalidConnectionException {
+
         double x = pos.getX();
         double y = pos.getY();
-        int xSign = 1;
-        if ((layoutType == SignalLayoutType.RIGHT_TO_LEFT)    || (layoutType == SignalLayoutType.RIGHT_TO_LEFT_INVERTED)) {
-            xSign = -1;
-        }
-        int ySign = 1;
-        if ((layoutType == SignalLayoutType.LEFT_TO_RIGHT_INVERTED) || (layoutType == SignalLayoutType.RIGHT_TO_LEFT_INVERTED)) {
-            ySign = -1;
-        }
+
+        int xSign = (layoutType == SignalLayoutType.RIGHT_TO_LEFT)
+                || (layoutType == SignalLayoutType.RIGHT_TO_LEFT_INVERTED) ? -1 : 1;
+
+        int ySign = (layoutType == SignalLayoutType.LEFT_TO_RIGHT_INVERTED)
+                || (layoutType == SignalLayoutType.RIGHT_TO_LEFT_INVERTED) ? -1 : 1;
 
         VisualPlace zero = stg.createVisualPlace(SignalStg.appendLowSuffix(signalName));
         zero.getReferencedComponent().setTokens(1);

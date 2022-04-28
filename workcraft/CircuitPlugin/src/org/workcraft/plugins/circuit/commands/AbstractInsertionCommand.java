@@ -18,8 +18,8 @@ public abstract class AbstractInsertionCommand implements ScriptableCommand<Void
     }
 
     @Override
-    public boolean isVisibleInMenu() {
-        return false;
+    public MenuVisibility getMenuVisibility() {
+        return MenuVisibility.NEVER;
     }
 
     @Override

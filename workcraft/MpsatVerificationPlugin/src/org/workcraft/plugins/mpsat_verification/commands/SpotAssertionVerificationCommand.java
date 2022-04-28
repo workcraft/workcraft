@@ -37,8 +37,8 @@ public class SpotAssertionVerificationCommand extends AbstractVerificationComman
     }
 
     @Override
-    public boolean isVisibleInMenu() {
-        return MpsatVerificationSettings.getShowSpotInMenu();
+    public MenuVisibility getMenuVisibility() {
+        return MpsatVerificationSettings.getShowSpotInMenu() ? MenuVisibility.ACTIVE_APPLICABLE : MenuVisibility.NEVER;
     }
 
     @Override

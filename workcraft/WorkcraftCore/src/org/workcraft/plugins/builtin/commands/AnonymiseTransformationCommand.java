@@ -14,7 +14,7 @@ public class AnonymiseTransformationCommand extends AbstractTransformationComman
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return true;
+        return we != null;
     }
 
     @Override

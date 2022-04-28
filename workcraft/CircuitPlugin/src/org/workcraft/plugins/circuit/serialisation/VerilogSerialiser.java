@@ -12,8 +12,10 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
+import org.workcraft.plugins.circuit.verilog.VerilogBus;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.types.Pair;
@@ -23,6 +25,9 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class VerilogSerialiser implements ModelSerialiser {
 
@@ -94,32 +99,17 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     private void writeHeader(PrintWriter writer, CircuitSignalInfo circuitInfo) {
-        String title = ExportUtils.asIdentifier(circuitInfo.getCircuit().getTitle());
-        writer.print(KEYWORD_MODULE + " " + title + " (");
         Set<String> inputPorts = new LinkedHashSet<>();
         Set<String> outputPorts = new LinkedHashSet<>();
-        boolean isFirstPort = true;
         for (Contact contact : circuitInfo.getCircuit().getPorts()) {
-            if (isFirstPort) {
-                isFirstPort = false;
-            } else {
-                writer.print(", ");
-            }
             String signal = circuitInfo.getContactSignal(contact);
-            writer.print(signal);
             if (contact.isInput()) {
                 inputPorts.add(signal);
             } else {
                 outputPorts.add(signal);
             }
         }
-        writer.println(");");
-        if (!inputPorts.isEmpty()) {
-            writer.println("    " + KEYWORD_INPUT + " " + String.join(", ", inputPorts) + ";");
-        }
-        if (!outputPorts.isEmpty()) {
-            writer.println("    " + KEYWORD_OUTPUT + " " + String.join(", ", outputPorts) + ";");
-        }
+
         Set<String> wires = new LinkedHashSet<>();
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
             for (FunctionContact contact : component.getFunctionOutputs()) {
@@ -128,10 +118,52 @@ public class VerilogSerialiser implements ModelSerialiser {
                 wires.add(signal);
             }
         }
-        if (!wires.isEmpty()) {
-            writer.println("    " + KEYWORD_WIRE + " " + String.join(", ", wires) + ";");
-        }
+
+        Set<VerilogBus> inputBuses = extractSignalBuses(inputPorts);
+        Set<VerilogBus> outputBuses = extractSignalBuses(outputPorts);
+        String title = ExportUtils.asIdentifier(circuitInfo.getCircuit().getTitle());
+        writePortDeclarations(writer, title, inputPorts, inputBuses, outputPorts, outputBuses);
+
+        writeSignalDefinitions(writer, KEYWORD_INPUT, inputPorts, inputBuses);
+        writeSignalDefinitions(writer, KEYWORD_OUTPUT, outputPorts, outputBuses);
+        Set<VerilogBus> wireBuses = extractSignalBuses(wires);
+        writeSignalDefinitions(writer, KEYWORD_WIRE, wires, wireBuses);
         writer.println();
+    }
+
+    private void writePortDeclarations(PrintWriter writer, String title,
+            Set<String> inputPorts, Set<VerilogBus> inputBuses,
+            Set<String> outputPorts, Set<VerilogBus> outputBuses) {
+
+        Set<String> ports = new LinkedHashSet<>();
+        ports.addAll(inputPorts);
+        ports.addAll(inputBuses.stream().map(VerilogBus::getName).collect(Collectors.toList()));
+        ports.addAll(outputPorts);
+        ports.addAll(outputBuses.stream().map(VerilogBus::getName).collect(Collectors.toList()));
+
+        writer.print(KEYWORD_MODULE + " " + title + " (");
+        boolean isFirstPort = true;
+        for (String port : ports) {
+            if (isFirstPort) {
+                isFirstPort = false;
+            } else {
+                writer.print(", ");
+            }
+            writer.print(port);
+        }
+        writer.println(");");
+    }
+
+    private void writeSignalDefinitions(PrintWriter writer, String keyword, Set<String> signals, Set<VerilogBus> buses) {
+        if (!signals.isEmpty()) {
+            writer.println("    " + keyword + " " + String.join(", ", signals) + ";");
+        }
+        for (VerilogBus bus : buses) {
+            Integer maxIndex = bus.getMaxIndex();
+            Integer minIndex = bus.getMinIndex();
+            String name = bus.getName();
+            writer.println("    " + keyword + " [" + maxIndex + ":" + minIndex + "] " + name + ";");
+        }
     }
 
     private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo) {
@@ -167,7 +199,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         boolean result = false;
         String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
         LogUtils.logWarning("Component '" + instanceFlatName + "' is not associated to a module and is exported as assign statement.");
-        for (CircuitSignalInfo.SignalInfo signalInfo: circuitInfo.getComponentSignalInfos(component)) {
+        for (CircuitSignalInfo.SignalInfo signalInfo : circuitInfo.getComponentSignalInfos(component)) {
             String signalName = circuitInfo.getContactSignal(signalInfo.contact);
             BooleanFormula setFormula = signalInfo.setFormula;
             String setExpr = StringGenerator.toString(setFormula, Style.VERILOG);
@@ -218,27 +250,56 @@ public class VerilogSerialiser implements ModelSerialiser {
         }
         msg += ": ";
         moduleName = SubstitutionUtils.getModuleSubstitutionName(moduleName, substitutionRule, msg);
+        Map<String, String> contactToSignalMap = new LinkedHashMap<>();
+        for (Contact contact : component.getContacts()) {
+            String contactName = SubstitutionUtils.getContactSubstitutionName(contact.getName(), substitutionRule, msg);
+            String signalName = circuitInfo.getContactSignal(contact);
+            if ((signalName == null) || signalName.isEmpty()) {
+                LogUtils.logWarning("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
+                signalName = "";
+            }
+            contactToSignalMap.put(contactName, signalName);
+        }
+
         if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
             writer.println("    // This inverter should have a short delay");
         }
+
         writer.print("    " + moduleName + " " + instanceFlatName + " (");
+        writeInstanceContacts(writer, contactToSignalMap);
+        writer.println(");");
+    }
+
+    private void writeInstanceContacts(PrintWriter writer, Map<String, String> contactToSignalMap) {
+        Map<String, Map<Integer, String>> contactBusToIndexedSignalMap = extractContactBuses(contactToSignalMap);
         boolean first = true;
-        for (Contact contact: component.getContacts()) {
+        for (String contactName : contactToSignalMap.keySet()) {
             if (first) {
                 first = false;
             } else {
                 writer.print(", ");
             }
-            String signalName = circuitInfo.getContactSignal(contact);
-            if ((signalName == null) || signalName.isEmpty()) {
-                String contactName = contact.getName();
-                LogUtils.logWarning("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
-                signalName = "";
-            }
-            String contactName = SubstitutionUtils.getContactSubstitutionName(contact.getName(), substitutionRule, msg);
-            writer.print("." + contactName + "(" + signalName + ")");
+            String signalName = contactToSignalMap.getOrDefault(contactName, "");
+            writer.print("." + contactName + "(" + convertToBusSignalIfNeeded(signalName) + ")");
         }
-        writer.println(");");
+        for (String contactBusName : contactBusToIndexedSignalMap.keySet()) {
+            if (first) {
+                first = false;
+            } else {
+                writer.print(", ");
+            }
+            Map<Integer, String> indexedSignals = contactBusToIndexedSignalMap.get(contactBusName);
+            Set<Integer> indexes = indexedSignals.keySet();
+            Integer maxIndex = Collections.max(indexes);
+            Integer minIndex = Collections.min(indexes);
+            List<String> signalNames = new ArrayList<>();
+            for (int index = maxIndex; index >= minIndex; --index) {
+                String signalName = indexedSignals.getOrDefault(index, "");
+                signalNames.add(convertToBusSignalIfNeeded(signalName));
+            }
+            writer.println();
+            writer.print("        ." + contactBusName + "( {" + String.join(", ", signalNames)  + "} )");
+        }
     }
 
     private void writeInitialState(PrintWriter writer, CircuitSignalInfo circuitInfo) {
@@ -256,10 +317,65 @@ public class VerilogSerialiser implements ModelSerialiser {
             writer.println("    // signal values at the initial state:");
             writer.print("    //");
             for (Map.Entry<String, Boolean> entry : signalInitState.entrySet()) {
-                writer.print((entry.getValue() ? " " : " !") + entry.getKey());
+                String signal = convertToBusSignalIfNeeded(entry.getKey());
+                writer.print((entry.getValue() ? " " : " !") + signal);
             }
             writer.println();
         }
+    }
+
+    private Set<VerilogBus> extractSignalBuses(Set<String> signalNames) {
+        Map<String, Set<Integer>> nameToIndexesMap = new HashMap<>();
+        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        for (String signalName : new HashSet<>(signalNames)) {
+            Matcher matcher = pattern.matcher(signalName);
+            if (matcher.matches()) {
+                String busName = matcher.group(1);
+                Integer netIndex = Integer.valueOf(matcher.group(2));
+                Set<Integer> indexes = nameToIndexesMap.computeIfAbsent(busName, key -> new HashSet<>());
+                indexes.add(netIndex);
+                signalNames.remove(signalName);
+            }
+        }
+        Set<VerilogBus> result = new LinkedHashSet<>();
+        for (String name : nameToIndexesMap.keySet()) {
+            Set<Integer> indexes = nameToIndexesMap.get(name);
+            Integer max = Collections.max(indexes);
+            Integer min = Collections.min(indexes);
+            result.add(new VerilogBus(name, min, max));
+        }
+        return result;
+    }
+
+    private Map<String, Map<Integer, String>> extractContactBuses(Map<String, String> contactToSignalMap) {
+        Map<String, Map<Integer, String>> result = new HashMap<>();
+        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Set<String> contactNames = new LinkedHashSet<>(contactToSignalMap.keySet());
+        for (String contactName : contactNames) {
+            Matcher matcher = pattern.matcher(contactName);
+            if (matcher.matches()) {
+                String contactBusName = matcher.group(1);
+                Integer contactNetIndex = Integer.valueOf(matcher.group(2));
+                Map<Integer, String> indexedSignals = result.computeIfAbsent(
+                        contactBusName, key -> new HashMap<>());
+
+                String signalName = contactToSignalMap.get(contactName);
+                indexedSignals.put(contactNetIndex, signalName);
+                contactToSignalMap.remove(contactName);
+            }
+        }
+        return result;
+    }
+
+    private String convertToBusSignalIfNeeded(String signalName) {
+        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Matcher matcher = pattern.matcher(signalName);
+        if (matcher.matches()) {
+            String busName = matcher.group(1);
+            int netIndex = Integer.parseInt(matcher.group(2));
+            return busName + "[" + netIndex + "]";
+        }
+        return signalName;
     }
 
 }

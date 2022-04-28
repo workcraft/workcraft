@@ -3,6 +3,7 @@ package org.workcraft.plugins.atacs.tasks;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
@@ -67,10 +68,16 @@ public class SynthesisResultHandlingMonitor extends AbstractResultHandlingMonito
         if (verilogModule == null) {
             return null;
         }
-        VerilogImporter verilogImporter = new VerilogImporter(celementAssign, sequentialAssign);
-        Circuit circuit = verilogImporter.createCircuit(verilogModule, mutexes);
 
-        removePortsForExposedInternalSignals(circuit);
+        Circuit circuit;
+        try {
+            VerilogImporter verilogImporter = new VerilogImporter(celementAssign, sequentialAssign);
+            circuit = verilogImporter.createCircuit(verilogModule, mutexes);
+            removePortsForExposedInternalSignals(circuit);
+        } catch (DeserialisationException e) {
+            DialogUtils.showError(e.getMessage());
+            return null;
+        }
 
         ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
         Framework framework = Framework.getInstance();

@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.Zero;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.genlib.UnaryGateInterface;
+import org.workcraft.plugins.circuit.genlib.GateInterface;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.utils.LogUtils;
 
@@ -14,7 +14,7 @@ import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ScanUtils {
+public final class ScanUtils {
 
     public static Set<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
         Set<VisualFunctionComponent> result = new HashSet<>();
@@ -39,15 +39,17 @@ public class ScanUtils {
             GateUtils.propagateInitialState(circuit, result);
             result.getGateOutput().getReferencedComponent().setPathBreaker(true);
         }
-        UnaryGateInterface testableGateInterface = result.isInverter() ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
-        result.getReferencedComponent().setModule(testableGateInterface.name);
+        GateInterface testableGateInterface = result.isInverter() ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
+        result.getReferencedComponent().setModule(testableGateInterface.getName());
 
         VisualContact inputContact = result.getFirstVisualInput();
         VisualContact outputContact = result.getFirstVisualOutput();
         // Temporary rename gate output, so there is no name clash on renaming gate input
-        circuit.setMathName(outputContact, Identifier.makeInternal(testableGateInterface.output));
-        circuit.setMathName(inputContact, testableGateInterface.input);
-        circuit.setMathName(outputContact, testableGateInterface.output);
+        String inputName = testableGateInterface.getInputs().get(0);
+        String outputName = testableGateInterface.getOutput();
+        circuit.setMathName(outputContact, Identifier.makeInternal(outputName));
+        circuit.setMathName(inputContact, inputName);
+        circuit.setMathName(outputContact, outputName);
         result.getGateOutput().getReferencedComponent().setPathBreaker(true);
         return result;
     }
@@ -60,14 +62,18 @@ public class ScanUtils {
                 return component;
             }
         }
-        if (contact.isOutput()) {
-            Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
-            if (drivenContacts.size() == 1) {
-                VisualContact drivenContact = drivenContacts.iterator().next();
-                return getAdjacentBufferOrInverter(circuit, drivenContact);
-            }
+        if (!contact.isOutput()) {
+            return null;
         }
-        return null;
+        Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
+        if (drivenContacts.size() != 1) {
+            return null;
+        }
+        VisualContact drivenContact = drivenContacts.iterator().next();
+        if (drivenContact == contact) {
+            return null;
+        }
+        return getAdjacentBufferOrInverter(circuit, drivenContact);
     }
 
     public static boolean insertScan(VisualCircuit circuit) {
@@ -312,7 +318,7 @@ public class ScanUtils {
     }
 
     private static VisualConnection connectFromIndividualPort(VisualCircuit circuit, String portPrefix, int index, VisualContact pin) {
-        String portName = portPrefix + CircuitSettings.getBusSuffix(index);
+        String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
         VisualContact port = getOrCreateAlwaysLowInputPort(circuit, portName, VisualContact.Direction.WEST);
         CircuitUtils.disconnectContact(circuit, pin);
         VisualConnection connection = connectIfPossible(circuit, port, pin);
@@ -321,7 +327,7 @@ public class ScanUtils {
     }
 
     private static VisualConnection connectToIndividualPort(VisualCircuit circuit, VisualContact pin, String portPrefix, int index) {
-        String portName = portPrefix + CircuitSettings.getBusSuffix(index);
+        String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
         VisualContact port = CircuitUtils.getOrCreatePort(circuit, portName,
                 Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
 

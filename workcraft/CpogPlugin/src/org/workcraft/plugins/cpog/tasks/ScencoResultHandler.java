@@ -2,6 +2,7 @@ package org.workcraft.plugins.cpog.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.Info;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -42,13 +43,17 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoOutput> {
             if (solver.isVerilog()) {
                 VerilogModule verilogModule = solver.getVerilogModule();
                 VerilogImporter verilogImporter = new VerilogImporter();
-                Circuit circuit = verilogImporter.createCircuit(verilogModule);
-                ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-                Framework framework = Framework.getInstance();
-                WorkspaceEntry weCircuit = framework.createWork(me, we.getFileName());
-                VisualCircuit visualCircuit = WorkspaceUtils.getAs(weCircuit, VisualCircuit.class);
-                visualCircuit.setTitle(we.getModelTitle());
-                framework.updatePropertyView();
+                try {
+                    Circuit circuit = verilogImporter.createCircuit(verilogModule);
+                    ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
+                    Framework framework = Framework.getInstance();
+                    WorkspaceEntry weCircuit = framework.createWork(me, we.getFileName());
+                    VisualCircuit visualCircuit = WorkspaceUtils.getAs(weCircuit, VisualCircuit.class);
+                    visualCircuit.setTitle(we.getModelTitle());
+                    framework.updatePropertyView();
+                } catch (DeserialisationException e) {
+                    DialogUtils.showError(e.getMessage());
+                }
             }
         } else if (result.isFailure()) {
             final String errorMessage = getErrorMessage(result.getPayload());
@@ -56,8 +61,8 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoOutput> {
             // In case of an internal error, activate automatically verbose mode
             if (INTERNAL_ERROR_MSG.equals(errorMessage)) {
                 final String[] sentence = result.getPayload().getStdout().split("\n");
-                for (int i = 0; i < sentence.length; i++) {
-                    System.out.println(sentence[i]);
+                for (String s : sentence) {
+                    System.out.println(s);
                 }
             }
 
@@ -80,8 +85,7 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoOutput> {
 
         // SCENCO known error
         String[] sentence = scencoOutput.getStdout().split("\n");
-        int i = 0;
-        for (i = 0; i < sentence.length; i++) {
+        for (int i = 0; i < sentence.length; i++) {
             if (sentence[i].contains(".error")) {
                 return sentence[i + 1];
             }

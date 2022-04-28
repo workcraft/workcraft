@@ -5,7 +5,8 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
-import org.workcraft.plugins.circuit.genlib.UnaryGateInterface;
+import org.workcraft.plugins.circuit.genlib.GateInterface;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
@@ -18,6 +19,7 @@ import org.workcraft.utils.FileUtils;
 import java.awt.*;
 import java.io.File;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -120,7 +122,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
     private static final String defaultVerilogAssignDelay = "";
-    private static final String defaultBusSuffix = "__$";
+    private static final String defaultBusSuffix = "__" + VerilogUtils.BUS_INDEX_PLACEHOLDER;
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
     private static final String defaultResetActiveLowPort = "rst_n";
@@ -300,7 +302,8 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getVerilogAssignDelay));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Bus split suffix on Verilog import ($ is replaced by index)",
+                PropertyHelper.BULLET_PREFIX + "Bus split/merge suffix on Verilog import/export ("
+                        + VerilogUtils.BUS_INDEX_PLACEHOLDER + " denotes index)",
                 CircuitSettings::setBusSuffix,
                 CircuitSettings::getBusSuffix));
 
@@ -649,12 +652,8 @@ public class CircuitSettings extends AbstractModelSettings {
             DialogUtils.showError("Delay for Verilog assign statement must be one of these:\n" +
                     PropertyHelper.BULLET_PREFIX + "empty string\n" +
                     PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n" +
-                    PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(deal1, delay2)`");
+                    PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(1ps * $urandom_range(10, 20))`");
         }
-    }
-
-    public static String getBusSuffix(int index) {
-        return busSuffix.replace("$", Integer.toString(index));
     }
 
     public static String getBusSuffix() {
@@ -662,7 +661,11 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static void setBusSuffix(String value) {
-        busSuffix = value;
+        if ((value == null) || !value.contains(VerilogUtils.BUS_INDEX_PLACEHOLDER)) {
+            DialogUtils.showError("Bus suffix must have index placeholder " + VerilogUtils.BUS_INDEX_PLACEHOLDER);
+        } else {
+            busSuffix = value;
+        }
     }
 
     public static String getResetActiveHighPort() {
@@ -705,7 +708,7 @@ public class CircuitSettings extends AbstractModelSettings {
         tbufData = value;
     }
 
-    public static UnaryGateInterface parseTbufData() {
+    public static GateInterface parseTbufData() {
         return parseGate2DataOrNull(getTbufData());
     }
 
@@ -717,7 +720,7 @@ public class CircuitSettings extends AbstractModelSettings {
         tinvData = value;
     }
 
-    public static UnaryGateInterface parseTinvData() {
+    public static GateInterface parseTinvData() {
         return parseGate2DataOrNull(getTinvData());
     }
 
@@ -835,13 +838,13 @@ public class CircuitSettings extends AbstractModelSettings {
         }
     }
 
-    private static UnaryGateInterface parseGate2DataOrNull(String value) {
+    private static GateInterface parseGate2DataOrNull(String value) {
         Matcher matcher = GATE2_DATA_PATTERN.matcher(value.replaceAll("\\s", ""));
         if (matcher.find()) {
             String name = matcher.group(GATE_NAME_GROUP);
             String input = matcher.group(GATE_INPUT_GROUP);
             String output = matcher.group(GATE_OUTPUT_GROUP);
-            return new UnaryGateInterface(name, input, output);
+            return new GateInterface(name, Collections.singletonList(input), output);
         }
         return null;
     }

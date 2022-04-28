@@ -86,6 +86,13 @@ class ImportExportTests {
         testImportExport(workName, verilogName);
     }
 
+    @Test
+    void testBusConcatenationImportExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus-concatenation.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "bus-concatenation.circuit.v");
+        testImportExport(workName, verilogName);
+    }
+
     private void testImportExport(String workName, String verilogName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -109,6 +116,7 @@ class ImportExportTests {
             vWe = framework.loadWork(vFile);
             collectNodes(vWe, vInputs, vOutputs, vGates);
         } catch (IOException | SerialisationException e) {
+            throw new RuntimeException(e);
         }
 
         Assertions.assertEquals(wInputs, vInputs);
@@ -137,7 +145,7 @@ class ImportExportTests {
 
     private void collectNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        for (Contact port: circuit.getPorts()) {
+        for (Contact port : circuit.getPorts()) {
             if (port.isInput()) {
                 inputs.add(circuit.getNodeReference(port));
             }
