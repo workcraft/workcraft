@@ -309,18 +309,12 @@ public class CircuitUtils {
     public static BooleanFormula parsePinFunction(VisualCircuit circuit, VisualFunctionComponent component,
             String function) throws ParseException {
 
-        if ((function == null) || function.isEmpty()) {
-            return null;
-        }
         return BooleanFormulaParser.parse(function, name -> circuit
                 .getExistingPinOrCreateInputPin(component, name)
                 .getReferencedComponent());
     }
 
     public static BooleanFormula parsePortFunction(VisualCircuit circuit, String function) throws ParseException {
-        if ((function == null) || function.isEmpty()) {
-            return null;
-        }
         return BooleanFormulaParser.parse(function, name -> circuit
                 .getOrCreatePort(name, IOType.OUTPUT)
                 .getReferencedComponent());
@@ -329,9 +323,6 @@ public class CircuitUtils {
     public static BooleanFormula parsePinFunction(Circuit circuit, FunctionComponent component, String function)
             throws ParseException {
 
-        if ((function == null) || function.isEmpty()) {
-            return null;
-        }
         return BooleanFormulaParser.parse(function, name -> {
             FunctionContact contact = (FunctionContact) circuit.getNodeByReference(component, name);
             if (contact == null) {

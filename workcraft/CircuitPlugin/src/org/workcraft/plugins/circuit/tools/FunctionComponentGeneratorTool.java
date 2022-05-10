@@ -350,16 +350,36 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                 libraryItems.add(new LibraryItem(gateName, type, pinCount, instantiator));
             }
         }
-        libraryItems.add(createWaitItem(Wait.Type.WAIT1));
-        libraryItems.add(createWaitItem(Wait.Type.WAIT0));
-        libraryItems.add(createMutexItem(Mutex.Protocol.LATE));
-        libraryItems.add(createMutexItem(Mutex.Protocol.EARLY));
+
+        LibraryItem wait1Item = createWaitItem(Wait.Type.WAIT1);
+        if (wait1Item != null) {
+            libraryItems.add(wait1Item);
+        }
+
+        LibraryItem wait0Item = createWaitItem(Wait.Type.WAIT0);
+        if (wait0Item != null) {
+            libraryItems.add(wait0Item);
+        }
+
+        LibraryItem mutexLateItem = createMutexItem(Mutex.Protocol.LATE);
+        if (mutexLateItem != null) {
+            libraryItems.add(mutexLateItem);
+        }
+
+        LibraryItem mutexEarlyItem = createMutexItem(Mutex.Protocol.EARLY);
+        if (mutexEarlyItem != null) {
+            libraryItems.add(mutexEarlyItem);
+        }
+
         libraryItems.sort((item1, item2) -> SortUtils.compareNatural(item1.toString(), item2.toString()));
         return libraryItems;
     }
 
     private LibraryItem createWaitItem(Wait.Type type) {
         Wait module = CircuitSettings.parseWaitData(type);
+        if (module == null) {
+            return null;
+        }
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);
@@ -384,6 +404,9 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
     private LibraryItem createMutexItem(Mutex.Protocol protocol) {
         Mutex module = CircuitSettings.parseMutexData();
+        if (module == null) {
+            return null;
+        }
         Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);

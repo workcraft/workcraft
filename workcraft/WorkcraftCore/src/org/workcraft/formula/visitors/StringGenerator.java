@@ -11,8 +11,8 @@ public class StringGenerator implements BooleanVisitor<String> {
     }
 
     public enum Style {
-        DEFAULT, UNICODE, VERILOG, REACH
-    };
+        DEFAULT, UNICODE, VERILOG, REACH, GENLIB
+    }
 
     public static class PrinterSuite {
         public PrinterSuite() {
@@ -137,49 +137,36 @@ public class StringGenerator implements BooleanVisitor<String> {
     public static class ImplyPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Imply node) {
-            switch (style) {
-            case UNICODE:
-                return visitBinary(next, " \u21d2 ", node);
-            default:
-                return visitBinary(next, " => ", node);
-            }
+            return style == Style.UNICODE
+                ?  visitBinary(next, " \u21d2 ", node)
+                : visitBinary(next, " => ", node);
         }
     }
 
     public static class IffPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Iff node) {
-            switch (style) {
-            case REACH:
-                return visitBinary(this, " <-> ", node);
-            default:
-                return visitBinary(this, " = ", node);
-            }
+            return style == Style.REACH
+                    ? visitBinary(this, " <-> ", node)
+                    : visitBinary(this, " = ", node);
         }
     }
 
     public static class OrPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Or node) {
-            switch (style) {
-            case VERILOG:
-            case REACH:
-                return visitBinary(this, " | ", node);
-            default:
-                return visitBinary(this, " + ", node);
-            }
+            return style == Style.VERILOG || style == Style.REACH
+                    ? visitBinary(this, " | ", node)
+                    : visitBinary(this, " + ", node);
         }
     }
 
     public static class XorPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Xor node) {
-            switch (style) {
-            case UNICODE:
-                return visitBinary(this, " \u2295 ", node);
-            default:
-                return visitBinary(this, " ^ ", node);
-            }
+            return style == Style.UNICODE
+                    ? visitBinary(this, " \u2295 ", node)
+                    : visitBinary(this, " ^ ", node);
         }
     }
 
@@ -209,6 +196,9 @@ public class StringGenerator implements BooleanVisitor<String> {
             case REACH:
                 append("~");
                 return node.getX().accept(this);
+            case GENLIB:
+                append("!");
+                return node.getX().accept(this);
             default:
                 node.getX().accept(this);
                 return append("'");
@@ -222,6 +212,8 @@ public class StringGenerator implements BooleanVisitor<String> {
             switch (style) {
             case REACH:
                 return append("true");
+            case GENLIB:
+                return append("CONST1");
             default:
                 return append("1");
             }
@@ -232,6 +224,8 @@ public class StringGenerator implements BooleanVisitor<String> {
             switch (style) {
             case REACH:
                 return append("false");
+            case GENLIB:
+                return append("CONST0");
             default:
                 return append("0");
             }
@@ -252,14 +246,7 @@ public class StringGenerator implements BooleanVisitor<String> {
                     throw new RuntimeException("Duplicate variable name '" + label + "'");
                 }
             }
-
-            switch (style) {
-            case REACH:
-                return append("$S\"" + label + "\"");
-
-            default:
-                return append(label);
-            }
+            return style == Style.REACH ? append("$S\"" + label + "\"") : append(label);
         }
     }
 

@@ -73,6 +73,9 @@ public class BooleanFormulaParser {
     public static BooleanFormula parse(String text, Func<String, ? extends BooleanFormula> vars)
             throws ParseException {
 
+        if ((text == null) || text.isEmpty()) {
+            return null;
+        }
         StringReader reader = new StringReader(text);
         return new BooleanFormulaParser(reader, vars).formula();
     }
@@ -80,27 +83,29 @@ public class BooleanFormulaParser {
     public static BooleanFormula parse(String text, Collection<? extends BooleanVariable> variables)
             throws ParseException {
 
-        final HashMap<String, BooleanVariable> map = new HashMap<String, BooleanVariable>();
+        final HashMap<String, BooleanVariable> labelToVariableMap = new HashMap<>();
         for(BooleanVariable var : variables) {
-            map.put(var.getLabel(), var);
+            labelToVariableMap.put(var.getLabel(), var);
         }
+        // JavaCC v7.0.10 does not support Java 1.8 syntax for lambdas yet
         return parse(text, new Func<String, BooleanVariable>() {
             @Override
             public BooleanVariable eval(String label) {
-                return map.get(label);
+                return labelToVariableMap.get(label);
             }
         });
     }
 
     public static BooleanFormula parse(String text) throws ParseException {
-        final HashMap<String, BooleanVariable> nameToVariableMap = new HashMap<String, BooleanVariable>();
+        final HashMap<String, BooleanVariable> labelToVariableMap = new HashMap<>();
+        // JavaCC v7.0.10 does not support Java 1.8 syntax for lambdas yet
         return BooleanFormulaParser.parse(text, new Func<String, BooleanVariable>() {
             @Override
             public BooleanVariable eval(String label) {
-                if (!nameToVariableMap.containsKey(label)) {
-                    nameToVariableMap.put(label, new FreeVariable(label));
+                if (!labelToVariableMap.containsKey(label)) {
+                    labelToVariableMap.put(label, new FreeVariable(label));
                 }
-                return nameToVariableMap.get(label);
+                return labelToVariableMap.get(label);
             }
         });
     }
