@@ -1,60 +1,78 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.formula.*;
+import org.workcraft.formula.bdd.BddManager;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.visitors.StringGenerator;
+
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 public class ExpressionUtils {
+
     private static final char TERM_DELIMITER = '+';
     private static final char FACTOR_DELIMITER = '*';
     private static final char NEGATION_DELIMITER = '!';
 
+    public static String extractSetFunction(String expression, String seqLiteral) {
+        return extractFunction(expression, seqLiteral, false, ExpressionUtils::extractHeuristicSetFunction);
+    }
+
+    public static String extractResetFunction(String expression, String seqLiteral) {
+        return extractFunction(expression, seqLiteral, true, ExpressionUtils::extractHeuristicResetFunction);
+    }
+
     // Extract SET term from an expression SET + seq * RESET'
-    public static String extractSetExpression(String expression, String seqLiteral) {
-        String result = "";
+    public static String extractHeuristicSetFunction(String expression, String seqLiteral) {
+        StringBuilder result = new StringBuilder();
         for (String term: getTerms(expression)) {
             if (!isResetTerm(term, seqLiteral)) {
-                if (!result.isEmpty()) {
-                    result += TERM_DELIMITER;
+                if (result.length() > 0) {
+                    result.append(TERM_DELIMITER);
                 }
-                result += term;
+                result.append(term);
             }
         }
-        return result;
+        return result.toString();
     }
 
     // Extract RESET term from an expression SET + seq * RESET'
-    public static String extractResetExpression(String expression, String seqLiteral) {
-        String result = "";
+    public static String extractHeuristicResetFunction(String expression, String seqLiteral) {
+        StringBuilder result = new StringBuilder();
         for (String term: getTerms(expression)) {
             if (isResetTerm(term, seqLiteral)) {
-                if (!result.isEmpty()) {
-                    result += TERM_DELIMITER;
+                if (result.length() > 0) {
+                    result.append(TERM_DELIMITER);
                 }
-                result += removeTermLiteral(term, seqLiteral);
+                result.append(removeTermLiteral(term, seqLiteral));
             }
         }
-        return negateExpression(result);
+        return negateExpression(result.toString());
     }
 
     private static List<String> getTerms(String expression) {
         List<String> result = new LinkedList<>();
         int bracketCount = 0;
-        String term = "";
+        StringBuilder term = new StringBuilder();
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
             if (c == ' ') continue;
             if ((c == TERM_DELIMITER) && (bracketCount == 0)) {
-                result.add(term);
-                term = "";
+                result.add(term.toString());
+                term = new StringBuilder();
             } else {
-                term += c;
+                term.append(c);
                 if (c == '(') bracketCount++;
                 if (c == ')') bracketCount--;
             }
         }
         if (bracketCount == 0) {
-            result.add(term);
+            result.add(term.toString());
         }
         return result;
     }
@@ -100,6 +118,41 @@ public class ExpressionUtils {
             result = "";
         }
         return result;
+    }
+
+    private static String extractFunction(String expression, String seqLiteral,
+            boolean seqValue, BiFunction<String, String, String> heuristic) {
+
+        FreeVariable seqVariable = new FreeVariable(seqLiteral);
+        Map<String, BooleanVariable> literalToVariableMap = new HashMap<>();
+        literalToVariableMap.put(seqLiteral, seqVariable);
+
+        BooleanFormula resultFormula = null;
+        try {
+            BooleanFormula formula = BooleanFormulaParser.parse(expression,
+                    literal -> literalToVariableMap.computeIfAbsent(literal, FreeVariable::new));
+
+            if (formula != null) {
+                BooleanFormula exactFormula = seqValue
+                        ? FormulaUtils.replaceOne(new Not(formula), seqVariable)
+                        : FormulaUtils.replaceZero(formula, seqVariable);
+
+                if (exactFormula != null) {
+                    String heuristicExpression = heuristic.apply(expression, seqLiteral);
+                    BooleanFormula heuristicFormula = BooleanFormulaParser.parse(heuristicExpression,
+                            literal -> literalToVariableMap.computeIfAbsent(literal, FreeVariable::new));
+
+                    if (heuristicFormula == null) {
+                        resultFormula = exactFormula;
+                    } else {
+                        BddManager bdd = new BddManager();
+                        resultFormula = bdd.equal(heuristicFormula, exactFormula) ? heuristicFormula : exactFormula;
+                    }
+                }
+            }
+        } catch (ParseException ignore) {
+        }
+        return StringGenerator.toString(resultFormula, StringGenerator.Style.GENLIB);
     }
 
 }

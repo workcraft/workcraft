@@ -6,10 +6,10 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
-import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.CustomXMLDeserialiser;
 import org.workcraft.serialisation.NodeFinaliser;
 import org.workcraft.serialisation.NodeInitialiser;
+import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.types.Func;
 
 public abstract class BooleanFunctionDeserialiser<T> implements CustomXMLDeserialiser<T> {
@@ -46,9 +46,7 @@ public abstract class BooleanFunctionDeserialiser<T> implements CustomXMLDeseria
 
     public static BooleanFormula parseFormula(String string, final ReferenceResolver internalReferenceResolver)
             throws DeserialisationException {
-        if ((string == null) || string.isEmpty()) {
-            return null;
-        }
+
         try {
             VariableResolver vars = new VariableResolver(internalReferenceResolver);
             return BooleanFormulaParser.parse(string, vars);

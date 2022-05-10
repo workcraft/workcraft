@@ -506,10 +506,10 @@ public class VerilogImporter implements Importer {
         String function = expression.toString();
 
         String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
-        String setFunction = ExpressionUtils.extractSetExpression(function, netName);
+        String setFunction = ExpressionUtils.extractHeuristicSetFunction(function, netName);
         Expression setExpression = convertFormulaToExpression(setFunction);
 
-        String resetFunction = ExpressionUtils.extractResetExpression(function, netName);
+        String resetFunction = ExpressionUtils.extractHeuristicResetFunction(function, netName);
         Expression resetExpression = convertFormulaToExpression(resetFunction);
         if (DebugCommonSettings.getVerboseImport()) {
             LogUtils.logInfo("Extracting SET and RESET from assign " + netName + " = " + formula);

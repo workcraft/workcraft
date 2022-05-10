@@ -78,21 +78,13 @@ public class GenlibUtils {
     }
 
     private static String getSetFunction(Gate gate) {
-        String result = null;
-        if (gate.isSequential()) {
-            result = ExpressionUtils.extractSetExpression(gate.function.formula, gate.seq);
-        } else {
-            result = gate.function.formula;
-        }
-        return result;
+        return !gate.isSequential() ? gate.function.formula
+                : ExpressionUtils.extractSetFunction(gate.function.formula, gate.seq);
     }
 
     private static String getResetFunction(Gate gate) {
-        String result = null;
-        if (gate.isSequential()) {
-            result = ExpressionUtils.extractResetExpression(gate.function.formula, gate.seq);
-        }
-        return result;
+        return !gate.isSequential() ? null
+                : ExpressionUtils.extractResetFunction(gate.function.formula, gate.seq);
     }
 
     public static Pair<Gate, Map<BooleanVariable, String>> findMapping(BooleanFormula formula, Library library) {
@@ -116,7 +108,7 @@ public class GenlibUtils {
                 if (mapping != null) {
                     return mapping.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getLabel()));
                 }
-            } catch (ParseException e) {
+            } catch (ParseException ignored) {
             }
         }
         return null;
@@ -165,7 +157,7 @@ public class GenlibUtils {
                 BooleanFormula formula = BooleanFormulaParser.parse(gate.function.formula);
                 List<BooleanVariable> pins = FormulaUtils.extractOrderedVariables(formula);
                 return pins.size() + (gate.isSequential() ? 0 : 1);
-            } catch (ParseException e) {
+            } catch (ParseException ignored) {
             }
         }
         return 0;

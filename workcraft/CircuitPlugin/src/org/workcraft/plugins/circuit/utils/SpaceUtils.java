@@ -101,9 +101,6 @@ public final class SpaceUtils {
     }
 
     public static void positionPort(VisualCircuit circuit, VisualContact port, boolean alignToRight) {
-        if ((circuit == null) || (port == null)) {
-            return;
-        }
         Collection<Touchable> nodes = new HashSet<>(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualConnection.class));
         for (VisualConnection connection : circuit.getConnections(port)) {
             nodes.remove(connection);
@@ -124,7 +121,10 @@ public final class SpaceUtils {
             if (driven.size() == 1) {
                 y = driven.iterator().next().getRootSpaceY();
             } else if (!driven.isEmpty()) {
-                y = TransformHelper.snapP5(MixUtils.middleRootspacePosition(driven).getY());
+                Point2D p = MixUtils.middleRootspacePosition(driven);
+                if (p != null) {
+                    y = TransformHelper.snapP5(p.getY());
+                }
             }
         }
         boolean done = false;
@@ -138,12 +138,12 @@ public final class SpaceUtils {
             }
         }
         port.setRootSpacePosition(new Point2D.Double(x, y));
+    }
 
-        if (port.isInput()) {
-            VisualJoint joint = CircuitUtils.detachJoint(circuit, port);
-            if (joint != null) {
-                joint.setRootSpacePosition(getOffsetContactPosition(port, 0.5));
-            }
+    public static void detachAndPositionJoint(VisualCircuit circuit, VisualContact port) {
+        VisualJoint joint = CircuitUtils.detachJoint(circuit, port);
+        if (joint != null) {
+            joint.setRootSpacePosition(getOffsetContactPosition(port, 0.5));
         }
     }
 
