@@ -205,8 +205,9 @@ public final class ScanUtils {
                 VisualContact pin = getContactWithPinNameOrPortName(circuit, portName, component, pinName);
                 connectIfPossible(circuit, port, pin);
             }
+            SpaceUtils.positionPort(circuit, port, false);
+            SpaceUtils.detachAndPositionJoint(circuit, port);
         }
-        SpaceUtils.positionPort(circuit, port, false);
     }
 
     private static VisualContact getOrCreateAlwaysLowInputPort(VisualCircuit circuit, String portName,
