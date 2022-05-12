@@ -36,7 +36,8 @@ class ScanCommandTests {
         CircuitSettings.setScanckData("scanen / SE");
         CircuitSettings.setScanckData("scanck / CK");
         CircuitSettings.setScantmData(null);
-        CircuitSettings.setIndividualScan(false);
+        CircuitSettings.setUseIndividualScan(false);
+        CircuitSettings.setUseScanInitialisation(false);
 
         String workName = PackageUtils.getPackagePath(getClass(), "scan-bufs_invs_boxes.circuit.work");
 
@@ -124,7 +125,8 @@ class ScanCommandTests {
         CircuitSettings.setScanoutData("scanout / I0");
         CircuitSettings.setScanckData(null);
         CircuitSettings.setScantmData(null);
-        CircuitSettings.setIndividualScan(true);
+        CircuitSettings.setUseIndividualScan(true);
+        CircuitSettings.setUseScanInitialisation(true);
 
         String workName = PackageUtils.getPackagePath(getClass(), "scan-bufs_invs_boxes.circuit.work");
 

@@ -96,7 +96,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyScanenData = prefix + ".scanenData";
     private static final String keyScanckData = prefix + ".scanckData";
     private static final String keyScantmData = prefix + ".scantmData";
-    private static final String keyIndividualScan = prefix + ".individualScan";
+    private static final String keyUseIndividualScan = prefix + ".useIndividualScan";
+    private static final String keyUseScanInitialisation = prefix + ".useScanInitialisation";
 
     /*
      * Defaults
@@ -137,7 +138,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultScanenData = "scanen / SE";
     private static final String defaultScanckData = "scanck / CK";
     private static final String defaultScantmData = "scantm / TM";
-    private static final boolean defaultIndividualScan = false;
+    private static final boolean defaultUseIndividualScan = false;
+    private static final boolean defaultUseScanInitialisation = false;
 
     /*
      * Variables
@@ -178,7 +180,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String scanenData = defaultScanenData;
     private static String scanckData = defaultScanckData;
     private static String scantmData = defaultScantmData;
-    private static boolean individualScan = defaultIndividualScan;
+    private static boolean useIndividualScan = defaultUseIndividualScan;
+    private static boolean useScanInitialisation = defaultUseScanInitialisation;
 
     static {
         properties.add(new PropertyDeclaration<>(Boolean.class,
@@ -373,8 +376,13 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 PropertyHelper.BULLET_PREFIX + "Individual scan control and observation",
-                CircuitSettings::setIndividualScan,
-                CircuitSettings::getIndividualScan));
+                CircuitSettings::setUseIndividualScan,
+                CircuitSettings::getUseIndividualScan));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Use Scan for initialisation",
+                CircuitSettings::setUseScanInitialisation,
+                CircuitSettings::getUseScanInitialisation));
     }
 
     private static String getBaseRelativePath(File file) {
@@ -441,7 +449,8 @@ public class CircuitSettings extends AbstractModelSettings {
         setScanenData(config.getString(keyScanenData, defaultScanenData));
         setScanckData(config.getString(keyScanckData, defaultScanckData));
         setScantmData(config.getString(keyScantmData, defaultScantmData));
-        setIndividualScan(config.getBoolean(keyIndividualScan, defaultIndividualScan));
+        setUseIndividualScan(config.getBoolean(keyUseIndividualScan, defaultUseIndividualScan));
+        setUseScanInitialisation(config.getBoolean(keyUseScanInitialisation, defaultUseScanInitialisation));
     }
 
     @Override
@@ -482,7 +491,8 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyScanenData, getScanenData());
         config.set(keyScanckData, getScanckData());
         config.set(keyScantmData, getScantmData());
-        config.setBoolean(keyIndividualScan, getIndividualScan());
+        config.setBoolean(keyUseIndividualScan, getUseIndividualScan());
+        config.setBoolean(keyUseScanInitialisation, getUseScanInitialisation());
     }
 
     public static boolean getShowContacts() {
@@ -822,12 +832,20 @@ public class CircuitSettings extends AbstractModelSettings {
         return pair == null ? null : pair.getSecond();
     }
 
-    public static boolean getIndividualScan() {
-        return individualScan;
+    public static boolean getUseIndividualScan() {
+        return useIndividualScan;
     }
 
-    public static void setIndividualScan(boolean value) {
-        individualScan = value;
+    public static void setUseIndividualScan(boolean value) {
+        useIndividualScan = value;
+    }
+
+    public static boolean getUseScanInitialisation() {
+        return useScanInitialisation;
+    }
+
+    public static void setUseScanInitialisation(boolean value) {
+        useScanInitialisation = value;
     }
 
     private static void setGate2Data(String value, Consumer<String> setter, String msg, String defaultValue) {

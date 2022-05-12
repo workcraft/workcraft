@@ -4,7 +4,7 @@ Circuit analysis:
   Component count (mapped + unmapped) -  20 (20 + 0)
   Area of mapped components -  196.0 + 3*MUX2
   Driver pin count (combinational + sequential + undefined) -  20 (19 + 1 + 0)
-  Literal count combinational / sequential (set + reset) -  33 / 4 (2 + 2)
+  Literal count combinational / sequential (set + reset) -  42 / 4 (2 + 2)
   Port count (input + output) -  19 (11 + 8)
   Max fanin / fanout -  4 / 4
   Fanin distribution [0 / 1 / 2 ...] -  0 / 10 / 3 / 3 / 4

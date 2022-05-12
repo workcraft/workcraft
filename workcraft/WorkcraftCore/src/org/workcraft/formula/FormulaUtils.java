@@ -125,8 +125,8 @@ public class FormulaUtils {
         }
     }
 
-    public static BooleanFormula createMux(BooleanVariable aVar, BooleanVariable bVar, BooleanVariable sVar) {
-        return new Or(new And(aVar, sVar), new And(bVar, new Not(sVar)));
+    public static BooleanFormula createMux(BooleanFormula i0Var, BooleanFormula i1Var, BooleanFormula sVar) {
+        return new Or(new And(i0Var, new Not(sVar)), new And(i1Var, sVar));
     }
 
     public static BooleanFormula createMaj(BooleanFormula a, BooleanFormula b, BooleanFormula c) {

@@ -12,7 +12,8 @@ setConfigVar("CircuitSettings.scanoutData", "scanout / SO");
 setConfigVar("CircuitSettings.scanenData", "scanen / SE");
 setConfigVar("CircuitSettings.scanckData", "scanck / CK");
 setConfigVar("CircuitSettings.scantmData", "");
-setConfigVar("CircuitSettings.individualScan", "false");
+setConfigVar("CircuitSettings.useIndividualScan", "false");
+setConfigVar("CircuitSettings.useScanInitialisation", "false");
 
 insertCircuitTestableGates(work);
 insertCircuitScan(work);
