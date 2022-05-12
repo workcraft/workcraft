@@ -120,8 +120,11 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getScantmData()),
                 framework.getConfigVar(prefix + ".scantmData", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getIndividualScan()),
-                framework.getConfigVar(prefix + ".individualScan", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getUseIndividualScan()),
+                framework.getConfigVar(prefix + ".useIndividualScan", false));
+
+        Assertions.assertEquals(Config.toString(CircuitSettings.getUseScanInitialisation()),
+                framework.getConfigVar(prefix + ".useScanInitialisation", false));
     }
 
 }
