@@ -155,22 +155,20 @@ public class Config {
 
             if ("var".equals(element.getTagName())) {
                 set(element.getAttribute("name"), element.getAttribute("value"));
-            } else {
-                if ("group".equals(element.getTagName())) {
-                    String name = element.getAttribute("name");
-                    // FIXME: Skipping deprecated gui group (now split into window, toolbar, and recent)
-                    if ("gui".equals(name)) {
+            } else if ("group".equals(element.getTagName())) {
+                String name = element.getAttribute("name");
+                // FIXME: Skipping deprecated gui group (now split into window, toolbar, and recent)
+                if ("gui".equals(name)) {
+                    continue;
+                }
+                NodeList groupNodes = element.getChildNodes();
+                for (int j = 0; j < groupNodes.getLength(); j++) {
+                    if (!(groupNodes.item(j) instanceof Element)) {
                         continue;
                     }
-                    NodeList groupNodes = element.getChildNodes();
-                    for (int j = 0; j < groupNodes.getLength(); j++) {
-                        if (!(groupNodes.item(j) instanceof Element)) {
-                            continue;
-                        }
-                        Element e2 = (Element) groupNodes.item(j);
-                        if ("var".equals(e2.getTagName())) {
-                            set(name + "." + e2.getAttribute("name"), e2.getAttribute("value"));
-                        }
+                    Element childElement = (Element) groupNodes.item(j);
+                    if ("var".equals(childElement.getTagName())) {
+                        set(name + "." + childElement.getAttribute("name"), childElement.getAttribute("value"));
                     }
                 }
             }

@@ -62,9 +62,15 @@ public class Console {
         framework.init();
 
         // NOTE: Config needs to be loaded before scripts and saved on exit
-        if (!options.hasNoConfigFlag()) {
-            File configFile = framework.getFileByAbsoluteOrRelativePath(options.getConfig());
+        File configFile = framework.getFileByAbsoluteOrRelativePath(options.getConfig());
+        if (!options.hasNoConfigLoadFlag()) {
             framework.loadConfig(configFile);
+        }
+        File configAdditionFile = framework.getFileByAbsoluteOrRelativePath(options.getConfigAddition());
+        if (configAdditionFile != null) {
+            framework.loadConfig(configAdditionFile);
+        }
+        if (!options.hasNoConfigSaveFlag()) {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> framework.saveConfig(configFile)));
         }
 
