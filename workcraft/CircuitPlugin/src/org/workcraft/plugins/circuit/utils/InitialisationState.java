@@ -10,22 +10,35 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.utils.SortUtils;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class InitialisationState {
 
     private static final BooleanWorker WORKER = CleverBooleanWorker.getInstance();
 
+    private final Circuit circuit;
+    public final List<Contact> driverPorts = new ArrayList<>();
+    private final List<Contact> driverPins = new ArrayList<>();
     private final Set<MathNode> highSet = new HashSet<>();
     private final Set<MathNode> lowSet = new HashSet<>();
     private final Set<MathNode> conflictSet = new HashSet<>();
     private final Set<MathNode> problematicSet = new HashSet<>();
 
     public InitialisationState(Circuit circuit) {
+        this.circuit = circuit;
+        driverPorts.addAll(circuit.getInputPorts());
+        SortUtils.sortNatural(driverPorts, circuit::getNodeReference);
+
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (!component.getIsZeroDelay()) {
+                driverPins.addAll(component.getOutputs());
+            }
+        }
+        SortUtils.sortNatural(driverPins, circuit::getNodeReference);
+
         Queue<MathConnection> queue = new LinkedList<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver() && isForcedOrConstant(contact)) {
@@ -145,6 +158,56 @@ public class InitialisationState {
 
     public boolean isProblematicPin(Contact contact) {
         return isConflict(contact) || (!isLow(contact) && !isHigh(contact) && isProblematic(contact));
+    }
+
+    public String getContactReference(Contact contact) {
+        return circuit.getNodeReference(contact);
+    }
+
+    public int getDriverPortCount() {
+        return driverPorts.size();
+    }
+
+    public Contact getDriverPort(int index) {
+        return (index >= 0) && (index < driverPorts.size()) ? driverPorts.get(index) : null;
+    }
+
+    public Set<Contact> getForcedPorts() {
+        return driverPorts.stream()
+                .filter(Contact::getForcedInit)
+                .collect(Collectors.toSet());
+    }
+
+    public int getDriverPinCount() {
+        return driverPins.size();
+    }
+
+    public Contact getDriverPin(int index) {
+        return (index >= 0) && (index < driverPins.size()) ? driverPins.get(index) : null;
+    }
+
+    public Collection<Contact> getUninitialisedPins() {
+        Set<Contact> result = new HashSet<>(driverPins);
+        result.removeAll(conflictSet);
+        result.removeAll(highSet);
+        result.removeAll(lowSet);
+        return result;
+    }
+
+    public Set<Contact> getForcedPins() {
+        return driverPins.stream()
+                .filter(Contact::getForcedInit)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<Contact> getProblematicPins() {
+        Set<Contact> result = new HashSet<>(driverPins);
+        result.retainAll(problematicSet);
+        return result;
+    }
+
+    public boolean isRedundantForceInit(FunctionContact contact) {
+        return false;
     }
 
 }

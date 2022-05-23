@@ -1,15 +1,22 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.Toolbox;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.utils.DirectedGraphUtils;
-import org.workcraft.utils.Hierarchy;
+import org.workcraft.plugins.circuit.tools.CycleAnalyserTool;
+import org.workcraft.utils.*;
 
 import java.util.*;
 
 public final class CycleUtils {
+
+    private static final String VERIFICATION_RESULT_TITLE = "Verification result";
 
     private CycleUtils() {
     }
@@ -64,7 +71,7 @@ public final class CycleUtils {
         return result;
     }
 
-    private static Set<Contact> getPathBreakerDrivers(Circuit circuit) {
+    public static Set<Contact> getPathBreakerDrivers(Circuit circuit) {
         Set<Contact> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             for (Contact contact : component.getOutputs()) {
@@ -79,18 +86,6 @@ public final class CycleUtils {
     public static Set<Contact> getCycledDrivers(Circuit circuit) {
         Map<Contact, Set<Contact>> graph = buildGraph(circuit);
         return DirectedGraphUtils.findLoopedVertices(graph);
-    }
-
-    public static Set<FunctionComponent> getCycledComponents(Circuit circuit) {
-        Set<FunctionComponent> result = new HashSet<>();
-        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
-        for (Contact contact : DirectedGraphUtils.findLoopedVertices(graph)) {
-            Node parent = contact.getParent();
-            if (parent instanceof FunctionComponent) {
-                result.add((FunctionComponent) parent);
-            }
-        }
-        return result;
     }
 
     private static Map<Contact, Set<Contact>> buildGraph(Circuit circuit) {
@@ -142,6 +137,52 @@ public final class CycleUtils {
             }
         }
         return result;
+    }
+
+    public static Boolean checkCycleAbsence(Circuit circuit, boolean useAnalysisTool) {
+        if (!VerificationUtils.checkBlackboxComponents(circuit)) {
+            return null;
+        }
+
+        Set<Contact> pathBreakerPins = getPathBreakerDrivers(circuit);
+        List<String> pathBreakerPinRefs = ReferenceHelper.getReferenceList(circuit, pathBreakerPins);
+        String pathBreakerText = "\n\n" + PropertyHelper.BULLET_PREFIX + (pathBreakerPinRefs.isEmpty()
+                ? "No path breaker pins"
+                : TextUtils.wrapMessageWithItems("Path breaker pin", pathBreakerPinRefs));
+
+        List<String> cycleComponentRefs = new ArrayList<>();
+        Map<Contact, Set<Contact>> graph = buildGraph(circuit);
+        for (Contact contact : DirectedGraphUtils.findLoopedVertices(graph)) {
+            Node parent = contact.getParent();
+            if (parent instanceof FunctionComponent) {
+                String componentRef = circuit.getNodeReference(parent);
+                cycleComponentRefs.add(Identifier.truncateNamespaceSeparator(componentRef));
+            }
+        }
+
+        if (cycleComponentRefs.isEmpty()) {
+            DialogUtils.showInfo("Circuit is free of unbroken cycles."
+                    + pathBreakerText, VERIFICATION_RESULT_TITLE);
+
+            return true;
+        }
+
+        if (useAnalysisTool) {
+            Framework framework = Framework.getInstance();
+            if (framework.isInGuiMode()) {
+                Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
+                toolbox.selectTool(toolbox.getToolInstance(CycleAnalyserTool.class));
+            }
+        }
+
+        SortUtils.sortNatural(cycleComponentRefs);
+        String cycleComponentText = "\n\n" + PropertyHelper.BULLET_PREFIX
+                + TextUtils.wrapMessageWithItems("Cycle component", cycleComponentRefs);
+
+        DialogUtils.showError("Circuit has unbroken cycles."
+                + pathBreakerText + cycleComponentText, VERIFICATION_RESULT_TITLE);
+
+        return false;
     }
 
 }

@@ -9,6 +9,8 @@ import java.awt.*;
 
 public class FlatHeaderRenderer extends DefaultTableCellRenderer {
 
+    private final boolean tooltipLongText;
+
     private final JLabel label = new JLabel() {
         @Override
         public void paint(Graphics g) {
@@ -19,6 +21,11 @@ public class FlatHeaderRenderer extends DefaultTableCellRenderer {
     };
 
     public FlatHeaderRenderer() {
+        this(true);
+    }
+
+    public FlatHeaderRenderer(boolean tooltipLongText) {
+        this.tooltipLongText = tooltipLongText;
         label.setBorder(GuiUtils.getTableHeaderBorder());
         label.setHorizontalAlignment(CENTER);
         label.setFont(label.getFont().deriveFont(Font.BOLD));
@@ -35,9 +42,10 @@ public class FlatHeaderRenderer extends DefaultTableCellRenderer {
         }
 
         label.setText(value == null ? "" : value.toString());
-
-        boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, col);
-        label.setToolTipText(fits ? null : label.getText());
+        if (tooltipLongText) {
+            boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, col);
+            label.setToolTipText(fits ? null : label.getText());
+        }
         return label;
     }
 

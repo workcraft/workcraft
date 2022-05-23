@@ -3,9 +3,11 @@ package org.workcraft.plugins.circuit.tools;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
@@ -15,24 +17,33 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.InitialisationState;
 import org.workcraft.plugins.circuit.utils.ResetUtils;
+import org.workcraft.plugins.circuit.utils.StatsUtils;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Function;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> forcedTable = new BasicTable<>("Force init pins");
+    private static final String WARNING_SYMBOL = Character.toString((char) 0x26A0);
+    private static final String WARNING_PREFIX = WARNING_SYMBOL + " ";
+
     private InitialisationState initState = null;
+    private final PortTable portTable = new PortTable();
+    private final PinTable pinTable = new PinTable();
 
     @Override
     public JPanel getControlsPanel(final GraphEditor editor) {
@@ -46,9 +57,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel() {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
-                Pair.of(VisualCommonSettings.getFillColor(), "Unknown initial state"),
                 Pair.of(AnalysisDecorationSettings.getDontTouchColor(), "Don't touch zero delay"),
                 Pair.of(AnalysisDecorationSettings.getProblemColor(), "Problem of initialisation"),
+                Pair.of(VisualCommonSettings.getFillColor(), "Unknown initial state"),
                 Pair.of(AnalysisDecorationSettings.getFixerColor(), "Forced initial state"),
                 Pair.of(AnalysisDecorationSettings.getClearColor(), "Propagated initial state")
         ));
@@ -113,9 +124,15 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         JPanel controlPanel = new JPanel(new WrapLayout());
         controlPanel.add(buttonPanel);
 
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                new JScrollPane(portTable), new JScrollPane(pinTable));
+
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setResizeWeight(0.5);
+
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.add(controlPanel, BorderLayout.NORTH);
-        forcePanel.add(new JScrollPane(forcedTable), BorderLayout.CENTER);
+        forcePanel.add(splitPane, BorderLayout.CENTER);
         return forcePanel;
     }
 
@@ -193,7 +210,6 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
-        forcedTable.clear();
         initState = null;
     }
 
@@ -207,16 +223,9 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private void updateState(final GraphEditor editor) {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        List<String> forcedPins = new ArrayList<>();
-        for (FunctionContact contact : circuit.getFunctionContacts()) {
-            if (contact.isDriver() && contact.getForcedInit()) {
-                String pinRef = circuit.getNodeReference(contact);
-                forcedPins.add(pinRef);
-            }
-        }
-        Collections.sort(forcedPins);
-        forcedTable.set(forcedPins);
         initState = new InitialisationState(circuit);
+        portTable.refresh();
+        pinTable.refresh();
     }
 
     @Override
@@ -384,6 +393,198 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 return true;
             }
         };
+    }
+
+    private class PortTable extends JTable {
+
+        PortTable() {
+            setModel(new PortTableModel());
+            setFocusable(false);
+            setRowSelectionAllowed(false);
+            setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
+            setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+            getTableHeader().setDefaultRenderer(new FlatHeaderRenderer(false));
+            getTableHeader().setReorderingAllowed(false);
+            setDefaultRenderer(Object.class, new PortTableCellRenderer());
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Contact contact = initState.getDriverPort(getSelectedRow());
+                    if (contact != null) {
+                        contact.setForcedInit(!contact.getForcedInit());
+                    }
+                }
+            });
+        }
+
+        public void refresh() {
+            int forcedPortCount = initState.getForcedPorts().size();
+            int uninitialisedPortCount = initState.getDriverPortCount() - forcedPortCount;
+
+            String header = StatsUtils.getHtmlStatsHeader("Input port assumptions",
+                    null, uninitialisedPortCount, forcedPortCount, null);
+
+            GuiUtils.setColumnHeader(this, 0, header);
+
+            Color color = uninitialisedPortCount > 0 ? GuiUtils.getTableHeaderBackgroundColor()
+                    : forcedPortCount > 0 ? AnalysisDecorationSettings.getFixerColor()
+                    : GuiUtils.getTableHeaderBackgroundColor();
+
+            getTableHeader().setBackground(color);
+            GuiUtils.refreshTable(this);
+        }
+    }
+
+    private class PortTableCellRenderer implements TableCellRenderer {
+
+        private final JLabel label = new JLabel() {
+            @Override
+            public void paint(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paint(g);
+            }
+        };
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int col) {
+
+            JLabel result = null;
+            if (value instanceof Contact) {
+                Contact contact = (Contact) value;
+                String ref = initState.getContactReference(contact);
+                label.setText(ref);
+
+                Color color = contact.getForcedInit() ? AnalysisDecorationSettings.getFixerColor() : null;
+                label.setBackground(ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), color));
+
+                boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, col);
+                label.setToolTipText(fits ? null : label.getText());
+                label.setBorder(GuiUtils.getTableCellBorder());
+                result = label;
+            }
+            return result;
+        }
+    }
+
+    private class PortTableModel extends AbstractTableModel {
+        @Override
+        public int getColumnCount() {
+            return 1;
+        }
+
+        @Override
+        public int getRowCount() {
+            return initState.getDriverPortCount();
+        }
+
+        @Override
+        public Object getValueAt(int row, int column) {
+            return initState.getDriverPort(row);
+        }
+    }
+
+    private class PinTable extends JTable {
+
+        PinTable() {
+            setModel(new PinTableModel());
+            setFocusable(false);
+            setRowSelectionAllowed(false);
+            setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
+            setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+            getTableHeader().setReorderingAllowed(false);
+            getTableHeader().setDefaultRenderer(new FlatHeaderRenderer(false));
+            setDefaultRenderer(Object.class, new PinTableCellRenderer());
+            GuiUtils.setColumnWidth(this, 1, 30);
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Contact contact = initState.getDriverPin(getSelectedRow());
+                    if (contact != null) {
+                        contact.setForcedInit(!contact.getForcedInit());
+                    }
+                }
+            });
+        }
+
+        public void refresh() {
+            int problematicPinCount = initState.getProblematicPins().size();
+            int uninitialisedPinCount = initState.getUninitialisedPins().size();
+            int forcedPinCount = initState.getForcedPins().size();
+            int clearPinCount = initState.getDriverPinCount() - uninitialisedPinCount;
+
+            String header = StatsUtils.getHtmlStatsHeader("Driver pins",
+                    problematicPinCount, uninitialisedPinCount, forcedPinCount, clearPinCount);
+
+            GuiUtils.setColumnHeader(this, 0, header);
+
+            final Color color = problematicPinCount > 0 ? AnalysisDecorationSettings.getProblemColor()
+                    : uninitialisedPinCount > 0 ? GuiUtils.getTableHeaderBackgroundColor()
+                    : forcedPinCount > 0 ? AnalysisDecorationSettings.getFixerColor()
+                    : clearPinCount > 0 ? AnalysisDecorationSettings.getClearColor()
+                    : GuiUtils.getTableHeaderBackgroundColor();
+
+            getTableHeader().setBackground(color);
+            GuiUtils.refreshTable(this);
+        }
+    }
+
+    private class PinTableCellRenderer implements TableCellRenderer {
+
+        private final JLabel label = new JLabel() {
+            @Override
+            public void paint(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paint(g);
+            }
+        };
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int col) {
+
+            JLabel result = null;
+            if (value instanceof FunctionContact) {
+                FunctionContact contact = (FunctionContact) value;
+                String ref = initState.getContactReference(contact);
+                String text = initState.isRedundantForceInit(contact) ? WARNING_PREFIX + ref : ref;
+                label.setText(text);
+
+                Color color = initState.isProblematicPin(contact) ? AnalysisDecorationSettings.getProblemColor()
+                        : !initState.isInitialisedPin(contact) ? VisualCommonSettings.getFillColor()
+                        : contact.isForcedDriver() ? AnalysisDecorationSettings.getFixerColor()
+                        : initState.isInitialisedPin(contact) ? AnalysisDecorationSettings.getClearColor()
+                        : null;
+
+                label.setBackground(ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), color));
+
+                boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, col);
+                label.setToolTipText(fits ? null : label.getText());
+                label.setBorder(GuiUtils.getTableCellBorder());
+                result = label;
+            }
+            return result;
+        }
+    }
+
+    private class PinTableModel extends AbstractTableModel {
+        @Override
+        public int getColumnCount() {
+            return 1;
+        }
+
+        @Override
+        public int getRowCount() {
+            return initState.getDriverPinCount();
+        }
+
+        @Override
+        public Object getValueAt(int row, int col) {
+            return initState.getDriverPin(row);
+        }
     }
 
 }
