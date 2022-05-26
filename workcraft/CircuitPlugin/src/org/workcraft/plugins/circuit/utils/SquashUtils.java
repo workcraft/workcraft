@@ -2,15 +2,16 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.circuit.*;
-import org.workcraft.types.Pair;
+import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.VisualFunctionContact;
+import org.workcraft.utils.LogUtils;
 
 import java.awt.geom.Point2D;
 import java.util.HashMap;
@@ -18,6 +19,28 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class SquashUtils {
+
+    public static boolean checkInterfaceConsistency(VisualCircuit circuit, VisualFunctionComponent component,
+            VisualCircuit componentModel) {
+
+        boolean result = true;
+        String componentRef = Identifier.truncateNamespaceSeparator(circuit.getMathReference(component));
+        if (RefinementUtils.isInconsistentSignalNames(component.getReferencedComponent(), componentModel.getMathModel())) {
+            result = false;
+            LogUtils.logWarning("Inconsistent interface signals for component '" + componentRef
+                    + "' and its circuit implementation");
+        }
+
+        Map<String, Boolean> componentState = RefinementUtils.getComponentInterfaceInitialState(
+                circuit.getMathModel(), component.getReferencedComponent());
+        Map<String, Boolean> modelState = RefinementUtils.getInterfaceInitialState(componentModel.getMathModel());
+        if (RefinementUtils.isInconsistentInitialStates(componentState, modelState)) {
+            result = false;
+            LogUtils.logWarning("Inconsistent initial state for component '" + componentRef
+                    + "' and its circuit implementation");
+        }
+        return result;
+    }
 
     public static void squashComponent(VisualCircuit circuit, VisualFunctionComponent component, VisualCircuit componentModel) {
         String pageName = circuit.getMathName(component);
@@ -36,30 +59,6 @@ public class SquashUtils {
             mergeConnections(circuit, pin, port);
         }
         circuit.remove(component);
-    }
-
-    public static void inheritInitialState(VisualCircuit circuit, VisualFunctionComponent component,
-            VisualCircuit componentModel) {
-
-        inheritInitialState(circuit.getMathModel(), component.getReferencedComponent(), componentModel.getMathModel());
-    }
-
-    public static void inheritInitialState(Circuit circuit, FunctionComponent component, Circuit componentModel) {
-        for (FunctionContact pin : component.getFunctionContacts()) {
-            String pinName = pin.getName();
-            MathNode node = componentModel.getNodeByReference(pinName);
-            if (node instanceof Contact) {
-                Contact port = (Contact) node;
-                Pair<Contact, Boolean> portDriverPair = CircuitUtils.findDriverAndInversionSkipZeroDelay(componentModel, port);
-                Pair<Contact, Boolean> pinDriverPair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, pin);
-                if ((pinDriverPair != null) && (portDriverPair != null)) {
-                    Contact portDriver = portDriverPair.getFirst();
-                    Contact pinDriver = pinDriverPair.getFirst();
-                    boolean inversion = pinDriverPair.getSecond() ^ portDriverPair.getSecond();
-                    portDriver.setInitToOne(pinDriver.getInitToOne() ^ inversion);
-                }
-            }
-        }
     }
 
     private static void mergeConnections(VisualCircuit circuit, VisualFunctionContact pin, VisualFunctionContact port) {

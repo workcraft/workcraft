@@ -9,6 +9,8 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.refinement.ComponentInterface;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
@@ -136,9 +138,7 @@ public final class RefinementUtils {
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             Pair<File, Circuit> refinementCircuit = getRefinementCircuit(component);
             if (refinementCircuit != null) {
-                ComponentInterface refinementCircuitInterface = getModelInterface(refinementCircuit.getSecond());
-                ComponentInterface componentInterface = getComponentInterface(component);
-                if (!isCompatible(componentInterface, refinementCircuitInterface)) {
+                if (isInconsistentSignalNames(component, refinementCircuit.getSecond())) {
                     result.add(component);
                 }
             }
@@ -147,7 +147,7 @@ public final class RefinementUtils {
     }
 
     public static ComponentInterface getComponentInterface(CircuitComponent component) {
-        return component == null ? null : new ComponentInterface(component.getModule(),
+        return component == null ? null : new ComponentInterface(
                 CircuitUtils.getInputPinNames(component), CircuitUtils.getOutputPinNames(component));
     }
 
@@ -156,7 +156,7 @@ public final class RefinementUtils {
     }
 
     public static ComponentInterface getModelInterface(MathModel model) {
-        return new ComponentInterface(model.getTitle(), getInputSignals(model), getOutputSignals(model));
+        return new ComponentInterface(getInputSignals(model), getOutputSignals(model));
     }
 
     public static Set<String> getInputSignals(MathModel model) {
@@ -179,24 +179,107 @@ public final class RefinementUtils {
         return null;
     }
 
-    public static boolean isCompatible(ComponentInterface ci1, ComponentInterface ci2) {
-        return (ci1 != null) && (ci2 != null)
-                && isCompatibleName(ci1.getName(), ci2.getName())
-                && isCompatibleSignals(ci1, ci2);
+    public static boolean isInconsistentSignalNames(Stg stg, ModelEntry refinementModelEntry) {
+        ComponentInterface stgInterface = RefinementUtils.getModelInterface(stg);
+        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementModelEntry);
+        return isInconsistentSignalNames(stgInterface, refinementInterface);
     }
 
-    public static boolean isCompatibleName(String aName, String bName) {
-        return (aName != null) && aName.equals(bName);
+    public static boolean isInconsistentSignalNames(CircuitComponent component, ModelEntry refinementModelEntry) {
+        ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component);
+        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementModelEntry);
+        return isInconsistentSignalNames(componentInterface, refinementInterface);
     }
 
-    public static boolean isCompatibleSignals(ComponentInterface ci1, ComponentInterface ci2) {
-        return (ci1 != null) && (ci2 != null)
-                && isCompatibleSignals(ci1.getInputs(), ci2.getInputs())
-                && isCompatibleSignals(ci1.getOutputs(), ci2.getOutputs());
+    public static boolean isInconsistentSignalNames(CircuitComponent component, Circuit refinementCircuit) {
+        ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component);
+        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementCircuit);
+        return isInconsistentSignalNames(componentInterface, refinementInterface);
     }
 
-    public static boolean isCompatibleSignals(Set<String> aSignals, Set<String> bSignals) {
-        return (aSignals != null)  && aSignals.equals(bSignals);
+    public static boolean isInconsistentSignalNames(ComponentInterface ci1, ComponentInterface ci2) {
+        return (ci1 == null) || (ci2 == null)
+                || isInconsistentSignalNames(ci1.getInputs(), ci2.getInputs())
+                || isInconsistentSignalNames(ci1.getOutputs(), ci2.getOutputs());
+    }
+
+    private static boolean isInconsistentSignalNames(Set<String> aSignals, Set<String> bSignals) {
+        return (aSignals == null) || !aSignals.equals(bSignals);
+    }
+
+    public static Map<String, Boolean> getInterfaceInitialState(ModelEntry me) {
+        return me == null ? null : getInterfaceInitialState(me.getMathModel());
+    }
+
+    public static Map<String, Boolean> getInterfaceInitialState(MathModel model) {
+        Map<String, Boolean> result = new HashMap<>();
+        if (model instanceof Stg) {
+            result.putAll(getInterfaceInitialState((Stg) model));
+        }
+        if (model instanceof Circuit) {
+            result.putAll(getInterfaceInitialState((Circuit) model));
+        }
+        return result;
+    }
+
+    public static Map<String, Boolean> getInterfaceInitialState(StgModel stg) {
+        Map<String, Boolean> result = new HashMap<>();
+        Map<String, Boolean> initialState = StgUtils.getInitialState(stg, 1000);
+        Set<String> interfaceSignals = new HashSet<>();
+        interfaceSignals.addAll(stg.getSignalReferences(Signal.Type.INPUT));
+        interfaceSignals.addAll(stg.getSignalReferences(Signal.Type.OUTPUT));
+        for (String signal : interfaceSignals) {
+            if (initialState.containsKey(signal)) {
+                result.put(signal, initialState.get(signal));
+            }
+        }
+        return result;
+    }
+
+    public static Map<String, Boolean> getInterfaceInitialState(Circuit circuit) {
+        Map<String, Boolean> result = new HashMap<>();
+        Set<Contact> ports = new HashSet<>();
+        ports.addAll(circuit.getInputPorts());
+        ports.addAll(circuit.getOutputPorts());
+        for (Contact port : ports) {
+            result.put(circuit.getNodeReference(port), port.getInitToOne());
+        }
+        return result;
+    }
+
+    public static Map<String, Boolean> getComponentInterfaceInitialState(Circuit circuit, CircuitComponent component) {
+        Map<String, Boolean> result = new HashMap<>();
+        Set<Contact> pins = new HashSet<>();
+        pins.addAll(component.getInputs());
+        pins.addAll(component.getOutputs());
+        for (Contact pin : pins) {
+            Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, pin);
+            if (pair != null) {
+                Contact driver = pair.getFirst();
+                Boolean inversion = pair.getSecond();
+                result.put(pin.getName(), driver.getInitToOne() != inversion);
+            }
+        }
+        return result;
+    }
+
+    public static boolean isInconsistentInitialStates(Map<String, Boolean> is1, Map<String, Boolean> is2) {
+        Set<String> signals = new HashSet<>();
+        signals.addAll(is1.keySet());
+        signals.retainAll(is2.keySet());
+        return !signals.stream().allMatch(signal -> is1.get(signal) == is2.get(signal));
+    }
+
+    public static boolean isInconsistentModelTitle(Stg stg, ModelEntry refinementModelEntry) {
+        return isInconsistentModelTitle(stg.getTitle(), refinementModelEntry.getModel().getTitle());
+    }
+
+    public static boolean isInconsistentModelTitle(CircuitComponent component, ModelEntry refinementModelEntry) {
+        return isInconsistentModelTitle(component.getModule(), refinementModelEntry.getModel().getTitle());
+    }
+
+    public static boolean isInconsistentModelTitle(String aTitle, String bTitle) {
+        return (aTitle == null) || !aTitle.equals(bTitle);
     }
 
     public static void updateInterface(VisualCircuit circuit, Set<File> changedRefinementFiles) {

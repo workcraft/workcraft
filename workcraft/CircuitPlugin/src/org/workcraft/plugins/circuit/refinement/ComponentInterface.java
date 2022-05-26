@@ -6,18 +6,12 @@ import java.util.Set;
 
 public class ComponentInterface {
 
-    private final String name;
     private final Set<String> inputs;
     private final Set<String> outputs;
 
-    public ComponentInterface(String name, Set<String> inputs, Set<String> outputs) {
-        this.name = name;
+    public ComponentInterface(Set<String> inputs, Set<String> outputs) {
         this.inputs = inputs;
         this.outputs = outputs;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Set<String> getInputs() {

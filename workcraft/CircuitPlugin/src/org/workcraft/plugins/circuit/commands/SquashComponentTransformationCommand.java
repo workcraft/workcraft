@@ -44,7 +44,7 @@ public class SquashComponentTransformationCommand extends AbstractComponentTrans
             try {
                 ModelEntry me = WorkUtils.loadModel(refinementCircuit.getFirst());
                 VisualCircuit componentModel = WorkspaceUtils.getAs(me, VisualCircuit.class);
-                SquashUtils.inheritInitialState(circuit, component, componentModel);
+                SquashUtils.checkInterfaceConsistency(circuit, component, componentModel);
                 SquashUtils.squashComponent(circuit, component, componentModel);
             } catch (DeserialisationException e) {
                 throw new RuntimeException(e);
