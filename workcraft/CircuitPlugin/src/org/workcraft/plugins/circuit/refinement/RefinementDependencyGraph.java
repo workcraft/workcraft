@@ -19,6 +19,8 @@ import java.util.stream.Collectors;
 
 public class RefinementDependencyGraph {
 
+    private static final String COMPOSITE_LABEL_SEPARATOR = ":";
+
     private final Map<File, Map<String, File>> detailedDependencyGraph = new HashMap<>();
     private final Map<File, ModelEntry> fileToModelMap = new HashMap<>();
 
@@ -55,14 +57,14 @@ public class RefinementDependencyGraph {
             Stg stg = WorkspaceUtils.getAs(me, Stg.class);
             File refinementFile = stg.getRefinementFile();
             if (refinementFile != null) {
-                String label = getInstanceLabel();
+                String label = createEmptyLabel();
                 result.put(label, refinementFile);
             }
         }
         if (WorkspaceUtils.isApplicable(me, Circuit.class)) {
             Circuit circuit = WorkspaceUtils.getAs(me, Circuit.class);
             for (FunctionComponent component : circuit.getFunctionComponents()) {
-                String label = getInstanceLabel(circuit, component);
+                String label = createCompositeLabel(circuit, component);
                 File refinementFile = component.getRefinementFile();
                 result.put(label, refinementFile);
             }
@@ -70,14 +72,24 @@ public class RefinementDependencyGraph {
         return result;
     }
 
-    public String getInstanceLabel() {
+    public static String createEmptyLabel() {
         return "";
     }
 
-    public String getInstanceLabel(Circuit circuit, FunctionComponent component) {
+    public static String createCompositeLabel(Circuit circuit, FunctionComponent component) {
         return Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component))
-                + ":" + component.getModule();
+                + COMPOSITE_LABEL_SEPARATOR + component.getModule();
     }
+
+    public static boolean isCompositeLabel(String label) {
+        return (label != null) && label.contains(COMPOSITE_LABEL_SEPARATOR);
+    }
+
+    public static String getCompositeLabelPrefix(String compositeLabel) {
+        int i = compositeLabel.indexOf(COMPOSITE_LABEL_SEPARATOR);
+        return i < 0 ? compositeLabel : compositeLabel.substring(0, i);
+    }
+
 
     public Set<File> getVertices() {
         return detailedDependencyGraph.keySet();

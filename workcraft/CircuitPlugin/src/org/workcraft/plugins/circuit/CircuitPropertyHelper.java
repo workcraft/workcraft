@@ -101,7 +101,7 @@ public class CircuitPropertyHelper {
 
         String refinementTitle = refinementModel.getTitle();
         String componentLabel = component.getLabel();
-        if (!RefinementUtils.isCompatibleName(refinementTitle, componentLabel)) {
+        if (RefinementUtils.isInconsistentModelTitle(componentLabel, refinementTitle)) {
             int answer = DialogUtils.showYesNoCancel(
                     "Refinement title does not match component label."
                             + "\n" + getBulletPair("Refinement title", refinementTitle)
@@ -117,9 +117,9 @@ public class CircuitPropertyHelper {
             }
         }
 
-        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementModel);
         ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component.getReferencedComponent());
-        if (!RefinementUtils.isCompatibleSignals(refinementInterface, componentInterface)) {
+        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementModel);
+        if (!RefinementUtils.isInconsistentSignalNames(componentInterface, refinementInterface)) {
             Set<String> missingPins = componentInterface.getMissingSignals(refinementInterface);
             Set<String> extraPins = componentInterface.getExtraSignals(refinementInterface);
             Set<String> mismatchPins = componentInterface.getMismatchSignals(refinementInterface);

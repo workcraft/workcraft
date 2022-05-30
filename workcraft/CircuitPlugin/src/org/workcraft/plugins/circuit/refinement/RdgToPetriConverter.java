@@ -60,7 +60,7 @@ public class RdgToPetriConverter {
                 if (toVertex != null) {
                     VisualTransition toTransition = getVertexTransition(toVertex);
                     connectIfPossible(petri, throughPlace, toTransition);
-                } else if (ref.contains(":")) {
+                } else if (RefinementDependencyGraph.isCompositeLabel(ref)) {
                     throughPlace.setFillColor(AnalysisDecorationSettings.getDontTouchColor());
                 }
 
@@ -136,12 +136,12 @@ public class RdgToPetriConverter {
         }
     }
 
-    public void highlightInstances(Map<File, Set<String>> vertices, Color color) {
-        if ((vertices == null) || vertices.isEmpty()) {
+    public void highlightInstances(Map<File, Set<String>> vertexToLabelsMap, Color color) {
+        if ((vertexToLabelsMap == null) || vertexToLabelsMap.isEmpty()) {
             return;
         }
-        for (File vertex : vertices.keySet()) {
-            Set<String> labels = vertices.get(vertex);
+        for (File vertex : vertexToLabelsMap.keySet()) {
+            Set<String> labels = vertexToLabelsMap.get(vertex);
             VisualPage page = getVertexPage(vertex);
             if (page != null) {
                 for (VisualPlace place : getVertexPlaces(vertex)) {
