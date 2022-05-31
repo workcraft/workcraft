@@ -89,11 +89,11 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getResetActiveLowPort()),
                 framework.getConfigVar(prefix + ".resetActiveLowPort", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getSetPin()),
-                framework.getConfigVar(prefix + ".setPin", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getInitLowMappingRules()),
+                framework.getConfigVar(prefix + ".initLowMappingRules", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getClearPin()),
-                framework.getConfigVar(prefix + ".clearPin", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getInitHighMappingRules()),
+                framework.getConfigVar(prefix + ".initHighMappingRules", false));
 
         // Scan
         Assertions.assertEquals(Config.toString(CircuitSettings.getTbufData()),
