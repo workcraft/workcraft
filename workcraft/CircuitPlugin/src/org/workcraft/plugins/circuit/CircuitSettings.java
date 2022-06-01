@@ -6,6 +6,7 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.builtin.settings.AbstractModelSettings;
 import org.workcraft.plugins.circuit.genlib.GateInterface;
+import org.workcraft.plugins.circuit.utils.InitMappingRules;
 import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
@@ -85,8 +86,8 @@ public class CircuitSettings extends AbstractModelSettings {
     // Reset
     private static final String keyResetActiveHighPort = prefix + ".resetActiveHighPort";
     private static final String keyResetActiveLowPort = prefix + ".resetActiveLowPort";
-    private static final String keySetPin = prefix + ".setPin";
-    private static final String keyClearPin = prefix + ".clearPin";
+    private static final String keyInitLowMappingRules = prefix + ".initLowMappingRules";
+    private static final String keyInitHighMappingRules = prefix + ".initHighMappingRules";
     // Scan
     private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyTinvData = prefix + ".tinvData";
@@ -127,8 +128,8 @@ public class CircuitSettings extends AbstractModelSettings {
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
     private static final String defaultResetActiveLowPort = "rst_n";
-    private static final String defaultSetPin = "S";
-    private static final String defaultClearPin = "R";
+    private static final String defaultInitLowMappingRules = "C2->C2R(R), NC2->NC2R(R)";
+    private static final String defaultInitHighMappingRules = "C2->C2S(S), NC2->NC2S(S)";
     // Scan
     private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultTinvData = "TINV (I, ON)";
@@ -169,8 +170,8 @@ public class CircuitSettings extends AbstractModelSettings {
     // Reset
     private static String resetActiveHighPort = defaultResetActiveHighPort;
     private static String resetActiveLowPort = defaultResetActiveLowPort;
-    private static String setPin = defaultSetPin;
-    private static String clearPin = defaultClearPin;
+    private static String initLowMappingRules = defaultInitLowMappingRules;
+    private static String initHighMappingRules = defaultInitHighMappingRules;
     // Scan
     private static String tbufData = defaultTbufData;
     private static String tinvData = defaultTinvData;
@@ -223,6 +224,8 @@ public class CircuitSettings extends AbstractModelSettings {
                 "Simplify generated circuit STG",
                 CircuitSettings::setSimplifyStg,
                 CircuitSettings::getSimplifyStg));
+
+        properties.add(PropertyHelper.createSeparatorProperty("Gates and arbitration primitives"));
 
         properties.add(new PropertyDeclaration<>(File.class,
                 GATE_LIBRARY_TITLE,
@@ -323,14 +326,14 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getResetActiveLowPort));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "SET pin name",
-                CircuitSettings::setSetPin,
-                CircuitSettings::getSetPin));
+                PropertyHelper.BULLET_PREFIX + "Rules for init-low gates as comma-separated list of original_gate->replacement_gate(init_pin)",
+                CircuitSettings::setInitLowMappingRules,
+                CircuitSettings::getInitLowMappingRules));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "CLEAR pin name",
-                CircuitSettings::setClearPin,
-                CircuitSettings::getClearPin));
+                PropertyHelper.BULLET_PREFIX + "Rules for init-high gates as comma-separated list of original_gate->replacement_gate(init_pin)",
+                CircuitSettings::setInitHighMappingRules,
+                CircuitSettings::getInitHighMappingRules));
 
         properties.add(PropertyHelper.createSeparatorProperty("Loop breaking and scan insertion"));
 
@@ -438,8 +441,8 @@ public class CircuitSettings extends AbstractModelSettings {
         // Reset
         setResetActiveHighPort(config.getString(keyResetActiveHighPort, defaultResetActiveHighPort));
         setResetActiveLowPort(config.getString(keyResetActiveLowPort, defaultResetActiveLowPort));
-        setSetPin(config.getString(keySetPin, defaultSetPin));
-        setClearPin(config.getString(keyClearPin, defaultClearPin));
+        setInitLowMappingRules(config.getString(keyInitLowMappingRules, defaultInitLowMappingRules));
+        setInitHighMappingRules(config.getString(keyInitHighMappingRules, defaultInitHighMappingRules));
         // Scan
         setTbufData(config.getString(keyTbufData, defaultTbufData));
         setTinvData(config.getString(keyTinvData, defaultTinvData));
@@ -480,8 +483,8 @@ public class CircuitSettings extends AbstractModelSettings {
         // Reset
         config.set(keyResetActiveHighPort, getResetActiveHighPort());
         config.set(keyResetActiveLowPort, getResetActiveLowPort());
-        config.set(keySetPin, getSetPin());
-        config.set(keyClearPin, getClearPin());
+        config.set(keyInitLowMappingRules, getInitLowMappingRules());
+        config.set(keyInitHighMappingRules, getInitHighMappingRules());
         // Scan
         config.set(keyTbufData, getTbufData());
         config.set(keyTinvData, getTinvData());
@@ -694,20 +697,27 @@ public class CircuitSettings extends AbstractModelSettings {
         resetActiveLowPort = value;
     }
 
-    public static String getSetPin() {
-        return setPin;
+    public static String getInitLowMappingRules() {
+        return initLowMappingRules;
     }
 
-    public static void setSetPin(String value) {
-        setPin = value;
+    public static void setInitLowMappingRules(String value) {
+        initLowMappingRules = InitMappingRules.sanitise(value);
     }
 
-    public static String getClearPin() {
-        return clearPin;
+    public static Pair<String, String> getInitLowGatePinPair(String moduleName) {
+        return InitMappingRules.parse(getInitLowMappingRules()).get(moduleName);
+    }
+    public static String getInitHighMappingRules() {
+        return initHighMappingRules;
     }
 
-    public static void setClearPin(String value) {
-        clearPin = value;
+    public static void setInitHighMappingRules(String value) {
+        initHighMappingRules = InitMappingRules.sanitise(value);
+    }
+
+    public static Pair<String, String> getInitHighGatePinPair(String moduleName) {
+        return InitMappingRules.parse(getInitHighMappingRules()).get(moduleName);
     }
 
     public static String getTbufData() {
