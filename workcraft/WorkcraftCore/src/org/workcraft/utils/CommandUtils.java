@@ -12,7 +12,9 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.function.Function;
 
 public class CommandUtils {
@@ -55,9 +57,7 @@ public class CommandUtils {
         for (Command command: commands) {
             sections.add(command.getSection());
         }
-        LinkedList<String> sortedSections = new LinkedList<>(sections);
-        Collections.sort(sortedSections);
-        return sortedSections;
+        return SortUtils.getSortedNatural(sections);
     }
 
     public static List<Command> getSectionCommands(String section, List<Command> commands) {

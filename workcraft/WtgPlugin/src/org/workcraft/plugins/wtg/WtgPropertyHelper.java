@@ -34,15 +34,13 @@ public class WtgPropertyHelper {
         Wtg mathWtg = visualWtg.getMathModel();
         if (SignalCommonSettings.getGroupByType()) {
             for (Signal.Type type : Signal.Type.values()) {
-                List<String> signalNames = new LinkedList<>(mathWtg.getSignalNames(type));
-                SortUtils.sortNatural(signalNames);
+                List<String> signalNames = SortUtils.getSortedNatural(mathWtg.getSignalNames(type));
                 for (final String signalName : signalNames) {
                     result.add(getSignalProperty(visualWtg, signalName));
                 }
             }
         } else {
-            List<String> signalNames = new LinkedList<>(mathWtg.getSignalNames());
-            SortUtils.sortNatural(signalNames);
+            List<String> signalNames = SortUtils.getSortedNatural(mathWtg.getSignalNames());
             for (final String signalName : signalNames) {
                 result.add(getSignalProperty(visualWtg, signalName));
             }
@@ -83,8 +81,7 @@ public class WtgPropertyHelper {
 
     public static Collection<PropertyDescriptor> getSignalDeclarationProperties(VisualWtg visualWtg, VisualWaveform waveform) {
         Collection<PropertyDescriptor> result = new ArrayList<>();
-        List<String> signalNames = new LinkedList<>(visualWtg.getMathModel().getSignalNames());
-        SortUtils.sortNatural(signalNames);
+        List<String> signalNames = SortUtils.getSortedNatural(visualWtg.getMathModel().getSignalNames());
         for (String signalName : signalNames) {
             result.add(getSignalDeclarationProperty(visualWtg, waveform, signalName));
         }

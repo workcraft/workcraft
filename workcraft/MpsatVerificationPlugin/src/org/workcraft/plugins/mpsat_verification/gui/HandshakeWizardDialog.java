@@ -146,13 +146,11 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
         Stg stg = getUserData().getStg();
 
-        List<String> inputSignals = new ArrayList<>(stg.getSignalReferences(Signal.Type.INPUT));
-        SortUtils.sortNatural(inputSignals);
+        List<String> inputSignals = SortUtils.getSortedNatural(stg.getSignalReferences(Signal.Type.INPUT));
         inputList = new SignalList(inputSignals, SignalCommonSettings.getInputColor());
         inputList.addListSelectionListener(l -> updateOkEnableness());
 
-        List<String> outputSignals = new ArrayList<>(stg.getSignalReferences(Signal.Type.OUTPUT));
-        SortUtils.sortNatural(outputSignals);
+        List<String> outputSignals = SortUtils.getSortedNatural(stg.getSignalReferences(Signal.Type.OUTPUT));
         outputList = new SignalList(outputSignals, SignalCommonSettings.getOutputColor());
         outputList.addListSelectionListener(l -> updateOkEnableness());
 
