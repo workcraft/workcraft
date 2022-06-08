@@ -1,8 +1,16 @@
 package org.workcraft.utils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class SortUtils {
+
+    public static List<String> getSortedNatural(Collection<String> collection) {
+        List<String> list = new ArrayList<>(collection);
+        SortUtils.sortNatural(list);
+        return list;
+    }
 
     public static void sortNatural(List<String> list) {
         list.sort(SortUtils::compareNatural);

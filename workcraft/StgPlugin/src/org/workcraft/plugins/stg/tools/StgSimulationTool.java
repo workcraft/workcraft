@@ -525,8 +525,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         HashMap<String, SignalData> newStateMap = new HashMap<>();
         List<String> allSignals = new LinkedList<>();
         for (Signal.Type type : Signal.Type.values()) {
-            List<String> typedSignals = new LinkedList<>(stg.getSignalReferences(type));
-            SortUtils.sortNatural(typedSignals);
+            List<String> typedSignals = SortUtils.getSortedNatural(stg.getSignalReferences(type));
             allSignals.addAll(typedSignals);
             for (String signal : typedSignals) {
                 SignalData signalData = signalDataMap.getOrDefault(signal, new SignalData(signal, type));

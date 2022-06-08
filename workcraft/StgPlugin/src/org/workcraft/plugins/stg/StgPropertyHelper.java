@@ -56,8 +56,7 @@ public class StgPropertyHelper {
         Container container = NamespaceHelper.getMathContainer(visualStg, visualStg.getCurrentLevel());
         if (SignalCommonSettings.getGroupByType()) {
             for (Signal.Type type : Signal.Type.values()) {
-                java.util.List<String> signalNames = new ArrayList<>(stg.getSignalNames(type, container));
-                SortUtils.sortNatural(signalNames);
+                List<String> signalNames = SortUtils.getSortedNatural(stg.getSignalNames(type, container));
                 for (final String signalName : signalNames) {
                     if (!stg.getSignalTransitions(signalName, container).isEmpty()) {
                         result.add(getSignalProperty(visualStg, signalName, container));
@@ -65,8 +64,7 @@ public class StgPropertyHelper {
                 }
             }
         } else {
-            List<String> signalNames = new ArrayList<>(stg.getSignalNames(container));
-            SortUtils.sortNatural(signalNames);
+            List<String> signalNames = SortUtils.getSortedNatural(stg.getSignalNames(container));
             for (final String signalName : signalNames) {
                 if (!stg.getSignalTransitions(signalName, container).isEmpty()) {
                     result.add(getSignalProperty(visualStg, signalName, container));
