@@ -94,7 +94,16 @@ indentation. Therefore Eclipse settings need to be modified as follows:
 
 ### Common issues
 
-Note: If Gradle complains about a missing `JAVA_HOME` env var even though it
-is set properly, the following may help in Debian-like systems:
+  * If a wrong version of Java is used by Gradle, check what JRE/JDK 
+  installations are available and which one is actually picked:
 
-    sudo ln -s /usr/lib/jvm/your-jdk /usr/lib/jvm/default-java
+        ./gradlew javaToolchains
+
+  * If Gradle complains about a missing `JAVA_HOME` environment variable even
+  though it is set properly, the following may help in Debian-like systems:
+
+        sudo ln -s /usr/lib/jvm/your-jdk /usr/lib/jvm/default-java
+
+  * If you hit disk quota for the home directory due to Gradle using too
+  much space, point ``GRADLE_USER_HOME`` environment variable to a different
+  location
