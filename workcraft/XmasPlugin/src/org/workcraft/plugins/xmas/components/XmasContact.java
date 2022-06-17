@@ -27,7 +27,7 @@ public class XmasContact extends MathNode {
         public String toString() {
             return name;
         }
-    };
+    }
 
     private IOType ioType = IOType.OUTPUT;
 

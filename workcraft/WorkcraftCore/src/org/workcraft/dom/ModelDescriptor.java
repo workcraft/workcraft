@@ -6,7 +6,7 @@ import org.workcraft.dom.math.MathModel;
 
 public interface ModelDescriptor {
 
-    enum Rating { TRIVIAL, EXPERIMENTAL, NORMAL, ESSENTIAL };
+    enum Rating { TRIVIAL, EXPERIMENTAL, NORMAL, ESSENTIAL }
 
     String getDisplayName();
     MathModel createMathModel();

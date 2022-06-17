@@ -5,7 +5,7 @@ public class UntanglingNode {
     public enum NodeType {
         PLACE,
         TRANSITION
-    };
+    }
 
     private final int id;
     private String label;

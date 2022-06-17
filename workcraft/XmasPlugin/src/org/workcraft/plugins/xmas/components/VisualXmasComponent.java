@@ -86,7 +86,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
             }
         }
 
-    };
+    }
 
     private Orientation orientation = Orientation.ORIENTATION_0;
     protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);

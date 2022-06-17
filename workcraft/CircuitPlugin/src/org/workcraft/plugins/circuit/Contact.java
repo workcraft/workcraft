@@ -29,7 +29,7 @@ public class Contact extends MathNode implements BooleanVariable {
         public String toString() {
             return name;
         }
-    };
+    }
 
     private String name = "";
     private IOType type = IOType.OUTPUT;

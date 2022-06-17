@@ -26,7 +26,7 @@ public class SourceComponent extends XmasComponent {
         public String toString() {
             return name;
         }
-    };
+    }
 
     public enum Type {
         TYPE_T("t"),
@@ -43,7 +43,7 @@ public class SourceComponent extends XmasComponent {
         public String toString() {
             return name;
         }
-    };
+    }
 
     public Mode mode = Mode.MODE_1;
     public Type type = Type.TYPE_T;
