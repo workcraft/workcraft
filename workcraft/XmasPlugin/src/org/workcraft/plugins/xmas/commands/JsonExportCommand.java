@@ -52,6 +52,7 @@ public class JsonExportCommand implements Command {
         }
     }
 
+    @SuppressWarnings("PMD.EmptyControlStatement")
     @Override
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");

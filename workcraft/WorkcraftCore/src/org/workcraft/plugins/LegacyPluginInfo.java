@@ -7,7 +7,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class LegacyPluginInfo implements Initialiser<Object> {
-    private String displayName;
+    private final String displayName;
     private final String className;
     private final String[] interfaceNames;
 

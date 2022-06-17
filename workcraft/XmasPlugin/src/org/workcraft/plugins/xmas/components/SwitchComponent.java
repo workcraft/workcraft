@@ -24,7 +24,7 @@ public class SwitchComponent extends XmasComponent {
         public String toString() {
             return name;
         }
-    };
+    }
 
     public enum Val {
         VAL_0("0"),
@@ -40,7 +40,7 @@ public class SwitchComponent extends XmasComponent {
         public String toString() {
             return name;
         }
-    };
+    }
 
     public Type type = Type.TYPE_E;
     public Val val = Val.VAL_0;

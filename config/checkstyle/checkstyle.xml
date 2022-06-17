@@ -2,7 +2,14 @@
 <!DOCTYPE module PUBLIC
     "-//Puppy Crawl//DTD Check Configuration 1.2//EN"
     "http://www.puppycrawl.com/dtds/configuration_1_2.dtd">
+
 <module name="Checker">
+
+    <module name="TreeWalker">
+        <module name="SuppressWarningsHolder"/>
+    </module>
+
+    <module name="SuppressWarningsFilter"/>
 
     <property name="charset" value="UTF-8"/>
 
@@ -13,23 +20,23 @@
     </module>
 
     <module name="RegexpSingleline">
-        <property name="format" value="\s+$" />
-        <property name="message" value="Line has trailing spaces." />
+        <property name="format" value="\s+$"/>
+        <property name="message" value="Line has trailing spaces."/>
     </module>
 
     <module name="TreeWalker">
         <module name="OuterTypeFilename"/>
         <module name="OneTopLevelClass"/>
-        <module name="NoLineWrap" />
+        <module name="NoLineWrap"/>
 
-        <module name="PackageName" />
-        <module name="LocalFinalVariableName" />
-        <module name="LocalVariableName" />
-        <module name="MemberName" />
-        <module name="MethodName" />
-        <module name="ParameterName" />
-        <module name="StaticVariableName" />
-        <module name="TypeName" />
+        <module name="PackageName"/>
+        <module name="LocalFinalVariableName"/>
+        <module name="LocalVariableName"/>
+        <module name="MemberName"/>
+        <module name="MethodName"/>
+        <module name="ParameterName"/>
+        <module name="StaticVariableName"/>
+        <module name="TypeName"/>
 
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
@@ -41,16 +48,16 @@
         </module>
         <module name="EmptyLineSeparator">
             <property name="tokens" value="IMPORT, CLASS_DEF, INTERFACE_DEF"/>
-            <property name="allowMultipleEmptyLines" value="false" />
+            <property name="allowMultipleEmptyLines" value="false"/>
         </module>
 
-        <module name="OneStatementPerLine" />
+        <module name="OneStatementPerLine"/>
 
-        <module name="UnusedImports" />
-        <module name="RedundantImport" />
+        <module name="UnusedImports"/>
+        <module name="RedundantImport"/>
 
         <module name="SeparatorWrap">
-            <property name="tokens" value="DOT" />
+            <property name="tokens" value="DOT"/>
             <property name="option" value="nl"/>
         </module>
         <module name="SeparatorWrap">
@@ -59,20 +66,20 @@
         </module>
         <module name="NoLineWrap"/>
 
-        <module name="GenericWhitespace" />
-        <module name="EmptyForIteratorPad" />
-        <module name="MethodParamPad" />
-        <module name="NoWhitespaceAfter" />
-        <module name="NoWhitespaceBefore" />
-        <module name="ParenPad" />
-        <module name="TypecastParenPad" />
-        <module name="WhitespaceAfter" />
-        <module name="WhitespaceAround" />
+        <module name="GenericWhitespace"/>
+        <module name="EmptyForIteratorPad"/>
+        <module name="MethodParamPad"/>
+        <module name="NoWhitespaceAfter"/>
+        <module name="NoWhitespaceBefore"/>
+        <module name="ParenPad"/>
+        <module name="TypecastParenPad"/>
+        <module name="WhitespaceAfter"/>
+        <module name="WhitespaceAround"/>
 
-        <module name="ModifierOrder" />
-        <module name="RedundantModifier" />
+        <module name="ModifierOrder"/>
+        <module name="RedundantModifier"/>
 
-        <module name="AvoidNestedBlocks" />
+        <module name="AvoidNestedBlocks"/>
         <module name="RightCurly"/>
         <module name="RightCurly">
             <property name="option" value="alone"/>
@@ -82,11 +89,11 @@
             <property name="allowSingleLineStatement" value="true"/>
         </module>
 
-        <module name="FinalClass" />
+        <module name="FinalClass"/>
 
-        <module name="ArrayTypeStyle" />
-        <module name="ArrayTrailingComma" />
-        <module name="UpperEll" />
+        <module name="ArrayTypeStyle"/>
+        <module name="ArrayTrailingComma"/>
+        <module name="UpperEll"/>
     </module>
 
 </module>

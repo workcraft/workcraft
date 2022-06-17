@@ -12,13 +12,12 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-@SuppressWarnings("serial")
 public class ContentPanel extends JPanel {
 
     class DockableViewHeader extends JPanel {
-        private ActionButton btnMax;
-        private ActionButton btnClose;
-        private final JLabel titleLabel;
+        private ActionButton btnMax = null;
+        private ActionButton btnClose = null;
+        private JLabel titleLabel = null;
         private JPanel buttonPanel = null;
         private boolean maximized = false;
 

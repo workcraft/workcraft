@@ -13,7 +13,7 @@ public interface Decorator {
      */
     Decoration getDecoration(Node node);
 
-    class Empty implements Decorator {
+    final class Empty implements Decorator {
 
         public static final Empty INSTANCE = new Empty();
 

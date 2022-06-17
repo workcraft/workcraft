@@ -5,7 +5,7 @@ import org.workcraft.gui.tools.Decoration;
 public interface StateDecoration extends Decoration {
     boolean isMarked();
 
-    class Marked implements StateDecoration {
+    final class Marked implements StateDecoration {
         private Marked() {
         }
         @Override
@@ -15,7 +15,7 @@ public interface StateDecoration extends Decoration {
         public static final Marked INSTANCE = new Marked();
     }
 
-    class Unmarked implements StateDecoration {
+    final class Unmarked implements StateDecoration {
         private Unmarked() {
         }
         @Override

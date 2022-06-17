@@ -109,7 +109,7 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
                                 if (overlap == null) {
                                     throw new TimeEstimationException(net.getNodeReference(nd) + ".finish ("
                                             + nd.getEndTime().toString() + ") is inconsistent with calculated interval "
-                                            + end.toString() + " (forward).");
+                                            + end + " (forward).");
                                 } else {
                                     nd.setEndTime(Interval.getOverlapping(end, nd.getEndTime()));
                                 }
@@ -127,8 +127,6 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
                 if (visit.get(nd) != postset.size()) {
                     remove.add(nd);
                     // System.out.println("remove"+net.getNodeReference(nd));
-                } else {
-                    // visit.put(nd, 0);
                 }
                 if (visit2.contains(nd)) {
                     remove.add(nd);
@@ -141,15 +139,9 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
     }
 
     private void addModify(Time time, int b) {
-        if (!modify.containsKey(time)) {
-            Boolean[] p = new Boolean[3];
-            p[b - 1] = true;
-            modify.put(time, p);
-        } else {
-            Boolean[] p = modify.get(time);
-            p[b - 1] = true;
-            modify.put(time, p);
-        }
+        Boolean[] p = modify.containsKey(time) ? modify.get(time) : new Boolean[3];
+        p[b - 1] = true;
+        modify.put(time, p);
     }
 
 }

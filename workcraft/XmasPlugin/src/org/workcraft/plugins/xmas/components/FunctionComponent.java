@@ -23,7 +23,7 @@ public class FunctionComponent extends XmasComponent {
         public String toString() {
             return name;
         }
-    };
+    }
 
     public Type type = Type.TYPE_T;
 
