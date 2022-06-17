@@ -19,7 +19,7 @@ gradle.ext.javaTargetVersion = JavaVersion.VERSION_1_8
 gradle.ext.javaReleaseVersion = 8  /* Must be integer, e.g. 8 for JDK8*/
 
 // Code quality and coverage tools (Checkstyle, PMD, Jacoco)
-gradle.ext.checkstyleVersion = '10.3'
+gradle.ext.checkstyleVersion = '9.3'  // v10.0 requires Java 11
 gradle.ext.pmdVersion = '6.46.0'
 gradle.ext.jacocoVersion = '0.8.8'
 
