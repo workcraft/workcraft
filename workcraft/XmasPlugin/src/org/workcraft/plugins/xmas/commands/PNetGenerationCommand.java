@@ -922,6 +922,7 @@ public class PNetGenerationCommand implements Command {
     public Collection<SwitchComponent> swNodes;
     public Collection<SinkComponent> snkNodes;
 
+    @SuppressWarnings("PMD.EmptyControlStatement")
     @Override
     public void run(WorkspaceEntry we) {
         System.out.println();

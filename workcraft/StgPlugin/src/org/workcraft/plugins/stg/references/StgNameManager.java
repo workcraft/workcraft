@@ -127,9 +127,7 @@ public class StgNameManager extends DefaultNameManager {
     @Override
     public String getName(Node node) {
         String result = null;
-        if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
-            // Skip implicit places
-        } else if (node instanceof NamedTransition) {
+        if (node instanceof NamedTransition) {
             Pair<String, Integer> instance = instancedNameManager.getInstance(node);
             if (instance != null) {
                 if (instance.getSecond().equals(0)) {
@@ -138,7 +136,8 @@ public class StgNameManager extends DefaultNameManager {
                     result = LabelParser.getInstancedTransitionReference(instance.getFirst(), instance.getSecond());
                 }
             }
-        } else {
+        } else if (!((node instanceof StgPlace) && ((StgPlace) node).isImplicit())) {
+            // Skip implicit places
             result = super.getName(node);
         }
         return result;
@@ -146,8 +145,7 @@ public class StgNameManager extends DefaultNameManager {
 
     @Override
     public boolean isNamed(Node node) {
-        return super.isNamed(node)
-                || (instancedNameManager.getInstance(node) != null);
+        return super.isNamed(node) || (instancedNameManager.getInstance(node) != null);
     }
 
     @Override
@@ -213,13 +211,7 @@ public class StgNameManager extends DefaultNameManager {
     }
 
     private boolean isGoodDummyName(String name) {
-        if (super.getNode(name) != null) {
-            return false;
-        }
-        if (isSignalName(name)) {
-            return false;
-        }
-        return true;
+        return (super.getNode(name) == null) && !isSignalName(name);
     }
 
     private void setDefaultSignalTransitionNameIfUnnamed(final SignalTransition st) {
@@ -260,13 +252,12 @@ public class StgNameManager extends DefaultNameManager {
 
     @Override
     public void setDefaultNameIfUnnamed(Node node) {
-        if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
-            // Skip implicit places
-        } else if (node instanceof SignalTransition) {
+        if (node instanceof SignalTransition) {
             setDefaultSignalTransitionNameIfUnnamed((SignalTransition) node);
         } else if (node instanceof DummyTransition) {
             setDefaultDummyTransitionNameIfUnnamed((DummyTransition) node);
-        } else {
+        } else if (!((node instanceof StgPlace) && ((StgPlace) node).isImplicit())) {
+            // Skip implicit places
             super.setDefaultNameIfUnnamed(node);
         }
     }

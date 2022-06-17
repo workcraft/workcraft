@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg.serialisation;
 import org.junit.jupiter.api.Assertions;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -25,7 +24,7 @@ class SerialisationTestingUtils {
 
     public static void comparePlaces(Place p1, Place p2) {
         Assertions.assertEquals(p1.getTokens(), p2.getTokens());
-        //Assertions.assertEquals(p1.getCapacity(), p2.getCapacity());
+        Assertions.assertEquals(p1.getCapacity(), p2.getCapacity());
     }
 
     public static void compareTransitions(SignalTransition t1, SignalTransition t2) {
@@ -38,72 +37,17 @@ class SerialisationTestingUtils {
         compareNodes(con1.getSecond(), con2.getSecond());
     }
 
-    public static void comparePreAndPostSets(VisualComponent c1, VisualComponent c2) {
-    /*    Assertions.assertEquals(c1.getPreset().size(), c2.getPreset().size());
-        Assertions.assertEquals(c1.getPostset().size(), c2.getPostset().size());
-
-        Iterator<VisualComponent> i1 = c1.getPreset().iterator();
-        Iterator<VisualComponent> i2 = c2.getPreset().iterator();
-
-        while (i1.hasNext()) {
-            VisualComponent n1 = i1.next();
-            VisualComponent n2 = i2.next();
-
-            Assertions.assertEquals(n1.getClass(), n2.getClass());
-        }
-
-        i1 = c1.getPostset().iterator();
-        i2 = c2.getPostset().iterator();
-
-        while (i1.hasNext()) {
-            VisualComponent n1 = i1.next();
-            VisualComponent n2 = i2.next();
-
-            Assertions.assertEquals(n1.getClass(), n2.getClass());
-        }*/
-    }
-
-    public static void comparePreAndPostSets(MathNode c1, MathNode c2) {
-        /*Assertions.assertEquals(c1.getPreset().size(), c2.getPreset().size());
-        Assertions.assertEquals(c1.getPostset().size(), c2.getPostset().size());
-
-        Iterator<MathComponent> i1 = c1.getPreset().iterator();
-        Iterator<MathComponent> i2 = c2.getPreset().iterator();
-
-        while (i1.hasNext()) {
-            Component n1 = i1.next();
-            Component n2 = i2.next();
-
-            Assertions.assertEquals(n1.getClass(), n2.getClass());
-        }
-
-        i1 = c1.getPostset().iterator();
-        i2 = c2.getPostset().iterator();
-
-        while (i1.hasNext()) {
-            Component n1 = i1.next();
-            Component n2 = i2.next();
-
-            Assertions.assertEquals(n1.getClass(), n2.getClass());
-        }*/
-    }
-
     public static void compareVisualPlaces(VisualPlace p1, VisualPlace p2) {
-        //Assertions.assertEquals(p1.getID(), p2.getID());
         Assertions.assertEquals(p1.getTransform(), p2.getTransform());
-
         comparePlaces(p1.getReferencedComponent(), p2.getReferencedComponent());
     }
 
     public static void compareVisualSignalTransitions(VisualSignalTransition t1, VisualSignalTransition t2) {
-        //Assertions.assertEquals(t1.getID(), t2.getID());
         Assertions.assertEquals(t1.getTransform(), t2.getTransform());
-
         compareTransitions(t1.getReferencedComponent(), t2.getReferencedComponent());
     }
 
     public static void compareVisualDummyTransitions(VisualDummyTransition t1, VisualDummyTransition t2) {
-        //Assertions.assertEquals(t1.getID(), t2.getID());
         Assertions.assertEquals(t1.getTransform(), t2.getTransform());
         Assertions.assertEquals(t1.getName(), t2.getName());
     }
@@ -111,7 +55,6 @@ class SerialisationTestingUtils {
     public static void compareVisualConnections(VisualConnection vc1, VisualConnection vc2) {
         compareNodes(vc1.getFirst(), vc2.getFirst());
         compareNodes(vc1.getSecond(), vc2.getSecond());
-
         compareConnections(vc1.getReferencedConnection(), vc2.getReferencedConnection());
     }
 
@@ -142,31 +85,49 @@ class SerialisationTestingUtils {
         Assertions.assertEquals(node1.getClass(), node2.getClass());
 
         if (node1 instanceof MathNode) {
-            comparePreAndPostSets((MathNode) node1, (MathNode) node2);
-        } else if (node1 instanceof VisualComponent) {
-            comparePreAndPostSets((VisualComponent) node1, (VisualComponent) node2);
-        } else if (node1 instanceof Place) {
-            comparePlaces((Place) node1, (Place) node2);
-        } else if (node1 instanceof MathConnection) {
-            compareConnections((MathConnection) node1, (MathConnection) node2);
-        } else if (node1 instanceof SignalTransition) {
-            compareTransitions((SignalTransition) node1, (SignalTransition) node2);
-        } else if (node1 instanceof VisualPlace) {
-            compareVisualPlaces((VisualPlace) node1, (VisualPlace) node2);
-        } else if (node1 instanceof VisualSignalTransition) {
-            compareVisualSignalTransitions((VisualSignalTransition) node1, (VisualSignalTransition) node2);
-        } else if (node1 instanceof VisualDummyTransition) {
-            compareVisualDummyTransitions((VisualDummyTransition) node1, (VisualDummyTransition) node2);
-        } else if (node1 instanceof VisualImplicitPlaceArc) {
-            compareImplicitPlaceArcs((VisualImplicitPlaceArc) node1, (VisualImplicitPlaceArc) node2);
-        } else if (node1 instanceof VisualConnection) {
-            compareVisualConnections((VisualConnection) node1, (VisualConnection) node2);
-        } else if (node1 instanceof Polyline) {
+            if (node1 instanceof Place) {
+                comparePlaces((Place) node1, (Place) node2);
+            }
+            if (node1 instanceof MathConnection) {
+                compareConnections((MathConnection) node1, (MathConnection) node2);
+            }
+            if (node1 instanceof SignalTransition) {
+                compareTransitions((SignalTransition) node1, (SignalTransition) node2);
+            }
+        }
+
+        if (node1 instanceof VisualComponent) {
+            if (node1 instanceof VisualPlace) {
+                compareVisualPlaces((VisualPlace) node1, (VisualPlace) node2);
+            }
+            if (node1 instanceof VisualSignalTransition) {
+                compareVisualSignalTransitions((VisualSignalTransition) node1, (VisualSignalTransition) node2);
+            }
+            if (node1 instanceof VisualDummyTransition) {
+                compareVisualDummyTransitions((VisualDummyTransition) node1, (VisualDummyTransition) node2);
+            }
+        }
+
+        if (node1 instanceof VisualConnection) {
+            if (node1 instanceof VisualImplicitPlaceArc) {
+                compareImplicitPlaceArcs((VisualImplicitPlaceArc) node1, (VisualImplicitPlaceArc) node2);
+            } else {
+                compareVisualConnections((VisualConnection) node1, (VisualConnection) node2);
+            }
+        }
+        if (node1 instanceof Polyline) {
             comparePolylines((Polyline) node1, (Polyline) node2);
-        } else if (node1 instanceof MathGroup) {
-        } else if (node1 instanceof VisualGroup) {
-        } else if (node1 instanceof ComponentsTransformObserver) {
-        } else Assertions.fail("Unexpected class " + node1.getClass().getName());
+        }
+
+        if (!(node1 instanceof MathNode)
+                && !(node1 instanceof VisualComponent)
+                && !(node1 instanceof VisualConnection)
+                && !(node1 instanceof VisualGroup)
+                && !(node1 instanceof Polyline)
+                && !(node1 instanceof ComponentsTransformObserver)) {
+
+            Assertions.fail("Unexpected class " + node1.getClass().getName());
+        }
 
         Collection<Node> ch1 = node1.getChildren();
         Collection<Node> ch2 = node2.getChildren();
