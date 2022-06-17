@@ -16,13 +16,13 @@ public interface Decoration {
     default void decorate(Graphics2D g) {
     }
 
-    class Empty implements Decoration {
+    final class Empty implements Decoration {
         private Empty() {
         }
         public static final Empty INSTANCE = new Empty();
     }
 
-    class Shaded implements Decoration {
+    final class Shaded implements Decoration {
         private Shaded() {
         }
         @Override
@@ -32,7 +32,7 @@ public interface Decoration {
         public static final Shaded INSTANCE = new Shaded();
     }
 
-    class Highlighted implements Decoration {
+    final class Highlighted implements Decoration {
         private Highlighted() {
         }
         @Override
@@ -42,7 +42,7 @@ public interface Decoration {
         public static final Highlighted INSTANCE = new Highlighted();
     }
 
-    class Selected implements Decoration {
+    final class Selected implements Decoration {
         private Selected() {
         }
         @Override

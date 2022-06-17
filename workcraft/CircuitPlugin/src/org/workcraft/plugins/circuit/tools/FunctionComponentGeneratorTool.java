@@ -57,7 +57,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     private LibraryItem libraryItem = null;
 
     interface Instantiator extends BiConsumer<VisualCircuit, VisualFunctionComponent> {
-        class Empty implements Instantiator {
+        final class Empty implements Instantiator {
             private Empty() {
             }
 
