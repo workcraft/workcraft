@@ -64,7 +64,7 @@ public class ColorLegendTable extends JTable {
         setFocusable(false);
         setRowSelectionAllowed(false);
         setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
-        setDefaultRenderer(Color.class, new ColorDataRenderer());
+        setDefaultRenderer(Color.class, new ColorTableCellRenderer());
         setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
 
         // Make the table transparent

@@ -3,9 +3,11 @@ package org.workcraft.plugins.circuit.tools;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.gui.tools.*;
@@ -13,29 +15,32 @@ import org.workcraft.interop.Format;
 import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.serialisation.PathbreakConstraintExporter;
-import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.utils.CycleUtils;
-import org.workcraft.plugins.circuit.utils.ScanUtils;
+import org.workcraft.plugins.circuit.utils.*;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.List;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Function;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
-    private final BasicTable<String> breakerTable = new BasicTable<>("Path breakers");
-    private Set<Contact> cycleContacts;
-    private Set<FunctionComponent> cycleComponents;
+    private static final String WARNING_SYMBOL = Character.toString((char) 0x26A0);
+    private static final String WARNING_PREFIX = WARNING_SYMBOL + " ";
+
+    private CycleState cycleState = null;
+    private final DriverPinTable driverPinTable = new DriverPinTable();
+    private final DrivenPinTable drivenPinTable = new DrivenPinTable();
+
     private JPanel panel;
     private JButton writeConstraintsButton;
 
@@ -98,9 +103,15 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         JPanel controlPanel = new JPanel(new WrapLayout());
         controlPanel.add(buttonPanel);
 
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT,
+                new JScrollPane(driverPinTable), new JScrollPane(drivenPinTable));
+
+        splitPane.setOneTouchExpandable(true);
+        splitPane.setResizeWeight(0.5);
+
         JPanel forcePanel = new JPanel(new BorderLayout());
         forcePanel.add(controlPanel, BorderLayout.NORTH);
-        forcePanel.add(new JScrollPane(breakerTable), BorderLayout.CENTER);
+        forcePanel.add(splitPane, BorderLayout.CENTER);
         return forcePanel;
     }
 
@@ -208,9 +219,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
-        cycleContacts = null;
-        cycleComponents = null;
-        breakerTable.clear();
+        cycleState = null;
     }
 
     @Override
@@ -223,61 +232,12 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private void updateState(final GraphEditor editor) {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        cycleContacts = CycleUtils.getCycledDrivers(circuit);
-        // Add components to "cycle" set if they have pins on a cycle
-        cycleComponents = new HashSet<>();
-        for (Contact contact : cycleContacts) {
-            Node parent = contact.getParent();
-            if (parent instanceof FunctionComponent) {
-                cycleComponents.add((FunctionComponent) parent);
-            }
-        }
-        // Add zero delay gates and their pins to "cycle" sets they are between components on a cycle
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getIsZeroDelay()) {
-                boolean inputOnCycle = false;
-                boolean outputOnCycle = false;
-                for (Contact input : component.getInputs()) {
-                    Contact driver = CycleUtils.findUnbrokenPathDriverPin(circuit, input);
-                    if (driver != null) {
-                        inputOnCycle |= cycleComponents.contains(driver.getParent());
-                    }
-                }
-                for (Contact output : component.getOutputs()) {
-                    for (Contact driven : CycleUtils.findUnbrokenPathDrivenPins(circuit, output)) {
-                        outputOnCycle |= cycleComponents.contains(driven.getParent());
-                    }
-                }
-                if (inputOnCycle && outputOnCycle) {
-                    cycleComponents.add(component);
-                    cycleContacts.addAll(component.getContacts());
-                }
-            }
-        }
-        // Extend the set of cycled pins by input pins in cycled components that are driven by other cycled pins
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            for (Contact contact : component.getInputs()) {
-                if (!contact.getPathBreaker() && cycleComponents.contains(component)) {
-                    Contact driver = CycleUtils.findUnbrokenPathDriverPin(circuit, contact);
-                    if (cycleContacts.contains(driver)) {
-                        cycleContacts.add(contact);
-                    }
-                }
-            }
-        }
-        // Populate path breaker table and check if there are input pins path breaker
-        boolean hasInputPinPathBreaker = false;
-        List<String> breakers = new ArrayList<>();
-        for (Contact contact : circuit.getFunctionContacts()) {
-            if (contact.getPathBreaker()) {
-                breakers.add(circuit.getNodeReference(contact));
-                hasInputPinPathBreaker |= contact.isInput();
-            }
-        }
-        Collections.sort(breakers);
-        breakerTable.set(breakers);
+        cycleState = new CycleState(circuit);
+        driverPinTable.refresh();
+        drivenPinTable.refresh();
         // Enable write SDC constraints button if there are path breaker input pins
-        writeConstraintsButton.setEnabled(hasInputPinPathBreaker);
+        boolean hasDrivenPathBreaker = !cycleState.getBreakerDrivenPins().isEmpty();
+        writeConstraintsButton.setEnabled(hasDrivenPathBreaker);
     }
 
     @Override
@@ -329,11 +289,15 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         };
     }
 
-    private Decoration getContactDecoration(Contact contact) {
-        final Color color = contact.isZeroDelayDriver() ? AnalysisDecorationSettings.getDontTouchColor()
-                : cycleContacts.contains(contact) ? AnalysisDecorationSettings.getProblemColor()
+    private Color getCycleStatusColor(Contact contact) {
+        return contact.isZeroDelayDriver() ? AnalysisDecorationSettings.getDontTouchColor()
+                : cycleState.isInCycle(contact) ? AnalysisDecorationSettings.getProblemColor()
                 : contact.getPathBreaker() ? AnalysisDecorationSettings.getFixerColor()
                 : contact.isPin() ? AnalysisDecorationSettings.getClearColor() : null;
+    }
+
+    private Decoration getContactDecoration(Contact contact) {
+        final Color color = getCycleStatusColor(contact);
 
         return new Decoration() {
             @Override
@@ -350,7 +314,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private Decoration getComponentDecoration(FunctionComponent component) {
         final Color color = component.getIsZeroDelay() ? AnalysisDecorationSettings.getDontTouchColor()
-                : cycleComponents.contains(component) ? AnalysisDecorationSettings.getProblemColor()
+                : cycleState.isInCycle(component) ? AnalysisDecorationSettings.getProblemColor()
                 : ScanUtils.hasPathBreakerOutput(component) ? AnalysisDecorationSettings.getFixerColor()
                 : AnalysisDecorationSettings.getClearColor();
 
@@ -365,6 +329,154 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 return color;
             }
         };
+    }
+
+    private class DriverPinTable extends JTable {
+
+        DriverPinTable() {
+            setModel(new DriverPinTableModel());
+            setFocusable(false);
+            setRowSelectionAllowed(false);
+            setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
+            setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+            getTableHeader().setDefaultRenderer(new FlatHeaderRenderer(false));
+            getTableHeader().setReorderingAllowed(false);
+            setDefaultRenderer(Object.class, new PinTableCellRenderer());
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Contact contact = cycleState.getDriverPin(getSelectedRow());
+                    if (contact != null) {
+                        contact.setPathBreaker(!contact.getPathBreaker());
+                    }
+                }
+            });
+        }
+
+        public void refresh() {
+            int cyclePinCount = cycleState.getCycleDriverPins().size();
+            int breakerPinCount = cycleState.getBreakerDriverPins().size();
+            int clearPinCount = cycleState.getDriverPinCount() - cyclePinCount - breakerPinCount;
+            String header = StatsUtils.getHtmlStatsHeader("Output pins",
+                    cyclePinCount, null, breakerPinCount, clearPinCount);
+
+            GuiUtils.setColumnHeader(this, 0, header);
+
+            final Color color = !cycleState.getCycleDriverPins().isEmpty() ? AnalysisDecorationSettings.getProblemColor()
+                    : !cycleState.getBreakerDriverPins().isEmpty() ? AnalysisDecorationSettings.getFixerColor()
+                    : AnalysisDecorationSettings.getClearColor();
+
+            getTableHeader().setBackground(color);
+            GuiUtils.refreshTable(this);
+        }
+    }
+
+    private class DriverPinTableModel extends AbstractTableModel {
+        @Override
+        public int getColumnCount() {
+            return 1;
+        }
+
+        @Override
+        public int getRowCount() {
+            return cycleState.getDriverPinCount();
+        }
+
+        @Override
+        public Object getValueAt(int row, int column) {
+            return cycleState.getDriverPin(row);
+        }
+    }
+
+    private class DrivenPinTable extends JTable {
+
+        DrivenPinTable() {
+            setModel(new DrivenPinTableModel());
+            setFocusable(false);
+            setRowSelectionAllowed(false);
+            setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
+            setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
+            getTableHeader().setReorderingAllowed(false);
+            getTableHeader().setDefaultRenderer(new FlatHeaderRenderer(false));
+            setDefaultRenderer(Object.class, new PinTableCellRenderer());
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    Contact contact = cycleState.getDrivenPin(getSelectedRow());
+                    if (contact != null) {
+                        contact.setPathBreaker(!contact.getPathBreaker());
+                    }
+                }
+            });
+        }
+
+        public void refresh() {
+            int cyclePinCount = cycleState.getCycleDrivenPins().size();
+            int breakerPinCount = cycleState.getBreakerDrivenPins().size();
+            int clearPinCount = cycleState.getDrivenPinCount() - cyclePinCount - breakerPinCount;
+            String header = StatsUtils.getHtmlStatsHeader("Input pins",
+                    cyclePinCount, null, breakerPinCount, clearPinCount);
+
+            GuiUtils.setColumnHeader(this, 0, header);
+
+            final Color color = !cycleState.getCycleDrivenPins().isEmpty() ? AnalysisDecorationSettings.getProblemColor()
+                    : !cycleState.getBreakerDrivenPins().isEmpty() ? AnalysisDecorationSettings.getFixerColor()
+                    : AnalysisDecorationSettings.getClearColor();
+
+            getTableHeader().setBackground(color);
+            GuiUtils.refreshTable(this);
+        }
+    }
+
+    private class DrivenPinTableModel extends AbstractTableModel {
+        @Override
+        public int getColumnCount() {
+            return 1;
+        }
+
+        @Override
+        public int getRowCount() {
+            return cycleState.getDrivenPinCount();
+        }
+
+        @Override
+        public Object getValueAt(int row, int column) {
+            return cycleState.getDrivenPin(row);
+        }
+    }
+
+    private class PinTableCellRenderer implements TableCellRenderer {
+
+        private final JLabel label = new JLabel() {
+            @Override
+            public void paint(Graphics g) {
+                g.setColor(getBackground());
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paint(g);
+            }
+        };
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int col) {
+
+            JLabel result = null;
+            if (value instanceof FunctionContact) {
+                FunctionContact contact = (FunctionContact) value;
+                Color color = ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), getCycleStatusColor(contact));
+                label.setBackground(color);
+
+                String ref = cycleState.getContactReference(contact);
+                String text = cycleState.isRedundantPathBreaker(contact) ? WARNING_PREFIX + ref : ref;
+                label.setText(text);
+
+                boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, col);
+                label.setToolTipText(fits ? null : label.getText());
+                label.setBorder(GuiUtils.getTableCellBorder());
+                result = label;
+            }
+            return result;
+        }
     }
 
 }

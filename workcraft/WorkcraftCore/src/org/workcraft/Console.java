@@ -209,13 +209,20 @@ public class Console {
         System.out.print("js>");
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         try {
+            Framework framework = Framework.getInstance();
             String line = reader.readLine();
-            Object result = Framework.getInstance().execJavaScript(line);
-            Context.enter();
-            String out = Context.toString(result);
-            Context.exit();
-            if (!"undefined".equals(out)) {
-                System.out.println(out);
+            if (line == null) {
+                System.out.println();
+                LogUtils.logError("No console input available");
+                framework.shutdown();
+            } else {
+                Object result = framework.execJavaScript(line);
+                Context.enter();
+                String out = Context.toString(result);
+                Context.exit();
+                if (!"undefined".equals(out)) {
+                    System.out.println(out);
+                }
             }
         } catch (org.mozilla.javascript.WrappedException e) {
             Throwable we = e.getWrappedException();

@@ -3,12 +3,23 @@ package org.workcraft.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 
 public class SortUtils {
 
+    public static <T> List<T> getSortedNatural(Collection<T> collection, Function<T, String> converter) {
+        List<T> list = new ArrayList<>(collection);
+        sortNatural(list, converter);
+        return list;
+    }
+
+    public static <T> void sortNatural(List<T> list, Function<T, String> converter) {
+        list.sort((s1, s2) -> compareNatural(converter.apply(s1), converter.apply(s2)));
+    }
+
     public static List<String> getSortedNatural(Collection<String> collection) {
         List<String> list = new ArrayList<>(collection);
-        SortUtils.sortNatural(list);
+        sortNatural(list);
         return list;
     }
 

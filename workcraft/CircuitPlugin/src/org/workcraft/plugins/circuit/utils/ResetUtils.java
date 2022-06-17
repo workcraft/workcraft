@@ -1,19 +1,27 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.formula.workers.DumbBooleanWorker;
+import org.workcraft.gui.Toolbox;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
+import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.SortUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +30,7 @@ public final class ResetUtils {
 
     private static final BooleanWorker DUMB_WORKER = DumbBooleanWorker.getInstance();
     private static final BooleanWorker CLEVER_WORKER = CleverBooleanWorker.getInstance();
+    private static final String VERIFICATION_RESULT_TITLE = "Verification result";
 
     private ResetUtils() {
     }
@@ -530,20 +539,53 @@ public final class ResetUtils {
         }
     }
 
-    public static Set<Contact> getInitialisationProblemPins(Circuit circuit) {
+    public static Boolean checkInitialisationViaForcedInputPorts(Circuit circuit, boolean useAnalysisTool) {
+        if (!VerificationUtils.checkBlackboxComponents(circuit)) {
+            return null;
+        }
+
         InitialisationState initState = new InitialisationState(circuit);
-        Set<Contact> result = new HashSet<>();
+        Collection<Contact> forcedPorts = initState.getForcedPorts();
+        List<String> forcedPortRefs = ReferenceHelper.getReferenceList(circuit, forcedPorts);
+        SortUtils.sortNatural(forcedPortRefs);
+        String forcedPortText = "\n\n" + PropertyHelper.BULLET_PREFIX + (forcedPortRefs.isEmpty()
+                ? "No forced input ports"
+                : TextUtils.wrapMessageWithItems("Forced input port", forcedPortRefs));
+
+        List<String> uninitialisedPinRefs = new ArrayList<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getIsZeroDelay()) {
-                continue;
-            }
-            for (FunctionContact contact : component.getFunctionContacts()) {
-                if (contact.isOutput() && (!initState.isInitialisedPin(contact) || contact.getForcedInit())) {
-                    result.add(contact);
+            if (!component.getIsZeroDelay()) {
+                for (FunctionContact contact : component.getFunctionContacts()) {
+                    if (contact.isOutput() && (!initState.isInitialisedPin(contact) || contact.getForcedInit())) {
+                        String contactRef = circuit.getNodeReference(contact);
+                        uninitialisedPinRefs.add(contactRef);
+                    }
                 }
             }
         }
-        return result;
+
+        if (uninitialisedPinRefs.isEmpty()) {
+            DialogUtils.showInfo("Circuit is fully initialised via forced input ports."
+                    + forcedPortText, VERIFICATION_RESULT_TITLE);
+            return true;
+        }
+
+        if (useAnalysisTool) {
+            Framework framework = Framework.getInstance();
+            if (framework.isInGuiMode()) {
+                Toolbox toolbox = framework.getMainWindow().getCurrentToolbox();
+                toolbox.selectTool(toolbox.getToolInstance(InitialisationAnalyserTool.class));
+            }
+        }
+
+        SortUtils.sortNatural(uninitialisedPinRefs);
+        String uninitialisedPinText = "\n\n" + PropertyHelper.BULLET_PREFIX +
+                TextUtils.wrapMessageWithItems("Uninitialised signal", uninitialisedPinRefs);
+
+        DialogUtils.showError("Circuit is not fully initialised via forced input ports."
+                + forcedPortText + uninitialisedPinText, VERIFICATION_RESULT_TITLE);
+
+        return false;
     }
 
 }

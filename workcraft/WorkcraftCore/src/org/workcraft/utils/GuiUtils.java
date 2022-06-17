@@ -17,7 +17,10 @@ import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.JTableHeader;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.font.LineMetrics;
@@ -278,8 +281,16 @@ public class GuiUtils {
         return new EmptyBorder(vGap, hGap, vGap, hGap);
     }
 
+    public static Color getTableCellBackgroundColor() {
+        return UIManager.getColor("Table.background");
+    }
+
     public static Border getTableHeaderBorder() {
         return UIManager.getBorder("TableHeader.cellBorder");
+    }
+
+    public static Color getTableHeaderBackgroundColor() {
+        return UIManager.getColor("TableHeader.background");
     }
 
     public static void paintBackgroundColor(Graphics g, Rectangle rect, Color color) {
@@ -325,6 +336,31 @@ public class GuiUtils {
         TableColumn column = table.getColumnModel().getColumn(col);
         Dimension spacing = table.getIntercellSpacing();
         return column.getWidth() - spacing.getWidth();
+    }
+
+    public static void setColumnHeader(JTable table, int col, String text) {
+        JTableHeader tableHeader = table.getTableHeader();
+        TableColumnModel columnModel = tableHeader.getColumnModel();
+        if ((col >= 0) && (col < columnModel.getColumnCount())) {
+            TableColumn tableColumn = columnModel.getColumn(col);
+            tableColumn.setHeaderValue(text);
+            tableHeader.repaint();
+        }
+    }
+
+    public static void setColumnWidth(JTable table, int col, int width) {
+        JTableHeader tableHeader = table.getTableHeader();
+        TableColumnModel columnModel = tableHeader.getColumnModel();
+        if ((col >= 0) && (col < columnModel.getColumnCount())) {
+            TableColumn tableColumn = columnModel.getColumn(col);
+            tableColumn.setMaxWidth(width);
+            tableColumn.setMinWidth(width);
+            tableHeader.repaint();
+        }
+    }
+
+    public static void refreshTable(JTable table) {
+        table.tableChanged(new TableModelEvent(table.getModel()));
     }
 
 }

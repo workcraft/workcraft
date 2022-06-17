@@ -6,7 +6,7 @@ import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
-public final class ColorDataRenderer implements TableCellRenderer {
+public final class ColorTableCellRenderer implements TableCellRenderer {
 
     private final JLabel label = new JLabel() {
         @Override
@@ -23,7 +23,9 @@ public final class ColorDataRenderer implements TableCellRenderer {
 
         label.setText("");
         label.setBorder(GuiUtils.getTableCellBorder());
-        label.setBackground((Color) value);
+        if (value instanceof Color) {
+            label.setBackground((Color) value);
+        }
         return label;
     }
 
