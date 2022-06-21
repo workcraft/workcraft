@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.genlib.Library;
@@ -26,6 +27,9 @@ public final class VerilogUtils {
 
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
+
+    private static final Pattern NUMBER_DELAY_PATTERN = Pattern.compile("\\d*\\.?\\d+");
+    private static final Pattern STRING_DELAY_PATTERN = Pattern.compile("^\\(.*\\)$");
 
     private static final Map<String, Pair<Boolean, String>> PRIMITIVE_OPERATOR_MAP = new HashMap<>();
     static {
@@ -307,6 +311,19 @@ public final class VerilogUtils {
     public static boolean isLibraryGate(String moduleName) {
         Library library = LibraryManager.getLibrary();
         return library.get(moduleName) != null;
+    }
+
+    public static boolean checkAssignDelay(String value) {
+        return value.isEmpty()
+                || NUMBER_DELAY_PATTERN.matcher(value).matches()
+                || STRING_DELAY_PATTERN.matcher(value).matches();
+    }
+
+    public static String getAssignDelayHelp() {
+        return "Delay for Verilog assign statement must be one of these:\n" +
+                PropertyHelper.BULLET_PREFIX + "empty string\n" +
+                PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n" +
+                PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(1ps * $urandom_range(10, 20))`";
     }
 
 }

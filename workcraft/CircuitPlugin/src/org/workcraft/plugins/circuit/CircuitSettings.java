@@ -30,9 +30,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static final String GATE_LIBRARY_TITLE = "Gate library for technology mapping";
 
-    private static final Pattern NUMBER_DELAY_PATTERN = Pattern.compile("\\d*\\.?\\d+");
-    private static final Pattern STRING_DELAY_PATTERN = Pattern.compile("^\\(.*\\)$");
-
     private static final Pattern MUTEX_DATA_PATTERN = Pattern.compile(
             "(\\w+)\\(\\((\\w+),(\\w+)\\),\\((\\w+),(\\w+)\\)\\)");
 
@@ -659,13 +656,10 @@ public class CircuitSettings extends AbstractModelSettings {
             value = "";
         }
         value = value.trim();
-        if (value.isEmpty() || NUMBER_DELAY_PATTERN.matcher(value).matches() || STRING_DELAY_PATTERN.matcher(value).matches()) {
+        if (VerilogUtils.checkAssignDelay(value)) {
             verilogAssignDelay = value;
         } else {
-            DialogUtils.showError("Delay for Verilog assign statement must be one of these:\n" +
-                    PropertyHelper.BULLET_PREFIX + "empty string\n" +
-                    PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n" +
-                    PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(1ps * $urandom_range(10, 20))`");
+            DialogUtils.showError(VerilogUtils.getAssignDelayHelp());
         }
     }
 
