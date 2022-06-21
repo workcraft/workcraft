@@ -1,27 +1,24 @@
 package org.workcraft.plugins.stg.serialisation;
 
+import org.workcraft.dom.Model;
+import org.workcraft.plugins.petri.PetriModel;
+import org.workcraft.plugins.stg.interop.LpnFormat;
+import org.workcraft.plugins.stg.serialisation.SerialiserUtils.Style;
+import org.workcraft.serialisation.AbstractBasicModelSerialiser;
+
 import java.io.OutputStream;
 import java.util.UUID;
 
-import org.workcraft.dom.Model;
-import org.workcraft.plugins.petri.PetriModel;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.interop.LpnFormat;
-import org.workcraft.plugins.stg.serialisation.SerialiserUtils.Style;
-import org.workcraft.serialisation.ModelSerialiser;
-import org.workcraft.serialisation.ReferenceProducer;
-
-public class LpnSerialiser implements ModelSerialiser {
+public class LpnSerialiser extends AbstractBasicModelSerialiser {
 
     @Override
-    public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
+    public void serialise(Model model, OutputStream out) {
         SerialiserUtils.writeModel(model, out, Style.LPN, true);
-        return refs;
     }
 
     @Override
     public boolean isApplicableTo(Model model) {
-        return (model instanceof StgModel) || (model instanceof PetriModel);
+        return model instanceof PetriModel;
     }
 
     @Override

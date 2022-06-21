@@ -6,8 +6,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.dfs.*;
 import org.workcraft.plugins.dfs.interop.VerilogFormat;
-import org.workcraft.serialisation.ModelSerialiser;
-import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.AbstractBasicModelSerialiser;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
 
@@ -15,7 +14,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.*;
 
-public class VerilogSerialiser implements ModelSerialiser {
+public class VerilogSerialiser extends AbstractBasicModelSerialiser {
 
     private static final String KEYWORD_OUTPUT = "output";
     private static final String KEYWORD_INPUT = "input";
@@ -41,7 +40,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String PREFIX_AO = NAME_AO + SEPARATOR;
 
     @Override
-    public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
+    public void serialise(Model model, OutputStream out) {
         if (model instanceof Dfs) {
             PrintWriter writer = new PrintWriter(out);
             writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
@@ -50,7 +49,6 @@ public class VerilogSerialiser implements ModelSerialiser {
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
-        return refs;
     }
 
     @Override

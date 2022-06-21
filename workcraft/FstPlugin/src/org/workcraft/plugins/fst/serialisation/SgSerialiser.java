@@ -1,10 +1,5 @@
 package org.workcraft.plugins.fst.serialisation;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.HashSet;
-import java.util.UUID;
-
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -17,14 +12,18 @@ import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.interop.SgFormat;
-import org.workcraft.serialisation.ModelSerialiser;
-import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.AbstractBasicModelSerialiser;
 import org.workcraft.utils.ExportUtils;
 
-public class SgSerialiser implements ModelSerialiser {
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.UUID;
+
+public class SgSerialiser extends AbstractBasicModelSerialiser {
 
     @Override
-    public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
+    public void serialise(Model model, OutputStream out) {
         PrintWriter writer = new PrintWriter(out);
         writer.write(Info.getGeneratedByText("# SG file ", "\n"));
         String title = ExportUtils.asIdentifier(model.getTitle());
@@ -35,7 +34,6 @@ public class SgSerialiser implements ModelSerialiser {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
         writer.close();
-        return refs;
     }
 
     @Override

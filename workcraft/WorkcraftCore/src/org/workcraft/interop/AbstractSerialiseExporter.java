@@ -2,7 +2,7 @@ package org.workcraft.interop;
 
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.serialisation.ModelSerialiser;
+import org.workcraft.serialisation.AbstractBasicModelSerialiser;
 
 import java.io.OutputStream;
 
@@ -15,9 +15,9 @@ public abstract class AbstractSerialiseExporter implements Exporter {
 
     @Override
     public void export(Model model, OutputStream out) throws SerialisationException {
-        getSerialiser().serialise(model, out, null);
+        getSerialiser().serialise(model, out);
     }
 
-    public abstract ModelSerialiser getSerialiser();
+    public abstract AbstractBasicModelSerialiser getSerialiser();
 
 }
