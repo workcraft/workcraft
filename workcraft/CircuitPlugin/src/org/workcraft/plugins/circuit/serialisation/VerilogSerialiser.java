@@ -16,8 +16,7 @@ import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogBus;
-import org.workcraft.serialisation.ModelSerialiser;
-import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.AbstractBasicModelSerialiser;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
 
@@ -29,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class VerilogSerialiser implements ModelSerialiser {
+public class VerilogSerialiser extends AbstractBasicModelSerialiser {
 
     private static final String KEYWORD_INPUT = "input";
     private static final String KEYWORD_OUTPUT = "output";
@@ -42,7 +41,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private final Queue<Pair<File, Circuit>> refinementCircuits = new LinkedList<>();
 
     @Override
-    public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
+    public void serialise(Model model, OutputStream out) {
         if (model instanceof Circuit) {
             Circuit circuit = (Circuit) model;
             Set<FunctionComponent> badComponents = RefinementUtils.getIncompatibleRefinementCircuitComponents(circuit);
@@ -51,7 +50,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                         ReferenceHelper.getReferenceSet(circuit, badComponents));
 
                 DialogUtils.showError(msg);
-                return refs;
+                return;
             }
 
             PrintWriter writer = new PrintWriter(out);
@@ -63,7 +62,6 @@ public class VerilogSerialiser implements ModelSerialiser {
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
-        return refs;
     }
 
     private void writeRefinementCircuits(PrintWriter writer) {

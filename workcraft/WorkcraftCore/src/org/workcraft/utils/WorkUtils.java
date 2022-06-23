@@ -22,7 +22,10 @@ import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
-import org.workcraft.serialisation.*;
+import org.workcraft.serialisation.DeserialisationResult;
+import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.References;
+import org.workcraft.serialisation.XMLCommonAttributes;
 import org.workcraft.shared.DataAccumulator;
 import org.workcraft.workspace.*;
 import org.xml.sax.SAXException;
@@ -356,7 +359,7 @@ public final class WorkUtils {
 
         try (ZipOutputStream zos = new ZipOutputStream(os)) {
             final PluginManager pm = Framework.getInstance().getPluginManager();
-            ModelSerialiser serialiser = new XMLModelSerialiser(pm);
+            XMLModelSerialiser serialiser = new XMLModelSerialiser(pm);
             // Save math model
             Model mathModel = me.getMathModel();
             if (mathModel != null) {

@@ -15,7 +15,7 @@ import org.workcraft.utils.XmlUtils;
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class XMLModelSerialiser implements ModelSerialiser {
+public class XMLModelSerialiser implements ModelSerialiser<ReferenceProducer, ReferenceProducer> {
 
     private final XMLSerialisationManager serialisation = new XMLSerialisationManager();
 

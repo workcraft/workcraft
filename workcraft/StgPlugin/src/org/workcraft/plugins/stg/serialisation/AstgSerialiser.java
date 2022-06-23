@@ -4,18 +4,16 @@ import org.workcraft.dom.Model;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.serialisation.SerialiserUtils.Style;
-import org.workcraft.serialisation.ModelSerialiser;
-import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.serialisation.AbstractBasicModelSerialiser;
 
 import java.io.OutputStream;
 import java.util.UUID;
 
-public class AstgSerialiser implements ModelSerialiser {
+public class AstgSerialiser extends AbstractBasicModelSerialiser {
 
     @Override
-    public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
+    public void serialise(Model model, OutputStream out) {
         SerialiserUtils.writeModel(model, out, Style.STG, false);
-        return refs;
     }
 
     @Override
