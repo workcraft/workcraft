@@ -88,6 +88,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Scan
     private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyTinvData = prefix + ".tinvData";
+    private static final String keyTestInstancePrefix = prefix + ".testInstancePrefix";
     private static final String keyScanSuffix = prefix + ".scanSuffix";
     private static final String keyScaninData = prefix + ".scaninData";
     private static final String keyScanoutData = prefix + ".scanoutData";
@@ -96,6 +97,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyScantmData = prefix + ".scantmData";
     private static final String keyUseIndividualScan = prefix + ".useIndividualScan";
     private static final String keyUseScanInitialisation = prefix + ".useScanInitialisation";
+    private static final String keyInitialisationInverterInstancePrefix = prefix + ".initialisationInverterInstancePrefix";
 
     /*
      * Defaults
@@ -130,6 +132,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Scan
     private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultTinvData = "TINV (I, ON)";
+    private static final String defaultTestInstancePrefix = "test_";
     private static final String defaultScanSuffix = "_scan";
     private static final String defaultScaninData = "scanin / SI";
     private static final String defaultScanoutData = "scanout / SO";
@@ -138,7 +141,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultScantmData = "scantm / TM";
     private static final boolean defaultUseIndividualScan = false;
     private static final boolean defaultUseScanInitialisation = false;
-
+    private static final String defaultInitialisationInverterInstancePrefix = "test_inv_";
     /*
      * Variables
      */
@@ -172,6 +175,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Scan
     private static String tbufData = defaultTbufData;
     private static String tinvData = defaultTinvData;
+    private static String testInstancePrefix = defaultTestInstancePrefix;
     private static String scanSuffix = defaultScanSuffix;
     private static String scaninData = defaultScaninData;
     private static String scanoutData = defaultScanoutData;
@@ -180,6 +184,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String scantmData = defaultScantmData;
     private static boolean useIndividualScan = defaultUseIndividualScan;
     private static boolean useScanInitialisation = defaultUseScanInitialisation;
+    private static String initialisationInverterInstancePrefix = defaultInitialisationInverterInstancePrefix;
 
     static {
         properties.add(new PropertyDeclaration<>(Boolean.class,
@@ -345,6 +350,11 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getTinvData));
 
         properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Testable instance prefix",
+                CircuitSettings::setTestInstancePrefix,
+                CircuitSettings::getTestInstancePrefix));
+
+        properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Scan module suffix",
                 CircuitSettings::setScanSuffix,
                 CircuitSettings::getScanSuffix));
@@ -383,6 +393,11 @@ public class CircuitSettings extends AbstractModelSettings {
                 PropertyHelper.BULLET_PREFIX + "Use Scan for initialisation",
                 CircuitSettings::setUseScanInitialisation,
                 CircuitSettings::getUseScanInitialisation));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Initialisation inverter instance prefix",
+                CircuitSettings::setInitialisationInverterInstancePrefix,
+                CircuitSettings::getInitialisationInverterInstancePrefix));
     }
 
     private static String getBaseRelativePath(File file) {
@@ -443,6 +458,7 @@ public class CircuitSettings extends AbstractModelSettings {
         // Scan
         setTbufData(config.getString(keyTbufData, defaultTbufData));
         setTinvData(config.getString(keyTinvData, defaultTinvData));
+        setTestInstancePrefix(config.getString(keyTestInstancePrefix, defaultTestInstancePrefix));
         setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
         setScaninData(config.getString(keyScaninData, defaultScaninData));
         setScanoutData(config.getString(keyScanoutData, defaultScanoutData));
@@ -451,6 +467,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setScantmData(config.getString(keyScantmData, defaultScantmData));
         setUseIndividualScan(config.getBoolean(keyUseIndividualScan, defaultUseIndividualScan));
         setUseScanInitialisation(config.getBoolean(keyUseScanInitialisation, defaultUseScanInitialisation));
+        setInitialisationInverterInstancePrefix(config.getString(keyInitialisationInverterInstancePrefix, defaultInitialisationInverterInstancePrefix));
     }
 
     @Override
@@ -485,6 +502,7 @@ public class CircuitSettings extends AbstractModelSettings {
         // Scan
         config.set(keyTbufData, getTbufData());
         config.set(keyTinvData, getTinvData());
+        config.set(keyTestInstancePrefix, getTestInstancePrefix());
         config.set(keyScanSuffix, getScanSuffix());
         config.set(keyScaninData, getScaninData());
         config.set(keyScanoutData, getScanoutData());
@@ -493,6 +511,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyScantmData, getScantmData());
         config.setBoolean(keyUseIndividualScan, getUseIndividualScan());
         config.setBoolean(keyUseScanInitialisation, getUseScanInitialisation());
+        config.set(keyInitialisationInverterInstancePrefix, getInitialisationInverterInstancePrefix());
     }
 
     public static boolean getShowContacts() {
@@ -738,6 +757,14 @@ public class CircuitSettings extends AbstractModelSettings {
         return parseGate2DataOrNull(getTinvData());
     }
 
+    public static String getTestInstancePrefix() {
+        return testInstancePrefix;
+    }
+
+    public static void setTestInstancePrefix(String value) {
+        testInstancePrefix = value;
+    }
+
     public static String getScanSuffix() {
         return scanSuffix;
     }
@@ -850,6 +877,14 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setUseScanInitialisation(boolean value) {
         useScanInitialisation = value;
+    }
+
+    public static String getInitialisationInverterInstancePrefix() {
+        return initialisationInverterInstancePrefix;
+    }
+
+    public static void setInitialisationInverterInstancePrefix(String value) {
+        initialisationInverterInstancePrefix = value;
     }
 
     private static void setGate2Data(String value, Consumer<String> setter, String msg, String defaultValue) {

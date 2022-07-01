@@ -120,6 +120,7 @@ class ScanCommandTests {
     void testScanIndividualInsertionCommand() throws DeserialisationException {
         CircuitSettings.setTbufData("MUX2 (I0, O)");
         CircuitSettings.setTinvData("NMUX2 (I0, ON)");
+        CircuitSettings.setTestInstancePrefix("test_");
         CircuitSettings.setScanSuffix("");
         CircuitSettings.setScaninData("scanin / I1");
         CircuitSettings.setScanoutData("scanout / I0");
@@ -127,6 +128,7 @@ class ScanCommandTests {
         CircuitSettings.setScantmData(null);
         CircuitSettings.setUseIndividualScan(true);
         CircuitSettings.setUseScanInitialisation(true);
+        CircuitSettings.setInitialisationInverterInstancePrefix("test_inv_");
 
         String workName = PackageUtils.getPackagePath(getClass(), "scan-bufs_invs_boxes.circuit.work");
 

@@ -6,7 +6,7 @@ tagCircuitPathBreakerAutoAppend(work);
 
 setConfigVar("CircuitSettings.tbufData", "TBUF (I, O)");
 setConfigVar("CircuitSettings.tinvData", "TINV (I, ON)");
-setConfigVar("CircuitSettings.scanSuffix", "_scan");
+setConfigVar("CircuitSettings.testInstancePrefix", "test_");
 setConfigVar("CircuitSettings.scaninData", "scanin / SI");
 setConfigVar("CircuitSettings.scanoutData", "scanout / SO");
 setConfigVar("CircuitSettings.scanenData", "scanen / SE");

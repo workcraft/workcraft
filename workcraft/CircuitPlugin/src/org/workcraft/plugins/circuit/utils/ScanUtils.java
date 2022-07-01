@@ -9,6 +9,7 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.GateInterface;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.SortUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -16,8 +17,8 @@ import java.util.stream.Collectors;
 
 public final class ScanUtils {
 
-    public static Set<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
-        Set<VisualFunctionComponent> result = new HashSet<>();
+    public static List<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
+        List<VisualFunctionComponent> result = new ArrayList<>();
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             for (VisualContact contact : component.getVisualOutputs()) {
                 if (contact.getReferencedComponent().getPathBreaker()) {
@@ -26,6 +27,12 @@ public final class ScanUtils {
                     result.add(testableGate);
                 }
             }
+        }
+        int index = 0;
+        String testInstancePrefix = CircuitSettings.getTestInstancePrefix();
+        for (VisualFunctionComponent testableGate : result) {
+            circuit.setMathName(testableGate, testInstancePrefix + index);
+            index++;
         }
         return result;
     }
@@ -245,28 +252,31 @@ public final class ScanUtils {
         return null;
     }
 
-    private static void connectIndividualScanin(VisualCircuit circuit, List<VisualFunctionComponent> components,
+    private static void connectIndividualScanin(VisualCircuit circuit, List<VisualFunctionComponent> testComponents,
             Set<VisualFunctionComponent> scaninInversionComponents) {
 
         String portPrefix = CircuitSettings.getScaninPort();
         if (portPrefix != null) {
             String pinName = CircuitSettings.getScaninPin();
+            String invInstancePrefix = CircuitSettings.getInitialisationInverterInstancePrefix();
             int index = 0;
-            for (VisualFunctionComponent component : components) {
-                if (circuit.hasPin(component, pinName)) {
-                    VisualContact pin = circuit.getPin(component, pinName);
-                    VisualConnection connection = connectFromIndividualPort(circuit, portPrefix, index++, pin, false);
-                    if ((connection != null) && scaninInversionComponents.contains(component)) {
+            for (VisualFunctionComponent testComponent : testComponents) {
+                if (circuit.hasPin(testComponent, pinName)) {
+                    VisualContact pin = circuit.getPin(testComponent, pinName);
+                    VisualConnection connection = connectFromIndividualPort(circuit, portPrefix, index, pin, false);
+                    if ((connection != null) && scaninInversionComponents.contains(testComponent)) {
                         VisualFunctionComponent inverterGate = GateUtils.createInverterGate(circuit);
+                        circuit.setMathName(inverterGate, invInstancePrefix + index);
                         GateUtils.insertGateWithin(circuit, inverterGate, connection);
                         GateUtils.propagateInitialState(circuit, inverterGate);
                     }
+                    index++;
                 }
             }
-            for (VisualFunctionComponent component : components) {
-                Set<VisualContact> pins = getInputPinsByPrefix(component, portPrefix);
-                for (VisualContact pin : pins) {
-                    connectFromIndividualPort(circuit, portPrefix, index++, pin, false);
+            for (VisualFunctionComponent component : testComponents) {
+                for (VisualContact pin : getSortedInputPinsByPrefix(component, portPrefix)) {
+                    connectFromIndividualPort(circuit, portPrefix, index, pin, false);
+                    index++;
                 }
             }
         }
@@ -281,13 +291,14 @@ public final class ScanUtils {
             for (VisualFunctionComponent component : components) {
                 if (circuit.hasPin(component, pinName)) {
                     VisualContact pin = circuit.getPin(component, pinName);
-                    connectFromIndividualPort(circuit, portPrefix, index++, pin, useScanInitialisation);
+                    connectFromIndividualPort(circuit, portPrefix, index, pin, useScanInitialisation);
+                    index++;
                 }
             }
             for (VisualFunctionComponent component : components) {
-                Set<VisualContact> pins = getInputPinsByPrefix(component, portPrefix);
-                for (VisualContact pin : pins) {
-                    connectFromIndividualPort(circuit, portPrefix, index++, pin, useScanInitialisation);
+                for (VisualContact pin : getSortedInputPinsByPrefix(component, portPrefix)) {
+                    connectFromIndividualPort(circuit, portPrefix, index, pin, useScanInitialisation);
+                    index++;
                 }
             }
         }
@@ -307,28 +318,31 @@ public final class ScanUtils {
                     if (needsBuffering(circuit, pin)) {
                         pin = addBuffering(circuit, pin);
                     }
-                    connectToIndividualPort(circuit, pin, portPrefix, index++);
+                    connectToIndividualPort(circuit, pin, portPrefix, index);
+                    index++;
                 }
             }
             for (VisualFunctionComponent component : components) {
-                Set<VisualContact> pins = getOutputPinsByPrefix(component, portPrefix);
-                for (VisualContact pin : pins) {
-                    connectToIndividualPort(circuit, pin, portPrefix, index++);
+                for (VisualContact pin : getSortedOutputPinsByPrefix(component, portPrefix)) {
+                    connectToIndividualPort(circuit, pin, portPrefix, index);
+                    index++;
                 }
             }
         }
     }
 
-    private static Set<VisualContact> getInputPinsByPrefix(VisualFunctionComponent component, String prefix) {
+    private static List<VisualContact> getSortedInputPinsByPrefix(VisualFunctionComponent component, String prefix) {
         return component.getVisualContacts().stream()
                 .filter(contact -> contact.isInput() && contact.getName().startsWith(prefix))
-                .collect(Collectors.toSet());
+                .sorted((c1, c2) -> SortUtils.compareNatural(c1, c2, VisualContact::getName))
+                .collect(Collectors.toList());
     }
 
-    private static Set<VisualContact> getOutputPinsByPrefix(VisualFunctionComponent component, String prefix) {
+    private static List<VisualContact> getSortedOutputPinsByPrefix(VisualFunctionComponent component, String prefix) {
         return component.getVisualContacts().stream()
                 .filter(contact -> contact.isOutput() && contact.getName().startsWith(prefix))
-                .collect(Collectors.toSet());
+                .sorted((c1, c2) -> SortUtils.compareNatural(c1, c2, VisualContact::getName))
+                .collect(Collectors.toList());
     }
 
     private static VisualConnection connectFromIndividualPort(VisualCircuit circuit, String portPrefix,
