@@ -8,14 +8,7 @@ import java.util.TreeSet;
 
 public class IDGenerator {
 
-    private static final Comparator<? super Pair<Integer, Integer>> comparator = new Comparator<Pair<Integer, Integer>>() {
-                @Override
-                public int compare(Pair<Integer, Integer> o1, Pair<Integer, Integer> o2) {
-                    return o1.getFirst().compareTo(o2.getFirst());
-                }
-            };
-
-    private final TreeSet<Pair<Integer, Integer>> takenRanges = new TreeSet<>(comparator);
+    private final TreeSet<Pair<Integer, Integer>> takenRanges = new TreeSet<>(Comparator.comparing(Pair::getFirst));
 
     public void reserveID(int id) {
         final Pair<Integer, Integer> point = emptyRange(id);
@@ -25,7 +18,7 @@ public class IDGenerator {
         }
 
         final Pair<Integer, Integer> ceiling = takenRanges.ceiling(point);
-        if ((ceiling != null) && (id == ceiling.getFirst().intValue())) {
+        if ((ceiling != null) && (id == ceiling.getFirst())) {
             throw new DuplicateIDException(id);
         }
 
@@ -85,8 +78,8 @@ public class IDGenerator {
     }
 
     public int getNextID() {
-        boolean b = !takenRanges.isEmpty() && (takenRanges.first().getFirst().intValue() == 0);
-        int result = b ? takenRanges.first().getSecond().intValue() : 0;
+        boolean b = !takenRanges.isEmpty() && (takenRanges.first().getFirst() == 0);
+        int result = b ? takenRanges.first().getSecond() : 0;
         reserveID(result);
         return result;
     }

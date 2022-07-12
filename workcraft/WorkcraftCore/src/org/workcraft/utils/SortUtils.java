@@ -17,6 +17,10 @@ public class SortUtils {
         list.sort((s1, s2) -> compareNatural(converter.apply(s1), converter.apply(s2)));
     }
 
+    public static <T> int compareNatural(T c1, T c2, Function<T, String> converter) {
+        return compareNatural(converter.apply(c1), converter.apply(c2));
+    }
+
     public static List<String> getSortedNatural(Collection<String> collection) {
         List<String> list = new ArrayList<>(collection);
         sortNatural(list);

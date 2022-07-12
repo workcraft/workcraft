@@ -102,6 +102,9 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getTinvData()),
                 framework.getConfigVar(prefix + ".tinvData", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getTestInstancePrefix()),
+                framework.getConfigVar(prefix + ".testInstancePrefix", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getScanSuffix()),
                 framework.getConfigVar(prefix + ".scanSuffix", false));
 
@@ -125,6 +128,9 @@ class CircuitSettingsTests {
 
         Assertions.assertEquals(Config.toString(CircuitSettings.getUseScanInitialisation()),
                 framework.getConfigVar(prefix + ".useScanInitialisation", false));
+
+        Assertions.assertEquals(Config.toString(CircuitSettings.getInitialisationInverterInstancePrefix()),
+                framework.getConfigVar(prefix + ".initialisationInverterInstancePrefix", false));
     }
 
 }
