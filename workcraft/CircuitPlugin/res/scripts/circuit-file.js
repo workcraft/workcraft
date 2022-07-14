@@ -1,5 +1,5 @@
 framework.addJavaScriptHelp("importCircuitVerilog", "vFileName",
-    "import a Circuit from the given Verilog netlist (*.v) file 'vFileName'and return its work");
+    "import a Circuit from the given Verilog netlist (*.v) file 'vFileName' and return its work");
 
 function importCircuitVerilog(vFileName) {
     if (!vFileName.endsWith(".v")) {
