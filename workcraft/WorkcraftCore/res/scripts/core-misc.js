@@ -14,14 +14,14 @@ function stopGUI() {
 }
 
 
-framework.addJavaScriptHelp("quit", "", "exit Workcraft");
+framework.addJavaScriptHelp("quit", "", "request Workcraft shutdown after script execution is complete");
 
 function quit() {
     framework.shutdown();
 }
 
 
-framework.addJavaScriptHelp("exit", "", "exit Workcraft");
+framework.addJavaScriptHelp("exit", "", "request Workcraft shutdown after script execution is complete");
 
 function exit() {
     framework.shutdown();
