@@ -35,7 +35,7 @@ public class DfsPlugin implements Plugin {
 
         ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkDfsDeadlockFreeness",
                 "check the DFS 'work' for deadlock freeness");
-        ScriptableCommandUtils.registerCommand(OutputPersisitencyVerificationCommand.class, "checkDfsOutputPersistency",
+        ScriptableCommandUtils.registerCommand(OutputPersistencyVerificationCommand.class, "checkDfsOutputPersistency",
                 "check the DFS 'work' for output persistency");
         ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkDfsCombined",
                 " combined check of the DFS 'work' for deadlock freeness and output persistency");

@@ -11,7 +11,7 @@ public class StringGenerator implements BooleanVisitor<String> {
     }
 
     public enum Style {
-        DEFAULT, UNICODE, VERILOG, REACH, GENLIB
+        DEFAULT, UNICODE, VERILOG, REACH, GENLIB, C
     }
 
     public static class PrinterSuite {
@@ -137,36 +137,66 @@ public class StringGenerator implements BooleanVisitor<String> {
     public static class ImplyPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Imply node) {
-            return style == Style.UNICODE
-                ?  visitBinary(next, " \u21d2 ", node)
-                : visitBinary(next, " => ", node);
+            switch (style) {
+            case UNICODE:
+                return visitBinary(next, " \u21d2 ", node);
+            case C:
+                new Not(node.getX()).accept(this);
+                append(" || ");
+                node.getY().accept(this);
+                return null;
+            default:
+                return visitBinary(next, " => ", node);
+            }
         }
     }
 
     public static class IffPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Iff node) {
-            return style == Style.REACH
-                    ? visitBinary(this, " <-> ", node)
-                    : visitBinary(this, " = ", node);
+            switch (style) {
+            case REACH:
+                return visitBinary(this, " <-> ", node);
+            case C:
+                new Not(node.getX()).accept(this);
+                append(" == ");
+                new Not(node.getY()).accept(this);
+                return null;
+            default:
+                return visitBinary(this, " = ", node);
+            }
         }
     }
 
     public static class OrPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Or node) {
-            return style == Style.VERILOG || style == Style.REACH
-                    ? visitBinary(this, " | ", node)
-                    : visitBinary(this, " + ", node);
+            switch (style) {
+            case VERILOG:
+            case REACH:
+                return visitBinary(this, " | ", node);
+            case C:
+                return visitBinary(this, " || ", node);
+            default:
+                return visitBinary(this, " + ", node);
+            }
         }
     }
 
     public static class XorPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Xor node) {
-            return style == Style.UNICODE
-                    ? visitBinary(this, " \u2295 ", node)
-                    : visitBinary(this, " ^ ", node);
+            switch (style) {
+            case UNICODE:
+                return visitBinary(this, " \u2295 ", node);
+            case C:
+                new Not(node.getX()).accept(this);
+                append(" != ");
+                new Not(node.getY()).accept(this);
+                return null;
+            default:
+                return visitBinary(this, " ^ ", node);
+            }
         }
     }
 
@@ -179,6 +209,8 @@ public class StringGenerator implements BooleanVisitor<String> {
             case VERILOG:
             case REACH:
                 return visitBinary(this, " & ", node);
+            case C:
+                return visitBinary(this, " && ", node);
             default:
                 return visitBinary(this, " * ", node);
             }
@@ -197,6 +229,7 @@ public class StringGenerator implements BooleanVisitor<String> {
                 append("~");
                 return node.getX().accept(this);
             case GENLIB:
+            case C:
                 append("!");
                 return node.getX().accept(this);
             default:
@@ -246,7 +279,14 @@ public class StringGenerator implements BooleanVisitor<String> {
                     throw new RuntimeException("Duplicate variable name '" + label + "'");
                 }
             }
-            return style == Style.REACH ? append("$S\"" + label + "\"") : append(label);
+            switch (style) {
+            case REACH:
+                return append("$S\"" + label + "\"");
+            case C:
+                return append("(" + label + ">0)");
+            default:
+                return append(label);
+            }
         }
     }
 

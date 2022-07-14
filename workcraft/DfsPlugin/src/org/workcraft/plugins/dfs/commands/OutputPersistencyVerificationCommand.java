@@ -12,7 +12,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class OutputPersisitencyVerificationCommand extends AbstractVerificationCommand
+public class OutputPersistencyVerificationCommand extends AbstractVerificationCommand
         implements ScriptableCommand<Boolean> {
 
     @Override

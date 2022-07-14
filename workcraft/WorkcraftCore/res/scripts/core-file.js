@@ -8,14 +8,6 @@ function load(fileName) {
 }
 
 
-framework.addJavaScriptHelp("import", "fileName",
-    "import a model from the given file 'fileName' (the model type is determined by its extension) and return its work");
-
-function import(fileName) {
-    return framework.loadWork(fileName);
-}
-
-
 framework.addJavaScriptHelp("save", "work, fileName",
     "save the model 'work' to a file 'fileName'");
 

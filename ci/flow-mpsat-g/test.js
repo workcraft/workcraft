@@ -10,7 +10,7 @@ exit();
 function process(name) {
     log = name + ".result";
     s = "";
-    stgWork = import(name + ".g");
+    stgWork = importStgG(name + ".g");
 
     s += "Processing STG:\n";
     s += "  - importing: ";

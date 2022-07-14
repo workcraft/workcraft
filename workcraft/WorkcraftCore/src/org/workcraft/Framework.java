@@ -80,6 +80,7 @@ public final class Framework {
 
         @Override
         public Object run(Context cx) {
+            cx.setLanguageVersion(Context.VERSION_ES6);
             return cx.evaluateString(scope, script, "<string>", 1, null);
         }
     }
