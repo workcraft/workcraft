@@ -1,14 +1,42 @@
-framework.addJavaScriptHelp("exportStgG", "work, fileName",
-    "export the STG 'work' as a Signal Transition Graph (*.g) file 'fileName'");
+framework.addJavaScriptHelp("importStgG", "gFileName",
+    "import an STG from the Signal Transition Graph (*.g) file 'gFileName' and return its work");
 
-function exportStgG(work, fileName) {
-    framework.exportWork(work, fileName, 'STG');
+function importStgG(gFileName) {
+    if (!gFileName.endsWith(".g")) {
+        throw("Signal Transition Graph file '" + gFileName + "' has incorrect extension, as '.g' is expected");
+    }
+    return framework.loadWork(gFileName);
 }
 
 
-framework.addJavaScriptHelp("exportStgLpn", "work, fileName",
-    "export the STG 'work' as a Labeled Petri Net (*.lpn) file 'fileName'");
+framework.addJavaScriptHelp("exportStgG", "work, gFileName",
+    "export the STG 'work' as a Signal Transition Graph (*.g) file 'gFileName'");
 
-function exportStgLpn(work, fileName) {
-    framework.exportWork(work, fileName, 'LPN');
+function exportStgG(work, gFileName) {
+    if (!gFileName.endsWith(".g")) {
+        throw("Signal Transition Graph file '" + gFileName + "' has incorrect extension, as '.g' is expected");
+    }
+    framework.exportWork(work, gFileName, 'STG');
+}
+
+
+framework.addJavaScriptHelp("importStgLpn", "lpnFileName",
+    "import an STG from the Labeled Petri Net (*.lpn) file 'lpnFileName' and return its work");
+
+function importStgLpn(lpnFileName) {
+    if (!lpnFileName.endsWith(".lpn")) {
+        throw("Labeled Petri Net file '" + lpnFileName + "' has incorrect extension, as '.lpn' is expected");
+    }
+    return framework.loadWork(lpnFileName);
+}
+
+
+framework.addJavaScriptHelp("exportStgLpn", "work, lpnFileName",
+    "export the STG 'work' as a Labeled Petri Net (*.lpn) file 'lpnFileName'");
+
+function exportStgLpn(work, lpnFileName) {
+    if (!lpnFileName.endsWith(".lpn")) {
+        throw("Labeled Petri Net file '" + lpnFileName + "' has incorrect extension, as '.lpn' is expected");
+    }
+    framework.exportWork(work, lpnFileName, 'LPN');
 }

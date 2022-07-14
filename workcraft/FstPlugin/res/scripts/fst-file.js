@@ -1,6 +1,20 @@
-framework.addJavaScriptHelp("exportFstSg", "work, fileName",
-    "export the FST 'work' as a State Graph (*.sg) file 'fileName'");
+framework.addJavaScriptHelp("importFstSg", "sgFileName",
+    "import an FST from the State Graph (*.sg) file 'sgFileName' and return its work");
 
-function exportFstSg(work, path) {
-    framework.exportWork(work, path, 'SG');
+function importFstSg(sgFileName) {
+    if (!sgFileName.endsWith(".sg")) {
+        throw("State Graph file '" + sgFileName + "' has incorrect extension, as '.sg' is expected");
+    }
+    return framework.loadWork(sgFileName);
+}
+
+
+framework.addJavaScriptHelp("exportFstSg", "work, sgFileName",
+    "export the FST 'work' as a State Graph (*.sg) file 'sgFileName'");
+
+function exportFstSg(work, sgFileName) {
+    if (!sgFileName.endsWith(".sg")) {
+        throw("State Graph file '" + sgFileName + "' has incorrect extension, as '.sg' is expected");
+    }
+    framework.exportWork(work, sgFileName, 'SG');
 }

@@ -5,7 +5,7 @@ setConfigVar("CircuitSettings.invertExportSubstitutionRules", "false");
 
 // Workcraft library Verilog
 setConfigVar("CircuitSettings.importSubstitutionLibrary", "");
-we = import("vme-tm.workcraft.v");
+we = importCircuitVerilog("vme-tm.workcraft.v");
 
 setConfigVar("CircuitSettings.exportSubstitutionLibrary", "");
 exportCircuitVerilog(we, "vme-tm.workcraft-workcraft.v");
@@ -18,7 +18,7 @@ exportCircuitVerilog(we, "vme-tm.workcraft-tsmc_bcd.v");
 
 // TSMC GHP library Verilog
 setConfigVar("CircuitSettings.importSubstitutionLibrary", "libraries/workcraft-tsmc_ghp.cnv");
-we = import("vme-tm.tsmc_ghp.v");
+we = importCircuitVerilog("vme-tm.tsmc_ghp.v");
 
 setConfigVar("CircuitSettings.exportSubstitutionLibrary", "");
 exportCircuitVerilog(we, "vme-tm.tsmc_ghp-workcraft.v");
@@ -31,7 +31,7 @@ exportCircuitVerilog(we, "vme-tm.tsmc_ghp-tsmc_bcd.v");
 
 // TSMC BCD library Verilog
 setConfigVar("CircuitSettings.importSubstitutionLibrary", "libraries/workcraft-tsmc_bcd.cnv");
-we = import("vme-tm.tsmc_bcd.v");
+we = importCircuitVerilog("vme-tm.tsmc_bcd.v");
 
 setConfigVar("CircuitSettings.exportSubstitutionLibrary", "");
 exportCircuitVerilog(we, "vme-tm.tsmc_bcd-workcraft.v");

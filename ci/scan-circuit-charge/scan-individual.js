@@ -15,7 +15,7 @@ setConfigVar("CircuitSettings.scanckData", "");
 setConfigVar("CircuitSettings.scantmData", "");
 setConfigVar("CircuitSettings.useIndividualScan", "true");
 setConfigVar("CircuitSettings.useScanInitialisation", "true");
-setConfigVar("CircuitSettings.initialistionInverterInstancePrefix", "test_inv_");
+setConfigVar("CircuitSettings.initialisationInverterInstancePrefix", "test_inv_");
 insertCircuitTestableGates(work);
 
 insertCircuitScan(work);

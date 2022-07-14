@@ -1,6 +1,7 @@
 helpRegex("check.*", "checkHelp.txt");
 helpRegex("convert.*", "convertHelp.txt");
 helpRegex("export.*", "exportHelp.txt");
+helpRegex("import.*", "importHelp.txt");
 helpRegex("insert.*", "insertHelp.txt");
 helpRegex("layout.*", "layoutHelp.txt");
 helpRegex("stat.*", "statHelp.txt");
