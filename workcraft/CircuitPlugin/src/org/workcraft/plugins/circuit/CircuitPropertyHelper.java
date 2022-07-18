@@ -13,6 +13,7 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.properties.TextAction;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
 import org.workcraft.plugins.circuit.refinement.ComponentInterface;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
@@ -20,6 +21,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 
+import java.awt.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,6 +54,8 @@ public class CircuitPropertyHelper {
                 () -> circuit.select(component),
                 "Select component '" + name + "'");
 
+        Color backgroundColor = getComponentPropertyBackgroundColor(component);
+
         return new PropertyDeclaration<>(TextAction.class, null,
                 value -> {
                     String newName = value.getText();
@@ -60,8 +64,17 @@ public class CircuitPropertyHelper {
                         component.sendNotification(new PropertyChangedEvent(component, Model.PROPERTY_NAME));
                     }
                 },
-                () -> new TextAction(name).setRightAction(rightAction)
+                () -> new TextAction(name).setRightAction(rightAction).setBackground(backgroundColor)
             ).setSpan();
+    }
+
+    private static Color getComponentPropertyBackgroundColor(VisualFunctionComponent component) {
+        File refinementFile = component == null ? null : component.getReferencedComponent().getRefinementFile();
+        Color color = refinementFile == null ? null : refinementFile.exists()
+                ? AnalysisDecorationSettings.getClearColor()
+                : AnalysisDecorationSettings.getProblemColor();
+
+        return ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), color);
     }
 
     public static PropertyDescriptor getEnvironmentProperty(VisualCircuit circuit) {
