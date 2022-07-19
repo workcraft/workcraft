@@ -180,6 +180,16 @@ public class TextUtils {
         return word + "s";
     }
 
+    public static String makeFirstCapital(String text) {
+        if ((text != null) && !text.isEmpty()) {
+            char c = text.charAt(0);
+            if (Character.isLetter(c)) {
+                return Character.toUpperCase(c) + text.substring(1);
+            }
+        }
+        return text;
+    }
+
     public static String repeat(String str, int count) {
         return String.join("", Collections.nCopies(count, str));
     }

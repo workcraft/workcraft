@@ -76,6 +76,8 @@ public class CircuitPlugin implements Plugin {
         // Statistics commands
         ScriptableCommandUtils.registerCommand(StatisticsCommand.class, "statCircuit",
                 "advanced complexity estimates for the Circuit 'work'");
+        ScriptableCommandUtils.registerCommand(RefinementStatisticsCommand.class, "statCircuitRefinement",
+                "refinement dependencies for the Circuit 'work'");
 
         // Conversion commands
         ScriptableCommandUtils.registerCommand(CircuitToStgConversionCommand.class, "convertCircuitToStg",

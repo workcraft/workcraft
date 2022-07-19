@@ -113,9 +113,20 @@ public class RefinementDependencyGraph {
         return result;
     }
 
+    public boolean isCircuit(File file) {
+        ModelEntry me = fileToModelMap.get(file);
+        return WorkspaceUtils.isApplicable(me, Circuit.class);
+    }
+
     public boolean isStg(File file) {
         ModelEntry me = fileToModelMap.get(file);
         return WorkspaceUtils.isApplicable(me, Stg.class);
+    }
+
+    public Set<File> getCircuitFiles() {
+        return getVertices().stream()
+                .filter(this::isCircuit)
+                .collect(Collectors.toSet());
     }
 
     public Set<File> getStgFiles() {
