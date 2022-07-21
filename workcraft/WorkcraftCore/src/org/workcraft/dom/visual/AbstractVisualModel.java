@@ -21,6 +21,7 @@ import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
+import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.types.Func;
 import org.workcraft.types.Pair;
@@ -709,6 +710,11 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     @Override
     public AbstractLayoutCommand getBestLayouter() {
         return new DotLayoutCommand();
+    }
+
+    @Override
+    public AbstractLayoutCommand getFallbackLayouter() {
+        return new RandomLayoutCommand();
     }
 
     @Override

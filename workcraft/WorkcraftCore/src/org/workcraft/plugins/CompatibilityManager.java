@@ -166,8 +166,8 @@ public class CompatibilityManager {
         return line;
     }
 
-    public ByteArrayInputStream process(File file) throws DeserialisationException, OperationCancelledException {
-        ByteArrayInputStream result = null;
+    public InputStream process(File file) throws DeserialisationException, OperationCancelledException {
+        InputStream result = null;
         try {
             ZipFile zipFile = new ZipFile(file, StandardCharsets.UTF_8);
             Version compatibilityVersion = WorkUtils.extractCompatibilityVersion(zipFile);

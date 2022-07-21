@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
@@ -10,6 +9,7 @@ import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.builtin.commands.StraightenConnectionTransformationCommand;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.basic.Point;
@@ -18,10 +18,9 @@ import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
-import org.workcraft.plugins.builtin.commands.StraightenConnectionTransformationCommand;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -364,13 +363,13 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         for (Route route: router.getRoutingResult()) {
             VisualContact srcContact = routingClient.getContact(route.source);
             VisualContact dstContact = routingClient.getContact(route.destination);
-            Connection connection = circuit.getConnection(srcContact, dstContact);
-            if (connection instanceof VisualConnection) {
+            VisualConnection connection = circuit.getConnection(srcContact, dstContact);
+            if (connection != null) {
                 List<Point2D> locationsInRootSpace = new ArrayList<>();
                 for (Point routePoint: route.getPoints()) {
                     locationsInRootSpace.add(new Point2D.Double(routePoint.getX(), routePoint.getY()));
                 }
-                ConnectionHelper.addControlPoints((VisualConnection) connection, locationsInRootSpace);
+                ConnectionHelper.addControlPoints(connection, locationsInRootSpace);
             }
         }
     }
@@ -480,7 +479,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
             VisualConnection succConnection = circuit.connect(joint, connection.getSecond());
             ConnectionHelper.addControlPoints(succConnection, suffixLocationsInRootSpace);
             succConnection.copyStyle(connection);
-        } catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException ignored) {
         }
     }
 
@@ -509,15 +508,15 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
             VisualConnection succ2Connection = circuit.connect(joint, c2.getSecond());
             ConnectionHelper.addControlPoints(succ2Connection, c2LocationsInRootSpace);
             succ2Connection.copyStyle(c2);
-        } catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException ignored) {
         }
     }
 
     private void mergeJoints(VisualCircuit circuit, VisualJoint j1, VisualJoint j2) {
         Set<VisualConnection> connections = new HashSet<>();
-        for (Connection connection: circuit.getConnections(j1)) {
-            if ((connection instanceof VisualConnection) && (connection.getFirst() == j1)) {
-                connections.add((VisualConnection) connection);
+        for (VisualConnection connection : circuit.getConnections(j1)) {
+            if ((connection != null) && (connection.getFirst() == j1)) {
+                connections.add(connection);
             }
         }
         circuit.remove(j1);
@@ -526,7 +525,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                 VisualConnection newConnection = circuit.connect(j2, connection.getSecond());
                 newConnection.copyShape(connection);
                 newConnection.copyStyle(connection);
-            } catch (InvalidConnectionException e) {
+            } catch (InvalidConnectionException ignored) {
             }
         }
     }
@@ -538,13 +537,13 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                 Polyline polyline = (Polyline) graphic;
                 AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
 
-                ControlPoint fcp = polyline.getFirstControlPoint();
-                Point2D fcpnPos = polyline.getNextAnchorPointLocation(fcp);
-                alignControlPointToNode(fcp, connection.getFirst(), fcpnPos, localToRootTransform);
+                ControlPoint firstControlPoint = polyline.getFirstControlPoint();
+                Point2D firstPos = polyline.getNextAnchorPointLocation(firstControlPoint);
+                alignControlPointToNode(firstControlPoint, connection.getFirst(), firstPos, localToRootTransform);
 
-                ControlPoint lcp = polyline.getLastControlPoint();
-                Point2D lcpnPos = polyline.getPrevAnchorPointLocation(lcp);
-                alignControlPointToNode(lcp, connection.getSecond(), lcpnPos, localToRootTransform);
+                ControlPoint lastControlPoint = polyline.getLastControlPoint();
+                Point2D lastPos = polyline.getPrevAnchorPointLocation(lastControlPoint);
+                alignControlPointToNode(lastControlPoint, connection.getSecond(), lastPos, localToRootTransform);
             }
         }
     }

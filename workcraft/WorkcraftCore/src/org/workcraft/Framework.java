@@ -633,7 +633,7 @@ public final class Framework {
                 ((StateObserver) component).notify(new ModelModifiedEvent(model));
             }
         }
-        AbstractLayoutCommand layoutCommand = answer == 0 ? model.getBestLayouter() : new RandomLayoutCommand();
+        AbstractLayoutCommand layoutCommand = answer == 0 ? model.getBestLayouter() : model.getFallbackLayouter();
         if (layoutCommand == null) {
             layoutCommand = new DotLayoutCommand();
         }

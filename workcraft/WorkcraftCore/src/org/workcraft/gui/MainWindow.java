@@ -319,12 +319,12 @@ public class MainWindow extends JFrame {
             if (weWindowsMap.get(we).isEmpty()) {
                 Framework framework = Framework.getInstance();
                 framework.closeWork(we);
-                framework.updatePropertyView();
             }
             // Remove commands menu and update property window
             if (editorInFocus == editor) {
                 menu.setCommandsMenu(null);
                 editorInFocus = null;
+                propertyEditorWindow.clear();
                 setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
             }
             // If no more editor windows left, then activate the document placeholder

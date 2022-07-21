@@ -67,6 +67,7 @@ public interface VisualModel extends Model<VisualNode, VisualConnection>, Observ
 
     Collection<VisualNode> hitBox(Point2D p1, Point2D p2);
     AbstractLayoutCommand getBestLayouter();
+    AbstractLayoutCommand getFallbackLayouter();
     Rectangle2D getBoundingBox();
     Point2D getNodeSpacePosition(Point2D rootspacePosition, VisualTransformableNode node);
 
