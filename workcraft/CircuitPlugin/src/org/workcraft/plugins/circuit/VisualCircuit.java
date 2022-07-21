@@ -16,6 +16,7 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutPlacementCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.RouterVisualiser;
@@ -345,6 +346,11 @@ public class VisualCircuit extends AbstractVisualModel {
     @Override
     public AbstractLayoutCommand getBestLayouter() {
         return new CircuitLayoutCommand();
+    }
+
+    @Override
+    public AbstractLayoutCommand getFallbackLayouter() {
+        return new CircuitLayoutPlacementCommand();
     }
 
     @Override
