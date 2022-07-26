@@ -2,6 +2,7 @@ package org.workcraft.plugins.petri_expression.utils;
 
 import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.petri.VisualPetri;
+import org.workcraft.plugins.petri_expression.presets.ExpressionParameters;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.utils.LogUtils;
 
@@ -62,14 +63,14 @@ public class ExpressionUtils {
         return pos;
     }
 
-    public static boolean insert(VisualPetri petri, String expressionText) {
+    public static boolean insert(VisualPetri petri, String expressionText, ExpressionParameters.Mode mode) {
         // TODO: Insert expression as a Petri net into petri model and return success status
-        return (petri != null) && (expressionText != null);
+        return (petri != null) && (expressionText != null) && (mode != null);
     }
 
-    public static boolean insert(VisualStg stg, String expressionText) {
+    public static boolean insert(VisualStg stg, String expressionText, ExpressionParameters.Mode mode) {
         // TODO: Insert expression as an STG into stg model and return success status
-        return (stg != null) && (expressionText != null);
+        return (stg != null) && (expressionText != null) && (mode != null);
     }
 
 }
