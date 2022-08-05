@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.function.Function;
 
 public class CircuitSignalInfo {
 
@@ -35,22 +36,25 @@ public class CircuitSignalInfo {
         }
     }
 
-
     public CircuitSignalInfo(Circuit circuit) {
+        this(circuit, Literal::new);
+    }
+
+    public CircuitSignalInfo(Circuit circuit, Function<String, Literal> literalBuilder) {
         this.circuit = circuit;
-        this.signalLiteralMap = buildSignalLiteralMap();
+        this.signalLiteralMap = buildSignalLiteralMap(literalBuilder);
     }
 
     public Circuit getCircuit() {
         return circuit;
     }
 
-    private HashMap<String, BooleanFormula> buildSignalLiteralMap() {
+    private HashMap<String, BooleanFormula> buildSignalLiteralMap(Function<String, Literal> literalCreator) {
         HashMap<String, BooleanFormula> result = new HashMap<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver()) {
                 String signalName = getContactSignal(contact);
-                BooleanFormula literal = new Literal(signalName);
+                BooleanFormula literal = literalCreator.apply(signalName);
                 result.put(signalName, literal);
             }
         }
@@ -89,6 +93,7 @@ public class CircuitSignalInfo {
         }
         return result;
     }
+
 
     public Collection<SignalInfo> getComponentSignalInfos(FunctionComponent component) {
         Collection<SignalInfo> result = new ArrayList<>();
