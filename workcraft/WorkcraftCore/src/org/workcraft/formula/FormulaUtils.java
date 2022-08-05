@@ -21,8 +21,8 @@ public class FormulaUtils {
         return replace(formula, variable, Zero.getInstance(), CleverBooleanWorker.getInstance());
     }
 
-    public static BooleanFormula replace(BooleanFormula formula, BooleanVariable param, BooleanFormula value) {
-        return replace(formula, param, value, DumbBooleanWorker.getInstance());
+    public static BooleanFormula replace(BooleanFormula formula, BooleanVariable variable, BooleanFormula value) {
+        return replace(formula, variable, value, DumbBooleanWorker.getInstance());
     }
 
     public static BooleanFormula replace(BooleanFormula formula, BooleanVariable variable,

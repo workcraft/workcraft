@@ -72,20 +72,6 @@ public final class RefinementUtils {
         }
     }
 
-    public static Pair<File, MathModel> getRefinementModel(CircuitComponent component) {
-        File file = component.getRefinementFile();
-        if (file != null) {
-            try {
-                ModelEntry me = WorkUtils.loadModel(file);
-                return Pair.of(file, me.getMathModel());
-            } catch (DeserialisationException e) {
-                String filePath = FileUtils.getFullPath(file);
-                LogUtils.logError("Cannot read model from file '" + filePath + "':\n" + e.getMessage());
-            }
-        }
-        return null;
-    }
-
     public static Pair<File, Stg> getRefinementStg(CircuitComponent component) {
         File file = component.getRefinementFile();
         return file == null ? null : getRefinementStg(file);

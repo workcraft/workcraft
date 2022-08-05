@@ -229,9 +229,12 @@ public class StringGenerator implements BooleanVisitor<String> {
                 append("~");
                 return node.getX().accept(this);
             case GENLIB:
-            case C:
                 append("!");
                 return node.getX().accept(this);
+            case C:
+                append("!(");
+                node.getX().accept(this);
+                return append(")");
             default:
                 node.getX().accept(this);
                 return append("'");
@@ -282,8 +285,6 @@ public class StringGenerator implements BooleanVisitor<String> {
             switch (style) {
             case REACH:
                 return append("$S\"" + label + "\"");
-            case C:
-                return append("(" + label + ">0)");
             default:
                 return append(label);
             }

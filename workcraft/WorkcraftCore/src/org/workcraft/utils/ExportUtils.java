@@ -97,9 +97,9 @@ public class ExportUtils {
         String result = description;
         String title = model.getTitle();
         if (!title.isEmpty()) {
-            result += "'" + title + "' ";
+            result += " '" + title + "'";
         }
-        result += "to file '" + file.getAbsolutePath() + "'.";
+        result += " to file '" + file.getAbsolutePath() + "'.";
         return result;
     }
 
