@@ -2,14 +2,11 @@ package org.workcraft.plugins.circuit.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.controls.IntRangeSlider;
-import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.observation.StateObserver;
-import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.genlib.Gate;
@@ -33,12 +30,10 @@ import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
@@ -50,32 +45,18 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     private final IntRangeSlider pinsFilter = new IntRangeSlider();
     private final JTextField nameFilter = new JTextField("");
     private final JScrollPane libraryScroll = new JScrollPane();
-    private final SymbolPanel symbolPanel = new SymbolPanel();
+    private final InstancePanel instancePanel = new InstancePanel();
 
     private JPanel panel = null;
     private List<LibraryItem> libraryItems = null;
     private LibraryItem libraryItem = null;
 
-    interface Instantiator extends BiConsumer<VisualCircuit, VisualFunctionComponent> {
-        final class Empty implements Instantiator {
-            private Empty() {
-            }
-
-            @Override
-            public void accept(VisualCircuit circuit, VisualFunctionComponent component) {
-                VisualContact contact = component.createContact(IOType.OUTPUT);
-                component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
-            }
-
-            public static final Empty INSTANCE = new Empty();
-        }
-    }
-
     static class LibraryItem {
+
         private final String name;
         private final Type type;
         private final int pinCount;
-        private final Instantiator instantiator;
+        private final InstancePanel.Instantiator instantiator;
 
         enum Type {
             UNDEFINED,
@@ -84,11 +65,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             ARBITRATION_PRIMITIVE,
         }
 
-        LibraryItem() {
-            this("", Type.UNDEFINED, 0, Instantiator.Empty.INSTANCE);
-        }
-
-        LibraryItem(String name, Type type, int pinCount, Instantiator instantiator) {
+        LibraryItem(String name, Type type, int pinCount, InstancePanel.Instantiator instantiator) {
             this.name = name;
             this.type = type;
             this.pinCount = pinCount;
@@ -106,62 +83,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         LibraryList(List<LibraryItem> items) {
             super(new Vector<>(items));
             setBorder(GuiUtils.getEmptyBorder());
-        }
-    }
-
-    class SymbolPanel extends JPanel {
-        private static final double MIN_SCALE_FACTOR = 10.0;
-        private static final double MAX_SCALE_FACTOR = 30.0;
-
-        private final VisualCircuit circuit = new VisualCircuit(new Circuit()) {
-            @Override
-            public void registerGraphEditorTools() {
-                // Prevent registration of GraphEditorTools because it leads to a loop
-                // between VisualCircuit and FunctionComponentGeneratorTool classes.
-            }
-        };
-
-        private VisualFunctionComponent component = null;
-
-        public void setInstantiator(Instantiator instantiator) {
-            if (component != null) {
-                circuit.remove(component);
-            }
-            component = new VisualFunctionComponent(new FunctionComponent()) {
-                @Override
-                public boolean getNameVisibility() {
-                    return false;
-                }
-            };
-            circuit.getMathModel().add(component.getReferencedComponent());
-            circuit.add(component);
-            instantiator.accept(circuit, component);
-            repaint();
-        }
-
-        @Override
-        public void paintComponent(Graphics g) {
-            setBackground(EditorCommonSettings.getBackgroundColor());
-            super.paintComponent(g);
-            if (component != null) {
-                component.copyStyle(getTemplateNode());
-                // Cache component text to better estimate its bounding box
-                component.cacheRenderedText(null);
-                Graphics2D g2d = (Graphics2D) g;
-                g2d.translate(getWidth() / 2, getHeight() / 2);
-                Rectangle2D bb = component.getBoundingBox();
-                double scaleX = (getWidth() - 5 * SizeHelper.getLayoutHGap()) / bb.getWidth();
-                double scaleY = (getHeight() - 5 * SizeHelper.getLayoutVGap()) / bb.getHeight();
-                double scale = Math.min(scaleX, scaleY);
-                if (scale < MIN_SCALE_FACTOR) {
-                    scale = MIN_SCALE_FACTOR;
-                }
-                if (scale > MAX_SCALE_FACTOR) {
-                    scale = MAX_SCALE_FACTOR;
-                }
-                g2d.scale(scale, scale);
-                circuit.draw(g2d, Decorator.Empty.INSTANCE);
-            }
         }
     }
 
@@ -192,12 +113,14 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         filterPanel.add(GuiUtils.createVGap());
         filterPanel.add(createNameFilterPanel(editor));
 
-        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, libraryScroll, symbolPanel);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, libraryScroll, instancePanel);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation(filterPanel.getMinimumSize().height);
         splitPane.setResizeWeight(0.5);
 
-        getTemplateNode().addObserver((StateObserver) e -> symbolPanel.repaint());
+        VisualFunctionComponent templateNode = getTemplateNode();
+        templateNode.addObserver((StateObserver) e -> instancePanel.repaint());
+        instancePanel.setTemplateNode(templateNode);
 
         panel = new JPanel(GuiUtils.createBorderLayout());
         panel.setBorder(GuiUtils.getGapBorder());
@@ -283,7 +206,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
     private void updateLibraryList(final GraphEditor editor) {
         ArrayList<LibraryItem> components = new ArrayList<>();
-        components.add(new LibraryItem());
+        components.add(createCustomItem());
         components.addAll(getLibraryItems().stream()
                 .filter(o -> filterByType(o) && filterByPins(o) && filterByName(o))
                 .collect(Collectors.toList()));
@@ -294,7 +217,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             libraryItem = libraryList.getSelectedValue();
             if (libraryItem != null) {
                 getTemplateNode().getReferencedComponent().setModule(this.libraryItem.name);
-                symbolPanel.setInstantiator(this.libraryItem.instantiator);
+                instancePanel.setInstantiator(this.libraryItem.instantiator);
                 Framework.getInstance().updatePropertyView();
             }
         });
@@ -344,8 +267,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
                 int pinCount = GenlibUtils.getPinCount(gate);
 
-                Instantiator instantiator = (circuit, component)
-                        -> GenlibUtils.instantiateGate(gate, circuit, component);
+                InstancePanel.Instantiator instantiator = (circuit, component) ->
+                        GenlibUtils.instantiateGate(gate, circuit, component);
 
                 libraryItems.add(new LibraryItem(gateName, type, pinCount, instantiator));
             }
@@ -375,12 +298,20 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         return libraryItems;
     }
 
+    private LibraryItem createCustomItem() {
+        InstancePanel.Instantiator instantiator = (circuit, component) -> {
+            VisualContact contact = component.createContact(Contact.IOType.OUTPUT);
+            component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
+        };
+        return new LibraryItem("", LibraryItem.Type.UNDEFINED, 0, instantiator);
+    }
+
     private LibraryItem createWaitItem(Wait.Type type) {
         Wait module = CircuitSettings.parseWaitData(type);
         if (module == null) {
             return null;
         }
-        Instantiator instantiator = (circuit, component) -> {
+        InstancePanel.Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);
 
@@ -407,7 +338,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         if (module == null) {
             return null;
         }
-        Instantiator instantiator = (circuit, component) -> {
+        InstancePanel.Instantiator instantiator = (circuit, component) -> {
             component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);
 
