@@ -14,7 +14,7 @@ import java.io.OutputStream;
 public class PngExporter implements Exporter {
 
     @Override
-    public void export(Model model, OutputStream out) throws SerialisationException {
+    public void exportTo(Model model, OutputStream out) throws SerialisationException {
         if (!(model instanceof VisualModel)) {
             throw new SerialisationException("Non-visual model cannot be exported as PNG file.");
         }

@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering;
+import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.interop.SgExporter;
@@ -16,7 +17,9 @@ import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 public class ExtractWindowsCommand implements Command, MenuOrdering {
 
@@ -63,13 +66,10 @@ public class ExtractWindowsCommand implements Command, MenuOrdering {
         Framework framework = Framework.getInstance();
 
         sgFile = new File(dir, sgFileName);
-
         // exporting the file
-        OutputStream fos = null;
         try {
-            fos = new FileOutputStream(sgFile);
-            exporter.export(fst, fos);
-        } catch (Exception e) {
+            exporter.exportTo(fst, sgFile);
+        } catch (SerialisationException e) {
             e.printStackTrace();
             FileUtils.deleteOnExitRecursively(dir);
         }

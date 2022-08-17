@@ -3,7 +3,7 @@ package org.workcraft.plugins.builtin.workspace;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.utils.ImportUtils;
+import org.workcraft.utils.ExportUtils;
 import org.workcraft.workspace.FileHandler;
 
 import javax.swing.*;
@@ -13,11 +13,7 @@ public class WorkcraftOpen implements FileHandler {
 
     @Override
     public boolean accept(File f) {
-        if (ImportUtils.chooseBestImporter(f) != null) {
-            return true;
-        } else {
-            return false;
-        }
+        return ExportUtils.chooseBestImporter(f) != null;
     }
 
     @Override

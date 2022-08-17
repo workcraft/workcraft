@@ -26,7 +26,7 @@ public class ConceptsImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in) throws DeserialisationException, IOException {
+    public ModelEntry importFrom(InputStream in) throws DeserialisationException {
         try {
             boolean system = FileUtils.containsKeyword(in, "system =");
             File file = FileUtils.createTempFile("plato-", ".hs");
@@ -44,6 +44,8 @@ public class ConceptsImporter implements Importer {
                 }
             }
             throw new PlatoException(result);
+        } catch (IOException e) {
+            throw new DeserialisationException(e);
         } catch (PlatoException e) {
             e.handleConceptsError();
             throw new DeserialisationException();

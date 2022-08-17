@@ -2,7 +2,6 @@ package org.workcraft.plugins.pcomp.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableDataCommand;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
@@ -118,7 +117,7 @@ public class ParallelCompositionCommand
             File file = FileUtils.createTempFile(prefix, stgFileExtension, directory);
             ExportUtils.exportToFile(model, file, stgFormat);
             return file;
-        } catch (IOException | ModelValidationException | SerialisationException e) {
+        } catch (IOException | SerialisationException e) {
             throw new RuntimeException(e);
         }
     }
