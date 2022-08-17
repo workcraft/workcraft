@@ -11,18 +11,18 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.Literal;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.utils.TextUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.function.Function;
 
 public class CircuitSignalInfo {
 
     public final Circuit circuit;
-    private final HashMap<Contact, String> contactSignalMap = new HashMap<>();
-    private final HashMap<String, BooleanFormula> signalLiteralMap;
+    private final Map<Contact, Contact> contactDriverMap = new HashMap<>();
+    private final Map<Contact, String> driverFlatNameMap = new HashMap<>();
+    private final Set<String> takenFlatNames = new HashSet<>();
+    private final Map<String, BooleanFormula> signalLiteralMap;
 
     public static class SignalInfo {
         public final FunctionContact contact;
@@ -62,38 +62,48 @@ public class CircuitSignalInfo {
     }
 
     public final String getContactSignal(Contact contact) {
-        String result = contactSignalMap.get(contact);
-        if (result == null) {
-            if (contact.isPort()) {
-                result = CircuitUtils.getSignalReference(circuit, contact);
-            } else if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {
-                Contact signal = CircuitUtils.findSignal(circuit, contact, false);
-                Node parent = signal.getParent();
-                boolean isAssignOutput = false;
-                if (parent instanceof FunctionComponent) {
-                    FunctionComponent component = (FunctionComponent) parent;
-                    isAssignOutput = signal.isOutput() && !component.isMapped();
-                }
-                if (isAssignOutput) {
-                    result = CircuitUtils.getSignalReference(circuit, signal);
-                } else {
-                    result = CircuitUtils.getContactReference(circuit, signal);
-                }
-            }
-            if (result != null) {
-                if (NamespaceHelper.isHierarchical(result)) {
-                    HierarchyReferenceManager refManager = circuit.getReferenceManager();
-                    NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
-                    NameManager nameManager = refManager.getNameManager(namespaceProvider);
-                    String candidateName = NamespaceHelper.flattenReference(result);
-                    result = nameManager.getDerivedName(contact, candidateName);
-                }
-                contactSignalMap.put(contact, result);
-            }
-        }
-        return result;
-    }
+        Contact driver = contactDriverMap.computeIfAbsent(contact,
+                key -> CircuitUtils.findSignal(circuit, contact, false));
 
+        if (driver == null) {
+            return null;
+        }
+        String signal = driverFlatNameMap.get(driver);
+        if (signal != null) {
+            return signal;
+        }
+
+        Node parent = driver.getParent();
+        boolean isAssignOutput = false;
+        if (parent instanceof FunctionComponent) {
+            FunctionComponent component = (FunctionComponent) parent;
+            isAssignOutput = driver.isOutput() && !component.isMapped();
+        }
+        if (isAssignOutput) {
+            signal = CircuitUtils.getSignalReference(circuit, driver);
+        } else {
+            signal = CircuitUtils.getContactReference(circuit, driver);
+        }
+        if (signal == null) {
+            return null;
+        }
+
+        if (NamespaceHelper.isHierarchical(signal)) {
+            HierarchyReferenceManager refManager = circuit.getReferenceManager();
+            NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
+            NameManager nameManager = refManager.getNameManager(namespaceProvider);
+            String flatCandidateName = NamespaceHelper.flattenReference(signal);
+            signal = nameManager.getDerivedName(driver, flatCandidateName);
+        }
+        int code = 0;
+        while (takenFlatNames.contains(signal)) {
+            signal = Identifier.compose(signal, TextUtils.codeToString(code));
+            code++;
+        }
+        takenFlatNames.add(signal);
+        driverFlatNameMap.put(driver, signal);
+        return signal;
+    }
 
     public Collection<SignalInfo> getComponentSignalInfos(FunctionComponent component) {
         Collection<SignalInfo> result = new ArrayList<>();
