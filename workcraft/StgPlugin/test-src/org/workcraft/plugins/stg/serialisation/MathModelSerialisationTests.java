@@ -11,7 +11,7 @@ import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.shared.DataAccumulator;
 
-class MathModelSerialisation {
+class MathModelSerialisationTests {
 
     @Test
     void simpleSaveLoad() {

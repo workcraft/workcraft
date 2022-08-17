@@ -16,7 +16,7 @@ import org.workcraft.shared.DataAccumulator;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-class VisualModelSerialisation {
+class VisualModelSerialisationTests {
 
     @Test
     void simpleSaveLoad() throws SerialisationException, DeserialisationException {
