@@ -782,7 +782,7 @@ public final class Framework {
         } else {
             try {
                 ExportUtils.exportToFile(exporter, me.getModel(), file);
-            } catch (IOException | ModelValidationException e) {
+            } catch (IOException e) {
                 throw new SerialisationException(e);
             }
         }

@@ -4,19 +4,30 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
+import org.workcraft.interop.FormatFileFilter;
+import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginManager;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
 public class ExportUtils {
+
+    public static Importer chooseBestImporter(File file) {
+        final PluginManager pm = Framework.getInstance().getPluginManager();
+        for (Importer importer : pm.getSortedImporters()) {
+            Format format = importer.getFormat();
+            if (FormatFileFilter.checkFileFormat(file, format)) {
+                return importer;
+            }
+        }
+        return null;
+    }
 
     public static Exporter chooseBestExporter(Model model, Format format) {
         return chooseBestExporter(model, format.getName(), format.getUuid());
@@ -38,7 +49,7 @@ public class ExportUtils {
     }
 
     public static void exportToFile(Model model, File file, Format format)
-            throws IOException, ModelValidationException, SerialisationException {
+            throws IOException, SerialisationException {
 
         Exporter exporter = chooseBestExporter(model, format);
         if (exporter == null) {
@@ -48,10 +59,9 @@ public class ExportUtils {
     }
 
     public static void exportToFile(Exporter exporter, Model model, File file)
-            throws IOException, ModelValidationException, SerialisationException {
+            throws IOException, SerialisationException {
 
         file.createNewFile();
-        FileOutputStream fos = new FileOutputStream(file);
         boolean success = false;
         try {
             // For incompatible visual model try exporting its underlying math model.
@@ -66,10 +76,9 @@ public class ExportUtils {
                     throw new RuntimeException(text);
                 }
             }
-            exporter.export(model, fos);
+            exporter.exportTo(model, file);
             success = true;
         } finally {
-            fos.close();
             if (!success) {
                 file.delete();
             }

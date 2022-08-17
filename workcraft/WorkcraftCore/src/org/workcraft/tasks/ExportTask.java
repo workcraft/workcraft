@@ -8,7 +8,6 @@ import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.LogUtils;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class ExportTask implements Task<ExportOutput> {
@@ -27,10 +26,8 @@ public class ExportTask implements Task<ExportOutput> {
     public Result<? extends ExportOutput> run(ProgressMonitor<? super ExportOutput> monitor) {
         LogUtils.logInfo(ExportUtils.getExportMessage(model, file));
 
-        FileOutputStream fos;
         try {
             file.createNewFile();
-            fos = new FileOutputStream(file);
         } catch (IOException e) {
             return new Result<>(e);
         }
@@ -53,15 +50,11 @@ public class ExportTask implements Task<ExportOutput> {
                     return new Result<>(nestedException);
                 }
             }
-            exporter.export(exportModel, fos);
+            exporter.exportTo(exportModel, file);
             success = true;
         } catch (Throwable e) {
             return new Result<>(e);
         } finally {
-            try {
-                fos.close();
-            } catch (IOException e) {
-            }
             if (!success) {
                 file.delete();
             }

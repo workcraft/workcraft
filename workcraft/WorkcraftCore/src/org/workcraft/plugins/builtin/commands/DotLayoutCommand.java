@@ -8,7 +8,6 @@ import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.LayoutException;
-import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
@@ -22,7 +21,6 @@ import org.workcraft.utils.*;
 
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,22 +71,20 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
                 throw new LayoutException("External process (dot) failed (code " +
                     output.getReturnCode() + ")\n\n" + output.getStdoutString() + "\n\n" + output.getStderrString());
             }
-        } catch (IOException | ModelValidationException | SerialisationException e) {
+        } catch (IOException | SerialisationException e) {
             DialogUtils.showError(e.getMessage());
         }
     }
 
     private void saveGraph(VisualModel model, File file)
-            throws IOException, ModelValidationException, SerialisationException {
+            throws IOException, SerialisationException {
 
         DotFormat format = DotFormat.getInstance();
         Exporter exporter = ExportUtils.chooseBestExporter(model, format);
         if (exporter == null) {
             throw new NoExporterException(model, format);
         }
-        FileOutputStream out = new FileOutputStream(file);
-        exporter.export(model, out);
-        out.close();
+        exporter.exportTo(model, file);
     }
 
     private void applyLayout(String text, VisualModel model) {
@@ -169,7 +165,7 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
                 throw new ParseException("Bad connection position format.");
             }
             if (ss.length == 3) {
-                double x = +parseCoord(ss[1]);
+                double x = parseCoord(ss[1]);
                 double y = -parseCoord(ss[2]);
                 Point2D p = new Point2D.Double(x, y);
                 if ("s".equals(ss[0])) {
@@ -182,7 +178,7 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
                     }
                 }
             } else {
-                double x = +parseCoord(ss[0]);
+                double x = parseCoord(ss[0]);
                 double y = -parseCoord(ss[1]);
                 result.add(0, new Point2D.Double(x, y));
             }

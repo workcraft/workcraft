@@ -193,10 +193,8 @@ public class CircuitUtils {
         if (driver == null) {
             return contact;
         }
-        for (Contact signal : Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
-            if (signal.isPort() && signal.isOutput()
-                    && (driver == CircuitUtils.findDriver(circuit, signal, transparentZeroDelayComponents))) {
-
+        for (Contact signal : circuit.getOutputPorts()) {
+            if (driver == CircuitUtils.findDriver(circuit, signal, transparentZeroDelayComponents)) {
                 signal.setInitToOne(driver.getInitToOne());
                 return signal;
             }

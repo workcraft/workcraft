@@ -832,14 +832,14 @@ public class MainWindow extends JFrame {
                 // Set last directory to the location of the imported file
                 // (in case auxiliary file need to be created there during import of compound files)
                 framework.setLastDirectory(file);
-                ModelEntry me = ImportUtils.importFromFile(importer, file);
+                ModelEntry me = importer.importFrom(file);
                 String title = me.getMathModel().getTitle();
                 if ((title == null) || title.isEmpty()) {
                     title = FileUtils.getFileNameWithoutExtension(file);
                     me.getMathModel().setTitle(title);
                 }
                 framework.createWork(me, file.getName());
-            } catch (IOException | DeserialisationException e) {
+            } catch (DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
             } catch (OperationCancelledException e) {
                 // Operation cancelled by the user - restore last directory

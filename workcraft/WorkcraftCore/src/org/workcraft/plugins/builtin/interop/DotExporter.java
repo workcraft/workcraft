@@ -20,7 +20,7 @@ public class DotExporter implements Exporter {
     private static final String INDENT = "  ";
 
     @Override
-    public void export(Model model, OutputStream outStream) throws SerialisationException {
+    public void exportTo(Model model, OutputStream outStream) throws SerialisationException {
         if (!(model instanceof VisualModel)) {
             throw new SerialisationException("Non-visual model cannot be exported to Graphviz DOT file.");
         }

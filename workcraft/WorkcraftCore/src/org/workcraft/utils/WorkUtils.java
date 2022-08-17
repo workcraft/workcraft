@@ -129,13 +129,11 @@ public final class WorkUtils {
                 }
             } else {
                 try {
-                    Importer importer = ImportUtils.chooseBestImporter(file);
+                    Importer importer = ExportUtils.chooseBestImporter(file);
                     if (importer == null) {
                         throw new DeserialisationException("Cannot identify appropriate importer for file '" + file.getAbsolutePath() + "'");
                     }
-                    me = ImportUtils.importFromFile(importer, file);
-                } catch (IOException e) {
-                    throw new DeserialisationException(e);
+                    me = importer.importFrom(file);
                 } catch (OperationCancelledException e) {
                     // Operation cancelled by the user
                 }
@@ -340,13 +338,11 @@ public final class WorkUtils {
     public static void saveModel(ModelEntry me, Collection<Resource> resources, File file)
             throws SerialisationException {
 
-        try {
-            FileOutputStream os = new FileOutputStream(file);
+        try (FileOutputStream os = new FileOutputStream(file)) {
             String base = FileUtils.getBasePath(file);
             adjustPropertyFilePaths(me.getVisualModel(), base, false);
             Collection<Resource> adjustedResources = adjustResourceFilePaths(resources, base, false);
             saveModel(me, adjustedResources, os);
-            os.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
         } finally {

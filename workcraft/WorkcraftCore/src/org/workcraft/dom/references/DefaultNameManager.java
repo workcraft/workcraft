@@ -7,6 +7,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.types.TwoWayMap;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -125,19 +126,10 @@ public class DefaultNameManager implements NameManager {
         String result = candidate;
         int code = 0;
         while (!isUnusedName(result)) {
-            result = Identifier.compose(candidate, codeToString(code));
+            result = Identifier.compose(candidate, TextUtils.codeToString(code));
             code++;
         }
         return result;
-    }
-
-    private static String codeToString(int code) {
-        StringBuilder result = new StringBuilder();
-        do {
-            result.append((char) ('a' + code % 26));
-            code /= 26;
-        } while (code > 0);
-        return result.toString();
     }
 
 }

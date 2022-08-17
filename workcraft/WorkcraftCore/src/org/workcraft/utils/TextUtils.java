@@ -302,4 +302,13 @@ public class TextUtils {
         return false;
     }
 
+    public static String codeToString(int code) {
+        StringBuilder result = new StringBuilder();
+        do {
+            result.append((char) ('a' + code % 26));
+            code /= 26;
+        } while (code > 0);
+        return result.toString();
+    }
+
 }

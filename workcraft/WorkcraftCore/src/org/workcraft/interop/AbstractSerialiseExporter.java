@@ -14,7 +14,7 @@ public abstract class AbstractSerialiseExporter implements Exporter {
     }
 
     @Override
-    public void export(Model model, OutputStream out) throws SerialisationException {
+    public void exportTo(Model model, OutputStream out) throws SerialisationException {
         getSerialiser().serialise(model, out);
     }
 

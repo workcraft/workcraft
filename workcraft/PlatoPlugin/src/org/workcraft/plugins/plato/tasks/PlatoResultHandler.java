@@ -12,6 +12,7 @@ import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualFstDescriptor;
+import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.SolutionMode;
@@ -28,13 +29,13 @@ import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.ImportUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -153,11 +154,12 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
 
     private void addStg(String output, Framework framework, GraphEditorPanel editor, String[] invariants)
             throws IOException, DeserialisationException, OperationCancelledException {
-        ModelEntry me = ImportUtils.importFromByteArray(new StgImporter(), output.getBytes());
-        MathModel mathModel = me.getMathModel();
-        StgDescriptor stgModel = new StgDescriptor();
-        VisualModelDescriptor vmd = stgModel.getVisualModelDescriptor();
-        try {
+
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes())) {
+            ModelEntry me = new StgImporter().importFrom(inputStream);
+            MathModel mathModel = me.getMathModel();
+            StgDescriptor stgModel = new StgDescriptor();
+            VisualModelDescriptor vmd = stgModel.getVisualModelDescriptor();
             me = new ModelEntry(me.getDescriptor(), vmd.create(mathModel));
             we = addWork(framework, we, editor, me);
             VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
@@ -174,11 +176,12 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
 
     private void addFst(String output, Framework framework, GraphEditorPanel editor)
             throws IOException, DeserialisationException, OperationCancelledException {
-        ModelEntry me = ImportUtils.importFromByteArray(new org.workcraft.plugins.fst.interop.SgImporter(), output.getBytes());
-        MathModel mathModel = me.getMathModel();
-        FstDescriptor fstModel = new FstDescriptor();
-        VisualFstDescriptor vmd = fstModel.getVisualModelDescriptor();
-        try {
+
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes())) {
+            ModelEntry me = new SgImporter().importFrom(inputStream);
+            MathModel mathModel = me.getMathModel();
+            FstDescriptor fstModel = new FstDescriptor();
+            VisualFstDescriptor vmd = fstModel.getVisualModelDescriptor();
             VisualFst visualFst = vmd.create(mathModel);
             me = new ModelEntry(me.getDescriptor(), visualFst);
             visualFst.getBestLayouter().layout(visualFst);
@@ -206,13 +209,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                         }
 
                         String sig = s.substring(0, x);
-                        String sigExp = "";
-                        if (sig.startsWith("not ")) {
-                            sigExp = "~$S\"" + sig.substring(4) + "\"";
-                        } else {
-                            sigExp = "$S\"" + sig + "\"";
-                        }
-                        exp.add(sigExp);
+                        exp.add(sig.startsWith("not ") ? "~$S\"" + sig.substring(4) + "\"" : "$S\"" + sig + "\"");
 
                         if (x != s.length() - 1) {
                             x += 4;
@@ -221,28 +218,28 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                     }
 
                     Iterator<String> it = exp.iterator();
-                    String fullExp = "";
+                    StringBuilder fullExp = new StringBuilder();
                     while (it.hasNext()) {
-                        fullExp = fullExp + it.next();
+                        fullExp.append(it.next());
                         if (it.hasNext()) {
-                            fullExp = fullExp + " & ";
+                            fullExp.append(" & ");
                         }
                     }
-                    expression.add(fullExp);
+                    expression.add(fullExp.toString());
                 }
             }
-            String fullExpression = "";
+            StringBuilder fullExpression = new StringBuilder();
             Iterator<String> it = expression.iterator();
             while (it.hasNext()) {
-                fullExpression = fullExpression + it.next();
+                fullExpression.append(it.next());
                 if (it.hasNext()) {
-                    fullExpression = fullExpression + "\n|\n";
+                    fullExpression.append("\n|\n");
                 }
             }
-            fullExpression = prefix + fullExpression + suffix;
+            fullExpression = new StringBuilder(prefix + fullExpression + suffix);
 
             VerificationParameters param = new VerificationParameters(null, VerificationMode.STG_REACHABILITY,
-                    0, SolutionMode.MINIMUM_COST, 10, fullExpression, true);
+                    0, SolutionMode.MINIMUM_COST, 10, fullExpression.toString(), true);
 
             VerificationChainTask mpsatTask = new VerificationChainTask(we, param);
             TaskManager taskManager = Framework.getInstance().getTaskManager();
