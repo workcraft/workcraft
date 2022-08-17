@@ -1,9 +1,3 @@
-/*
- * Copyright (C) 2018 Dialog Semiconductor.
- * This computer program includes Confidential, Proprietary Information
- * of Dialog Semiconductor. All rights reserved.
- */
-
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.w3c.dom.Document;

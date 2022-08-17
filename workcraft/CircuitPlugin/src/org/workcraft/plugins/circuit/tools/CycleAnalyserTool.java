@@ -14,7 +14,8 @@ import org.workcraft.gui.tools.*;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.serialisation.PathbreakConstraintExporter;
+import org.workcraft.plugins.circuit.interop.SdcFormat;
+import org.workcraft.plugins.circuit.utils.PathbreakSerialiserUtils;
 import org.workcraft.plugins.circuit.utils.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
@@ -28,6 +29,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Function;
@@ -169,13 +172,17 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private void writeConstraints(final GraphEditor editor) {
         File file = new File(editor.getWorkspaceEntry().getFileName());
-        PathbreakConstraintExporter exporter = new PathbreakConstraintExporter();
-        Format format = exporter.getFormat();
+        Format format = SdcFormat.getInstance();
         JFileChooser fc = DialogUtils.createFileSaver("Save path breaker SDC constraints", file, format);
         try {
             file = DialogUtils.chooseValidSaveFileOrCancel(fc, format);
             Circuit circuit = WorkspaceUtils.getAs(editor.getWorkspaceEntry(), Circuit.class);
-            exporter.export(circuit, file);
+            LogUtils.logInfo(ExportUtils.getExportMessage(circuit, file, "Writing path breaker constraints for the circuit "));
+            try (FileOutputStream out = new FileOutputStream(file)) {
+                PathbreakSerialiserUtils.write(circuit, out);
+            } catch (IOException e) {
+                LogUtils.logError("Could not write into file '" + file.getAbsolutePath() + "'");
+            }
             Framework.getInstance().setLastDirectory(fc.getCurrentDirectory());
         } catch (OperationCancelledException e) {
             // Operation cancelled by the user
