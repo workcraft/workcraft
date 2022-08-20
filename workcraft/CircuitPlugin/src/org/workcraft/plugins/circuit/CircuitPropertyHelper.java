@@ -69,11 +69,24 @@ public class CircuitPropertyHelper {
     }
 
     private static Color getComponentPropertyBackgroundColor(VisualFunctionComponent component) {
+        Color color = null;
         File refinementFile = component == null ? null : component.getReferencedComponent().getRefinementFile();
-        Color color = refinementFile == null ? null : refinementFile.exists()
-                ? AnalysisDecorationSettings.getClearColor()
-                : AnalysisDecorationSettings.getProblemColor();
-
+        if (refinementFile != null) {
+            ModelEntry me = null;
+            if (FileUtils.isAvailableFile(refinementFile)) {
+                try {
+                    me = WorkUtils.loadModel(refinementFile);
+                } catch (DeserialisationException ignored) {
+                }
+            }
+            if (WorkspaceUtils.isApplicable(me, Circuit.class)) {
+                color = AnalysisDecorationSettings.getFixerColor();
+            } else if (WorkspaceUtils.isApplicable(me, Stg.class)) {
+                color = AnalysisDecorationSettings.getClearColor();
+            } else {
+                color = AnalysisDecorationSettings.getProblemColor();
+            }
+        }
         return ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), color);
     }
 
