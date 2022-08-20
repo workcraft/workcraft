@@ -699,7 +699,7 @@ public class MainWindow extends JFrame {
     public WorkspaceEntry openWork(File file) {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry we = null;
-        if (FileUtils.checkAvailability(file, null, true)) {
+        if (FileUtils.checkAvailability(file, true)) {
             try {
                 we = framework.loadWork(file);
                 requestFocus(we);
@@ -823,7 +823,7 @@ public class MainWindow extends JFrame {
     }
 
     private void importFrom(Importer importer, File file) {
-        if (FileUtils.checkAvailability(file, null, true)
+        if (FileUtils.checkAvailability(file, true)
                 && FormatFileFilter.checkFileFormat(file, importer.getFormat())) {
 
             final Framework framework = Framework.getInstance();

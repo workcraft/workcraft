@@ -115,7 +115,7 @@ public final class WorkUtils {
             return cloneModel(we.getModelEntry());
         }
         ModelEntry me = null;
-        if (FileUtils.checkAvailability(file, null, false)) {
+        if (FileUtils.checkAvailability(file, false)) {
             // Load (from *.work) or import (other extensions) work.
             if (FileFilters.isWorkFile(file)) {
                 try {
