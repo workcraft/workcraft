@@ -16,7 +16,6 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
-import org.workcraft.plugins.circuit.commands.CircuitLayoutPlacementCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.RouterVisualiser;
@@ -28,10 +27,8 @@ import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.awt.geom.Rectangle2D;
+import java.util.*;
 
 @DisplayName("Digital Circuit")
 @ShortName("circuit")
@@ -349,11 +346,6 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     @Override
-    public AbstractLayoutCommand getFallbackLayouter() {
-        return new CircuitLayoutPlacementCommand();
-    }
-
-    @Override
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
@@ -381,6 +373,31 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
         return properties;
+    }
+
+    @Override
+    public void applyRandomLayout(Point2D start, Point2D range) {
+        Random r = new Random();
+        for (VisualFunctionComponent component : getVisualFunctionComponents()) {
+            for (VisualContact contact : component.getVisualContacts()) {
+                contact.setPosition(new Point2D.Double(contact.isInput() ? -1.5 : 1.5, 0.0));
+            }
+            component.setContactsDefaultPosition();
+            Rectangle2D box = component.getBoundingBoxInLocalSpace();
+            double x = start.getX() + 0.5 * box.getWidth() + r.nextDouble() * (range.getX() - box.getWidth());
+            double y = start.getY() + 0.5 * box.getHeight() + r.nextDouble() * (range.getY() - box.getHeight());
+            component.setRootSpacePosition(new Point2D.Double(x, y));
+        }
+        for (VisualContact port : getVisualPorts()) {
+            double x = start.getX() + (port.isOutput() ? range.getX() : 0);
+            double y = start.getY() + r.nextDouble() * range.getY();
+            port.setRootSpacePosition(new Point2D.Double(x, y));
+            port.setDefaultDirection();
+        }
+        for (VisualConnection connection : Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class)) {
+            connection.setConnectionType(VisualConnection.ConnectionType.POLYLINE);
+            connection.getGraphic().setDefaultControlPoints();
+        }
     }
 
 }

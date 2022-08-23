@@ -25,6 +25,7 @@ import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.types.Func;
 import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.*;
@@ -39,7 +40,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
     public static final String PROPERTY_TITLE = "Title";
 
-    private MathModel mathModel;
+    private final MathModel mathModel;
     private Container currentLevel;
     private final Set<VisualNode> selection = new HashSet<>();
     private final ObservableStateImpl observableState = new ObservableStateImpl();
@@ -75,6 +76,36 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         }.attach(getRoot());
         if (generatedRoot) {
             createDefaultStructure();
+        }
+    }
+
+    @Override
+    public void applyRandomLayout(Point2D start, Point2D range) {
+        Random r = new Random();
+        Queue<Triple<Container, Point2D, Point2D>> queue = new LinkedList<>();
+        queue.add(Triple.of(getRoot(), start, range));
+        while (!queue.isEmpty()) {
+            Triple<Container, Point2D, Point2D> item = queue.remove();
+            Container container = item.getFirst();
+            start = item.getSecond();
+            range = item.getThird();
+            for (Node node : container.getChildren()) {
+                double x = start.getX() + r.nextDouble() * range.getX();
+                double y = start.getY() + r.nextDouble() * range.getY();
+                if (node instanceof VisualTransformableNode) {
+                    VisualTransformableNode transformableNode = (VisualTransformableNode) node;
+                    transformableNode.setRootSpacePosition(new Point2D.Double(x, y));
+                }
+                if (node instanceof Container) {
+                    Point2D childrenRange = new Point2D.Double(range.getX() / 2.0, range.getY() / 2.0);
+                    Point2D childrenStart = new Point2D.Double(x - childrenRange.getX() / 2.0, y - childrenRange.getY() / 2.0);
+                    queue.add(Triple.of((Container) node, childrenStart, childrenRange));
+                }
+            }
+        }
+        for (VisualConnection connection : Hierarchy.getDescendantsOfType(getRoot(), VisualConnection.class)) {
+            connection.setConnectionType(VisualConnection.ConnectionType.POLYLINE);
+            connection.getGraphic().setDefaultControlPoints();
         }
     }
 
@@ -259,15 +290,13 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     @Override
     public <T extends VisualComponent> T getVisualComponentByMathReference(String ref, Class<T> type) {
         T result = null;
-        Node node = getMathModel().getNodeByReference(ref);
-        if (node instanceof MathNode) {
-            MathNode mathNode = (MathNode) node;
-            result = getVisualComponent(mathNode, type);
+        MathNode node = getMathModel().getNodeByReference(ref);
+        if (node != null) {
+            result = getVisualComponent(node, type);
         }
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public <T extends VisualReplica> T createVisualReplica(VisualComponent masterComponent, Class<T> type, Container container) {
         T replica = null;
@@ -305,9 +334,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     }
 
     private Collection<VisualNode> saveSelection() {
-        Set<VisualNode> prevSelection = new HashSet<>();
-        prevSelection.addAll(selection);
-        return prevSelection;
+        return new HashSet<>(selection);
     }
 
     private void notifySelectionChanged(Collection<? extends VisualNode> prevSelection) {
@@ -592,15 +619,10 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     private void deleteSelection(final Func<Node, Boolean> filter) {
         HashMap<Container, LinkedList<Node>> batches = new HashMap<>();
         for (Node node : selection) {
-            LinkedList<Node> batch = null;
             if (node.getParent() instanceof Container) {
                 Container container = (Container) node.getParent();
                 if (filter.eval(node)) {
-                    batch = batches.get(container);
-                    if (batch == null) {
-                        batch = new LinkedList<>();
-                        batches.put(container, batch);
-                    }
+                    List<Node> batch = batches.computeIfAbsent(container, k -> new LinkedList<>());
                     batch.add(node);
                 }
             }

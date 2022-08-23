@@ -22,6 +22,8 @@ import java.util.List;
 
 public interface VisualModel extends Model<VisualNode, VisualConnection>, ObservableState {
     void createDefaultStructure();
+    void applyRandomLayout(Point2D start, Point2D range);
+
     MathModel getMathModel();
     void draw(Graphics2D g, Decorator decorator);
 
