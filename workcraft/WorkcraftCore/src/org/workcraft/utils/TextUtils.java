@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class TextUtils {
 
@@ -18,7 +19,7 @@ public class TextUtils {
     private static final Pattern XML_ELEMENT_PATTERN = Pattern.compile(
             "^\\s*<([\\w-.]+).*(</\\1\\s*|/)>\\s*$", Pattern.DOTALL);
 
-    public static String truncateText(String text, int length) {
+    public static String truncateLines(String text, int length) {
         StringBuilder result = new StringBuilder();
         boolean firstLine = true;
         for (String line : splitLines(text)) {
@@ -231,18 +232,15 @@ public class TextUtils {
     public static String getHtmlSpan(String text, Color foregroundColor, Color backgroundColor) {
         String foregroundAttribute = getHtmlColorAttribute("color", foregroundColor);
         String backgroundAttribute = getHtmlColorAttribute("background-color", backgroundColor);
-        String attributes = joinNonEmpty("; ", Arrays.asList(foregroundAttribute, backgroundAttribute));
+        String attributes = Stream.of(foregroundAttribute, backgroundAttribute)
+                .filter(item -> (item != null) && !item.isEmpty())
+                .collect(Collectors.joining("; "));
+
         return "<span style=\"" + attributes + "\">" + text + "</span>";
     }
 
     private static String getHtmlColorAttribute(String name, Color color) {
         return (color == null) ? "" : String.format(name + ": #%06x", color.getRGB() & 0xffffff);
-    }
-
-    private static String joinNonEmpty(String delimiter, Collection<String> items) {
-        return items.stream()
-                .filter(item -> (item != null) && !item.isEmpty())
-                .collect(Collectors.joining(delimiter));
     }
 
     public static int countLeadingSpaces(String text) {

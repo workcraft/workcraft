@@ -39,6 +39,7 @@ import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import javax.swing.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
@@ -100,7 +101,8 @@ public class VerilogImporter implements Importer {
 
         Set<String> undefinedModules = VerilogUtils.getUndefinedModules(verilogModules);
         if (!undefinedModules.isEmpty()) {
-            String msg = TextUtils.wrapMessageWithItems("Verilog netlist refers to undefined module", undefinedModules)
+            String prefix = TextUtils.wrapMessageWithItems("Verilog netlist refers to undefined module", undefinedModules);
+            String msg = TextUtils.getHeadAndTail(prefix, 10, 0)
                     + "\n\nInstances of these modules may be interpreted incorrectly due to missing information about input/output pins."
                     + "\n\nPossible causes of the problem:"
                     + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect path to gate library GenLib file"
@@ -303,36 +305,50 @@ public class VerilogImporter implements Importer {
     private void checkImportResult(Circuit circuit, Set<String> usedSignals,
             Set<String> initialisedSignals) {
 
-        String msg = "";
+        String longMessage = "";
+        String shortMessage = "";
         // Check circuit for no components
         if (circuit.getFunctionComponents().isEmpty()) {
-            msg += "\n" + PropertyHelper.BULLET_PREFIX + "No components";
+            String itemText = "\n" + PropertyHelper.BULLET_PREFIX + "No components";
+            longMessage += itemText;
+            shortMessage += itemText;
         }
         // Check circuit for hanging contacts
         Set<String> hangingSignals = VerificationUtils.getHangingSignals(circuit);
         if (!hangingSignals.isEmpty()) {
-            msg += TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
+            String itemText = TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
                     + "Hanging contact", hangingSignals);
+
+            longMessage += itemText;
+            shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
         }
         // Check circuit for uninitialised signals
         Set<String> uninitialisedSignals = new HashSet<>(usedSignals);
         uninitialisedSignals.addAll(VerificationUtils.getHangingDriverSignals(circuit));
         uninitialisedSignals.removeAll(initialisedSignals);
         if (!uninitialisedSignals.isEmpty()) {
-            msg += TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
+            String itemText = TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
                     + "Missing initial state declaration (assuming low) for signal", uninitialisedSignals);
+
+            longMessage += itemText;
+            shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
         }
         // Check circuit for uninitialised signals
         Set<String> unusedSignals = new HashSet<>(initialisedSignals);
         unusedSignals.removeAll(usedSignals);
         if (!unusedSignals.isEmpty()) {
-            msg += TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
+            String itemText = TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
                     + "Initial state declaration for unused signal", unusedSignals);
+
+            longMessage += itemText;
+            shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
         }
         // Produce warning
-        if (!msg.isEmpty()) {
+        if (!longMessage.isEmpty()) {
             String title = circuit.getTitle().isEmpty() ? "" : "'" + circuit.getTitle() + "' ";
-            DialogUtils.showWarning("The imported circuit " + title + "has the following issues:" + msg);
+            String prefix = "The imported circuit " + title + "has the following issues:";
+            DialogUtils.showMessage(prefix + shortMessage, VERILOG_IMPORT_TITLE, JOptionPane.WARNING_MESSAGE, false);
+            LogUtils.logWarning(prefix + longMessage);
         }
     }
 
@@ -512,10 +528,9 @@ public class VerilogImporter implements Importer {
         String resetFunction = ExpressionUtils.extractHeuristicResetFunction(function, netName);
         Expression resetExpression = convertFormulaToExpression(resetFunction);
         if (DebugCommonSettings.getVerboseImport()) {
-            LogUtils.logInfo("Extracting SET and RESET from assign " + netName + " = " + formula);
-            LogUtils.logInfo("  Function: " + function);
-            LogUtils.logInfo("  Set function: " + setFunction);
-            LogUtils.logInfo("  Reset function: " + resetFunction);
+            LogUtils.logMessage("Extracting SET and RESET from assign " + netName + " = " + formula
+                    + "\n" + PropertyHelper.BULLET_PREFIX + "Set function: " + setFunction
+                    + "\n" + PropertyHelper.BULLET_PREFIX + "Reset function: " + resetFunction);
         }
         HashMap<String, String> connections = new HashMap<>();
         String outputName = VerilogUtils.getPrimitiveGatePinName(0);
@@ -562,7 +577,7 @@ public class VerilogImporter implements Importer {
         for (VerilogPort verilogPort: verilogModule.ports) {
             List<String> portNames = getPortNames(verilogPort);
             if (verilogPort.range != null) {
-                LogUtils.logInfo("Bus " + verilogPort.name + verilogPort.range + " is split to nets: "
+                LogUtils.logMessage("Bus " + verilogPort.name + verilogPort.range + " is split to nets: "
                         + String.join(", ", portNames));
             }
             for (String portName: portNames) {
@@ -815,7 +830,7 @@ public class VerilogImporter implements Importer {
             if (node instanceof FunctionContact) {
                 FunctionContact contact = (FunctionContact) node;
                 if (contact.isPort() && contact.isOutput()) {
-                    LogUtils.logInfo("Signal '" + signal.name + "' is restored as internal.");
+                    LogUtils.logMessage("Signal '" + signal.name + "' is restored as internal.");
                     circuit.remove(contact);
                     Net net = nets.get(signal.name);
                     if (net != null) {
@@ -979,7 +994,7 @@ public class VerilogImporter implements Importer {
                     net.source.setIOType(IOType.OUTPUT);
                 }
                 String contactRef = circuit.getNodeReference(net.source);
-                LogUtils.logInfo("Source contact detected: " + contactRef);
+                LogUtils.logMessage("Source contact detected: " + contactRef);
                 net.undefined.clear();
                 result = false;
             } else {
@@ -1007,7 +1022,7 @@ public class VerilogImporter implements Importer {
                 }
             }
             String contactRefs = ReferenceHelper.getNodesAsString(circuit, net.undefined);
-            LogUtils.logInfo("Sink contacts detected: " + contactRefs);
+            LogUtils.logMessage("Sink contacts detected: " + contactRefs);
             net.undefined.clear();
             result = false;
         }

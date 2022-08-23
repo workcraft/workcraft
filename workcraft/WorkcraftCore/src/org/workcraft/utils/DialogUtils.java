@@ -23,25 +23,27 @@ public class DialogUtils {
     private static final String CONFIG_FILE_CHOOSER_WIDTH = "filechooser.width";
     private static final String CONFIG_FILE_CHOOSER_HEIGHT = "filechooser.height";
 
-    private static void showMessage(String msg, String title, int messageType) {
-        switch (messageType) {
-        case JOptionPane.INFORMATION_MESSAGE:
-            LogUtils.logInfo(msg);
-            break;
-        case JOptionPane.WARNING_MESSAGE:
-            LogUtils.logWarning(msg);
-            break;
-        case JOptionPane.ERROR_MESSAGE:
-            LogUtils.logError(msg);
-            break;
-        default:
-            LogUtils.logMessage(msg);
-            break;
+    public static void showMessage(String msg, String title, int messageType, boolean log) {
+        if (log) {
+            switch (messageType) {
+            case JOptionPane.INFORMATION_MESSAGE:
+                LogUtils.logInfo(msg);
+                break;
+            case JOptionPane.WARNING_MESSAGE:
+                LogUtils.logWarning(msg);
+                break;
+            case JOptionPane.ERROR_MESSAGE:
+                LogUtils.logError(msg);
+                break;
+            default:
+                LogUtils.logMessage(msg);
+                break;
+            }
         }
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         if ((mainWindow != null) && framework.isInGuiMode()) {
-            String text = TextUtils.truncateText(msg, TRUNCATE_LENGTH);
+            String text = TextUtils.truncateLines(msg, TRUNCATE_LENGTH);
             JOptionPane.showMessageDialog(mainWindow, text, title, messageType);
         }
     }
@@ -51,7 +53,7 @@ public class DialogUtils {
     }
 
     public static void showMessage(String msg, String title) {
-        showMessage(msg, title, JOptionPane.PLAIN_MESSAGE);
+        showMessage(msg, title, JOptionPane.PLAIN_MESSAGE, true);
     }
 
     public static void showInfo(String msg) {
@@ -59,7 +61,7 @@ public class DialogUtils {
     }
 
     public static void showInfo(String msg, String title) {
-        showMessage(msg, title, JOptionPane.INFORMATION_MESSAGE);
+        showMessage(msg, title, JOptionPane.INFORMATION_MESSAGE, true);
     }
 
     public static void showWarning(String msg) {
@@ -67,7 +69,7 @@ public class DialogUtils {
     }
 
     public static void showWarning(String msg, String title) {
-        showMessage(msg, title, JOptionPane.WARNING_MESSAGE);
+        showMessage(msg, title, JOptionPane.WARNING_MESSAGE, true);
     }
 
     public static void showError(String msg) {
@@ -75,7 +77,7 @@ public class DialogUtils {
     }
 
     public static void showError(String msg, String title) {
-        showMessage(msg, title, JOptionPane.ERROR_MESSAGE);
+        showMessage(msg, title, JOptionPane.ERROR_MESSAGE, true);
     }
 
     public static boolean showConfirm(String msg, String title, boolean defaultChoice) {
@@ -140,11 +142,11 @@ public class DialogUtils {
         String yesText = UIManager.getString("OptionPane.yesButtonText");
         String noText = UIManager.getString("OptionPane.noButtonText");
         String cancelText = UIManager.getString("OptionPane.cancelButtonText");
-        return showChoice(msg, title,  JOptionPane.QUESTION_MESSAGE, yesText, noText, cancelText, defaultChoice);
+        return showChoice(msg, title, yesText, noText, cancelText, defaultChoice);
     }
 
-    private static int showChoice(String msg, String title, int messageType,
-            String yesText, String noText, String cancelText, int defaultChoice) {
+    private static int showChoice(String msg, String title, String yesText, String noText, String cancelText,
+            int defaultChoice) {
 
         int result = JOptionPane.CANCEL_OPTION;
         Framework framework = Framework.getInstance();
@@ -152,7 +154,7 @@ public class DialogUtils {
         if ((mainWindow != null) && framework.isInGuiMode()) {
             String[] options = {yesText, noText, cancelText};
             result = JOptionPane.showOptionDialog(mainWindow, msg, title, JOptionPane.YES_NO_CANCEL_OPTION,
-                    messageType, null, options, options[defaultChoice]);
+                    JOptionPane.QUESTION_MESSAGE, null, options, options[defaultChoice]);
         }
         return result;
     }
