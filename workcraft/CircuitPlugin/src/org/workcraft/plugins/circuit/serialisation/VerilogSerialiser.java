@@ -4,6 +4,7 @@ import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.Not;
 import org.workcraft.formula.visitors.StringGenerator;
@@ -19,6 +20,7 @@ import org.workcraft.plugins.circuit.verilog.VerilogBus;
 import org.workcraft.serialisation.AbstractBasicModelSerialiser;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
+import org.workcraft.workspace.ModelEntry;
 
 import java.io.File;
 import java.io.OutputStream;
@@ -231,10 +233,15 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
     private void writeInstance(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         // Module name
         String title = component.getModule();
-        Pair<File, Circuit> refinementCircuit = RefinementUtils.getRefinementCircuit(component);
-        if (refinementCircuit != null) {
-            refinementCircuits.add(refinementCircuit);
-            title = refinementCircuit.getSecond().getTitle();
+        File refinementCircuitFile = RefinementUtils.getRefinementCircuitFile(component);
+        if (refinementCircuitFile != null) {
+            try {
+                ModelEntry me = WorkUtils.loadModel(refinementCircuitFile);
+                Circuit refinementCircuit = WorkspaceUtils.getAs(me, Circuit.class);
+                refinementCircuits.add(Pair.of(refinementCircuitFile, refinementCircuit));
+                title = refinementCircuit.getTitle();
+            } catch (DeserialisationException ignored) {
+            }
         }
         String moduleName = ExportUtils.asIdentifier(title);
         // Instance name

@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.exceptions.DeserialisationException;
@@ -9,6 +10,7 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.refinement.ComponentInterface;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.types.Pair;
@@ -37,27 +39,27 @@ public final class RefinementUtils {
     }
 
     public static boolean hasRefinementStg(VisualFunctionComponent component) {
-        return (component != null) && (getRefinementStg(component.getReferencedComponent()) != null);
+        return (component != null) && (getRefinementStgFile(component.getReferencedComponent()) != null);
     }
 
     public static void openRefinementStg(VisualCircuitComponent component) {
         if (component != null) {
-            Pair<File, Stg> refinementStg = getRefinementStg(component.getReferencedComponent());
-            if (refinementStg != null) {
-                openRefinementFile(refinementStg.getFirst());
+            File refinementStgFile = getRefinementStgFile(component.getReferencedComponent());
+            if (refinementStgFile != null) {
+                openRefinementFile(refinementStgFile);
             }
         }
     }
 
     public static boolean hasRefinementCircuit(VisualFunctionComponent component) {
-        return (component != null) && (getRefinementCircuit(component.getReferencedComponent()) != null);
+        return (component != null) && (getRefinementCircuitFile(component.getReferencedComponent()) != null);
     }
 
     public static void openRefinementCircuit(VisualCircuitComponent component) {
         if (component != null) {
-            Pair<File, Circuit> refinementCircuit = getRefinementCircuit(component.getReferencedComponent());
-            if (refinementCircuit != null) {
-                openRefinementFile(refinementCircuit.getFirst());
+            File refinementCircuitFile = getRefinementCircuitFile(component.getReferencedComponent());
+            if (refinementCircuitFile != null) {
+                openRefinementFile(refinementCircuitFile);
             }
         }
     }
@@ -72,49 +74,45 @@ public final class RefinementUtils {
         }
     }
 
-    public static Pair<File, Stg> getRefinementStg(CircuitComponent component) {
+    public static File getRefinementStgFile(CircuitComponent component) {
         File file = component.getRefinementFile();
-        return file == null ? null : getRefinementStg(file);
-    }
-
-    private static Pair<File, Stg> getRefinementStg(File file) {
         try {
-            ModelEntry me = WorkUtils.loadModel(file);
-            MathModel model = me.getMathModel();
-            if (model instanceof Stg) {
-                return Pair.of(file, (Stg) model);
+            ModelDescriptor modelDescriptor = WorkUtils.extractModelDescriptor(file);
+            if (modelDescriptor instanceof StgDescriptor) {
+                return file;
             }
         } catch (DeserialisationException e) {
-            String filePath = FileUtils.getFullPath(file);
-            LogUtils.logError("Cannot read model from file '" + filePath + "':\n" + e.getMessage());
+            LogUtils.logError("Cannot read model from file '" + FileUtils.getFullPath(file) + "':\n" + e.getMessage());
         }
         return null;
     }
 
-    public static Pair<File, Circuit> getRefinementCircuit(CircuitComponent component) {
+    public static File getRefinementCircuitFile(CircuitComponent component) {
         File file = component.getRefinementFile();
-        return file == null ? null : getRefinementCircuit(file);
-    }
-
-    private static Pair<File, Circuit> getRefinementCircuit(File file) {
-        if (file == null) {
-            return null;
-        }
-        try {
-            ModelEntry me = WorkUtils.loadModel(file);
-            if (me != null) {
-                MathModel model = me.getMathModel();
-                if (model instanceof Circuit) {
-                    return Pair.of(file, (Circuit) model);
-                }
-                if (model instanceof Stg) {
-                    Stg stg = (Stg) model;
-                    return getRefinementCircuit(stg.getRefinementFile());
-                }
+        Set<File> visited = new HashSet<>();
+        while (file != null) {
+            if (visited.contains(file)) {
+                LogUtils.logError("Cyclic dependency on file '" + FileUtils.getFullPath(file) + "'");
+                return null;
             }
-        } catch (DeserialisationException e) {
-            String filePath = FileUtils.getFullPath(file);
-            LogUtils.logError("Cannot read model from file '" + filePath + "':\n" + e.getMessage());
+            visited.add(file);
+            try {
+                ModelDescriptor modelDescriptor = WorkUtils.extractModelDescriptor(file);
+                if (modelDescriptor instanceof CircuitDescriptor) {
+                    return file;
+                }
+                if (modelDescriptor instanceof StgDescriptor) {
+                    ModelEntry me = WorkUtils.loadModel(file);
+                    Stg stg = WorkspaceUtils.getAs(me, Stg.class);
+                    file = stg.getRefinementFile();
+                } else {
+                    LogUtils.logError("Unexpected model type in file '" + FileUtils.getFullPath(file) + "'");
+                    return null;
+                }
+            } catch (DeserialisationException e) {
+                LogUtils.logError("Cannot read model from file '" + FileUtils.getFullPath(file) + "':\n" + e.getMessage());
+                return null;
+            }
         }
         return null;
     }
@@ -122,10 +120,17 @@ public final class RefinementUtils {
     public static Set<FunctionComponent> getIncompatibleRefinementCircuitComponents(Circuit circuit) {
         Set<FunctionComponent> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            Pair<File, Circuit> refinementCircuit = getRefinementCircuit(component);
-            if (refinementCircuit != null) {
-                if (isInconsistentSignalNames(component, refinementCircuit.getSecond())) {
-                    result.add(component);
+            File refinementCircuitFile = getRefinementCircuitFile(component);
+            if (refinementCircuitFile != null) {
+                try {
+                    ModelEntry me = WorkUtils.loadModel(refinementCircuitFile);
+                    Circuit refinementCircuit = WorkspaceUtils.getAs(me, Circuit.class);
+                    if (isInconsistentSignalNames(component, refinementCircuit)) {
+                        result.add(component);
+                    }
+                } catch (DeserialisationException e) {
+                    String filePath = FileUtils.getFullPath(refinementCircuitFile);
+                    LogUtils.logError("Cannot read model from file '" + filePath + "':\n" + e.getMessage());
                 }
             }
         }
@@ -250,8 +255,7 @@ public final class RefinementUtils {
     }
 
     public static boolean isInconsistentInitialStates(Map<String, Boolean> is1, Map<String, Boolean> is2) {
-        Set<String> signals = new HashSet<>();
-        signals.addAll(is1.keySet());
+        Set<String> signals = new HashSet<>(is1.keySet());
         signals.retainAll(is2.keySet());
         return !signals.stream().allMatch(signal -> is1.get(signal) == is2.get(signal));
     }
@@ -270,13 +274,15 @@ public final class RefinementUtils {
 
     public static void updateInterface(VisualCircuit circuit, Set<File> changedRefinementFiles) {
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
-            Pair<File, Circuit> refinementFileCircuitPair = getRefinementCircuit(component.getReferencedComponent());
-            if (refinementFileCircuitPair != null) {
-                File refinementFile = refinementFileCircuitPair.getFirst();
-                if (changedRefinementFiles.contains(refinementFile)) {
-                    Circuit refinementCircuit = refinementFileCircuitPair.getSecond();
+            File refinementCircuitFile = getRefinementCircuitFile(component.getReferencedComponent());
+            if ((refinementCircuitFile != null) && changedRefinementFiles.contains(refinementCircuitFile)) {
+                try {
+                    ModelEntry me = WorkUtils.loadModel(refinementCircuitFile);
+                    Circuit refinementCircuit = WorkspaceUtils.getAs(me, Circuit.class);
                     ComponentInterface refinementInterface = getModelInterface(refinementCircuit);
                     updateInterface(circuit, component, refinementInterface);
+                } catch (DeserialisationException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

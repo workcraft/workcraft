@@ -594,4 +594,20 @@ public final class WorkUtils {
         return (ze != null) && META_WORK_ENTRY.equals(ze.getName());
     }
 
+    public static ModelDescriptor extractModelDescriptor(File file) throws DeserialisationException {
+        Framework framework = Framework.getInstance();
+        WorkspaceEntry we = framework.getWorkspace().getWork(file);
+        if (we != null) {
+            return we.getModelEntry().getDescriptor();
+        }
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            byte[] bytes = DataAccumulator.loadStream(fis);
+            Document metaDocument = loadMetaDoc(bytes);
+            return loadMetaDescriptor(metaDocument);
+        } catch (IOException e) {
+            throw new DeserialisationException(e);
+        }
+    }
+
 }

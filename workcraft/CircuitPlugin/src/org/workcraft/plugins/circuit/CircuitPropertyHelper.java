@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.dom.Model;
+import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.references.Identifier;
@@ -18,6 +19,7 @@ import org.workcraft.plugins.circuit.refinement.ComponentInterface;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 
@@ -72,16 +74,16 @@ public class CircuitPropertyHelper {
         Color color = null;
         File refinementFile = component == null ? null : component.getReferencedComponent().getRefinementFile();
         if (refinementFile != null) {
-            ModelEntry me = null;
+            ModelDescriptor modelDescriptor = null;
             if (FileUtils.isAvailableFile(refinementFile)) {
                 try {
-                    me = WorkUtils.loadModel(refinementFile);
+                    modelDescriptor = WorkUtils.extractModelDescriptor(refinementFile);
                 } catch (DeserialisationException ignored) {
                 }
             }
-            if (WorkspaceUtils.isApplicable(me, Circuit.class)) {
+            if (modelDescriptor instanceof CircuitDescriptor) {
                 color = AnalysisDecorationSettings.getFixerColor();
-            } else if (WorkspaceUtils.isApplicable(me, Stg.class)) {
+            } else if (modelDescriptor instanceof StgDescriptor) {
                 color = AnalysisDecorationSettings.getClearColor();
             } else {
                 color = AnalysisDecorationSettings.getProblemColor();
