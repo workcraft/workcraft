@@ -74,12 +74,13 @@ public class FileUtils {
             prefix = "";
         }
         // Prefix must be without spaces (replace spaces with underscores).
-        prefix = prefix.replaceAll("\\s", "_");
         // Prefix must be at least 3 symbols long (prepend short prefix with
         // underscores).
-        while (prefix.length() < 3) {
-            prefix = "_" + prefix;
+        StringBuilder prefixBuilder = new StringBuilder(prefix.replaceAll("\\s", "_"));
+        while (prefixBuilder.length() < 3) {
+            prefixBuilder.insert(0, "_");
         }
+        prefix = prefixBuilder.toString();
         return prefix;
     }
 
@@ -247,12 +248,25 @@ public class FileUtils {
         }
     }
 
-    public static boolean checkAvailability(File file) {
-        return checkAvailability(file, null, false);
+    public static boolean isAvailableFile(File file) {
+        return (file != null) && file.exists() && !file.isDirectory() && file.canRead();
     }
 
-    public static boolean checkAvailability(File file, String title, boolean showMessageDialog) {
-        String msg = getAvailabilityMessage(file);
+    public static boolean checkAvailability(File file, boolean showMessageDialog) {
+        return checkAvailability(file, showMessageDialog, null);
+    }
+
+    public static boolean checkAvailability(File file, boolean showMessageDialog, String title) {
+        String msg = null;
+        if (file == null) {
+            msg = "The file name is undefined.";
+        } else if (!file.exists()) {
+            msg = "The path '" + file.getPath() + "' does not exist.";
+        } else if (file.isDirectory()) {
+            msg = "The path '" + file.getPath() + "' is not a file.";
+        } else if (!file.canRead()) {
+            msg = "The file '" + file.getPath() + "' cannot be read.";
+        }
         if (msg == null) {
             return true;
         }
@@ -267,25 +281,9 @@ public class FileUtils {
         return false;
     }
 
-    private static String getAvailabilityMessage(File file) {
-        if (file == null) {
-            return "The file name is undefined.";
-        }
-        if (!file.exists()) {
-            return "The path '" + file.getPath() + "' does not exist.";
-        }
-        if (file.isDirectory()) {
-            return "The path '" + file.getPath() + "' is not a file.";
-        }
-        if (!file.canRead()) {
-            return "The file '" + file.getPath() + "' cannot be read.";
-        }
-        return null;
-    }
-
     public static void openExternally(String fileName, String errorTitle) {
         File file = new File(fileName);
-        if (checkAvailability(file, errorTitle, true)) {
+        if (checkAvailability(file, true, errorTitle)) {
             DesktopApi.open(file);
         }
     }

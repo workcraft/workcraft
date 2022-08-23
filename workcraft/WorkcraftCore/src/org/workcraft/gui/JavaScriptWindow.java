@@ -27,14 +27,13 @@ public class JavaScriptWindow extends JPanel {
                 try {
                     final Framework framework = Framework.getInstance();
                     Object result = framework.execJavaScript(txtScript.getText());
-
                     Context.enter();
                     String out = Context.toString(result);
                     Context.exit();
                     if (!"undefined".equals(out)) {
                         System.out.println(out);
                     }
-                    resetScript();
+                    txtScript.setText("");
                 } catch (org.mozilla.javascript.WrappedException e) {
                     Throwable we = e.getWrappedException();
                     System.err.println(we.getClass().getName() + " " + we.getMessage());

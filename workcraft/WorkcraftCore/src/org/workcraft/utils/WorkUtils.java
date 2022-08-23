@@ -115,7 +115,7 @@ public final class WorkUtils {
             return cloneModel(we.getModelEntry());
         }
         ModelEntry me = null;
-        if (FileUtils.checkAvailability(file, null, false)) {
+        if (FileUtils.checkAvailability(file, false)) {
             // Load (from *.work) or import (other extensions) work.
             if (FileFilters.isWorkFile(file)) {
                 try {
@@ -592,6 +592,22 @@ public final class WorkUtils {
 
     public static boolean isMetaEntry(ZipEntry ze) {
         return (ze != null) && META_WORK_ENTRY.equals(ze.getName());
+    }
+
+    public static ModelDescriptor extractModelDescriptor(File file) throws DeserialisationException {
+        Framework framework = Framework.getInstance();
+        WorkspaceEntry we = framework.getWorkspace().getWork(file);
+        if (we != null) {
+            return we.getModelEntry().getDescriptor();
+        }
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            byte[] bytes = DataAccumulator.loadStream(fis);
+            Document metaDocument = loadMetaDoc(bytes);
+            return loadMetaDescriptor(metaDocument);
+        } catch (IOException e) {
+            throw new DeserialisationException(e);
+        }
     }
 
 }

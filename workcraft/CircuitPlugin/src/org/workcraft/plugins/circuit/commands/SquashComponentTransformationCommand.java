@@ -2,12 +2,10 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.circuit.utils.SquashUtils;
-import org.workcraft.types.Pair;
 import org.workcraft.utils.WorkUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -39,13 +37,13 @@ public class SquashComponentTransformationCommand extends AbstractComponentTrans
 
     @Override
     public void transformComponent(VisualCircuit circuit, VisualFunctionComponent component) {
-        Pair<File, Circuit> refinementCircuit = RefinementUtils.getRefinementCircuit(component.getReferencedComponent());
-        if (refinementCircuit != null) {
+        File refinementCircuitFile = RefinementUtils.getRefinementCircuitFile(component.getReferencedComponent());
+        if (refinementCircuitFile != null) {
             try {
-                ModelEntry me = WorkUtils.loadModel(refinementCircuit.getFirst());
-                VisualCircuit componentModel = WorkspaceUtils.getAs(me, VisualCircuit.class);
-                SquashUtils.checkInterfaceConsistency(circuit, component, componentModel);
-                SquashUtils.squashComponent(circuit, component, componentModel);
+                ModelEntry me = WorkUtils.loadModel(refinementCircuitFile);
+                VisualCircuit refinementCircuit = WorkspaceUtils.getAs(me, VisualCircuit.class);
+                SquashUtils.checkInterfaceConsistency(circuit, component, refinementCircuit);
+                SquashUtils.squashComponent(circuit, component, refinementCircuit);
             } catch (DeserialisationException e) {
                 throw new RuntimeException(e);
             }

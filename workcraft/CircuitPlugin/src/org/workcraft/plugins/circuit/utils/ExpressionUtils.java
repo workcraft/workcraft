@@ -150,7 +150,7 @@ public class ExpressionUtils {
                     }
                 }
             }
-        } catch (ParseException ignore) {
+        } catch (ParseException ignored) {
         }
         return StringGenerator.toString(resultFormula, StringGenerator.Style.GENLIB);
     }

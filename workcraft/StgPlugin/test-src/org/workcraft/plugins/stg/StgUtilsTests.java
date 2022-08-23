@@ -24,19 +24,19 @@ class StgUtilsTests {
     @Test
     void testVmeInitialState() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
-        testInitialState(workName, 10, Collections.emptyList(), Collections.emptyList());
+        testInitialState(workName, 100, Collections.emptyList(), Collections.emptyList());
     }
 
     @Test
     void testBuckInitialState() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
-        testInitialState(workName, 10, Arrays.asList("gn", "gn_ack"), Collections.emptyList());
+        testInitialState(workName, 100, Arrays.asList("gn", "gn_ack"), Collections.emptyList());
     }
 
     @Test
     void testChoice9InitialState() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "choice9.stg.work");
-        testInitialState(workName, 300, Collections.emptyList(), Collections.singletonList("out"));
+        testInitialState(workName, 1000, Collections.emptyList(), Collections.singletonList("out"));
     }
 
     private void testInitialState(String workName, int timeout,

@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.dom.Model;
+import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.references.Identifier;
@@ -18,6 +19,7 @@ import org.workcraft.plugins.circuit.refinement.ComponentInterface;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 
@@ -69,11 +71,24 @@ public class CircuitPropertyHelper {
     }
 
     private static Color getComponentPropertyBackgroundColor(VisualFunctionComponent component) {
+        Color color = null;
         File refinementFile = component == null ? null : component.getReferencedComponent().getRefinementFile();
-        Color color = refinementFile == null ? null : refinementFile.exists()
-                ? AnalysisDecorationSettings.getClearColor()
-                : AnalysisDecorationSettings.getProblemColor();
-
+        if (refinementFile != null) {
+            ModelDescriptor modelDescriptor = null;
+            if (FileUtils.isAvailableFile(refinementFile)) {
+                try {
+                    modelDescriptor = WorkUtils.extractModelDescriptor(refinementFile);
+                } catch (DeserialisationException ignored) {
+                }
+            }
+            if (modelDescriptor instanceof CircuitDescriptor) {
+                color = AnalysisDecorationSettings.getFixerColor();
+            } else if (modelDescriptor instanceof StgDescriptor) {
+                color = AnalysisDecorationSettings.getClearColor();
+            } else {
+                color = AnalysisDecorationSettings.getProblemColor();
+            }
+        }
         return ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), color);
     }
 

@@ -652,7 +652,7 @@ public final class Framework {
     @SuppressWarnings("unused")
     public WorkspaceEntry loadWork(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        if (FileUtils.checkAvailability(file, null, false)) {
+        if (FileUtils.checkAvailability(file, false)) {
             return loadWork(file);
         }
         return null;
