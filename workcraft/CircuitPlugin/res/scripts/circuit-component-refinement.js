@@ -8,6 +8,9 @@ function setCircuitComponentRefinement(circuitWork, componentRef, refinementPath
         throw "Circuit component '" + componentRef + "' not found";
     }
     refinement = org.workcraft.dom.references.FileReference();
+    file = framework.getWorkspace().getFile(circuitWork);
+    refinementBase = org.workcraft.utils.FileUtils.getBasePath(file);
+    refinement.setBase(refinementBase)
     refinement.setPath(refinementPath);
     component.setRefinement(refinement);
 }
