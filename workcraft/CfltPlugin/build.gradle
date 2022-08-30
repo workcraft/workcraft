@@ -1,0 +1,20 @@
+dependencies {
+    implementation project(':WorkcraftCore')
+    implementation project(':PetriPlugin')
+    implementation project(':StgPlugin')
+}
+tasks.withType(Checkstyle) {
+    exclude '**/org/workcraft/plugins/cflt/javaccPetri/**'
+    exclude '**/org/workcraft/plugins/cflt/javaccStg/**'
+}
+tasks.withType(Pmd) {
+    exclude '**/org/workcraft/plugins/cflt/javaccPetri/**'
+    exclude '**/org/workcraft/plugins/cflt/javaccStg/**'
+}
+
+cpdCheck.exclude '**/org/workcraft/plugins/cflt/javaccPetri/**' 
+cpdCheck.exclude '**/org/workcraft/plugins/cflt/javaccStg/**'
+
+//The sequence heuristic is similar to the min/ max heuristic and generates a single CPD error, 
+//but this has been left for the sake of completeness
+cpdCheck.exclude '**/org/workcraft/plugins/cflt/ecc/SequenceHeuristic**'

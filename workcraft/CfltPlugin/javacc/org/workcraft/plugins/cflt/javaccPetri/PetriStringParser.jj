@@ -1,0 +1,135 @@
+options
+{
+    STATIC=false;
+}
+PARSER_BEGIN(PetriStringParser)
+package org.workcraft.plugins.cflt.javaccPetri;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import org.workcraft.plugins.cflt.tools.CotreeTool;
+import org.workcraft.plugins.cflt.*;
+
+public class PetriStringParser
+{
+  	CotreeTool ctr;
+    public void parse(String s) throws ParseException 
+    {
+       ctr = new CotreeTool();
+       ctr.reset();
+       InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
+       PetriStringParser parser = new PetriStringParser(is);
+	   parser.parseOneLine();
+    }
+}
+PARSER_END(PetriStringParser)
+<*> SKIP :
+{
+    < " " | "\t" | "\r" | "\n" | "\r\n" >
+|   <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")?>
+}
+TOKEN:
+{
+    < TRANSITION: (<CHARACTER>)+>
+|   < CHARACTER: ["a"-"z", "A" - "Z", "0" - "9"] >
+}
+void parseOneLine():
+{
+    String a;
+}
+{
+    a=concurrency()  <EOF>
+    {
+		if (CotreeTool.nodes.size() == 0) { 
+      		CotreeTool.singleTransition = a;
+    	}
+    }
+    | <EOF>
+    {
+    } 
+}
+String concurrency():
+{
+  String a;
+  String b;
+}
+{
+  a = choice()
+  (
+      "|" b= concurrency()
+      {
+          Node node = new Node(a, b, Operator.CONCURRENCY);
+          CotreeTool.nodes.add(node);
+      }
+  )*
+  {
+      return a;
+  }
+}
+String choice():
+{
+    String a;
+    String b;
+}
+{
+    a=sequence()
+    (
+        "#" b=choice()
+        {
+        	Node node = new Node(a, b, Operator.CHOICE);
+        	CotreeTool.nodes.add(node);
+        }	
+    )*
+    {
+        return a;
+    }
+}
+String sequence():
+{
+    String a;
+    String b;
+}
+{
+    a=unary()
+    (
+        ";" b=sequence()
+        {
+			Node node = new Node(a, b, Operator.SEQUENCE);
+        	CotreeTool.nodes.add(node);
+        }
+    )*
+    {
+        return a;
+    }
+}
+String unary():
+{
+    String a;
+}
+{
+    a=element()
+    {
+        return a;
+    }       
+}
+String element():
+{
+    Token t;
+    String a;
+}
+{
+    t=<TRANSITION>
+    {
+        return t.toString();
+    }
+    |   "(" a=concurrency() ")"
+    {
+        return a;
+    }
+    |   "{" a=concurrency() "}"
+	{
+	  	CotreeTool.containsIteration = true;
+  		Node node = new Node(a, a, Operator.ITERATION);
+		CotreeTool.nodes.add(node); return a;
+	}
+}
