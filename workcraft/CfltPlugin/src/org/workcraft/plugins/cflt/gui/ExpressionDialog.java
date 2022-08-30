@@ -1,19 +1,23 @@
-package org.workcraft.plugins.petri_expression.gui;
+package org.workcraft.plugins.cflt.gui;
 
-import info.clearthought.layout.TableLayout;
-import info.clearthought.layout.TableLayoutConstraints;
+import java.awt.BorderLayout;
+import java.awt.Window;
+import java.io.File;
+
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
 import org.workcraft.gui.controls.CodePanel;
-import org.workcraft.plugins.petri_expression.presets.ExpressionParameters;
-import org.workcraft.plugins.petri_expression.utils.ExpressionUtils;
+import org.workcraft.plugins.cflt.presets.ExpressionParameters;
+import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.presets.DataMapper;
 import org.workcraft.presets.PresetDialog;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.utils.GuiUtils;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.File;
+import info.clearthought.layout.TableLayout;
+import info.clearthought.layout.TableLayoutConstraints;
 
 public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
 
@@ -22,7 +26,7 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
     private CodePanel codePanel;
 
     public ExpressionDialog(Window owner, PresetManager presetManager) {
-        super(owner, "Petri expression", presetManager);
+        super(owner, "Control Flow Logic Translator", presetManager);
         presetPanel.selectFirst();
         // TODO: Prepare Petri expression help in workcraft.org, similar to https://workcraft.org/help/reach
         addHelpButton(new File("help/petri_expression.html"));
@@ -47,12 +51,34 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
     private PresetManagerPanel<ExpressionParameters> createPresetPanel() {
         PresetManager<ExpressionParameters> presetManager = getUserData();
 
-        // TODO: Populate expression presets
-        addExample(presetManager, "Concurrency between transitions",
-                "// Transitions a and b are concurrent\n" + "a | b");
+        addExample(presetManager, "General information",
+                "// Anything starting with '//' is a comment and will be ignored"
+                + "\n" + "// '|' represents concurrency"
+                + "\n" + "// '#' represents mutual exclusion (choice)"
+                + "\n" + "// ';' represents sequence"
+                + "\n" + "// '{' and '}' enforce iteration (loops)"
+                + "\n" + "// '(' and ')' enforce precedence"
+                + "\n" + "\n" + "// The precedence is as follows: "
+                + "\n" + "// brackets > sequence > choice > concurrency"
+                + "\n" + "\n" + "// Multiple transitions with the same name are allowed");
 
-        addExample(presetManager, "Mutual exclusion of transitions",
-                "// Transitions a and b are mutually exclusive\n" + "a # b");
+
+        addExample(presetManager, "Concurrency between transitions",
+                "// Transitions a and b are concurrent\n" + "a | b" + "\n//events 'a' and 'b' will take place in any order");
+
+        addExample(presetManager, "Mutual exclusion of (choice between) transitions",
+                "// Transitions a and b are mutually exclusive\n" + "a # b" + "\n//either event 'a' or 'b' will take place");
+
+        addExample(presetManager, "Sequence of transitions",
+                "// Transitions a and b are in sequence\n" + "a ; b" + "\n//event 'b' will only take place after event 'a'");
+        addExample(presetManager, "Sequence of transitions looped",
+                "// Transitions a and b are in sequence and looped\n" + "{a ; b}");
+
+        addExample(presetManager, "Precedence",
+                "// The precedence is as follows: brackets > sequence > choice > concurrency\n" + "a | b # c ; (d | e)");
+
+        addExample(presetManager, "Sample",
+                "// A sample expression\n" + "((i1|i2)#i3);((o1|o2)#(o3|o4)#(o5|o6|o7;o8));end");
 
         DataMapper<ExpressionParameters> guiMapper = new DataMapper<ExpressionParameters>() {
             @Override
@@ -72,7 +98,7 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
 
     private void addExample(PresetManager<ExpressionParameters> presetManager, String title, String expression) {
         ExpressionParameters parameters = new ExpressionParameters(title,
-                ExpressionParameters.Mode.FAST, expression);
+                ExpressionParameters.Mode.FAST_MIN, expression);
 
         presetManager.addExamplePreset(title, parameters);
     }
@@ -80,8 +106,10 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
     private JPanel createOptionsPanel() {
         modeCombo = new JComboBox<>();
         modeCombo.setEditable(false);
-        modeCombo.addItem(ExpressionParameters.Mode.FAST);
-        modeCombo.addItem(ExpressionParameters.Mode.EXACT);
+        modeCombo.addItem(ExpressionParameters.Mode.FAST_MIN);
+        modeCombo.addItem(ExpressionParameters.Mode.FAST_MAX);
+        modeCombo.addItem(ExpressionParameters.Mode.SLOW_EXACT);
+        modeCombo.addItem(ExpressionParameters.Mode.FAST_SEQ);
 
         JPanel result = new JPanel(GuiUtils.createBorderLayout());
         result.add(GuiUtils.createLabeledComponent(modeCombo, "Translation mode:     "), BorderLayout.NORTH);

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.petri_expression.presets;
+package org.workcraft.plugins.cflt.presets;
 
 import org.w3c.dom.Element;
 import org.workcraft.presets.DataSerialiser;
@@ -15,7 +15,7 @@ public class ExpressionDataSerialiser implements DataSerialiser<ExpressionParame
     public ExpressionParameters fromXML(Element parent, ExpressionParameters defaultParameters) {
         if (defaultParameters == null) {
             defaultParameters = new ExpressionParameters(
-                    null, ExpressionParameters.Mode.FAST, null);
+                    null, ExpressionParameters.Mode.FAST_MIN, null);
         }
         Element settingsElement = XmlUtils.getChildElement(SETTINGS_ELEMENT, parent);
 

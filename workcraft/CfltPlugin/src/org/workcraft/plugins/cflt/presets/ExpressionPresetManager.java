@@ -1,4 +1,4 @@
-package org.workcraft.plugins.petri_expression.presets;
+package org.workcraft.plugins.cflt.presets;
 
 import org.workcraft.presets.PresetManager;
 import org.workcraft.workspace.WorkspaceEntry;

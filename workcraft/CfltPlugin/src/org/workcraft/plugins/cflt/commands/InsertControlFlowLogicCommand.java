@@ -1,23 +1,24 @@
-package org.workcraft.plugins.petri_expression.commands;
+package org.workcraft.plugins.cflt.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.cflt.gui.ExpressionDialog;
+import org.workcraft.plugins.cflt.presets.ExpressionDataSerialiser;
+import org.workcraft.plugins.cflt.presets.ExpressionParameters;
+import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.plugins.petri.VisualPetri;
-import org.workcraft.plugins.petri_expression.gui.ExpressionDialog;
-import org.workcraft.plugins.petri_expression.presets.ExpressionDataSerialiser;
-import org.workcraft.plugins.petri_expression.presets.ExpressionParameters;
-import org.workcraft.plugins.petri_expression.utils.ExpressionUtils;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class InsertPetriCommand implements Command, MenuOrdering {
+public class InsertControlFlowLogicCommand implements Command, MenuOrdering {
 
-    private static final String PRESET_KEY = "petri-expressions.xml";
+    private static final String PRESET_KEY = "cfl-expressions.xml";
     private static final ExpressionDataSerialiser DATA_SERIALISER = new ExpressionDataSerialiser();
 
     private static ExpressionParameters preservedData = null;
@@ -39,7 +40,7 @@ public class InsertPetriCommand implements Command, MenuOrdering {
 
     @Override
     public String getDisplayName() {
-        return "Insert Petri expression...";
+        return "Insert Control Flow Logic Expression...";
     }
 
     @Override
@@ -50,8 +51,11 @@ public class InsertPetriCommand implements Command, MenuOrdering {
 
     @Override
     public void run(WorkspaceEntry we) {
+
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
+        ExpressionUtils.we = we;
+
         PresetManager<ExpressionParameters> presetManager
                 = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
 
@@ -64,8 +68,13 @@ public class InsertPetriCommand implements Command, MenuOrdering {
             we.captureMemento();
             if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
                 VisualPetri petri = WorkspaceUtils.getAs(we, VisualPetri.class);
-                if (!ExpressionUtils.insert(petri, expression, mode)) {
-                    we.cancelMemento();
+                try {
+                    if (!ExpressionUtils.insert(petri, expression, mode)) {
+                        we.cancelMemento();
+                    }
+                } catch (InvalidConnectionException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
                 }
             }
             if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {

@@ -1,10 +1,12 @@
-package org.workcraft.plugins.petri_expression.presets;
+package org.workcraft.plugins.cflt.presets;
 
 public class ExpressionParameters {
 
     public enum Mode {
-        FAST("Fast heuristic"),
-        EXACT("Exact solution");
+        FAST_MAX("Maximum Heuristic"),
+        FAST_MIN("Minimum Heuristic"),
+        FAST_SEQ("Sequence Heuristic"),
+        SLOW_EXACT("Expensive Exact ECC");
 
         private final String name;
 
