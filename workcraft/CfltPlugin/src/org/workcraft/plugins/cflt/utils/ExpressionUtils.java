@@ -240,7 +240,7 @@ public class ExpressionUtils {
             } catch (org.workcraft.plugins.cflt.jj.petri.ParseException e) {
                 DialogUtils.showError(e.getMessage(), "Parse Exception");
                 throw e;
-            } catch (Error e) {
+            } catch (org.workcraft.plugins.cflt.jj.petri.TokenMgrError e) {
                 DialogUtils.showError(e.getMessage(), "Error");
                 e.printStackTrace();
                 throw e;
@@ -252,7 +252,7 @@ public class ExpressionUtils {
             } catch (org.workcraft.plugins.cflt.jj.stg.ParseException e) {
                 DialogUtils.showError(e.getMessage(), "Parse Exception");
                 throw e;
-            } catch (Error e) {
+            } catch (org.workcraft.plugins.cflt.jj.stg.TokenMgrError e) {
                 DialogUtils.showError(e.getMessage(), "Error");
                 e.printStackTrace();
                 throw e;

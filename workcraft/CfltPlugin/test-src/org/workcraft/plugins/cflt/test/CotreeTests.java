@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.plugins.cflt.Operator;
 import org.workcraft.plugins.cflt.jj.petri.ParseException;
 import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
+import org.workcraft.plugins.cflt.jj.petri.TokenMgrError;
 import org.workcraft.plugins.cflt.tools.CotreeTool;
 import org.workcraft.utils.DialogUtils;
 
@@ -25,7 +26,7 @@ class CotreeTests {
         } catch (ParseException e) {
             DialogUtils.showError(e.getMessage(), "Parse Exception");
             e.printStackTrace();
-        } catch (Error e) {
+        } catch (TokenMgrError e) {
             DialogUtils.showError(e.getMessage(), "Error");
             e.printStackTrace();
         }

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.plugins.cflt.jj.petri.ParseException;
 import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
+import org.workcraft.plugins.cflt.jj.petri.TokenMgrError;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -121,10 +122,9 @@ class PetriParserTests {
         thrown = false;
         try {
             parseExpression("a+ # b");
-        } catch (Error e) {
+        } catch (TokenMgrError e) {
             thrown = true;
-        } catch (ParseException e) {
-
+        } catch (ParseException ignored) {
         }
         Assertions.assertTrue(thrown);
     }
@@ -134,20 +134,18 @@ class PetriParserTests {
         boolean thrown = false;
         try {
             parseExpression("a$#b");
-        } catch (Error e) {
+        } catch (TokenMgrError e) {
             thrown = true;
-        } catch (ParseException e) {
-
+        } catch (ParseException ignored) {
         }
         Assertions.assertTrue(thrown);
 
         thrown = false;
         try {
             parseExpression("a # b&");
-        } catch (Error e) {
+        } catch (TokenMgrError e) {
             thrown = true;
-        } catch (ParseException e) {
-
+        } catch (ParseException ignored) {
         }
         Assertions.assertTrue(thrown);
     }

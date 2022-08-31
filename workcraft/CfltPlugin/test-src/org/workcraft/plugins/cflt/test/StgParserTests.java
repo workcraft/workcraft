@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.plugins.cflt.jj.stg.ParseException;
 import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
+import org.workcraft.plugins.cflt.jj.stg.TokenMgrError;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -129,8 +130,9 @@ class StgParserTests {
         thrown = false;
         try {
             parseExpression("a++ # b-- # c~~");
-        } catch (Error | ParseException e) {
+        } catch (TokenMgrError e) {
             thrown = true;
+        } catch (ParseException ignored) {
         }
         Assertions.assertTrue(thrown);
     }
@@ -140,20 +142,18 @@ class StgParserTests {
         boolean thrown = false;
         try {
             parseExpression("a$#b");
-        } catch (Error e) {
+        } catch (TokenMgrError e) {
             thrown = true;
-        } catch (ParseException e) {
-
+        } catch (ParseException ignored) {
         }
         Assertions.assertTrue(thrown);
 
         thrown = false;
         try {
             parseExpression("a # b&");
-        } catch (Error e) {
+        } catch (TokenMgrError e) {
             thrown = true;
-        } catch (ParseException e) {
-
+        } catch (ParseException ignored) {
         }
         Assertions.assertTrue(thrown);
     }
@@ -186,7 +186,6 @@ class StgParserTests {
         InputStream is = new ByteArrayInputStream(expressionText.getBytes(StandardCharsets.UTF_8));
         StgStringParser parser = new StgStringParser(is);
         parser.parse(expressionText);
-
     }
 
 }
