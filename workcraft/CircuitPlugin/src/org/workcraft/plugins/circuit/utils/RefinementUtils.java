@@ -76,13 +76,15 @@ public final class RefinementUtils {
 
     public static File getRefinementStgFile(CircuitComponent component) {
         File file = component.getRefinementFile();
-        try {
-            ModelDescriptor modelDescriptor = WorkUtils.extractModelDescriptor(file);
-            if (modelDescriptor instanceof StgDescriptor) {
-                return file;
+        if (file != null) {
+            try {
+                ModelDescriptor modelDescriptor = WorkUtils.extractModelDescriptor(file);
+                if (modelDescriptor instanceof StgDescriptor) {
+                    return file;
+                }
+            } catch (DeserialisationException e) {
+                LogUtils.logError("Cannot read model from file '" + FileUtils.getFullPath(file) + "':\n" + e.getMessage());
             }
-        } catch (DeserialisationException e) {
-            LogUtils.logError("Cannot read model from file '" + FileUtils.getFullPath(file) + "':\n" + e.getMessage());
         }
         return null;
     }
