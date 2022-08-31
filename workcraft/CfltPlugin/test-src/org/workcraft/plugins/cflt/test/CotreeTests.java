@@ -1,22 +1,21 @@
 package org.workcraft.plugins.cflt.test;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.plugins.cflt.Operator;
-import org.workcraft.plugins.cflt.javaccPetri.ParseException;
-import org.workcraft.plugins.cflt.javaccPetri.PetriStringParser;
+import org.workcraft.plugins.cflt.jj.petri.ParseException;
+import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
 import org.workcraft.plugins.cflt.tools.CotreeTool;
 import org.workcraft.utils.DialogUtils;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 
 class CotreeTests {
 
     @Test
     void precedenceAndNodeGenerationTest() {
-
         String testExpression = "A|B#C;(D|{E})";
         InputStream is = new ByteArrayInputStream(testExpression.getBytes(StandardCharsets.UTF_8));
         PetriStringParser parser = new PetriStringParser(is);
@@ -26,7 +25,6 @@ class CotreeTests {
         } catch (ParseException e) {
             DialogUtils.showError(e.getMessage(), "Parse Exception");
             e.printStackTrace();
-
         } catch (Error e) {
             DialogUtils.showError(e.getMessage(), "Error");
             e.printStackTrace();
@@ -51,4 +49,5 @@ class CotreeTests {
         Assertions.assertEquals(CotreeTool.nodes.get(4).getRight(), "B");
         Assertions.assertEquals(CotreeTool.nodes.get(4).getOperator(), Operator.CONCURRENCY);
     }
+
 }

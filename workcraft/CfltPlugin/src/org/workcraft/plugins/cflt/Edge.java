@@ -13,7 +13,9 @@ public class Edge {
     public String getFirstVertex() {
         return firstVertex;
     }
+
     public String getSecondVertex() {
         return secondVertex;
     }
+
 }

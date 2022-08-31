@@ -24,18 +24,18 @@ public class StgStringParser {
 }
 PARSER_END(StgStringParser)
 
-<*> SKIP :
+<*> SKIP:
 {
-    <" " | "\t" | "\r" | "\n" | "\r\n" >
+    <" " | "\t" | "\r" | "\n" | "\r\n">
 |
     <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")?>
 }
 
 TOKEN:
-{  
-    < TRANSITION: (<CHARACTER>)+("+"|"-"|"~")?>
+{
+    <TRANSITION: (<CHARACTER>)+("+"|"-"|"~")?>
 |
-    < CHARACTER: ["a"-"z", "A" - "Z", "0" - "9"] >
+    <CHARACTER: ["a"-"z", "A"-"Z", "0"-"9"]>
 }
 
 void parseOneLine():
@@ -44,7 +44,7 @@ void parseOneLine():
 }
 {
     a = concurrency() <EOF>
-    { 
+    {
         if (CotreeTool.nodes.size() == 0) { 
               CotreeTool.singleTransition = a;
         }
@@ -57,21 +57,21 @@ void parseOneLine():
 
 String concurrency():
 {
-  String a;
-  String b;
+    String a;
+    String b;
 }
 {
-  a = choice()
-  (
-      "|" b = concurrency()
-      {
-          Node node = new Node(a, b, Operator.CONCURRENCY);
-          CotreeTool.nodes.add(node);
-      }
-  )*
-  {
-       return a;
-  }
+    a = choice()
+    (
+        "|" b = concurrency()
+        {
+            Node node = new Node(a, b, Operator.CONCURRENCY);
+            CotreeTool.nodes.add(node);
+        }
+    )*
+    {
+        return a;
+    }
 }
 
 String choice():
@@ -86,7 +86,7 @@ String choice():
         {
             Node node = new Node(a, b, Operator.CHOICE);
             CotreeTool.nodes.add(node);
-        }    
+        }
     )*
     {
         return a;

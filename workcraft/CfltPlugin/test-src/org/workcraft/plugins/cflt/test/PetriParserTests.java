@@ -1,19 +1,18 @@
 package org.workcraft.plugins.cflt.test;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.workcraft.plugins.cflt.jj.petri.ParseException;
+import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-import org.workcraft.plugins.cflt.javaccPetri.ParseException;
-import org.workcraft.plugins.cflt.javaccPetri.PetriStringParser;
 
 class PetriParserTests {
 
     @Test
     void missingBracketEng() {
-
         boolean thrown = false;
         try {
             parseExpression("(a#b");
@@ -59,9 +58,9 @@ class PetriParserTests {
         }
         Assertions.assertTrue(thrown);
     }
+
     @Test
     void missingBracketBeg() {
-
         boolean thrown = false;
         try {
             parseExpression("a#b)");
@@ -80,9 +79,9 @@ class PetriParserTests {
         }
         Assertions.assertTrue(thrown);
     }
+
     @Test
     void invaidExpressionParsing() {
-
         boolean thrown = false;
         try {
             parseExpression("a #");
@@ -129,9 +128,9 @@ class PetriParserTests {
         }
         Assertions.assertTrue(thrown);
     }
+
     @Test
     void lexicalError() {
-
         boolean thrown = false;
         try {
             parseExpression("a$#b");
@@ -152,9 +151,9 @@ class PetriParserTests {
         }
         Assertions.assertTrue(thrown);
     }
+
     @Test
     void commentIgnoring() {
-
         boolean thrown = false;
         try {
             parseExpression("a # b //((((a # b $ % }}");
@@ -164,9 +163,9 @@ class PetriParserTests {
         }
         Assertions.assertFalse(thrown);
     }
+
     @Test
     void tabSpaceMultipleLinesHandling() {
-
         boolean thrown = false;
         try {
             parseExpression("a # b             //((((a # b $ % }}" + "\n" + "        #     c" + "\n" + "//%$%$}}}");
@@ -183,4 +182,5 @@ class PetriParserTests {
         parser.parse(expressionText);
 
     }
+
 }

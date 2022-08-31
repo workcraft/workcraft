@@ -24,7 +24,7 @@ public class PetriStringParser {
 }
 PARSER_END(PetriStringParser)
 
-<*> SKIP :
+<*> SKIP:
 {
     < " " | "\t" | "\r" | "\n" | "\r\n" >
 |
@@ -33,9 +33,9 @@ PARSER_END(PetriStringParser)
 
 TOKEN:
 {
-    < TRANSITION: (<CHARACTER>)+>
+    <TRANSITION: (<CHARACTER>)+>
 |
-    < CHARACTER: ["a"-"z", "A" - "Z", "0" - "9"] >
+    <CHARACTER: ["a"-"z", "A"-"Z", "0"-"9"]>
 }
 
 void parseOneLine():
@@ -43,35 +43,35 @@ void parseOneLine():
     String a;
 }
 {
-    a = concurrency()  <EOF>
+    a = concurrency() <EOF>
     {
-		if (CotreeTool.nodes.size() == 0) { 
-      		CotreeTool.singleTransition = a;
-    	}
+        if (CotreeTool.nodes.size() == 0) {
+            CotreeTool.singleTransition = a;
+        }
     }
 |
     <EOF>
     {
-    } 
+    }
 }
 
 String concurrency():
 {
-  String a;
-  String b;
+    String a;
+    String b;
 }
 {
-  a = choice()
-  (
-      "|" b = concurrency()
-      {
-          Node node = new Node(a, b, Operator.CONCURRENCY);
-          CotreeTool.nodes.add(node);
-      }
-  )*
-  {
-      return a;
-  }
+    a = choice()
+    (
+        "|" b = concurrency()
+        {
+            Node node = new Node(a, b, Operator.CONCURRENCY);
+            CotreeTool.nodes.add(node);
+        }
+    )*
+    {
+        return a;
+    }
 }
 
 String choice():
@@ -103,8 +103,8 @@ String sequence():
     (
         ";" b = sequence()
         {
-			Node node = new Node(a, b, Operator.SEQUENCE);
-        	CotreeTool.nodes.add(node);
+            Node node = new Node(a, b, Operator.SEQUENCE);
+            CotreeTool.nodes.add(node);
         }
     )*
     {
@@ -120,7 +120,7 @@ String unary():
     a = element()
     {
         return a;
-    }       
+    }
 }
 
 String element():
@@ -140,9 +140,9 @@ String element():
     }
 |
     "{" a = concurrency() "}"
-	{
-	  	CotreeTool.containsIteration = true;
-  		Node node = new Node(a, a, Operator.ITERATION);
-		CotreeTool.nodes.add(node); return a;
-	}
+    {
+        CotreeTool.containsIteration = true;
+        Node node = new Node(a, a, Operator.ITERATION);
+        CotreeTool.nodes.add(node); return a;
+    }
 }

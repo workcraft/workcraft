@@ -1,18 +1,10 @@
 package org.workcraft.plugins.cflt.utils;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.controls.CodePanel;
-import org.workcraft.plugins.cflt.javaccPetri.ParseException;
-import org.workcraft.plugins.cflt.javaccPetri.PetriStringParser;
-import org.workcraft.plugins.cflt.javaccStg.StgStringParser;
+import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
+import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.tools.CotreeTool;
@@ -23,6 +15,13 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ExpressionUtils {
 
@@ -51,7 +50,6 @@ public class ExpressionUtils {
     public static HashMap<String, Character> nameDirectionMap = new HashMap<>();
 
     public static void checkSyntax(CodePanel codePanel) {
-
         Model model = Model.DEFAULT;
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
             model = Model.PETRI_NET;
@@ -89,16 +87,14 @@ public class ExpressionUtils {
     }
 
     private static String parseData(String data, Model model) {
-
         try {
             validateExpression(data, model);
             //checkNestedIteration(data);
             checkIteration(model);
-        } catch (ParseException | org.workcraft.plugins.cflt.javaccStg.ParseException e) {
+        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
             data = null;
             e.printStackTrace();
         }
-
         return data == null ? "Bad control flow logic expression" : null;
     }
 
@@ -113,23 +109,22 @@ public class ExpressionUtils {
         }
         return pos;
     }
-    public static boolean insert(VisualPetri petri, String expressionText, ExpressionParameters.Mode mode) throws InvalidConnectionException {
+
+    public static boolean insert(VisualPetri petri, String expressionText, ExpressionParameters.Mode mode)
+            throws InvalidConnectionException {
 
         checkMode(mode);
 
         try {
             validateExpression(expressionText, Model.PETRI_NET);
             //checkNestedIteration(expressionText);
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-            return false;
-        } catch (org.workcraft.plugins.cflt.javaccStg.ParseException e) {
+        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
             e.printStackTrace();
             return false;
         }
         checkIteration(Model.PETRI_NET);
         CotreeTool ctr = new CotreeTool();
-        //if the expression is merely a single transition
+        // If the expression is merely a single transition
         if (CotreeTool.nodes.size() == 0 && CotreeTool.singleTransition != null) {
             ctr.drawSingleTransition(Model.PETRI_NET);
         }
@@ -138,31 +133,29 @@ public class ExpressionUtils {
 
         try {
             validateExpression(expressionText, Model.PETRI_NET);
-        } catch (ParseException | org.workcraft.plugins.cflt.javaccStg.ParseException e1) {
-            e1.printStackTrace();
+        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
+            e.printStackTrace();
             return false;
         }
         ctr.drawInterpretedGraph(mode, Model.PETRI_NET);
 
         AbstractLayoutCommand alc = petri.getBestLayouter();
         alc.layout(petri);
-
-        return (petri != null) && (expressionText != null) && (mode != null);
+        return mode != null;
     }
 
     public static boolean insert(VisualStg stg, String expressionText, ExpressionParameters.Mode mode) {
         checkMode(mode);
-
         try {
             validateExpression(expressionText, Model.STG);
             //checkNestedIteration(expressionText);
-        } catch (org.workcraft.plugins.cflt.javaccStg.ParseException | ParseException e) {
+        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
             e.printStackTrace();
             return false;
         }
         checkIteration(Model.STG);
         CotreeTool ctr = new CotreeTool();
-        //if the expression is merely a single transition
+        // If the expression is merely a single transition
         if (CotreeTool.nodes.size() == 0 && CotreeTool.singleTransition != null) {
             ctr.drawSingleTransition(Model.STG);
         }
@@ -172,7 +165,7 @@ public class ExpressionUtils {
 
         try {
             validateExpression(expressionText, Model.STG);
-        } catch (org.workcraft.plugins.cflt.javaccStg.ParseException | ParseException e) {
+        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
             e.printStackTrace();
             return false;
         }
@@ -180,14 +173,13 @@ public class ExpressionUtils {
 
         AbstractLayoutCommand alc = stg.getBestLayouter();
         alc.layout(stg);
-
-        return (stg != null) && (expressionText != null) && (mode != null);
+        return mode != null;
     }
 
     /**
      * Transitions in the expression text are made unique and their original name is stored, later to be used as a label
-     * @param expressionText
-     * @return expressionText with all transitions being unique
+     * @param expressionText original expression, possibly with reused transition names
+     * @return expression with all transitions being unique
      */
     private static String makeTransitionsUnique(String expressionText) {
         String str = expressionText;
@@ -195,35 +187,36 @@ public class ExpressionUtils {
         int repNo = 0;
         while (i < expressionText.length()) {
 
-            String transition = "";
-            while (expressionText.charAt(i) != CONCURRENCY
-                    && expressionText.charAt(i) != SEQUENCE
-                    && expressionText.charAt(i) != CHOICE
-                    && expressionText.charAt(i) != OPEN_BRACKET
-                    && expressionText.charAt(i) != CLOSED_BRACKET
-                    && expressionText.charAt(i) != OPEN_CURLY_BRACKET
-                    && expressionText.charAt(i) != CLOSED_CURLY_BRACKET
-                    && expressionText.charAt(i) != '\t'
-                    && expressionText.charAt(i) != '\n'
-                    && expressionText.charAt(i) != ' '
-                    && expressionText.charAt(i) != '/') {
-                transition += expressionText.charAt(i);
+            StringBuilder transition = new StringBuilder();
+            while ((expressionText.charAt(i) != CONCURRENCY)
+                    && (expressionText.charAt(i) != SEQUENCE)
+                    && (expressionText.charAt(i) != CHOICE)
+                    && (expressionText.charAt(i) != OPEN_BRACKET)
+                    && (expressionText.charAt(i) != CLOSED_BRACKET)
+                    && (expressionText.charAt(i) != OPEN_CURLY_BRACKET)
+                    && (expressionText.charAt(i) != CLOSED_CURLY_BRACKET)
+                    && (expressionText.charAt(i) != '\t')
+                    && (expressionText.charAt(i) != '\n')
+                    && (expressionText.charAt(i) != ' ')
+                    && (expressionText.charAt(i) != '/')) {
+
+                transition.append(expressionText.charAt(i));
                 i++;
                 if (i == expressionText.length()) {
                     break;
                 }
             }
-            if (!transition.contains("//") && !transition.equals("\n") && !transition.equals("")) {
+            if (!transition.toString().contains("//") && !transition.toString().equals("\n") && !transition.toString().equals("")) {
                 String uniqueT = "t" + repNo;
 
                 char lastC = expressionText.charAt(i - 1);
                 int wasAltered = 0;
                 nameDirectionMap.put(uniqueT, lastC);
                 if (lastC == PLUS_DIR || lastC == MINUS_DIR || lastC == TOGGLE_DIR) {
-                    transition = transition.substring(0, transition.length() - 1);
+                    transition = new StringBuilder(transition.substring(0, transition.length() - 1));
                     wasAltered = 1;
                 }
-                labelNameMap.put(uniqueT, transition);
+                labelNameMap.put(uniqueT, transition.toString());
 
                 str = str.substring(0, i - transition.length() - wasAltered) + uniqueT + str.substring(i);
                 i -= transition.length();
@@ -236,52 +229,49 @@ public class ExpressionUtils {
         return str;
     }
 
-    public static void validateExpression(String expressionText, Model model) throws ParseException,
-                            org.workcraft.plugins.cflt.javaccStg.ParseException {
+    public static void validateExpression(String expressionText, Model model)
+            throws org.workcraft.plugins.cflt.jj.petri.ParseException, org.workcraft.plugins.cflt.jj.stg.ParseException {
 
         InputStream is = new ByteArrayInputStream(expressionText.getBytes(StandardCharsets.UTF_8));
         if (model == Model.PETRI_NET) {
-
             PetriStringParser parser = new PetriStringParser(is);
-
             try {
                 parser.parse(expressionText);
-            } catch (ParseException e) {
+            } catch (org.workcraft.plugins.cflt.jj.petri.ParseException e) {
                 DialogUtils.showError(e.getMessage(), "Parse Exception");
-                e.printStackTrace();
                 throw e;
-
             } catch (Error e) {
                 DialogUtils.showError(e.getMessage(), "Error");
                 e.printStackTrace();
                 throw e;
             }
         } else if (model == Model.STG) {
-
             StgStringParser parser = new StgStringParser(is);
-
             try {
                 parser.parse(expressionText);
+            } catch (org.workcraft.plugins.cflt.jj.stg.ParseException e) {
+                DialogUtils.showError(e.getMessage(), "Parse Exception");
+                throw e;
             } catch (Error e) {
                 DialogUtils.showError(e.getMessage(), "Error");
-                e.printStackTrace();
-                throw e;
-            } catch (org.workcraft.plugins.cflt.javaccStg.ParseException e) {
-                DialogUtils.showError(e.getMessage(), "Parse Exception");
                 e.printStackTrace();
                 throw e;
             }
         }
     }
+
     private static void checkIteration(Model model) {
         if (CotreeTool.containsIteration) {
-            DialogUtils.showWarning(model.toString() + " may yield unexpected/ incorrect result.", "Iteration Detected");
+            DialogUtils.showWarning(model.toString() + " may yield unexpected/ incorrect result.",
+                    "Iteration Detected");
         }
     }
+
     private static void checkMode(Mode mode) {
         if (mode == Mode.SLOW_EXACT) {
             DialogUtils.showWarning("The exhaustive search algorithm may take a long time to compute," + "\n" +
                     "heuristics may be used instead.", "Slow Exact Algorithm Used");
         }
     }
+
 }

@@ -17,9 +17,10 @@ public class Graph {
         this.connections = connections;
         this.vertices = vertices;
     }
-    public Graph() {
 
+    public Graph() {
     }
+
     public void initialiseConnections() {
         this.connections = new boolean[getVertices().size()][getVertices().size()];
         for (int x = 0; x < connections.length; x++) {
@@ -32,6 +33,7 @@ public class Graph {
             this.connections[getVertices().indexOf(e.getSecondVertex())][getVertices().indexOf(e.getFirstVertex())] = true;
         }
     }
+
     public void printGraph() {
         for (Edge edge : getEdges()) {
             System.out.println("Edge: " + edge.getFirstVertex() + " " + edge.getSecondVertex());
@@ -40,20 +42,24 @@ public class Graph {
             System.out.println("Vertex: " + s);
         }
     }
+
     public void addVertex(String v) {
         this.vertices.add(v);
     }
+
     public void removeVertex(String v) {
         this.vertices.remove(v);
     }
+
     public void addEdge(Edge e) {
         this.getEdges().add(e);
     }
+
     public void removeEdge(Edge e) {
         this.getEdges().remove(e);
     }
-    public ArrayList<String> getIsolatedVertices() {
 
+    public ArrayList<String> getIsolatedVertices() {
         if (getEdges().isEmpty()) {
             return getVertices();
         }
@@ -72,32 +78,38 @@ public class Graph {
         return vertexList;
 
     }
+
     public void removeEdges(Graph sequenceInputGraph) {
         for (Edge edge : sequenceInputGraph.getEdges()) {
             this.edges.remove(edge);
         }
     }
+
     public void setEdges(List<Edge> edges) {
         this.edges = (ArrayList<Edge>) edges;
     }
+
     public void setConnections(boolean[][] cons) {
         this.connections = cons;
     }
+
     public ArrayList<String> getVertices() {
         return vertices;
     }
+
     public void setVertices(ArrayList<String> vertices) {
         this.vertices = vertices;
     }
+
     public ArrayList<Edge> getEdges() {
         return edges;
     }
+
     public void setEdges(ArrayList<Edge> edges) {
         this.edges = edges;
     }
-    @SuppressWarnings("unchecked")
-    public Graph cloneGraph(int counter) {
 
+    public Graph cloneGraph(int counter) {
         String addition = "$" + counter;
         ArrayList<String> vClone = new ArrayList<>();
         ArrayList<Edge> eClone = new ArrayList<>();
@@ -109,4 +121,5 @@ public class Graph {
         }
         return new Graph(eClone, vClone, null);
     }
+
 }

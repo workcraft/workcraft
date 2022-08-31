@@ -12,28 +12,25 @@ public class MaxMinHeuristic {
 
     public static ArrayList<ArrayList<String>> getEdgeCliqueCover(Graph g, ArrayList<Edge> optionalEdges, boolean max)  {
 
-        //number of cliques
+        // Number of cliques
         int cliqueNumber = -1;
-        //is the edge covered, yes 1, no 0
+        // Is the edge covered, yes 1, no 0
         HashMap<String, Integer> isCovered = new HashMap<>();
-        //the uncovered degree of each vertex
+        // The uncovered degree of each vertex
         HashMap<String, Integer> uncoveredDegree = new HashMap<>();
-        //all neighbours of a vertex
+        // All neighbours of a vertex
         HashMap<String, HashSet<String>> allNeighbours = EccUtils.initialiseNeighbours(g);
 
-        //final cliques as a list of vertices
+        // Final cliques as a list of vertices
         ArrayList<ArrayList<String>> finalCliques = new ArrayList<>();
-        //final cliques as a list of edges (ie. v1 + v2)
+        // Final cliques as a list of edges (ie. v1 + v2)
         ArrayList<ArrayList<String>> finalCliquesEdges = new ArrayList<>();
-        //how many cliques an edge is contained in
+        // How many cliques an edge is contained in
         HashMap<String, Integer> edgeToNoOfCliquesItsContainedIn = new HashMap<>();
 
-        //the local uncovered degree of each vertex
+        // Local uncovered degree of each vertex
         HashMap<String, Integer> localUncoveredDegree = new HashMap<>();
-
         HashSet<String> uncoveredVertices = new HashSet<>();
-
-        //optional edges
         HashSet<String> optionalEdgeSet = new HashSet<>();
 
         for (Edge e : optionalEdges) {
@@ -41,7 +38,7 @@ public class MaxMinHeuristic {
             optionalEdgeSet.add(e.getSecondVertex() + e.getFirstVertex());
         }
 
-        // all edges are initialised to uncovered and the number of cliques it is contained in to zero
+        // All edges are initialised to uncovered and the number of cliques it is contained in to zero
         for (Edge e : g.getEdges()) {
             isCovered.put(e.getFirstVertex() + e.getSecondVertex(), 0);
             isCovered.put(e.getSecondVertex() + e.getFirstVertex(), 0);
@@ -50,13 +47,13 @@ public class MaxMinHeuristic {
             edgeToNoOfCliquesItsContainedIn.put(e.getSecondVertex() + e.getFirstVertex(), 0);
         }
 
-        //initially, the uncovered degree of each vertex is set to it's degree
+        // Initially, the uncovered degree of each vertex is set to it's degree
         for (String vertex : g.getVertices()) {
             if (allNeighbours.get(vertex) != null) {
                 uncoveredDegree.put(vertex, allNeighbours.get(vertex).size());
                 uncoveredVertices.add(vertex);
             } else {
-                //if the vertex has no neighbours
+                // If the vertex has no neighbours
                 uncoveredDegree.put(vertex, 0);
             }
         }
@@ -65,7 +62,6 @@ public class MaxMinHeuristic {
         int currentCliqueSize = 0;
 
         while (!uncoveredVertices.isEmpty()) {
-
             String i;
             if (max) {
                 i = EccUtils.argmax(uncoveredDegree, uncoveredVertices);
@@ -73,34 +69,28 @@ public class MaxMinHeuristic {
                 i = EccUtils.argmin(uncoveredDegree, uncoveredVertices);
             }
 
-
-            //while there are still uncovered edges adjacent to the vertex
+            // While there are still uncovered edges adjacent to the vertex
             while (uncoveredDegree.get(i) > 0) {
-
                 if (currentCliqueSize > maxCliqueSize) {
                     maxCliqueSize = currentCliqueSize;
                 }
                 currentCliqueSize = 1;
                 cliqueNumber += 1;
 
-                finalCliques.add(cliqueNumber, new ArrayList<String>());
+                finalCliques.add(cliqueNumber, new ArrayList<>());
                 finalCliques.get(cliqueNumber).add(i);
-
-                finalCliquesEdges.add(new ArrayList<String>());
+                finalCliquesEdges.add(new ArrayList<>());
 
                 @SuppressWarnings("unchecked")
                 HashSet<String> localNeighbourhoodOfi = (HashSet<String>) allNeighbours.get(i).clone();
-
                 for (String j : localNeighbourhoodOfi) {
                     localUncoveredDegree.put(j, 1 - isCovered.get(i + j));
                 }
 
                 String u = EccUtils.argmax(localUncoveredDegree, localNeighbourhoodOfi);
-
                 while (localUncoveredDegree.get(u) > 0) {
                     boolean isOptional = true;
                     for (String j : finalCliques.get(cliqueNumber)) {
-
                         if (isCovered.get(u + j) == 0 && isCovered.get(j + u) == 0) {
                             isCovered.replace(u + j, 1);
                             isCovered.replace(j + u, 1);
@@ -110,11 +100,11 @@ public class MaxMinHeuristic {
                             temp = uncoveredDegree.get(j);
                             uncoveredDegree.replace(j, temp - 1);
                         }
-                        //adding the key edges of the clique
+                        // Adding the key edges of the clique
                         finalCliquesEdges.get(cliqueNumber).add(u + j);
                         finalCliquesEdges.get(cliqueNumber).add(j + u);
 
-                        //updating the number of cliques the edge is contained in
+                        // Updating the number of cliques the edge is contained in
                         int oldVal = edgeToNoOfCliquesItsContainedIn.get(u + j);
                         edgeToNoOfCliquesItsContainedIn.replace(u + j, oldVal + 1);
                         edgeToNoOfCliquesItsContainedIn.replace(j + u, oldVal + 1);
@@ -140,7 +130,7 @@ public class MaxMinHeuristic {
                     if (localNeighbourhoodOfi.isEmpty()) { break; }
                 }
             }
-            //updating the set of uncovered vertices
+            // Updating the set of uncovered vertices
             HashSet<String> updatedUncoveredVertices = new HashSet<>();
             for (String v : uncoveredVertices) {
                 if (uncoveredDegree.get(v) > 0) {
@@ -151,14 +141,14 @@ public class MaxMinHeuristic {
         }
 
         int currentCliqueIndex = 0;
-        //dealing with cliques which are not maximal
+        // Dealing with cliques which are not maximal
         for (ArrayList<String> finalClique : finalCliques) {
-            //if the clique is not maximal
+            // If the clique is not maximal
             if (finalClique.size() < maxCliqueSize && !finalClique.isEmpty()) {
 
                 @SuppressWarnings("unchecked")
-                HashSet<String> neightboursOfFirstVertex = (HashSet<String>) allNeighbours.get(finalClique.get(0)).clone();
-                ArrayList<String> verticesToBeAdded = new ArrayList<>(neightboursOfFirstVertex);
+                HashSet<String> neighboursOfFirstVertex = (HashSet<String>) allNeighbours.get(finalClique.get(0)).clone();
+                ArrayList<String> verticesToBeAdded = new ArrayList<>(neighboursOfFirstVertex);
 
                 for (int x = 1; x < finalClique.size(); x++) {
                     verticesToBeAdded.retainAll(allNeighbours.get(finalClique.get(x)));
@@ -174,7 +164,7 @@ public class MaxMinHeuristic {
                             finalCliquesEdges.get(currentCliqueIndex).add(i + s);
                             finalCliquesEdges.get(currentCliqueIndex).add(s + i);
 
-                            //updating the number of cliques the edge is contained in
+                            // Updating the number of cliques the edge is contained in
                             int oldVal = edgeToNoOfCliquesItsContainedIn.get(i + s);
                             edgeToNoOfCliquesItsContainedIn.replace(i + s, oldVal + 1);
                             edgeToNoOfCliquesItsContainedIn.replace(s + i, oldVal + 1);
@@ -185,12 +175,10 @@ public class MaxMinHeuristic {
             currentCliqueIndex++;
         }
 
-        //if a clique only contains edges from the optional edge list it needs to be removed
+        // If a clique only contains edges from the optional edge list it needs to be removed
         for (int x = 0; x < finalCliquesEdges.size(); x++) {
-
             boolean containsOnlyOptionalEdges = true;
             for (String edge : finalCliquesEdges.get(x)) {
-
                 if (!optionalEdgeSet.contains(edge)) {
                     containsOnlyOptionalEdges = false;
                     break;
@@ -198,15 +186,14 @@ public class MaxMinHeuristic {
             }
             if (containsOnlyOptionalEdges) {
                 finalCliques.remove(x);
-                finalCliques.add(x, new ArrayList<String>());
+                finalCliques.add(x, new ArrayList<>());
             }
         }
-        //remove redundant cliques
+        // Remove redundant cliques
         for (int x = 0; x < finalCliques.size(); x++) {
-            //if the clique is redundant
+            // If the clique is redundant
             if (EccUtils.checkRedundancy(edgeToNoOfCliquesItsContainedIn, finalCliquesEdges.get(x))) {
-
-                //update number of cliques an edge is contained in
+                // Update number of cliques an edge is contained in
                 for (String edge : finalCliquesEdges.get(x)) {
                     int temp = edgeToNoOfCliquesItsContainedIn.get(edge);
                     edgeToNoOfCliquesItsContainedIn.replace(edge, temp - 1);
@@ -217,4 +204,5 @@ public class MaxMinHeuristic {
         }
         return finalCliques;
     }
+
 }
