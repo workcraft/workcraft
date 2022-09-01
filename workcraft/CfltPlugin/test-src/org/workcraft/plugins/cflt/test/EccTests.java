@@ -32,6 +32,7 @@ class EccTests {
         Assertions.assertTrue(doesCover(minEccAsEdges, g));
         Assertions.assertTrue(doesCover(exactEccAsEdges, g));
     }
+
     @Test
     void areCliquesMaximal() {
         Graph g = getGraph();
@@ -45,6 +46,7 @@ class EccTests {
         Assertions.assertTrue(areCliquesMaxSize(minEcc, 4));
         Assertions.assertTrue(areCliquesMaxSize(exactEcc, 4));
     }
+
     private boolean areCliquesMaxSize(ArrayList<ArrayList<String>> ecc, int requiredSize) {
         for (ArrayList<String> clique : ecc) {
             if (clique.size() < requiredSize) {
@@ -53,6 +55,7 @@ class EccTests {
         }
         return true;
     }
+
     private HashSet<String> getEccAsEdges(ArrayList<ArrayList<String>> ecc) {
         HashSet<String> eccAsEdges = new HashSet<>();
         for (ArrayList<String> clique : ecc) {
@@ -67,8 +70,8 @@ class EccTests {
         }
         return eccAsEdges;
     }
-    private boolean doesCover(HashSet<String> eccAsEdges, Graph g) {
 
+    private boolean doesCover(HashSet<String> eccAsEdges, Graph g) {
         for (Edge e : g.getEdges()) {
             if (!eccAsEdges.contains(e.getFirstVertex() + e.getSecondVertex())) {
                 return false;
@@ -76,13 +79,13 @@ class EccTests {
         }
         return true;
     }
+
     /**
      *
      * @return a complete graph with 8 vertices, and the edge A-B, C-D, E-F, G-H missing
      * All the maximal cliques in this graph are of size 4
      */
     private Graph getGraph() {
-
         Graph g = new Graph();
         g.addVertex("A");
         g.addVertex("B");
@@ -105,4 +108,5 @@ class EccTests {
 
         return finalG;
     }
+
 }

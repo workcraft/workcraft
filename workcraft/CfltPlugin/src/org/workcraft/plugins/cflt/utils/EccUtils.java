@@ -19,14 +19,14 @@ public class EccUtils {
             if (mode.equals(Mode.SLOW_EXACT.toString())) {
                 edgeCliqueCover = ExhaustiveSearch.getEdgeCliqueCover(inputG, null);
             } else if (mode.equals(Mode.FAST_SEQ.toString())) {
-                edgeCliqueCover = SequenceHeuristic.getEdgeCliqueCover(inputG, new ArrayList<Edge>());
+                edgeCliqueCover = SequenceHeuristic.getEdgeCliqueCover(inputG, new ArrayList<>());
             } else if (mode.equals(Mode.FAST_MAX.toString())) {
-                edgeCliqueCover = MaxMinHeuristic.getEdgeCliqueCover(inputG, new ArrayList<Edge>(), true);
+                edgeCliqueCover = MaxMinHeuristic.getEdgeCliqueCover(inputG, new ArrayList<>(), true);
             } else if (mode.equals(Mode.FAST_MIN.toString())) {
-                edgeCliqueCover = MaxMinHeuristic.getEdgeCliqueCover(inputG, new ArrayList<Edge>(), false);
+                edgeCliqueCover = MaxMinHeuristic.getEdgeCliqueCover(inputG, new ArrayList<>(), false);
             }
 
-        } else if (isSequence) {
+        } else {
             if (mode.equals(Mode.SLOW_EXACT.toString())) {
                 edgeCliqueCover = ExhaustiveSearch.getEdgeCliqueCover(GraphUtils.join(inputG, outputG), inputG.getEdges());
             } else if (mode.equals(Mode.FAST_SEQ.toString())) {
@@ -39,16 +39,16 @@ public class EccUtils {
         }
         return edgeCliqueCover;
     }
-    public static HashMap<String, HashSet<String>> initialiseNeighbours(Graph g) {
 
+    public static HashMap<String, HashSet<String>> initialiseNeighbours(Graph g) {
         HashMap<String, HashSet<String>> allNeighbours = new HashMap<>();
-        //initialising neighbours
+        // Initialising neighbours
         for (Edge e : g.getEdges()) {
             if (allNeighbours.containsKey(e.getFirstVertex())) {
                 allNeighbours.get(e.getFirstVertex()).add(e.getSecondVertex());
 
             } else {
-                allNeighbours.put(e.getFirstVertex(), new HashSet<String>());
+                allNeighbours.put(e.getFirstVertex(), new HashSet<>());
                 allNeighbours.get(e.getFirstVertex()).add(e.getSecondVertex());
 
             }
@@ -56,17 +56,18 @@ public class EccUtils {
                 allNeighbours.get(e.getSecondVertex()).add(e.getFirstVertex());
 
             } else {
-                allNeighbours.put(e.getSecondVertex(), new HashSet<String>());
+                allNeighbours.put(e.getSecondVertex(), new HashSet<>());
                 allNeighbours.get(e.getSecondVertex()).add(e.getFirstVertex());
             }
         }
         return allNeighbours;
     }
+
     /**
      * This function eliminates redundant cliques in an edge clique cover
      * by checking if the clique consists only of edges contained in other cliques.
      * @param noOfCliqueAnEdgeIsContainedIn, the number of cliques an edge is contained in
-     * @param a clique
+     * @param cliqueAsEdges clique
      * @return null if clique is redundant, or the clique
      */
     public static boolean checkRedundancy(HashMap<String, Integer> noOfCliqueAnEdgeIsContainedIn,
@@ -80,10 +81,10 @@ public class EccUtils {
         }
         return true;
     }
+
     public static String argmin(HashMap<String, Integer> uncoveredDegree, HashSet<String> uncoveredVertices) {
         int arg = 1000;
         String u = "";
-
         for (String str : uncoveredVertices) {
             if (uncoveredDegree.get(str) < arg) {
                 arg = uncoveredDegree.get(str);
@@ -102,7 +103,6 @@ public class EccUtils {
     public static String argmax(HashMap<String, Integer> localUncoveredDegree, HashSet<String> localNeighbourhood) {
         int arg = -1;
         String u = "";
-
         for (String str : localNeighbourhood) {
             if (localUncoveredDegree.get(str) > arg) {
                 arg = localUncoveredDegree.get(str);

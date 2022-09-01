@@ -1,21 +1,20 @@
-
-options
-{
-    STATIC=false;
+options {
+    JDK_VERSION = "1.8";
+    STATIC = false;
+    UNICODE_INPUT = true;
 }
+
 PARSER_BEGIN(StgStringParser)
-package org.workcraft.plugins.cflt.javaccStg;
+package org.workcraft.plugins.cflt.jj.stg;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import org.workcraft.plugins.cflt.tools.CotreeTool;
 import org.workcraft.plugins.cflt.*;
 
-public class StgStringParser
-{
+public class StgStringParser {
     CotreeTool ctr;
-    public void parse(String s) throws ParseException 
-    {
+    public void parse(String s) throws ParseException {
         ctr = new CotreeTool();
         ctr.reset();
         InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
@@ -24,76 +23,84 @@ public class StgStringParser
     }
 }
 PARSER_END(StgStringParser)
-<*> SKIP :
+
+<*> SKIP:
 {
-    <" " | "\t" | "\r" | "\n" | "\r\n" >
-|   <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")?>
+    <" " | "\t" | "\r" | "\n" | "\r\n">
+|
+    <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")?>
 }
+
 TOKEN:
-{  
-    < TRANSITION: (<CHARACTER>)+("+"|"-"|"~")?>
-|   < CHARACTER: ["a"-"z", "A" - "Z", "0" - "9"] >
+{
+    <TRANSITION: ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9", "."])*("+"|"-"|"~")?>
+|
+    <CHARACTER: ["a"-"z", "A"-"Z", "0"-"9"]>
 }
+
 void parseOneLine():
 {
     String a;
 }
 {
-    a=concurrency() <EOF>
-    { 
-        if (CotreeTool.nodes.size() == 0) { 
-              CotreeTool.singleTransition = a;
+    [
+        a = concurrency()
+        {
+            if (CotreeTool.nodes.size() == 0) {
+                CotreeTool.singleTransition = a;
+            }
         }
-    }
-      | <EOF>
-      {
-      }
+    ]
+    <EOF>
 }
+
 String concurrency():
 {
-  String a;
-  String b;
+    String a;
+    String b;
 }
 {
-  a = choice()
-  (
-      "|" b= concurrency()
-      {
-          Node node = new Node(a, b, Operator.CONCURRENCY);
-          CotreeTool.nodes.add(node);
-      }
-  )*
-  {
-       return a;
-  }
+    a = choice()
+    (
+        "|" b = concurrency()
+        {
+            Node node = new Node(a, b, Operator.CONCURRENCY);
+            CotreeTool.nodes.add(node);
+        }
+    )*
+    {
+        return a;
+    }
 }
+
 String choice():
 {
     String a;
     String b;
 }
 {
-    a=sequence()
+    a = sequence()
     (
-        "#" b=choice()
+        "#" b = choice()
         {
             Node node = new Node(a, b, Operator.CHOICE);
             CotreeTool.nodes.add(node);
-        }    
+        }
     )*
     {
         return a;
     }
 }
+
 String sequence():
 {
     String a;
     String b;
 }
 {
-    a=unary()
+    a = unary()
     (
-        ";" b=sequence() 
+        [";"] b = sequence()
         {
             Node node = new Node(a, b, Operator.SEQUENCE);
             CotreeTool.nodes.add(node);
@@ -103,31 +110,35 @@ String sequence():
         return a;
     }
 }
+
 String unary():
 {
     String a;
 }
 {
-    a=element()
+    a = element()
     {
         return a;
     }
 }
+
 String element():
 {
     Token t;
     String a;
 }
 {
-    t=<TRANSITION>
+    t = <TRANSITION>
     {
         return t.toString();
     }
-    |   "(" a=concurrency() ")"
+|
+    "(" a = concurrency() ")"
     {
         return a;
     }
-    |   "{" a=concurrency() "}"   
+|
+    "{" a = concurrency() "}"
     {
         CotreeTool.containsIteration = true;
         Node node = new Node(a, a, Operator.ITERATION);

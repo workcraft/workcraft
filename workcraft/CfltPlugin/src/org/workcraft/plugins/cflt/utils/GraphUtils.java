@@ -27,6 +27,7 @@ public class GraphUtils {
         }
         return new Graph(newEdges, newVertices, null);
     }
+
     public static Graph join(Graph g1, Graph g2) {
         Graph newGraph = disjointUnion(g1, g2);
         for (String v1 : g1.getVertices()) {
@@ -36,7 +37,8 @@ public class GraphUtils {
         }
         return newGraph;
     }
-    public static void printECC(ArrayList<ArrayList<String>> ecc) {
+
+    public static void printEcc(ArrayList<ArrayList<String>> ecc) {
         if (ecc.isEmpty()) {
             System.out.println("The ECC is empty");
         }
@@ -49,4 +51,5 @@ public class GraphUtils {
             }
         }
     }
+
 }

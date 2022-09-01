@@ -13,7 +13,7 @@ public class MaxCliqueEnumerator {
     HashMap<String, Integer> vertexNameIndex = new HashMap<>();
     HashMap<Integer, String> vertexIndexName = new HashMap<>();
 
-    class Vertex implements Comparable<Vertex> {
+    static class Vertex implements Comparable<Vertex> {
         int x;
 
         int degree;
@@ -65,13 +65,7 @@ public class MaxCliqueEnumerator {
 
         @Override
         public int compareTo(Vertex o) {
-            if (this.degree < o.degree) {
-                return -1;
-            }
-            if (this.degree > o.degree) {
-                return 1;
-            }
-            return 0;
+            return Integer.compare(this.degree, o.degree);
         }
     }
 
@@ -84,9 +78,7 @@ public class MaxCliqueEnumerator {
         }
     }
 
-    // reads Input
     void readNextGraph(Graph g) {
-
         nodesCount = g.getVertices().size();
         int edgesCount = g.getEdges().size();
         initGraph();
@@ -125,23 +117,21 @@ public class MaxCliqueEnumerator {
         return arlHold;
     }
 
-    // removes the neigbours
+    // removes the neighbours
     ArrayList<Vertex> removeNbrs(ArrayList<Vertex> arlFirst, Vertex v) {
         ArrayList<Vertex> arlHold = new ArrayList<>(arlFirst);
         arlHold.removeAll(v.getNbrs());
         return arlHold;
     }
 
-    // version without a pivot
+    // Version without a pivot
     void bronKerboschWithoutPivot(ArrayList<Vertex> r, ArrayList<Vertex> p, ArrayList<Vertex> x, String pre) {
-
         if ((p.isEmpty()) && (x.isEmpty())) {
             saveClique(r);
             return;
         }
 
         ArrayList<Vertex> p1 = new ArrayList<>(p);
-
         for (Vertex v : p) {
             r.add(v);
             bronKerboschWithoutPivot(r, intersect(p1, getNbrs(v)),
@@ -153,7 +143,6 @@ public class MaxCliqueEnumerator {
     }
 
     void bronKerboschPivotExecute() {
-
         ArrayList<Vertex> x = new ArrayList<>();
         ArrayList<Vertex> r = new ArrayList<>();
         ArrayList<Vertex> p = new ArrayList<>(graph);
@@ -167,6 +156,7 @@ public class MaxCliqueEnumerator {
         }
         allMaxCliques.add(maxClique);
     }
+
     private void initialiseMap(Graph g) {
         for (int x = 0; x < g.getVertices().size(); x++) {
             vertexNameIndex.put(g.getVertices().get(x), x);
@@ -183,4 +173,5 @@ public class MaxCliqueEnumerator {
         ff.bronKerboschPivotExecute();
         return ff.allMaxCliques;
     }
+
 }

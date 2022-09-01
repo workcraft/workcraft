@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.cflt.gui.ExpressionDialog;
 import org.workcraft.plugins.cflt.presets.ExpressionDataSerialiser;
@@ -16,9 +15,9 @@ import org.workcraft.presets.PresetManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class InsertControlFlowLogicCommand implements Command, MenuOrdering {
+public class TranslateProFloExpressionCommand implements Command, MenuOrdering {
 
-    private static final String PRESET_KEY = "cfl-expressions.xml";
+    private static final String PRESET_KEY = "proflo-expressions.xml";
     private static final ExpressionDataSerialiser DATA_SERIALISER = new ExpressionDataSerialiser();
 
     private static ExpressionParameters preservedData = null;
@@ -40,7 +39,7 @@ public class InsertControlFlowLogicCommand implements Command, MenuOrdering {
 
     @Override
     public String getDisplayName() {
-        return "Insert Control Flow Logic Expression...";
+        return "Translate ProFlo expression...";
     }
 
     @Override
@@ -51,7 +50,6 @@ public class InsertControlFlowLogicCommand implements Command, MenuOrdering {
 
     @Override
     public void run(WorkspaceEntry we) {
-
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         ExpressionUtils.we = we;
@@ -68,13 +66,8 @@ public class InsertControlFlowLogicCommand implements Command, MenuOrdering {
             we.captureMemento();
             if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
                 VisualPetri petri = WorkspaceUtils.getAs(we, VisualPetri.class);
-                try {
-                    if (!ExpressionUtils.insert(petri, expression, mode)) {
-                        we.cancelMemento();
-                    }
-                } catch (InvalidConnectionException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                if (!ExpressionUtils.insert(petri, expression, mode)) {
+                    we.cancelMemento();
                 }
             }
             if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {

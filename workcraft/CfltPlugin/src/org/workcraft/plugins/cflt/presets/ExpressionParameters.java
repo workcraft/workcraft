@@ -3,10 +3,10 @@ package org.workcraft.plugins.cflt.presets;
 public class ExpressionParameters {
 
     public enum Mode {
-        FAST_MAX("Maximum Heuristic"),
-        FAST_MIN("Minimum Heuristic"),
-        FAST_SEQ("Sequence Heuristic"),
-        SLOW_EXACT("Expensive Exact ECC");
+        FAST_MAX("Maximum heuristic"),
+        FAST_MIN("Minimum heuristic"),
+        FAST_SEQ("Sequence heuristic"),
+        SLOW_EXACT("Expensive exact ECC");
 
         private final String name;
 

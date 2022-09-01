@@ -7,6 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.net.URI;
 
 public abstract class PresetDialog<T> extends ModalDialog<PresetManager<T>> {
 
@@ -18,8 +19,12 @@ public abstract class PresetDialog<T> extends ModalDialog<PresetManager<T>> {
         return addButton("Check syntax", action, false);
     }
 
-    public JButton addHelpButton(File helpFile) {
-        return addButton("Help", event -> DesktopApi.open(helpFile), true);
+    public JButton addHelpButton(File file) {
+        return addButton("Help", event -> DesktopApi.open(file), true);
+    }
+
+    public JButton addHelpButton(URI uri) {
+        return addButton("Help", event -> DesktopApi.browse(uri), true);
     }
 
     public abstract T getPresetData();

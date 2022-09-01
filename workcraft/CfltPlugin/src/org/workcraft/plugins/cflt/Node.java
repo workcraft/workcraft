@@ -15,19 +15,25 @@ public class Node {
     public String getLeft() {
         return left;
     }
+
     public void setLEft(String left) {
         this.left = left;
     }
+
     public String getRight() {
         return right;
     }
+
     public void setB(String right) {
         this.right = right;
     }
+
     public Operator getOperator() {
         return operator;
     }
+
     public void setOperator(Operator operator) {
         this.operator = operator;
     }
+
 }

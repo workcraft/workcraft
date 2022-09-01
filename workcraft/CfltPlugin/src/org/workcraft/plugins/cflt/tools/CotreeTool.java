@@ -25,9 +25,11 @@ public class CotreeTool {
         CotreeTool.singleTransition = null;
         CotreeTool.containsIteration = false;
     }
+
     public enum Model {
-        PETRI_NET, STG, DEFAULT;
+        PETRI_NET, STG, DEFAULT
     }
+
     public void drawSingleTransition(Model model) {
         if (model == Model.PETRI_NET) {
             pdt.drawSingleTransition(singleTransition);
@@ -35,11 +37,10 @@ public class CotreeTool {
             sdt.drawSingleTransition(singleTransition);
         }
     }
-    public void drawInterpretedGraph(Mode mode, Model model) {
 
+    public void drawInterpretedGraph(Mode mode, Model model) {
         int counter = 0;
         for (Node node : nodes) {
-
             String a = node.getLeft();
             String b = node.getRight();
             Operator o = node.getOperator();
@@ -82,15 +83,11 @@ public class CotreeTool {
                 exitGraph.replace(a, exitGraph.get(b));
 
             } else if (o == Operator.ITERATION) {
-
                 Graph clone = exitGraph.get(a).cloneGraph(counter);
                 Graph eG =  GraphUtils.join(entryGraph.get(a), clone);
-
-                //Graph xG = eG;
-                //exitGraph.replace(a, xG);
                 entryGraph.replace(a, eG);
             }
-            //if the node is the root node
+            // If the node is the root node
             if (counter == nodes.size() - 1) {
                 if (model == Model.PETRI_NET) {
                     pdt.drawPetri(entryGraph.get(a), new Graph(), false, true, mode);
@@ -101,4 +98,5 @@ public class CotreeTool {
             counter++;
         }
     }
+
 }

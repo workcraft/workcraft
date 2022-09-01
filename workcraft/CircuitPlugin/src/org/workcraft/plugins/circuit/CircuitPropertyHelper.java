@@ -147,7 +147,7 @@ public class CircuitPropertyHelper {
 
         ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component.getReferencedComponent());
         ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementModel);
-        if (!RefinementUtils.isInconsistentSignalNames(componentInterface, refinementInterface)) {
+        if (RefinementUtils.isInconsistentSignalNames(componentInterface, refinementInterface)) {
             Set<String> missingPins = componentInterface.getMissingSignals(refinementInterface);
             Set<String> extraPins = componentInterface.getExtraSignals(refinementInterface);
             Set<String> mismatchPins = componentInterface.getMismatchSignals(refinementInterface);
