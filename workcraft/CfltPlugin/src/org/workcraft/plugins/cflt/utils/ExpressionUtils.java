@@ -1,7 +1,6 @@
 package org.workcraft.plugins.cflt.utils;
 
 import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
 import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
@@ -12,6 +11,7 @@ import org.workcraft.plugins.cflt.tools.CotreeTool.Model;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.JavaccSyntaxUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -20,18 +20,8 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ExpressionUtils {
-
-    private static final Pattern SYNTAX_ERROR_PATTERN = Pattern.compile(
-            "parse error:\\R>>> (.+)\\R    (.*)(\\^+)\\Rsyntax error, (.+)\\R",
-            Pattern.UNIX_LINES);
-
-    private static final int POSITION_GROUP = 2;
-    private static final int LENGTH_GROUP = 3;
-    private static final int MESSAGE_GROUP = 4;
 
     public static final char CHOICE = '#';
     public static final char CONCURRENCY = '|';
@@ -58,71 +48,39 @@ public class ExpressionUtils {
         }
 
         String data = codePanel.getText();
+        InputStream is = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         String errorText = null;
         if (model == Model.PETRI_NET) {
-            errorText = parseData(data, Model.PETRI_NET);
+            PetriStringParser parser = new PetriStringParser(is);
+            try {
+                parser.parse(data);
+            } catch (org.workcraft.plugins.cflt.jj.petri.TokenMgrError | org.workcraft.plugins.cflt.jj.petri.ParseException e) {
+                errorText = e.getMessage();
+            }
         } else if (model == Model.STG) {
-            errorText = parseData(data, Model.STG);
+            StgStringParser parser = new StgStringParser(is);
+            try {
+                parser.parse(data);
+            } catch (org.workcraft.plugins.cflt.jj.stg.TokenMgrError | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
+                errorText = e.getMessage();
+            }
         }
+
         if (errorText == null) {
             String message = "Property is syntactically correct";
             codePanel.showInfoStatus(message);
             LogUtils.logInfo(message);
         } else {
-            Matcher matcher = SYNTAX_ERROR_PATTERN.matcher(errorText);
-            if (matcher.find()) {
-                String message = "Syntax error: " + matcher.group(MESSAGE_GROUP);
-                LogUtils.logError(message);
-                int pos = matcher.group(POSITION_GROUP).length();
-                int len = matcher.group(LENGTH_GROUP).length();
-                int fromPos = getCodePosition(codePanel.getText(), pos);
-                int toPos = getCodePosition(codePanel.getText(), pos + len);
-                codePanel.highlightError(fromPos, toPos, message);
-            } else {
-                String message = "Syntax check failed";
-                LogUtils.logError(message);
-                codePanel.showErrorStatus(message);
-            }
+            JavaccSyntaxUtils.processSyntaxError(errorText, codePanel);
         }
     }
 
-    private static String parseData(String data, Model model) {
-        try {
-            validateExpression(data, model);
-            //checkNestedIteration(data);
-            checkIteration(model);
-        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
-            data = null;
-            e.printStackTrace();
-        }
-        return data == null ? "Bad control flow logic expression" : null;
-    }
-
-    public static int getCodePosition(String text, int pos) {
-        for (int i = 0; i < text.length(); i++) {
-            if (i > pos) {
-                break;
-            }
-            if (text.charAt(i) == '\n') {
-                pos++;
-            }
-        }
-        return pos;
-    }
-
-    public static boolean insert(VisualPetri petri, String expressionText, ExpressionParameters.Mode mode)
-            throws InvalidConnectionException {
-
-        checkMode(mode);
-
-        try {
-            validateExpression(expressionText, Model.PETRI_NET);
-            //checkNestedIteration(expressionText);
-        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
-            e.printStackTrace();
+    public static boolean insert(VisualPetri petri, String expressionText, ExpressionParameters.Mode mode) {
+        if (!validateExpression(expressionText, Model.PETRI_NET)) {
             return false;
         }
-        checkIteration(Model.PETRI_NET);
+        checkMode(mode);
+        checkIteration();
         CotreeTool ctr = new CotreeTool();
         // If the expression is merely a single transition
         if (CotreeTool.nodes.size() == 0 && CotreeTool.singleTransition != null) {
@@ -130,30 +88,21 @@ public class ExpressionUtils {
         }
         labelNameMap = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
-
-        try {
-            validateExpression(expressionText, Model.PETRI_NET);
-        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
-            e.printStackTrace();
+        if (validateExpression(expressionText, Model.PETRI_NET)) {
             return false;
         }
         ctr.drawInterpretedGraph(mode, Model.PETRI_NET);
-
         AbstractLayoutCommand alc = petri.getBestLayouter();
         alc.layout(petri);
-        return mode != null;
+        return true;
     }
 
     public static boolean insert(VisualStg stg, String expressionText, ExpressionParameters.Mode mode) {
-        checkMode(mode);
-        try {
-            validateExpression(expressionText, Model.STG);
-            //checkNestedIteration(expressionText);
-        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
-            e.printStackTrace();
+        if (!validateExpression(expressionText, Model.STG)) {
             return false;
         }
-        checkIteration(Model.STG);
+        checkMode(mode);
+        checkIteration();
         CotreeTool ctr = new CotreeTool();
         // If the expression is merely a single transition
         if (CotreeTool.nodes.size() == 0 && CotreeTool.singleTransition != null) {
@@ -162,18 +111,14 @@ public class ExpressionUtils {
         nameDirectionMap = new HashMap<>();
         labelNameMap = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
-
-        try {
-            validateExpression(expressionText, Model.STG);
-        } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
-            e.printStackTrace();
+        if (!validateExpression(expressionText, Model.STG)) {
             return false;
         }
-        ctr.drawInterpretedGraph(mode, Model.STG);
 
+        ctr.drawInterpretedGraph(mode, Model.STG);
         AbstractLayoutCommand alc = stg.getBestLayouter();
         alc.layout(stg);
-        return mode != null;
+        return true;
     }
 
     /**
@@ -229,48 +174,40 @@ public class ExpressionUtils {
         return str;
     }
 
-    public static void validateExpression(String expressionText, Model model)
-            throws org.workcraft.plugins.cflt.jj.petri.ParseException, org.workcraft.plugins.cflt.jj.stg.ParseException {
-
+    public static boolean validateExpression(String expressionText, Model model) {
         InputStream is = new ByteArrayInputStream(expressionText.getBytes(StandardCharsets.UTF_8));
         if (model == Model.PETRI_NET) {
             PetriStringParser parser = new PetriStringParser(is);
             try {
                 parser.parse(expressionText);
-            } catch (org.workcraft.plugins.cflt.jj.petri.ParseException e) {
-                DialogUtils.showError(e.getMessage(), "Parse Exception");
-                throw e;
-            } catch (org.workcraft.plugins.cflt.jj.petri.TokenMgrError e) {
-                DialogUtils.showError(e.getMessage(), "Error");
-                e.printStackTrace();
-                throw e;
+            } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.petri.TokenMgrError e) {
+                DialogUtils.showError(e.getMessage());
+                return false;
             }
+            return true;
         } else if (model == Model.STG) {
             StgStringParser parser = new StgStringParser(is);
             try {
                 parser.parse(expressionText);
-            } catch (org.workcraft.plugins.cflt.jj.stg.ParseException e) {
-                DialogUtils.showError(e.getMessage(), "Parse Exception");
-                throw e;
-            } catch (org.workcraft.plugins.cflt.jj.stg.TokenMgrError e) {
-                DialogUtils.showError(e.getMessage(), "Error");
-                e.printStackTrace();
-                throw e;
+            } catch (org.workcraft.plugins.cflt.jj.stg.ParseException | org.workcraft.plugins.cflt.jj.stg.TokenMgrError e) {
+                DialogUtils.showError(e.getMessage());
+                return false;
             }
+            return true;
         }
+        return false;
     }
 
-    private static void checkIteration(Model model) {
+    private static void checkIteration() {
         if (CotreeTool.containsIteration) {
-            DialogUtils.showWarning(model.toString() + " may yield unexpected/ incorrect result.",
-                    "Iteration Detected");
+            DialogUtils.showWarning("Iteration operator is experimental and may yield incorrect result.");
         }
     }
 
     private static void checkMode(Mode mode) {
         if (mode == Mode.SLOW_EXACT) {
             DialogUtils.showWarning("The exhaustive search algorithm may take a long time to compute," + "\n" +
-                    "heuristics may be used instead.", "Slow Exact Algorithm Used");
+                    "heuristics may be used instead.");
         }
     }
 
