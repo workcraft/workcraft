@@ -73,7 +73,7 @@ public class MpsatUtils {
         }
 
         if (result.isFailure()) {
-            SyntaxUtils.processBisonSyntaxError("Error: incorrect syntax of the expression: ",
+            BisonSyntaxUtils.processSyntaxError("Error: incorrect syntax of the expression: ",
                     result.getPayload(), codePanel);
         }
     }

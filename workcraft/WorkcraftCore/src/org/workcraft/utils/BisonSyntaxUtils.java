@@ -6,7 +6,7 @@ import org.workcraft.tasks.ExternalProcessOutput;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class SyntaxUtils {
+public class BisonSyntaxUtils {
 
     private static final String LOCATION_REGEX = "(.+) \\(located at (\\d+).(\\d+)(-((\\d+).)?(\\d+))?\\)\\R";
     private static final int MESSAGE_GROUP = 1;
@@ -18,7 +18,7 @@ public class SyntaxUtils {
     private static final Pattern UNEXPECTED_MESSAGE_PATTERN = Pattern.compile("^syntax error, unexpected (.+)$");
     private static final Pattern UNDECLARED_MESSAGE_PATTERN = Pattern.compile("^Undeclared identifier: (.+)$");
 
-    public static void processBisonSyntaxError(String patternPrefix, ExternalProcessOutput output, CodePanel codePanel) {
+    public static void processSyntaxError(String patternPrefix, ExternalProcessOutput output, CodePanel codePanel) {
         String text = output == null ? "" : output.getStderrString();
         Pattern pattern = Pattern.compile(patternPrefix + LOCATION_REGEX, Pattern.UNIX_LINES);
         Matcher matcher = pattern.matcher(text);
@@ -29,10 +29,10 @@ public class SyntaxUtils {
             String startColStr = matcher.group(START_COL_GROUP);
             String endRowStr = matcher.group(END_ROW_GROUP);
             String endColStr = matcher.group(END_COL_GROUP);
-            int startRow = Integer.valueOf(startRowStr);
-            int startCol = Integer.valueOf(startColStr);
-            int endRow = endRowStr == null ? startRow : Integer.valueOf(endRowStr);
-            int endCol = endColStr == null ? startCol + 1 : Integer.valueOf(endColStr);
+            int startRow = Integer.parseInt(startRowStr);
+            int startCol = Integer.parseInt(startColStr);
+            int endRow = endRowStr == null ? startRow : Integer.parseInt(endRowStr);
+            int endCol = endColStr == null ? startCol + 1 : Integer.parseInt(endColStr);
             int startPos = TextUtils.getTextPosition(codePanel.getText(), startRow, startCol);
             int endPos = TextUtils.getTextPosition(codePanel.getText(), endRow, endCol);
             codePanel.highlightError(startPos, endPos, message);
