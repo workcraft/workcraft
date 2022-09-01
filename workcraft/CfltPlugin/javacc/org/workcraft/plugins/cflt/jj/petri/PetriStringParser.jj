@@ -33,9 +33,7 @@ PARSER_END(PetriStringParser)
 
 TOKEN:
 {
-    <TRANSITION: (<CHARACTER>)+>
-|
-    <CHARACTER: ["a"-"z", "A"-"Z", "0"-"9"]>
+    <TRANSITION: ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9", "."])*>
 }
 
 void parseOneLine():
@@ -43,16 +41,15 @@ void parseOneLine():
     String a;
 }
 {
-    a = concurrency() <EOF>
-    {
-        if (CotreeTool.nodes.size() == 0) {
-            CotreeTool.singleTransition = a;
+    [
+        a = concurrency()
+        {
+            if (CotreeTool.nodes.size() == 0) {
+                CotreeTool.singleTransition = a;
+            }
         }
-    }
-|
+    ]
     <EOF>
-    {
-    }
 }
 
 String concurrency():
@@ -101,7 +98,7 @@ String sequence():
 {
     a = unary()
     (
-        ";" b = sequence()
+        [";"] b = sequence()
         {
             Node node = new Node(a, b, Operator.SEQUENCE);
             CotreeTool.nodes.add(node);
