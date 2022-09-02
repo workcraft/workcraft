@@ -88,7 +88,7 @@ public class ExpressionUtils {
         }
         labelNameMap = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
-        if (validateExpression(expressionText, Model.PETRI_NET)) {
+        if (!validateExpression(expressionText, Model.PETRI_NET)) {
             return false;
         }
         ctr.drawInterpretedGraph(mode, Model.PETRI_NET);

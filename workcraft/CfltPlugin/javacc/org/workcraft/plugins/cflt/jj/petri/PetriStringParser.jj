@@ -33,7 +33,7 @@ PARSER_END(PetriStringParser)
 
 TOKEN:
 {
-    <TRANSITION: ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9", "."])*>
+    <TRANSITION: ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*>
 }
 
 void parseOneLine():
