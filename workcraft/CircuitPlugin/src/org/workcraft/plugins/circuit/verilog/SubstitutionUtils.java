@@ -29,10 +29,9 @@ public final class SubstitutionUtils {
         if (substitutionRule != null) {
             String newContactName = substitutionRule.substitutions.get(contactName);
             if (newContactName != null) {
-                if (msg == null) {
-                    msg = "";
+                if (msg != null) {
+                    LogUtils.logInfo(msg + "Renaming contact '" + contactName + "' to '" + newContactName + "'.");
                 }
-                LogUtils.logInfo(msg + "Renaming contact '" + contactName + "' to '" + newContactName + "'.");
                 contactName = newContactName;
             }
         }

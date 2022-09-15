@@ -1,10 +1,16 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.CircuitComponent;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
@@ -324,6 +330,22 @@ public final class VerilogUtils {
                 PropertyHelper.BULLET_PREFIX + "empty string\n" +
                 PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n" +
                 PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(1ps * $urandom_range(10, 20))`";
+    }
+
+    public static String getContactFullNameWithSubstitutions(Circuit circuit, Contact contact) {
+        Node parent = contact.getParent();
+        if (parent instanceof CircuitComponent) {
+            CircuitComponent component = (CircuitComponent) parent;
+            String instanceRef = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
+            String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
+            String moduleName = component.getModule();
+            Map<String, SubstitutionRule> substitutionRules = LibraryManager.getExportSubstitutionRules();
+            SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
+            String contactName = SubstitutionUtils.getContactSubstitutionName(contact.getName(), substitutionRule, null);
+            return instanceFlatName + "/" + contactName;
+        } else {
+            return contact.getName();
+        }
     }
 
 }
