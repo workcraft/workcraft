@@ -52,7 +52,7 @@ public class VerilogImporter implements Importer {
     private final boolean celementAssign;
     private final boolean sequentialAssign;
 
-    private Map<VerilogModule, String> moduleFileNames = null;
+    private Map<VerilogModule, String> moduleToFileNameMap = null;
 
     private static class AssignGate {
         public final String outputName;
@@ -93,7 +93,7 @@ public class VerilogImporter implements Importer {
     public ModelEntry importFrom(InputStream in)
             throws OperationCancelledException, DeserialisationException  {
 
-        moduleFileNames = null;
+        moduleToFileNameMap = null;
         Collection<VerilogModule> verilogModules = VerilogUtils.importVerilogModules(in);
         if ((verilogModules == null) || verilogModules.isEmpty()) {
             throw new DeserialisationException("No Verilog modules could be imported");
@@ -122,7 +122,11 @@ public class VerilogImporter implements Importer {
                 ? createCircuit(verilogModules.iterator().next())
                 : createCircuitHierarchy(verilogModules);
 
-        return new ModelEntry(new CircuitDescriptor(), circuit);
+        ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
+        if (moduleToFileNameMap != null) {
+            me.setDesiredName(moduleToFileNameMap.get(verilogModules.iterator().next()));
+        }
+        return me;
     }
 
     public Circuit createCircuit(VerilogModule verilogModule) throws DeserialisationException {
@@ -156,7 +160,7 @@ public class VerilogImporter implements Importer {
         VerilogModule topVerilogModule = dialog.getTopModule();
         File dir = dialog.getDirectory();
         Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
-        moduleFileNames = dialog.getModuleFileNames();
+        moduleToFileNameMap = dialog.getModuleToFileNameMap();
         Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(descendantModules, dir);
         if (!existingSaveFilePaths.isEmpty()) {
             String delimiter = "\n" + PropertyHelper.BULLET_PREFIX;
@@ -177,7 +181,7 @@ public class VerilogImporter implements Importer {
         VerilogModule topVerilogModule = VerilogUtils.getTopModule(verilogModules);
         Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
         File dir = Framework.getInstance().getWorkingDirectory();
-        moduleFileNames = VerilogUtils.getModuleToFileMap(verilogModules);
+        moduleToFileNameMap = VerilogUtils.getModuleToFileMap(verilogModules);
         Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(descendantModules, dir);
         if (!existingSaveFilePaths.isEmpty()) {
             String msg = "Import of circuit hierarchy overwrites the following files:\n"
@@ -191,7 +195,7 @@ public class VerilogImporter implements Importer {
     private Collection<String> getExistingSaveFilePaths(Set<VerilogModule> descendantModules, File dir) {
         Collection<String> result = new HashSet<>();
         for (VerilogModule module : descendantModules) {
-            String fileName = moduleFileNames.get(module);
+            String fileName = moduleToFileNameMap.get(module);
             File file = new File(dir, fileName);
             if (file.exists()) {
                 result.add(file.getAbsolutePath());
@@ -208,8 +212,8 @@ public class VerilogImporter implements Importer {
         Map<Circuit, String> circuitFileNames = new HashMap<>();
         for (VerilogModule verilogModule : descendantModules) {
             Circuit descendantCircuit = createCircuit(verilogModule, descendantModules, Collections.emptySet());
-            if (moduleFileNames != null) {
-                circuitFileNames.put(descendantCircuit, moduleFileNames.get(verilogModule));
+            if (moduleToFileNameMap != null) {
+                circuitFileNames.put(descendantCircuit, moduleToFileNameMap.get(verilogModule));
             }
         }
         adjustModuleRefinements(circuit, circuitFileNames, dir);
@@ -711,8 +715,8 @@ public class VerilogImporter implements Importer {
         VerilogModule verilogModule = getVerilogModule(verilogModules, verilogInstance.moduleName);
         if (verilogModule == null) {
             component.setIsEnvironment(true);
-        } else if (moduleFileNames != null) {
-            String path = moduleFileNames.get(verilogModule);
+        } else if (moduleToFileNameMap != null) {
+            String path = moduleToFileNameMap.get(verilogModule);
             FileReference refinement = new FileReference();
             refinement.setPath(path);
             component.setRefinement(refinement);

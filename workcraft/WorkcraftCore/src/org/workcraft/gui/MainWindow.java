@@ -829,16 +829,17 @@ public class MainWindow extends JFrame {
             final Framework framework = Framework.getInstance();
             File lastDirectory = framework.getLastDirectory();
             try {
-                // Set last directory to the location of the imported file
-                // (in case auxiliary file need to be created there during import of compound files)
+                // Set last directory to the imported file location, in case auxiliary files need to be created there
                 framework.setLastDirectory(file);
                 ModelEntry me = importer.importFrom(file);
+                // Set model title, if empty
                 String title = me.getMathModel().getTitle();
                 if ((title == null) || title.isEmpty()) {
                     title = FileUtils.getFileNameWithoutExtension(file);
                     me.getMathModel().setTitle(title);
                 }
-                framework.createWork(me, file.getName());
+                // Create work with desired name set by importer
+                framework.createWork(me, me.getDesiredName());
             } catch (DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
             } catch (OperationCancelledException e) {

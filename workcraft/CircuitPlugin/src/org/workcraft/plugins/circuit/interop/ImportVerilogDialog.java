@@ -24,7 +24,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
 
     private VerilogModule topModule;
     private File dir;
-    private Map<VerilogModule, String> moduleToFileMap;
+    private Map<VerilogModule, String> moduleToFileNameMap;
 
     class ModuleFileProperties implements Properties {
         private final List<PropertyDescriptor> properties = new LinkedList<>();
@@ -37,18 +37,18 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         public void add(VerilogModule module, String name) {
             properties.add(new PropertyDeclaration<>(String.class, name,
                     value -> {
-                        if (moduleToFileMap != null) {
+                        if (moduleToFileNameMap != null) {
                             if ((value == null) || value.isEmpty() || FileFilters.DOCUMENT_EXTENSION.equals(value)) {
                                 DialogUtils.showError("File name cannot be empty.");
                             } else {
                                 if (!FileFilters.isWorkPath(value)) {
                                     value += FileFilters.DOCUMENT_EXTENSION;
                                 }
-                                moduleToFileMap.put(module, value);
+                                moduleToFileNameMap.put(module, value);
                             }
                         }
                     },
-                    () -> moduleToFileMap == null ? null : moduleToFileMap.get(module)));
+                    () -> moduleToFileNameMap == null ? null : moduleToFileNameMap.get(module)));
         }
     }
 
@@ -83,7 +83,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         Set<VerilogModule> topModules = new HashSet<>(VerilogUtils.getTopModules(modules));
 
         JComboBox<VerilogModule> topModuleCombo = new JComboBox<>();
-        moduleToFileMap = VerilogUtils.getModuleToFileMap(modules);
+        moduleToFileNameMap = VerilogUtils.getModuleToFileMap(modules);
         topModuleCombo.setRenderer(new ModuleComboBoxRenderer(createModuleToTextMap(modules, topModules)));
 
         PropertyEditorTable modulesTable = new PropertyEditorTable(
@@ -170,8 +170,8 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         return topModule;
     }
 
-    public Map<VerilogModule, String> getModuleFileNames() {
-        return Collections.unmodifiableMap(moduleToFileMap);
+    public Map<VerilogModule, String> getModuleToFileNameMap() {
+        return Collections.unmodifiableMap(moduleToFileNameMap);
     }
 
     public File getDirectory() {

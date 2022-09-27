@@ -214,7 +214,7 @@ public class PresetManager<T> {
                 Node dataNode = presetDocument.adoptNode(documentElement);
                 presetElement.appendChild(dataNode);
             } catch (SAXException | IOException e) {
-                new RuntimeException("Incorrect XML format for preset data:\n" + dataText);
+                throw new RuntimeException("Incorrect XML format for preset data:\n" + dataText);
             }
         } else {
             presetElement.setTextContent(dataText);
