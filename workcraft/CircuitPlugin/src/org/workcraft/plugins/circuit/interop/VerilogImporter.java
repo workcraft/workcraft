@@ -919,7 +919,7 @@ public class VerilogImporter implements Importer {
     }
 
     private void setMutexGrant(Circuit circuit, Signal signal, HashMap<String, Net> nets) {
-        Node node = signal.name == null ? null : circuit.getNodeByReference(signal.name);
+        Node node = (signal == null) || (signal.name == null) ? null : circuit.getNodeByReference(signal.name);
         if (node instanceof FunctionContact) {
             FunctionContact port = (FunctionContact) node;
             switch (signal.type) {
@@ -947,7 +947,7 @@ public class VerilogImporter implements Importer {
         }
         component.add(contact);
         circuit.setName(contact, port.name);
-        Net net = getOrCreateNet(signal.name, nets);
+        Net net = signal == null ? null : getOrCreateNet(signal.name, nets);
         if (net != null) {
             if (port.type == Signal.Type.INPUT) {
                 net.sinks.add(contact);
