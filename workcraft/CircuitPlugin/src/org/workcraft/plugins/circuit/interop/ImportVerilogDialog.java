@@ -11,6 +11,7 @@ import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.SortUtils;
 import org.workcraft.workspace.FileFilters;
 
 import javax.swing.*;
@@ -79,46 +80,44 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         result.setLayout(GuiUtils.createBorderLayout());
 
         Collection<VerilogModule> modules = getUserData();
+        Set<VerilogModule> topModules = new HashSet<>(VerilogUtils.getTopModules(modules));
 
         JComboBox<VerilogModule> topModuleCombo = new JComboBox<>();
         moduleToFileMap = VerilogUtils.getModuleToFileMap(modules);
-        topModuleCombo.setRenderer(new ModuleComboBoxRenderer(createModuleToTextMap(modules)));
+        topModuleCombo.setRenderer(new ModuleComboBoxRenderer(createModuleToTextMap(modules, topModules)));
 
-        PropertyEditorTable descendantModulesTable = new PropertyEditorTable(
-                "Hierarchy module", "File name");
+        PropertyEditorTable modulesTable = new PropertyEditorTable(
+                "Verilog modules to import", "File name");
 
         Map<VerilogModule, ModuleFileProperties> moduleToPropertiesMap = createModuleToPropertyMap(modules);
         // First add action listener, then populate the ComboBox
         topModuleCombo.addActionListener(l -> {
             topModule = (VerilogModule) topModuleCombo.getSelectedItem();
-            descendantModulesTable.assign(moduleToPropertiesMap.get(topModule));
+            modulesTable.assign(moduleToPropertiesMap.get(topModule));
         });
 
-        Collection<VerilogModule> topModules = VerilogUtils.getTopModules(modules);
-        for (VerilogModule module : modules) {
-            if (topModules.contains(module)) {
-                topModuleCombo.insertItemAt(module, 0);
-            } else {
-                topModuleCombo.addItem(module);
-            }
-            topModuleCombo.setSelectedIndex(0);
-        }
+        // Add sorted top modules, followed by sorted instantiated modules to the selection list
+        List<VerilogModule> sortedTopModules = SortUtils.getSortedNatural(topModules, m -> m.name);
+        sortedTopModules.forEach(topModuleCombo::addItem);
+        Set<VerilogModule> instantiatedModules = new HashSet<>(modules);
+        instantiatedModules.removeAll(topModules);
+        List<VerilogModule> sortedInstantiatedModules = SortUtils.getSortedNatural(instantiatedModules, m -> m.name);
+        sortedInstantiatedModules.forEach(topModuleCombo::addItem);
 
         JPanel topModulePanel = GuiUtils.createLabeledComponent(topModuleCombo,
-                "<html>Top module (suggested are <b>bold</b>):</html>");
+                "<html>Top module (list starts with not instantiated modules in <b>bold</b>):</html>");
 
         result.add(topModulePanel, BorderLayout.NORTH);
-        result.add(new JScrollPane(descendantModulesTable), BorderLayout.CENTER);
+        result.add(new JScrollPane(modulesTable), BorderLayout.CENTER);
         result.add(createDirectoryPanel(), BorderLayout.SOUTH);
 
         return result;
     }
 
-    private Map<VerilogModule, String> createModuleToTextMap(Collection<VerilogModule> modules) {
+    private Map<VerilogModule, String> createModuleToTextMap(Collection<VerilogModule> modules, Set<VerilogModule> topModules) {
         Map<VerilogModule, String> result = new HashMap<>();
-        Collection<VerilogModule> topModules = VerilogUtils.getTopModules(modules);
         for (VerilogModule module : modules) {
-            result.put(module, topModules.contains(module) ? "<html><b>" + module.name + "</b></html>" : module.name);
+            result.put(module, topModules.contains(module) ? getDecoratedUninstantiatedModuleName(module) : module.name);
         }
         return result;
     }
@@ -127,16 +126,23 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         Map<VerilogModule, ModuleFileProperties> result = new HashMap<>();
         Map<VerilogModule, Set<VerilogModule>> moduleToDescendantsMap = VerilogUtils.getModuleToDescendantsMap(modules);
         for (VerilogModule module : modules) {
-            Set<VerilogModule> descendants = moduleToDescendantsMap.get(module);
+            Set<VerilogModule> descendants = moduleToDescendantsMap.getOrDefault(module, new HashSet<>());
             ModuleFileProperties properties = new ModuleFileProperties();
             result.put(module, properties);
-            if (descendants != null) {
-                for (VerilogModule descendant : descendants) {
-                    properties.add(descendant, descendant.name);
-                }
+            properties.add(module, getDecoratedTopModuleName(module));
+            for (VerilogModule descendantModule : SortUtils.getSortedNatural(descendants, m -> m.name)) {
+                properties.add(descendantModule, descendantModule.name);
             }
         }
         return result;
+    }
+
+    private static String getDecoratedUninstantiatedModuleName(VerilogModule module) {
+        return "<html><b>" + module.name + "</b></html>";
+    }
+
+    private static String getDecoratedTopModuleName(VerilogModule module) {
+        return "<html><font size='-2' color='#888888'>[top]</font> " + module.name + "</html>";
     }
 
     private JPanel createDirectoryPanel() {
