@@ -5,7 +5,7 @@ function importFstSg(sgFileName) {
     if (!sgFileName.endsWith(".sg")) {
         throw("State Graph file '" + sgFileName + "' has incorrect extension, as '.sg' is expected");
     }
-    return framework.loadWork(sgFileName);
+    return framework.importWork(sgFileName);
 }
 
 

@@ -196,7 +196,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
             throw new RuntimeException("Unable to export the model.");
         }
         if (!mutexes.isEmpty()) {
-            stg = StgUtils.loadStg(stgFile);
+            stg = StgUtils.loadOrImportStg(stgFile);
             MutexUtils.factoroutMutexes(stg, mutexes);
             stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
             exportTask = new ExportTask(stgExporter, stg, stgFile);

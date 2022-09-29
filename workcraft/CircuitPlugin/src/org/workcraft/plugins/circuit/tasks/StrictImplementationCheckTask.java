@@ -87,7 +87,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
             File envFile = circuit.getEnvironmentFile();
 
             // Load environment STG
-            Stg envStg = StgUtils.loadStg(envFile);
+            Stg envStg = StgUtils.loadOrImportStg(envFile);
             // Make sure that input signals of the circuit are also inputs in the environment STG
             Collection<String> inputSignalNames = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
             Collection<String> outputSignalNames = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());

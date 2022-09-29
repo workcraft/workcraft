@@ -45,7 +45,7 @@ class ImportHierarchyTests {
 
         framework.setLastDirectory(tmpDirectory);
         framework.setWorkingDirectory(tmpDirectory);
-        WorkspaceEntry we = framework.loadWork(vFile);
+        WorkspaceEntry we = framework.importWork(vFile);
         framework.setWorkingDirectory(workingDirectory);
 
         File vOutFile = new File(tmpDirectory, fileName);

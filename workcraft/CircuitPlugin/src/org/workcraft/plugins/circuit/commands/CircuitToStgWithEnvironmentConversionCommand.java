@@ -61,7 +61,7 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
 
         if (pcompResult.isSuccess()) {
             File sysStgFile = pcompResult.getPayload().getOutputFile();
-            return StgUtils.loadStg(sysStgFile);
+            return StgUtils.loadOrImportStg(sysStgFile);
         }
 
         if (pcompResult.isFailure()) {
@@ -75,7 +75,7 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
             File directory) {
 
         File result = null;
-        Stg envStg = StgUtils.loadStg(envFile);
+        Stg envStg = StgUtils.loadOrImportStg(envFile);
         if (envStg != null) {
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
             String stgFileExtension = StgFormat.getInstance().getExtension();

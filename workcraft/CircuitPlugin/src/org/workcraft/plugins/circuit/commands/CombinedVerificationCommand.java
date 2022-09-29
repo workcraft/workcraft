@@ -62,7 +62,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
 
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         File envFile = circuit.getEnvironmentFile();
-        Stg envStg = StgUtils.loadStg(envFile);
+        Stg envStg = StgUtils.loadOrImportStg(envFile);
         if (envStg != null) {
             boolean noDummies = envStg.getDummyTransitions().isEmpty();
             if (!noDummies && checkPersistency) {

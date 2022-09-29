@@ -826,11 +826,13 @@ public class MainWindow extends JFrame {
         if (FileUtils.checkAvailability(file, true)
                 && FormatFileFilter.checkFileFormat(file, importer.getFormat())) {
 
-            final Framework framework = Framework.getInstance();
-            File lastDirectory = framework.getLastDirectory();
+            Framework framework = Framework.getInstance();
+            // If context directory is undefined, then set it to that of imported file
+            if (framework.getImportContextDirectory() == null) {
+                framework.setImportContextDirectory(file);
+            }
+
             try {
-                // Set last directory to the imported file location, in case auxiliary files need to be created there
-                framework.setLastDirectory(file);
                 ModelEntry me = importer.importFrom(file);
                 // Set model title, if empty
                 String title = me.getMathModel().getTitle();
@@ -838,13 +840,15 @@ public class MainWindow extends JFrame {
                     title = FileUtils.getFileNameWithoutExtension(file);
                     me.getMathModel().setTitle(title);
                 }
-                // Create work with desired name set by importer
+                // Create work with desired name set by the importer
                 framework.createWork(me, me.getDesiredName());
             } catch (DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
             } catch (OperationCancelledException e) {
                 // Operation cancelled by the user - restore last directory
-                framework.setLastDirectory(lastDirectory);
+            } finally {
+                // Reset context directory for future imports
+                framework.setImportContextDirectory(null);
             }
         }
     }

@@ -32,7 +32,7 @@ public final class VerificationUtils {
     public static Stg getEnvironmentStg(WorkspaceEntry we) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         File envFile = circuit.getEnvironmentFile();
-        return StgUtils.loadStg(envFile);
+        return StgUtils.loadOrImportStg(envFile);
     }
 
     public static boolean checkCircuitHasComponents(WorkspaceEntry we) {
@@ -47,7 +47,7 @@ public final class VerificationUtils {
     public static boolean checkInterfaceInitialState(WorkspaceEntry we) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         File envFile = circuit.getEnvironmentFile();
-        Stg envStg = StgUtils.loadStg(envFile);
+        Stg envStg = StgUtils.loadOrImportStg(envFile);
         // Check initial state conformance of interface signals between the circuit and its environment STG (if present)
         if (envStg != null) {
             Set<String> conflictSignals = getConflictingInterfaceSignals(circuit, envStg);
@@ -81,7 +81,7 @@ public final class VerificationUtils {
     public static boolean checkInterfaceConstrains(WorkspaceEntry we, boolean skipEnvironmentCheck) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         File envFile = circuit.getEnvironmentFile();
-        Stg envStg = StgUtils.loadStg(envFile);
+        Stg envStg = StgUtils.loadOrImportStg(envFile);
         String msg = "";
         if (!skipEnvironmentCheck && (envStg == null)) {
             if (envFile == null) {

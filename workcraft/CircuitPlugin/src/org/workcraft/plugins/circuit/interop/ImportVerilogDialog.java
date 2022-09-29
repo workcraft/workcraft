@@ -81,9 +81,16 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
 
         Collection<VerilogModule> modules = getUserData();
         Set<VerilogModule> topModules = new HashSet<>(VerilogUtils.getTopModules(modules));
+        moduleToFileNameMap = VerilogUtils.getModuleToFileMap(modules);
+
+        // Set default directory to save work files for instantiated modules
+        Framework framework = Framework.getInstance();
+        dir = framework.getImportContextDirectory();
+        if (dir == null) {
+            dir = framework.getWorkingDirectory();
+        }
 
         JComboBox<VerilogModule> topModuleCombo = new JComboBox<>();
-        moduleToFileNameMap = VerilogUtils.getModuleToFileMap(modules);
         topModuleCombo.setRenderer(new ModuleComboBoxRenderer(createModuleToTextMap(modules, topModules)));
 
         PropertyEditorTable modulesTable = new PropertyEditorTable(
@@ -146,7 +153,6 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
     }
 
     private JPanel createDirectoryPanel() {
-        dir = Framework.getInstance().getLastDirectory();
         JTextField dirText = new JTextField(dir.getPath());
         dirText.setEditable(false);
         JPanel dirPanel = GuiUtils.createLabeledComponent(dirText, "Save directory:");

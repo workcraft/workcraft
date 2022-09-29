@@ -83,7 +83,7 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
     private boolean checkCircuitHasEnvironmentStrict(WorkspaceEntry we) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         File envFile = circuit.getEnvironmentFile();
-        Stg envStg = StgUtils.loadStg(envFile);
+        Stg envStg = StgUtils.loadOrImportStg(envFile);
         if (envStg == null) {
             String msg = "Strict implementation cannot be checked without an environment STG.";
             if (envFile != null) {

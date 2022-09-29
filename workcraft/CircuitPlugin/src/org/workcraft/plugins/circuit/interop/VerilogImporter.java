@@ -178,9 +178,14 @@ public class VerilogImporter implements Importer {
     private Circuit createCircuitHierarchyAuto(Collection<VerilogModule> verilogModules)
             throws DeserialisationException {
 
+        // Set directory to save work files for instantiated modules
+        Framework framework = Framework.getInstance();
+        File dir = framework.getImportContextDirectory();
+        if (dir == null) {
+            dir = framework.getWorkingDirectory();
+        }
         VerilogModule topVerilogModule = VerilogUtils.getTopModule(verilogModules);
         Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
-        File dir = Framework.getInstance().getWorkingDirectory();
         moduleToFileNameMap = VerilogUtils.getModuleToFileMap(verilogModules);
         Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(descendantModules, dir);
         if (!existingSaveFilePaths.isEmpty()) {
@@ -226,7 +231,8 @@ public class VerilogImporter implements Importer {
             ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
             WorkspaceEntry we = framework.createWork(me, circuit.getTitle());
             try {
-                File file = new File(dir, circuitFileNames.get(circuit));
+                String fileName = circuitFileNames.get(circuit);
+                File file = FileUtils.getFileByAbsoluteOrRelativePath(fileName, dir);
                 framework.saveWork(we, file);
             } catch (SerialisationException e) {
                 e.printStackTrace();

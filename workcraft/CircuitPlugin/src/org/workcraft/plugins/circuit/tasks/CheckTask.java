@@ -71,7 +71,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
             // Load environment STG
             File envStgFile = null;
-            Stg envStg = StgUtils.loadStg(envFile);
+            Stg envStg = StgUtils.loadOrImportStg(envFile);
             if (envStg != null) {
                 // Make sure that signal types of the environment STG match those of the device STG
                 StgUtils.restoreInterfaceSignals(envStg,
@@ -133,7 +133,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 monitor.progressUpdate(0.3);
 
                 File modSysStgFile = modPcompResult.getPayload().getOutputFile();
-                Stg modSysStg = StgUtils.loadStg(modSysStgFile);
+                Stg modSysStg = StgUtils.loadOrImportStg(modSysStgFile);
                 // Restore the original types of mutex grant in modified system STG (if needed)
                 if (!originalMutexGrantTypes.isEmpty()) {
                     restoreMutexGrants(modSysStg, grantPairs, originalMutexGrantTypes);
@@ -209,7 +209,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 }
                 // Restore the original types of mutex grant in system STG (if needed)
                 if (!originalMutexGrantTypes.isEmpty()) {
-                    Stg sysStg = StgUtils.loadStg(sysStgFile);
+                    Stg sysStg = StgUtils.loadOrImportStg(sysStgFile);
                     restoreMutexGrants(sysStg, grantPairs, originalMutexGrantTypes);
                     sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
                     StgUtils.exportStg(sysStg, sysStgFile, monitor);

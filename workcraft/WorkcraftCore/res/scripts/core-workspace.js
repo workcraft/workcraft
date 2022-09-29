@@ -60,17 +60,6 @@ framework.addJavaScriptHelp("setWorkingDirectory", "path",
     "set 'path' as the working directory");
 
 function setWorkingDirectory(path) {
-    // Helper function to convert env to a File object
-    function getPathAsFile(path) {
-        if (path instanceof File) {
-            return path;
-        }
-        if ((path instanceof String) || (typeof path === "string")) {
-            return new File(path);
-        }
-        throw "Path must be specified as File or String";
-    }
-
     framework.setWorkingDirectory(getPathAsFile(path));
 
 }
@@ -81,4 +70,32 @@ framework.addJavaScriptHelp("getWorkingDirectory", "",
 
 function getWorkingDirectory() {
     return framework.getWorkingDirectory();
+}
+
+
+framework.addJavaScriptHelp("setImportContextDirectory", "path",
+    "set 'path' as the directory for saving intermediate files on import");
+
+function setImportContextDirectory(path) {
+    framework.setImportContextDirectory(getPathAsFile(path));
+
+}
+
+
+framework.addJavaScriptHelp("getImportContextDirectory", "",
+    "get the directory for saving intermediate files on import");
+
+function getImportContextDirectory() {
+    return framework.getImportContextDirectory();
+}
+
+// Helper function to convert env to a File object
+function getPathAsFile(path) {
+    if (path instanceof File) {
+        return path;
+    }
+    if ((path instanceof String) || (typeof path === "string")) {
+        return new File(path);
+    }
+    throw "Path must be specified as File or String";
 }

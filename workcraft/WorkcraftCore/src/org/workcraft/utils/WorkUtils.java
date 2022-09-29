@@ -17,7 +17,6 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.interop.Importer;
 import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.builtin.serialisation.XMLModelDeserialiser;
@@ -114,32 +113,19 @@ public final class WorkUtils {
         if (we != null) {
             return cloneModel(we.getModelEntry());
         }
-        ModelEntry me = null;
-        if (FileUtils.checkAvailability(file, false)) {
-            // Load (from *.work) or import (other extensions) work.
-            if (FileFilters.isWorkFile(file)) {
-                try {
-                    CompatibilityManager cm = framework.getCompatibilityManager();
-                    InputStream is = cm.process(file);
-                    me = loadModel(is);
-                    String base = FileUtils.getBasePath(file);
-                    adjustPropertyFilePaths(me.getVisualModel(), base, true);
-                } catch (OperationCancelledException e) {
-                    // Operation cancelled by the user
-                }
-            } else {
-                try {
-                    Importer importer = ExportUtils.chooseBestImporter(file);
-                    if (importer == null) {
-                        throw new DeserialisationException("Cannot identify appropriate importer for file '" + file.getAbsolutePath() + "'");
-                    }
-                    me = importer.importFrom(file);
-                } catch (OperationCancelledException e) {
-                    // Operation cancelled by the user
-                }
+        if (FileUtils.checkAvailability(file, false) && FileFilters.isWorkFile(file)) {
+            try {
+                CompatibilityManager cm = framework.getCompatibilityManager();
+                InputStream is = cm.process(file);
+                ModelEntry me = loadModel(is);
+                String base = FileUtils.getBasePath(file);
+                adjustPropertyFilePaths(me.getVisualModel(), base, true);
+                return me;
+            } catch (OperationCancelledException e) {
+                // Operation cancelled by the user
             }
         }
-        return me;
+        return null;
     }
 
     public static ModelEntry loadModel(InputStream is) throws DeserialisationException {
