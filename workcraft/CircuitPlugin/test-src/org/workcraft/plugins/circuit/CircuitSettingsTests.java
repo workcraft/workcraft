@@ -82,6 +82,9 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getModuleFilePattern()),
+                framework.getConfigVar(prefix + ".moduleFilePattern", false));
+
         // Reset
         Assertions.assertEquals(Config.toString(CircuitSettings.getResetActiveHighPort()),
                 framework.getConfigVar(prefix + ".resetActiveHighPort", false));

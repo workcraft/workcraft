@@ -16,6 +16,7 @@ import org.workcraft.types.Pair;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.workspace.FileFilters;
 
 import java.awt.*;
 import java.io.File;
@@ -80,6 +81,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyInvertImportSubstitutionRules = prefix + ".invertImportSubstitutionRules";
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
     private static final String keyBusSuffix = prefix + ".busSuffix";
+    private static final String keyModuleFilePattern = prefix + ".moduleFilePattern";
     // Reset
     private static final String keyResetActiveHighPort = prefix + ".resetActiveHighPort";
     private static final String keyResetActiveLowPort = prefix + ".resetActiveLowPort";
@@ -124,6 +126,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultInvertImportSubstitutionRules = true;
     private static final String defaultVerilogAssignDelay = "";
     private static final String defaultBusSuffix = "__" + VerilogUtils.BUS_INDEX_PLACEHOLDER;
+    private static final String defaultModuleFilePattern = VerilogUtils.MODULE_NAME_PLACEHOLDER + FileFilters.DOCUMENT_EXTENSION;
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
     private static final String defaultResetActiveLowPort = "rst_n";
@@ -165,8 +168,9 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
     private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
-    private static String busSuffix = defaultBusSuffix;
     private static String verilogAssignDelay = defaultVerilogAssignDelay;
+    private static String busSuffix = defaultBusSuffix;
+    private static String moduleFilePattern = defaultModuleFilePattern;
     // Reset
     private static String resetActiveHighPort = defaultResetActiveHighPort;
     private static String resetActiveLowPort = defaultResetActiveLowPort;
@@ -315,6 +319,12 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::setBusSuffix,
                 CircuitSettings::getBusSuffix));
 
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "File pattern for import of hierarchical Verilog modules ("
+                        + VerilogUtils.MODULE_NAME_PLACEHOLDER + " denotes module name)",
+                CircuitSettings::setModuleFilePattern,
+                CircuitSettings::getModuleFilePattern));
+
         properties.add(PropertyHelper.createSeparatorProperty("Initialisation"));
 
         properties.add(new PropertyDeclaration<>(String.class,
@@ -450,6 +460,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
         setVerilogAssignDelay(config.getString(keyVerilogAssignDelay, defaultVerilogAssignDelay));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
+        setModuleFilePattern(config.getString(keyModuleFilePattern, defaultModuleFilePattern));
         // Reset
         setResetActiveHighPort(config.getString(keyResetActiveHighPort, defaultResetActiveHighPort));
         setResetActiveLowPort(config.getString(keyResetActiveLowPort, defaultResetActiveLowPort));
@@ -494,6 +505,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
         config.set(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyBusSuffix, getBusSuffix());
+        config.set(keyModuleFilePattern, getModuleFilePattern());
         // Reset
         config.set(keyResetActiveHighPort, getResetActiveHighPort());
         config.set(keyResetActiveLowPort, getResetActiveLowPort());
@@ -691,6 +703,18 @@ public class CircuitSettings extends AbstractModelSettings {
             DialogUtils.showError("Bus suffix must have index placeholder " + VerilogUtils.BUS_INDEX_PLACEHOLDER);
         } else {
             busSuffix = value;
+        }
+    }
+
+    public static String getModuleFilePattern() {
+        return moduleFilePattern;
+    }
+
+    public static void setModuleFilePattern(String value) {
+        if ((value == null) || !value.contains(VerilogUtils.MODULE_NAME_PLACEHOLDER)) {
+            DialogUtils.showError("File pattern must have module name placeholder " + VerilogUtils.MODULE_NAME_PLACEHOLDER);
+        } else {
+            moduleFilePattern = value;
         }
     }
 
