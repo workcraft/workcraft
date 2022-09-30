@@ -11,7 +11,9 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NoExporterException;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.interop.Exporter;
+import org.workcraft.interop.Importer;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
@@ -25,6 +27,7 @@ import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.*;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.*;
+import org.workcraft.workspace.FileFilters;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -121,24 +124,36 @@ public class StgUtils {
     }
 
     // Load STG model from .work or .g file
-    public static Stg loadStg(File file) {
+    public static Stg loadOrImportStg(File file) {
         Stg result = null;
         if (file != null) {
             String filePath = FileUtils.getFullPath(file);
+            ModelEntry me = null;
             try {
-                ModelEntry me = WorkUtils.loadModel(file);
-                if (me != null) {
-                    MathModel model = me.getMathModel();
-                    if (model instanceof Stg) {
-                        result = (Stg) model;
-                    } else {
-                        LogUtils.logError("Model in file '" + filePath + "' is not an STG.");
-                    }
+                if (FileFilters.isWorkFile(file)) {
+                    me = WorkUtils.loadModel(file);
                 } else {
-                    LogUtils.logError("Cannot read file '" + filePath + "'.");
+                    Importer importer = ExportUtils.chooseBestImporter(file);
+                    if (importer == null) {
+                        LogUtils.logError("Cannot identify appropriate importer for file '" + filePath + "'");
+                    } else {
+                        me = importer.importFrom(file);
+                    }
                 }
             } catch (DeserialisationException e) {
                 LogUtils.logError("Cannot read STG model from file '" + filePath + "':\n" + e.getMessage());
+            } catch (OperationCancelledException e) {
+                // Operation cancelled by the user
+            }
+            if (me != null) {
+                MathModel model = me.getMathModel();
+                if (model instanceof Stg) {
+                    result = (Stg) model;
+                } else {
+                    LogUtils.logError("Model in file '" + filePath + "' is not an STG.");
+                }
+            } else {
+                LogUtils.logError("Cannot read file '" + filePath + "'.");
             }
         }
         return result;

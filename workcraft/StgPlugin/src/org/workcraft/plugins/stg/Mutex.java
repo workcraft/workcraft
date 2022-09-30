@@ -44,7 +44,11 @@ public class Mutex {
 
     @Override
     public String toString() {
-        return "MUTEX " + name + " (.r1(" + r1.name + "), .g1(" + g1.name + "), .r2(" + r2.name + "), .g2(" + g2.name + "))";
+        String r1Name = (r1 == null) || (r1.name == null) ? "" : r1.name;
+        String g1Name = (g1 == null) || (g1.name == null) ? "" : g1.name;
+        String r2Name = (r2 == null) || (r2.name == null) ? "" : r2.name;
+        String g2Name = (g2 == null) || (g2.name == null) ? "" : g2.name;
+        return "MUTEX " + name + " (.r1(" + r1Name + "), .g1(" + g1Name + "), .r2(" + r2Name + "), .g2(" + g2Name + "))";
     }
 
 }

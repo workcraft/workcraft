@@ -57,7 +57,7 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
             Stg devStg = converter.getStg().getMathModel();
 
             // Load environment STG
-            Stg envStg = StgUtils.loadStg(envFile);
+            Stg envStg = StgUtils.loadOrImportStg(envFile);
             if (envStg != null) {
                 // Make sure that input signals of the device STG are also inputs in the environment STG
                 Set<String> inputSignalNames = devStg.getSignalNames(Signal.Type.INPUT, null);

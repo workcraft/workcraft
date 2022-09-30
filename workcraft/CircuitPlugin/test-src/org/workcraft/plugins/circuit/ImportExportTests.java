@@ -113,7 +113,7 @@ class ImportExportTests {
             File vFile = File.createTempFile("workcraft-", ".v");
             vFile.deleteOnExit();
             framework.exportWork(wWe, vFile, VerilogFormat.getInstance());
-            vWe = framework.loadWork(vFile);
+            vWe = framework.importWork(vFile);
             collectNodes(vWe, vInputs, vOutputs, vGates);
         } catch (IOException | SerialisationException e) {
             throw new RuntimeException(e);
@@ -125,7 +125,7 @@ class ImportExportTests {
 
         if (verilogName != null) {
             URL sUrl = classLoader.getResource(verilogName);
-            WorkspaceEntry sWe = framework.loadWork(sUrl.getFile());
+            WorkspaceEntry sWe = framework.importWork(sUrl.getFile());
 
             Set<String> sInputs = new HashSet<>();
             Set<String> sOutputs = new HashSet<>();

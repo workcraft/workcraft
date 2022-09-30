@@ -58,7 +58,7 @@ public class SynthesisChainTask implements Task<SynthesisChainOutput> {
                 return Result.failure(new SynthesisChainOutput(exportResult, null, synthesisMode));
             }
             if ((mutexes != null) && !mutexes.isEmpty()) {
-                model = StgUtils.loadStg(netFile);
+                model = StgUtils.loadOrImportStg(netFile);
                 MutexUtils.factoroutMutexes(model, mutexes);
                 filePrefix += StgUtils.MUTEX_FILE_SUFFIX;
                 netFile = new File(directory, filePrefix + stgFileExtension);

@@ -46,7 +46,7 @@ class SubstitutionRulesTests {
 
         // Import from Workcraft-mapped Verilog
         CircuitSettings.setImportSubstitutionLibrary("");
-        WorkspaceEntry vWorkcraftWe = framework.loadWork(vWorkcraftFile);
+        WorkspaceEntry vWorkcraftWe = framework.importWork(vWorkcraftFile);
 
         CircuitSettings.setExportSubstitutionLibrary("");
         File vWorkcraftWorkcraftFile = new File(tmpDirectory, "vme-tm.workcraft-workcraft.v");
@@ -67,7 +67,7 @@ class SubstitutionRulesTests {
 
         // Import from TSMC_GHP-mapped Verilog
         CircuitSettings.setImportSubstitutionLibrary(BackendUtils.getTemplateLibraryPath("workcraft-tsmc_ghp.cnv"));
-        WorkspaceEntry vTsmcghpWe = framework.loadWork(vTsmcghpFile);
+        WorkspaceEntry vTsmcghpWe = framework.importWork(vTsmcghpFile);
 
         CircuitSettings.setExportSubstitutionLibrary("");
         File vTsmcghpWorkcraftFile = new File(tmpDirectory, "vme-tm.tsmc_ghp-workcraft.v");
@@ -88,7 +88,7 @@ class SubstitutionRulesTests {
 
         // Import from TSMC_BCD-mapped Verilog
         CircuitSettings.setImportSubstitutionLibrary(BackendUtils.getTemplateLibraryPath("workcraft-tsmc_bcd.cnv"));
-        WorkspaceEntry vTsmcbcdWe = framework.loadWork(vTsmcbcdFile);
+        WorkspaceEntry vTsmcbcdWe = framework.importWork(vTsmcbcdFile);
 
         CircuitSettings.setExportSubstitutionLibrary("");
         File vTsmcbcdWorkcraftFile = new File(tmpDirectory, "vme-tm.tsmc_bcd-workcraft.v");

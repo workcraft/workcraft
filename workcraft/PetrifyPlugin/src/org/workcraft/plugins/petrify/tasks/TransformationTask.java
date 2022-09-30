@@ -154,7 +154,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             throw new RuntimeException("Unable to export the model.");
         }
         if ((mutexes != null) && !mutexes.isEmpty()) {
-            Stg stg = StgUtils.loadStg(file);
+            Stg stg = StgUtils.loadOrImportStg(file);
             MutexUtils.factoroutMutexes(stg, mutexes);
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + format.getExtension());
             exportTask = new ExportTask(exporter, stg, file);

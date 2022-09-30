@@ -82,7 +82,7 @@ public class ConformationTask implements Task<VerificationChainOutput> {
     private Result<? extends VerificationChainOutput> exportInterfaces(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
-        Stg envStg = StgUtils.loadStg(envFile);
+        Stg envStg = StgUtils.loadOrImportStg(envFile);
         if (envStg == null) {
             return Result.exception("Cannot load environment STG from file '" + envFile.getAbsolutePath() + "'");
         }

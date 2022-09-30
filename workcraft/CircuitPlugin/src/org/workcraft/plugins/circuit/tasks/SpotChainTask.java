@@ -76,7 +76,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             Stg devStg = converter.getStg().getMathModel();
 
             // Load environment STG
-            Stg envStg = StgUtils.loadStg(envFile);
+            Stg envStg = StgUtils.loadOrImportStg(envFile);
             if (envStg != null) {
                 // Make sure that input signals of the device STG are also inputs in the environment STG
                 Set<String> inputSignalNames = devStg.getSignalNames(Signal.Type.INPUT, null);
@@ -124,7 +124,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             monitor.progressUpdate(0.20);
 
             // Add initial states to the system STG
-            Stg sysModStg = StgUtils.loadStg(sysStgFile);
+            Stg sysModStg = StgUtils.loadOrImportStg(sysStgFile);
             File sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
             FileOutputStream sysModStgStream = new FileOutputStream(sysModStgFile);
             SerialiserUtils.writeModel(sysModStg, sysModStgStream, SerialiserUtils.Style.STG, true);

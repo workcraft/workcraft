@@ -106,7 +106,7 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             return Result.exception("Specification STG is undefined");
         }
 
-        Stg specificationStg = StgUtils.loadStg(specificationStgFile);
+        Stg specificationStg = StgUtils.loadOrImportStg(specificationStgFile);
         if (specificationStg == null) {
             return Result.exception("Cannot load specification STG from file '" + specificationStgFile.getAbsolutePath() + "'");
         }
@@ -165,7 +165,7 @@ public class RefinementTask implements Task<VerificationChainOutput> {
     private Result<? extends VerificationChainOutput> exportInterfaces(VerificationChainOutput payload,
             ProgressMonitor<? super VerificationChainOutput> monitor, File directory) {
 
-        Stg specificationStg = StgUtils.loadStg(specificationStgFile);
+        Stg specificationStg = StgUtils.loadOrImportStg(specificationStgFile);
         if (specificationStg == null) {
             return Result.exception("Cannot load specification STG from file '" + specificationStgFile.getAbsolutePath() + "'");
         }

@@ -63,7 +63,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         boolean checkPersistency = true;
         Circuit mathCircuit = circuit.getMathModel();
         File envFile = mathCircuit.getEnvironmentFile();
-        Stg envStg = StgUtils.loadStg(envFile);
+        Stg envStg = StgUtils.loadOrImportStg(envFile);
         if (envStg == null) {
             String msg = "Environment STG is missing, so conformation cannot be checked during optimisation.\n\n" +
                     "Proceed checking output persistency only?";

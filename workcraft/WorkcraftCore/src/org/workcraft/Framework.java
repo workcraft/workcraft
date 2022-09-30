@@ -19,6 +19,7 @@ import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
+import org.workcraft.interop.Importer;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.CompatibilityManager;
@@ -66,6 +67,24 @@ public final class Framework {
 
 
     private static Framework instance = null;
+    private final PluginManager pluginManager;
+    private final TaskManager taskManager;
+    private final CompatibilityManager compatibilityManager;
+    private final Workspace workspace;
+    private MainWindow mainWindow;
+
+    private Config config;
+    private ScriptableObject systemScope;
+    private ScriptableObject globalScope;
+
+    private boolean inGuiMode = false;
+    private boolean shutdownRequested = false;
+    private final ContextFactory contextFactory = new ContextFactory();
+    public Resource clipboard;
+    private final HashMap<String, JavascriptItem> javascriptHelp = new HashMap<>();
+
+    private File workingDirectory = null;
+    private File importContextDirectory = null;
     private File lastDirectory = null;
     private final LinkedHashSet<String> recentFilePaths = new LinkedHashSet<>();
 
@@ -171,23 +190,6 @@ public final class Framework {
             return name + (params == null ? "" : "(" + params + ")") + " - " + description;
         }
     }
-
-    private final PluginManager pluginManager;
-    private final TaskManager taskManager;
-    private final CompatibilityManager compatibilityManager;
-    private final Workspace workspace;
-
-    private Config config;
-    private ScriptableObject systemScope;
-    private ScriptableObject globalScope;
-
-    private boolean inGuiMode = false;
-    private boolean shutdownRequested = false;
-    private final ContextFactory contextFactory = new ContextFactory();
-    private File workingDirectory = null;
-    private MainWindow mainWindow;
-    public Resource clipboard;
-    private final HashMap<String, JavascriptItem> javascriptHelp = new HashMap<>();
 
     private Framework() {
         pluginManager = new PluginManager();
@@ -652,10 +654,7 @@ public final class Framework {
     @SuppressWarnings("unused")
     public WorkspaceEntry loadWork(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        if (FileUtils.checkAvailability(file, false)) {
-            return loadWork(file);
-        }
-        return null;
+        return FileUtils.checkAvailability(file, false) ? loadWork(file) : null;
     }
 
     public WorkspaceEntry loadWork(File file) throws DeserialisationException {
@@ -663,6 +662,9 @@ public final class Framework {
     }
 
     public WorkspaceEntry loadWork(File file, boolean open) throws DeserialisationException {
+        if (!FileFilters.isWorkFile(file)) {
+            throw new DeserialisationException("File '" + file.getAbsolutePath() + "; is not a work file");
+        }
         // Check if work is already loaded
         WorkspaceEntry we = getWorkspace().getWork(file);
         if (we != null) {
@@ -670,23 +672,13 @@ public final class Framework {
         }
         ModelEntry me = WorkUtils.loadModel(file);
         if (me != null) {
-            // Load (from *.work) or import (other extensions) work
-            boolean isWorkFile = FileFilters.isWorkFile(file);
             Path<String> path = getWorkspace().getPath(file);
-            if (isWorkFile) {
-                if (path == null) {
-                    path = getWorkspace().tempMountExternalFile(file);
-                }
-            } else {
-                String desiredName = FileUtils.getFileNameWithoutExtension(file);
-                Path<String> parent = path == null ? Path.empty() : path.getParent();
-                path = getWorkspace().createWorkPath(parent, desiredName);
+            if (path == null) {
+                path = getWorkspace().tempMountExternalFile(file);
             }
             we = createWork(me, path, open, false);
-            if (isWorkFile) {
-                Collection<Resource> resources = WorkUtils.loadResources(file);
-                resources.forEach(we::addResource);
-            }
+            Collection<Resource> resources = WorkUtils.loadResources(file);
+            resources.forEach(we::addResource);
         }
         updateJavaScript(we);
         return we;
@@ -755,6 +747,32 @@ public final class Framework {
      * Used in core-file.js JavaScript wrapper.
      */
     @SuppressWarnings("unused")
+    public WorkspaceEntry importWork(String path) throws DeserialisationException {
+        File file = getFileByAbsoluteOrRelativePath(path);
+        return FileUtils.checkAvailability(file, false) ? importWork(file) : null;
+    }
+
+    public WorkspaceEntry importWork(File file) throws DeserialisationException {
+        try {
+            Importer importer = ExportUtils.chooseBestImporter(file);
+            if (importer == null) {
+                throw new DeserialisationException("Cannot identify appropriate importer for file '" + file.getAbsolutePath() + "'");
+            }
+            ModelEntry me = importer.importFrom(file);
+            Path<String> path = getWorkspace().createWorkPath(Path.empty(), me.getDesiredName());
+            WorkspaceEntry we = createWork(me, path, true, false);
+            updateJavaScript(we);
+            return we;
+        } catch (OperationCancelledException e) {
+            // Operation cancelled by the user
+        }
+        return null;
+    }
+
+    /**
+     * Used in core-file.js JavaScript wrapper.
+     */
+    @SuppressWarnings("unused")
     public void exportWork(WorkspaceEntry we, String path, String formatName) throws SerialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
         exportModel(we.getModelEntry(), file, formatName, null);
@@ -790,6 +808,38 @@ public final class Framework {
 
     public void loadWorkspace(File file) throws DeserialisationException {
         workspace.load(file);
+    }
+
+    public File getFileByAbsoluteOrRelativePath(String path) {
+        return FileUtils.getFileByAbsoluteOrRelativePath(path, getWorkingDirectory());
+    }
+
+    public void setWorkingDirectory(File value) {
+        workingDirectory = FileUtils.getFileDirectory(value);
+    }
+
+    public File getWorkingDirectory() {
+        if (workingDirectory == null) {
+            String path = System.getProperty("user.dir");
+            setWorkingDirectory(path == null ? null : new File(path));
+        }
+        return workingDirectory;
+    }
+
+    public void setImportContextDirectory(File value) {
+        importContextDirectory = FileUtils.getFileDirectory(value);
+    }
+
+    public File getImportContextDirectory() {
+        return importContextDirectory;
+    }
+
+    public void setLastDirectory(File value) {
+        lastDirectory = FileUtils.getFileDirectory(value);
+    }
+
+    public File getLastDirectory() {
+        return lastDirectory;
     }
 
     public Config getConfig() {
@@ -849,39 +899,6 @@ public final class Framework {
         ArrayList<String> result = new ArrayList<>(recentFilePaths);
         Collections.reverse(result);
         return result;
-    }
-
-    public void setLastDirectory(File value) {
-        if (value != null) {
-            if (value.isDirectory()) {
-                lastDirectory = value;
-            } else {
-                File parentFile = value.getParentFile();
-                if ((parentFile != null) && parentFile.isDirectory()) {
-                    lastDirectory = parentFile;
-                }
-            }
-        }
-    }
-
-    public File getLastDirectory() {
-        return lastDirectory;
-    }
-
-    public File getFileByAbsoluteOrRelativePath(String path) {
-        return FileUtils.getFileByAbsoluteOrRelativePath(path, getWorkingDirectory());
-    }
-
-    public void setWorkingDirectory(File dir) {
-        workingDirectory = dir;
-    }
-
-    public File getWorkingDirectory() {
-        if (workingDirectory == null) {
-            String path = System.getProperty("user.dir");
-            setWorkingDirectory(path == null ? null : new File(path));
-        }
-        return workingDirectory;
     }
 
     public WorkspaceEntry getWorkspaceEntry(ModelEntry me) {

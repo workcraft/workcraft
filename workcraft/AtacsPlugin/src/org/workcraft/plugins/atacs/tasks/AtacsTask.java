@@ -108,7 +108,7 @@ public class AtacsTask implements Task<AtacsOutput>, ExternalProcessListener {
             throw new RuntimeException("Unable to export the model.");
         }
         if (!mutexes.isEmpty()) {
-            stg = StgUtils.loadStg(file);
+            stg = StgUtils.loadOrImportStg(file);
             MutexUtils.factoroutMutexes(stg, mutexes);
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
             exportTask = new ExportTask(exporter, stg, file);

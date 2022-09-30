@@ -17,7 +17,6 @@ import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.workspace.FileFilters;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -30,6 +29,7 @@ import java.util.stream.Collectors;
 public final class VerilogUtils {
 
     public static final String BUS_INDEX_PLACEHOLDER = "$";
+    public static final String MODULE_NAME_PLACEHOLDER = "$";
 
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
@@ -54,7 +54,7 @@ public final class VerilogUtils {
     public static Map<VerilogModule, String> getModuleToFileMap(Collection<VerilogModule> modules) {
         Map<VerilogModule, String> result = new HashMap<>();
         for (VerilogModule module : modules) {
-            result.put(module, module.name + FileFilters.DOCUMENT_EXTENSION);
+            result.put(module, getModuleFileName(module.name));
         }
         return result;
     }
@@ -246,6 +246,21 @@ public final class VerilogUtils {
         }
         if (!result.contains(BUS_INDEX_PLACEHOLDER)) {
             result += BUS_INDEX_PLACEHOLDER;
+        }
+        return result;
+    }
+
+    public static String getModuleFileName(String moduleName) {
+        return getProcessedModuleFilePattern().replace(MODULE_NAME_PLACEHOLDER, moduleName);
+    }
+
+    private static String getProcessedModuleFilePattern() {
+        String result = CircuitSettings.getModuleFilePattern();
+        if (result == null) {
+            result = MODULE_NAME_PLACEHOLDER;
+        }
+        if (!result.contains(MODULE_NAME_PLACEHOLDER)) {
+            result = MODULE_NAME_PLACEHOLDER + result;
         }
         return result;
     }

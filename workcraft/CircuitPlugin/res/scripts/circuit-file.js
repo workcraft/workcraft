@@ -5,7 +5,7 @@ function importCircuitVerilog(vFileName) {
     if (!vFileName.endsWith(".v")) {
         throw("Verilog netlist file '" + vFileName + "' has incorrect extension, as '.v' is expected");
     }
-    return framework.loadWork(vFileName);
+    return framework.importWork(vFileName);
 }
 
 framework.addJavaScriptHelp("exportCircuitVerilog", "work, vFileName",

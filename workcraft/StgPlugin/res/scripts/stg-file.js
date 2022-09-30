@@ -5,7 +5,7 @@ function importStgG(gFileName) {
     if (!gFileName.endsWith(".g")) {
         throw("Signal Transition Graph file '" + gFileName + "' has incorrect extension, as '.g' is expected");
     }
-    return framework.loadWork(gFileName);
+    return framework.importWork(gFileName);
 }
 
 
@@ -27,7 +27,7 @@ function importStgLpn(lpnFileName) {
     if (!lpnFileName.endsWith(".lpn")) {
         throw("Labeled Petri Net file '" + lpnFileName + "' has incorrect extension, as '.lpn' is expected");
     }
-    return framework.loadWork(lpnFileName);
+    return framework.importWork(lpnFileName);
 }
 
 

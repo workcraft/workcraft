@@ -12,6 +12,7 @@ public class ModelEntry {
     private final ModelDescriptor descriptor;
     private final Model model;
     private Stamp stamp;
+    private String desiredName;
 
     public ModelEntry(ModelDescriptor descriptor, Model model) {
         this.descriptor = descriptor;
@@ -88,6 +89,14 @@ public class ModelEntry {
             stamp = new Stamp(time, uuid);
         }
         return stamp;
+    }
+
+    public String getDesiredName() {
+        return desiredName;
+    }
+
+    public void setDesiredName(String desiredName) {
+        this.desiredName = desiredName;
     }
 
 }
