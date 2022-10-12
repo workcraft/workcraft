@@ -15,8 +15,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 class ImportHierarchyTests {
 
@@ -30,10 +30,11 @@ class ImportHierarchyTests {
 
     @Test
     void testImportExportHierBuckControl() throws DeserialisationException, SerialisationException, IOException {
-        testImportExport("hier_buck_control.v");
+        testImportExport("hier_buck_control.v",
+                new HashSet<>(Arrays.asList("CHARGE.work", "CYCLE.work", "CYCLE_CTRL.work", "CHARGE_CTRL.work", "WAIT2.work")));
     }
 
-    private void testImportExport(String fileName) throws DeserialisationException, SerialisationException, IOException {
+    private void testImportExport(String fileName, Set<String> expectedFileNames) throws DeserialisationException, SerialisationException, IOException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
@@ -43,10 +44,13 @@ class ImportHierarchyTests {
         File workingDirectory = framework.getWorkingDirectory();
         File tmpDirectory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(fileName));
 
-        framework.setLastDirectory(tmpDirectory);
         framework.setWorkingDirectory(tmpDirectory);
         WorkspaceEntry we = framework.importWork(vFile);
         framework.setWorkingDirectory(workingDirectory);
+
+        List<File> directoryFiles = FileUtils.getDirectoryFiles(tmpDirectory);
+        Set<String> actualFileNames = directoryFiles.stream().map(File::getName).collect(Collectors.toSet());
+        Assertions.assertEquals(expectedFileNames, actualFileNames);
 
         File vOutFile = new File(tmpDirectory, fileName);
         framework.exportWork(we, vOutFile, VerilogFormat.getInstance());
