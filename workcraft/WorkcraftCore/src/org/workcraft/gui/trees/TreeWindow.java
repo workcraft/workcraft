@@ -18,6 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class TreeWindow<T> extends JPanel {
 
@@ -25,6 +26,7 @@ public class TreeWindow<T> extends JPanel {
 
     private JTree tree;
     private final TreePopupProvider<T> popupProvider;
+    private final Consumer<T> doubleClickAction;
     private final Set<T> checkedNodes = new HashSet<>();
     private CheckBoxMode checkBoxMode = CheckBoxMode.NONE;
     private JCheckBox checkBox;
@@ -112,22 +114,29 @@ public class TreeWindow<T> extends JPanel {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            final int x = e.getX();
-            final int y = e.getY();
-            int row = tree.getClosestRowForLocation(x, y);
-            if (row != -1) {
-                final Rectangle rowBounds = tree.getRowBounds(row);
-                if (rowBounds.contains(x, y)) {
-                    @SuppressWarnings("unchecked")
-                    T node = (T) tree.getPathForRow(row).getLastPathComponent();
-                    if ((checkBoxMode == CheckBoxMode.ALL)
-                            || ((checkBoxMode == CheckBoxMode.LEAF) && source.isLeaf(node))) {
-                        if (checkedNodes.contains(node)) {
-                            checkedNodes.remove(node);
-                        } else {
-                            checkedNodes.add(node);
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                final int x = e.getX();
+                final int y = e.getY();
+                int row = tree.getClosestRowForLocation(x, y);
+                if (row != -1) {
+                    final Rectangle rowBounds = tree.getRowBounds(row);
+                    if (rowBounds.contains(x, y)) {
+                        @SuppressWarnings("unchecked")
+                        T node = (T) tree.getPathForRow(row).getLastPathComponent();
+                        if (e.getClickCount() > 1) {
+                            if (doubleClickAction != null) {
+                                doubleClickAction.accept(node);
+                            }
+                        } else if ((checkBoxMode == CheckBoxMode.ALL)
+                                || ((checkBoxMode == CheckBoxMode.LEAF) && source.isLeaf(node))) {
+
+                            if (checkedNodes.contains(node)) {
+                                checkedNodes.remove(node);
+                            } else {
+                                checkedNodes.add(node);
+                            }
+                            tree.repaint(rowBounds);
                         }
-                        tree.repaint(rowBounds);
                     }
                 }
             }
@@ -209,8 +218,11 @@ public class TreeWindow<T> extends JPanel {
         }
     }
 
-    public TreeWindow(TreeSource<T> source, TreeDecorator<T> decorator, TreePopupProvider<T> popupProvider) {
+    public TreeWindow(TreeSource<T> source, TreeDecorator<T> decorator,
+            TreePopupProvider<T> popupProvider, Consumer<T> doubleClickAction) {
+
         this.popupProvider = popupProvider;
+        this.doubleClickAction = doubleClickAction;
         startup(source, decorator);
     }
 
@@ -267,10 +279,14 @@ public class TreeWindow<T> extends JPanel {
         tree.makeVisible(new TreePath(Path.getPath(node).toArray()));
     }
 
-    public static <T> TreeWindow<T> create(TreeSource<T> source,
-            TreeDecorator<T> decorator, TreePopupProvider<T> popupProvider) {
+    public static <T> TreeWindow<T> create(TreeSource<T> source, TreeDecorator<T> decorator) {
+        return create(source, decorator, null, null);
+    }
 
-        return new TreeWindow<>(source, decorator, popupProvider);
+    public static <T> TreeWindow<T> create(TreeSource<T> source, TreeDecorator<T> decorator,
+            TreePopupProvider<T> popupProvider, Consumer<T> doubleClickAction) {
+
+        return new TreeWindow<>(source, decorator, popupProvider, doubleClickAction);
     }
 
     public void setChecked(T node, boolean value) {

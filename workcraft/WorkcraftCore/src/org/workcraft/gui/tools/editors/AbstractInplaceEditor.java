@@ -5,6 +5,7 @@ import org.workcraft.dom.visual.Alignment;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.editor.Viewport;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.utils.GuiUtils;
@@ -156,10 +157,13 @@ public abstract class AbstractInplaceEditor {
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(getComponent());
         Rectangle2D rootBox = TransformHelper.transform(getComponent(), localToRootTransform).getBoundingBox();
         Rectangle screenBox = viewport.userToScreen(BoundingBoxHelper.move(rootBox, offset));
-        Point editorScreenPosition = Framework.getInstance().getMainWindow().getCurrentEditor().getLocationOnScreen();
-        int xPosition = editorScreenPosition.x + screenBox.x + (screenBox.width - dialog.getWidth()) / 2;
-        int yPosition = editorScreenPosition.y + screenBox.y + (screenBox.height - dialog.getHeight()) / 2;
-        dialog.setLocation(xPosition, yPosition);
+        GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+        if (editor instanceof GraphEditorPanel) {
+            Point editorScreenPosition = ((GraphEditorPanel) editor).getLocationOnScreen();
+            int xPosition = editorScreenPosition.x + screenBox.x + (screenBox.width - dialog.getWidth()) / 2;
+            int yPosition = editorScreenPosition.y + screenBox.y + (screenBox.height - dialog.getHeight()) / 2;
+            dialog.setLocation(xPosition, yPosition);
+        }
         dialog.setVisible(true);
         textPane.requestFocusInWindow();
     }

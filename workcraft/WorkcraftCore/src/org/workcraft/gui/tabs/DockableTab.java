@@ -28,29 +28,27 @@ public class DockableTab extends JPanel {
 
         ContentPanel contentPanel = dockableWindow.getComponent();
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        int extraSpace = 0;
         if ((contentPanel.getOptions() & ContentPanel.MAXIMIZE_BUTTON) != 0) {
             TabButton maxButton = new TabButton("Maximize window",
                     new Action("\u2191", () -> mainWindow.toggleDockableWindowMaximized(dockableWindow)));
 
             buttonsPanel.add(maxButton);
-            buttonsPanel.add(Box.createRigidArea(new Dimension(2, 0)));
+            extraSpace = maxButton.getPreferredSize().width;
         }
 
-        TabButton closeButton = null;
         if ((contentPanel.getOptions() & ContentPanel.CLOSE_BUTTON) != 0) {
-            closeButton = new TabButton("Close window",
+            TabButton closeButton = new TabButton("Close window",
                     new Action("\u00d7", () -> mainWindow.closeDockableWindow(dockableWindow)));
 
+            buttonsPanel.add(Box.createRigidArea(new Dimension(extraSpace / 2, 0)));
             buttonsPanel.add(closeButton);
+            extraSpace = closeButton.getPreferredSize().width;
         }
-
-        Dimension x = label.getPreferredSize();
-        Dimension y = (closeButton != null) ? closeButton.getPreferredSize() : x;
+        buttonsPanel.add(Box.createRigidArea(new Dimension(2 * extraSpace, 0)), 0);
 
         add(label, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.EAST);
-
-        setPreferredSize(new Dimension(x.width + y.width + 30, Math.max(y.height, x.height) + 4));
     }
 
 }

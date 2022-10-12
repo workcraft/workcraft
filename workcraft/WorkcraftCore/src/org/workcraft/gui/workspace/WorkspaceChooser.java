@@ -51,7 +51,7 @@ public class WorkspaceChooser extends JPanel {
 
         filteredSource = new FilteredTreeSource<>(workspace.getTree(), filter);
         filteredSource.setFilter(filter);
-        tree = TreeWindow.create(filteredSource, new WorkspaceTreeDecorator(workspace), null);
+        tree = TreeWindow.create(filteredSource, new WorkspaceTreeDecorator(workspace));
         expand();
 
         JScrollPane scrollPane = new JScrollPane();

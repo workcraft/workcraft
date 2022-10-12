@@ -8,7 +8,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualFstDescriptor;
@@ -66,7 +66,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                     if (result.isSuccess()) {
                         final Framework framework = Framework.getInstance();
                         final MainWindow mainWindow = framework.getMainWindow();
-                        GraphEditorPanel editor = mainWindow.getEditor(we);
+                        GraphEditor editor = mainWindow.getOrCreateEditor(we);
                         if (stdout.startsWith(".model out") || stdout.startsWith(".inputs")) {
                             int endOfFile = stdout.indexOf(".end") + 4;
                             String info = stdout.substring(endOfFile).trim();
@@ -130,7 +130,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         }
     }
 
-    private WorkspaceEntry addWork(Framework framework, WorkspaceEntry we, GraphEditorPanel editor, ModelEntry me) {
+    private WorkspaceEntry addWork(Framework framework, WorkspaceEntry we, GraphEditor editor, ModelEntry me) {
         WorkspaceEntry newWe = null;
         if (!isCurrentWorkEmpty(editor)) {
             newWe = framework.createWork(me, name);
@@ -138,11 +138,11 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
             we.setModelEntry(me);
             newWe = we;
         }
-        framework.getMainWindow().getEditor(we).zoomFit();
+        framework.getMainWindow().getOrCreateEditor(we).zoomFit();
         return newWe;
     }
 
-    private boolean isCurrentWorkEmpty(GraphEditorPanel editor) {
+    private boolean isCurrentWorkEmpty(GraphEditor editor) {
         VisualModel visualModel = editor.getModel();
         visualModel.selectAll();
         if (visualModel.getSelection().isEmpty()) {
@@ -152,7 +152,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         return false;
     }
 
-    private void addStg(String output, Framework framework, GraphEditorPanel editor, String[] invariants)
+    private void addStg(String output, Framework framework, GraphEditor editor, String[] invariants)
             throws IOException, DeserialisationException, OperationCancelledException {
 
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes())) {
@@ -174,7 +174,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
         }
     }
 
-    private void addFst(String output, Framework framework, GraphEditorPanel editor)
+    private void addFst(String output, Framework framework, GraphEditor editor)
             throws IOException, DeserialisationException, OperationCancelledException {
 
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes())) {

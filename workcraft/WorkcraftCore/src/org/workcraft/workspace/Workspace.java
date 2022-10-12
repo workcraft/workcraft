@@ -416,7 +416,7 @@ public class Workspace {
         final WorkspaceEntry openFile = getWork(path);
         if (openFile != null) {
             final Framework framework = Framework.getInstance();
-            framework.getMainWindow().closeEditors(openFile);
+            framework.getMainWindow().closeEditor(openFile);
         }
         openFiles.removeValue(openFile);
         final File file = getFile(path);

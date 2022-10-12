@@ -5,7 +5,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.*;
 import org.workcraft.plugins.son.commands.ToolManager;
@@ -118,7 +118,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
         final SONSimulationTool tool = toolbox.getToolInstance(SONSimulationTool.class);
         toolbox.selectTool(tool);
         final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        final GraphEditorPanel editor = mainWindow.getEditor(we);
+        final GraphEditor editor = mainWindow.getOrCreateEditor(we);
         result = tool.reachabilitySimulator(editor, causalPredecessorRefs, markingRefs);
         tool.mergeTrace(editor);
         return result;
