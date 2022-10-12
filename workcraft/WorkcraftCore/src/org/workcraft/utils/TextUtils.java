@@ -38,24 +38,18 @@ public class TextUtils {
             return line;
         }
         StringBuilder result = new StringBuilder();
-        int curLength = 0;
         for (String word : splitWords(line)) {
-            int wordLength = word.length();
-            if (curLength == 0) {
-                int leadingSpaceLength = countLeadingSpaces(line);
-                if (leadingSpaceLength + wordLength < length) {
-                    result.append(repeat(" ", leadingSpaceLength));
-                }
-            } else {
-                if (curLength + wordLength < length) {
-                    result.append(" ");
-                } else {
-                    result.append(ELLIPSIS_SYMBOL);
-                    break;
-                }
+            int spaceCount = 1;
+            if (result.length() == 0) {
+                spaceCount = countLeadingSpaces(line);
             }
-            result.append(word);
-            curLength += wordLength;
+            if (result.length() + spaceCount < length) {
+                result.append(repeat(" ", spaceCount));
+                result.append(word);
+            } else {
+                result.append(ELLIPSIS_SYMBOL);
+                break;
+            }
         }
         return result.toString();
     }

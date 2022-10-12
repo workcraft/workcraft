@@ -51,7 +51,7 @@ class TextUtilsTests {
     @Test
     void truncateTextTest() {
         String text = "1 22 333 \r\n  4444 55555 666666 7777777 88888888\n  999999999";
-        Assertions.assertEquals("1 22 333 \n  4444 55555\u2026\n999999999",
+        Assertions.assertEquals("1 22 333 \n  4444 55555\u2026\n  999999999",
                 TextUtils.truncateLines(text, 10));
     }
 
