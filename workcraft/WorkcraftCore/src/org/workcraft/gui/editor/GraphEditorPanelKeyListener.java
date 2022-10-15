@@ -38,7 +38,7 @@ class GraphEditorPanelKeyListener implements KeyListener {
                 break;
             case KeyEvent.VK_TAB:
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                DockableWindow editorWindow = mainWindow.getEditorWindow(editor);
+                DockableWindow editorWindow = mainWindow.getDockableWindow(editor);
                 DockingUtils.activateNextTab(editorWindow, e.isShiftDown() ? -1 : 1);
                 break;
             }

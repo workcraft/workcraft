@@ -106,7 +106,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     popup.addSeparator();
 
                     JMenuItem miOpenEditor = new JMenuItem("Open editor");
-                    miOpenEditor.addActionListener(event -> mainWindow.createEditorWindow(we));
+                    miOpenEditor.addActionListener(event -> mainWindow.getOrCreateEditor(we));
                     popup.add(miOpenEditor);
 
                     JMenuItem miSave = new JMenuItem("Save");
@@ -118,7 +118,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     popup.add(miSaveAs);
 
                     JMenuItem miClose = new JMenuItem("Close");
-                    miClose.addActionListener(event -> mainWindow.closeEditors(we));
+                    miClose.addActionListener(event -> mainWindow.closeEditor(we));
                     popup.add(miClose);
 
                     JMenu mnExport = new JMenu("Export");

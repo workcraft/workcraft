@@ -2,7 +2,7 @@ package org.workcraft.utils;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.SimulationTool;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -117,7 +117,7 @@ public class TraceUtils {
     public static void playSolution(WorkspaceEntry we, Solution solution, String suffix) {
         final Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
-            GraphEditorPanel editor = framework.getMainWindow().getEditor(we);
+            GraphEditor editor = framework.getMainWindow().getOrCreateEditor(we);
             Toolbox toolbox = editor.getToolBox();
             SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
             toolbox.selectTool(tool);

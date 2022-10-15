@@ -16,6 +16,7 @@ import org.workcraft.exceptions.*;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.properties.Settings;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
@@ -580,7 +581,7 @@ public final class Framework {
         if (open && isInGuiMode()) {
             // Attempt automatic layout only if the model entry changed (because of creating visual layer)
             if ((me == we.getModelEntry()) || attemptLayout(we.getModelEntry().getVisualModel())) {
-                getMainWindow().createEditorWindow(we);
+                getMainWindow().getOrCreateEditor(we);
             }
         }
         we.setChanged(changed);
@@ -912,8 +913,10 @@ public final class Framework {
 
     public void updatePropertyView() {
         if (isInGuiMode()) {
-            GraphEditorPanel editor = getMainWindow().getCurrentEditor();
-            SwingUtilities.invokeLater(editor::updatePropertyView);
+            GraphEditor editor = getMainWindow().getCurrentEditor();
+            if (editor instanceof GraphEditorPanel) {
+                SwingUtilities.invokeLater(((GraphEditorPanel) editor)::updatePropertyView);
+            }
         }
     }
 

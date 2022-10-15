@@ -118,38 +118,27 @@ public class VerilogImporter implements Importer {
             }
         }
 
-        Circuit circuit = (verilogModules.size() == 1)
-                ? createCircuit(verilogModules.iterator().next())
-                : createCircuitHierarchy(verilogModules);
-
-        ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-        if (moduleToFileNameMap != null) {
-            me.setDesiredName(moduleToFileNameMap.get(verilogModules.iterator().next()));
-        }
-        return me;
+        return (verilogModules.size() == 1)
+                ? createCircuitModelEntry(verilogModules.iterator().next())
+                : createCircuitModelEntryWithHierarchy(verilogModules);
     }
 
-    public Circuit createCircuit(VerilogModule verilogModule) throws DeserialisationException {
-        return createCircuit(verilogModule, Collections.emptySet());
+    private ModelEntry createCircuitModelEntry(VerilogModule verilogModule) throws DeserialisationException {
+        Circuit circuit = createCircuit(verilogModule, Collections.emptySet());
+        return new ModelEntry(new CircuitDescriptor(), circuit);
     }
 
-    public Circuit createCircuit(VerilogModule verilogModule, Collection<Mutex> mutexes)
-            throws DeserialisationException {
-
-        return createCircuit(verilogModule, Collections.singletonList(verilogModule), mutexes);
-    }
-
-    private Circuit createCircuitHierarchy(Collection<VerilogModule> verilogModules)
+    private ModelEntry createCircuitModelEntryWithHierarchy(Collection<VerilogModule> verilogModules)
             throws DeserialisationException, OperationCancelledException {
 
         if (Framework.getInstance().isInGuiMode()) {
-            return createCircuitHierarchyGui(verilogModules);
+            return createCircuitModelEntryWithHierarchyGui(verilogModules);
         } else {
-            return createCircuitHierarchyAuto(verilogModules);
+            return createCircuitModelEntryWithHierarchyAuto(verilogModules);
         }
     }
 
-    private Circuit createCircuitHierarchyGui(Collection<VerilogModule> verilogModules)
+    private ModelEntry createCircuitModelEntryWithHierarchyGui(Collection<VerilogModule> verilogModules)
             throws OperationCancelledException, DeserialisationException {
 
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
@@ -159,9 +148,9 @@ public class VerilogImporter implements Importer {
         }
         VerilogModule topVerilogModule = dialog.getTopModule();
         File dir = dialog.getDirectory();
-        Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
+        Set<VerilogModule> instantiatedModules = VerilogUtils.getInstantiatedModules(topVerilogModule, verilogModules);
         moduleToFileNameMap = dialog.getModuleToFileNameMap();
-        Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(descendantModules, dir);
+        Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(instantiatedModules, dir);
         if (!existingSaveFilePaths.isEmpty()) {
             String delimiter = "\n" + PropertyHelper.BULLET_PREFIX;
             String msg = "The following files already exist:" + delimiter
@@ -172,10 +161,15 @@ public class VerilogImporter implements Importer {
                 throw new OperationCancelledException();
             }
         }
-        return createCircuitHierarchy(topVerilogModule, descendantModules, dir);
+        Circuit topCircuit = createCircuitHierarchy(topVerilogModule, instantiatedModules, dir);
+        ModelEntry me = new ModelEntry(new CircuitDescriptor(), topCircuit);
+        if (moduleToFileNameMap != null) {
+            me.setDesiredName(moduleToFileNameMap.get(topVerilogModule));
+        }
+        return me;
     }
 
-    private Circuit createCircuitHierarchyAuto(Collection<VerilogModule> verilogModules)
+    private ModelEntry createCircuitModelEntryWithHierarchyAuto(Collection<VerilogModule> verilogModules)
             throws DeserialisationException {
 
         // Set directory to save work files for instantiated modules
@@ -185,21 +179,26 @@ public class VerilogImporter implements Importer {
             dir = framework.getWorkingDirectory();
         }
         VerilogModule topVerilogModule = VerilogUtils.getTopModule(verilogModules);
-        Set<VerilogModule> descendantModules = VerilogUtils.getDescendantModules(topVerilogModule, verilogModules);
+        Set<VerilogModule> instantiatedModules = VerilogUtils.getInstantiatedModules(topVerilogModule, verilogModules);
         moduleToFileNameMap = VerilogUtils.getModuleToFileMap(verilogModules);
-        Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(descendantModules, dir);
+        Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(instantiatedModules, dir);
         if (!existingSaveFilePaths.isEmpty()) {
             String msg = "Import of circuit hierarchy overwrites the following files:\n"
                     + String.join("\n", existingSaveFilePaths);
 
             LogUtils.logWarning(msg);
         }
-        return createCircuitHierarchy(topVerilogModule, descendantModules, dir);
+        Circuit topCircuit = createCircuitHierarchy(topVerilogModule, instantiatedModules, dir);
+        ModelEntry me = new ModelEntry(new CircuitDescriptor(), topCircuit);
+        if (moduleToFileNameMap != null) {
+            me.setDesiredName(moduleToFileNameMap.get(topVerilogModule));
+        }
+        return me;
     }
 
-    private Collection<String> getExistingSaveFilePaths(Set<VerilogModule> descendantModules, File dir) {
+    private Collection<String> getExistingSaveFilePaths(Set<VerilogModule> instantiatedModules, File dir) {
         Collection<String> result = new HashSet<>();
-        for (VerilogModule module : descendantModules) {
+        for (VerilogModule module : instantiatedModules) {
             String fileName = moduleToFileNameMap.get(module);
             File file = new File(dir, fileName);
             if (file.exists()) {
@@ -209,16 +208,16 @@ public class VerilogImporter implements Importer {
         return result;
     }
 
-    private Circuit createCircuitHierarchy(VerilogModule topVerilogModule, Collection<VerilogModule> descendantModules,
+    private Circuit createCircuitHierarchy(VerilogModule topVerilogModule, Collection<VerilogModule> instantiatedModules,
             File dir) throws DeserialisationException {
 
-        Circuit circuit = createCircuit(topVerilogModule, descendantModules, Collections.emptySet());
+        Circuit circuit = createCircuit(topVerilogModule, Collections.emptySet(), instantiatedModules);
 
         Map<Circuit, String> circuitFileNames = new HashMap<>();
-        for (VerilogModule verilogModule : descendantModules) {
-            Circuit descendantCircuit = createCircuit(verilogModule, descendantModules, Collections.emptySet());
+        for (VerilogModule verilogModule : instantiatedModules) {
+            Circuit instantiatedCircuit = createCircuit(verilogModule, Collections.emptySet(), instantiatedModules);
             if (moduleToFileNameMap != null) {
-                circuitFileNames.put(descendantCircuit, moduleToFileNameMap.get(verilogModule));
+                circuitFileNames.put(instantiatedCircuit, moduleToFileNameMap.get(verilogModule));
             }
         }
         adjustModuleRefinements(circuit, circuitFileNames, dir);
@@ -249,8 +248,20 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private Circuit createCircuit(VerilogModule verilogModule, Collection<VerilogModule> descendantModules,
-            Collection<Mutex> mutexes) throws DeserialisationException {
+    public Circuit createCircuit(VerilogModule verilogModule)
+            throws DeserialisationException {
+
+        return createCircuit(verilogModule, Collections.emptySet());
+    }
+
+    public Circuit createCircuit(VerilogModule verilogModule, Collection<Mutex> mutexes)
+            throws DeserialisationException {
+
+        return createCircuit(verilogModule, mutexes, Collections.emptySet());
+    }
+
+    private Circuit createCircuit(VerilogModule verilogModule, Collection<Mutex> mutexes,
+            Collection<VerilogModule> instantiatedModules) throws DeserialisationException {
 
         Circuit circuit = new Circuit();
         circuit.setTitle(verilogModule.name);
@@ -284,7 +295,7 @@ public class VerilogImporter implements Importer {
                 Mutex mutexInstance = instanceToMutexWithProtocol(verilogInstance, mutexes);
                 component = createMutex(circuit, mutexInstance, nets);
             } else {
-                component = createModuleInstance(circuit, verilogInstance, nets, descendantModules);
+                component = createModuleInstance(circuit, verilogInstance, nets, instantiatedModules);
             }
             if (component != null) {
                 instanceComponentMap.put(verilogInstance, component);
@@ -355,10 +366,10 @@ public class VerilogImporter implements Importer {
         }
         // Produce warning
         if (!longMessage.isEmpty()) {
-            String title = circuit.getTitle().isEmpty() ? "" : "'" + circuit.getTitle() + "' ";
-            String prefix = "The imported circuit " + title + "has the following issues:";
-            DialogUtils.showMessage(prefix + shortMessage, VERILOG_IMPORT_TITLE, JOptionPane.WARNING_MESSAGE, false);
-            LogUtils.logWarning(prefix + longMessage);
+            String title = circuit.getTitle();
+            String intro = "Issues with imported circuit" + (title.isEmpty() ? ":" : " '" + title + "':");
+            LogUtils.logWarning(intro + longMessage);
+            DialogUtils.showMessage(intro + shortMessage, VERILOG_IMPORT_TITLE, JOptionPane.WARNING_MESSAGE, false);
         }
     }
 

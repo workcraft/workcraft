@@ -59,7 +59,7 @@ public final class VerilogUtils {
         return result;
     }
 
-    public static Set<VerilogModule> getDescendantModules(VerilogModule module, Collection<VerilogModule> modules) {
+    public static Set<VerilogModule> getInstantiatedModules(VerilogModule module, Collection<VerilogModule> modules) {
         return getModuleToDescendantsMap(modules).get(module);
     }
 

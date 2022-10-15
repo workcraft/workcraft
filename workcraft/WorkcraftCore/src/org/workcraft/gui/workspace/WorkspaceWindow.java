@@ -10,6 +10,7 @@ import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.FileFilters;
 import org.workcraft.workspace.Workspace;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,10 +24,24 @@ public class WorkspaceWindow extends JPanel {
 
     public WorkspaceWindow() {
         super();
-        Workspace workspace = Framework.getInstance().getWorkspace();
+        Framework framework = Framework.getInstance();
+        Workspace workspace = framework.getWorkspace();
+        MainWindow mainWindow = framework.getMainWindow();
+
         TreeWindow<Path<String>> workspaceTree = TreeWindow.create(workspace.getTree(),
                 new WorkspaceTreeDecorator(workspace),
-                new WorkspacePopupProvider(this));
+                new WorkspacePopupProvider(this),
+                path -> {
+                    WorkspaceEntry we = workspace.getWork(path);
+                    if (we == null) {
+                        File file = workspace.getFile(path);
+                        if ((file != null) && file.isFile() && file.exists()) {
+                            mainWindow.openWork(file);
+                        }
+                    } else {
+                        mainWindow.getOrCreateEditor(we);
+                    }
+                });
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.getVerticalScrollBar().setUnitIncrement(8);

@@ -7,7 +7,7 @@ import org.workcraft.commands.MenuOrdering.Position;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.commands.ScriptableDataCommand;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.editor.GraphEditorPanel;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -101,7 +101,7 @@ public class CommandUtils {
 
     public static void run(MainWindow mainWindow, Command command) {
         if (mainWindow != null) {
-            GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
+            GraphEditor currentEditor = mainWindow.getCurrentEditor();
             WorkspaceEntry we = currentEditor == null ? null : currentEditor.getWorkspaceEntry();
             checkCommandApplicability(we, command);
             command.run(we);

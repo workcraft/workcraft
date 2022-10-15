@@ -146,8 +146,18 @@ public class WorkspaceEntry implements ObservableState {
         return details == null ? "" : " : " + details;
     }
 
-    public String getTitleAndModel() {
+    public String getTitleAndModelType() {
+        return getTitle() + getModelTypeSuffix();
+    }
+
+    public String getHtmlDetailedTitle() {
         String prefix = isChanged() ? "*" : "";
+        String suffix = getModelTypeSuffix();
+        String formattedTitle = temporary ? "<i>" + getTitle() + "</i>" : getTitle();
+        return "<html>" + prefix + formattedTitle + getDetails() + suffix + "</html>";
+    }
+
+    private String getModelTypeSuffix() {
         String suffix = "";
         VisualModel model = getModelEntry().getVisualModel();
         if (model != null) {
@@ -163,8 +173,7 @@ public class WorkspaceEntry implements ObservableState {
                 break;
             }
         }
-        String formattedTitle = temporary ? "<i>" + getTitle() + "</i>" : getTitle();
-        return "<html>" + prefix + formattedTitle + getDetails() + suffix + "</html>";
+        return suffix;
     }
 
     public String getFileName() {

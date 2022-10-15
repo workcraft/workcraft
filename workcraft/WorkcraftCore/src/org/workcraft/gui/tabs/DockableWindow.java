@@ -48,20 +48,6 @@ public class DockableWindow extends AbstractDockable {
         }
     };
 
-    private final MouseListener headerMouseListener = new MouseAdapter() {
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (e.getButton() == MouseEvent.BUTTON2) {
-                MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                mainWindow.closeDockableWindow(DockableWindow.this);
-            } else {
-                for (DockableListener l : new ArrayList<>(dockableListeners)) {
-                    l.headerClicked(e.getButton());
-                }
-            }
-        }
-    };
-
     private boolean inTab = false;
     private boolean closed = false;
 
@@ -74,7 +60,20 @@ public class DockableWindow extends AbstractDockable {
         Component header = contentPanel.getHeader();
         dragSources.add(contentPanel);
         dragSources.add(header);
-        header.addMouseListener(headerMouseListener);
+
+        header.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (e.getButton() == MouseEvent.BUTTON2) {
+                        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                        mainWindow.closeDockableWindow(DockableWindow.this);
+                    } else {
+                        for (DockableListener l : new ArrayList<>(dockableListeners)) {
+                            l.headerClicked(e.getButton());
+                        }
+                    }
+                }
+            });
     }
 
     @Override
