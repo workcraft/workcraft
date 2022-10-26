@@ -1,7 +1,10 @@
 package org.workcraft.utils;
 
+import org.workcraft.types.Pair;
+
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 public class SetUtils {
@@ -59,6 +62,19 @@ public class SetUtils {
             result.add(new HashSet<>(Arrays.asList(v)));
         }
         return result;
+    }
+
+    public static <T> Pair<Set<T>, Set<T>> partition(Map<T, Boolean> itemToBooleanMap) {
+        Set<T> trueItems = new HashSet<>();
+        Set<T> falseItems = new HashSet<>();
+        for (T item : itemToBooleanMap.keySet()) {
+            Boolean value = itemToBooleanMap.get(item);
+            if (value != null) {
+                Set<T> partitionItems = value ? trueItems : falseItems;
+                partitionItems.add(item);
+            }
+        }
+        return Pair.of(trueItems, falseItems);
     }
 
 }
