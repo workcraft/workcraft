@@ -168,7 +168,7 @@ public class FileUtils {
      * Reads all text from the file using the default charset.
      */
     public static String readAllText(File file) throws IOException {
-        try (InputStream stream = new FileInputStream(file)) {
+        try (InputStream stream = Files.newInputStream(file.toPath())) {
             return readAllText(stream);
         }
     }
@@ -194,7 +194,7 @@ public class FileUtils {
      * Reads first count characters from the file using UTF8 charset.
      */
     public static String readHeaderUtf8(File file, int count) throws IOException {
-        try (InputStream stream = new FileInputStream(file)) {
+        try (InputStream stream = Files.newInputStream(file.toPath())) {
             BufferedReader in = new BufferedReader(new InputStreamReader(stream, StandardCharsets.UTF_8));
             char[] buf = new char[count];
             int len = in.read(buf, 0, count);
