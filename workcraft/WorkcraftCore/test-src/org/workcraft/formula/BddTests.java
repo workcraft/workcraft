@@ -9,26 +9,26 @@ class BddTests {
     private static final BddManager BDD_MANAGER = new BddManager();
 
     @Test
-    void testUnatness() {
+    void testUnateness() {
         BooleanVariable aVar = new FreeVariable("a");
         BooleanVariable bVar = new FreeVariable("b");
         BooleanVariable cVar = new FreeVariable("c");
 
         BooleanFormula and2Func = new And(aVar, bVar);
-        checkUnaness(and2Func, aVar, true, false);
+        checkUnateness(and2Func, aVar, true, false);
 
         BooleanFormula nor2Func = new Not(new Or(aVar, bVar));
-        checkUnaness(nor2Func, aVar, false, true);
+        checkUnateness(nor2Func, aVar, false, true);
 
         BooleanFormula xor2Func = new Xor(aVar, bVar);
-        checkUnaness(xor2Func, aVar, false, false);
+        checkUnateness(xor2Func, aVar, false, false);
 
         BooleanFormula mux2Func = new Or(new And(aVar, cVar), new And(bVar, new Not(cVar)));
-        checkUnaness(mux2Func, aVar, true, false);
-        checkUnaness(mux2Func, cVar, false, false);
+        checkUnateness(mux2Func, aVar, true, false);
+        checkUnateness(mux2Func, cVar, false, false);
     }
 
-    private void checkUnaness(BooleanFormula formula, BooleanVariable var, boolean posUnate, boolean negUnate) {
+    private void checkUnateness(BooleanFormula formula, BooleanVariable var, boolean posUnate, boolean negUnate) {
         Assertions.assertEquals(posUnate, BDD_MANAGER.isPositiveUnate(formula, var));
         Assertions.assertEquals(negUnate, BDD_MANAGER.isNegativeUnate(formula, var));
         Assertions.assertEquals(!posUnate && !negUnate, BDD_MANAGER.isBinate(formula, var));
