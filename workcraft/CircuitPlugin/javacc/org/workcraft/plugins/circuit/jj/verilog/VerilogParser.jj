@@ -18,6 +18,23 @@ import org.workcraft.plugins.circuit.verilog.*;
 import java.util.*;
 
 public class VerilogParser {
+
+    private List<VerilogNet> createListOfNets(String name, VerilogPort.Range range) {
+        List<VerilogNet> nets = new ArrayList<>();
+        if (name == null) {
+            nets.add(null);
+        } else if (range == null) {
+            nets.add(new VerilogNet(name));
+        } else {
+            int index = range.getTopIndex();
+            while (index != range.getBottomIndex()) {
+                nets.add(new VerilogNet(name, index));
+                index -= range.getStep();
+            }
+            nets.add(new VerilogNet(name, index));
+        }
+        return nets;
+    }
 }
 PARSER_END(VerilogParser)
 
@@ -101,22 +118,20 @@ TOKEN:
 |
     <DELAY: ("#" ([ "0"-"9" ])* (["."])? ([ "0"-"9" ])+) | ("#(" (~["(", ")"])* ")")>
 |
-    <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <WS> <NL>>
+    <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <NEW_LINE_WITH_OPTIONAL_SPACES>>
 |
-    <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <WS> <NL>>
+    <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <NEW_LINE_WITH_OPTIONAL_SPACES>>
 |
-    <PETRIFY50_INIT_STATE : "// signal values at the initial state:" <WS> <NL> <WS> "//">
+    <PETRIFY50_INIT_STATE : "// signal values at the initial state:" <NEW_LINE_WITH_OPTIONAL_SPACES> "//">
 |
-    <PETRIFY51_INIT_STATE : "// Initial state:" <WS> <NL> <WS> "//">
+    <PETRIFY51_INIT_STATE : "// Initial state:" <NEW_LINE_WITH_OPTIONAL_SPACES> "//">
 |
-    <MPSAT_INIT_STATE : "// initial values of the signals" <WS> <NL> <WS> "//">
+    <MPSAT_INIT_STATE : "// initial values of the signals" <NEW_LINE_WITH_OPTIONAL_SPACES> "//">
 |
-    <#WS: ([" ", "\t"])*>
-|
-    <#NL: (["\n", "\r"])+>
+    <#NEW_LINE_WITH_OPTIONAL_SPACES: ([" ", "\t"])*(["\n", "\r"])+([" ", "\t"])*>
 }
 
-List<VerilogModule> parseCircuit() :
+List<VerilogModule> parseCircuit():
 {
     List<VerilogModule> modules;
 }
@@ -148,6 +163,7 @@ VerilogModule parseModule():
 {
     String name;
     List<VerilogPort> ports;
+    Map<String, VerilogPort> nameToPortMap = new HashMap<>();
     VerilogAssign assign;
     List<VerilogAssign> assigns = new LinkedList<>();
     VerilogInstance instance;
@@ -157,6 +173,11 @@ VerilogModule parseModule():
 {
     <MODULE> name = parseModuleName()
     ports = parsePorts()
+    {
+        for (VerilogPort port : ports) {
+            nameToPortMap.putIfAbsent(port.name, port);
+        }
+    }
     (
         (
             assign = parseAssign()
@@ -164,7 +185,7 @@ VerilogModule parseModule():
                 assigns.add(assign);
             }
         |
-            instance = parseInstance()
+            instance = parseInstance(nameToPortMap)
             {
                 instances.add(instance);
             }
@@ -199,7 +220,7 @@ List<VerilogPort> parsePorts():
         LOOKAHEAD("(" (<INPUT> | <OUTPUT>))
         ports = parseCompactPorts()
     |
-        ports = parseComplexPorts()
+        ports = parseExtendedPorts()
     )
     {
         return ports;
@@ -209,21 +230,21 @@ List<VerilogPort> parsePorts():
 List<VerilogPort> parseCompactPorts():
 {
     VerilogPort port;
+    List<VerilogPort> internalPorts;
     List<VerilogPort> ports = new LinkedList<>();
 }
 {
-    [
-        "("
-            (
-                port = parseCompactPort() [","]
-                {
-                    ports.add(port);
-                }
-            )*
-        ")"
-    ]
-    ";"
+    "("
+        (
+            port = parseCompactPort() [","]
+            {
+                ports.add(port);
+            }
+        )*
+    ")" ";"
+    internalPorts = parseTypedPorts()
     {
+        ports.addAll(internalPorts);
         return ports;
     }
 }
@@ -241,6 +262,67 @@ VerilogPort parseCompactPort():
     }
 }
 
+List<VerilogPort> parseExtendedPorts():
+{
+    List<String> interfacePortNames;
+    List<VerilogPort> typedPorts;
+}
+{
+    "(" interfacePortNames = parseNames() ")" ";"
+    typedPorts = parseTypedPorts()
+    {
+        HashMap<String, VerilogPort> nameToPort = new HashMap<>();
+        for (VerilogPort port : typedPorts) {
+            nameToPort.put(port.name, port);
+        }
+        List<VerilogPort> ports = new LinkedList<>();
+        for (String interfacePortName : interfacePortNames) {
+            VerilogPort port = nameToPort.get(interfacePortName);
+            if (port != null) {
+                ports.add(port);
+            }
+        }
+        typedPorts.removeAll(ports);
+        ports.addAll(typedPorts);
+        return ports;
+    }
+}
+
+List<VerilogPort> parseTypedPorts():
+{
+    List<VerilogPort> typedPorts;
+    List<VerilogPort> ports = new LinkedList<>();
+}
+{
+    (
+        typedPorts = parseTypedPortsOfOneType()
+        {
+            ports.addAll(typedPorts);
+        }
+    )*
+    {
+        return ports;
+    }
+}
+
+List<VerilogPort> parseTypedPortsOfOneType():
+{
+    VerilogPort.Type type;
+    VerilogPort.Range range = null;
+    List<String> names;
+}
+{
+    type = parsePortType() [range = parseRange()] names = parseNames() ";"
+    {
+        List<VerilogPort> ports = new ArrayList<>();
+        for (String name : names) {
+            VerilogPort port = new VerilogPort(name, type, range);
+            ports.add(port);
+        }
+        return ports;
+    }
+}
+
 VerilogPort.Type parsePortType():
 {
 }
@@ -254,87 +336,11 @@ VerilogPort.Type parsePortType():
         {
             return VerilogPort.Type.OUTPUT;
         }
-
-}
-
-List<VerilogPort> parseComplexPorts():
-{
-    List<String> declarations;
-    List<VerilogPort> definitions;
-}
-{
-    declarations = parsePortsDeclaration()
-    definitions = parsePortsDefinitions()
-    {
-        HashMap<String, VerilogPort> nameToPort = new HashMap<>();
-        for (VerilogPort port: definitions) {
-            nameToPort.put(port.name, port);
-        }
-        List<VerilogPort> ports = new LinkedList<>();
-        for (String name: declarations) {
-            VerilogPort port = nameToPort.get(name);
-            if (port != null) {
-                ports.add(port);
-            }
-        }
-        return ports;
-    }
-}
-
-List<String> parsePortsDeclaration():
-{
-    List<String> names = null;
-}
-{
-    ["(" names = parseNames() ")"] ";"
-    {
-        List<String> ports = new LinkedList<>();
-        if (names != null) {
-            ports.addAll(names);
-        }
-        return ports;
-    }
-}
-
-List<VerilogPort> parsePortsDefinitions():
-{
-    List<VerilogPort> ports;
-    List<VerilogPort> allPorts = new LinkedList<>();
-}
-{
-    (
-        ports = parsePortsDefinition()
-        {
-            allPorts.addAll(ports);
-        }
-    )*
-    {
-        return allPorts;
-    }
-}
-
-List<VerilogPort> parsePortsDefinition():
-{
-    VerilogPort.Type type;
-    VerilogPort.Range range = null;
-    List<String> names;
-    List<VerilogPort> ports = new LinkedList<>();
-}
-{
-    (
-        <WIRE> [parseRange()] parseNames() ";"
     |
-        type = parsePortType() [range = parseRange()] names = parseNames() ";"
+        <WIRE>
         {
-            for (String name: names) {
-                VerilogPort port = new VerilogPort(name, type, range);
-                ports.add(port);
-            }
+            return VerilogPort.Type.INTERNAL;
         }
-    )
-    {
-        return ports;
-    }
 }
 
 VerilogPort.Range parseRange():
@@ -415,7 +421,7 @@ VerilogAssign parseAssign():
     }
 }
 
-VerilogInstance parseInstance():
+VerilogInstance parseInstance(Map<String, VerilogPort> nameToPortMap):
 {
     boolean zeroDelay = false;
     String moduleName;
@@ -432,21 +438,21 @@ VerilogInstance parseInstance():
     ]
     moduleName = parseModuleName()
     [nameToken = <NAME>]
-    "(" connections = parseConnections() ")" ";"
+    "(" connections = parseConnections(nameToPortMap) ")" ";"
     {
         String name = (nameToken == null ? null : nameToken.image);
         return new VerilogInstance(name, moduleName, connections, zeroDelay);
     }
 }
 
-List<VerilogConnection> parseConnections():
+List<VerilogConnection> parseConnections(Map<String, VerilogPort> nameToPortMap):
 {
     List<VerilogConnection> connections;
 }
 {
     (
         LOOKAHEAD(".")
-        connections = parseNamedConnections()
+        connections = parseNamedConnections(nameToPortMap)
     |
         connections = parseOrderedConnections()
     )
@@ -455,18 +461,18 @@ List<VerilogConnection> parseConnections():
     }
 }
 
-List<VerilogConnection> parseNamedConnections():
+List<VerilogConnection> parseNamedConnections(Map<String, VerilogPort> nameToPortMap):
 {
     VerilogConnection connection;
     List<VerilogConnection> connections = new LinkedList<>();
 }
 {
-    connection = parseNamedConnection()
+    connection = parseNamedConnection(nameToPortMap)
     {
         connections.add(connection);
     }
     (
-        "," connection = parseNamedConnection()
+        "," connection = parseNamedConnection(nameToPortMap)
         {
             connections.add(connection);
         }
@@ -476,7 +482,7 @@ List<VerilogConnection> parseNamedConnections():
     }
 }
 
-VerilogConnection parseNamedConnection():
+VerilogConnection parseNamedConnection(Map<String, VerilogPort> nameToPortMap):
 {
     Token nameToken;
     List<VerilogNet> nets;
@@ -485,9 +491,9 @@ VerilogConnection parseNamedConnection():
     "." nameToken = <NAME> "("
     (
         LOOKAHEAD("{")
-        "{" nets = parseOptionalNets() "}"
+        "{" nets = parseOptionalNets(nameToPortMap) "}"
     |
-        nets = parseOptionalNetOrNetRange()
+        nets = parseOptionalNetRange(nameToPortMap)
     )
     ")"
     {
@@ -516,15 +522,15 @@ List<VerilogConnection> parseOrderedConnections():
     }
 }
 
-List<VerilogNet> parseOptionalNets():
+List<VerilogNet> parseOptionalNets(Map<String, VerilogPort> nameToPortMap):
 {
     List<VerilogNet> netRange;
     List<VerilogNet> nets;
 }
 {
-    nets = parseOptionalNetOrNetRange()
+    nets = parseOptionalNetRange(nameToPortMap)
     (
-        "," netRange = parseOptionalNetOrNetRange()
+        "," netRange = parseOptionalNetRange(nameToPortMap)
         {
             nets.addAll(netRange);
         }
@@ -534,26 +540,37 @@ List<VerilogNet> parseOptionalNets():
     }
 }
 
-List<VerilogNet> parseOptionalNetOrNetRange():
+List<VerilogNet> parseOptionalNetRange(Map<String, VerilogPort> nameToPortMap):
 {
-    VerilogNet net;
-    List<VerilogNet> nets;
+    Token nameToken = null;
+    VerilogPort.Range range = null;
+    Integer index = null;
 }
 {
-    (
-        LOOKAHEAD(parseNetRange())
-        nets = parseNetRange()
-    |
-        net = parseOptionalNet()
-        {
-            nets = new ArrayList<>();
-            nets.add(net);
-        }
-    )
+    [
+        nameToken = <NAME>
+        [
+                LOOKAHEAD(parseRange())
+                range = parseRange()
+            |
+                index = parseIndex()
+                {
+                    range = new VerilogPort.Range(index, index);
+                }
+        ]
+    ]
     {
-        return nets;
+        String name = nameToken == null ? null : nameToken.image;
+        if ((name != null) && (range == null)) {
+            VerilogPort port = nameToPortMap.get(name);
+            if (port != null) {
+                range = port.range;
+            }
+        }
+        return createListOfNets(name, range);
     }
 }
+
 
 VerilogNet parseOptionalNet():
 {
@@ -570,15 +587,11 @@ VerilogNet parseNet():
 {
     Token nameToken;
     Integer index = null;
-    VerilogNet net;
 }
 {
     nameToken = <NAME> [ index = parseIndex()]
     {
-        net = new VerilogNet(nameToken.image, index);
-    }
-    {
-        return net;
+        return new VerilogNet(nameToken.image, index);
     }
 }
 
@@ -590,25 +603,5 @@ Integer parseIndex():
     "[" indexToken = <INTEGER> "]"
     {
         return Integer.parseInt(indexToken.image);
-    }
-}
-
-List<VerilogNet> parseNetRange():
-{
-    Token nameToken;
-    VerilogPort.Range range;
-    List<VerilogNet> nets = new ArrayList<>();
-}
-{
-    nameToken = <NAME> range = parseRange()
-    {
-        int index = range.getTopIndex();
-        String name = nameToken.image;
-        while (index != range.getBottomIndex()) {
-            nets.add(new VerilogNet(name, index));
-            index -= range.getStep();
-        }
-        nets.add(new VerilogNet(name, index));
-        return nets;
     }
 }

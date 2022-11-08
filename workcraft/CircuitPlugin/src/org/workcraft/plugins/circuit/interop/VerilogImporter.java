@@ -595,14 +595,15 @@ public class VerilogImporter implements Importer {
 
     private HashMap<String, Net> createPorts(Circuit circuit, VerilogModule verilogModule) {
         HashMap<String, Net> nets = new HashMap<>();
-        for (VerilogPort verilogPort: verilogModule.ports) {
-            List<String> portNames = getPortNames(verilogPort);
+        for (VerilogPort verilogPort : verilogModule.ports) {
+            if (verilogPort.isInternal()) continue;
+            List<String> portNetNames = getPortNetNames(verilogPort);
             if (verilogPort.range != null) {
                 LogUtils.logMessage("Bus " + verilogPort.name + verilogPort.range + " is split to nets: "
-                        + String.join(", ", portNames));
+                        + String.join(", ", portNetNames));
             }
-            for (String portName: portNames) {
-                createPort(circuit, nets, portName, verilogPort.isInput());
+            for (String portNetName: portNetNames) {
+                createPort(circuit, nets, portNetName, verilogPort.isInput());
             }
         }
         return nets;
@@ -627,7 +628,7 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private List<String> getPortNames(VerilogPort verilogPort) {
+    private List<String> getPortNetNames(VerilogPort verilogPort) {
         List<String> result = new ArrayList<>();
         if (verilogPort.range == null) {
             result.add(verilogPort.name);
@@ -746,12 +747,11 @@ public class VerilogImporter implements Importer {
             String componentRef = circuit.getNodeReference(component);
             LogUtils.logWarning("Cannot set name '" + verilogInstance.name + "' for component '" + componentRef + "'.");
         }
-        HashMap<String, VerilogPort> instancePorts = getModulePortMap(verilogModule);
         for (VerilogConnection verilogConnection : verilogInstance.connections) {
             if (verilogConnection == null) {
                 continue;
             }
-            VerilogPort verilogPort = instancePorts.get(verilogConnection.name);
+            VerilogPort verilogPort = (verilogModule == null) ? null : verilogModule.getPort(verilogConnection.name);
             VerilogPort.Range portRange = (verilogPort == null) ? null : verilogPort.range;
             List<VerilogNet> verilogNets = new ArrayList<>(verilogConnection.nets);
             int netCount = verilogNets.size();
@@ -796,7 +796,7 @@ public class VerilogImporter implements Importer {
     }
 
     private void updateContactTypeAndNetConnectivity(VerilogPort verilogPort, FunctionContact contact, Net net) {
-        if (verilogPort == null) {
+        if ((verilogPort == null) || verilogPort.isInternal()) {
             if (net != null) {
                 net.undefined.add(contact);
             }
@@ -805,7 +805,7 @@ public class VerilogImporter implements Importer {
             if (net != null) {
                 net.source = contact;
             }
-        } else {
+        } else if (verilogPort.isInput()) {
             contact.setIOType(IOType.INPUT);
             if (net != null) {
                 net.sinks.add(contact);
@@ -1158,16 +1158,6 @@ public class VerilogImporter implements Importer {
                 net.source.setInitToOne(signalState);
             }
         }
-    }
-
-    private HashMap<String, VerilogPort> getModulePortMap(VerilogModule verilogModule) {
-        HashMap<String, VerilogPort> result = new HashMap<>();
-        if (verilogModule != null) {
-            for (VerilogPort verilogPort : verilogModule.ports) {
-                result.put(verilogPort.name, verilogPort);
-            }
-        }
-        return result;
     }
 
 }

@@ -171,6 +171,7 @@ public final class VerilogUtils {
 
     public static void printModule(VerilogModule verilogModule) {
         String portNames = verilogModule.ports.stream()
+                .filter(port -> port.isInput() || port.isOutput())
                 .map(verilogPort -> verilogPort.name)
                 .collect(Collectors.joining(", "));
 
