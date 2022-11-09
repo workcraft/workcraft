@@ -10,7 +10,8 @@ public class VerilogPort {
 
     public enum Type {
         INPUT("input"),
-        OUTPUT("output");
+        OUTPUT("output"),
+        INTERNAL("internal");
 
         private final String name;
 
@@ -63,6 +64,10 @@ public class VerilogPort {
 
     public boolean isOutput() {
         return type == Type.OUTPUT;
+    }
+
+    public boolean isInternal() {
+        return type == Type.INTERNAL;
     }
 
 }

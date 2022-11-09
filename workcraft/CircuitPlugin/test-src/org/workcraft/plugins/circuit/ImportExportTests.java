@@ -4,11 +4,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.plugins.circuit.commands.SquashComponentTransformationCommand;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.utils.BackendUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -93,6 +96,13 @@ class ImportExportTests {
         testImportExport(workName, verilogName);
     }
 
+    @Test
+    void testBusHierMixedImportExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus-hier-mixed.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "bus-hier-mixed.circuit.v");
+        testImportExport(workName, verilogName);
+    }
+
     private void testImportExport(String workName, String verilogName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -125,8 +135,15 @@ class ImportExportTests {
 
         if (verilogName != null) {
             URL sUrl = classLoader.getResource(verilogName);
-            WorkspaceEntry sWe = framework.importWork(sUrl.getFile());
 
+            File workingDirectory = framework.getWorkingDirectory();
+            File tmpDirectory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(verilogName));
+            framework.setWorkingDirectory(tmpDirectory);
+            WorkspaceEntry sWe = framework.importWork(sUrl.getFile());
+            framework.setWorkingDirectory(workingDirectory);
+
+            // Squash hierarchical modules
+            new SquashComponentTransformationCommand().run(sWe);
             Set<String> sInputs = new HashSet<>();
             Set<String> sOutputs = new HashSet<>();
             Set<String> sGates = new HashSet<>();
@@ -154,8 +171,8 @@ class ImportExportTests {
             }
         }
         for (FunctionComponent component: circuit.getFunctionComponents()) {
-            String ref = circuit.getNodeReference(component);
-            gates.add(component.getModule() + " " + Identifier.truncateNamespaceSeparator(ref));
+            String ref = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
+            gates.add(component.getModule() + " " + NamespaceHelper.flattenReference(ref));
         }
     }
 
