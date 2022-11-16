@@ -12,11 +12,14 @@ import java.io.InputStream;
 
 public interface Importer {
     Format getFormat();
-    ModelEntry importFrom(InputStream in) throws DeserialisationException, OperationCancelledException;
+    ModelEntry importFrom(InputStream in, String serialisedUserData)
+            throws DeserialisationException, OperationCancelledException;
 
-    default ModelEntry importFrom(File file) throws DeserialisationException, OperationCancelledException {
+    default ModelEntry importFrom(File file, String serialisedUserData)
+            throws DeserialisationException, OperationCancelledException {
+
         try (FileInputStream fileInputStream = new FileInputStream(file)) {
-            ModelEntry me = importFrom(fileInputStream);
+            ModelEntry me = importFrom(fileInputStream, serialisedUserData);
             if (me.getDesiredName() == null) {
                 me.setDesiredName(FileUtils.getFileNameWithoutExtension(file));
             }

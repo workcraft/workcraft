@@ -32,6 +32,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.Wait;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
@@ -90,8 +91,8 @@ public class VerilogImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in)
-            throws OperationCancelledException, DeserialisationException  {
+    public ModelEntry importFrom(InputStream in, String serialisedUserData)
+            throws OperationCancelledException, DeserialisationException {
 
         moduleToFileNameMap = null;
         Collection<VerilogModule> verilogModules = VerilogUtils.importVerilogModules(in);
@@ -118,9 +119,27 @@ public class VerilogImporter implements Importer {
             }
         }
 
-        return (verilogModules.size() == 1)
-                ? createCircuitModelEntry(verilogModules.iterator().next())
-                : createCircuitModelEntryWithHierarchy(verilogModules);
+        String topModuleName = extractTopModuleName(serialisedUserData);
+        VerilogModule topVerilogModule = topModuleName == null ? VerilogUtils.getTopModule(verilogModules)
+                : verilogModules.stream().filter(m -> topModuleName.equals(m.name)).findAny().orElse(null);
+
+        if (topVerilogModule == null) {
+            String msg = "Cannot find suggested top module '" + topModuleName + "'."
+                    + "\n\nProceed with Verilog import anyway?";
+
+            // Do not proceed in no-GUI mode if the suggested top module is incorrect
+            if (!DialogUtils.showConfirmWarning(msg, VERILOG_IMPORT_TITLE, false)) {
+                throw new OperationCancelledException();
+            }
+            topVerilogModule = VerilogUtils.getTopModule(verilogModules);
+        }
+
+        return (verilogModules.size() == 1) ? createCircuitModelEntry(topVerilogModule)
+                : createCircuitModelEntryWithHierarchy(verilogModules, topVerilogModule);
+    }
+
+    private String extractTopModuleName(String serialisedUserData) {
+        return serialisedUserData;
     }
 
     private ModelEntry createCircuitModelEntry(VerilogModule verilogModule) throws DeserialisationException {
@@ -128,25 +147,25 @@ public class VerilogImporter implements Importer {
         return new ModelEntry(new CircuitDescriptor(), circuit);
     }
 
-    private ModelEntry createCircuitModelEntryWithHierarchy(Collection<VerilogModule> verilogModules)
-            throws DeserialisationException, OperationCancelledException {
+    private ModelEntry createCircuitModelEntryWithHierarchy(Collection<VerilogModule> verilogModules,
+            VerilogModule topVerilogModule) throws DeserialisationException, OperationCancelledException {
 
         if (Framework.getInstance().isInGuiMode()) {
-            return createCircuitModelEntryWithHierarchyGui(verilogModules);
+            return createCircuitModelEntryWithHierarchyGui(verilogModules, topVerilogModule);
         } else {
-            return createCircuitModelEntryWithHierarchyAuto(verilogModules);
+            return createCircuitModelEntryWithHierarchyAuto(verilogModules, topVerilogModule);
         }
     }
 
-    private ModelEntry createCircuitModelEntryWithHierarchyGui(Collection<VerilogModule> verilogModules)
-            throws OperationCancelledException, DeserialisationException {
+    private ModelEntry createCircuitModelEntryWithHierarchyGui(Collection<VerilogModule> verilogModules,
+            VerilogModule topVerilogModule) throws OperationCancelledException, DeserialisationException {
 
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        ImportVerilogDialog dialog = new ImportVerilogDialog(mainWindow, verilogModules);
+        ImportVerilogDialog dialog = new ImportVerilogDialog(mainWindow, Pair.of(verilogModules, topVerilogModule));
         if (!dialog.reveal()) {
             throw new OperationCancelledException();
         }
-        VerilogModule topVerilogModule = dialog.getTopModule();
+        topVerilogModule = dialog.getTopModule();
         File dir = dialog.getDirectory();
         Set<VerilogModule> instantiatedModules = VerilogUtils.getInstantiatedModules(topVerilogModule, verilogModules);
         moduleToFileNameMap = dialog.getModuleToFileNameMap();
@@ -169,8 +188,8 @@ public class VerilogImporter implements Importer {
         return me;
     }
 
-    private ModelEntry createCircuitModelEntryWithHierarchyAuto(Collection<VerilogModule> verilogModules)
-            throws DeserialisationException {
+    private ModelEntry createCircuitModelEntryWithHierarchyAuto(Collection<VerilogModule> verilogModules,
+            VerilogModule topVerilogModule) throws DeserialisationException {
 
         // Set directory to save work files for instantiated modules
         Framework framework = Framework.getInstance();
@@ -178,7 +197,6 @@ public class VerilogImporter implements Importer {
         if (dir == null) {
             dir = framework.getWorkingDirectory();
         }
-        VerilogModule topVerilogModule = VerilogUtils.getTopModule(verilogModules);
         Set<VerilogModule> instantiatedModules = VerilogUtils.getInstantiatedModules(topVerilogModule, verilogModules);
         moduleToFileNameMap = VerilogUtils.getModuleToFileMap(verilogModules);
         Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(instantiatedModules, dir);
@@ -747,12 +765,19 @@ public class VerilogImporter implements Importer {
             String componentRef = circuit.getNodeReference(component);
             LogUtils.logWarning("Cannot set name '" + verilogInstance.name + "' for component '" + componentRef + "'.");
         }
+        int portIndex = -1;
         for (VerilogConnection verilogConnection : verilogInstance.connections) {
+            portIndex++;
             if (verilogConnection == null) {
                 continue;
             }
-            VerilogPort verilogPort = (verilogModule == null) ? null : verilogModule.getPort(verilogConnection.name);
-            VerilogPort.Range portRange = (verilogPort == null) ? null : verilogPort.range;
+            VerilogPort verilogPort = getPortByNameOrPosition(verilogModule, verilogConnection.name, portIndex);
+            if (verilogPort == null) {
+                throw new DeserialisationException("Cannot create instance '" + verilogInstance.name
+                        + "' of module '" + verilogInstance.moduleName + "': wrong connection in position " + portIndex);
+            }
+            String portName = verilogPort.name;
+            VerilogPort.Range portRange = verilogPort.range;
             List<VerilogNet> verilogNets = new ArrayList<>(verilogConnection.nets);
             int netCount = verilogNets.size();
             if (netCount == 1) {
@@ -761,21 +786,15 @@ public class VerilogImporter implements Importer {
                 Net net = getOrCreateNet(VerilogUtils.getNetBusSuffixName(verilogNet), nets);
                 updateContactTypeAndNetConnectivity(verilogPort, contact, net);
                 component.add(contact);
-                if (verilogConnection.name != null) {
-                    Integer contactBusIndex = portRange == null ? null : portRange.getBottomIndex();
-                    String contactName = VerilogUtils.getSignalWithBusSuffix(verilogConnection.name, contactBusIndex);
-                    circuit.setName(contact, contactName);
-                }
-            } else if (verilogConnection.name == null) {
-                throw new DeserialisationException("Cannot create instance '" + verilogInstance.name
-                        + "' of module '" + verilogInstance.moduleName + "': cannot connect a bus of " + netCount
-                        + " nets to unnamed port");
+                Integer contactBusIndex = portRange == null ? null : portRange.getBottomIndex();
+                String contactName = VerilogUtils.getSignalWithBusSuffix(portName, contactBusIndex);
+                circuit.setName(contact, contactName);
             } else {
                 int portSize = (portRange == null) ? netCount : portRange.getSize();
                 if (netCount > portSize) {
                     throw new DeserialisationException("Cannot create instance '" + verilogInstance.name
                             + "' of module '" + verilogInstance.moduleName + "': cannot connect a bus of "
-                            + netCount + " nets to port '" + verilogConnection.name + "' of size " + portSize);
+                            + netCount + " nets to port '" + portName + "' of size " + portSize);
                 }
                 Collections.reverse(verilogNets);
                 int step = (portRange == null) ? 1 : portRange.getStep();
@@ -787,12 +806,26 @@ public class VerilogImporter implements Importer {
                     updateContactTypeAndNetConnectivity(verilogPort, contact, net);
                     component.add(contact);
                     int contactBusIndex = bottomIndex + step * index;
-                    String contactName = VerilogUtils.getSignalWithBusSuffix(verilogConnection.name, contactBusIndex);
+                    String contactName = VerilogUtils.getSignalWithBusSuffix(portName, contactBusIndex);
                     circuit.setName(contact, contactName);
                 }
             }
         }
         return component;
+    }
+
+    private VerilogPort getPortByNameOrPosition(VerilogModule verilogModule, String portName, int portIndex) {
+        VerilogPort port = null;
+        if (verilogModule == null) {
+            port = new VerilogPort(portName, VerilogPort.Type.INTERNAL, null);
+        } else {
+            if (portName != null) {
+                port = verilogModule.getPort(portName);
+            } else if ((portIndex >= 0) && (portIndex < verilogModule.ports.size())) {
+                port = verilogModule.ports.get(portIndex);
+            }
+        }
+        return port;
     }
 
     private void updateContactTypeAndNetConnectivity(VerilogPort verilogPort, FunctionContact contact, Net net) {

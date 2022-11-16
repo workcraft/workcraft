@@ -1,12 +1,14 @@
-framework.addJavaScriptHelp("importCircuitVerilog", "vFileName",
-    "import a Circuit from the given Verilog netlist (*.v) file 'vFileName' and return its work");
+framework.addJavaScriptHelp("importCircuitVerilog", "vFileName, topModuleName",
+    "import a Circuit 'topModuleName' (can be skipped for auto detection) with its dependencies from the given Verilog netlist (*.v) file 'vFileName' and return its work");
 
-function importCircuitVerilog(vFileName) {
+function importCircuitVerilog(vFileName, topModuleName) {
     if (!vFileName.endsWith(".v")) {
         throw("Verilog netlist file '" + vFileName + "' has incorrect extension, as '.v' is expected");
     }
-    return framework.importWork(vFileName);
+    return (topModuleName == undefined) ? framework.importWork(vFileName)
+        : framework.importWork(vFileName, topModuleName);
 }
+
 
 framework.addJavaScriptHelp("exportCircuitVerilog", "work, vFileName",
     "export the Circuit 'work' as a Verilog netlist (*.v) file 'vFileName'");

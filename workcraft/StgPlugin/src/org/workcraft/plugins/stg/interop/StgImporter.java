@@ -21,7 +21,7 @@ public class StgImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in) throws DeserialisationException {
+    public ModelEntry importFrom(InputStream in, String serialisedUserData) throws DeserialisationException {
         Stg stg = importStg(in);
         PetriUtils.checkSoundness(stg, false);
         return new ModelEntry(new StgDescriptor(), stg);

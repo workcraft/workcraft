@@ -20,11 +20,11 @@ public class LpnImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in) throws DeserialisationException {
+    public ModelEntry importFrom(InputStream in, String serialisedUserData) throws DeserialisationException {
         return new ModelEntry(new StgDescriptor(), importSTG(in));
     }
 
-    public StgModel importSTG(InputStream in) throws DeserialisationException {
+    private StgModel importSTG(InputStream in) throws DeserialisationException {
         try {
             StgParser parser = new StgParser(in);
             if (DebugCommonSettings.getParserTracing()) {

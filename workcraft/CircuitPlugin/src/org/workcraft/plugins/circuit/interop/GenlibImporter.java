@@ -22,7 +22,7 @@ public class GenlibImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in) throws DeserialisationException {
+    public ModelEntry importFrom(InputStream in, String serialisedUserData) throws DeserialisationException {
         return new ModelEntry(new CircuitDescriptor(), importGenlib(in));
     }
 
