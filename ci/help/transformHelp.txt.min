@@ -1,6 +1,6 @@
 transformCircuitContractComponent(work) - transform the Circuit 'work' by contracting selected single-input/single-output components
 transformCircuitContractJoint(work) - transform the Circuit 'work' by contracting selected (or all) joints
-transformCircuitDetachJoint(work) - transform the Circuit 'work' by detaching selected (or all joints)
+transformCircuitDetachJoint(work) - transform the Circuit 'work' by detaching selected (or all) joints
 transformCircuitDissolveJoint(work) - transform the Circuit 'work' by dissolving selected (or all) joints
 transformCircuitInsertBuffer(work) - transform the Circuit 'work' by inserting buffers into selected wires
 transformCircuitOptimiseZeroDelay(work) - transform the Circuit 'work' by discarding redundant zero delay attribute for selected (or all) inverters and buffers

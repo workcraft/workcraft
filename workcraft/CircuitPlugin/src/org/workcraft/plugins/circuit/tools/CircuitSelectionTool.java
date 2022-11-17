@@ -65,6 +65,14 @@ public class CircuitSelectionTool extends SelectionTool {
             });
             popup.add(defaultContactPositionMenuItem);
 
+            JMenuItem repackContactPositionMenuItem = new JMenuItem("Repack component to fit contact names");
+            repackContactPositionMenuItem.setEnabled(component.getRenderingResult() == null);
+            repackContactPositionMenuItem.addActionListener(event -> {
+                editor.getWorkspaceEntry().saveMemento();
+                component.repackContactsPosition();
+            });
+            popup.add(repackContactPositionMenuItem);
+
             JMenuItem centerPivotPointMenuItem = new JMenuItem("Center pivot point");
             centerPivotPointMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();

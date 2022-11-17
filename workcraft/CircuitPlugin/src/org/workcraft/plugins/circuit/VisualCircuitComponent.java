@@ -20,6 +20,7 @@ import java.awt.geom.*;
 import java.io.File;
 import java.util.List;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
@@ -110,22 +111,22 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         double northPosition = -contactStep * (northCount - 1) / 2;
         double eastPosition = -contactStep * (eastCount - 1) / 2;
         double southPosition = -contactStep * (southCount - 1) / 2;
-        for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-            switch (vc.getDirection()) {
+        for (VisualContact contact : Hierarchy.getChildrenOfType(this, VisualContact.class)) {
+            switch (contact.getDirection()) {
             case WEST:
-                vc.setY(westPosition);
+                contact.setY(westPosition);
                 westPosition += contactStep;
                 break;
             case NORTH:
-                vc.setX(northPosition);
+                contact.setX(northPosition);
                 northPosition += contactStep;
                 break;
             case EAST:
-                vc.setY(eastPosition);
+                contact.setY(eastPosition);
                 eastPosition += contactStep;
                 break;
             case SOUTH:
-                vc.setX(southPosition);
+                contact.setX(southPosition);
                 southPosition += contactStep;
                 break;
             }
@@ -139,19 +140,75 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
 
         Collection<VisualContact> contacts = getVisualContacts();
-        for (VisualContact vc: contacts) {
-            switch (vc.getDirection()) {
+        for (VisualContact contact : contacts) {
+            switch (contact.getDirection()) {
             case WEST:
-                vc.setX(bb.getMinX() - contactLength);
+                contact.setX(bb.getMinX() - contactLength);
                 break;
             case NORTH:
-                vc.setY(bb.getMinY() - contactLength);
+                contact.setY(bb.getMinY() - contactLength);
                 break;
             case EAST:
-                vc.setX(bb.getMaxX() + contactLength);
+                contact.setX(bb.getMaxX() + contactLength);
                 break;
             case SOUTH:
-                vc.setY(bb.getMaxY() + contactLength);
+                contact.setY(bb.getMaxY() + contactLength);
+                break;
+            }
+        }
+        invalidateBoundingBox();
+    }
+
+    public void repackContactsPosition() {
+        Collection<VisualContact> contacts = getVisualContacts();
+        double westStart = 0.0;
+        double northStart = 0.0;
+        double eastStart = 0.0;
+        double southStart = 0.0;
+        for (VisualContact contact : contacts) {
+            switch (contact.getDirection()) {
+            case NORTH:
+            case SOUTH:
+                eastStart = Math.max(eastStart, contact.getX());
+                westStart = Math.min(westStart, contact.getX());
+                break;
+            }
+        }
+        double westPosition = -contactMinOffset;
+        double northPosition = -contactMinOffset;
+        double eastPosition = contactMinOffset;
+        double southPosition = contactMinOffset;
+        for (VisualContact contact : contacts) {
+            GlyphVector gv = getContactNameGlyphs(contact, contact::getName);
+            double contactBestPosition = gv.getVisualBounds().getWidth() + contactMargin + contactLength;
+            switch (contact.getDirection()) {
+            case WEST:
+                westPosition = Math.min(westPosition, -contactBestPosition);
+                break;
+            case NORTH:
+                northPosition = Math.min(northPosition, -contactBestPosition);
+                break;
+            case EAST:
+                eastPosition = Math.max(eastPosition, contactBestPosition);
+                break;
+            case SOUTH:
+                southPosition = Math.max(southPosition, contactBestPosition);
+                break;
+            }
+        }
+        for (VisualContact contact : contacts) {
+            switch (contact.getDirection()) {
+            case WEST:
+                contact.setX(TransformHelper.snapP5(westStart + westPosition));
+                break;
+            case NORTH:
+                contact.setY(TransformHelper.snapP5(northStart + northPosition));
+                break;
+            case EAST:
+                contact.setX(TransformHelper.snapP5(eastStart + eastPosition));
+                break;
+            case SOUTH:
+                contact.setY(TransformHelper.snapP5(southStart + southPosition));
                 break;
             }
         }
@@ -205,16 +262,16 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
         switch (direction) {
         case WEST:
-            double westOffset = contacts.stream().mapToDouble(VisualTransformableNode::getX).max().orElse(-contactMinOffset);
+            double westOffset = contacts.stream().mapToDouble(VisualContact::getX).max().orElse(-contactMinOffset);
             return Math.min(TransformHelper.snapP5(bb.getMinX() - contactLength), westOffset);
         case NORTH:
-            double northOffset = contacts.stream().mapToDouble(VisualTransformableNode::getY).max().orElse(-contactMinOffset);
+            double northOffset = contacts.stream().mapToDouble(VisualContact::getY).max().orElse(-contactMinOffset);
             return Math.min(TransformHelper.snapP5(bb.getMinY() - contactLength), northOffset);
         case EAST:
-            double eastOffset = contacts.stream().mapToDouble(VisualTransformableNode::getX).min().orElse(contactMinOffset);
+            double eastOffset = contacts.stream().mapToDouble(VisualContact::getX).min().orElse(contactMinOffset);
             return Math.max(TransformHelper.snapP5(bb.getMaxX() + contactLength), eastOffset);
         case SOUTH:
-            double southOffset = contacts.stream().mapToDouble(VisualTransformableNode::getY).min().orElse(contactMinOffset);
+            double southOffset = contacts.stream().mapToDouble(VisualContact::getY).min().orElse(contactMinOffset);
             return Math.max(TransformHelper.snapP5(bb.getMaxY() + contactLength), southOffset);
         default:
             return 0.0;
@@ -451,17 +508,16 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         return NAME_FONT.deriveFont((float) CircuitSettings.getContactFontSize());
     }
 
-    public GlyphVector getContactNameGlyphs(DrawRequest r, VisualContact vc) {
+    private GlyphVector getContactNameGlyphs(VisualContact vc, Supplier<String> getName) {
         if (Math.abs(CircuitSettings.getContactFontSize() - contactFontSize) > 0.001) {
             contactFontSize = CircuitSettings.getContactFontSize();
             contactNameGlyphs.clear();
         }
-        Circuit circuit = (Circuit) r.getModel().getMathModel();
-        String name = circuit.getName(vc.getReferencedComponent());
         GlyphVector gv = contactNameGlyphs.get(vc);
         if (gv == null) {
-            FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
-            gv = getContactFont().createGlyphVector(context, name);
+            AffineTransform tx = AffineTransform.getScaleInstance(1000.0, 1000.0);
+            FontRenderContext context = new FontRenderContext(tx, true, true);
+            gv = getContactFont().createGlyphVector(context, getName.get());
             contactNameGlyphs.put(vc, gv);
         }
         return gv;
@@ -475,7 +531,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         g.setColor(ColorUtils.colorise(color, colorisation));
 
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        GlyphVector gv = getContactNameGlyphs(r, vc);
+        GlyphVector gv = getContactNameGlyphs(vc, () -> r.getModel().getMathName(vc));
         Rectangle2D labelBB = gv.getVisualBounds();
 
         float x = 0.0f;
@@ -507,6 +563,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
                 contact -> (contact.getDirection() == Direction.WEST) || (contact.getDirection() == Direction.EAST))) {
+
             drawContactName(r, vc);
         }
 
