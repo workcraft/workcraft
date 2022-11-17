@@ -55,7 +55,7 @@ public class CircuitPlugin implements Plugin {
         ScriptableCommandUtils.registerCommand(DissolveJointTransformationCommand.class, "transformCircuitDissolveJoint",
                 "transform the Circuit 'work' by dissolving selected (or all) joints");
         ScriptableCommandUtils.registerCommand(DetachJointTransformationCommand.class, "transformCircuitDetachJoint",
-                "transform the Circuit 'work' by detaching selected (or all joints)");
+                "transform the Circuit 'work' by detaching selected (or all) joints");
         ScriptableCommandUtils.registerCommand(ContractComponentTransformationCommand.class, "transformCircuitContractComponent",
                 "transform the Circuit 'work' by contracting selected single-input/single-output components");
         ScriptableCommandUtils.registerCommand(InsertBufferTransformationCommand.class, "transformCircuitInsertBuffer",

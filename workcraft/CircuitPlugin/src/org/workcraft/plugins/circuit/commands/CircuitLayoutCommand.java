@@ -92,6 +92,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                 }
             }
             component.setContactsDefaultPosition();
+            component.repackContactsPosition();
         }
     }
 

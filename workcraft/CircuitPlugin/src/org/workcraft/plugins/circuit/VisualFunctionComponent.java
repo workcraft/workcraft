@@ -295,6 +295,14 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     @Override
+    public void repackContactsPosition() {
+        ComponentRenderingResult res = getRenderingResult();
+        if (res == null) {
+            super.repackContactsPosition();
+        }
+    }
+
+    @Override
     public void addContact(VisualContact vc) {
         super.addContact(vc);
         invalidateRenderingResult();

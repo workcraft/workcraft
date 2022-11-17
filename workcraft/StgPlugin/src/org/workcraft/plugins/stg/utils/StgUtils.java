@@ -137,7 +137,7 @@ public class StgUtils {
                     if (importer == null) {
                         LogUtils.logError("Cannot identify appropriate importer for file '" + filePath + "'");
                     } else {
-                        me = importer.importFrom(file);
+                        me = importer.importFrom(file, null);
                     }
                 }
             } catch (DeserialisationException e) {

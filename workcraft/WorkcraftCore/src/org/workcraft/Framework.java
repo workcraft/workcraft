@@ -749,17 +749,25 @@ public final class Framework {
      */
     @SuppressWarnings("unused")
     public WorkspaceEntry importWork(String path) throws DeserialisationException {
+        return importWork(path, null);
+    }
+
+    public WorkspaceEntry importWork(String path, String serialisedUserData) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        return FileUtils.checkAvailability(file, false) ? importWork(file) : null;
+        return FileUtils.checkAvailability(file, false) ? importWork(file, serialisedUserData) : null;
     }
 
     public WorkspaceEntry importWork(File file) throws DeserialisationException {
+        return importWork(file, null);
+    }
+
+    public WorkspaceEntry importWork(File file, String serialisedUserData) throws DeserialisationException {
         try {
             Importer importer = ExportUtils.chooseBestImporter(file);
             if (importer == null) {
                 throw new DeserialisationException("Cannot identify appropriate importer for file '" + file.getAbsolutePath() + "'");
             }
-            ModelEntry me = importer.importFrom(file);
+            ModelEntry me = importer.importFrom(file, serialisedUserData);
             Path<String> path = getWorkspace().createWorkPath(Path.empty(), me.getDesiredName());
             WorkspaceEntry we = createWork(me, path, true, false);
             updateJavaScript(we);

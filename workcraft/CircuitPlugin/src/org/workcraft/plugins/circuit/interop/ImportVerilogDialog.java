@@ -8,6 +8,7 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyEditorTable;
 import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogModule;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.GuiUtils;
@@ -20,7 +21,7 @@ import java.io.File;
 import java.util.List;
 import java.util.*;
 
-public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> {
+public class ImportVerilogDialog extends ModalDialog<Pair<Collection<VerilogModule>, VerilogModule>> {
 
     private VerilogModule topModule;
     private File dir;
@@ -70,8 +71,8 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         }
     }
 
-    public ImportVerilogDialog(Window owner, Collection<VerilogModule> modules) {
-        super(owner, "Import hierarchical Verilog", modules);
+    public ImportVerilogDialog(Window owner, Pair<Collection<VerilogModule>, VerilogModule> modulesAndTopModule) {
+        super(owner, "Import hierarchical Verilog", modulesAndTopModule);
     }
 
     @Override
@@ -79,7 +80,9 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         JPanel result = super.createContentPanel();
         result.setLayout(GuiUtils.createBorderLayout());
 
-        Collection<VerilogModule> modules = getUserData();
+        Pair<Collection<VerilogModule>, VerilogModule> modulesAndTopModule = getUserData();
+        Collection<VerilogModule> modules = modulesAndTopModule.getFirst();
+        VerilogModule suggestedTopModule = modulesAndTopModule.getSecond();
         Set<VerilogModule> topModules = new HashSet<>(VerilogUtils.getTopModules(modules));
         moduleToFileNameMap = VerilogUtils.getModuleToFileMap(modules);
 
@@ -96,6 +99,7 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         PropertyEditorTable modulesTable = new PropertyEditorTable(
                 "Verilog modules to import", "File name");
 
+
         Map<VerilogModule, ModuleFileProperties> moduleToPropertiesMap = createModuleToPropertyMap(modules);
         // First add action listener, then populate the ComboBox
         topModuleCombo.addActionListener(l -> {
@@ -110,6 +114,9 @@ public class ImportVerilogDialog extends ModalDialog<Collection<VerilogModule>> 
         instantiatedModules.removeAll(topModules);
         List<VerilogModule> sortedInstantiatedModules = SortUtils.getSortedNatural(instantiatedModules, m -> m.name);
         sortedInstantiatedModules.forEach(topModuleCombo::addItem);
+        if (suggestedTopModule != null) {
+            topModuleCombo.setSelectedItem(suggestedTopModule);
+        }
 
         JPanel topModulePanel = GuiUtils.createLabeledComponent(topModuleCombo,
                 "<html>Top module (list starts with not instantiated modules in <b>bold</b>):</html>");

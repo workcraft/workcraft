@@ -842,7 +842,7 @@ public class MainWindow extends JFrame {
             }
 
             try {
-                ModelEntry me = importer.importFrom(file);
+                ModelEntry me = importer.importFrom(file, null);
                 // Set model title, if empty
                 String title = me.getMathModel().getTitle();
                 if ((title == null) || title.isEmpty()) {
@@ -851,6 +851,7 @@ public class MainWindow extends JFrame {
                 }
                 // Create work with desired name set by the importer
                 framework.createWork(me, me.getDesiredName());
+                framework.setLastDirectory(file);
             } catch (DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
             } catch (OperationCancelledException e) {

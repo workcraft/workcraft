@@ -30,11 +30,13 @@ class ImportHierarchyTests {
 
     @Test
     void testImportExportHierBuckControl() throws DeserialisationException, SerialisationException, IOException {
-        testImportExport("hier_buck_control.v",
+        testImportExport("hier_buck_control.v", "CTRL",
                 new HashSet<>(Arrays.asList("CHARGE.work", "CYCLE.work", "CYCLE_CTRL.work", "CHARGE_CTRL.work", "WAIT2.work")));
     }
 
-    private void testImportExport(String fileName, Set<String> expectedFileNames) throws DeserialisationException, SerialisationException, IOException {
+    private void testImportExport(String fileName, String topModuleName, Set<String> expectedFileNames)
+            throws DeserialisationException, SerialisationException, IOException {
+
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
@@ -45,8 +47,10 @@ class ImportHierarchyTests {
         File tmpDirectory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(fileName));
 
         framework.setWorkingDirectory(tmpDirectory);
-        WorkspaceEntry we = framework.importWork(vFile);
+        WorkspaceEntry we = framework.importWork(vFile, topModuleName);
         framework.setWorkingDirectory(workingDirectory);
+        Assertions.assertNotNull(we);
+        Assertions.assertEquals(we.getTitle(), topModuleName);
 
         List<File> directoryFiles = FileUtils.getDirectoryFiles(tmpDirectory);
         Set<String> actualFileNames = directoryFiles.stream().map(File::getName).collect(Collectors.toSet());

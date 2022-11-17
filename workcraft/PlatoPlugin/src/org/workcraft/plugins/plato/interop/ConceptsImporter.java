@@ -26,7 +26,7 @@ public class ConceptsImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in) throws DeserialisationException {
+    public ModelEntry importFrom(InputStream in, String serialisedUserData) throws DeserialisationException {
         try {
             boolean system = FileUtils.containsKeyword(in, "system =");
             File file = FileUtils.createTempFile("plato-", ".hs");
