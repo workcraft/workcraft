@@ -45,6 +45,12 @@ public class ComponentInterface {
         return result;
     }
 
+    public Set<String> getMatchingOutputSignals(ComponentInterface that) {
+        Set<String> result = this.createOutputSet();
+        result.retainAll(that.createOutputSet());
+        return result;
+    }
+
     private Set<String> createInputOutputSet() {
         Set<String> result = new HashSet<>();
         result.addAll(createInputSet());
