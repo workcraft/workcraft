@@ -199,13 +199,6 @@ public final class GateUtils {
                 vars -> new Not(new Or(new Not(vars.get(0)), vars.get(1))));
     }
 
-    public static VisualFunctionComponent createAO222Gate(VisualCircuit circuit) {
-        return GateUtils.createGate(circuit,
-                new GateInterface(Arrays.asList("A1", "A2", "B1", "B2", "C1", "C2"), "O"),
-                vars -> new Or(new Or(new And(vars.get(0), vars.get(1)), new And(vars.get(2), vars.get(3))),
-                        new And(vars.get(4), vars.get(5))));
-    }
-
     public static VisualFunctionComponent createAOI222Gate(VisualCircuit circuit) {
         return GateUtils.createGate(circuit,
                 new GateInterface(Arrays.asList("A1", "A2", "B1", "B2", "C1", "C2"), "ON"),
@@ -293,14 +286,9 @@ public final class GateUtils {
         List<BooleanVariable> variables = new LinkedList<>();
         List<BooleanFormula> values = new LinkedList<>();
         for (FunctionContact input : component.getFunctionInputs()) {
-            Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, input);
-            if (pair != null) {
-                boolean initToOne = pair.getFirst().getInitToOne();
-                boolean inversion = pair.getSecond();
-                variables.add(input);
-                BooleanFormula state = initToOne ^ inversion ? One.getInstance() : Zero.getInstance();
-                values.add(state);
-            }
+            variables.add(input);
+            boolean state = CircuitUtils.findInitToOneFromDriver(circuit, input);
+            values.add(state ? One.getInstance() : Zero.getInstance());
         }
         return Pair.of(variables, values);
     }
