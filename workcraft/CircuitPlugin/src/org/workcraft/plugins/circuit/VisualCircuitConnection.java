@@ -1,18 +1,16 @@
 package org.workcraft.plugins.circuit;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.geom.Line2D;
-
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.utils.ColorUtils;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Geometry;
+
+import java.awt.*;
+import java.awt.geom.Line2D;
 
 public class VisualCircuitConnection extends VisualConnection {
 
@@ -43,7 +41,7 @@ public class VisualCircuitConnection extends VisualConnection {
         g.setColor(ColorUtils.colorise(getColor(), colorisation));
         g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
 
-        boolean showContact = CircuitSettings.getShowContacts() || (d instanceof StateDecoration);
+        boolean showContact = (d instanceof StateDecoration);
 
         if (!showContact && (getFirst().getParent() instanceof VisualCircuitComponent)) {
             double tStart = Geometry.getBorderPointParameter(getFirstShape(), getGraphic(), 0, 1);

@@ -260,8 +260,8 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }
         g.transform(rotateTransform);
 
-        boolean showContact = CircuitSettings.getShowContacts() || (d instanceof StateDecoration)
-                || (d.getColorisation() != null) || (d.getBackground() != null);
+        boolean showContact = r.getModel().getConnections(this).isEmpty()
+                || (d instanceof StateDecoration) || (d.getColorisation() != null) || (d.getBackground() != null);
 
         if (showContact || isPort()) {
             boolean showForcedInit = (d instanceof StateDecoration) && ((StateDecoration) d).showForcedInit();

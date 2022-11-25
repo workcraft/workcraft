@@ -20,9 +20,6 @@ class CircuitSettingsTests {
         final Framework framework = Framework.getInstance();
         String prefix = "CircuitSettings";
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getShowContacts()),
-                framework.getConfigVar(prefix + ".showContacts", false));
-
         Assertions.assertEquals(Config.toString(CircuitSettings.getContactFontSize()),
                 framework.getConfigVar(prefix + ".contactFontSize", false));
 
