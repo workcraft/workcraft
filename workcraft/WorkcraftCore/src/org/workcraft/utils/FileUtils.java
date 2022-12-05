@@ -1,5 +1,6 @@
 package org.workcraft.utils;
 
+import javax.swing.*;
 import java.io.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -248,42 +249,61 @@ public class FileUtils {
         }
     }
 
-    public static boolean isAvailableFile(File file) {
+    public static boolean isReadableFile(File file) {
         return (file != null) && file.exists() && !file.isDirectory() && file.canRead();
     }
 
-    public static boolean checkAvailability(File file, boolean showMessageDialog) {
-        return checkAvailability(file, showMessageDialog, null);
+    public static boolean checkFileReadability(File file, boolean showMessageDialog) {
+        return checkFileReadability(file, showMessageDialog, null);
     }
 
-    public static boolean checkAvailability(File file, boolean showMessageDialog, String title) {
+    public static boolean checkFileReadability(File file, boolean showMessageDialog, String title) {
         String msg = null;
         if (file == null) {
-            msg = "The file name is undefined.";
+            msg = "Path is undefined";
         } else if (!file.exists()) {
-            msg = "The path '" + file.getPath() + "' does not exist.";
+            msg = "Path does not exist '" + file.getPath() + "'";
         } else if (file.isDirectory()) {
-            msg = "The path '" + file.getPath() + "' is not a file.";
+            msg = "Path is a directory '" + file.getPath() + "'";
         } else if (!file.canRead()) {
-            msg = "The file '" + file.getPath() + "' cannot be read.";
+            msg = "Not a readable file '" + file.getPath() + "'";
         }
-        if (msg == null) {
-            return true;
+        showFileAccessError(msg, showMessageDialog, title);
+        return (msg == null);
+    }
+
+    public static boolean checkFileWritability(File file, boolean showMessageDialog) {
+        return checkFileWritability(file, showMessageDialog, null);
+    }
+
+    public static boolean checkFileWritability(File file, boolean showMessageDialog, String title) {
+        String msg = null;
+        if (file == null) {
+            msg = "Path is undefined";
+        } else if (file.isDirectory()) {
+            msg = "Path is a directory '" + file.getPath() + "'";
+        } else if (file.exists() && !file.canWrite()) {
+            msg = "Not a writable file '" + file.getPath() + "'";
         }
-        if (title == null) {
-            title = "File access error";
+        showFileAccessError(msg, showMessageDialog, title);
+        return (msg == null);
+    }
+
+    private static void showFileAccessError(String msg, boolean showMessageDialog, String title) {
+        if (msg != null) {
+            if (showMessageDialog) {
+                if ((title == null) || title.isEmpty()) {
+                    title = "File access error";
+                }
+                LogUtils.logError(title + ": " + msg);
+                DialogUtils.showMessage(msg, title, JOptionPane.ERROR_MESSAGE, false);
+            }
         }
-        if (showMessageDialog) {
-            DialogUtils.showError(msg, title);
-        } else {
-            LogUtils.logError(title + ": " + msg);
-        }
-        return false;
     }
 
     public static void openExternally(String fileName, String errorTitle) {
         File file = new File(fileName);
-        if (checkAvailability(file, true, errorTitle)) {
+        if (checkFileReadability(file, true, errorTitle)) {
             DesktopApi.open(file);
         }
     }

@@ -23,7 +23,10 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.*;
+import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -70,6 +73,15 @@ public class CircuitUtils {
             }
         }
         return Pair.of(driver, inversion);
+    }
+
+    public static boolean findInitToOneFromDriver(VisualCircuit circuit, VisualContact contact) {
+        return findInitToOneFromDriver(circuit.getMathModel(), contact.getReferencedComponent());
+    }
+
+    public static boolean findInitToOneFromDriver(Circuit circuit, Contact contact) {
+        Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, contact);
+        return (pair == null) ? contact.getInitToOne() : (pair.getFirst().getInitToOne() != pair.getSecond());
     }
 
     public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
@@ -195,16 +207,12 @@ public class CircuitUtils {
         }
         for (Contact signal : circuit.getOutputPorts()) {
             if (driver == CircuitUtils.findDriver(circuit, signal, transparentZeroDelayComponents)) {
+                // FIXME: Set initial state of output port from driver, so signal.getInitToOne() returns correct state
                 signal.setInitToOne(driver.getInitToOne());
                 return signal;
             }
         }
         return driver;
-    }
-
-    public static VisualContact findSignal(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Contact mathSignal = findSignal(circuit.getMathModel(), contact.getReferencedComponent(), transparentZeroDelayComponents);
-        return circuit.getVisualComponent(mathSignal, VisualContact.class);
     }
 
     public static String getSignalReference(Circuit circuit, Contact contact) {
@@ -519,7 +527,19 @@ public class CircuitUtils {
         }
     }
 
-    public static Collection<FunctionComponent> correctZeroDelayInitialState(Circuit circuit) {
+    public static boolean correctInitialState(Circuit circuit) {
+        Collection<FunctionComponent> changedComponents = correctZeroDelayInitialState(circuit);
+        if (!changedComponents.isEmpty()) {
+            LogUtils.logInfo("Corrected initial state of " + changedComponents.size() + " zero delay component(s)");
+        }
+        Collection<Contact> changedContacts = correctOutputPortInitialState(circuit);
+        if (!changedContacts.isEmpty()) {
+            LogUtils.logInfo("Corrected initial state of " + changedContacts.size() + " output ports(s)");
+        }
+        return !changedComponents.isEmpty() || !changedContacts.isEmpty();
+    }
+
+    private static Collection<FunctionComponent> correctZeroDelayInitialState(Circuit circuit) {
         Collection<FunctionComponent> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (component.getIsZeroDelay()) {
@@ -531,8 +551,17 @@ public class CircuitUtils {
                 }
             }
         }
-        if (!result.isEmpty()) {
-            LogUtils.logInfo("Corrected initial state of " + result.size() + " zero delay component(s)");
+        return result;
+    }
+
+    private static Collection<Contact> correctOutputPortInitialState(Circuit circuit) {
+        Collection<Contact> result = new HashSet<>();
+        for (Contact contact : circuit.getOutputPorts()) {
+            boolean state = CircuitUtils.findInitToOneFromDriver(circuit, contact);
+            if (state != contact.getInitToOne()) {
+                contact.setInitToOne(state);
+                result.add(contact);
+            }
         }
         return result;
     }

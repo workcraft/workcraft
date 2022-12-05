@@ -13,7 +13,6 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkUtils;
@@ -23,6 +22,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class RefinementUtils {
 
@@ -204,6 +204,11 @@ public final class RefinementUtils {
         return me == null ? null : getInterfaceInitialState(me.getMathModel());
     }
 
+    public static Map<String, Boolean> getSignalsInitialState(MathModel model, Collection<String> signals) {
+        Map<String, Boolean> interfaceInitialState = getInterfaceInitialState(model);
+        return filterStates(interfaceInitialState, signals);
+    }
+
     public static Map<String, Boolean> getInterfaceInitialState(MathModel model) {
         Map<String, Boolean> result = new HashMap<>();
         if (model instanceof Stg) {
@@ -235,7 +240,25 @@ public final class RefinementUtils {
         ports.addAll(circuit.getInputPorts());
         ports.addAll(circuit.getOutputPorts());
         for (Contact port : ports) {
-            result.put(circuit.getNodeReference(port), port.getInitToOne());
+            result.put(circuit.getNodeReference(port), CircuitUtils.findInitToOneFromDriver(circuit, port));
+        }
+        return result;
+    }
+
+    public static Map<String, Boolean> getComponentSignalsInitialState(Circuit circuit, CircuitComponent component,
+            Collection<String> signals) {
+
+        Map<String, Boolean> interfaceInitialState = getComponentInterfaceInitialState(circuit, component);
+        return filterStates(interfaceInitialState, signals);
+    }
+
+    public static Map<String, Boolean> filterStates(Map<String, Boolean> states, Collection<String> signals) {
+        Map<String, Boolean> result = new HashMap<>();
+        for (String signal : signals) {
+            Boolean state = states.get(signal);
+            if (state != null) {
+                result.put(signal, state);
+            }
         }
         return result;
     }
@@ -246,20 +269,13 @@ public final class RefinementUtils {
         pins.addAll(component.getInputs());
         pins.addAll(component.getOutputs());
         for (Contact pin : pins) {
-            Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, pin);
-            if (pair != null) {
-                Contact driver = pair.getFirst();
-                Boolean inversion = pair.getSecond();
-                result.put(pin.getName(), driver.getInitToOne() != inversion);
-            }
+            result.put(pin.getName(), CircuitUtils.findInitToOneFromDriver(circuit, pin));
         }
         return result;
     }
 
     public static boolean isInconsistentInitialStates(Map<String, Boolean> is1, Map<String, Boolean> is2) {
-        Set<String> signals = new HashSet<>(is1.keySet());
-        signals.retainAll(is2.keySet());
-        return !signals.stream().allMatch(signal -> is1.get(signal) == is2.get(signal));
+        return !getSignalsWithInconsistentStates(is1, is2).isEmpty();
     }
 
     public static boolean isInconsistentModelTitle(Stg stg, ModelEntry refinementModelEntry) {
@@ -386,6 +402,23 @@ public final class RefinementUtils {
             }
         }
         return result;
+    }
+
+    public static Set<String> getSignalsWithInconsistentStates(Map<String, Boolean> is1, Map<String, Boolean> is2) {
+        Set<String> signals = new HashSet<>(is1.keySet());
+        signals.retainAll(is2.keySet());
+        return signals.stream()
+                .filter(signal -> is1.get(signal) != is2.get(signal))
+                .collect(Collectors.toSet());
+    }
+
+    public static void updateInitialState(CircuitComponent component, Map<String, Boolean> states) {
+        for (Contact contact : component.getOutputs()) {
+            Boolean state = states.get(contact.getName());
+            if (state != null) {
+                contact.setInitToOne(state);
+            }
+        }
     }
 
 }

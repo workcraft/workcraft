@@ -113,7 +113,7 @@ public final class WorkUtils {
         if (we != null) {
             return cloneModel(we.getModelEntry());
         }
-        if (FileUtils.checkAvailability(file, false) && FileFilters.isWorkFile(file)) {
+        if (FileUtils.checkFileReadability(file, false) && FileFilters.isWorkFile(file)) {
             try {
                 CompatibilityManager cm = framework.getCompatibilityManager();
                 InputStream is = cm.process(file);

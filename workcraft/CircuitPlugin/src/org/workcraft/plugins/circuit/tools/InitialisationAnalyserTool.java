@@ -202,7 +202,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
-        CircuitUtils.correctZeroDelayInitialState(circuit);
+        CircuitUtils.correctInitialState(circuit);
         updateState(editor);
         editor.getWorkspaceEntry().addObserver(e -> updateState(editor));
     }

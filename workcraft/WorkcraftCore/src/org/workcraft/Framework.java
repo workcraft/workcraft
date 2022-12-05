@@ -655,7 +655,7 @@ public final class Framework {
     @SuppressWarnings("unused")
     public WorkspaceEntry loadWork(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        return FileUtils.checkAvailability(file, false) ? loadWork(file) : null;
+        return FileUtils.checkFileReadability(file, false) ? loadWork(file) : null;
     }
 
     public WorkspaceEntry loadWork(File file) throws DeserialisationException {
@@ -754,7 +754,7 @@ public final class Framework {
 
     public WorkspaceEntry importWork(String path, String serialisedUserData) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        return FileUtils.checkAvailability(file, false) ? importWork(file, serialisedUserData) : null;
+        return FileUtils.checkFileReadability(file, false) ? importWork(file, serialisedUserData) : null;
     }
 
     public WorkspaceEntry importWork(File file) throws DeserialisationException {

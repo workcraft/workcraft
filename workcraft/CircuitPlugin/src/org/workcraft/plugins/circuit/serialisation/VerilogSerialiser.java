@@ -12,6 +12,7 @@ import org.workcraft.formula.visitors.StringGenerator.Style;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
@@ -308,14 +309,16 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
     }
 
     private void writeInitialState(PrintWriter writer, CircuitSignalInfo circuitInfo) {
-        Set<Contact> driversAndPorts = new HashSet<>(circuitInfo.getCircuit().getDrivers());
-        driversAndPorts.addAll(circuitInfo.getCircuit().getPorts());
+        Circuit circuit = circuitInfo.getCircuit();
+        Set<Contact> driversAndPorts = new HashSet<>(circuit.getDrivers());
+        driversAndPorts.addAll(circuit.getPorts());
 
         Map<String, Boolean> signalInitState = new TreeMap<>();
-        for (Contact driver : driversAndPorts) {
-            String signalName = circuitInfo.getContactSignal(driver);
+        for (Contact contact : driversAndPorts) {
+            String signalName = circuitInfo.getContactSignal(contact);
             if ((signalName != null) && !signalName.isEmpty()) {
-                signalInitState.put(signalName, driver.getInitToOne());
+                boolean state = CircuitUtils.findInitToOneFromDriver(circuit, contact);
+                signalInitState.put(signalName, state);
             }
         }
         if (!signalInitState.isEmpty()) {

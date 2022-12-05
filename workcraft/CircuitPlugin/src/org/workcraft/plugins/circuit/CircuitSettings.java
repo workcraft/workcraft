@@ -59,7 +59,6 @@ public class CircuitSettings extends AbstractModelSettings {
     /*
      * Keys
      */
-    private static final String keyShowContacts = prefix + ".showContacts";
     private static final String keyContactFontSize = prefix + ".contactFontSize";
     private static final String keyShowZeroDelayNames = prefix + ".showZeroDelayNames";
     private static final String keyBorderWidth = prefix + ".borderWidth";
@@ -104,7 +103,6 @@ public class CircuitSettings extends AbstractModelSettings {
     /*
      * Defaults
      */
-    private static final boolean defaultShowContacts = false;
     private static final double defaultContactFontSize = 0.4f;
     private static final boolean defaultShowZeroDelayNames = false;
     private static final Double defaultBorderWidth = 0.06;
@@ -148,7 +146,6 @@ public class CircuitSettings extends AbstractModelSettings {
     /*
      * Variables
      */
-    private static boolean showContacts = defaultShowContacts;
     private static double contactFontSize = defaultContactFontSize;
     private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
     private static Double borderWidth = defaultBorderWidth;
@@ -191,11 +188,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String initialisationInverterInstancePrefix = defaultInitialisationInverterInstancePrefix;
 
     static {
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Show contacts",
-                CircuitSettings::setShowContacts,
-                CircuitSettings::getShowContacts));
-
         properties.add(new PropertyDeclaration<>(Double.class,
                 "Contact font size (cm)",
                 CircuitSettings::setContactFontSize,
@@ -438,7 +430,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     @Override
     public void load(Config config) {
-        setShowContacts(config.getBoolean(keyShowContacts, defaultShowContacts));
         setContactFontSize(config.getDouble(keyContactFontSize, defaultContactFontSize));
         setShowZeroDelayNames(config.getBoolean(keyShowZeroDelayNames, defaultShowZeroDelayNames));
         setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
@@ -483,7 +474,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     @Override
     public void save(Config config) {
-        config.setBoolean(keyShowContacts, getShowContacts());
         config.setDouble(keyContactFontSize, getContactFontSize());
         config.setBoolean(keyShowZeroDelayNames, getShowZeroDelayNames());
         config.setDouble(keyBorderWidth, getBorderWidth());
@@ -524,14 +514,6 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyUseIndividualScan, getUseIndividualScan());
         config.setBoolean(keyUseScanInitialisation, getUseScanInitialisation());
         config.set(keyInitialisationInverterInstancePrefix, getInitialisationInverterInstancePrefix());
-    }
-
-    public static boolean getShowContacts() {
-        return showContacts;
-    }
-
-    public static void setShowContacts(boolean value) {
-        showContacts = value;
     }
 
     public static double getContactFontSize() {

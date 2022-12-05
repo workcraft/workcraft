@@ -708,7 +708,7 @@ public class MainWindow extends JFrame {
     public WorkspaceEntry openWork(File file) {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry we = null;
-        if (FileUtils.checkAvailability(file, true)) {
+        if (FileUtils.checkFileReadability(file, true)) {
             try {
                 we = framework.loadWork(file);
                 requestFocus(we);
@@ -741,13 +741,14 @@ public class MainWindow extends JFrame {
     public void mergeWork(File file) {
         if (currentEditor == null) {
             openWork(file);
-        } else {
+        } else if (FileUtils.checkFileReadability(file, true)) {
             try {
                 final Framework framework = Framework.getInstance();
                 WorkspaceEntry we = currentEditor.getWorkspaceEntry();
                 framework.mergeWork(we, file);
             } catch (DeserialisationException e) {
-                DialogUtils.showError("A problem was encountered while trying to merge '" + file.getPath() + "'.\n" + e.getMessage());
+                DialogUtils.showError("A problem was encountered while merging '" + file.getPath() + "'.\n"
+                        + e.getMessage());
             }
         }
     }
@@ -810,13 +811,15 @@ public class MainWindow extends JFrame {
                     "Cannot save workspace entry - it does not have an associated Workcraft model.");
         }
         Framework framework = Framework.getInstance();
-        try {
-            framework.saveWork(we, file);
-            framework.setLastDirectory(file);
-            framework.pushRecentFilePath(file);
-            menu.updateRecentMenu();
-        } catch (SerialisationException e) {
-            DialogUtils.showError(e.getMessage());
+        if (FileUtils.checkFileWritability(file, true)) {
+            try {
+                framework.saveWork(we, file);
+                framework.setLastDirectory(file);
+                framework.pushRecentFilePath(file);
+                menu.updateRecentMenu();
+            } catch (SerialisationException e) {
+                DialogUtils.showError(e.getMessage());
+            }
         }
     }
 
@@ -832,7 +835,7 @@ public class MainWindow extends JFrame {
     }
 
     private void importFrom(Importer importer, File file) {
-        if (FileUtils.checkAvailability(file, true)
+        if (FileUtils.checkFileReadability(file, true)
                 && FormatFileFilter.checkFileFormat(file, importer.getFormat())) {
 
             Framework framework = Framework.getInstance();

@@ -25,15 +25,12 @@ import org.workcraft.workspace.ModelEntry;
 
 import java.awt.*;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class CircuitPropertyHelper {
 
     private static final String PROPERTY_ENVIRONMENT = "Environment";
-    private static final String REFINEMENT_MODEL_TITLE = "Refinement model";
 
     public static Collection<PropertyDescriptor> getComponentProperties(VisualCircuit circuit) {
         List<VisualFunctionComponent> components = new ArrayList<>(Hierarchy.getChildrenOfType(
@@ -75,7 +72,7 @@ public class CircuitPropertyHelper {
         File refinementFile = component == null ? null : component.getReferencedComponent().getRefinementFile();
         if (refinementFile != null) {
             ModelDescriptor modelDescriptor = null;
-            if (FileUtils.isAvailableFile(refinementFile)) {
+            if (FileUtils.isReadableFile(refinementFile)) {
                 try {
                     modelDescriptor = WorkUtils.extractModelDescriptor(refinementFile);
                 } catch (DeserialisationException ignored) {
@@ -103,11 +100,14 @@ public class CircuitPropertyHelper {
                 () -> component.getReferencedComponent().getRefinement());
     }
 
-    private static void setRefinementIfCompatible(VisualCircuit circuit, VisualFunctionComponent component, FileReference value) {
+    public static void setRefinementIfCompatible(VisualCircuit circuit, VisualFunctionComponent component, FileReference value) {
         if (value == null) {
             component.getReferencedComponent().setRefinement(null);
             return;
         }
+
+        String title = "Refinement model for component "
+                + Identifier.truncateNamespaceSeparator(circuit.getMathReference(component));
 
         MathModel refinementModel;
         File file = value.getFile();
@@ -117,13 +117,13 @@ public class CircuitPropertyHelper {
         } catch (DeserialisationException e) {
             String path = FileUtils.getFullPath(file);
             DialogUtils.showError("Cannot read refinement model from '" + path + "':\n " + e.getMessage(),
-                    REFINEMENT_MODEL_TITLE);
+                    title);
             return;
         }
 
         if (!(refinementModel instanceof Stg) && !(refinementModel instanceof Circuit)) {
             DialogUtils.showError("Incompatible refinement model type: " + refinementModel.getDisplayName(),
-                    REFINEMENT_MODEL_TITLE);
+                    title);
             return;
         }
 
@@ -135,7 +135,7 @@ public class CircuitPropertyHelper {
                             + "\n" + getBulletPair("Refinement title", refinementTitle)
                             + "\n" + getBulletPair("Component label", componentLabel)
                             + "\n\nUpdate component label to match refinement title?",
-                    REFINEMENT_MODEL_TITLE, 0);
+                    title, 0);
 
             if (answer == 2) {
                 return;
@@ -156,7 +156,7 @@ public class CircuitPropertyHelper {
                             + getBulletPair("Unexpected component pin", extraPins)
                             + getBulletPair("Incorrect I/O type pin", mismatchPins)
                             + "\n\nUpdate component pins to match refinement model signals?",
-                    REFINEMENT_MODEL_TITLE, 0);
+                    title, 0);
 
             if (answer == 2) {
                 return;
@@ -166,11 +166,41 @@ public class CircuitPropertyHelper {
             }
         }
 
+        ComponentInterface updatedComponentInterface = RefinementUtils.getComponentInterface(
+                component.getReferencedComponent());
+
+        Set<String> matchingOutputSignals = updatedComponentInterface.getMatchingOutputSignals(refinementInterface);
+
+        Map<String, Boolean> componentOutputInitialState = RefinementUtils.getComponentSignalsInitialState(
+                circuit.getMathModel(), component.getReferencedComponent(), matchingOutputSignals);
+
+        Map<String, Boolean> refinementOutputInitialState = RefinementUtils.getSignalsInitialState(
+                refinementModel, matchingOutputSignals);
+
+        Set<String> inconsistentInitialStateOutputs = RefinementUtils.getSignalsWithInconsistentStates(
+                componentOutputInitialState, refinementOutputInitialState);
+
+        if (!inconsistentInitialStateOutputs.isEmpty()) {
+            int answer = DialogUtils.showYesNoCancel("Initial state of output signals in the refinement model differs\n"
+                            + "from the initial state of the component output pins."
+                            + getBulletPair("Inconsistent initial state pin", inconsistentInitialStateOutputs)
+                            + "\n\nUpdate initial state of the component output pins?",
+                    title, 0);
+
+            if (answer == 2) {
+                return;
+            }
+            if (answer == 0) {
+                RefinementUtils.updateInitialState(component.getReferencedComponent(), refinementOutputInitialState);
+            }
+
+        }
+
         Set<String> constrainedPins = RefinementUtils.getConstrainedPins(component);
         if (!constrainedPins.isEmpty()) {
             int answer = DialogUtils.showYesNoCancel("Component has constrained pins that may conflict with the refinement model."
                             + "\n\nRemove set/reset functions for the component pins?",
-                    REFINEMENT_MODEL_TITLE, 0);
+                    title, 0);
 
             if (answer == 2) {
                 return;

@@ -6,8 +6,10 @@ transformCircuitInsertBuffer(work) - transform the Circuit 'work' by inserting b
 transformCircuitOptimiseZeroDelay(work) - transform the Circuit 'work' by discarding redundant zero delay attribute for selected (or all) inverters and buffers
 transformCircuitPropagateInversion(work) - transform the Circuit 'work' by propagating inversion through selected (or all) gates
 transformCircuitSplitGate(work) - transform the Circuit 'work' by splitting selected (or all) complex gates into simple gates
+transformCircuitSquashComponent(work) - transform the Circuit 'work' by replacing selected (or all) components with their implementations
 transformCircuitToggleBubble(work) - transform the Circuit 'work' by toggling inversion of selected contacts and outputs of selected components
 transformCircuitToggleZeroDelay(work) - transform the Circuit 'work' by toggling zero delay of selected inverters and buffers
+transformCircuitUpdateComponentInterface(work) - transform the Circuit 'work' by updating selected (or all) components from their refinement models
 transformDfsContractComponent(work) -  transform the DFS 'work' by contracting selected components
 transformDfsInsertControlRegister(work) - transform the DFS 'work' by inserting control register nodes into selected arcs
 transformDfsInsertCounterflowLogic(work) - transform the DFS 'work' by inserting counterflow logic nodes into selected arcs

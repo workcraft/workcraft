@@ -193,9 +193,9 @@ public class CircuitToStgConverter {
     private TwoWayMap<VisualContact, SignalStg> convertDriversToStgs(HashSet<VisualContact> drivers) {
         TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();
         for (VisualContact driver: drivers) {
-            VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
+            VisualContact signal = findSignalSkipZeroDelay(circuit, driver);
             if (signal.isDriver() || signal.isPort()) {
-                boolean initToOne = signal.getReferencedComponent().getInitToOne();
+                boolean initToOne = CircuitUtils.findInitToOneFromDriver(circuit, signal);
                 String signalRef = CircuitUtils.getSignalReference(circuit, signal);
 
                 String parentRef = NamespaceHelper.getParentReference(signalRef);
@@ -245,7 +245,7 @@ public class CircuitToStgConverter {
     }
 
     private void createSignalStgTransitions(VisualContact driver, Dnf dnf, SignalTransition.Direction direction) {
-        VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
+        VisualContact signal = findSignalSkipZeroDelay(circuit, driver);
         SignalStg driverStg = driverToStgMap.getValue(driver);
         if ((signal != null) && (driverStg != null)) {
             createSignalStgTransitions(signal, driverStg, dnf, direction);
@@ -458,7 +458,7 @@ public class CircuitToStgConverter {
         // Position STG places and transitions according to the location circuit ports and pins.
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
-            VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
+            VisualContact signal = findSignalSkipZeroDelay(circuit, driver);
             if ((signalStg != null) && (signal != null)) {
                 Point2D centerPosition = getCenterRootSpacePosition(signal);
                 signalStg.zero.setRootSpacePosition(Geometry.add(centerPosition, OFFSET_P0));
@@ -562,6 +562,11 @@ public class CircuitToStgConverter {
 
     private void cleanupPages() {
         NamespaceHelper.removeEmptyPages(stg);
+    }
+
+    private VisualContact findSignalSkipZeroDelay(VisualCircuit circuit, VisualContact contact) {
+        Contact signal = CircuitUtils.findSignal(circuit.getMathModel(), contact.getReferencedComponent(), true);
+        return circuit.getVisualComponent(signal, VisualContact.class);
     }
 
 }

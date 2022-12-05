@@ -51,24 +51,23 @@ public final class ResetUtils {
         HashSet<Contact> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             for (FunctionContact outputContact : component.getFunctionOutputs()) {
-                if (!outputContact.getForcedInit()) {
-                    LinkedList<BooleanVariable> variables = new LinkedList<>();
-                    LinkedList<BooleanFormula> values = new LinkedList<>();
-                    for (FunctionContact contact : component.getFunctionContacts()) {
-                        Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, contact);
-                        if (pair != null) {
-                            Contact driver = pair.getFirst();
-                            if ((driver != null) && (driver != outputContact)) {
-                                variables.add(contact);
-                                boolean inverting = pair.getSecond();
-                                BooleanFormula value = (driver.getInitToOne() == inverting) ? Zero.getInstance() : One.getInstance();
-                                values.add(value);
-                            }
-                        }
+                if (outputContact.getForcedInit()) continue;
+                LinkedList<BooleanVariable> variables = new LinkedList<>();
+                LinkedList<BooleanFormula> values = new LinkedList<>();
+                for (FunctionContact contact : component.getFunctionContacts()) {
+                    if (contact == outputContact) continue;
+                    Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, contact);
+                    if (pair == null) continue;
+                    Contact driver = pair.getFirst();
+                    if ((driver != null) && (driver != outputContact)) {
+                        variables.add(contact);
+                        boolean inverting = pair.getSecond();
+                        BooleanFormula value = (driver.getInitToOne() != inverting) ? One.getInstance() : Zero.getInstance();
+                        values.add(value);
                     }
-                    if (isProblematicPin(outputContact, variables, values)) {
-                        result.add(outputContact);
-                    }
+                }
+                if (isProblematicPin(outputContact, variables, values)) {
+                    result.add(outputContact);
                 }
             }
         }
