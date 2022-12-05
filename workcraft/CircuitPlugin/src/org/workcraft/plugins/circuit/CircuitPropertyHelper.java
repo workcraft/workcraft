@@ -72,7 +72,7 @@ public class CircuitPropertyHelper {
         File refinementFile = component == null ? null : component.getReferencedComponent().getRefinementFile();
         if (refinementFile != null) {
             ModelDescriptor modelDescriptor = null;
-            if (FileUtils.isAvailableFile(refinementFile)) {
+            if (FileUtils.isReadableFile(refinementFile)) {
                 try {
                     modelDescriptor = WorkUtils.extractModelDescriptor(refinementFile);
                 } catch (DeserialisationException ignored) {
