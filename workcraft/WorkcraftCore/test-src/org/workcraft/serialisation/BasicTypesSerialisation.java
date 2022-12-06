@@ -11,7 +11,7 @@ import org.workcraft.utils.XmlUtils;
 
 import java.awt.geom.AffineTransform;
 
-class BasicTypesSerialisation {
+class BasicTypesSerialisationTests {
 
     public enum TestEnum {
         ONE,

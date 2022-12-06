@@ -7,6 +7,8 @@ import org.workcraft.plugins.cpog.encoding.BinaryNumberProvider;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
+// Test methods are defined in the base SolverTests class
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
 class BinarySolverTests extends SolverTests {
 
     @BeforeAll

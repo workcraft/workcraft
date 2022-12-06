@@ -6,7 +6,10 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.encoding.onehot.CnfGeneratingOptimiser;
 
-@Disabled // This only works with MINISAT solver which is not supported in Travis OSX
+// Test methods are defined in the base SolverTests class
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
+// This only works with MINISAT solver which is not supported in Travis OSX
+@Disabled
 class CleverCnfSolverTests extends SolverTests {
 
     @BeforeAll

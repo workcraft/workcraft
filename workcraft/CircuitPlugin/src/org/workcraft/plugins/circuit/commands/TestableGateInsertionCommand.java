@@ -5,6 +5,8 @@ import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+// This is not a test class, the matching name pattern is just a coincidence
+@SuppressWarnings("PMD.TestClassWithoutTestCases")
 public class TestableGateInsertionCommand extends AbstractInsertionCommand {
 
     @Override
