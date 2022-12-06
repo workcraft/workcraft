@@ -64,7 +64,7 @@
 
     <rule ref="category/java/errorprone.xml">
         <exclude name="MissingSerialVersionUID"/> <!--Too nitpicky and used often -->
-        <exclude name="BeanMembersShouldSerialize"/> <!--Too nitpicky and used often -->
+        <exclude name="NonSerializableClass"/> <!--Too nitpicky and used often -->
         <exclude name="DataflowAnomalyAnalysis"/> <!-- Too restrictive an does not work well -->
         <exclude name="AvoidLiteralsInIfCondition"/> <!-- Too restrictive and used often -->
         <exclude name="AvoidDuplicateLiterals"/> <!-- Too restrictive and used often -->

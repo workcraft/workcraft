@@ -28,7 +28,7 @@ class MethodParametersMatcherTests {
     }
 
     private int match(Class<?> type, Class<?>... parameters) throws InvocationTargetException, IllegalAccessException {
-        TestMethodInfo match;
+        MethodInfoImplementation match;
         try {
             match = MethodParametersMatcher.match(getMethods(type), parameters);
         } catch (NoSuchMethodException e) {
@@ -97,10 +97,10 @@ class MethodParametersMatcherTests {
         Assertions.assertEquals(-2, match(Ambiguous.class, ABq.class, AC.class));
     }
 
-    class TestMethodInfo implements MethodInfo {
+    class MethodInfoImplementation implements MethodInfo {
         private final Method method;
 
-        TestMethodInfo(Method method) {
+        MethodInfoImplementation(Method method) {
             this.method = method;
         }
 
@@ -115,12 +115,12 @@ class MethodParametersMatcherTests {
         }
     }
 
-    private Collection<TestMethodInfo> getMethods(Class<?> clasz) {
-        ArrayList<TestMethodInfo> result = new ArrayList<>();
+    private Collection<MethodInfoImplementation> getMethods(Class<?> clasz) {
+        ArrayList<MethodInfoImplementation> result = new ArrayList<>();
 
         for (Method method : clasz.getMethods()) {
             if ("qq".equals(method.getName())) {
-                result.add(new TestMethodInfo(method));
+                result.add(new MethodInfoImplementation(method));
             }
         }
         return result;

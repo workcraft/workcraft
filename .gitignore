@@ -20,6 +20,8 @@
 # InteliJ IDEA
 /.shelf/
 /workcraft.iml
+/workcraft.main.iml
+/workcraft.test.iml
 /workcraft.ipr
 /workcraft.iws
 /workcraft/*/*.iml
