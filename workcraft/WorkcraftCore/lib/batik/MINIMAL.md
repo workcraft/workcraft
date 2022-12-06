@@ -14,8 +14,8 @@ If extra ~10MB and several unnecessary dependencies are not a problem,
 then Batik and FOP transcoders can be included via Gradle in
 dependencies section of WorkcraftCore\build.gradle as follows:
 
-    lib 'org.apache.xmlgraphics:batik-transcoder:1.14'
-    lib 'org.apache.xmlgraphics:fop-transcoder:2.6'
+    lib 'org.apache.xmlgraphics:batik-transcoder:1.16'
+    lib 'org.apache.xmlgraphics:fop-transcoder:2.8'
 
 
 ## Dependency analysis
