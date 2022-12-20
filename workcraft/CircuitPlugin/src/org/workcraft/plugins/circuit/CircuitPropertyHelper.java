@@ -9,10 +9,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.gui.actions.Action;
-import org.workcraft.gui.properties.PropertyDeclaration;
-import org.workcraft.gui.properties.PropertyDescriptor;
-import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.gui.properties.TextAction;
+import org.workcraft.gui.properties.*;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
 import org.workcraft.plugins.circuit.refinement.ComponentInterface;
@@ -40,10 +37,33 @@ public class CircuitPropertyHelper {
                 circuit.getMathName(component1), circuit.getMathName(component2)));
 
         Collection<PropertyDescriptor> result = new ArrayList<>();
+        if (!components.isEmpty()) {
+            result.add(PropertyHelper.createSeparatorProperty("Components with color-coded refinement type"));
+            result.add(getRefinementLegendProperty());
+        }
         for (VisualFunctionComponent component : components) {
             result.add(getComponentProperty(circuit, component));
         }
         return result;
+    }
+
+    private static PropertyDescriptor getRefinementLegendProperty() {
+        Color cellColor = GuiUtils.getTableCellBackgroundColor();
+
+        return new LegendListDeclaration()
+                .addLegend("none", ColorUtils.colorise(cellColor, Color.WHITE))
+                .addLegend("STG", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getClearColor()))
+                .addLegend("circuit", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getFixerColor()))
+                .addLegend("error", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getProblemColor()))
+                .setReadonly();
+/*
+        return new LegendListDeclaration()
+                .addLegend("none", "Missing model", Color.BLACK, noneColor, () -> {})
+                .addLegend("STG", "Signal Transition Graph", Color.BLACK, stgColor, () -> {})
+                .addLegend("circuit", "Digital Circuit", Color.BLACK, circuitColor, () -> {})
+                .addLegend("error", "Incorrect model", Color.BLACK, errorColor, () -> {})
+                .setReadonly();
+ */
     }
 
     private static PropertyDescriptor getComponentProperty(VisualCircuit circuit, VisualFunctionComponent component) {
@@ -78,10 +98,10 @@ public class CircuitPropertyHelper {
                 } catch (DeserialisationException ignored) {
                 }
             }
-            if (modelDescriptor instanceof CircuitDescriptor) {
-                color = AnalysisDecorationSettings.getFixerColor();
-            } else if (modelDescriptor instanceof StgDescriptor) {
+            if (modelDescriptor instanceof StgDescriptor) {
                 color = AnalysisDecorationSettings.getClearColor();
+            } else if (modelDescriptor instanceof CircuitDescriptor) {
+                color = AnalysisDecorationSettings.getFixerColor();
             } else {
                 color = AnalysisDecorationSettings.getProblemColor();
             }

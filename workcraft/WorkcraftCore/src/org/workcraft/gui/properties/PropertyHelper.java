@@ -33,7 +33,7 @@ public class PropertyHelper {
         boolean groupByType = SignalCommonSettings.getGroupByType();
         return new ActionDeclaration(
                 "Signals " + (groupByType ? "(grouped)" : "(sorted)"),
-                groupByType ? "Sort alphabetically" : "Group by type",
+                groupByType ? "Sort by name" : "Group by type",
                 () -> {
                     SignalCommonSettings.setGroupByType(!groupByType);
                     visualModel.sendNotification(new ModelModifiedEvent(visualModel));

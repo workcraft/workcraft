@@ -126,7 +126,7 @@ public final class VerificationUtils {
             if (!msg.isEmpty()) {
                 msg += "\n";
             }
-            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Non-quiescent component", excitedComponentRefs);
+            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Excited component", excitedComponentRefs);
         }
 
         if (!msg.isEmpty()) {
