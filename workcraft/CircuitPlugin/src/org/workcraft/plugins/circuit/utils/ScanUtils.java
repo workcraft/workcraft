@@ -215,7 +215,9 @@ public final class ScanUtils {
     private static void connectCommonInputPort(VisualCircuit circuit, List<VisualFunctionComponent> components,
             String portName, String pinName, boolean initToOne) {
 
-        VisualContact port = getOrCreateNeverRiseInputPort(circuit, portName, VisualContact.Direction.WEST, initToOne);
+        VisualContact port = getOrCreateNeverRiseForcedInitInputPort(circuit, portName,
+                VisualContact.Direction.WEST, initToOne);
+
         if (port != null) {
             for (VisualFunctionComponent component : components) {
                 VisualContact pin = getContactWithPinNameOrPortName(circuit, portName, component, pinName);
@@ -226,7 +228,7 @@ public final class ScanUtils {
         }
     }
 
-    private static VisualContact getOrCreateNeverRiseInputPort(VisualCircuit circuit, String portName,
+    private static VisualContact getOrCreateNeverRiseForcedInitInputPort(VisualCircuit circuit, String portName,
             VisualContact.Direction direction, boolean initToOne) {
 
         VisualFunctionContact result = null;
@@ -237,6 +239,7 @@ public final class ScanUtils {
             result.setSetFunction(Zero.getInstance());
             result.setResetFunction(One.getInstance());
             result.setInitToOne(initToOne);
+            result.setForcedInit(true);
         }
         return result;
     }
@@ -252,7 +255,7 @@ public final class ScanUtils {
         return null;
     }
 
-    private static void connectIndividualScanin(VisualCircuit circuit, List<VisualFunctionComponent> testComponents,
+    private static void connectIndividualScanin(VisualCircuit circuit, List<VisualFunctionComponent> components,
             Set<VisualFunctionComponent> scaninInversionComponents) {
 
         String portPrefix = CircuitSettings.getScaninPort();
@@ -260,11 +263,12 @@ public final class ScanUtils {
             String pinName = CircuitSettings.getScaninPin();
             String invInstancePrefix = CircuitSettings.getInitialisationInverterInstancePrefix();
             int index = 0;
-            for (VisualFunctionComponent testComponent : testComponents) {
-                if (circuit.hasPin(testComponent, pinName)) {
-                    VisualContact pin = circuit.getPin(testComponent, pinName);
+            // Connect to existing pins with given name pinName
+            for (VisualFunctionComponent component : components) {
+                if (circuit.hasPin(component, pinName)) {
+                    VisualContact pin = circuit.getPin(component, pinName);
                     VisualConnection connection = connectFromIndividualPort(circuit, portPrefix, index, pin, false);
-                    if ((connection != null) && scaninInversionComponents.contains(testComponent)) {
+                    if ((connection != null) && scaninInversionComponents.contains(component)) {
                         VisualFunctionComponent inverterGate = GateUtils.createInverterGate(circuit);
                         circuit.setMathName(inverterGate, invInstancePrefix + index);
                         GateUtils.insertGateWithin(circuit, inverterGate, connection);
@@ -273,8 +277,9 @@ public final class ScanUtils {
                     index++;
                 }
             }
-            for (VisualFunctionComponent component : testComponents) {
-                for (VisualContact pin : getSortedInputPinsByPrefix(component, portPrefix)) {
+            // Connect to existing pins with given prefix portPrefix
+            for (VisualFunctionComponent testComponent : components) {
+                for (VisualContact pin : getSortedInputPinsByPrefix(testComponent, portPrefix)) {
                     connectFromIndividualPort(circuit, portPrefix, index, pin, false);
                     index++;
                 }
@@ -349,14 +354,18 @@ public final class ScanUtils {
             int index, VisualContact pin, boolean initToOne) {
 
         String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
-        VisualContact port = getOrCreateNeverRiseInputPort(circuit, portName, VisualContact.Direction.WEST, initToOne);
+        VisualContact port = getOrCreateNeverRiseForcedInitInputPort(circuit, portName,
+                VisualContact.Direction.WEST, initToOne);
+
         CircuitUtils.disconnectContact(circuit, pin);
         VisualConnection connection = connectIfPossible(circuit, port, pin);
         SpaceUtils.positionPort(circuit, port, false);
         return connection;
     }
 
-    private static VisualConnection connectToIndividualPort(VisualCircuit circuit, VisualContact pin, String portPrefix, int index) {
+    private static VisualConnection connectToIndividualPort(VisualCircuit circuit, VisualContact pin,
+            String portPrefix, int index) {
+
         String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
         VisualContact port = CircuitUtils.getOrCreatePort(circuit, portName,
                 Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
@@ -407,7 +416,7 @@ public final class ScanUtils {
     }
 
     private static void stitchScanComponents(VisualCircuit circuit, List<VisualFunctionComponent> components) {
-        VisualContact scaninPort = getOrCreateNeverRiseInputPort(circuit, CircuitSettings.getScaninPort(),
+        VisualContact scaninPort = getOrCreateNeverRiseForcedInitInputPort(circuit, CircuitSettings.getScaninPort(),
                 VisualContact.Direction.EAST, false);
 
         // Disconnect components from old scan chain
