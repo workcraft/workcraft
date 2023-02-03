@@ -2,7 +2,7 @@ package org.workcraft.plugins.parity;
 
 import org.workcraft.dom.ModelDescriptor;
 
-/** 
+/**
  * ModelDescriptor subclass specifically for Parity games.
  * This will define the name of the game in the menu, call for a new Parity game
  * to be made, generate the visualDescriptor, and get the rating.
@@ -37,7 +37,7 @@ public class ParityDescriptor implements ModelDescriptor {
         return new VisualParityDescriptor();
     }
 
-    /** 
+    /**
      * Get the rating of the model.
      * This is set as trivial (it will appear near the bottom of the menu),
      * however this is not too relevant.

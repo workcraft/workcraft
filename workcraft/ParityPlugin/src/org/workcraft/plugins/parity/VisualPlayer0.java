@@ -79,10 +79,10 @@ public class VisualPlayer0 extends VisualComponent {
      * subject here is to be able to update the priority of a vertex.
      */
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<>(Integer.class, 
-            Player0.PROPERTY_PRIORITY, 
-            priority -> getReferencedComponent().setPrio(priority), 
-            () -> getReferencedComponent().getPrio()).setCombinable().setTemplatable());
+        addPropertyDeclaration(new PropertyDeclaration<>(Integer.class,
+                Player0.PROPERTY_PRIORITY,
+                priority -> getReferencedComponent().setPrio(priority),
+                () -> getReferencedComponent().getPrio()).setCombinable().setTemplatable());
     }
 
     /**
@@ -126,7 +126,7 @@ public class VisualPlayer0 extends VisualComponent {
     /**
      * Predicate function to check if two shapes are overlapping.
      * @param pointInLocalSpace    2D point to check
-     * @return                     true if a point is being occupied by 
+     * @return                     true if a point is being occupied by
      *                             two different objects
      */
     @Override
@@ -191,8 +191,8 @@ public class VisualPlayer0 extends VisualComponent {
             cacheLabelRenderedText(r);
             Player0 tempNode = getReferencedComponent();
             String label = Integer.toString(tempNode.getPrio());
-            RenderedText displayText = new RenderedText (label, getLabelFont(), 
-                Positioning.CENTER, getLabelOffset());
+            RenderedText displayText = new RenderedText(label, getLabelFont(),
+                    Positioning.CENTER, getLabelOffset());
             Graphics2D g = r.getGraphics();
             displayText.draw(g);
         }

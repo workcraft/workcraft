@@ -12,27 +12,27 @@ import org.workcraft.utils.WorkspaceUtils;
 public class ParityHelpSolverCommand extends AbstractGameSolverCommand {
 
     /**
-	 * Get the display name of the text box to be clicked to view the game
+     * Get the display name of the text box to be clicked to view the game
      * solver help
-	 */
+     */
     @Override
     public String getDisplayName() {
         return "Game Solver Instructions";
     }
 
     /**
-	 * Ensure the WorkspaceEntry can be worked on.
-	 */
+     * Ensure the WorkspaceEntry can be worked on.
+     */
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, Parity.class);
     }
 
     /**
-	 * Generate the game solver help here.
-	 * @param we    Current WorkspaceEntry
-	 * @return      Instructions on how to use the Parity game solver
-	 */
+     * Generate the game solver help here.
+     * @param we    Current WorkspaceEntry
+     * @return      Instructions on how to use the Parity game solver
+     */
     @Override
     public String getGameSolver(WorkspaceEntry we) {
         return "Welcome to the parity game solver!\n\n"
@@ -46,13 +46,13 @@ public class ParityHelpSolverCommand extends AbstractGameSolverCommand {
             + "INSTRUCTIONS:\n"
             + "1) Place down any amount of player 0 and player 1 vertices\n"
             + "    by clicking the circle and square icons in the top ribbon\n"
-            + "2) Add edges using the edge/Connect icon in the top ribbon.\n" 
+            + "2) Add edges using the edge/Connect icon in the top ribbon.\n"
             + "    Ensure every vertex has at least 1 outgoing edge\n"
             + "3) Edit vertex priorities by clicking the pointer icon in the\n"
             + "    top ribbon, clicking one of the vertices, and editing\n"
             + "    the priority value in the 'Priority' right hand text box.\n"
             + "    Vertex priorities cannot be non-negative\n"
-            + "4) Click the 'Solve Game' option in the Tools -> Game Solver\n" 
+            + "4) Click the 'Solve Game' option in the Tools -> Game Solver\n"
             + "    menu to solve the game\n\n"
             + "This parity game solver uses Oink to solve the games,\n"
             + "developed by Tom van Dijk.\n\n"

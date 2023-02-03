@@ -31,7 +31,7 @@ import java.util.List;
 @ShortName("parity")
 
 /**
- * Visual model of the Parity game. 
+ * Visual model of the Parity game.
  * Subclass of AbstractVisualModel.
  */
 public class VisualParity extends AbstractVisualModel {
@@ -96,7 +96,7 @@ public class VisualParity extends AbstractVisualModel {
             properties.add(getPlayer0SymbolProperty((VisualPlayer0) node));
         } else if (node instanceof VisualPlayer1) {
             properties.add(getPlayer1SymbolProperty((VisualPlayer1) node));
-        } 
+        }
 
         return properties;
     }
@@ -127,7 +127,7 @@ public class VisualParity extends AbstractVisualModel {
 
     /**
      * Get the property symbols from all possible components in the Model, using
-     * a symbol as the root. 
+     * a symbol as the root.
      * @param symbol    Root Symbol member
      * @return          PropertyDescriptor of the whole Model
      */

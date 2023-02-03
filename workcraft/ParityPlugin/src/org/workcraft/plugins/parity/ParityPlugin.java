@@ -10,12 +10,12 @@ import org.workcraft.utils.ScriptableCommandUtils;
 @SuppressWarnings("unused")
 
 /**
- * ParityPlugin class that actually initiates and executes the Parity game 
+ * ParityPlugin class that actually initiates and executes the Parity game
  * plugin.
  */
 public class ParityPlugin implements Plugin {
 
-    /** 
+    /**
      * Returns the description of the particular plugin.
      * @return    "Parity Game plugin"
      */
@@ -26,7 +26,7 @@ public class ParityPlugin implements Plugin {
 
     /**
      * Initialise the Parity game plugin.
-     * Outside of the model itself, init function generates the game solver 
+     * Outside of the model itself, init function generates the game solver
      * commands ParitySolverCommand and ParityHelpSolverCommand.
      */
     @Override
@@ -37,10 +37,10 @@ public class ParityPlugin implements Plugin {
         pm.registerModelDescriptor(ParityDescriptor.class);
 
         ScriptableCommandUtils.registerCommand(ParitySolverCommand.class,
-        	"ParitySolver",
-        	"Analyse the distinct vertices and edges within the parity game");
+                "ParitySolver",
+                "Analyse the distinct vertices and edges within the parity game");
         ScriptableCommandUtils.registerCommand(ParityHelpSolverCommand.class,
-        	"ParityHelpSolver",
-        	"Help for users on how to use the Parity Game Plugin");
+                "ParityHelpSolver",
+                "Help for users on how to use the Parity Game Plugin");
     }
 }

@@ -5,8 +5,8 @@ import java.util.ArrayList;
 /**
  * OinkInputNode class is used to represent part of the model of a parity game.
  * Each node is one of the vertices in the parity game, and through the outgoing
- * ArrayList will also store the edge information. 
- * 
+ * ArrayList will also store the edge information.
+ *
  * An ArrayList of OinkInputNodes represent the whole game.
  */
 public class OinkInputNode {
@@ -21,8 +21,8 @@ public class OinkInputNode {
      */
     Integer priority;
 
-    /** 
-     * Determines which player owns the vertex. Will be false if Player 0 owns 
+    /**
+     * Determines which player owns the vertex. Will be false if Player 0 owns
      * the vertex, and true if Player 1 owns it.
      */
     Boolean ownedBy;
@@ -43,7 +43,7 @@ public class OinkInputNode {
      * @param ownedBy
      * @param outgoing
      */
-    public OinkInputNode (Integer id, Integer priority, Boolean ownedBy,
+    public OinkInputNode(Integer id, Integer priority, Boolean ownedBy,
             ArrayList<Integer> outgoing) {
         this.id = id;
         this.priority = priority;
@@ -51,11 +51,11 @@ public class OinkInputNode {
         this.outgoing = outgoing;
     }
 
-    /** 
+    /**
      * Get the identifier of an input node
      * @return id
      */
-    public Integer getId () {
+    public Integer getId() {
         return id;
     }
 
@@ -63,11 +63,11 @@ public class OinkInputNode {
      * Get the priority of an input node
      * @return priority
      */
-    public Integer getPrio () {
+    public Integer getPrio() {
         return priority;
     }
 
-    /** 
+    /**
      * Get the ownership of an input node
      * @return ownedBy
      */
@@ -75,7 +75,7 @@ public class OinkInputNode {
         return ownedBy;
     }
 
-    /** 
+    /**
      * Get the ArrayList of identifiers that the current node is connected to
      * through outgoing edges
      * @return outgoing

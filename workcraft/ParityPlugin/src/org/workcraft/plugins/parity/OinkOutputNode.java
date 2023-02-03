@@ -15,12 +15,12 @@ public class OinkOutputNode {
     Integer id;
 
     /**
-     * Determines if Player 1 has won the game or not. 
+     * Determines if Player 1 has won the game or not.
      * False if Player 0 won, True if Player 1 won
      */
     Boolean wonByPlayer1;
 
-    /** 
+    /**
      * Winning strategy for the given output vertex.
      * Will be set to -1 if there is no winning strategy, otherwise this will
      * be an identifier of another vertex.
@@ -32,7 +32,7 @@ public class OinkOutputNode {
      * @param id
      * @param wonByPlayer1
      */
-    public OinkOutputNode (Integer id, Boolean wonByPlayer1) {
+    public OinkOutputNode(Integer id, Boolean wonByPlayer1) {
         this.id = id;
         this.wonByPlayer1 = wonByPlayer1;
     }
@@ -43,7 +43,7 @@ public class OinkOutputNode {
      * @param wonByPlayer1
      * @param strategy
      */
-    public OinkOutputNode (Integer id, Boolean wonByPlayer1, Integer strategy) {
+    public OinkOutputNode(Integer id, Boolean wonByPlayer1, Integer strategy) {
         this.id = id;
         this.wonByPlayer1 = wonByPlayer1;
         this.strategy = strategy;
@@ -74,6 +74,7 @@ public class OinkOutputNode {
     }
 
     //TEST FUNCTION: Return a string of all the attributes
+    @Override
     public String toString() {
         return "ID: " + id + " Won by Player 1? " + wonByPlayer1 + " Strategy: " + strategy;
     }

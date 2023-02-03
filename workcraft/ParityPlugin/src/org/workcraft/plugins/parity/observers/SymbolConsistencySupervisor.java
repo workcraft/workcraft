@@ -86,7 +86,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
     }
 
     /**
-     * Helper function called by handleHierarchyEvent to deal with deletion of 
+     * Helper function called by handleHierarchyEvent to deal with deletion of
      * Player 0 vertices.
      * @param p0    Player 0 vertex to be deleted
      */
@@ -107,7 +107,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
     }
 
     /**
-     * Helper function called by handleHierarchyEvent to deal with deletion of 
+     * Helper function called by handleHierarchyEvent to deal with deletion of
      * Player 1 vertices.
      * @param p1    Player 1 vertex to be deleted
      */

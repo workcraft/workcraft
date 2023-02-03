@@ -9,37 +9,32 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.plugins.parity.observers.SymbolConsistencySupervisor;
-import org.workcraft.plugins.parity.OinkInputNode;
-import org.workcraft.plugins.parity.OinkOutputNode;
 import org.workcraft.serialisation.References;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.Hierarchy;
-import org.workcraft.types.MultiSet;
-import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.io.*;
-import java.lang.StringBuilder;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Locale;
 
-/** 
- * Class to model the entire Parity game. 
+/**
+ * Class to model the entire Parity game.
  * This is a subclass of the AbstractMathModel.
  *
  * A Parity game is a type of infinite graph game where the vertices are owned
  * by either Player 0 or Player 1. A token starts on a selected vertex, and the
  * player who owns a given vertex decides which edge the token travels across.
- * A strategy is followed (an edge is selected) by each player for each vertex 
+ * A strategy is followed (an edge is selected) by each player for each vertex
  * they own, and this edge selection is guaranteed to be the same regardless of
  * context.
  *
  * The game ends once an infinite cycle has been identified, and then the group
  * of vertices that make up this are compared to see which infinitely occurring
  * vertex has the largest attached priority value. If it is even then Player 0
- * wins, and if it is odd then Player 1 wins. 
+ * wins, and if it is odd then Player 1 wins.
  *
  * In the graph, Player 0 vertices are identified by Circles, and Player 1
  * vertices are identified by Squares. Once the game has been solved, a vertex
@@ -49,7 +44,7 @@ import java.util.Hashtable;
  * be coloured blue or red for Players 0 or 1, respectively.
  *
  * A Backend tool is used to solve the Parity game. This tool is called Oink,
- * and was developed by Tom van Dijk. 
+ * and was developed by Tom van Dijk.
  * Link: https://github.com/trolando/oink
  *
  * Oink is not designed to be compatible with Windows natively, and as such this
@@ -64,7 +59,7 @@ public class Parity extends AbstractMathModel {
      * Empty constructor
      */
     public Parity() {
-        this(null,null);
+        this(null, null);
     }
 
     /**
@@ -73,7 +68,7 @@ public class Parity extends AbstractMathModel {
      * in the Parity game are well connected. Components in a Workcraft graph
      * are accessed in a similar structure to linked lists.
      * @param root    Abstract container to hold components
-     * @param refs    Reference to all other linked components, managed by the 
+     * @param refs    Reference to all other linked components, managed by the
      *                ReferenceManager
      */
     public Parity(Container root, References refs) {
@@ -81,7 +76,7 @@ public class Parity extends AbstractMathModel {
         new SymbolConsistencySupervisor(this).attach(getRoot());
     }
 
-    /** 
+    /**
      * Function that always returns false. Context is to ensure unused symbols
      * are not cached.
      * @return    false
@@ -95,11 +90,11 @@ public class Parity extends AbstractMathModel {
      * @return    null Symbol
      */
     public Symbol createSymbol(String name) {
-        return createNode(name,null,Symbol.class);
+        return createNode(name, null, Symbol.class);
     }
 
-    /** 
-     * Get the set of symbols within the MathModel, with no argument provided. 
+    /**
+     * Get the set of symbols within the MathModel, with no argument provided.
      * This will be the Symbol components.
      * @return    Collection of Symbols in Model
      */
@@ -107,8 +102,8 @@ public class Parity extends AbstractMathModel {
         return Hierarchy.getDescendantsOfType(getRoot(), Symbol.class);
     }
 
-    /** 
-     * Get the set of symbols within the MathModel, with the container of 
+    /**
+     * Get the set of symbols within the MathModel, with the container of
      * components given as an argument.
      * @param container    Container of components
      * @return             Collection of Symbols in Model
@@ -120,7 +115,7 @@ public class Parity extends AbstractMathModel {
         return Hierarchy.getChildrenOfType(container, Symbol.class);
     }
 
-    /** 
+    /**
      * Get the set of Player 0 vertices within the MathModel, no arguments.
      * @return    Collection of Player 0 owned vertices within Model
      */
@@ -128,19 +123,19 @@ public class Parity extends AbstractMathModel {
         return Hierarchy.getDescendantsOfType(getRoot(), Player0.class);
     }
 
-    /** 
+    /**
      * Get the set of Player 0 vertices within the MathModel, with a symbol
-     * provided as an argument. The symbol is used as a filter to only get 
+     * provided as an argument. The symbol is used as a filter to only get
      * descendants of whatever the symbol is inside the Player 0 vertex provided.
      * @param symbol    MathNode symbol to use as a filter as a temporary root
      * @return          Collection of Player 0 owned vertices within Model
      */
     public Collection<Player0> getPlayer0(final Symbol symbol) {
-        return Hierarchy.getDescendantsOfType(getRoot(), Player0.class, 
+        return Hierarchy.getDescendantsOfType(getRoot(), Player0.class,
             p0 -> p0.getSymbol() == symbol);
     }
 
-    /** 
+    /**
      * Get the set of Player 1 vertices within the MathModel, no arguments.
      * @return Collection of Player 1 owned vertices within Model
      */
@@ -148,19 +143,19 @@ public class Parity extends AbstractMathModel {
         return Hierarchy.getDescendantsOfType(getRoot(), Player1.class);
     }
 
-    /** 
+    /**
      * Get the set of Player 1 vertices within the MathModel, with a symbol
-     * provided as an argument. The symbol is used as a filter to only get 
+     * provided as an argument. The symbol is used as a filter to only get
      * descendants of whatever the symbol is inside the Player 1 vertex provided.
      * @param symbol    MathNode symbol to use as a filter as a temporary root
      * @return          Collection of Player 1 owned vertices within Model
      */
     public Collection<Player1> getPlayer1(final Symbol symbol) {
-        return Hierarchy.getDescendantsOfType(getRoot(), Player1.class, 
+        return Hierarchy.getDescendantsOfType(getRoot(), Player1.class,
             p1 -> p1.getSymbol() == symbol);
     }
 
-    /** 
+    /**
      * Get the set of Connection (edge) components within the Parity game.
      * @return    Collection of edges within Model
      */
@@ -175,11 +170,11 @@ public class Parity extends AbstractMathModel {
      */
     public boolean isMacLinux() {
         String osName = System.getProperty("os.name");
-        osName = osName.toLowerCase();
+        osName = osName.toLowerCase(Locale.ENGLISH);
         return (osName.contains("mac") || osName.contains("linux")) ? true : false;
     }
 
-    /** 
+    /**
      * Predicate function to ensure user has placed vertices on game graph.
      * If there are no vertices, owned by either player 0 or 1 on the graph,
      * false will be returned.
@@ -188,8 +183,8 @@ public class Parity extends AbstractMathModel {
     public boolean isNonEmpty() {
         Collection<Player0> p0nodes = getPlayer0();
         Collection<Player1> p1nodes = getPlayer1();
-        
-        return (p0nodes.size() == 0 && p1nodes.size() == 0) ? false : true;
+
+        return (p0nodes.isEmpty() && p1nodes.isEmpty()) ? false : true;
     }
 
     /**
@@ -203,33 +198,30 @@ public class Parity extends AbstractMathModel {
      */
     public boolean isNonNegative() {
         Collection<Player0> p0nodes = getPlayer0();
-        Collection<Player1> p1nodes = getPlayer1();
         Iterator<Player0> p0iter = p0nodes.iterator();
-		Iterator<Player1> p1iter = p1nodes.iterator();
-
         while (p0iter.hasNext()) {
             Player0 tempNode = p0iter.next();
             if (tempNode.getPrio() < 0) {
                 return false;
             }
         }
-
+        Collection<Player1> p1nodes = getPlayer1();
+        Iterator<Player1> p1iter = p1nodes.iterator();
         while (p1iter.hasNext()) {
             Player1 tempNode = p1iter.next();
             if (tempNode.getPrio() < 0) {
                 return false;
             }
         }
-
         return true;
     }
 
-    /** 
+    /**
      * Builds the Oink input format as a collection of Oink input nodes, which
      * are OinkInputNode objects. Each of these objects hold the automatically
      * assigned identifier 0-n, the priority of the vertex, which player owns
      * the vertex, and what vertices can be directly reached from the input node.
-     * @return    ArrayList of OinkInputNodes. These are parsed to build the 
+     * @return    ArrayList of OinkInputNodes. These are parsed to build the
      *            text input for Oink.
      */
     public ArrayList<OinkInputNode> buildOinkInput() {
@@ -237,10 +229,10 @@ public class Parity extends AbstractMathModel {
         Collection<Player1> p1nodes = getPlayer1();
         Collection<MathConnection> edges = getConnections();
         Iterator<Player0> p0iter = p0nodes.iterator();
-		Iterator<Player1> p1iter = p1nodes.iterator();
+        Iterator<Player1> p1iter = p1nodes.iterator();
         Iterator<MathConnection> edgeIter = edges.iterator();
-        Hashtable<String,Integer> nameToId = new Hashtable<String,Integer>();
-        int nodeCounter = 0;    //Nodes must have identifiers of interval [0,N-1) 
+        HashMap<String, Integer> nameToId = new HashMap<>();
+        int nodeCounter = 0;    //Nodes must have identifiers of interval [0,N-1)
                                 //where N = amount of vertices in game
 
         /*
@@ -249,28 +241,28 @@ public class Parity extends AbstractMathModel {
          * of a given input node. Data will be collected from the Model to
          * fill these ArrayLists.
          */
-        ArrayList<Integer> inputPriority = new ArrayList<Integer>();
-        ArrayList<Boolean> ownedBy = new ArrayList<Boolean>();
-        ArrayList<ArrayList<Integer> > outgoing = new ArrayList<ArrayList<Integer> >();
-        ArrayList<OinkInputNode> inputNodes = new ArrayList<OinkInputNode>();
+        ArrayList<Integer> inputPriority = new ArrayList<>();
+        ArrayList<Boolean> ownedBy = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> outgoing = new ArrayList<>();
+        ArrayList<OinkInputNode> inputNodes = new ArrayList<>();
 
-        while(p0iter.hasNext()) {
+        while (p0iter.hasNext()) {
             Player0 tempNode = p0iter.next();
             tempNode.setId(nodeCounter);
             inputPriority.add(tempNode.getPrio());
             ownedBy.add(false);
-            nameToId.put(getName(tempNode),nodeCounter++);
-            ArrayList<Integer> tempArray = new ArrayList<Integer>();
+            nameToId.put(getName(tempNode), nodeCounter++);
+            ArrayList<Integer> tempArray = new ArrayList<>();
             outgoing.add(tempArray);
         }
 
-        while(p1iter.hasNext()) {
+        while (p1iter.hasNext()) {
             Player1 tempNode = p1iter.next();
             tempNode.setId(nodeCounter);
             inputPriority.add(tempNode.getPrio());
             ownedBy.add(true);
-            nameToId.put(getName(tempNode),nodeCounter++);
-            ArrayList<Integer> tempArray = new ArrayList<Integer>();
+            nameToId.put(getName(tempNode), nodeCounter++);
+            ArrayList<Integer> tempArray = new ArrayList<>();
             outgoing.add(tempArray);
         }
 
@@ -284,14 +276,14 @@ public class Parity extends AbstractMathModel {
         }
 
         /*
-         * All of the information to build OinkInputNode objects has been 
+         * All of the information to build OinkInputNode objects has been
          * collected; input nodes will now be built.
          */
-        for (int inputNodeIter = 0; inputNodeIter < inputPriority.size(); 
-            ++inputNodeIter) {
-            
-            OinkInputNode inputNode = new OinkInputNode
-                (inputNodeIter, inputPriority.get(inputNodeIter), 
+        for (int inputNodeIter = 0; inputNodeIter < inputPriority.size();
+                ++inputNodeIter) {
+
+            OinkInputNode inputNode = new OinkInputNode(
+                    inputNodeIter, inputPriority.get(inputNodeIter),
                     ownedBy.get(inputNodeIter), outgoing.get(inputNodeIter));
             inputNodes.add(inputNode);
         }
@@ -299,42 +291,43 @@ public class Parity extends AbstractMathModel {
         return inputNodes;
     }
 
-    /** 
+    /**
      * Using the ArrayList of OinkInputNodes, generate the text input to be fed
      * into the Oink parity game solver backend.
-     * 
+     *
      * More information about the input format Oink accepts can be found
      * at pp 34-43 in the following paper:
      * https://www.win.tue.nl/~timw/downloads/amc2014/pgsolver.pdf
      *
      * @param inputNodes    ArrayList of the OinkInputNodes
-     * @return              Parity game represented as a String, adhering to 
+     * @return              Parity game represented as a String, adhering to
      *                      the Oink input format.
      */
-    public String printOinkInput (ArrayList<OinkInputNode> inputNodes) {
-        
+    public String printOinkInput(ArrayList<OinkInputNode> inputNodes) {
+
         StringBuilder outputBuilder = new StringBuilder();
         outputBuilder.append("parity " + inputNodes.size() + ";\n");
-        for (int inputNodeIter = 0; inputNodeIter < inputNodes.size(); 
-            ++inputNodeIter) {
+        for (int inputNodeIter = 0; inputNodeIter < inputNodes.size();
+                ++inputNodeIter) {
 
             outputBuilder.append(inputNodes.get(inputNodeIter).getId() + " ");
             outputBuilder.append(inputNodes.get(inputNodeIter).getPrio() + " ");
-            if (inputNodes.get(inputNodeIter).getOwnership() == false) {
+            OinkInputNode tempInputNode = inputNodes.get(inputNodeIter);
+            if (!tempInputNode.getOwnership()) {
                 outputBuilder.append("0 ");
             } else {
                 outputBuilder.append("1 ");
             }
-            ArrayList<Integer> tempOutgoing = 
-                inputNodes.get(inputNodeIter).getOutgoing();
+            ArrayList<Integer> tempOutgoing =
+                    inputNodes.get(inputNodeIter).getOutgoing();
             if (!tempOutgoing.isEmpty()) {
                 Iterator<Integer> outgoingIter = tempOutgoing.iterator();
                 while (outgoingIter.hasNext()) {
                     outputBuilder.append(outgoingIter.next() + ",");
                 }
-                outputBuilder.deleteCharAt(outputBuilder.length()-1);
+                outputBuilder.deleteCharAt(outputBuilder.length() - 1);
             } else {
-                outputBuilder.deleteCharAt(outputBuilder.length()-1);
+                outputBuilder.deleteCharAt(outputBuilder.length() - 1);
             }
             outputBuilder.append(";\n");
         }
@@ -342,8 +335,8 @@ public class Parity extends AbstractMathModel {
         return outputBuilder.toString();
     }
 
-    /** 
-     * Predicate function to check that every vertex in an Oink parity game have 
+    /**
+     * Predicate function to check that every vertex in an Oink parity game have
      * at least one successor (outgoing edge). Returns true if all vertices have
      * a successor.
      *
@@ -354,10 +347,10 @@ public class Parity extends AbstractMathModel {
      */
     public boolean isInfinite(ArrayList<OinkInputNode> inputNodes) {
 
-        for (int inputNodeIter = 0; inputNodeIter < inputNodes.size(); 
-            ++inputNodeIter) {
+        for (int inputNodeIter = 0; inputNodeIter < inputNodes.size();
+                ++inputNodeIter) {
 
-            if (inputNodes.get(inputNodeIter).getOutgoing().size()==0) {
+            if (inputNodes.get(inputNodeIter).getOutgoing().isEmpty()) {
                 return false;
             }
         }
@@ -367,10 +360,10 @@ public class Parity extends AbstractMathModel {
     /**
      * Function to run Oink. The String built within printOinkInput is used to
      * build a temporary text file called oinkinput.txt. This is then fed into
-     * Oink, and an output solution file is built called oinkoutput.sol. 
+     * Oink, and an output solution file is built called oinkoutput.sol.
      *
      * This oinkoutput.sol file has the following syntax:
-     * - First line will be paritysol N; where N is the amount of vertices in 
+     * - First line will be paritysol N; where N is the amount of vertices in
      *   the game.
      * - Every line after the first has the form X Y Z; where:
      *   X: Node identifier of interval [0,N-1)
@@ -378,8 +371,8 @@ public class Parity extends AbstractMathModel {
      *   Z: OPTIONAL - If vertex is won by the player who owns it, show winning
      *      strategy with the vertex the token should travel to
      *
-     * Note: For this to work, the Oink backend binary (for the respective OS) 
-     *       must be built, placed inside a directory called 'Oink', and then 
+     * Note: For this to work, the Oink backend binary (for the respective OS)
+     *       must be built, placed inside a directory called 'Oink', and then
      *       moved to:
      *       a) workcraft/dist/template/osx/Contents/Resources/tools
      *       b) workcraft/dist/template/linux/tools
@@ -392,17 +385,17 @@ public class Parity extends AbstractMathModel {
      *                     will be used to generate the Oink output nodes.
      */
     public String runOink(String oinkInput) {
-        String oinkBinaryPath = BackendUtils.getTemplateToolPath("Oink","oink");
+        String oinkBinaryPath = BackendUtils.getTemplateToolPath("Oink", "oink");
         StringBuilder outputString = new StringBuilder();
-        
+
         try {
             FileWriter inputFile = new FileWriter("oinkinput.txt");
             inputFile.write(oinkInput);
             inputFile.close();
-            Process ps = Runtime.getRuntime().exec(oinkBinaryPath 
-                + " -v -p oinkinput.txt oinkoutput.sol");
+            Process ps = Runtime.getRuntime().exec(oinkBinaryPath
+                    + " -v -p oinkinput.txt oinkoutput.sol");
             BufferedReader bufRdr = new BufferedReader(
-                new InputStreamReader(ps.getInputStream()));
+                    new InputStreamReader(ps.getInputStream()));
             String currentLine;
             while ((currentLine = bufRdr.readLine()) != null) {
                 outputString.append(currentLine);
@@ -412,7 +405,7 @@ public class Parity extends AbstractMathModel {
         } catch (Exception ex) {
             ex.printStackTrace();
         }
-        
+
         return outputString.toString();
     }
 
@@ -423,7 +416,7 @@ public class Parity extends AbstractMathModel {
      * @return    Parity Game modelled as an ArrayList of OinkOutputNodes
      */
     public ArrayList<OinkOutputNode> buildOutputNodes() {
-        ArrayList<String> outputLines = new ArrayList<String>();
+        ArrayList<String> outputLines = new ArrayList<>();
         File sol = new File("oinkoutput.sol");
 
         try {
@@ -434,15 +427,15 @@ public class Parity extends AbstractMathModel {
             while ((currentLine = bufRdr.readLine()) != null) {
                 outputLines.add(currentLine);
             }
-        } catch (Exception ex ) {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
 
-        ArrayList<OinkOutputNode> outputNodes = new ArrayList<OinkOutputNode>();
+        ArrayList<OinkOutputNode> outputNodes = new ArrayList<>();
         //Parse the lines into an arraylist of OinkOutputNodes
         for (int lineIter = 0; lineIter < outputLines.size(); ++lineIter) {
-            String tempLine = outputLines.get(lineIter).substring(0, 
-                outputLines.get(lineIter).length()-1);
+            String tempLine = outputLines.get(lineIter).substring(
+                    0, outputLines.get(lineIter).length() - 1);
             String[] words = tempLine.split(" ");
             Boolean tempWinner;
             if (words[1].equals("1")) {
@@ -454,10 +447,10 @@ public class Parity extends AbstractMathModel {
             if (words.length == 3) {
                 tempStrategy = Integer.parseInt(words[2]);
             }
-            
+
             OinkOutputNode tempOutputNode;
             if (tempStrategy != -1) {
-                tempOutputNode = new OinkOutputNode(lineIter, tempWinner, 
+                tempOutputNode = new OinkOutputNode(lineIter, tempWinner,
                     tempStrategy);
             } else {
                 tempOutputNode = new OinkOutputNode(lineIter, tempWinner);
@@ -490,7 +483,7 @@ public class Parity extends AbstractMathModel {
      * @param srcChildren     Source children of root component.
      */
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, 
+    public boolean reparent(Container dstContainer, Model srcModel,
             Container srcRoot, Collection<? extends MathNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;

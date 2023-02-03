@@ -10,8 +10,8 @@ import org.workcraft.observation.PropertyChangedEvent;
 @IdentifierPrefix("p1")
 @VisualClass(VisualPlayer1.class)
 
-/** 
- * Player 1 class. 
+/**
+ * Player 1 class.
  * This is a vertex belonging to Player 1 in a Parity game.
  * Player 1 is wins if the largest infinitely appearing number is odd.
  */
@@ -37,7 +37,7 @@ public class Player1 extends MathNode {
      */
     private int priority = 0;
 
-    /** 
+    /**
      * Vertex identifier. Automatically determined and not selected by the user.
      * Separate to the name of the vertex.
      */
@@ -48,13 +48,15 @@ public class Player1 extends MathNode {
      */
     private Symbol symbol;
 
-    /** 
+    /**
      * Void constructor with no input.
      */
-    public Player1() {}
+    public Player1() {
+
+    }
 
     /**
-     * Constructor that will instantiate a symbol inside the vertex 
+     * Constructor that will instantiate a symbol inside the vertex
      * if one has been provided.
      * @param symbol    Input symbol
      */
@@ -65,7 +67,7 @@ public class Player1 extends MathNode {
 
     /**
      * Get the symbol associated with this vertex
-     * @return symbol   
+     * @return symbol
      */
     public Symbol getSymbol() {
         return symbol;
