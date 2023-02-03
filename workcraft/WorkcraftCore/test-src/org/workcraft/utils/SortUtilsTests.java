@@ -24,6 +24,8 @@ class SortUtilsTests {
         Assertions.assertEquals(0, SortUtils.compareNatural("123", "123"));
         Assertions.assertEquals(-48, SortUtils.compareNatural("1", "a1"));
         Assertions.assertEquals(-1, SortUtils.compareNatural("a", "a1"));
+        Assertions.assertEquals(0, SortUtils.compareNatural("a9876543210", "a9876543210"));
+        Assertions.assertEquals(-1, SortUtils.compareNatural("a12345678901", "a12345678909"));
     }
 
     @Test
@@ -31,6 +33,7 @@ class SortUtilsTests {
         List<String> sortedList = Arrays.asList(
                 "1", "2", "13", "22",
                 "a", "a1", "a2", "a13", "a22",
+                "a12345678901", "a12345678909",
                 "b", "b123", "bb",
                 "c", "c1d", "cd", "cd");
 
