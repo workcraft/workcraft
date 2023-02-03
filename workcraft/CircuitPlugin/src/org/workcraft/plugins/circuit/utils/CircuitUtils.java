@@ -545,7 +545,7 @@ public class CircuitUtils {
             if (component.getIsZeroDelay()) {
                 FunctionContact output = component.getGateOutput();
                 boolean initToOne = output.getInitToOne();
-                GateUtils.propagateInitialState(circuit, component);
+                GateUtils.propagateInitialState(circuit, component, Collections.singleton(output));
                 if (initToOne != output.getInitToOne()) {
                     result.add(component);
                 }

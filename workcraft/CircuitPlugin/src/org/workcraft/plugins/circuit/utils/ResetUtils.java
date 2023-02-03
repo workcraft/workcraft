@@ -429,7 +429,7 @@ public final class ResetUtils {
                 resetGate.clearMapping();
             }
         }
-        GateUtils.propagateInitialState(circuit, component);
+        GateUtils.propagateInitialState(circuit, component, forceInitOutputs);
         return result;
     }
 

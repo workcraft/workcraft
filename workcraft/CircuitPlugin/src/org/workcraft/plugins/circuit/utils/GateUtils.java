@@ -248,17 +248,33 @@ public final class GateUtils {
     }
 
     public static void propagateInitialState(VisualCircuit circuit, VisualFunctionComponent component) {
-        propagateInitialState(circuit.getMathModel(), component.getReferencedComponent());
+        Set<VisualFunctionContact> outputContacts = component.getVisualFunctionContacts().stream()
+                .filter(VisualContact::isOutput).collect(Collectors.toSet());
+
+        propagateInitialState(circuit, component, outputContacts);
     }
 
-    public static void propagateInitialState(Circuit circuit, FunctionComponent component) {
-        Pair<List<BooleanVariable>, List<BooleanFormula>> varAssignment = getVariableAssignment(circuit, component);
-        for (FunctionContact output : component.getFunctionOutputs()) {
-            BooleanFormula setFunction = FormulaUtils.replace(output.getSetFunction(),
-                    varAssignment.getFirst(), varAssignment.getSecond(), CLEVER_WORKER);
+    public static void propagateInitialState(VisualCircuit circuit, VisualFunctionComponent component,
+            Collection<VisualFunctionContact> contacts) {
 
-            boolean isOne = One.getInstance().equals(setFunction);
-            output.setInitToOne(isOne);
+        Collection<FunctionContact> mathContacts = contacts.stream()
+                .map(VisualFunctionContact::getReferencedComponent).collect(Collectors.toSet());
+
+        propagateInitialState(circuit.getMathModel(), component.getReferencedComponent(), mathContacts);
+    }
+
+    public static void propagateInitialState(Circuit circuit, FunctionComponent component,
+            Collection<FunctionContact> contacts) {
+
+        if (!contacts.isEmpty()) {
+            Pair<List<BooleanVariable>, List<BooleanFormula>> varAssignment = getVariableAssignment(circuit, component);
+            for (FunctionContact contact : contacts) {
+                BooleanFormula setFunction = FormulaUtils.replace(contact.getSetFunction(),
+                        varAssignment.getFirst(), varAssignment.getSecond(), CLEVER_WORKER);
+
+                boolean isOne = One.getInstance().equals(setFunction);
+                contact.setInitToOne(isOne);
+            }
         }
     }
 
@@ -280,7 +296,7 @@ public final class GateUtils {
         return false;
     }
 
-    public static Pair<List<BooleanVariable>, List<BooleanFormula>> getVariableAssignment(
+    private static Pair<List<BooleanVariable>, List<BooleanFormula>> getVariableAssignment(
             Circuit circuit, FunctionComponent component) {
 
         List<BooleanVariable> variables = new LinkedList<>();

@@ -1,5 +1,6 @@
 package org.workcraft.utils;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,9 +53,9 @@ public class SortUtils {
             if (Character.isDigit(c1) && Character.isDigit(c2)) {
                 String d1 = getNumericalPart(s1, i1);
                 String d2 = getNumericalPart(s2, i2);
+                b = compareNumbers(d1, d2);
                 i1 += d1.length();
                 i2 += d2.length();
-                b = Integer.compare(Integer.parseInt(d1), Integer.parseInt(d2));
             } else {
                 b = Character.compare(c1, c2);
                 i1++;
@@ -65,6 +66,19 @@ public class SortUtils {
             }
         }
         return Integer.compare(len1 - i1, len2 - i2);
+    }
+
+    private static int compareNumbers(String d1, String d2) {
+        // Integer.MAX_VALUE = 2^31-1 = 2,147,483,647 is a 10-digit number
+        if ((d1.length() < 10) && (d2.length() < 10)) {
+            int v1 = Integer.parseInt(d1);
+            int v2 = Integer.parseInt(d2);
+            return Integer.compare(v1, v2);
+        } else {
+            BigInteger v1 = new BigInteger(d1);
+            BigInteger v2 = new BigInteger(d2);
+            return v1.compareTo(v2);
+        }
     }
 
     private static String getNumericalPart(String s, int index) {
