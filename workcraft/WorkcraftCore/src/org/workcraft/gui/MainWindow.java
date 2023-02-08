@@ -841,7 +841,7 @@ public class MainWindow extends JFrame {
             Framework framework = Framework.getInstance();
             // If context directory is undefined, then set it to that of imported file
             if (framework.getImportContextDirectory() == null) {
-                framework.setImportContextDirectory(file);
+                framework.setImportContextDirectory(FileUtils.getFileDirectory(file));
             }
 
             try {
@@ -854,7 +854,7 @@ public class MainWindow extends JFrame {
                 }
                 // Create work with desired name set by the importer
                 framework.createWork(me, me.getDesiredName());
-                framework.setLastDirectory(file);
+                framework.setLastDirectory(FileUtils.getFileDirectory(file));
             } catch (DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
             } catch (OperationCancelledException e) {

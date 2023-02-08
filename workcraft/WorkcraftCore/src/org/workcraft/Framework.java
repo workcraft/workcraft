@@ -823,8 +823,24 @@ public final class Framework {
         return FileUtils.getFileByAbsoluteOrRelativePath(path, getWorkingDirectory());
     }
 
+    private static boolean checkDirectory(File value, String prefix) {
+        if (value != null) {
+            String path = value.getPath();
+            if (!value.exists()) {
+                LogUtils.logWarning(prefix + " is set to non-existent path:" + path);
+                return false;
+            }
+            if (!value.isFile()) {
+                LogUtils.logWarning(prefix + " is set to a file path:" + path);
+                return false;
+            }
+        }
+        return true;
+    }
+
     public void setWorkingDirectory(File value) {
-        workingDirectory = FileUtils.getFileDirectory(value);
+        checkDirectory(value, "Working directory");
+        workingDirectory = value;
     }
 
     public File getWorkingDirectory() {
@@ -836,7 +852,8 @@ public final class Framework {
     }
 
     public void setImportContextDirectory(File value) {
-        importContextDirectory = FileUtils.getFileDirectory(value);
+        checkDirectory(value, "Context directory for import");
+        importContextDirectory = value;
     }
 
     public File getImportContextDirectory() {
@@ -844,7 +861,8 @@ public final class Framework {
     }
 
     public void setLastDirectory(File value) {
-        lastDirectory = FileUtils.getFileDirectory(value);
+        checkDirectory(value, "Last directory");
+        lastDirectory = value;
     }
 
     public File getLastDirectory() {

@@ -388,7 +388,7 @@ public class FileUtils {
     }
 
     public static File getFileDirectory(File file) {
-        return (file == null) || (file.isDirectory()) ? file : file.getParentFile();
+        return ((file == null) || !file.isFile()) ? file : file.getParentFile();
     }
 
 }
