@@ -58,6 +58,11 @@ public class MpsatTask implements Task<MpsatOutput> {
         command.addAll(verificationParameters.getMpsatArguments(directory));
 
         // Global arguments
+        int threadCount = MpsatVerificationSettings.getThreadCount();
+        if (threadCount > 0) {
+            command.add("-j" + threadCount);
+        }
+
         if (MpsatVerificationSettings.getReplicateSelfloopPlaces()) {
             command.add("-l");
         }
