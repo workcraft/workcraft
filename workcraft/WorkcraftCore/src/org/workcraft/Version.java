@@ -49,7 +49,7 @@ public class Version implements Comparable<Version> {
     @Override
     public String toString() {
         String result = major + "." + minor + "." + revision;
-        if ((status != null) && (status != Status.RELEASE)) {
+        if (status != Status.RELEASE) {
             result += " (" + status + ")";
         }
         return result;
@@ -78,7 +78,7 @@ public class Version implements Comparable<Version> {
         if (revision > o.revision) {
             return 1;
         }
-        return status == null ? 0 : status.compareTo(o.status);
+        return status.compareTo(o.status);
     }
 
     @Override
