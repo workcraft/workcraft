@@ -17,6 +17,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final String prefix = "Tools.mpsatVerification";
 
     private static final String keyCommand = prefix + ".command";
+    private static final String keyThreadCount = prefix + ".threadCount";
     private static final String keyReplicateSelfloopPlaces = prefix + ".replicateSelfloopPlaces";
     private static final String keySolutionMode = prefix + ".solutionMode";
     private static final String keyArgs = prefix + ".args";
@@ -30,6 +31,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final String keyShowSpotInMenu = prefix + ".showSpotInMenu";
 
     private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "mpsat");
+    private static final int defaultThreadCount = 8;
     private static final boolean defaultReplicateSelfloopPlaces = true;
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
     private static final String defaultArgs = "";
@@ -43,6 +45,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final Boolean defaultShowSpotInMenu = false;
 
     private static String command = defaultCommand;
+    private static int threadCount = defaultThreadCount;
     private static boolean replicateSelfloopPlaces = defaultReplicateSelfloopPlaces;
     private static SolutionMode solutionMode = defaultSolutionMode;
     private static String args = defaultArgs;
@@ -60,6 +63,11 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
                 "MPSat command for verification",
                 MpsatVerificationSettings::setCommand,
                 MpsatVerificationSettings::getCommand));
+
+        properties.add(new PropertyDeclaration<>(Integer.class,
+                "Number of threads (8 by default, 0 for automatic)",
+                MpsatVerificationSettings::setThreadCount,
+                MpsatVerificationSettings::getThreadCount));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 "Replicate places with multiple self-loops (-l parameter)",
@@ -125,6 +133,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     @Override
     public void load(Config config) {
         setCommand(config.getString(keyCommand, defaultCommand));
+        setThreadCount(config.getInt(keyThreadCount, defaultThreadCount));
         setReplicateSelfloopPlaces(config.getBoolean(keyReplicateSelfloopPlaces, defaultReplicateSelfloopPlaces));
         setSolutionMode(config.getEnum(keySolutionMode, SolutionMode.class, defaultSolutionMode));
         setArgs(config.getString(keyArgs, defaultArgs));
@@ -141,6 +150,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     @Override
     public void save(Config config) {
         config.set(keyCommand, getCommand());
+        config.setInt(keyThreadCount, getThreadCount());
         config.setBoolean(keyReplicateSelfloopPlaces, getReplicateSelfloopPlaces());
         config.setEnum(keySolutionMode, getSolutionMode());
         config.set(keyArgs, getArgs());
@@ -165,6 +175,16 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
 
     public static void setCommand(String value) {
         command = value;
+    }
+
+    public static int getThreadCount() {
+        return threadCount;
+    }
+
+    public static void setThreadCount(int value) {
+        if (value >= 0) {
+            threadCount = value;
+        }
     }
 
     public static boolean getReplicateSelfloopPlaces() {

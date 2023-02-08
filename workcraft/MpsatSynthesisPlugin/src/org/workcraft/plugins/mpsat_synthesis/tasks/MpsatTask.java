@@ -81,6 +81,11 @@ public class MpsatTask implements Task<MpsatOutput> {
         command.addAll(mode.getMpsatArguments(modeParameter));
 
         // Global arguments
+        int threadCount = MpsatSynthesisSettings.getThreadCount();
+        if (threadCount > 0) {
+            command.add("-j" + threadCount);
+        }
+
         if (MpsatSynthesisSettings.getReplicateSelfloopPlaces()) {
             command.add("-l");
         }
