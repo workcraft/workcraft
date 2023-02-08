@@ -8,6 +8,7 @@ import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.FileFilters;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -104,7 +105,7 @@ public class WorkspaceWindow extends JPanel {
             File file = chooseValidFileOrCancel();
             Framework framework = Framework.getInstance();
             framework.getWorkspace().saveAs(file);
-            framework.setLastDirectory(file);
+            framework.setLastDirectory(FileUtils.getFileDirectory(file));
         } catch (OperationCancelledException e) {
             // Operation cancelled by the user
         }
@@ -189,7 +190,7 @@ public class WorkspaceWindow extends JPanel {
                     DialogUtils.showError("Workspace load failed. See the Problems window for details.");
                     e.printStackTrace();
                 }
-                framework.setLastDirectory(file);
+                framework.setLastDirectory(FileUtils.getFileDirectory(file));
             }
         } catch (OperationCancelledException e) {
             // Operation cancelled by the user

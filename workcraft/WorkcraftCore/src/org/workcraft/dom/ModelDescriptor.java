@@ -1,6 +1,5 @@
 package org.workcraft.dom;
 
-import org.workcraft.Info;
 import org.workcraft.Version;
 import org.workcraft.dom.math.MathModel;
 
@@ -17,10 +16,9 @@ public interface ModelDescriptor {
         return Rating.NORMAL;
     }
 
-    // By default, assume backward compatibility of file format with the same Major/Minor versions and any Revision
+    // By default, assume backward compatibility of file format with v3.3.0
     default Version getCompatibilityVersion() {
-        Version version = Info.getVersion();
-        return new Version(version.major, version.minor, 0, Version.Status.RELEASE);
+        return new Version(3, 3, 0, Version.Status.RELEASE);
     }
 
 }
