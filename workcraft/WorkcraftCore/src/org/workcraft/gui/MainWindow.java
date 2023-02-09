@@ -315,13 +315,12 @@ public class MainWindow extends JFrame {
             if (DockingManager.isMaximized(window)) {
                 toggleDockableWindowMaximized(window);
             }
-            // Remove the window tab listeners
-            weWindowMap.get(we).clearTabListeners();
-            // Remove the window and close its workspace entry
-            weWindowMap.remove(we);
-            if (weWindowMap.get(we) == null) {
-                Framework framework = Framework.getInstance();
-                framework.closeWork(we);
+            DockableWindow dockableWindow = weWindowMap.remove(we);
+            // Close the work it has no associated windows, or clear listeners otherwise
+            if (dockableWindow == null) {
+                Framework.getInstance().closeWork(we);
+            } else {
+                dockableWindow.clearTabListeners();
             }
             // Remove commands menu and update property window
             if (currentEditor == editor) {
