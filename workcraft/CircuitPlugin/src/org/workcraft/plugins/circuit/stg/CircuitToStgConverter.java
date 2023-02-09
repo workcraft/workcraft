@@ -3,7 +3,9 @@ package org.workcraft.plugins.circuit.stg;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
@@ -56,7 +58,7 @@ public class CircuitToStgConverter {
         this.driverToStgMap = convertDriversToStgs(drivers);
         connectDriverStgs(drivers);
         if (CircuitSettings.getSimplifyStg()) {
-            // Remove dead transitions
+            // Remove redundant transitions (except the last ones for each phase)
             simplifyDriverStgs(drivers);
         }
         positionDriverStgs(drivers);
@@ -248,7 +250,33 @@ public class CircuitToStgConverter {
         VisualContact signal = findSignalSkipZeroDelay(circuit, driver);
         SignalStg driverStg = driverToStgMap.getValue(driver);
         if ((signal != null) && (driverStg != null)) {
-            createSignalStgTransitions(signal, driverStg, dnf, direction);
+            if (dnf.getClauses().isEmpty()) {
+                createSignalStgDeadTransition(signal, driverStg, direction);
+            } else {
+                createSignalStgTransitions(signal, driverStg, dnf, direction);
+            }
+        }
+    }
+
+    private void createSignalStgDeadTransition(VisualContact signal, SignalStg driverStg, SignalTransition.Direction direction) {
+        VisualPlace predPlace = direction == SignalTransition.Direction.PLUS ? driverStg.zero : driverStg.one;
+        VisualPlace succPlace = direction == SignalTransition.Direction.PLUS ? driverStg.one : driverStg.zero;
+        Collection<VisualSignalTransition> transitions = direction == SignalTransition.Direction.PLUS ? driverStg.riseList : driverStg.fallList;
+
+        String signalRef = CircuitUtils.getSignalReference(circuit, signal);
+        String signalName = NamespaceHelper.getReferenceName(signalRef);
+        Signal.Type signalType = CircuitUtils.getSignalType(circuit, signal);
+        String containerRef = NamespaceHelper.getParentReference(signalRef);
+        VisualPage container = stg.getVisualComponentByMathReference(containerRef, VisualPage.class);
+
+        VisualSignalTransition transition = stg.createVisualSignalTransition(signalName, signalType, direction, container);
+        transitions.add(transition);
+        try {
+            stg.connect(predPlace, transition);
+            stg.connect(transition, succPlace);
+            stg.connect(succPlace, transition);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -385,19 +413,31 @@ public class CircuitToStgConverter {
     }
 
     private void simplifyDriverStgs(HashSet<VisualContact> drivers) {
-        HashSet<VisualNode> redundantTransitions = getDeadTransitions(drivers);
+        Set<VisualNode> redundantTransitions = getDeadTransitions(drivers);
         redundantTransitions.addAll(getDuplicateTransitions(drivers));
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
             if (signalStg != null) {
-                signalStg.riseList.removeAll(redundantTransitions);
-                signalStg.fallList.removeAll(redundantTransitions);
+                removeRedundantTransitionsExceptLastOne(signalStg.riseList, redundantTransitions);
+                removeRedundantTransitionsExceptLastOne(signalStg.fallList, redundantTransitions);
             }
         }
-        stg.remove(redundantTransitions);
     }
 
-    private HashSet<VisualNode> getDeadTransitions(HashSet<VisualContact> drivers) {
+    private void removeRedundantTransitionsExceptLastOne(Collection<VisualSignalTransition> transitions,
+            Set<VisualNode> redundantTransitions) {
+        if (transitions.size() > 1) {
+            Set<VisualSignalTransition> unneededTransitions = new HashSet(transitions);
+            unneededTransitions.retainAll(redundantTransitions);
+            if (unneededTransitions.size() == transitions.size()) {
+                unneededTransitions.remove(unneededTransitions.iterator().next());
+            }
+            transitions.removeAll(unneededTransitions);
+            stg.remove(unneededTransitions);
+        }
+    }
+
+    private Set<VisualNode> getDeadTransitions(HashSet<VisualContact> drivers) {
         HashSet<VisualNode> result = new HashSet<>();
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
@@ -410,7 +450,7 @@ public class CircuitToStgConverter {
         return result;
     }
 
-    private HashSet<VisualNode> getDuplicateTransitions(HashSet<VisualContact> drivers) {
+    private Set<VisualNode> getDuplicateTransitions(HashSet<VisualContact> drivers) {
         HashSet<VisualNode> result = new HashSet<>();
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
@@ -476,6 +516,7 @@ public class CircuitToStgConverter {
                     transition.setRootSpacePosition(plusPosition);
                     plusPosition = Geometry.add(plusPosition, OFFSET_INC_PLUS);
                     unmovedTransition.remove(transition);
+                    addCommentForDeadTransition(transition, signalStg.one, 1.0);
                 }
 
                 Point2D minusPosition = Geometry.add(centerPosition, OFFSET_INIT_MINUS);
@@ -483,6 +524,7 @@ public class CircuitToStgConverter {
                     transition.setRootSpacePosition(minusPosition);
                     minusPosition = Geometry.add(minusPosition, OFFSET_INC_MINUS);
                     unmovedTransition.remove(transition);
+                    addCommentForDeadTransition(transition, signalStg.zero, -1.0);
                 }
             }
         }
@@ -507,6 +549,25 @@ public class CircuitToStgConverter {
                 component.setPosition(pos);
                 xTransition += SCALE_X;
             }
+        }
+    }
+
+    private void addCommentForDeadTransition(VisualSignalTransition transition, VisualPlace place, double yOffset) {
+        VisualConnection predConnection = stg.getConnection(place, transition);
+        VisualConnection succConnection = stg.getConnection(transition, place);
+        if ((predConnection != null) && (succConnection != null)) {
+            predConnection.setConnectionType(VisualConnection.ConnectionType.BEZIER);
+            for (ControlPoint cp : predConnection.getGraphic().getControlPoints()) {
+                cp.setY(cp.getY() + yOffset);
+            }
+            succConnection.setConnectionType(VisualConnection.ConnectionType.BEZIER);
+            for (ControlPoint cp : succConnection.getGraphic().getControlPoints()) {
+                cp.setY(cp.getY() - yOffset);
+            }
+
+            VisualComment comment = stg.createVisualComponent(new CommentNode(), VisualComment.class);
+            comment.setLabel("dead|phase");
+            comment.setRootSpacePosition(new Point2D.Double(transition.getRootSpaceX(), transition.getRootSpaceY() + yOffset));
         }
     }
 
