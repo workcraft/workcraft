@@ -257,14 +257,14 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
                 case OUTPUT:
                     outputEventRef = outputEventRef == null ? projectionEventRef : outputEventRef;
                     break;
-                case INPUT:
-                    inputEventRef = projectionEventRef;
-                    break;
                 case INTERNAL:
                     internalEventRef = projectionEventRef;
                     break;
                 case DUMMY:
                     dummyEventRef = projectionEventRef;
+                    break;
+                case INPUT:
+                    inputEventRef = projectionEventRef;
                     break;
                 }
             }
@@ -272,9 +272,10 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
 
         return violationEventRef != null ? violationEventRef
                 : outputEventRef != null ? outputEventRef
-                : inputEventRef != null ? inputEventRef
                 : internalEventRef != null ? internalEventRef
-                : dummyEventRef;
+                : dummyEventRef != null ? dummyEventRef
+                : inputEventRef != null ? inputEventRef
+                : null;
     }
 
     public String getProjectionEventReference(WorkspaceEntry we, String projectionEvent) {
