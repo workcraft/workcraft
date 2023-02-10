@@ -93,6 +93,9 @@ public final class RefinementUtils {
         File file = component.getRefinementFile();
         Set<File> visited = new HashSet<>();
         while (file != null) {
+            if (!FileUtils.checkFileReadability(file, false)) {
+                return null;
+            }
             if (visited.contains(file)) {
                 LogUtils.logError("Cyclic dependency on file '" + FileUtils.getFullPath(file) + "'");
                 return null;
