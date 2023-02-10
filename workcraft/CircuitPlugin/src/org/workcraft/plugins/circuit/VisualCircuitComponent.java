@@ -172,6 +172,11 @@ public class VisualCircuitComponent extends VisualComponent implements Container
                 eastStart = Math.max(eastStart, contact.getX());
                 westStart = Math.min(westStart, contact.getX());
                 break;
+            case WEST:
+            case EAST:
+                northStart = Math.min(northStart, contact.getY());
+                southStart = Math.max(southStart, contact.getY());
+                break;
             }
         }
         double westPosition = -contactMinOffset;
