@@ -48,17 +48,19 @@ public class CircuitConnectionTool extends ConnectionTool {
     @Override
     public VisualConnection finishConnection(GraphEditorMouseEvent e) {
         VisualConnection connection = super.finishConnection(e);
-        ConnectionUtils.moveInternalContacts(connection);
+        if (connection != null) {
+            ConnectionUtils.moveInternalContacts(connection);
 
-        // Adjust position of a newly created joint
-        VisualNode fromNode = connection.getFirst();
-        if ((firstNode instanceof VisualConnection) && (fromNode instanceof VisualJoint)) {
-            VisualJoint joint = (VisualJoint) fromNode;
-            VisualTransformableNode adjacentNode = getConnectionSecondTransformableNode(connection);
-            if (adjacentNode != null) {
-                Set<Point2D> snaps = Collections.singleton(adjacentNode.getRootSpacePosition());
-                Point2D snapPos = e.getEditor().snap(joint.getRootSpacePosition(), snaps);
-                joint.setRootSpacePosition(snapPos);
+            // Adjust position of a newly created joint
+            VisualNode fromNode = connection.getFirst();
+            if ((firstNode instanceof VisualConnection) && (fromNode instanceof VisualJoint)) {
+                VisualJoint joint = (VisualJoint) fromNode;
+                VisualTransformableNode adjacentNode = getConnectionSecondTransformableNode(connection);
+                if (adjacentNode != null) {
+                    Set<Point2D> snaps = Collections.singleton(adjacentNode.getRootSpacePosition());
+                    Point2D snapPos = e.getEditor().snap(joint.getRootSpacePosition(), snaps);
+                    joint.setRootSpacePosition(snapPos);
+                }
             }
         }
         return connection;
