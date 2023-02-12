@@ -3,13 +3,13 @@ package org.workcraft.plugins.parity;
 import java.util.ArrayList;
 
 /**
- * OinkInputNode class is used to represent part of the model of a parity game.
+ * InputNode class is used to represent part of the model of a parity game.
  * Each node is one of the vertices in the parity game, and through the outgoing
  * ArrayList will also store the edge information.
  *
- * An ArrayList of OinkInputNodes represent the whole game.
+ * An ArrayList of InputNodes represent the whole game.
  */
-public class OinkInputNode {
+public class InputNode {
     /**
      * Automatically determined identifier. User does NOT decide the identifier;
      * this is separate to the name of the node in the workcraft model.
@@ -43,7 +43,7 @@ public class OinkInputNode {
      * @param ownedBy
      * @param outgoing
      */
-    public OinkInputNode(Integer id, Integer priority, Boolean ownedBy,
+    public InputNode(Integer id, Integer priority, Boolean ownedBy,
             ArrayList<Integer> outgoing) {
         this.id = id;
         this.priority = priority;

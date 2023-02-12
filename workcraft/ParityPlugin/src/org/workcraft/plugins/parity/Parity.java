@@ -10,7 +10,6 @@ import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.plugins.parity.observers.SymbolConsistencySupervisor;
 import org.workcraft.serialisation.References;
-import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.io.*;
@@ -18,7 +17,6 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.HashMap;
-import java.util.Locale;
 
 /**
  * Class to model the entire Parity game.
@@ -42,14 +40,6 @@ import java.util.Locale;
  * wins. If a player wins at a vertex and also owns it, then that means there is
  * a winning strategy for them from that vertex. This winning strategy edge will
  * be coloured blue or red for Players 0 or 1, respectively.
- *
- * A Backend tool is used to solve the Parity game. This tool is called Oink,
- * and was developed by Tom van Dijk.
- * Link: https://github.com/trolando/oink
- *
- * Oink is not designed to be compatible with Windows natively, and as such this
- * plugin will only correctly run on Linux distros, MacOS, or Windows with WSL
- * or a Linux VM.
  */
 public class Parity extends AbstractMathModel {
 
@@ -164,17 +154,6 @@ public class Parity extends AbstractMathModel {
     }
 
     /**
-     * Predicate function to check if the OS being used is either a Linux distro
-     * or MacOS. Oink is not designed to work with Windows.
-     * @return    true if OS name is either Mac or Linux
-     */
-    public boolean isMacLinux() {
-        String osName = System.getProperty("os.name");
-        osName = osName.toLowerCase(Locale.ENGLISH);
-        return (osName.contains("mac") || osName.contains("linux")) ? true : false;
-    }
-
-    /**
      * Predicate function to ensure user has placed vertices on game graph.
      * If there are no vertices, owned by either player 0 or 1 on the graph,
      * false will be returned.
@@ -217,14 +196,13 @@ public class Parity extends AbstractMathModel {
     }
 
     /**
-     * Builds the Oink input format as a collection of Oink input nodes, which
-     * are OinkInputNode objects. Each of these objects hold the automatically
+     * Builds the input format as a collection of input nodes, which are
+     * InputNode objects. Each of these objects hold the automatically
      * assigned identifier 0-n, the priority of the vertex, which player owns
      * the vertex, and what vertices can be directly reached from the input node.
-     * @return    ArrayList of OinkInputNodes. These are parsed to build the
-     *            text input for Oink.
+     * @return    ArrayList of InputNodes
      */
-    public ArrayList<OinkInputNode> buildOinkInput() {
+    public ArrayList<InputNode> buildInputNodes() {
         Collection<Player0> p0nodes = getPlayer0();
         Collection<Player1> p1nodes = getPlayer1();
         Collection<MathConnection> edges = getConnections();
@@ -237,14 +215,14 @@ public class Parity extends AbstractMathModel {
 
         /*
          * Initially gather ArrayLists of parameters from which to build the
-         * OinkInputNodes. The index of the ArrayList refers to the identifier
+         * InputNodes. The index of the ArrayList refers to the identifier
          * of a given input node. Data will be collected from the Model to
          * fill these ArrayLists.
          */
         ArrayList<Integer> inputPriority = new ArrayList<>();
         ArrayList<Boolean> ownedBy = new ArrayList<>();
         ArrayList<ArrayList<Integer>> outgoing = new ArrayList<>();
-        ArrayList<OinkInputNode> inputNodes = new ArrayList<>();
+        ArrayList<InputNode> inputNodes = new ArrayList<>();
 
         while (p0iter.hasNext()) {
             Player0 tempNode = p0iter.next();
@@ -276,13 +254,13 @@ public class Parity extends AbstractMathModel {
         }
 
         /*
-         * All of the information to build OinkInputNode objects has been
+         * All of the information to build InputNode objects has been
          * collected; input nodes will now be built.
          */
         for (int inputNodeIter = 0; inputNodeIter < inputPriority.size();
                 ++inputNodeIter) {
 
-            OinkInputNode inputNode = new OinkInputNode(
+            InputNode inputNode = new InputNode(
                     inputNodeIter, inputPriority.get(inputNodeIter),
                     ownedBy.get(inputNodeIter), outgoing.get(inputNodeIter));
             inputNodes.add(inputNode);
@@ -292,60 +270,13 @@ public class Parity extends AbstractMathModel {
     }
 
     /**
-     * Using the ArrayList of OinkInputNodes, generate the text input to be fed
-     * into the Oink parity game solver backend.
-     *
-     * More information about the input format Oink accepts can be found
-     * at pp 34-43 in the following paper:
-     * https://www.win.tue.nl/~timw/downloads/amc2014/pgsolver.pdf
-     *
-     * @param inputNodes    ArrayList of the OinkInputNodes
-     * @return              Parity game represented as a String, adhering to
-     *                      the Oink input format.
-     */
-    public String printOinkInput(ArrayList<OinkInputNode> inputNodes) {
-
-        StringBuilder outputBuilder = new StringBuilder();
-        outputBuilder.append("parity " + inputNodes.size() + ";\n");
-        for (int inputNodeIter = 0; inputNodeIter < inputNodes.size();
-                ++inputNodeIter) {
-
-            outputBuilder.append(inputNodes.get(inputNodeIter).getId() + " ");
-            outputBuilder.append(inputNodes.get(inputNodeIter).getPrio() + " ");
-            OinkInputNode tempInputNode = inputNodes.get(inputNodeIter);
-            if (!tempInputNode.getOwnership()) {
-                outputBuilder.append("0 ");
-            } else {
-                outputBuilder.append("1 ");
-            }
-            ArrayList<Integer> tempOutgoing =
-                    inputNodes.get(inputNodeIter).getOutgoing();
-            if (!tempOutgoing.isEmpty()) {
-                Iterator<Integer> outgoingIter = tempOutgoing.iterator();
-                while (outgoingIter.hasNext()) {
-                    outputBuilder.append(outgoingIter.next() + ",");
-                }
-                outputBuilder.deleteCharAt(outputBuilder.length() - 1);
-            } else {
-                outputBuilder.deleteCharAt(outputBuilder.length() - 1);
-            }
-            outputBuilder.append(";\n");
-        }
-
-        return outputBuilder.toString();
-    }
-
-    /**
-     * Predicate function to check that every vertex in an Oink parity game have
+     * Predicate function to check that every vertex in the parity game have
      * at least one successor (outgoing edge). Returns true if all vertices have
      * a successor.
-     *
-     * Oink deals exclusively with infinite games, although finite parity games
-     * can exist.
-     * @param inputNodes    ArrayList of OinkInputNodes gathered from Model.
+     * @param inputNodes    ArrayList of InputNodes gathered from Model.
      * @return              true if every vertex has at least one outgoing edge
      */
-    public boolean isInfinite(ArrayList<OinkInputNode> inputNodes) {
+    public boolean isInfinite(ArrayList<InputNode> inputNodes) {
 
         for (int inputNodeIter = 0; inputNodeIter < inputNodes.size();
                 ++inputNodeIter) {
@@ -358,117 +289,17 @@ public class Parity extends AbstractMathModel {
     }
 
     /**
-     * Function to run Oink. The String built within printOinkInput is used to
-     * build a temporary text file called oinkinput.txt. This is then fed into
-     * Oink, and an output solution file is built called oinkoutput.sol.
-     *
-     * This oinkoutput.sol file has the following syntax:
-     * - First line will be paritysol N; where N is the amount of vertices in
-     *   the game.
-     * - Every line after the first has the form X Y Z; where:
-     *   X: Node identifier of interval [0,N-1)
-     *   Y: Winner of game. 0 for player 0, 1 for player 1
-     *   Z: OPTIONAL - If vertex is won by the player who owns it, show winning
-     *      strategy with the vertex the token should travel to
-     *
-     * Note: For this to work, the Oink backend binary (for the respective OS)
-     *       must be built, placed inside a directory called 'Oink', and then
-     *       moved to:
-     *       a) workcraft/dist/template/osx/Contents/Resources/tools
-     *       b) workcraft/dist/template/linux/tools
-     *
-     *       As mentioned on Line 55, this plugin is not compatible with native
-     *       Windows. WSL, Linux VM, Linux distro, or MacOS must be used.
-     *
-     * @param oinkInput    Input string built by printOinkInput
-     * @return             String of STDOUT that Oink produces. oinkoutput.sol
-     *                     will be used to generate the Oink output nodes.
+     * Solves the parity game using Zielonka's algorithm. More information can
+     * be found in regards to this within Zielonka.java.
+     * @param inputNodes    ArrayList of InputNodes gathered from Model.
+     * @return              ArrayList of OutputNodes from which the game can be
+     *                      solved.
      */
-    public String runOink(String oinkInput) {
-        String oinkBinaryPath = BackendUtils.getTemplateToolPath("Oink", "oink");
-        StringBuilder outputString = new StringBuilder();
-
-        try {
-            FileWriter inputFile = new FileWriter("oinkinput.txt");
-            inputFile.write(oinkInput);
-            inputFile.close();
-            Process ps = Runtime.getRuntime().exec(oinkBinaryPath
-                    + " -v -p oinkinput.txt oinkoutput.sol");
-            BufferedReader bufRdr = new BufferedReader(
-                    new InputStreamReader(ps.getInputStream()));
-            String currentLine;
-            while ((currentLine = bufRdr.readLine()) != null) {
-                outputString.append(currentLine);
-                outputString.append("\n");
-            }
-            ps.waitFor();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        return outputString.toString();
-    }
-
-    /**
-     * From the oinkoutput.sol text file generated by runOink, build the
-     * ArrayList of OinkOutputNodes. These will then be used to correctly
-     * colour the visual model.
-     * @return    Parity Game modelled as an ArrayList of OinkOutputNodes
-     */
-    public ArrayList<OinkOutputNode> buildOutputNodes() {
-        ArrayList<String> outputLines = new ArrayList<>();
-        File sol = new File("oinkoutput.sol");
-
-        try {
-            BufferedReader bufRdr = new BufferedReader(new FileReader(sol));
-            String currentLine;
-            //skip first line paritysol x;
-            currentLine = bufRdr.readLine();
-            while ((currentLine = bufRdr.readLine()) != null) {
-                outputLines.add(currentLine);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-
-        ArrayList<OinkOutputNode> outputNodes = new ArrayList<>();
-        //Parse the lines into an arraylist of OinkOutputNodes
-        for (int lineIter = 0; lineIter < outputLines.size(); ++lineIter) {
-            String tempLine = outputLines.get(lineIter).substring(
-                    0, outputLines.get(lineIter).length() - 1);
-            String[] words = tempLine.split(" ");
-            Boolean tempWinner;
-            if (words[1].equals("1")) {
-                tempWinner = true;
-            } else {
-                tempWinner = false;
-            }
-            Integer tempStrategy = -1;
-            if (words.length == 3) {
-                tempStrategy = Integer.parseInt(words[2]);
-            }
-
-            OinkOutputNode tempOutputNode;
-            if (tempStrategy != -1) {
-                tempOutputNode = new OinkOutputNode(lineIter, tempWinner,
-                    tempStrategy);
-            } else {
-                tempOutputNode = new OinkOutputNode(lineIter, tempWinner);
-            }
-            outputNodes.add(tempOutputNode);
-        }
-
-        return outputNodes;
-    }
-
-    /**
-     * Clean oinkinput.txt and oinkoutput.sol from directory
-     */
-    public void deleteTempFiles() {
-        File oinkInput = new File("oinkinput.txt");
-        File oinkOutput = new File("oinkoutput.sol");
-        oinkInput.delete();
-        oinkOutput.delete();
+    public ArrayList<OutputNode> solveGame(ArrayList<InputNode> inputNodes) {
+        SolvableGame sg = Parser.parseInputNodes(inputNodes);
+        boolean[][] winner = Zielonka.solve(sg);
+        int[][] strategy = Zielonka.calcStrategy(sg, winner);
+        return Parser.buildOutputNodes(winner, strategy);
     }
 
     /**

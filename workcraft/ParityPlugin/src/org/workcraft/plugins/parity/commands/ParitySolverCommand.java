@@ -4,8 +4,8 @@ import org.workcraft.commands.AbstractGameSolverCommand;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.parity.OinkInputNode;
-import org.workcraft.plugins.parity.OinkOutputNode;
+import org.workcraft.plugins.parity.InputNode;
+import org.workcraft.plugins.parity.OutputNode;
 import org.workcraft.plugins.parity.Parity;
 import org.workcraft.plugins.parity.VisualParity;
 import org.workcraft.plugins.parity.Player0;
@@ -137,12 +137,11 @@ public class ParitySolverCommand extends AbstractGameSolverCommand {
      * coloured.
      * BLUE = Player 0 wins
      * RED = Player 1 wins
-     * @param outputNodes    Collection of output nodes generated from Oink
-     *                       solution file
+     * @param outputNodes    Collection of output nodes
      * @param pg             Mathematical model of the parity game
      * @param vpg            Visual model of the parity game
      */
-    public void colorWinningRegions(ArrayList<OinkOutputNode> outputNodes,
+    public void colorWinningRegions(ArrayList<OutputNode> outputNodes,
             Parity pg, VisualParity vpg) {
         ArrayList<VisualPlayer0> p0win = new ArrayList<>();
         ArrayList<VisualPlayer0> p0lose = new ArrayList<>();
@@ -156,13 +155,13 @@ public class ParitySolverCommand extends AbstractGameSolverCommand {
         Iterator<Player1> p1iter = pg.getPlayer1().iterator();
         Iterator<VisualPlayer0> visualp0iter = vpg.getVisualPlayer0().iterator();
         Iterator<VisualPlayer1> visualp1iter = vpg.getVisualPlayer1().iterator();
-        Iterator<OinkOutputNode> outputNodeiter = outputNodes.iterator();
+        Iterator<OutputNode> outputNodeiter = outputNodes.iterator();
 
         //Colour nodes owned by player 0
         while (p0iter.hasNext()) {
             Player0 tempP0 = p0iter.next();
             VisualPlayer0 tempvisualp0 = visualp0iter.next();
-            OinkOutputNode tempOutput = outputNodeiter.next();
+            OutputNode tempOutput = outputNodeiter.next();
             nameToId.put(pg.getName(tempP0), tempOutput.getId());
             if (tempOutput.getWonByPlayer1()) {
                 p0lose.add(tempvisualp0);
@@ -175,7 +174,7 @@ public class ParitySolverCommand extends AbstractGameSolverCommand {
         while (p1iter.hasNext()) {
             Player1 tempP1 = p1iter.next();
             VisualPlayer1 tempvisualp1 = visualp1iter.next();
-            OinkOutputNode tempOutput = outputNodeiter.next();
+            OutputNode tempOutput = outputNodeiter.next();
             nameToId.put(pg.getName(tempP1), tempOutput.getId());
             if (tempOutput.getWonByPlayer1()) {
                 p1win.add(tempvisualp1);
@@ -184,12 +183,12 @@ public class ParitySolverCommand extends AbstractGameSolverCommand {
             }
         }
 
-        //2nd pass through OinkOutputNodes, Colour edges if strategy found
+        //2nd pass through OutputNodes, Colour edges if strategy found
         outputNodeiter = outputNodes.iterator();
         while (outputNodeiter.hasNext()) {
             Iterator<MathConnection> edgeIter = pg.getConnections().iterator();
             Iterator<VisualConnection> visualEdgeIter = vpg.getEdges().iterator();
-            OinkOutputNode tempOutput = outputNodeiter.next();
+            OutputNode tempOutput = outputNodeiter.next();
 
             while (edgeIter.hasNext()) {
                 MathConnection tempEdge = edgeIter.next();
@@ -246,12 +245,6 @@ public class ParitySolverCommand extends AbstractGameSolverCommand {
 
         Parity pg = WorkspaceUtils.getAs(we, Parity.class);
 
-        if (!pg.isMacLinux()) {
-            return "Parity Game Plugin is only designed to be ran on\n"
-                + "Linux distros or Mac OS.\n"
-                + "If using Windows, please use WSL or Linux VM.\n";
-        }
-
         if (!pg.isNonEmpty()) {
             return "Please place some vertices on the game graph.\n";
         }
@@ -261,20 +254,21 @@ public class ParitySolverCommand extends AbstractGameSolverCommand {
                 + "Please ensure all vertex priorities are non-negative.\n";
         }
 
-        ArrayList<OinkInputNode> inputNodes = pg.buildOinkInput();
-        if (!pg.isInfinite(inputNodes)) {
-            return "Oink will only solve parity games that are infinitely looping\n"
+        ArrayList<InputNode> inputList = pg.buildInputNodes();
+        if (!pg.isInfinite(inputList)) {
+            return "Zielonka will only solve parity games that are infinitely looping\n"
                 + "(every vertex has at least one outgoing edge).\n"
                 + "Please ensure all vertices have at least one outgoing edge.\n";
         }
 
-        String oinkInput = pg.printOinkInput(inputNodes);
-        String textOutput = pg.runOink(oinkInput);
-        ArrayList<OinkOutputNode> oinkOutput = pg.buildOutputNodes();
+        ArrayList<OutputNode> outputList = pg.solveGame(inputList);
         VisualParity vpg = WorkspaceUtils.getAs(we, VisualParity.class);
-        colorWinningRegions(oinkOutput, pg, vpg);
-        pg.deleteTempFiles();
-        return textOutput;
+        colorWinningRegions(outputList, pg, vpg);
+        return "Game has been solved.\n"
+            + "Winning regions are coloured blue if Player 0 wins at that vertex\n"
+            + "Winning regions are coloured red if Player 1 wins at that vertex\n"
+            + "Winning strategies for the corresponding players are also coloured\n"
+            + "where appropriate.\n\n";
     }
 
 }

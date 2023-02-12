@@ -53,13 +53,6 @@ public class ParityHelpSolverCommand extends AbstractGameSolverCommand {
             + "    the priority value in the 'Priority' right hand text box.\n"
             + "    Vertex priorities cannot be non-negative\n"
             + "4) Click the 'Solve Game' option in the Tools -> Game Solver\n"
-            + "    menu to solve the game\n\n"
-            + "This parity game solver uses Oink to solve the games,\n"
-            + "developed by Tom van Dijk.\n\n"
-            + "Oink was not designed to be built on Windows natively.\n"
-            + "Plugin will run on MacOS, Linux distros,\n"
-            + "or Windows using WSL/Linux VM\n\n"
-            + "The URL to the Oink Github can be found below:\n"
-            + "https://github.com/trolando/oink";
+            + "    menu to solve the game\n\n";
     }
 }
