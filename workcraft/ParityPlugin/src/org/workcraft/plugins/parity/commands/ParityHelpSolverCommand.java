@@ -1,7 +1,6 @@
 package org.workcraft.plugins.parity.commands;
 
 import org.workcraft.plugins.parity.Parity;
-import org.workcraft.commands.AbstractGameSolverCommand;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
 

@@ -1,6 +1,5 @@
 package org.workcraft.plugins.parity.commands;
 
-import org.workcraft.commands.AbstractGameSolverCommand;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;

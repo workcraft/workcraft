@@ -1,5 +1,6 @@
-package org.workcraft.commands;
+package org.workcraft.plugins.parity.commands;
 
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -7,7 +8,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 /**
  * Game Solver Command that sits in the 'Tools' section of the ribbon.
- * This file must be placed in /WorkcraftCore/src/org/workcraft/commands/
  */
 public abstract class AbstractGameSolverCommand implements ScriptableCommand<String> {
 
