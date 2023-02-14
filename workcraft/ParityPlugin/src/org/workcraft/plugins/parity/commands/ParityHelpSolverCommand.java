@@ -13,6 +13,7 @@ public class ParityHelpSolverCommand extends AbstractGameSolverCommand {
     /**
      * Get the display name of the text box to be clicked to view the game
      * solver help
+     * @return Title of submenu
      */
     @Override
     public String getDisplayName() {
@@ -20,7 +21,10 @@ public class ParityHelpSolverCommand extends AbstractGameSolverCommand {
     }
 
     /**
-     * Ensure the WorkspaceEntry can be worked on.
+     * Predicate function to check if the WorkspaceEntry is applicable in
+     * regards to the Parity class.
+     * @param we    WorkspaceEntry to check for validity
+     * @return      True if the Workspace is applicable to Parity
      */
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
