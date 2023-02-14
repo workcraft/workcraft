@@ -19,7 +19,8 @@ public class VisualParityDescriptor implements VisualModelDescriptor {
      */
     @Override
     public VisualParity create(MathModel mathModel) throws VisualModelInstantiationException {
-        ValidationUtils.validateMathModelType(mathModel, Parity.class, VisualParity.class.getSimpleName());
+        ValidationUtils.validateMathModelType(mathModel, Parity.class,
+                VisualParity.class.getSimpleName());
         return new VisualParity((Parity) mathModel);
     }
 

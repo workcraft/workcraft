@@ -227,6 +227,7 @@ public class ParitySolverCommand extends AbstractGameSolverCommand {
 
     /**
      * Ensure the WorkspaceEntry can be worked on.
+     * @param we    Current WorkspaceEntry
      */
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {

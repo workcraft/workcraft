@@ -49,7 +49,10 @@ public class VisualPlayer0 extends VisualComponent {
         }
     }
 
-    // Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+    /**
+     * Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly 
+     * in the source code).
+     */
     public static final String EPSILON_SYMBOL = Character.toString((char) 0x03B5);
 
     public static final String PROPERTY_RENDER_TYPE = "Render type";
@@ -101,7 +104,8 @@ public class VisualPlayer0 extends VisualComponent {
      */
     @Override
     public Shape getShape() {
-        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize() 
+            - VisualCommonSettings.getStrokeWidth();
         double pos = -0.5 * size;
         Shape shape = new Ellipse2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {
@@ -177,7 +181,8 @@ public class VisualPlayer0 extends VisualComponent {
         if (symbol != null) {
 
             String label = Integer.toString(tempNode.getPrio());
-            cacheLabelRenderedText(label, getLabelFont(), Positioning.CENTER, getLabelOffset());
+            cacheLabelRenderedText(label, getLabelFont(), Positioning.CENTER,
+                    getLabelOffset());
         }
     }
 

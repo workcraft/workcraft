@@ -178,7 +178,8 @@ public class Attractor {
      */
     void printAttractorSet(boolean player, boolean[] targetStates) {
         int temp = player ? 1 : 0;
-        System.out.print("ATTRACTOR SET FOR PLAYER " + temp + " ON TARGET STATES ");
+        System.out.print("ATTRACTOR SET FOR PLAYER " + temp
+            + " ON TARGET STATES ");
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         for (int i = 0; i < targetStates.length; ++i) {

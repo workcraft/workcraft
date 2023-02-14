@@ -33,9 +33,11 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
         if (e instanceof PropertyChangedEvent) {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
-            if ((sender instanceof Player0) && pce.getPropertyName().equals(Player0.PROPERTY_SYMBOL)) {
+            if ((sender instanceof Player0) 
+                    && pce.getPropertyName().equals(Player0.PROPERTY_SYMBOL)) {
                 handlePlayer0SymbolChange();
-            } else if ((sender instanceof Player1) && pce.getPropertyName().equals(Player1.PROPERTY_SYMBOL)) {
+            } else if ((sender instanceof Player1)
+                    && pce.getPropertyName().equals(Player1.PROPERTY_SYMBOL)) {
                 // Update the collection of symbols on a change of vertex symbol property
                 handlePlayer1SymbolChange();
             }
