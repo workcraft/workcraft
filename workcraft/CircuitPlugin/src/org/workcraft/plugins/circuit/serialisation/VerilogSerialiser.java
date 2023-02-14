@@ -104,10 +104,12 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         Set<String> outputPorts = new LinkedHashSet<>();
         for (Contact contact : circuitInfo.getCircuit().getPorts()) {
             String signal = circuitInfo.getContactSignal(contact);
-            if (contact.isInput()) {
-                inputPorts.add(signal);
-            } else {
-                outputPorts.add(signal);
+            Set<String> ports = contact.isInput() ? inputPorts : outputPorts;
+            ports.add(signal);
+            if (circuitInfo.getBusIndexes(signal) != null) {
+                circuitInfo.removeBus(signal);
+                LogUtils.logWarning("Nets of bus '" + signal + "' cannot be merged because "
+                        + (contact.isInput() ? "input" : "output") + " port with the same name exists");
             }
         }
 
@@ -117,19 +119,59 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
                 String signal = circuitInfo.getContactSignal(contact);
                 if ((signal == null) || inputPorts.contains(signal) || outputPorts.contains(signal)) continue;
                 wires.add(signal);
+                if (circuitInfo.getBusIndexes(signal) != null) {
+                    circuitInfo.removeBus(signal);
+                    LogUtils.logWarning("Nets of bus '" + signal + "' cannot be merged because " +
+                            "wire with the same name exists");
+                }
             }
         }
 
-        Set<VerilogBus> inputBuses = extractSignalBuses(inputPorts);
-        Set<VerilogBus> outputBuses = extractSignalBuses(outputPorts);
+        adjustBuses(inputPorts, outputPorts, wires, circuitInfo);
+
+        Set<VerilogBus> inputBuses = extractSignalBuses(inputPorts, circuitInfo);
+        Set<VerilogBus> outputBuses = extractSignalBuses(outputPorts, circuitInfo);
         String title = ExportUtils.asIdentifier(circuitInfo.getCircuit().getTitle());
         writePortDeclarations(writer, title, inputPorts, inputBuses, outputPorts, outputBuses);
 
         writeSignalDefinitions(writer, KEYWORD_INPUT, inputPorts, inputBuses);
         writeSignalDefinitions(writer, KEYWORD_OUTPUT, outputPorts, outputBuses);
-        Set<VerilogBus> wireBuses = extractSignalBuses(wires);
+        Set<VerilogBus> wireBuses = extractSignalBuses(wires, circuitInfo);
         writeSignalDefinitions(writer, KEYWORD_WIRE, wires, wireBuses);
         writer.println();
+    }
+
+    private void adjustBuses(Set<String> inputs, Set<String> outputs, Set<String> wires,
+            CircuitSignalInfo circuitInfo) {
+
+        Set<String> inputBusNames = getBusNames(inputs, circuitInfo);
+        Set<String> outputBusNames = getBusNames(outputs, circuitInfo);
+        Set<String> wireBusNames = getBusNames(wires, circuitInfo);
+
+        Set<String> overlapBusNames = new HashSet<>();
+        overlapBusNames.addAll(SetUtils.intersection(inputBusNames, outputBusNames));
+        overlapBusNames.addAll(SetUtils.intersection(outputBusNames, wireBusNames));
+        overlapBusNames.addAll(SetUtils.intersection(wireBusNames, inputBusNames));
+
+        for (String busName : overlapBusNames) {
+            circuitInfo.removeBus(busName);
+            LogUtils.logWarning("Nets of bus '" + busName + "' cannot be merged as they are of different types");
+        }
+    }
+
+    private Set<String> getBusNames(Set<String> signals, CircuitSignalInfo circuitInfo) {
+        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Set<String> result = new HashSet<>();
+        for (String signal : signals) {
+            Matcher matcher = pattern.matcher(signal);
+            if (matcher.matches()) {
+                String busName = matcher.group(1);
+                if (circuitInfo.getBusIndexes(busName) != null) {
+                    result.add(busName);
+                }
+            }
+        }
+        return result;
     }
 
     private void writePortDeclarations(PrintWriter writer, String title,
@@ -272,11 +314,13 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         }
 
         writer.print("    " + moduleName + " " + instanceFlatName + " (");
-        writeInstanceContacts(writer, contactToSignalMap);
+        writeInstanceContacts(writer, circuitInfo, contactToSignalMap);
         writer.println(");");
     }
 
-    private void writeInstanceContacts(PrintWriter writer, Map<String, String> contactToSignalMap) {
+    private void writeInstanceContacts(PrintWriter writer, CircuitSignalInfo circuitInfo,
+            Map<String, String> contactToSignalMap) {
+
         Map<String, Map<Integer, String>> contactBusToIndexedSignalMap = extractContactBuses(contactToSignalMap);
         boolean first = true;
         for (String contactName : contactToSignalMap.keySet()) {
@@ -286,7 +330,8 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
                 writer.print(", ");
             }
             String signalName = contactToSignalMap.getOrDefault(contactName, "");
-            writer.print("." + contactName + "(" + convertToBusSignalIfNeeded(signalName) + ")");
+            String netName = getNetName(signalName, circuitInfo);
+            writer.print("." + contactName + "(" + netName + ")");
         }
         for (String contactBusName : contactBusToIndexedSignalMap.keySet()) {
             if (first) {
@@ -298,13 +343,18 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             Set<Integer> indexes = indexedSignals.keySet();
             Integer maxIndex = Collections.max(indexes);
             Integer minIndex = Collections.min(indexes);
-            List<String> signalNames = new ArrayList<>();
+            List<String> netNames = new ArrayList<>();
             for (int index = maxIndex; index >= minIndex; --index) {
                 String signalName = indexedSignals.getOrDefault(index, "");
-                signalNames.add(convertToBusSignalIfNeeded(signalName));
+                netNames.add(getNetName(signalName, circuitInfo));
             }
-            writer.println();
-            writer.print("        ." + contactBusName + "( {" + String.join(", ", signalNames)  + "} )");
+            String joinedNetNames = String.join(", ", netNames);
+            if (CircuitSettings.getDissolveSingletonBus() && (netNames.size() < 2)) {
+                writer.print(" ." + contactBusName + "(" + joinedNetNames + ")");
+            } else {
+                writer.println();
+                writer.print("        ." + contactBusName + "( {" + joinedNetNames + "} )");
+            }
         }
     }
 
@@ -325,24 +375,28 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             writer.println("    // signal values at the initial state:");
             writer.print("    //");
             for (Map.Entry<String, Boolean> entry : signalInitState.entrySet()) {
-                String signal = convertToBusSignalIfNeeded(entry.getKey());
-                writer.print((entry.getValue() ? " " : " !") + signal);
+                Boolean state = entry.getValue();
+                String signal = entry.getKey();
+                String netName = getNetName(signal, circuitInfo);
+                writer.print((state ? " " : " !") + netName);
             }
             writer.println();
         }
     }
 
-    private Set<VerilogBus> extractSignalBuses(Set<String> signalNames) {
+    private Set<VerilogBus> extractSignalBuses(Set<String> signalNames, CircuitSignalInfo circuitInfo) {
         Map<String, Set<Integer>> nameToIndexesMap = new HashMap<>();
         Pattern pattern = VerilogUtils.getBusSignalPattern();
         for (String signalName : new HashSet<>(signalNames)) {
             Matcher matcher = pattern.matcher(signalName);
             if (matcher.matches()) {
                 String busName = matcher.group(1);
-                Integer netIndex = Integer.valueOf(matcher.group(2));
-                Set<Integer> indexes = nameToIndexesMap.computeIfAbsent(busName, key -> new HashSet<>());
-                indexes.add(netIndex);
-                signalNames.remove(signalName);
+                if (circuitInfo.getBusIndexes(busName) != null) {
+                    Integer netIndex = Integer.valueOf(matcher.group(2));
+                    Set<Integer> indexes = nameToIndexesMap.computeIfAbsent(busName, key -> new HashSet<>());
+                    indexes.add(netIndex);
+                    signalNames.remove(signalName);
+                }
             }
         }
         Set<VerilogBus> result = new LinkedHashSet<>();
@@ -350,7 +404,11 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             Set<Integer> indexes = nameToIndexesMap.get(name);
             Integer max = Collections.max(indexes);
             Integer min = Collections.min(indexes);
-            result.add(new VerilogBus(name, min, max));
+            if (CircuitSettings.getDissolveSingletonBus() && Objects.equals(max, min)) {
+                signalNames.add(name);
+            } else {
+                result.add(new VerilogBus(name, min, max));
+            }
         }
         return result;
     }
@@ -375,15 +433,22 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         return result;
     }
 
-    private String convertToBusSignalIfNeeded(String signalName) {
+    private String getNetName(String signal, CircuitSignalInfo circuitInfo) {
         Pattern pattern = VerilogUtils.getBusSignalPattern();
-        Matcher matcher = pattern.matcher(signalName);
+        Matcher matcher = pattern.matcher(signal);
         if (matcher.matches()) {
             String busName = matcher.group(1);
+            Set<Integer> busIndexes = circuitInfo.getBusIndexes(busName);
+            if (busIndexes == null) {
+                return signal;
+            }
+            if ((busIndexes.size() == 1) && CircuitSettings.getDissolveSingletonBus()) {
+                return busName;
+            }
             int netIndex = Integer.parseInt(matcher.group(2));
             return busName + "[" + netIndex + "]";
         }
-        return signalName;
+        return signal;
     }
 
 }

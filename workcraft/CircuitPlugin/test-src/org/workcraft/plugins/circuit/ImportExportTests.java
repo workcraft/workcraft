@@ -29,6 +29,7 @@ class ImportExportTests {
         final Framework framework = Framework.getInstance();
         framework.init();
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
+        CircuitSettings.setDissolveSingletonBus(false);
     }
 
     @Test
@@ -93,6 +94,13 @@ class ImportExportTests {
     void testBusConcatenationImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "bus-concatenation.circuit.work");
         String verilogName = PackageUtils.getPackagePath(getClass(), "bus-concatenation.circuit.v");
+        testImportExport(workName, verilogName);
+    }
+
+    @Test
+    void testBusHierImportExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "bus-hier.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "bus-hier.circuit.v");
         testImportExport(workName, verilogName);
     }
 

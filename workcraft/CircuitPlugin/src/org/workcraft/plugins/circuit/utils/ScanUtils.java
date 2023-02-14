@@ -267,7 +267,7 @@ public final class ScanUtils {
             for (VisualFunctionComponent component : components) {
                 if (circuit.hasPin(component, pinName)) {
                     VisualContact pin = circuit.getPin(component, pinName);
-                    VisualConnection connection = connectFromIndividualPort(circuit, portPrefix, index, pin, false);
+                    VisualConnection connection = connectFromIndividualInputPort(circuit, portPrefix, index, pin, false);
                     if ((connection != null) && scaninInversionComponents.contains(component)) {
                         VisualFunctionComponent inverterGate = GateUtils.createInverterGate(circuit);
                         circuit.setMathName(inverterGate, invInstancePrefix + index);
@@ -280,7 +280,7 @@ public final class ScanUtils {
             // Connect to existing pins with given prefix portPrefix
             for (VisualFunctionComponent testComponent : components) {
                 for (VisualContact pin : getSortedInputPinsByPrefix(testComponent, portPrefix)) {
-                    connectFromIndividualPort(circuit, portPrefix, index, pin, false);
+                    connectFromIndividualInputPort(circuit, portPrefix, index, pin, false);
                     index++;
                 }
             }
@@ -296,13 +296,13 @@ public final class ScanUtils {
             for (VisualFunctionComponent component : components) {
                 if (circuit.hasPin(component, pinName)) {
                     VisualContact pin = circuit.getPin(component, pinName);
-                    connectFromIndividualPort(circuit, portPrefix, index, pin, useScanInitialisation);
+                    connectFromIndividualInputPort(circuit, portPrefix, index, pin, useScanInitialisation);
                     index++;
                 }
             }
             for (VisualFunctionComponent component : components) {
                 for (VisualContact pin : getSortedInputPinsByPrefix(component, portPrefix)) {
-                    connectFromIndividualPort(circuit, portPrefix, index, pin, useScanInitialisation);
+                    connectFromIndividualInputPort(circuit, portPrefix, index, pin, useScanInitialisation);
                     index++;
                 }
             }
@@ -323,13 +323,13 @@ public final class ScanUtils {
                     if (needsBuffering(circuit, pin)) {
                         pin = addBuffering(circuit, pin);
                     }
-                    connectToIndividualPort(circuit, pin, portPrefix, index);
+                    connectToIndividualOutputPort(circuit, pin, portPrefix, index);
                     index++;
                 }
             }
             for (VisualFunctionComponent component : components) {
                 for (VisualContact pin : getSortedOutputPinsByPrefix(component, portPrefix)) {
-                    connectToIndividualPort(circuit, pin, portPrefix, index);
+                    connectToIndividualOutputPort(circuit, pin, portPrefix, index);
                     index++;
                 }
             }
@@ -350,7 +350,7 @@ public final class ScanUtils {
                 .collect(Collectors.toList());
     }
 
-    private static VisualConnection connectFromIndividualPort(VisualCircuit circuit, String portPrefix,
+    private static VisualConnection connectFromIndividualInputPort(VisualCircuit circuit, String portPrefix,
             int index, VisualContact pin, boolean initToOne) {
 
         String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
@@ -363,7 +363,7 @@ public final class ScanUtils {
         return connection;
     }
 
-    private static VisualConnection connectToIndividualPort(VisualCircuit circuit, VisualContact pin,
+    private static VisualConnection connectToIndividualOutputPort(VisualCircuit circuit, VisualContact pin,
             String portPrefix, int index) {
 
         String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
@@ -375,7 +375,6 @@ public final class ScanUtils {
         SpaceUtils.positionPort(circuit, port, true);
         return connection;
     }
-
 
     private static VisualContact getOrCreateContact(VisualCircuit circuit, VisualFunctionComponent component,
             String contactName, Contact.IOType ioType) {

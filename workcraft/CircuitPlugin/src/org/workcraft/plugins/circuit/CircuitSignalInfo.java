@@ -11,10 +11,14 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.Literal;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.utils.TextUtils;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class CircuitSignalInfo {
 
@@ -23,6 +27,7 @@ public class CircuitSignalInfo {
     private final Map<Contact, String> driverFlatNameMap = new HashMap<>();
     private final Set<String> takenFlatNames = new HashSet<>();
     private final Map<String, BooleanFormula> signalLiteralMap;
+    private final Map<String, Set<Integer>> busIndexesMap;
 
     public static class SignalInfo {
         public final FunctionContact contact;
@@ -43,6 +48,7 @@ public class CircuitSignalInfo {
     public CircuitSignalInfo(Circuit circuit, Function<String, Literal> literalBuilder) {
         this.circuit = circuit;
         this.signalLiteralMap = buildSignalLiteralMap(literalBuilder);
+        this.busIndexesMap = buildBusIndexesMap();
     }
 
     public Circuit getCircuit() {
@@ -105,6 +111,27 @@ public class CircuitSignalInfo {
         return signal;
     }
 
+    private Map<String, Set<Integer>> buildBusIndexesMap() {
+        Set<String> signals = getCircuit().getFunctionContacts().stream()
+                .filter(contact -> (contact.isPort() || contact.isDriver()))
+                .map(this::getContactSignal)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
+
+        Map<String, Set<Integer>> result = new HashMap<>();
+        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        for (String signal : signals) {
+            Matcher matcher = pattern.matcher(signal);
+            if (matcher.matches()) {
+                String busName = matcher.group(1);
+                Integer netIndex = Integer.valueOf(matcher.group(2));
+                Set<Integer> indexes = result.computeIfAbsent(busName, key -> new HashSet<>());
+                indexes.add(netIndex);
+            }
+        }
+        return result;
+    }
+
     public Collection<SignalInfo> getComponentSignalInfos(FunctionComponent component) {
         Collection<SignalInfo> result = new ArrayList<>();
         LinkedList<BooleanVariable> variables = new LinkedList<>();
@@ -135,6 +162,14 @@ public class CircuitSignalInfo {
     public String getComponentFlattenReference(FunctionComponent component) {
         String ref = getComponentReference(component);
         return NamespaceHelper.flattenReference(ref);
+    }
+
+    public Set<Integer> getBusIndexes(String busName) {
+        return busIndexesMap.get(busName);
+    }
+
+    public void removeBus(String busName) {
+        busIndexesMap.remove(busName);
     }
 
 }
