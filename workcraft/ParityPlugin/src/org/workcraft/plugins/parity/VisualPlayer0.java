@@ -50,7 +50,7 @@ public class VisualPlayer0 extends VisualComponent {
     }
 
     /**
-     * Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly 
+     * Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly
      * in the source code).
      */
     public static final String EPSILON_SYMBOL = Character.toString((char) 0x03B5);
@@ -104,8 +104,8 @@ public class VisualPlayer0 extends VisualComponent {
      */
     @Override
     public Shape getShape() {
-        double size = VisualCommonSettings.getNodeSize() 
-            - VisualCommonSettings.getStrokeWidth();
+        double size = VisualCommonSettings.getNodeSize()
+                - VisualCommonSettings.getStrokeWidth();
         double pos = -0.5 * size;
         Shape shape = new Ellipse2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {

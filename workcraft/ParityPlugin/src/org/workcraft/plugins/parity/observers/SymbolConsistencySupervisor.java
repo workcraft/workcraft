@@ -33,7 +33,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
         if (e instanceof PropertyChangedEvent) {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
-            if ((sender instanceof Player0) 
+            if ((sender instanceof Player0)
                     && pce.getPropertyName().equals(Player0.PROPERTY_SYMBOL)) {
                 handlePlayer0SymbolChange();
             } else if ((sender instanceof Player1)

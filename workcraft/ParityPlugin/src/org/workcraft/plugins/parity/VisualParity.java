@@ -88,7 +88,7 @@ public class VisualParity extends AbstractVisualModel {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            Container container = NamespaceHelper.getMathContainer(this, 
+            Container container = NamespaceHelper.getMathContainer(this,
                     getCurrentLevel());
             List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols(
                     container));
@@ -151,7 +151,7 @@ public class VisualParity extends AbstractVisualModel {
                                     event, Player1.PROPERTY_SYMBOL));
                         }
                     } else if (!(node instanceof Symbol)) {
-                        throw new FormatException("Node '" + value 
+                        throw new FormatException("Node '" + value
                             + "' already exists and it is not a symbol.");
                     }
                 },

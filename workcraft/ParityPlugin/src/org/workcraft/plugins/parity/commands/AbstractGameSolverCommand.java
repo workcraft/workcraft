@@ -8,7 +8,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 /**
  * Game Solver Command that sits in the 'Tools' section of the ribbon.
- * Contains the ParityHelpSolverCommand, and ParitySolverCommand within the 
+ * Contains the ParityHelpSolverCommand, and ParitySolverCommand within the
  * 'Game Solver' menu that this class creates.
  */
 public abstract class AbstractGameSolverCommand implements ScriptableCommand<String> {
