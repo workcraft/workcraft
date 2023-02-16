@@ -7,6 +7,7 @@ import org.flexdock.docking.defaults.DefaultDockingStrategy;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 
 import javax.swing.*;
 import javax.swing.plaf.UIResource;
@@ -42,7 +43,14 @@ public class ScrollDockingPort extends DefaultDockingPort {
     protected JTabbedPane createTabbedPane() {
         JTabbedPane tabbedPane = super.createTabbedPane();
         tabbedPane.setUI(new DockingTabbedPaneUI());
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        switch (EditorCommonSettings.getTabStyle()) {
+        case WRAP:
+            tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+            break;
+        case SCROLL:
+            tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+            break;
+        }
         return tabbedPane;
     }
 

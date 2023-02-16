@@ -73,6 +73,9 @@ class CommonSettingsTest {
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getTitleStyle()),
                 framework.getConfigVar(prefix + ".titleStyle", false));
 
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getTabStyle()),
+                framework.getConfigVar(prefix + ".tabStyle", false));
+
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getDialogStyle()),
                 framework.getConfigVar(prefix + ".dialogStyle", false));
 

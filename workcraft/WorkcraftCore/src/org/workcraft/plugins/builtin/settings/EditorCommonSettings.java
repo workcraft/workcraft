@@ -64,6 +64,22 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         }
     }
 
+    public enum TabStyle {
+        SCROLL("scroll"),
+        WRAP("wrap");
+
+        public final String name;
+
+        TabStyle(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonEditorSettings";
 
@@ -74,6 +90,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static final String keyScreenDpi = prefix + ".screenDpi";
     private static final String keyFontSize = prefix + ".fontSize";
     private static final String keyTitleStyle = prefix + ".titleStyle";
+    private static final String keyTabStyle = prefix + ".tabStyle";
     private static final String keyDialogStyle = prefix + ".dialogStyle";
     private static final String keyRecentCount = prefix + ".recentCount";
     // Canvas
@@ -102,6 +119,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static final double defaultScreenDpi = 96.0;
     private static final double defaultFontSize = 10.0;
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
+    private static final TabStyle defaultTabStyle = TabStyle.SCROLL;
     private static final DialogStyle defaultDialogStyle = DialogStyle.CROSS_PLATFORM;
     private static final int defaultRecentCount = 10;
     // Canvas
@@ -130,6 +148,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static double screenDpi = defaultScreenDpi;
     private static double fontSize = defaultFontSize;
     private static TitleStyle titleStyle = defaultTitleStyle;
+    private static TabStyle tabStyle = defaultTabStyle;
     private static DialogStyle dialogStyle = defaultDialogStyle;
     private static int recentCount = defaultRecentCount;
     // Canvas
@@ -178,6 +197,11 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 PropertyHelper.BULLET_PREFIX + "Tab title style",
                 EditorCommonSettings::setTitleStyle,
                 EditorCommonSettings::getTitleStyle));
+
+        properties.add(new PropertyDeclaration<>(TabStyle.class,
+                PropertyHelper.BULLET_PREFIX + "Tab layout - requires restart",
+                EditorCommonSettings::setTabStyle,
+                EditorCommonSettings::getTabStyle));
 
         properties.add(new PropertyDeclaration<>(DialogStyle.class,
                 PropertyHelper.BULLET_PREFIX + "Dialog style",
@@ -274,6 +298,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         setScreenDpi(config.getDouble(keyScreenDpi, defaultScreenDpi));
         setFontSize(config.getDouble(keyFontSize, defaultFontSize));
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
+        setTabStyle(config.getEnum(keyTabStyle, TabStyle.class, defaultTabStyle));
         setDialogStyle(config.getEnum(keyDialogStyle, DialogStyle.class, defaultDialogStyle));
         setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
         // Canvas
@@ -302,6 +327,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         config.setDouble(keyScreenDpi, getScreenDpi());
         config.setDouble(keyFontSize, getFontSize());
         config.setEnum(keyTitleStyle, getTitleStyle());
+        config.setEnum(keyTabStyle, getTabStyle());
         config.setEnum(keyDialogStyle, getDialogStyle());
         config.setInt(keyRecentCount, getRecentCount());
         // Canvas
@@ -351,6 +377,14 @@ public class EditorCommonSettings extends AbstractCommonSettings {
 
     public static void setTitleStyle(TitleStyle value) {
         titleStyle = value;
+    }
+
+    public static TabStyle getTabStyle() {
+        return tabStyle;
+    }
+
+    public static void setTabStyle(TabStyle value) {
+        tabStyle = value;
     }
 
     public static DialogStyle getDialogStyle() {
