@@ -6,8 +6,13 @@ import org.flexdock.docking.defaults.DefaultDockingPort;
 import org.flexdock.docking.defaults.DefaultDockingStrategy;
 import org.flexdock.docking.defaults.StandardBorderManager;
 import org.flexdock.plaf.common.border.ShadowBorder;
+import org.workcraft.dom.visual.SizeHelper;
 
 import javax.swing.*;
+import javax.swing.plaf.UIResource;
+import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import java.awt.*;
 
 public class ScrollDockingPort extends DefaultDockingPort {
 
@@ -35,9 +40,35 @@ public class ScrollDockingPort extends DefaultDockingPort {
 
     @Override
     protected JTabbedPane createTabbedPane() {
-        JTabbedPane tabbed = super.createTabbedPane();
-        tabbed.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        return tabbed;
+        JTabbedPane tabbedPane = super.createTabbedPane();
+        tabbedPane.setUI(new DockingTabbedPaneUI());
+        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        return tabbedPane;
+    }
+
+    private static class DockingTabbedPaneUI extends BasicTabbedPaneUI {
+
+        @Override
+        protected JButton createScrollButton(int direction) {
+            return new DockingArrowButton(direction);
+        }
+    }
+
+    private static class DockingArrowButton extends BasicArrowButton implements UIResource {
+
+        DockingArrowButton(int direction) {
+            super(direction,
+                    UIManager.getColor("TabbedPane.selected"),
+                    UIManager.getColor("TabbedPane.shadow"),
+                    UIManager.getColor("TabbedPane.darkShadow"),
+                    UIManager.getColor("TabbedPane.highlight"));
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            int d = SizeHelper.getTabScrollButtonSize();
+            return new Dimension(d, d);
+        }
     }
 
 }
