@@ -2,8 +2,6 @@ package org.workcraft.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -34,10 +32,8 @@ public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
         VisualModel model = WorkspaceUtils.getAs(we, VisualModel.class);
         layout(model);
         final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
-        if (framework.isInGuiMode() && (mainWindow != null)) {
-            final GraphEditor editor = mainWindow.getCurrentEditor();
-            editor.zoomFit();
+        if (framework.isInGuiMode()) {
+            framework.getMainWindow().getCurrentEditor().zoomFit();
         }
         return null;
     }

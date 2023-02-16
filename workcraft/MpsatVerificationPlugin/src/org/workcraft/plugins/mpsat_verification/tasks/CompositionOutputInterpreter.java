@@ -65,7 +65,7 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
             MainWindow mainWindow = framework.getMainWindow();
             for (WorkspaceEntry we : wes) {
                 List<Solution> processedSolutions = processSolutions(solutions, we);
-                if (!processedSolutions.isEmpty() && framework.isInGuiMode()) {
+                if (!processedSolutions.isEmpty()) {
                     mainWindow.requestFocus(we);
                     String title = OutcomeUtils.TITLE + " for model '" + we.getTitle() + "'";
                     ReachabilityDialog solutionsDialog = new ReachabilityDialog(
