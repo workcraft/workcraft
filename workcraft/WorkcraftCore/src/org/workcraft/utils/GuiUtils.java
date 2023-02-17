@@ -30,8 +30,7 @@ import java.net.URL;
 
 public class GuiUtils {
 
-    private static final int BUTTON_PREFERRED_WIDTH = 100;
-    private static final int BUTTON_PREFERRED_HEIGHT = 25;
+    private static final float BUTTON_PREFERRED_ASPECT_RATIO = 4.0f;
 
     public static JPanel createLabeledComponent(JComponent component, String labelText) {
         return createLabeledComponent(component, labelText, BorderLayout.WEST);
@@ -197,12 +196,15 @@ public class GuiUtils {
     }
 
     public static JButton createDialogButton(String text) {
-        JButton result = new JButton(text);
-        Dimension dimension = result.getPreferredSize();
-        int w = Math.max(dimension.width, BUTTON_PREFERRED_WIDTH);
-        int h = Math.max(dimension.height, BUTTON_PREFERRED_HEIGHT);
-        result.setPreferredSize(new Dimension(w, h));
-        return result;
+        return new JButton(text) {
+            @Override
+            public Dimension getPreferredSize() {
+                Dimension dimension = super.getPreferredSize();
+                int h = dimension.height;
+                int w = Math.max(dimension.width, Math.round(BUTTON_PREFERRED_ASPECT_RATIO * h));
+                return new Dimension(w, h);
+            }
+        };
     }
 
     public static FlowLayout createFlowLayout() {

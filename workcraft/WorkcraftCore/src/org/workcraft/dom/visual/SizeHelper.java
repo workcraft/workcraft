@@ -26,16 +26,16 @@ public class SizeHelper {
         return (int) Math.round(1.5 * getBaseSize());
     }
 
-    public static int getIconSize() {
-        return 32;
-    }
-
     public static int getToolIconSize() {
         return (int) Math.round(2.0 * getBaseSize());
     }
 
     public static int getListRowSize() {
         return (int) Math.round(1.8 * getBaseSize());
+    }
+
+    public static int getTabScrollButtonSize() {
+        return (int) Math.round(1.55 * getBaseSize());
     }
 
     public static int getCheckBoxIconSize() {

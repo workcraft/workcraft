@@ -78,7 +78,6 @@ public final class Framework {
     private ScriptableObject systemScope;
     private ScriptableObject globalScope;
 
-    private boolean inGuiMode = false;
     private boolean shutdownRequested = false;
     private final ContextFactory contextFactory = new ContextFactory();
     public Resource clipboard;
@@ -448,7 +447,7 @@ public final class Framework {
     }
 
     public void startGUI() {
-        if (inGuiMode) {
+        if (isInGuiMode()) {
             System.out.println("Already in GUI mode");
             return;
         }
@@ -474,8 +473,6 @@ public final class Framework {
             systemScope.setAttributes(MAIN_WINDOW_VARIABLE, ScriptableObject.READONLY);
             return null;
         });
-
-        inGuiMode = true;
     }
 
     public void shutdownGUI() throws OperationCancelledException {
@@ -483,7 +480,6 @@ public final class Framework {
             mainWindow.shutdown();
             mainWindow.dispose();
             mainWindow = null;
-            inGuiMode = false;
 
             contextFactory.call(cx -> {
                 ScriptableObject.deleteProperty(systemScope, MAIN_WINDOW_VARIABLE);
@@ -525,11 +521,11 @@ public final class Framework {
     }
 
     public boolean isInGuiMode() {
-        return inGuiMode;
+        return mainWindow != null;
     }
 
     public void requestFocus(WorkspaceEntry we) {
-        if (isInGuiMode() && (mainWindow != null) && (we != null)) {
+        if (isInGuiMode() && (we != null)) {
             mainWindow.requestFocus(we);
         }
     }
@@ -669,6 +665,9 @@ public final class Framework {
         // Check if work is already loaded
         WorkspaceEntry we = getWorkspace().getWork(file);
         if (we != null) {
+            if (open && isInGuiMode()) {
+                getMainWindow().getOrCreateEditor(we);
+            }
             return we;
         }
         ModelEntry me = WorkUtils.loadModel(file);
@@ -830,7 +829,7 @@ public final class Framework {
                 LogUtils.logWarning(prefix + " is set to non-existent path:" + path);
                 return false;
             }
-            if (!value.isFile()) {
+            if (value.isFile()) {
                 LogUtils.logWarning(prefix + " is set to a file path:" + path);
                 return false;
             }

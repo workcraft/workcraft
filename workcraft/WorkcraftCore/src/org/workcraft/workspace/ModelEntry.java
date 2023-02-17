@@ -5,7 +5,10 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 
-import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 public class ModelEntry {
@@ -84,7 +87,8 @@ public class ModelEntry {
     public Stamp getStamp() {
         if (stamp == null) {
             long currentTime = System.currentTimeMillis();
-            String time = new Timestamp(currentTime).toString();
+            ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), ZoneId.systemDefault());
+            String time = zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
             String uuid = UUID.randomUUID().toString();
             stamp = new Stamp(time, uuid);
         }

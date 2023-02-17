@@ -41,8 +41,8 @@ public class DialogUtils {
             }
         }
         Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        if ((mainWindow != null) && framework.isInGuiMode()) {
+        if (framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
             String text = TextUtils.truncateLines(msg, TRUNCATE_LENGTH);
             JOptionPane.showMessageDialog(mainWindow, text, title, messageType);
         }
@@ -111,8 +111,8 @@ public class DialogUtils {
     private static boolean showConfirm(String msg, String title, int messageType, boolean defaultChoice) {
         boolean result = defaultChoice;
         Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        if ((mainWindow != null) && framework.isInGuiMode()) {
+        if (framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
             String yesText = UIManager.getString("OptionPane.yesButtonText");
             String noText = UIManager.getString("OptionPane.noButtonText");
             String[] options = {yesText, noText};
@@ -130,8 +130,8 @@ public class DialogUtils {
 
     public static String showInput(String msg, String title, String initial) {
         Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        if ((mainWindow != null) && framework.isInGuiMode()) {
+        if (framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
             return (String) JOptionPane.showInputDialog(mainWindow, msg, title,
                     JOptionPane.QUESTION_MESSAGE, null, null, initial);
         }
@@ -150,8 +150,8 @@ public class DialogUtils {
 
         int result = JOptionPane.CANCEL_OPTION;
         Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        if ((mainWindow != null) && framework.isInGuiMode()) {
+        if (framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
             String[] options = {yesText, noText, cancelText};
             result = JOptionPane.showOptionDialog(mainWindow, msg, title, JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE, null, options, options[defaultChoice]);
@@ -228,8 +228,8 @@ public class DialogUtils {
 
     public static boolean showFileOpener(JFileChooser fc) {
         Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        if ((mainWindow != null) && framework.isInGuiMode()) {
+        if (framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
             loadFileChooserSize(fc);
             int returnValue = fc.showOpenDialog(mainWindow);
             saveFileChooserSize(fc);
@@ -240,9 +240,9 @@ public class DialogUtils {
 
     public static boolean showFileSaver(JFileChooser fc) {
         Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        if ((mainWindow != null) && framework.isInGuiMode()) {
+        if (framework.isInGuiMode()) {
             loadFileChooserSize(fc);
+            MainWindow mainWindow = framework.getMainWindow();
             int returnValue = fc.showSaveDialog(mainWindow);
             saveFileChooserSize(fc);
             return returnValue == JFileChooser.APPROVE_OPTION;
