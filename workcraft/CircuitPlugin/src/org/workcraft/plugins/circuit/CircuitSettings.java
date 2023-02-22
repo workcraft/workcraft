@@ -80,6 +80,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyInvertImportSubstitutionRules = prefix + ".invertImportSubstitutionRules";
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
     private static final String keyBusSuffix = prefix + ".busSuffix";
+    private static final String keyDissolveSingletonBus = prefix + ".dissolveSingletonBus";
     private static final String keyModuleFilePattern = prefix + ".moduleFilePattern";
     // Reset
     private static final String keyResetActiveHighPort = prefix + ".resetActiveHighPort";
@@ -125,6 +126,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultInvertImportSubstitutionRules = true;
     private static final String defaultVerilogAssignDelay = "";
     private static final String defaultBusSuffix = "__" + VerilogUtils.BUS_INDEX_PLACEHOLDER;
+    private static final boolean defaultDissolveSingletonBus = true;
     private static final String defaultModuleFilePattern = VerilogUtils.MODULE_NAME_PLACEHOLDER + FileFilters.DOCUMENT_EXTENSION;
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
@@ -169,6 +171,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
     private static String verilogAssignDelay = defaultVerilogAssignDelay;
     private static String busSuffix = defaultBusSuffix;
+    private static boolean dissolveSingletonBus = defaultDissolveSingletonBus;
     private static String moduleFilePattern = defaultModuleFilePattern;
     // Reset
     private static String resetActiveHighPort = defaultResetActiveHighPort;
@@ -313,6 +316,11 @@ public class CircuitSettings extends AbstractModelSettings {
                         + VerilogUtils.BUS_INDEX_PLACEHOLDER + " denotes index)",
                 CircuitSettings::setBusSuffix,
                 CircuitSettings::getBusSuffix));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Dissolve single-bit buses on Verilog export",
+                CircuitSettings::setDissolveSingletonBus,
+                CircuitSettings::getDissolveSingletonBus));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "File pattern for import of hierarchical Verilog modules ("
@@ -459,6 +467,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
         setVerilogAssignDelay(config.getString(keyVerilogAssignDelay, defaultVerilogAssignDelay));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
+        setDissolveSingletonBus(config.getBoolean(keyDissolveSingletonBus, defaultDissolveSingletonBus));
         setModuleFilePattern(config.getString(keyModuleFilePattern, defaultModuleFilePattern));
         // Reset
         setResetActiveHighPort(config.getString(keyResetActiveHighPort, defaultResetActiveHighPort));
@@ -504,6 +513,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
         config.set(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyBusSuffix, getBusSuffix());
+        config.setBoolean(keyDissolveSingletonBus, getDissolveSingletonBus());
         config.set(keyModuleFilePattern, getModuleFilePattern());
         // Reset
         config.set(keyResetActiveHighPort, getResetActiveHighPort());
@@ -696,6 +706,14 @@ public class CircuitSettings extends AbstractModelSettings {
         } else {
             busSuffix = value;
         }
+    }
+
+    public static boolean getDissolveSingletonBus() {
+        return dissolveSingletonBus;
+    }
+
+    public static void setDissolveSingletonBus(boolean value) {
+        dissolveSingletonBus = value;
     }
 
     public static String getModuleFilePattern() {

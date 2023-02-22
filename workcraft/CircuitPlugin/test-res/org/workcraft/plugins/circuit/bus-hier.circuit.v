@@ -1,7 +1,4 @@
 module top (input [2:0] in, output [1:0] out);
-  input mixed__0, override, override__0, override__1;
-  input [0:0] singleton_in;
-  output override_singleton__123, mixed__1, override_singleton;
   wire [1:0] w;
 
   // Bus connects of instA are expanded as follows:
@@ -16,11 +13,8 @@ module top (input [2:0] in, output [1:0] out);
 
   INV inst_inv (.I(w[1]), .ON(out[0]));
 
-  BUF g2 (.O(override_singleton__123), .I(singleton_in[0]));
-  BUF g1 (.O(mixed__1), .I(mixed__0));
-  AND3 g0 (.O(override_singleton), .A(override__0), .B(override__1), .C(override));                                                                                                                    
   // signal values at the initial state:
-  // !in[2] !in[1] !in[0] w[1] !w[0] !out[1] !out[0]  !mixed__0 !mixed__1 !override !override__0 !override__1 !override_singleton !override_singleton__123 !singleton_in[0]
+  // !in[2] !in[1] !in[0] w[1] !w[0] !out[1] !out[0]
 endmodule
 
 
