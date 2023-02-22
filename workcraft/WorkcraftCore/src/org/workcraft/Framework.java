@@ -826,11 +826,11 @@ public final class Framework {
         if (value != null) {
             String path = value.getPath();
             if (!value.exists()) {
-                LogUtils.logWarning(prefix + " is set to non-existent path:" + path);
+                LogUtils.logWarning(prefix + " is set to non-existent path: " + path);
                 return false;
             }
             if (value.isFile()) {
-                LogUtils.logWarning(prefix + " is set to a file path:" + path);
+                LogUtils.logWarning(prefix + " is set to a file path: " + path);
                 return false;
             }
         }

@@ -11,6 +11,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,9 +35,14 @@ public class ArbitrationUtils {
     }
 
     public static Set<String> getWaitModuleNames() {
-        return Arrays.stream(Wait.Type.values())
-                .map(type -> CircuitSettings.parseWaitData(type).name)
-                .collect(Collectors.toSet());
+        Set<String> result = new HashSet<>();
+        for (Wait.Type type : Wait.Type.values()) {
+            Wait module = CircuitSettings.parseWaitData(type);
+            if ((module != null) && (module.name != null)) {
+                result.add(module.name);
+            }
+        }
+        return result;
     }
 
     public static Wait getWaitModule(String moduleName) {

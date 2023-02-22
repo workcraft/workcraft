@@ -90,6 +90,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyTbufData = prefix + ".tbufData";
     private static final String keyTinvData = prefix + ".tinvData";
     private static final String keyTestInstancePrefix = prefix + ".testInstancePrefix";
+    private static final String keyUseTestPathBreaker = prefix + ".useTestPathBreaker";
     private static final String keyScanSuffix = prefix + ".scanSuffix";
     private static final String keyScaninData = prefix + ".scaninData";
     private static final String keyScanoutData = prefix + ".scanoutData";
@@ -134,6 +135,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultTinvData = "TINV (I, ON)";
     private static final String defaultTestInstancePrefix = "test_";
+    private static final boolean defaultUseTestPathBreaker = true;
     private static final String defaultScanSuffix = "_scan";
     private static final String defaultScaninData = "scanin / SI";
     private static final String defaultScanoutData = "scanout / SO";
@@ -177,6 +179,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String tbufData = defaultTbufData;
     private static String tinvData = defaultTinvData;
     private static String testInstancePrefix = defaultTestInstancePrefix;
+    private static boolean useTestPathBreaker = defaultUseTestPathBreaker;
     private static String scanSuffix = defaultScanSuffix;
     private static String scaninData = defaultScaninData;
     private static String scanoutData = defaultScanoutData;
@@ -356,6 +359,11 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::setTestInstancePrefix,
                 CircuitSettings::getTestInstancePrefix));
 
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Use testable instance as path breaker",
+                CircuitSettings::setUseTestPathBreaker,
+                CircuitSettings::getUseTestPathBreaker));
+
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Scan module suffix",
                 CircuitSettings::setScanSuffix,
@@ -461,6 +469,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setTbufData(config.getString(keyTbufData, defaultTbufData));
         setTinvData(config.getString(keyTinvData, defaultTinvData));
         setTestInstancePrefix(config.getString(keyTestInstancePrefix, defaultTestInstancePrefix));
+        setUseTestPathBreaker(config.getBoolean(keyUseTestPathBreaker, defaultUseTestPathBreaker));
         setScanSuffix(config.getString(keyScanSuffix, defaultScanSuffix));
         setScaninData(config.getString(keyScaninData, defaultScaninData));
         setScanoutData(config.getString(keyScanoutData, defaultScanoutData));
@@ -505,6 +514,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyTbufData, getTbufData());
         config.set(keyTinvData, getTinvData());
         config.set(keyTestInstancePrefix, getTestInstancePrefix());
+        config.setBoolean(keyUseTestPathBreaker, getUseTestPathBreaker());
         config.set(keyScanSuffix, getScanSuffix());
         config.set(keyScaninData, getScaninData());
         config.set(keyScanoutData, getScanoutData());
@@ -769,6 +779,14 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setTestInstancePrefix(String value) {
         testInstancePrefix = value;
+    }
+
+    public static boolean getUseTestPathBreaker() {
+        return useTestPathBreaker;
+    }
+
+    public static void setUseTestPathBreaker(boolean value) {
+        useTestPathBreaker = value;
     }
 
     public static String getScanSuffix() {

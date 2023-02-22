@@ -57,7 +57,10 @@ public final class ScanUtils {
         circuit.setMathName(outputContact, Identifier.makeInternal(outputName));
         circuit.setMathName(inputContact, inputName);
         circuit.setMathName(outputContact, outputName);
-        result.getGateOutput().getReferencedComponent().setPathBreaker(true);
+        if (CircuitSettings.getUseTestPathBreaker()) {
+            inputContact.getReferencedComponent().setPathBreaker(true);
+        }
+        outputContact.getReferencedComponent().setPathBreaker(true);
         return result;
     }
 
