@@ -21,6 +21,7 @@ class CycleCommandTests {
     static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
+        CircuitSettings.setUseTestPathBreaker(false);
     }
 
     @Test

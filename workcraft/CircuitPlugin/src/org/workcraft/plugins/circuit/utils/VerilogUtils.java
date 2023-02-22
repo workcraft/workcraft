@@ -348,16 +348,29 @@ public final class VerilogUtils {
                 PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(1ps * $urandom_range(10, 20))`";
     }
 
+    private static String getPortNameWithSubstitutions(String moduleName, String portName) {
+        Map<String, SubstitutionRule> substitutionRules = LibraryManager.getExportSubstitutionRules();
+        SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
+        return SubstitutionUtils.getContactSubstitutionName(portName, substitutionRule, null);
+    }
+
+    public static String getContactNameWithSubstitutions(Contact contact) {
+        Node parent = contact.getParent();
+        if (parent instanceof CircuitComponent) {
+            CircuitComponent component = (CircuitComponent) parent;
+            return getPortNameWithSubstitutions(component.getModule(), contact.getName());
+        } else {
+            return contact.getName();
+        }
+    }
+
     public static String getContactFullNameWithSubstitutions(Circuit circuit, Contact contact) {
         Node parent = contact.getParent();
         if (parent instanceof CircuitComponent) {
             CircuitComponent component = (CircuitComponent) parent;
             String instanceRef = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
             String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
-            String moduleName = component.getModule();
-            Map<String, SubstitutionRule> substitutionRules = LibraryManager.getExportSubstitutionRules();
-            SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
-            String contactName = SubstitutionUtils.getContactSubstitutionName(contact.getName(), substitutionRule, null);
+            String contactName = getPortNameWithSubstitutions(component.getModule(), contact.getName());
             return instanceFlatName + "/" + contactName;
         } else {
             return contact.getName();

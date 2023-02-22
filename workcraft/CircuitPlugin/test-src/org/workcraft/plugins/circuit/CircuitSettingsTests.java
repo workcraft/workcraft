@@ -105,6 +105,9 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getTestInstancePrefix()),
                 framework.getConfigVar(prefix + ".testInstancePrefix", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getUseTestPathBreaker()),
+                framework.getConfigVar(prefix + ".useTestPathBreaker", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getScanSuffix()),
                 framework.getConfigVar(prefix + ".scanSuffix", false));
 
