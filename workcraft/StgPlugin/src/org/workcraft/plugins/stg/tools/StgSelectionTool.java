@@ -43,11 +43,9 @@ public class StgSelectionTool extends SelectionTool {
             VisualModel model = editor.getModel();
             Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node instanceof VisualPlace) {
-                if (e.isMenuKeyDown()) {
-                    VisualPlace place = (VisualPlace) node;
-                    toggleToken(place.getReferencedComponent(), editor);
-                    return;
-                }
+                VisualPlace place = (VisualPlace) node;
+                toggleToken(place.getReferencedComponent(), editor);
+                return;
             }
             if (node instanceof VisualImplicitPlaceArc) {
                 if (e.isMenuKeyDown()) {
@@ -122,7 +120,7 @@ public class StgSelectionTool extends SelectionTool {
                         DesktopApi.getMenuKeyName() + "+double-click to toggle implicit place marking.";
             }
             if (getCurrentNode() instanceof VisualPlace) {
-                return DesktopApi.getMenuKeyName() + "+double-click to toggle place marking.";
+                return "Double-click to toggle place marking.";
             }
         }
         if ((getDragState() == DragState.MOVE) && (relocationTransition != null)) {

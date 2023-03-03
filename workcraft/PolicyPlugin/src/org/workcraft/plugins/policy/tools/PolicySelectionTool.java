@@ -50,19 +50,17 @@ public class PolicySelectionTool extends SelectionTool {
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node instanceof VisualPlace) {
-                if (e.isMenuKeyDown()) {
-                    VisualPlace place = (VisualPlace) node;
-                    if (place.getReferencedComponent().getTokens() <= 1) {
-                        e.getEditor().getWorkspaceEntry().saveMemento();
+                VisualPlace place = (VisualPlace) node;
+                if (place.getReferencedComponent().getTokens() <= 1) {
+                    e.getEditor().getWorkspaceEntry().saveMemento();
 
-                        if (place.getReferencedComponent().getTokens() == 1) {
-                            place.getReferencedComponent().setTokens(0);
-                        } else {
-                            place.getReferencedComponent().setTokens(1);
-                        }
+                    if (place.getReferencedComponent().getTokens() == 1) {
+                        place.getReferencedComponent().setTokens(0);
+                    } else {
+                        place.getReferencedComponent().setTokens(1);
                     }
-                    processed = true;
                 }
+                processed = true;
             }
         }
 
@@ -121,7 +119,7 @@ public class PolicySelectionTool extends SelectionTool {
     public String getHintText(final GraphEditor editor) {
         if (getDragState() == DragState.NONE) {
             if (getCurrentNode() instanceof VisualPlace) {
-                return DesktopApi.getMenuKeyName() + "+double-click to toggle place marking.";
+                return "Double-click to toggle place marking.";
             }
         }
         return super.getHintText(editor);
