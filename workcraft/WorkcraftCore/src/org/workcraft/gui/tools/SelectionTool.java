@@ -7,6 +7,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionMenuItem;
@@ -54,10 +55,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public static final String CCW_ROTATE_ICON = "images/selection-rotate_counterclockwise.svg";
     public static final String CCW_ROTATE_HINT = "Rotate counterclockwise";
 
-    public enum DrugState { NONE, MOVE, SELECT }
+    public enum DragState { NONE, MOVE, SELECT }
     public enum SelectionMode { NONE, ADD, REMOVE, REPLACE }
 
-    private DrugState dragState = DrugState.NONE;
+    private DragState dragState = DragState.NONE;
     private boolean ignoreMouseButton1 = false;
     private boolean ignoreMouseButton3 = false;
 
@@ -212,7 +213,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     @Override
     public boolean isDragging() {
-        return dragState != DrugState.NONE;
+        return dragState != DragState.NONE;
     }
 
     @Override
@@ -337,7 +338,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         VisualModel model = editor.getModel();
         Point2D pos = e.getPosition();
-        if (dragState == DrugState.MOVE) {
+        if (dragState == DragState.MOVE) {
             Point2D startPos = e.getStartPosition();
             Point2D offsetStartPos = new Point2D.Double(startPos.getX() + snapOffset.getX(), startPos.getY() + snapOffset.getY());
             Point2D snapOffsetStartPos = editor.snap(offsetStartPos, snaps);
@@ -356,7 +357,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
             VisualModelTransformer.translateSelection(model, dx - moveOffset.getX(), dy - moveOffset.getY());
             moveOffset = new Point2D.Double(dx, dy);
-        } else if (dragState == DrugState.SELECT) {
+        } else if (dragState == DragState.SELECT) {
             selected.clear();
             selected.addAll(model.hitBox(e.getStartPosition(), pos));
             selectionBox = getSelectionRect(e.getStartPosition(), pos);
@@ -420,7 +421,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     selectionMode = SelectionMode.REPLACE;
                 }
                 // Selection will not actually be changed until drag completes
-                dragState = DrugState.SELECT;
+                dragState = DragState.SELECT;
                 selected.clear();
                 if (selectionMode == SelectionMode.REPLACE) {
                     model.selectNone();
@@ -429,7 +430,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 }
             } else if (e.getKeyModifiers() == 0) {
                 // If mouse down without modifiers and hit something then begin move-drag
-                dragState = DrugState.MOVE;
+                dragState = DragState.MOVE;
                 if (!model.getSelection().contains(hitNode)) {
                     model.select(hitNode);
                 }
@@ -449,10 +450,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
     @Override
     public void finishDrag(GraphEditorMouseEvent e) {
         GraphEditor editor = e.getEditor();
-        if (dragState == DrugState.MOVE) {
+        if (dragState == DragState.MOVE) {
             // Final move of the selection - afterSelectionModification is needed
             afterSelectionModification(editor);
-        } else if (dragState == DrugState.SELECT) {
+        } else if (dragState == DragState.SELECT) {
             VisualModel model = e.getModel();
             if (selectionMode == SelectionMode.REPLACE) {
                 model.select(selected);
@@ -463,19 +464,19 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
             selectionBox = null;
         }
-        dragState = DrugState.NONE;
+        dragState = DragState.NONE;
         selected.clear();
         editor.repaint();
     }
 
     private void cancelDrag(GraphEditor editor) {
-        if (dragState == DrugState.MOVE) {
+        if (dragState == DragState.MOVE) {
             editor.getWorkspaceEntry().cancelMemento();
-        } else if (dragState == DrugState.SELECT) {
+        } else if (dragState == DragState.SELECT) {
             selected.clear();
             selectionBox = null;
         }
-        dragState = DrugState.NONE;
+        dragState = DragState.NONE;
         ignoreMouseButton1 = true;
         ignoreMouseButton3 = true;
         editor.repaint();
@@ -569,19 +570,32 @@ public class SelectionTool extends AbstractGraphEditorTool {
         return selectionMode;
     }
 
+    public DragState getDragState() {
+        return dragState;
+    }
+
+    public VisualNode getCurrentNode() {
+        return currentNode;
+    }
+
     @Override
     public String getHintText(final GraphEditor editor) {
-        if (dragState == DrugState.MOVE) {
+        if (getDragState() == DragState.NONE) {
+            if (getCurrentNode() instanceof VisualConnection) {
+                return "Double-click for adding control point to connection.";
+            }
+        }
+        if (dragState == DragState.MOVE) {
             return "Hold Shift for dragging parallel to axes.";
         }
         return "Hold Shift for adding to selection or " +
                 DesktopApi.getMenuKeyName() + " for removing from selection. " +
-                "Hold Alt/AltGr for extending selection to adjacent nodes.";
+                "Hold Alt/AltGr for extending selection to adjacent connections.";
     }
 
     @Override
     public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
-        if ((dragState == DrugState.SELECT) && (selectionBox != null)) {
+        if ((dragState == DragState.SELECT) && (selectionBox != null)) {
             Viewport viewport = editor.getViewport();
             g.setStroke(new BasicStroke((float) viewport.pixelSizeInUserSpace().getX()));
             Color borderColor = SelectionDecorationSettings.getSelectionColor();

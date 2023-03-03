@@ -128,7 +128,7 @@ public class DtdSelectionTool extends SelectionTool {
     @Override
     public String getHintText(final GraphEditor editor) {
         return "Double-click on signal to add an event. In unstable state hold Shift to rise, " +
-                DesktopApi.getMenuKeyName() + " to fall; in high/low state hold Shift-" +
+                DesktopApi.getMenuKeyName() + " to fall; in high/low state hold Shift+" +
                 DesktopApi.getMenuKeyName() + " to destabilise. Hold Alt/AltGr to swap signals.";
     }
 
