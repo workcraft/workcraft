@@ -108,19 +108,19 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         if (hasSelfLoopsOnly(mathModel, mathTransition)) {
             return;
         }
-        String name = mathModel.getName(mathTransition);
+        String ref = mathModel.getNodeReference(mathTransition);
         if (hasSelfLoopAndMore(mathModel, mathTransition)) {
             throw new ImpossibleContractionException(
-                    "Cannot contract transition " + name + " with both read-arc (self-loop) and producing/consuming arc.");
+                    "Cannot contract transition " + ref + " with both read-arc (self-loop) and producing/consuming arc.");
         } else if (needsWaitedArcs(mathModel, mathTransition)) {
             throw new ImpossibleContractionException(
-                    "Cannot contract transition " + name + " as it requires weighted arcs that are currently not supported.");
+                    "Cannot contract transition " + ref + " as it requires weighted arcs that are currently not supported.");
         } else if (isLanguageChanging(mathModel, mathTransition)) {
             throw new SuspiciousContractionException(
-                    "Contraction of transition " + name + " may change the language.");
+                    "Contraction of transition " + ref + " may change the language.");
         } else if (isSafenessViolating(mathModel, mathTransition)) {
             throw new SuspiciousContractionException(
-                    "Contraction of transition " + name + " may be not safeness-preserving.");
+                    "Contraction of transition " + ref + " may be not safeness-preserving.");
         }
     }
 
