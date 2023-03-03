@@ -11,6 +11,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
+import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -69,34 +70,39 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
         if ((model instanceof VisualStg) && (node instanceof VisualConnection)) {
             VisualStg stg = (VisualStg) model;
             VisualConnection connection = (VisualConnection) node;
-            Container container = (Container) connection.getParent();
-            VisualTransition transition = createTransition(stg, container);
-            Point2D splitPoint = connection.getSplitPoint();
-            transition.setPosition(splitPoint);
-            try {
-                LinkedList<Point2D> prefixLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(connection, splitPoint);
-                VisualConnection predConnection = stg.connect(connection.getFirst(), transition);
-                predConnection.copyStyle(connection);
-                ConnectionHelper.addControlPoints(predConnection, prefixLocationsInRootSpace);
-            } catch (InvalidConnectionException e) {
-                LogUtils.logWarning(e.getMessage());
-            }
-            try {
-                LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPoint);
-                VisualConnection succConnection = stg.connect(transition, connection.getSecond());
-                succConnection.copyStyle(connection);
-                if (succConnection instanceof VisualImplicitPlaceArc) {
-                    ((VisualImplicitPlaceArc) succConnection).getImplicitPlace().setTokens(0);
-                }
-                ConnectionHelper.addControlPoints(succConnection, suffixLocationsInRootSpace);
-            } catch (InvalidConnectionException e) {
-                LogUtils.logWarning(e.getMessage());
-            }
-            stg.remove(connection);
+            VisualTransition transition = insertTransitionIntoConnection(stg, connection);
             model.addToSelection(transition);
         }
     }
 
-    public abstract VisualTransition createTransition(VisualStg stg, Container container);
+    public VisualNamedTransition insertTransitionIntoConnection(VisualStg stg, VisualConnection connection) {
+        Container container = (Container) connection.getParent();
+        VisualNamedTransition transition = createTransition(stg, container);
+        Point2D splitPoint = connection.getSplitPoint();
+        transition.setPosition(splitPoint);
+        try {
+            LinkedList<Point2D> prefixLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(connection, splitPoint);
+            VisualConnection predConnection = stg.connect(connection.getFirst(), transition);
+            predConnection.copyStyle(connection);
+            ConnectionHelper.addControlPoints(predConnection, prefixLocationsInRootSpace);
+        } catch (InvalidConnectionException e) {
+            LogUtils.logWarning(e.getMessage());
+        }
+        try {
+            LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPoint);
+            VisualConnection succConnection = stg.connect(transition, connection.getSecond());
+            succConnection.copyStyle(connection);
+            if (succConnection instanceof VisualImplicitPlaceArc) {
+                ((VisualImplicitPlaceArc) succConnection).getImplicitPlace().setTokens(0);
+            }
+            ConnectionHelper.addControlPoints(succConnection, suffixLocationsInRootSpace);
+        } catch (InvalidConnectionException e) {
+            LogUtils.logWarning(e.getMessage());
+        }
+        stg.remove(connection);
+        return transition;
+    }
+
+    public abstract VisualNamedTransition createTransition(VisualStg stg, Container container);
 
 }

@@ -18,6 +18,8 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.*;
+import org.workcraft.plugins.petri.exceptions.ImpossibleContractionException;
+import org.workcraft.plugins.petri.exceptions.SuspiciousContractionException;
 import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.types.Pair;
@@ -85,22 +87,40 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
         if (node instanceof VisualTransition) {
-            PetriModel mathModel = (PetriModel) model.getMathModel();
             VisualTransition transition = (VisualTransition) node;
-            Transition mathTransition = transition.getReferencedComponent();
-            if (hasSelfLoop(mathModel, mathTransition)) {
-                DialogUtils.showError("A transition with a self-loop/read-arc cannot be contracted.");
-            } else if (needsWaitedArcs(mathModel, mathTransition)) {
-                DialogUtils.showError("This transformation requires weighted arcs that are currently not supported.");
-            } else if (isLanguageChanging(mathModel, mathTransition)) {
+            try {
+                validateContraction(model, transition);
+                removeOrContractTransition(model, transition);
+            } catch (SuspiciousContractionException e) {
                 contractTransition(model, transition);
-                DialogUtils.showWarning("This transformation may change the language.");
-            } else if (isSafenessViolating(mathModel, mathTransition)) {
-                contractTransition(model, transition);
-                DialogUtils.showWarning("This transformation may be not safeness-preserving.");
-            } else {
-                contractTransition(model, transition);
+                DialogUtils.showWarning(e.getMessage());
+            } catch (ImpossibleContractionException e) {
+                DialogUtils.showError(e.getMessage());
             }
+        }
+    }
+
+    public void validateContraction(VisualModel model, VisualTransition transition)
+            throws SuspiciousContractionException, ImpossibleContractionException {
+
+        PetriModel mathModel = (PetriModel) model.getMathModel();
+        Transition mathTransition = transition.getReferencedComponent();
+        if (hasSelfLoopsOnly(mathModel, mathTransition)) {
+            return;
+        }
+        String name = mathModel.getName(mathTransition);
+        if (hasSelfLoopAndMore(mathModel, mathTransition)) {
+            throw new ImpossibleContractionException(
+                    "Cannot contract transition " + name + " with both read-arc (self-loop) and producing/consuming arc.");
+        } else if (needsWaitedArcs(mathModel, mathTransition)) {
+            throw new ImpossibleContractionException(
+                    "Cannot contract transition " + name + " as it requires weighted arcs that are currently not supported.");
+        } else if (isLanguageChanging(mathModel, mathTransition)) {
+            throw new SuspiciousContractionException(
+                    "Contraction of transition " + name + " may change the language.");
+        } else if (isSafenessViolating(mathModel, mathTransition)) {
+            throw new SuspiciousContractionException(
+                    "Contraction of transition " + name + " may be not safeness-preserving.");
         }
     }
 
@@ -122,10 +142,19 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         return !(predPredNodes.isEmpty() && predSuccNodes.isEmpty());
     }
 
-    private boolean hasSelfLoop(PetriModel model, Transition transition) {
-        HashSet<MathNode> connectedNodes = new HashSet<>(model.getPreset(transition));
-        connectedNodes.retainAll(model.getPostset(transition));
-        return !connectedNodes.isEmpty();
+    private boolean hasSelfLoopsOnly(PetriModel model, Transition transition) {
+        Set<MathNode> preset = model.getPreset(transition);
+        Set<MathNode> postset = model.getPostset(transition);
+        Set<MathNode> difference = SetUtils.symmetricDifference(preset, postset);
+        return difference.isEmpty();
+    }
+
+    private boolean hasSelfLoopAndMore(PetriModel model, Transition transition) {
+        Set<MathNode> preset = model.getPreset(transition);
+        Set<MathNode> postset = model.getPostset(transition);
+        Set<MathNode> difference = SetUtils.symmetricDifference(preset, postset);
+        Set<MathNode> intersection = SetUtils.intersection(preset, postset);
+        return !difference.isEmpty() && !intersection.isEmpty();
     }
 
     private boolean isLanguageChanging(PetriModel model, Transition transition) {
@@ -169,7 +198,9 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     private boolean isSafenessViolating(PetriModel model, Transition transition) {
-        return !isType1Safe(model, transition) && !isType2Safe(model, transition) && !isType3Safe(model, transition);
+        return !isType1Safe(model, transition)
+                && !isType2Safe(model, transition)
+                && !isType3Safe(model, transition);
     }
 
     // The only place in the postset is unmarked AND it is not a merge.
@@ -232,30 +263,40 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         return true;
     }
 
-    private void contractTransition(VisualModel visualModel, VisualTransition visualTransition) {
-        beforeContraction(visualModel, visualTransition);
-        LinkedList<VisualNode> predNodes = new LinkedList<>(visualModel.getPreset(visualTransition));
-        LinkedList<VisualNode> succNodes = new LinkedList<>(visualModel.getPostset(visualTransition));
+    public void removeOrContractTransition(VisualModel model, VisualTransition transition) {
+        PetriModel mathModel = (PetriModel) model.getMathModel();
+        Transition mathTransition = transition.getReferencedComponent();
+        if (hasSelfLoopsOnly(mathModel, mathTransition)) {
+            model.remove(transition);
+        } else {
+            contractTransition(model, transition);
+        }
+    }
+
+    private void contractTransition(VisualModel model, VisualTransition transition) {
+        beforeContraction(model, transition);
+        LinkedList<VisualNode> predNodes = new LinkedList<>(model.getPreset(transition));
+        LinkedList<VisualNode> succNodes = new LinkedList<>(model.getPostset(transition));
         boolean isTrivial = (predNodes.size() == 1) && (succNodes.size() == 1);
         HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap = new HashMap<>();
         for (VisualNode predNode : predNodes) {
             VisualPlace predPlace = (VisualPlace) predNode;
             for (VisualNode succNode : succNodes) {
                 VisualPlace succPlace = (VisualPlace) succNode;
-                VisualPlace productPlace = createProductPlace(visualModel, predPlace, succPlace);
+                VisualPlace productPlace = createProductPlace(model, predPlace, succPlace);
                 initialiseProductPlace(predPlace, succPlace, productPlace);
                 HashSet<VisualConnection> connections = new HashSet<>();
-                connections.addAll(visualModel.getConnections(predPlace));
-                connections.addAll(visualModel.getConnections(succPlace));
-                Map<VisualConnection, VisualConnection> productConnectionMap = connectProductPlace(visualModel, connections, productPlace);
+                connections.addAll(model.getConnections(predPlace));
+                connections.addAll(model.getConnections(succPlace));
+                Map<VisualConnection, VisualConnection> productConnectionMap = connectProductPlace(model, connections, productPlace);
                 productPlaceMap.put(productPlace, new Pair<>(predPlace, succPlace));
                 if (isTrivial) {
-                    productPlace.copyPosition(visualTransition);
-                    VisualConnection predConnection = visualModel.getConnection(predPlace, visualTransition);
+                    productPlace.copyPosition(transition);
+                    VisualConnection predConnection = model.getConnection(predPlace, transition);
                     LinkedList<Point2D> predLocations = ConnectionHelper.getMergedControlPoints(predPlace, null, predConnection);
-                    VisualConnection succConnection = visualModel.getConnection(visualTransition, succPlace);
+                    VisualConnection succConnection = model.getConnection(transition, succPlace);
                     LinkedList<Point2D> succLocations = ConnectionHelper.getMergedControlPoints(succPlace, succConnection, null);
-                    if (visualModel.getPostset(succPlace).size() < 2) {
+                    if (model.getPostset(succPlace).size() < 2) {
                         for (VisualConnection newConnection : productConnectionMap.keySet()) {
                             if (newConnection.getFirst() == productPlace) {
                                 ConnectionHelper.prependControlPoints(newConnection, succLocations);
@@ -263,7 +304,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
                             filterControlPoints(newConnection);
                         }
                     }
-                    if (visualModel.getPreset(predPlace).size() < 2) {
+                    if (model.getPreset(predPlace).size() < 2) {
                         for (VisualConnection newConnection : productConnectionMap.keySet()) {
                             if (newConnection.getSecond() == productPlace) {
                                 ConnectionHelper.addControlPoints(newConnection, predLocations);
@@ -274,13 +315,13 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
                 }
             }
         }
-        visualModel.remove(visualTransition);
-        afterContraction(visualModel, visualTransition, productPlaceMap);
+        model.remove(transition);
+        afterContraction(model, transition, productPlaceMap);
         for (VisualNode predNode : predNodes) {
-            visualModel.remove(predNode);
+            model.remove(predNode);
         }
         for (VisualNode succNode : succNodes) {
-            visualModel.remove(succNode);
+            model.remove(succNode);
         }
     }
 
@@ -409,9 +450,11 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     public void filterControlPoints(VisualConnection connection) {
-        ConnectionGraphic graphic = connection.getGraphic();
-        if (graphic instanceof Polyline) {
-            ConnectionHelper.filterControlPoints((Polyline) graphic);
+        if (connection != null) {
+            ConnectionGraphic graphic = connection.getGraphic();
+            if (graphic instanceof Polyline) {
+                ConnectionHelper.filterControlPoints((Polyline) graphic);
+            }
         }
     }
 
