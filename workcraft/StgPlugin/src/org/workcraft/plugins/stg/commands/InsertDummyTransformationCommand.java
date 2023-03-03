@@ -1,7 +1,7 @@
 package org.workcraft.plugins.stg.commands;
 
 import org.workcraft.dom.Container;
-import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualStg;
 
 public final class InsertDummyTransformationCommand extends AbstractInsertTransformationCommand {
@@ -17,7 +17,7 @@ public final class InsertDummyTransformationCommand extends AbstractInsertTransf
     }
 
     @Override
-    public VisualTransition createTransition(VisualStg stg, Container container) {
+    public VisualDummyTransition createTransition(VisualStg stg, Container container) {
         return stg.createVisualDummyTransition(null, container);
     }
 
