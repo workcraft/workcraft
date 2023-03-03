@@ -4,6 +4,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.plugins.petri.VisualPlace;
 
@@ -35,6 +36,16 @@ public class PetriSelectionTool extends SelectionTool {
         if (!processed) {
             super.mouseClicked(e);
         }
+    }
+
+    @Override
+    public String getHintText(final GraphEditor editor) {
+        if (getDragState() == DragState.NONE) {
+            if (getCurrentNode() instanceof VisualPlace) {
+                return "Double-click to toggle place marking.";
+            }
+        }
+        return super.getHintText(editor);
     }
 
 }

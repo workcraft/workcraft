@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petri.utils;
 
+import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -86,8 +87,12 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
     }
 
     public static HashSet<VisualConnection> getVisualConsumingArcs(VisualModel visualModel) {
+        return getVisualConsumingArcs(visualModel.getRoot());
+    }
+
+    public static HashSet<VisualConnection> getVisualConsumingArcs(Container container) {
         HashSet<VisualConnection> connections = new HashSet<>();
-        for (VisualConnection connection : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
+        for (VisualConnection connection : Hierarchy.getDescendantsOfType(container, VisualConnection.class)) {
             if (isVisualConsumingArc(connection)) {
                 connections.add(connection);
             }
@@ -96,8 +101,12 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
     }
 
     public static HashSet<VisualConnection> getVisualProducingArcs(VisualModel visualModel) {
+        return getVisualProducingArcs(visualModel.getRoot());
+    }
+
+    public static HashSet<VisualConnection> getVisualProducingArcs(Container container) {
         HashSet<VisualConnection> connections = new HashSet<>();
-        for (VisualConnection connection : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
+        for (VisualConnection connection : Hierarchy.getDescendantsOfType(container, VisualConnection.class)) {
             if (isVisualProducingArc(connection)) {
                 connections.add(connection);
             }
@@ -106,11 +115,19 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
     }
 
     public static HashSet<VisualReadArc> getVisualReadArcs(VisualModel visualModel) {
-        return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualReadArc.class));
+        return getVisualReadArcs(visualModel.getRoot());
+    }
+
+    public static HashSet<VisualReadArc> getVisualReadArcs(Container container) {
+        return new HashSet<>(Hierarchy.getDescendantsOfType(container, VisualReadArc.class));
     }
 
     public static HashSet<VisualReplicaPlace> getVisualReplicaPlaces(VisualModel visualModel) {
-        return new HashSet<>(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualReplicaPlace.class));
+        return getVisualReplicaPlaces(visualModel.getRoot());
+    }
+
+    public static HashSet<VisualReplicaPlace> getVisualReplicaPlaces(Container container) {
+        return new HashSet<>(Hierarchy.getDescendantsOfType(container, VisualReplicaPlace.class));
     }
 
     public static boolean isVisualProducingArc(VisualNode node) {

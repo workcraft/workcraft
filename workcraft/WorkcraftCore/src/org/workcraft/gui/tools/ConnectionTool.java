@@ -4,9 +4,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -206,7 +206,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
                 } else if ((firstNode == currentNode) && (forbidSelfLoops || !mouseLeftFirstNode)) {
                     if (forbidSelfLoops) {
                         showIssue(editor, "Self-loops are not allowed.");
-                    } else if (!mouseLeftFirstNode) {
+                    } else {
                         showIssue(editor, "Move the mouse outside this node before creating a self-loop.");
                     }
                 } else if ((firstNode instanceof VisualGroup) || (currentNode instanceof VisualGroup)) {

@@ -66,6 +66,13 @@ public class ConnectionHelper {
         return result;
     }
 
+    public static  Point2D getNearestLocationOnConnection(VisualConnection connection, Point2D locationInRootSpace) {
+        AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
+        Point2D locationInLocalSpace = rootToLocalTransform.transform(locationInRootSpace, null);
+        ConnectionGraphic graphic = connection.getGraphic();
+        return graphic.getNearestPointOnCurve(locationInLocalSpace);
+    }
+
     public static LinkedList<Point2D> getPrefixControlPoints(VisualConnection connection, Point2D splitPointInLocalSpace) {
         LinkedList<Point2D> locationsInRootSpace = new LinkedList<>();
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (splitPointInLocalSpace != null)) {
@@ -130,10 +137,6 @@ public class ConnectionHelper {
         }
         result.addAll(secondLocations);
         return result;
-    }
-
-    public static Point2D getControlPoint(VisualTransformableNode node) {
-        return node == null ? null : node.getRootSpacePosition();
     }
 
     public static LinkedList<Point2D> getControlPoints(VisualConnection connection) {
@@ -232,13 +235,16 @@ public class ConnectionHelper {
                 index++;
                 if (index < splitIndex) {
                     Point2D locationInLocalSpace = cp.getPosition();
-                    if ((index < splitIndex - 1) || areDifferentAnchorPoints(locationInLocalSpace, splitPointInLocalSpace)) {
+                    boolean isGoodControlPoint = areDifferentAnchorPoints(locationInLocalSpace, splitPointInLocalSpace);
+                    if ((index < splitIndex - 1) || isGoodControlPoint) {
                         locationInRootSpace = localToRootTransform.transform(locationInLocalSpace, null);
                     }
                 }
             }
         }
-        if ((locationInRootSpace == null) && (connection.getFirst() instanceof VisualTransformableNode)) {
+        if ((connection != null) && (locationInRootSpace == null)
+                && (connection.getFirst() instanceof VisualTransformableNode)) {
+
             VisualTransformableNode first = (VisualTransformableNode) connection.getFirst();
             locationInRootSpace = first.getRootSpacePosition();
         }
@@ -256,14 +262,17 @@ public class ConnectionHelper {
                 index++;
                 if (index >= splitIndex) {
                     Point2D locationInLocalSpace = cp.getPosition();
-                    if ((index > splitIndex) || areDifferentAnchorPoints(locationInLocalSpace, splitPointInLocalSpace)) {
+                    boolean isGoodControlPoint = areDifferentAnchorPoints(locationInLocalSpace, splitPointInLocalSpace);
+                    if ((index > splitIndex) || isGoodControlPoint) {
                         locationInRootSpace = localToRootTransform.transform(locationInLocalSpace, null);
                         break;
                     }
                 }
             }
         }
-        if ((locationInRootSpace == null) && (connection.getFirst() instanceof VisualTransformableNode)) {
+        if ((connection != null) && (locationInRootSpace == null)
+                && (connection.getFirst() instanceof VisualTransformableNode)) {
+
             VisualTransformableNode second = (VisualTransformableNode) connection.getSecond();
             locationInRootSpace = second.getRootSpacePosition();
         }

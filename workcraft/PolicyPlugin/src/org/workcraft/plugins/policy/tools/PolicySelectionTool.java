@@ -48,7 +48,7 @@ public class PolicySelectionTool extends SelectionTool {
         boolean processed = false;
         VisualModel model = e.getEditor().getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
-            VisualNode node = (VisualNode) HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+            VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node instanceof VisualPlace) {
                 VisualPlace place = (VisualPlace) node;
                 if (place.getReferencedComponent().getTokens() <= 1) {
@@ -113,6 +113,16 @@ public class PolicySelectionTool extends SelectionTool {
             VisualPolicy visualModel = (VisualPolicy) editor.getModel();
             visualModel.unbundleTransitions(transitions);
         }
+    }
+
+    @Override
+    public String getHintText(final GraphEditor editor) {
+        if (getDragState() == DragState.NONE) {
+            if (getCurrentNode() instanceof VisualPlace) {
+                return "Double-click to toggle place marking.";
+            }
+        }
+        return super.getHintText(editor);
     }
 
 }
