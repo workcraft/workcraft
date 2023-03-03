@@ -1,9 +1,5 @@
 package org.workcraft.plugins.stg.commands;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -20,10 +16,14 @@ import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualStgPlace;
-import org.workcraft.utils.Hierarchy;
 import org.workcraft.types.Pair;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ContractNamedTransitionTransformationCommand extends ContractTransitionTransformationCommand {
 
@@ -69,7 +69,15 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
                 if ((productPlace instanceof VisualStgPlace)
                         && convertedImplicitPlaces.contains(predPlace)
                         && convertedImplicitPlaces.contains(succPlace)) {
-                    VisualConnection connection = visualStg.makeImplicitIfPossible((VisualStgPlace) productPlace, true);
+
+                    VisualConnection connection = visualStg.makeImplicitIfPossible(
+                            (VisualStgPlace) productPlace, true);
+
+                    // Straighten connection if implicit place is the only source of control points
+                    if ((connection != null) && (connection.getGraphic().getControlPoints().size() == 1)) {
+                        connection.setConnectionType(VisualConnection.ConnectionType.BEZIER);
+                        connection.setConnectionType(VisualConnection.ConnectionType.POLYLINE);
+                    }
                     filterControlPoints(connection);
                 }
             }
