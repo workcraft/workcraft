@@ -12,10 +12,22 @@ import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
 
 import java.awt.geom.Point2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class ScanUtils {
+
+    private static class ScanData {
+        public final String scaninPortPrefix = CircuitSettings.getScaninPort();
+        public final String scanenPortPrefix = CircuitSettings.getScanenPort();
+        public final String scanoutPortPrefix = CircuitSettings.getScanoutPort();
+        public final String scaninPinName = CircuitSettings.getScaninPin();
+        public final String scanenPinName = CircuitSettings.getScanenPin();
+        public final String scanoutPinName = CircuitSettings.getScanoutPin();
+    }
 
     public static List<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
         List<VisualFunctionComponent> result = new ArrayList<>();
@@ -109,10 +121,8 @@ public final class ScanUtils {
                 .collect(Collectors.toSet());
 
         convertPathbreakerToScan(circuit, scanComponents);
-        // Add individual scan port and connect in to corresponding scan pins - scanin/SI, scanout/SO, scanen/SE
-        connectIndividualScanin(circuit, scanComponents, scaninInversionComponents);
-        connectIndividualScanout(circuit, scanComponents);
-        connectIndividualScanen(circuit, scanComponents);
+        // Add individual scan port and connect it to corresponding scan pins - scanin/SI, scanout/SO, scanen/SE
+        connectIndividualScan(circuit, scanComponents, scaninInversionComponents);
 
         // Add always common scan port and connect them to corresponding scan pins - scanck/CK and scantm/TM
         connectCommonInputPort(circuit, scanComponents,
@@ -223,7 +233,7 @@ public final class ScanUtils {
 
         if (port != null) {
             for (VisualFunctionComponent component : components) {
-                VisualContact pin = getContactWithPinNameOrPortName(circuit, portName, component, pinName);
+                VisualContact pin = getContactWithPathbreakerPinNameOrWithPortName(circuit, portName, component, pinName);
                 connectIfPossible(circuit, port, pin);
             }
             SpaceUtils.positionPort(circuit, port, false);
@@ -247,96 +257,118 @@ public final class ScanUtils {
         return result;
     }
 
-    private static VisualContact getContactWithPinNameOrPortName(VisualCircuit circuit, String portName,
+    private static VisualContact getContactWithPathbreakerPinNameOrWithPortName(VisualCircuit circuit, String portName,
             VisualFunctionComponent component, String pinName) {
 
-        for (String contactName : Arrays.asList(pinName, portName)) {
-            if ((contactName != null) && !contactName.isEmpty() && circuit.hasPin(component, contactName)) {
-                return circuit.getPin(component, contactName);
-            }
+        if (hasPathBreakerOutput(component) && (pinName != null)) {
+            return circuit.getPin(component, pinName);
+        }
+        if (portName != null) {
+            return circuit.getPin(component, portName);
         }
         return null;
     }
 
-    private static void connectIndividualScanin(VisualCircuit circuit, List<VisualFunctionComponent> components,
+    private static void connectIndividualScan(VisualCircuit circuit, List<VisualFunctionComponent> components,
             Set<VisualFunctionComponent> scaninInversionComponents) {
 
-        String portPrefix = CircuitSettings.getScaninPort();
-        if (portPrefix != null) {
-            String pinName = CircuitSettings.getScaninPin();
+        ScanData scanData = new ScanData();
+        if ((scanData.scaninPortPrefix == null) || (scanData.scaninPinName == null)) {
+            LogUtils.logError("Both scan input port and pin must be defined in global preferences");
+            return;
+        }
+        if ((scanData.scanenPortPrefix == null) || (scanData.scanenPinName == null)) {
+            LogUtils.logError("Both scan enable port and pin must be defined in global preferences");
+            return;
+        }
+        if ((scanData.scanoutPortPrefix == null) && (scanData.scanoutPinName == null)) {
+            LogUtils.logError("Both scan output port and pin must be defined in global preferences");
+            return;
+        }
+
+        int index = 0;
+        for (VisualFunctionComponent component : components) {
+            // Connect to pathbreaker components (hierarchy leafs)
+            boolean needScaninInversion = scaninInversionComponents.contains(component);
+            index += connectIndividualScanPathbreaker(circuit, component, scanData, index, needScaninInversion);
+            // Route scan nets through hierarchy
+            index += connectIndividualScanHierarchy(circuit, component, scanData, index);
+        }
+    }
+
+    private static int connectIndividualScanPathbreaker(VisualCircuit circuit, VisualFunctionComponent component,
+            ScanData scanData, int index, boolean needScaninInversion) {
+
+        if (!hasPathBreakerOutput(component)) {
+            return 0;
+        }
+
+        VisualContact scaninPin = getScanPinOrLogError(circuit, component, scanData.scaninPinName);
+        VisualContact scanenPin = getScanPinOrLogError(circuit, component, scanData.scanenPinName);
+        VisualContact scanoutPin = getScanPinOrLogError(circuit, component, scanData.scanoutPinName);
+        if ((scaninPin == null) || (scanenPin == null) || (scanoutPin == null)) {
+            return 0;
+        }
+
+        VisualConnection scaninConnection = connectFromIndividualInputPort(
+                circuit, scanData.scaninPortPrefix, index, scaninPin, false);
+
+        if ((scaninConnection != null) && needScaninInversion) {
+            VisualFunctionComponent inverterGate = GateUtils.createInverterGate(circuit);
             String invInstancePrefix = CircuitSettings.getInitialisationInverterInstancePrefix();
-            int index = 0;
-            // Connect to existing pins with given name pinName
-            for (VisualFunctionComponent component : components) {
-                if (circuit.hasPin(component, pinName)) {
-                    VisualContact pin = circuit.getPin(component, pinName);
-                    VisualConnection connection = connectFromIndividualInputPort(circuit, portPrefix, index, pin, false);
-                    if ((connection != null) && scaninInversionComponents.contains(component)) {
-                        VisualFunctionComponent inverterGate = GateUtils.createInverterGate(circuit);
-                        circuit.setMathName(inverterGate, invInstancePrefix + index);
-                        GateUtils.insertGateWithin(circuit, inverterGate, connection);
-                        GateUtils.propagateInitialState(circuit, inverterGate);
-                    }
-                    index++;
-                }
-            }
-            // Connect to existing pins with given prefix portPrefix
-            for (VisualFunctionComponent testComponent : components) {
-                for (VisualContact pin : getSortedInputPinsByPrefix(testComponent, portPrefix)) {
-                    connectFromIndividualInputPort(circuit, portPrefix, index, pin, false);
-                    index++;
-                }
-            }
+            circuit.setMathName(inverterGate, invInstancePrefix + index);
+            GateUtils.insertGateWithin(circuit, inverterGate, scaninConnection);
+            GateUtils.propagateInitialState(circuit, inverterGate);
         }
+
+        boolean useScanInitialisation = CircuitSettings.getUseScanInitialisation();
+        connectFromIndividualInputPort(circuit, scanData.scanenPortPrefix, index, scanenPin, useScanInitialisation);
+
+        if (!scanoutPin.isDriver()) {
+            scanoutPin = CircuitUtils.findDriver(circuit, scanoutPin, true);
+        }
+        if (needsBuffering(circuit, scanoutPin)) {
+            scanoutPin = addBuffering(circuit, scanoutPin);
+        }
+        connectToIndividualOutputPort(circuit, scanoutPin, scanData.scanoutPortPrefix, index);
+        return 1;
     }
 
-    private static void connectIndividualScanen(VisualCircuit circuit, List<VisualFunctionComponent> components) {
-        String portPrefix = CircuitSettings.getScanenPort();
-        if (portPrefix != null) {
-            boolean useScanInitialisation = CircuitSettings.getUseScanInitialisation();
-            String pinName = CircuitSettings.getScanenPin();
-            int index = 0;
-            for (VisualFunctionComponent component : components) {
-                if (circuit.hasPin(component, pinName)) {
-                    VisualContact pin = circuit.getPin(component, pinName);
-                    connectFromIndividualInputPort(circuit, portPrefix, index, pin, useScanInitialisation);
-                    index++;
-                }
-            }
-            for (VisualFunctionComponent component : components) {
-                for (VisualContact pin : getSortedInputPinsByPrefix(component, portPrefix)) {
-                    connectFromIndividualInputPort(circuit, portPrefix, index, pin, useScanInitialisation);
-                    index++;
-                }
-            }
+    private static VisualContact getScanPinOrLogError(VisualCircuit circuit, VisualFunctionComponent component,
+            String pinName) {
+
+        VisualFunctionContact pin = circuit.getPin(component, pinName);
+        if (pin == null) {
+            String componentRef = Identifier.truncateNamespaceSeparator(circuit.getMathReference(component));
+            LogUtils.logError("Cannot find pin '" + pinName + "' in scan component '" + componentRef + "'");
         }
+        return pin;
     }
 
-    private static void connectIndividualScanout(VisualCircuit circuit, List<VisualFunctionComponent> components) {
-        String portPrefix = CircuitSettings.getScanoutPort();
-        if (portPrefix != null) {
-            String pinName = CircuitSettings.getScanoutPin();
-            int index = 0;
-            for (VisualFunctionComponent component : components) {
-                if (circuit.hasPin(component, pinName)) {
-                    VisualContact pin = circuit.getPin(component, pinName);
-                    if ((pin != null) && !pin.isDriver()) {
-                        pin = CircuitUtils.findDriver(circuit, pin, true);
-                    }
-                    if (needsBuffering(circuit, pin)) {
-                        pin = addBuffering(circuit, pin);
-                    }
-                    connectToIndividualOutputPort(circuit, pin, portPrefix, index);
-                    index++;
-                }
-            }
-            for (VisualFunctionComponent component : components) {
-                for (VisualContact pin : getSortedOutputPinsByPrefix(component, portPrefix)) {
-                    connectToIndividualOutputPort(circuit, pin, portPrefix, index);
-                    index++;
-                }
-            }
+    private static int connectIndividualScanHierarchy(VisualCircuit circuit, VisualFunctionComponent component,
+            ScanData scanData, int index) {
+
+        List<VisualContact> scaninPins = getSortedInputPinsByPrefix(component, scanData.scaninPortPrefix);
+        List<VisualContact> scanenPins = getSortedInputPinsByPrefix(component, scanData.scanenPortPrefix);
+        List<VisualContact> scanoutPins = getSortedOutputPinsByPrefix(component, scanData.scanoutPortPrefix);
+
+        int count = scaninPins.size();
+        if ((scanenPins.size() != count) || (scanoutPins.size() != count)) {
+            return 0;
         }
+
+        boolean useScanInitialisation = CircuitSettings.getUseScanInitialisation();
+        for (int i = 0; i < count; i++) {
+            VisualContact scaninPin = scaninPins.get(i);
+            connectFromIndividualInputPort(circuit, scanData.scaninPortPrefix, index + i, scaninPin, false);
+
+            VisualContact scanenPin = scanenPins.get(i);
+            connectFromIndividualInputPort(circuit, scanData.scanenPortPrefix, index + i, scanenPin, useScanInitialisation);
+
+            VisualContact scanoutPin = scanoutPins.get(i);
+            connectToIndividualOutputPort(circuit, scanoutPin, scanData.scanoutPortPrefix, index + i);
+        }
+        return count;
     }
 
     private static List<VisualContact> getSortedInputPinsByPrefix(VisualFunctionComponent component, String prefix) {
@@ -423,12 +455,12 @@ public final class ScanUtils {
 
         // Disconnect components from old scan chain
         for (VisualFunctionComponent component : components) {
-            VisualContact scaninPin = getContactWithPinNameOrPortName(circuit, CircuitSettings.getScaninPort(),
+            VisualContact scaninPin = getContactWithPathbreakerPinNameOrWithPortName(circuit, CircuitSettings.getScaninPort(),
                     component, CircuitSettings.getScaninPin());
 
             CircuitUtils.disconnectContact(circuit, scaninPin);
 
-            VisualContact scanoutPin = getContactWithPinNameOrPortName(circuit, CircuitSettings.getScanoutPort(),
+            VisualContact scanoutPin = getContactWithPathbreakerPinNameOrWithPortName(circuit, CircuitSettings.getScanoutPort(),
                     component, CircuitSettings.getScanoutPin());
 
             if ((scanoutPin != null) && scanoutPin.isDriver()) {
@@ -458,13 +490,13 @@ public final class ScanUtils {
             VisualContact contact) {
 
         if (contact != null) {
-            VisualContact scaninPin = getContactWithPinNameOrPortName(circuit, CircuitSettings.getScaninPort(),
+            VisualContact scaninPin = getContactWithPathbreakerPinNameOrWithPortName(circuit, CircuitSettings.getScaninPort(),
                     component, CircuitSettings.getScaninPin());
 
             connectIfPossible(circuit, contact, scaninPin);
         }
         return (component.getVisualOutputs().size() == 1) ? component.getFirstVisualOutput()
-                : getContactWithPinNameOrPortName(circuit, CircuitSettings.getScanoutPort(),
+                : getContactWithPathbreakerPinNameOrWithPortName(circuit, CircuitSettings.getScanoutPort(),
                 component, CircuitSettings.getScanoutPin());
     }
 
