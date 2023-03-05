@@ -1,0 +1,12 @@
+Cycle absence check: false
+Combined check: false
+Circuit analysis:
+  Component count (mapped + unmapped) -  16 (15 + 1)
+  Area of mapped components -  56.0 + 2*MUX2 + 2*NMUX2
+  Driver pin count (combinational + sequential + undefined) -  17 (15 + 0 + 2)
+  Literal count combinational / sequential (set + reset) -  30 / 0 (0 + 0)
+  Port count (input + output) -  27 (17 + 10)
+  Max fanin / fanout -  5 / 2
+  Fanin distribution [0 / 1 / 2 ...] -  0 / 8 / 3 / 4 / 0 / 1
+  Fanout distribution [0 / 1 / 2 ...] -  0 / 27 / 7
+  Isolated components / ports / pins -  0 / 0 / 0

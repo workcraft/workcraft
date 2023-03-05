@@ -49,31 +49,32 @@ class ScanCommandTests {
 
         Assertions.assertEquals(3, getHangingContactCount(circuit));
 
-        Set<String> expectedInputSignals = new HashSet<>(Arrays.asList("in0", "in0a", "in0b", "in0c", "in0d"));
+        Set<String> expectedInputSignals = new HashSet<>(Arrays.asList("in0", "in1", "in2", "in3", "in4", "in4a", "in4b"));
         Assertions.assertEquals(expectedInputSignals, RefinementUtils.getInputSignals(circuit));
 
-        Set<String> expectedOutputSignals = new HashSet<>(Arrays.asList("out0", "out0a", "out0b", "out0c", "out0d"));
+        Set<String> expectedOutputSignals = new HashSet<>(Arrays.asList("out0", "out1", "out2", "out3", "out4"));
         Assertions.assertEquals(expectedOutputSignals, RefinementUtils.getOutputSignals(circuit));
 
         Map<String, Integer> expectedModuleInstanceCount = new HashMap<>();
-        expectedModuleInstanceCount.put("BUF", 4);
+        expectedModuleInstanceCount.put("BUF", 6);
         expectedModuleInstanceCount.put("INV", 2);
         expectedModuleInstanceCount.put("NAND2", 2);
         expectedModuleInstanceCount.put("OR2", 1);
-        expectedModuleInstanceCount.put("", 1);
-        Assertions.assertEquals(expectedModuleInstanceCount, getModuleCount(circuit));
+        Assertions.assertEquals(expectedModuleInstanceCount, getConnectedModuleCount(circuit));
 
         Map<String, Integer> expectedSignalConnections = new HashMap<>();
         expectedSignalConnections.put("in0", 1);
-        expectedSignalConnections.put("in0a", 1);
-        expectedSignalConnections.put("in0b", 1);
-        expectedSignalConnections.put("in0c", 1);
-        expectedSignalConnections.put("in0d", 1);
+        expectedSignalConnections.put("in1", 1);
+        expectedSignalConnections.put("in2", 1);
+        expectedSignalConnections.put("in3", 1);
+        expectedSignalConnections.put("in4", 1);
+        expectedSignalConnections.put("in4a", 1);
+        expectedSignalConnections.put("in4b", 1);
         expectedSignalConnections.put("out0", 1);
-        expectedSignalConnections.put("out0a", 1);
-        expectedSignalConnections.put("out0b", 1);
-        expectedSignalConnections.put("out0c", 1);
-        expectedSignalConnections.put("out0d", 1);
+        expectedSignalConnections.put("out1", 1);
+        expectedSignalConnections.put("out2", 1);
+        expectedSignalConnections.put("out3", 1);
+        expectedSignalConnections.put("out4", 1);
         Assertions.assertEquals(expectedSignalConnections, getSignalConnectionCount(circuit));
 
         // Insert testable gates
@@ -83,11 +84,10 @@ class ScanCommandTests {
         Assertions.assertEquals(expectedInputSignals, RefinementUtils.getInputSignals(circuit));
         Assertions.assertEquals(expectedOutputSignals, RefinementUtils.getOutputSignals(circuit));
 
-        expectedModuleInstanceCount.remove("BUF");
         expectedModuleInstanceCount.remove("INV");
-        expectedModuleInstanceCount.put("BUF", 2);
+        expectedModuleInstanceCount.put("BUF", 4);
         expectedModuleInstanceCount.put("FF", 4);
-        Assertions.assertEquals(expectedModuleInstanceCount, getModuleCount(circuit));
+        Assertions.assertEquals(expectedModuleInstanceCount, getConnectedModuleCount(circuit));
 
         Assertions.assertEquals(expectedSignalConnections, getSignalConnectionCount(circuit));
 
@@ -104,8 +104,9 @@ class ScanCommandTests {
 
         expectedModuleInstanceCount.remove("FF");
         expectedModuleInstanceCount.put("FF_SCAN", 4);
-        expectedModuleInstanceCount.put("BUF", 3); // Add 1 buffer for fork to 2 output ports
-        Assertions.assertEquals(expectedModuleInstanceCount, getModuleCount(circuit));
+        expectedModuleInstanceCount.put("BUF", 5); // Add 1 buffer for fork to 2 output ports
+        expectedModuleInstanceCount.put("", 1); // Add 1 complex module
+        Assertions.assertEquals(expectedModuleInstanceCount, getConnectedModuleCount(circuit));
 
         expectedSignalConnections.put("scanin", 1);
         expectedSignalConnections.put("scanout", 1);
@@ -140,31 +141,32 @@ class ScanCommandTests {
 
         Assertions.assertEquals(3, getHangingContactCount(circuit));
 
-        Set<String> expectedInputSignals = new HashSet<>(Arrays.asList("in0", "in0a", "in0b", "in0c", "in0d"));
+        Set<String> expectedInputSignals = new HashSet<>(Arrays.asList("in0", "in1", "in2", "in3", "in4", "in4a", "in4b"));
         Assertions.assertEquals(expectedInputSignals, RefinementUtils.getInputSignals(circuit));
 
-        Set<String> expectedOutputSignals = new HashSet<>(Arrays.asList("out0", "out0a", "out0b", "out0c", "out0d"));
+        Set<String> expectedOutputSignals = new HashSet<>(Arrays.asList("out0", "out1", "out2", "out3", "out4"));
         Assertions.assertEquals(expectedOutputSignals, RefinementUtils.getOutputSignals(circuit));
 
         Map<String, Integer> expectedModuleInstanceCount = new HashMap<>();
-        expectedModuleInstanceCount.put("BUF", 4);
+        expectedModuleInstanceCount.put("BUF", 6);
         expectedModuleInstanceCount.put("INV", 2);
         expectedModuleInstanceCount.put("NAND2", 2);
         expectedModuleInstanceCount.put("OR2", 1);
-        expectedModuleInstanceCount.put("", 1);
-        Assertions.assertEquals(expectedModuleInstanceCount, getModuleCount(circuit));
+        Assertions.assertEquals(expectedModuleInstanceCount, getConnectedModuleCount(circuit));
 
         Map<String, Integer> expectedSignalConnections = new HashMap<>();
         expectedSignalConnections.put("in0", 1);
-        expectedSignalConnections.put("in0a", 1);
-        expectedSignalConnections.put("in0b", 1);
-        expectedSignalConnections.put("in0c", 1);
-        expectedSignalConnections.put("in0d", 1);
+        expectedSignalConnections.put("in1", 1);
+        expectedSignalConnections.put("in2", 1);
+        expectedSignalConnections.put("in3", 1);
+        expectedSignalConnections.put("in4", 1);
+        expectedSignalConnections.put("in4a", 1);
+        expectedSignalConnections.put("in4b", 1);
         expectedSignalConnections.put("out0", 1);
-        expectedSignalConnections.put("out0a", 1);
-        expectedSignalConnections.put("out0b", 1);
-        expectedSignalConnections.put("out0c", 1);
-        expectedSignalConnections.put("out0d", 1);
+        expectedSignalConnections.put("out1", 1);
+        expectedSignalConnections.put("out2", 1);
+        expectedSignalConnections.put("out3", 1);
+        expectedSignalConnections.put("out4", 1);
         Assertions.assertEquals(expectedSignalConnections, getSignalConnectionCount(circuit));
 
         // Insert testable gates
@@ -174,12 +176,11 @@ class ScanCommandTests {
         Assertions.assertEquals(expectedInputSignals, RefinementUtils.getInputSignals(circuit));
         Assertions.assertEquals(expectedOutputSignals, RefinementUtils.getOutputSignals(circuit));
 
-        expectedModuleInstanceCount.remove("BUF");
         expectedModuleInstanceCount.remove("INV");
-        expectedModuleInstanceCount.put("BUF", 2);
+        expectedModuleInstanceCount.put("BUF", 4);
         expectedModuleInstanceCount.put("MUX2", 2);
         expectedModuleInstanceCount.put("NMUX2", 2);
-        Assertions.assertEquals(expectedModuleInstanceCount, getModuleCount(circuit));
+        Assertions.assertEquals(expectedModuleInstanceCount, getConnectedModuleCount(circuit));
 
         Assertions.assertEquals(expectedSignalConnections, getSignalConnectionCount(circuit));
 
@@ -200,11 +201,12 @@ class ScanCommandTests {
         Assertions.assertEquals(expectedOutputSignals, RefinementUtils.getOutputSignals(circuit));
 
         expectedModuleInstanceCount.put("INV", 2); // Add 2 inverters for initialisation of testable gates
-        expectedModuleInstanceCount.put("BUF", 4); // Add 2 buffers for direct connections between input and output ports
-        Assertions.assertEquals(expectedModuleInstanceCount, getModuleCount(circuit));
+        expectedModuleInstanceCount.put("BUF", 6); // Add 2 buffers for direct connections between input and output ports
+        expectedModuleInstanceCount.put("", 1); // Add 1 complex module
+        Assertions.assertEquals(expectedModuleInstanceCount, getConnectedModuleCount(circuit));
 
-        expectedSignalConnections.put("in0a", 2);
-        expectedSignalConnections.put("in0c", 2);
+        expectedSignalConnections.put("in1", 2);
+        expectedSignalConnections.put("in3", 2);
         expectedSignalConnections.put("scanin__0", 1);
         expectedSignalConnections.put("scanin__1", 1);
         expectedSignalConnections.put("scanin__2", 1);
@@ -235,12 +237,16 @@ class ScanCommandTests {
         return result;
     }
 
-    private static Map<String, Integer> getModuleCount(Circuit circuit) {
+    private static Map<String, Integer> getConnectedModuleCount(Circuit circuit) {
         Map<String, Integer> result = new HashMap<>();
         for (CircuitComponent component : circuit.getFunctionComponents()) {
-            String moduleName = component.getModule();
-            Integer count = result.getOrDefault(moduleName, 0);
-            result.put(moduleName, count + 1);
+            boolean connected = component.getContacts().stream()
+                    .noneMatch(contact -> circuit.getConnections(contact).isEmpty());
+            if (connected) {
+                String moduleName = component.getModule();
+                Integer count = result.getOrDefault(moduleName, 0);
+                result.put(moduleName, count + 1);
+            }
         }
         return result;
     }
