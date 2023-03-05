@@ -384,6 +384,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     public void updatePropertyView() {
+        final Framework framework = Framework.getInstance();
+        if (!framework.isInGuiMode()) {
+            return;
+        }
         ModelProperties properties;
         final VisualNode defaultNode = we.getDefaultNode();
         final VisualNode templateNode = we.getTemplateNode();
@@ -405,7 +409,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             }
         }
 
-        final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
         GraphEditorTool tool = (toolbox == null) ? null : toolbox.getSelectedTool();
