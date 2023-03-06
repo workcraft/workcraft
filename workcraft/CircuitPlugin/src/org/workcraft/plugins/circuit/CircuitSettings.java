@@ -53,6 +53,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final int GATE_INPUT_GROUP = 2;
     private static final int GATE_OUTPUT_GROUP = 3;
 
+    private static final String FORK_FUNOUT_PLACEHOLDER = "$";
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
 
@@ -101,6 +103,9 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyUseIndividualScan = prefix + ".useIndividualScan";
     private static final String keyUseScanInitialisation = prefix + ".useScanInitialisation";
     private static final String keyInitialisationInverterInstancePrefix = prefix + ".initialisationInverterInstancePrefix";
+    // Forks
+    private static final String keyForkHighFanout = prefix + ".forkHighFanout";
+    private static final String keyForkBufferPattern = prefix + ".forkBufferPattern";
 
     /*
      * Defaults
@@ -147,6 +152,10 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultUseIndividualScan = false;
     private static final boolean defaultUseScanInitialisation = false;
     private static final String defaultInitialisationInverterInstancePrefix = "test_inv_";
+    // Forks
+    private static final int defaultForkHighFanout = 4;
+    private static final String defaultForkBufferPattern = "fork_x" + FORK_FUNOUT_PLACEHOLDER + "_";
+
     /*
      * Variables
      */
@@ -192,6 +201,9 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean useIndividualScan = defaultUseIndividualScan;
     private static boolean useScanInitialisation = defaultUseScanInitialisation;
     private static String initialisationInverterInstancePrefix = defaultInitialisationInverterInstancePrefix;
+    // Forks
+    private static Integer forkHighFanout = defaultForkHighFanout;
+    private static String forkBufferPattern = defaultForkBufferPattern;
 
     static {
         properties.add(new PropertyDeclaration<>(Double.class,
@@ -416,6 +428,19 @@ public class CircuitSettings extends AbstractModelSettings {
                 PropertyHelper.BULLET_PREFIX + "Initialisation inverter instance prefix",
                 CircuitSettings::setInitialisationInverterInstancePrefix,
                 CircuitSettings::getInitialisationInverterInstancePrefix));
+
+        properties.add(PropertyHelper.createSeparatorProperty("Buffering forks with high fanout"));
+
+        properties.add(new PropertyDeclaration<>(Integer.class,
+                PropertyHelper.BULLET_PREFIX + "Fork high fanout",
+                CircuitSettings::setForkHighFanout,
+                CircuitSettings::getForkHighFanout));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Fork buffer pattern ("
+                        + VerilogUtils.MODULE_NAME_PLACEHOLDER + " denotes fanout)",
+                CircuitSettings::setForkBufferPattern,
+                CircuitSettings::getForkBufferPattern));
     }
 
     private static String getBaseRelativePath(File file) {
@@ -488,6 +513,9 @@ public class CircuitSettings extends AbstractModelSettings {
         setUseIndividualScan(config.getBoolean(keyUseIndividualScan, defaultUseIndividualScan));
         setUseScanInitialisation(config.getBoolean(keyUseScanInitialisation, defaultUseScanInitialisation));
         setInitialisationInverterInstancePrefix(config.getString(keyInitialisationInverterInstancePrefix, defaultInitialisationInverterInstancePrefix));
+        // Forks
+        setForkHighFanout(config.getInt(keyForkHighFanout, defaultForkHighFanout));
+        setForkBufferPattern(config.getString(keyForkBufferPattern, defaultForkBufferPattern));
     }
 
     @Override
@@ -534,6 +562,9 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyUseIndividualScan, getUseIndividualScan());
         config.setBoolean(keyUseScanInitialisation, getUseScanInitialisation());
         config.set(keyInitialisationInverterInstancePrefix, getInitialisationInverterInstancePrefix());
+        // Forks
+        config.setInt(keyForkHighFanout, getForkHighFanout());
+        config.set(keyForkBufferPattern, getForkBufferPattern());
     }
 
     public static double getContactFontSize() {
@@ -927,6 +958,38 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setInitialisationInverterInstancePrefix(String value) {
         initialisationInverterInstancePrefix = value;
+    }
+
+    public static String getForkBufferPattern() {
+        return forkBufferPattern;
+    }
+
+    public static void setForkBufferPattern(String value) {
+        if ((value == null) || !value.contains(FORK_FUNOUT_PLACEHOLDER)) {
+            DialogUtils.showError("Fork buffer pattern must have fanout placeholder " + FORK_FUNOUT_PLACEHOLDER);
+        } else {
+            forkBufferPattern = value;
+        }
+    }
+
+    public static int getForkHighFanout() {
+        return forkHighFanout;
+    }
+
+    public static void setForkHighFanout(int value) {
+        if (value < 2) {
+            DialogUtils.showError("Fork fanout must be greater than 1");
+        } else {
+            forkHighFanout = value;
+        }
+    }
+
+    public static String getForkBufferName(int fanout) {
+        String pattern = getForkBufferPattern();
+        if ((pattern == null) || !pattern.contains(FORK_FUNOUT_PLACEHOLDER)) {
+            pattern = defaultForkBufferPattern;
+        }
+        return pattern.replace(FORK_FUNOUT_PLACEHOLDER, Integer.toString(fanout));
     }
 
     private static void setGate2Data(String value, Consumer<String> setter, String msg, String defaultValue) {
