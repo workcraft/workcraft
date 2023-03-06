@@ -251,7 +251,7 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 "WAIT name, dirty input and clean handshake",
                 value -> {
-                    if (parseWaitData(value) != null) {
+                    if (parseWaitData(value, Wait.Type.WAIT1) != null) {
                         setWaitData(value);
                     } else {
                         errorDescriptionFormat("WAIT", defaultWaitData);
@@ -262,7 +262,7 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 "WAIT0 name, dirty input and clean handshake",
                 value -> {
-                    if (parseWaitData(value) != null) {
+                    if (parseWaitData(value, Wait.Type.WAIT0) != null) {
                         setWait0Data(value);
                     } else {
                         errorDescriptionFormat("WAIT0", defaultWait0Data);
@@ -648,7 +648,7 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static Wait parseWaitData(Wait.Type type) {
-        return parseWaitData(type == Wait.Type.WAIT0 ? getWait0Data() : getWaitData());
+        return parseWaitData(type == Wait.Type.WAIT0 ? getWait0Data() : getWaitData(), type);
     }
 
     public static String getMutexData() {
@@ -1025,7 +1025,7 @@ public class CircuitSettings extends AbstractModelSettings {
         return result;
     }
 
-    private static Wait parseWaitData(String str) {
+    private static Wait parseWaitData(String str, Wait.Type type) {
         Wait result = null;
         Matcher matcher = WAIT_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
         if (matcher.find()) {
@@ -1033,7 +1033,7 @@ public class CircuitSettings extends AbstractModelSettings {
             Signal sig = new Signal(matcher.group(WAIT_SIG_GROUP), Signal.Type.INPUT);
             Signal ctrl = new Signal(matcher.group(WAIT_CTRL_GROUP), Signal.Type.INPUT);
             Signal san = new Signal(matcher.group(WAIT_SAN_GROUP), Signal.Type.OUTPUT);
-            result = new Wait(name, sig, ctrl, san);
+            result = new Wait(name, type, sig, ctrl, san);
         }
         return result;
     }

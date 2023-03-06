@@ -400,10 +400,7 @@ public class VerilogImporter implements Importer {
         Signal sig = getPinConnectedSignal(verilogInstance, module.sig.name, 0);
         Signal ctrl = getPinConnectedSignal(verilogInstance, module.ctrl.name, 2);
         Signal san = getPinConnectedSignal(verilogInstance, module.san.name, 3);
-
-        Wait result = new Wait(name, sig, ctrl, san);
-        result.setType(module.getType());
-        return result;
+        return new Wait(name, module.type, sig, ctrl, san);
     }
 
     private Mutex instanceToMutexWithProtocol(VerilogInstance verilogInstance, Collection<Mutex> mutexes) {
@@ -925,8 +922,7 @@ public class VerilogImporter implements Importer {
         if (instance == null) {
             return null;
         }
-        Wait.Type type = instance.getType();
-        Wait module = CircuitSettings.parseWaitData(type);
+        Wait module = CircuitSettings.parseWaitData(instance.type);
         if ((module == null) || (module.name == null)) {
             return null;
         }
@@ -940,7 +936,7 @@ public class VerilogImporter implements Importer {
         FunctionContact ctrlContact = addComponentPin(circuit, component, module.ctrl, instance.ctrl, nets);
         FunctionContact sanContact = addComponentPin(circuit, component, module.san, instance.san, nets);
 
-        ArbitrationUtils.assignWaitFunctions(type, sigContact, ctrlContact, sanContact);
+        ArbitrationUtils.assignWaitFunctions(instance.type, sigContact, ctrlContact, sanContact);
         return component;
     }
 
