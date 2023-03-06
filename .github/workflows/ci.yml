@@ -7,7 +7,7 @@ jobs:
   linux:
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-18.04]
+        os: [ubuntu-20.04, ubuntu-22.04]
         java-version: [8, 11]
 
     runs-on: ${{ matrix.os }}

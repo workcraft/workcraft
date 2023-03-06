@@ -145,6 +145,10 @@ public class CircuitPlugin implements Plugin {
                 "insert scan for path breaker components into the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(CycleFreenessVerificationCommand.class, "checkCircuitCycles",
                 "check if the Circuit 'work' is free from cyclic paths");
+
+        // Fork buffering
+        ScriptableCommandUtils.registerCommand(BufferHighFanoutTransformationCommand.class, "transformCircuitBufferHighFanout",
+                "buffer forks with high fanout in the Circuit 'work'");
     }
 
     private void initCompatibilityManager() {
