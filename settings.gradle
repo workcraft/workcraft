@@ -1,10 +1,10 @@
 pluginManagement {
     plugins {
-        id 'org.jetbrains.kotlin.jvm' version '1.7.22'
+        id 'org.jetbrains.kotlin.jvm' version '1.8.10'
         id 'ca.coglinc.javacc' version '2.4.0'
         id 'com.github.kt3k.coveralls' version '2.12.0'
         id 'de.aaschmid.cpd' version '3.3'
-        id 'com.github.jk1.dependency-license-report' version '2.0' // v2.1 requires Java 11
+        id 'com.github.jk1.dependency-license-report' version '2.1'
     }
 }
 
@@ -14,13 +14,13 @@ pluginManagement {
  */
 
 // Java version for source code and target bytecode compatibility
-gradle.ext.javaSourceVersion = JavaVersion.VERSION_1_8
-gradle.ext.javaTargetVersion = JavaVersion.VERSION_1_8
-gradle.ext.javaReleaseVersion = 8  /* Must be integer, e.g. 8 for JDK8*/
+gradle.ext.javaSourceVersion = JavaVersion.VERSION_11
+gradle.ext.javaTargetVersion = JavaVersion.VERSION_11
+gradle.ext.javaReleaseVersion = 11  /* Must be integer, e.g. 11 for JDK11*/
 
 // Code quality and coverage tools (Checkstyle, PMD, Jacoco)
-gradle.ext.checkstyleVersion = '9.3'  // v10.0 requires Java 11
-gradle.ext.pmdVersion = '6.52.0'
+gradle.ext.checkstyleVersion = '10.8.1'
+gradle.ext.pmdVersion = '6.55.0'
 gradle.ext.jacocoVersion = '0.8.8'
 
 
@@ -29,7 +29,7 @@ gradle.ext.jacocoVersion = '0.8.8'
  */
 
 // Unit testing
-gradle.ext.junit = 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+gradle.ext.junit = 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
 
 // JavaCC parser generator
 gradle.ext.javacc = 'net.java.dev.javacc:javacc:7.0.12'
