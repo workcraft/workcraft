@@ -60,7 +60,8 @@ public class AboutDialog extends JDialog {
         String homepage = Info.getHomepage();
         infoPane.setText("<p center>" + Info.getFullTitle() + "</p>"
                 + "<p center>" + Info.getCopyright() + "</p>"
-                + "<p center><a href='" + homepage + "'>" + homepage + "</a></p>");
+                + "<p center><a href='" + homepage + "'>" + homepage + "</a></p>"
+                + "<p center>" + Info.getJavaDescription() + "</p>");
 
         infoPane.addHyperlinkListener(event -> {
             if (HyperlinkEvent.EventType.ACTIVATED.equals(event.getEventType())) {

@@ -36,7 +36,10 @@ public class Console {
     }
 
     public static void main(String[] args) {
-        LogUtils.logMessage(Info.getFullTitle() + "\n" + Info.getCopyright() + "\n");
+        LogUtils.logMessage(Info.getFullTitle() + "\n"
+                + Info.getCopyright() + "\n"
+                + Info.getJavaDescription() + "\n");
+
         Options options = new Options(args);
 
         if (options.hasVersionFlag()) {
