@@ -265,7 +265,7 @@ public final class Framework {
     }
 
     public void init() {
-        // Configure logj4 output and set INFO verbosity.
+        // Configure log4j output and set INFO verbosity.
         // This is necessary for some plugins (e.g. PdfExporter) that use log4j.
         BasicConfigurator.configure();
         Logger.getRootLogger().setLevel(Level.INFO);
