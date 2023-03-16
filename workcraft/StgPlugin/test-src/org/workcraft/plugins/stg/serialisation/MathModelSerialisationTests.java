@@ -11,6 +11,8 @@ import org.workcraft.plugins.builtin.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.shared.DataAccumulator;
 
+import java.nio.charset.StandardCharsets;
+
 class MathModelSerialisationTests {
 
     @Test
@@ -33,7 +35,7 @@ class MathModelSerialisationTests {
             DataAccumulator accumulator = new DataAccumulator();
             serialiser.serialise(stg, accumulator, null);
 
-            System.out.println(new String(accumulator.getData()));
+            System.out.println(new String(accumulator.getData(), StandardCharsets.UTF_8));
 
             // deserialise
             XMLModelDeserialiser deserisaliser = new XMLModelDeserialiser(mock);

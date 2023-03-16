@@ -5,6 +5,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.utils.DialogUtils;
 
 import javax.swing.*;
+import java.nio.charset.StandardCharsets;
 
 public class TaskFailureNotifier extends BasicProgressMonitor<Object> {
     private final String description;
@@ -16,7 +17,7 @@ public class TaskFailureNotifier extends BasicProgressMonitor<Object> {
 
     @Override
     public void stderr(byte[] data) {
-        errorMessage += new String(data);
+        errorMessage += new String(data, StandardCharsets.UTF_8);
     }
 
     @Override

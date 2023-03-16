@@ -2,6 +2,8 @@ package org.workcraft.tasks;
 
 import org.workcraft.utils.TextUtils;
 
+import java.nio.charset.StandardCharsets;
+
 public class ExternalProcessOutput {
 
     private final int returnCode;
@@ -27,7 +29,7 @@ public class ExternalProcessOutput {
     }
 
     public String getStdoutString() {
-        return new String(stdout);
+        return new String(stdout, StandardCharsets.UTF_8);
     }
 
     public byte[] getStderr() {
@@ -35,7 +37,7 @@ public class ExternalProcessOutput {
     }
 
     public String getStderrString() {
-        return new String(stderr);
+        return new String(stderr, StandardCharsets.UTF_8);
     }
 
     public String getErrorsHeadAndTail() {

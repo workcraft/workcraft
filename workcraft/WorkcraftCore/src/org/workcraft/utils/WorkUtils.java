@@ -521,7 +521,7 @@ public final class WorkUtils {
                 String adjustedAttribute = attribute.replace(path, fileReference.getPath());
                 line = line.replace(attribute, adjustedAttribute);
             }
-            os.write(line.getBytes());
+            os.write(line.getBytes(StandardCharsets.UTF_8));
         }
         return new Resource(resource.getName(), os);
     }

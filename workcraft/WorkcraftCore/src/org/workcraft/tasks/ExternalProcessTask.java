@@ -7,6 +7,7 @@ import org.workcraft.utils.LogUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ExternalProcessTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
@@ -87,7 +88,7 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
         }
         monitor.stdout(data);
         if (printStdout) {
-            String text = new String(data);
+            String text = new String(data, StandardCharsets.UTF_8);
             LogUtils.logStdout(text);
         }
     }
@@ -101,7 +102,7 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
         }
         monitor.stderr(data);
         if (printStderr) {
-            String text = new String(data);
+            String text = new String(data, StandardCharsets.UTF_8);
             LogUtils.logStderr(text);
         }
     }

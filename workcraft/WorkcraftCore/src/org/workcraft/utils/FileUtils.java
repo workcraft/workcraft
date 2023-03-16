@@ -45,7 +45,7 @@ public class FileUtils {
 
     public static void dumpString(File out, String string) throws IOException {
         try (FileOutputStream fos = new FileOutputStream(out)) {
-            fos.write(string.getBytes());
+            fos.write(string.getBytes(StandardCharsets.UTF_8));
         }
     }
 

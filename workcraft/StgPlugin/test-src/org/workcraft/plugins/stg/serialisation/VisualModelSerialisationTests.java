@@ -16,6 +16,8 @@ import org.workcraft.shared.DataAccumulator;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.nio.charset.StandardCharsets;
+
 class VisualModelSerialisationTests {
 
     @Test
@@ -42,9 +44,9 @@ class VisualModelSerialisationTests {
         DataAccumulator visualData = new DataAccumulator();
         serialiser.serialise(visualstg, visualData, mathModelReferences);
 
-        System.out.println(new String(mathData.getData()));
+        System.out.println(new String(mathData.getData(), StandardCharsets.UTF_8));
         System.out.println("---------------");
-        System.out.println(new String(visualData.getData()));
+        System.out.println(new String(visualData.getData(), StandardCharsets.UTF_8));
 
         // deserialise
         XMLModelDeserialiser deserialiser = new XMLModelDeserialiser(mockPluginManager);

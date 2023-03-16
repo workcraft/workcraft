@@ -23,6 +23,7 @@ import org.workcraft.utils.Geometry;
 
 import java.awt.geom.Point2D;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,9 +89,8 @@ public class ScencoExecutionSupport {
         if (f.exists() && !f.isDirectory()) {
             System.out.println("Boolean controller:");
             try {
-                FileInputStream fstream = new FileInputStream(fileName);
-                DataInputStream in = new DataInputStream(fstream);
-                BufferedReader bre = new BufferedReader(new InputStreamReader(in));
+                DataInputStream in = new DataInputStream(new FileInputStream(fileName));
+                BufferedReader bre = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
                 String strLine;
                 bre.readLine();
                 bre.readLine();
@@ -256,7 +256,7 @@ public class ScencoExecutionSupport {
             File scenarioFile, File encodingFile, EncoderSettings settings) {
         try {
 
-            PrintStream output = new PrintStream(scenarioFile);
+            PrintStream output = new PrintStream(scenarioFile, StandardCharsets.UTF_8);
 
             for (int k = 0; k < m; k++) {
                 Map<String, Integer> nodes = new HashMap<>();
@@ -354,7 +354,7 @@ public class ScencoExecutionSupport {
             if (settings.getGenMode() != GenerationMode.SCENCO) {
 
                 if (settings.isCustomEncMode()) {
-                    PrintStream output1 = new PrintStream(encodingFile);
+                    PrintStream output1 = new PrintStream(encodingFile, StandardCharsets.UTF_8);
 
                     String[] enc = settings.getCustomEnc();
                     for (int k = 0; k < m; k++) {
