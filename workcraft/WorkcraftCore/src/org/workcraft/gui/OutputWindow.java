@@ -9,6 +9,7 @@ import org.workcraft.utils.LogUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 @SuppressWarnings("serial")
 public class OutputWindow extends LogPanel {
@@ -28,7 +29,7 @@ public class OutputWindow extends LogPanel {
             if (systemOut != null) {
                 systemOut.write(b);
             }
-            displayInEventDispatchThread(new String(b));
+            displayInEventDispatchThread(new String(b, StandardCharsets.UTF_8));
         }
 
         @Override
@@ -36,7 +37,7 @@ public class OutputWindow extends LogPanel {
             if (systemOut != null) {
                 systemOut.write(b, off, len);
             }
-            displayInEventDispatchThread(new String(b, off, len));
+            displayInEventDispatchThread(new String(b, off, len, StandardCharsets.UTF_8));
         }
 
         private void displayInEventDispatchThread(String text) {
@@ -101,7 +102,7 @@ public class OutputWindow extends LogPanel {
     public void captureStream() {
         if (!streamCaptured) {
             OutputStreamView outView = new OutputStreamView(new ByteArrayOutputStream(), getTextArea());
-            PrintStream outStream = new PrintStream(outView);
+            PrintStream outStream = new PrintStream(outView, true, StandardCharsets.UTF_8);
             systemOut = System.out;
             System.setOut(outStream);
             streamCaptured = true;

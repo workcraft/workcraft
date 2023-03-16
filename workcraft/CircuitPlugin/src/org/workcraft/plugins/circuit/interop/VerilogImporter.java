@@ -44,6 +44,7 @@ import javax.swing.*;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class VerilogImporter implements Importer {
@@ -592,7 +593,7 @@ public class VerilogImporter implements Importer {
     }
 
     private Expression convertFormulaToExpression(String formula) {
-        InputStream expressionStream = new ByteArrayInputStream(formula.getBytes());
+        InputStream expressionStream = new ByteArrayInputStream(formula.getBytes(StandardCharsets.UTF_8));
         ExpressionParser expressionParser = new ExpressionParser(expressionStream);
         if (DebugCommonSettings.getParserTracing()) {
             expressionParser.enable_tracing();

@@ -18,8 +18,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.geom.Point2D;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -209,8 +210,8 @@ public class ScencoSolver {
             boolean[][] encoding = solution.getCode();
             PrintStream output = null;
             try {
-                output = new PrintStream(encodingFile);
-            } catch (FileNotFoundException e) {
+                output = new PrintStream(encodingFile, StandardCharsets.UTF_8);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
 

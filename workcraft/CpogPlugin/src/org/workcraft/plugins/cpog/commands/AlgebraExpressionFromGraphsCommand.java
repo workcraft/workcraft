@@ -12,8 +12,9 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 public class AlgebraExpressionFromGraphsCommand extends AbstractAlgebraCommand {
 
@@ -57,10 +58,10 @@ public class AlgebraExpressionFromGraphsCommand extends AbstractAlgebraCommand {
                 }
                 PrintStream expressions;
                 try {
-                    expressions = new PrintStream(file);
+                    expressions = new PrintStream(file, StandardCharsets.UTF_8);
                     expressions.print(exp);
                     expressions.close();
-                } catch (FileNotFoundException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {

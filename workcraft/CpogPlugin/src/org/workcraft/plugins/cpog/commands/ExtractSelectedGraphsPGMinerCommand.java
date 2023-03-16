@@ -13,6 +13,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class ExtractSelectedGraphsPGMinerCommand extends AbstractPGMinerCommand {
@@ -56,7 +57,7 @@ public class ExtractSelectedGraphsPGMinerCommand extends AbstractPGMinerCommand 
             }
 
             File inputFile = File.createTempFile("input", ".tr");
-            PrintStream expressions = new PrintStream(inputFile);
+            PrintStream expressions = new PrintStream(inputFile, StandardCharsets.UTF_8);
             for (String graph: graphs) {
                 expressions.println(graph);
             }

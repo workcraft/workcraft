@@ -10,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 @SuppressWarnings("serial")
 public class ErrorWindow extends LogPanel implements ComponentListener {
@@ -27,7 +28,7 @@ public class ErrorWindow extends LogPanel implements ComponentListener {
             if (systemErr != null) {
                 systemErr.write(b);
             }
-            displayInEventDispatchThread(new String(b));
+            displayInEventDispatchThread(new String(b, StandardCharsets.UTF_8));
         }
 
         @Override
@@ -35,7 +36,7 @@ public class ErrorWindow extends LogPanel implements ComponentListener {
             if (systemErr != null) {
                 systemErr.write(b, off, len);
             }
-            displayInEventDispatchThread(new String(b, off, len));
+            displayInEventDispatchThread(new String(b, off, len, StandardCharsets.UTF_8));
         }
 
         private void displayInEventDispatchThread(String s) {

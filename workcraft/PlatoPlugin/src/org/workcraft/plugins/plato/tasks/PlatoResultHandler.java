@@ -38,6 +38,7 @@ import javax.swing.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -155,7 +156,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
     private void addStg(String output, Framework framework, GraphEditor editor, String[] invariants)
             throws IOException, DeserialisationException, OperationCancelledException {
 
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes())) {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8))) {
             ModelEntry me = new StgImporter().importFrom(inputStream, null);
             MathModel mathModel = me.getMathModel();
             StgDescriptor stgModel = new StgDescriptor();
@@ -177,7 +178,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
     private void addFst(String output, Framework framework, GraphEditor editor)
             throws IOException, DeserialisationException, OperationCancelledException {
 
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes())) {
+        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8))) {
             ModelEntry me = new SgImporter().importFrom(inputStream, null);
             MathModel mathModel = me.getMathModel();
             FstDescriptor fstModel = new FstDescriptor();
