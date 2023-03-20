@@ -838,8 +838,9 @@ public final class Framework {
     }
 
     public void setWorkingDirectory(File value) {
-        checkDirectory(value, "Working directory");
-        workingDirectory = value;
+        File directory = FileUtils.getFileDirectory(value);
+        checkDirectory(directory, "Working directory");
+        workingDirectory = directory;
     }
 
     public File getWorkingDirectory() {
@@ -851,8 +852,9 @@ public final class Framework {
     }
 
     public void setImportContextDirectory(File value) {
-        checkDirectory(value, "Context directory for import");
-        importContextDirectory = value;
+        File directory = FileUtils.getFileDirectory(value);
+        checkDirectory(directory, "Context directory for import");
+        importContextDirectory = directory;
     }
 
     public File getImportContextDirectory() {
@@ -860,8 +862,9 @@ public final class Framework {
     }
 
     public void setLastDirectory(File value) {
-        checkDirectory(value, "Last directory");
-        lastDirectory = value;
+        File directory = FileUtils.getFileDirectory(value);
+        checkDirectory(directory, "Last directory");
+        lastDirectory = directory;
     }
 
     public File getLastDirectory() {
