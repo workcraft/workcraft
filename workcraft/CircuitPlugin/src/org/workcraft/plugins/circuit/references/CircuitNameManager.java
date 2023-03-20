@@ -67,6 +67,12 @@ public class CircuitNameManager extends DefaultNameManager {
     }
 
     @Override
+    public void remove(Node node) {
+        signalMap.removeValue(node);
+        super.remove(node);
+    }
+
+    @Override
     public boolean isUnusedName(String name) {
         return (getSignalNode(name) == null)
                 && super.isUnusedName(Identifier.truncateNamespaceSeparator(name))
