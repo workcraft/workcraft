@@ -1,0 +1,13 @@
+Original Init to one on pin: false
+Modified Init to one on pin: true
+Original Init to one on port: false
+Modified Init to one on port: true
+Original Forced init on pin: false
+Modified Forced init on pin: true
+Original Forced init on port: false
+Modified Forced init on port: true
+Original Path breaker on pin: false
+Modified Path breaker on pin: true
+Original constroints on port:  / 
+Modified constraints on port: 1 / 0
+Cleared constraints on port:  / 

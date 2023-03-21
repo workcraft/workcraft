@@ -56,14 +56,6 @@ public class CircuitPropertyHelper {
                 .addLegend("circuit", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getFixerColor()))
                 .addLegend("error", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getProblemColor()))
                 .setReadonly();
-/*
-        return new LegendListDeclaration()
-                .addLegend("none", "Missing model", Color.BLACK, noneColor, () -> {})
-                .addLegend("STG", "Signal Transition Graph", Color.BLACK, stgColor, () -> {})
-                .addLegend("circuit", "Digital Circuit", Color.BLACK, circuitColor, () -> {})
-                .addLegend("error", "Incorrect model", Color.BLACK, errorColor, () -> {})
-                .setReadonly();
- */
     }
 
     private static PropertyDescriptor getComponentProperty(VisualCircuit circuit, VisualFunctionComponent component) {
@@ -133,11 +125,17 @@ public class CircuitPropertyHelper {
         File file = value.getFile();
         try {
             ModelEntry me = WorkUtils.loadModel(file);
+            if (me == null) {
+                throw new DeserialisationException();
+            }
             refinementModel = me.getMathModel();
         } catch (DeserialisationException e) {
             String path = FileUtils.getFullPath(file);
-            DialogUtils.showError("Cannot read refinement model from '" + path + "':\n " + e.getMessage(),
-                    title);
+            String details = e.getMessage();
+            String msg = "Cannot read refinement model from '" + path + "'"
+                    + ((details == null) || details.isEmpty() ? "" : (":\n " + details));
+
+            DialogUtils.showError(msg, title);
             return;
         }
 
@@ -245,7 +243,7 @@ public class CircuitPropertyHelper {
     }
 
     public static PropertyDescriptor getSetFunctionProperty(VisualCircuit circuit, VisualFunctionContact contact) {
-        return new PropertyDeclaration<String>(String.class, FunctionContact.PROPERTY_SET_FUNCTION,
+        return new PropertyDeclaration<>(String.class, FunctionContact.PROPERTY_SET_FUNCTION,
                 value -> {
                     try {
                         contact.setSetFunction(CircuitUtils.parseContactFunction(circuit, contact, value));
@@ -262,7 +260,7 @@ public class CircuitPropertyHelper {
     }
 
     public static PropertyDescriptor getResetFunctionProperty(VisualCircuit circuit, VisualFunctionContact contact) {
-        return new PropertyDeclaration<String>(String.class, FunctionContact.PROPERTY_RESET_FUNCTION,
+        return new PropertyDeclaration<>(String.class, FunctionContact.PROPERTY_RESET_FUNCTION,
                 value -> {
                     try {
                         contact.setResetFunction(CircuitUtils.parseContactFunction(circuit, contact, value));
