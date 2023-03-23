@@ -101,9 +101,9 @@ public class StgNameManager extends DefaultNameManager {
                 throw new ArgumentException("Name '" + name + "' is unavailable.");
             }
             String derivedName = getDerivedName(occupant, name);
-            String msg = "Name '" + name + "' is already taken by a place.\n" +
-                    "Rename that place to '" + derivedName + "' and continue?";
-            if (!DialogUtils.showConfirmWarning(msg)) {
+            String message = "Name '" + name + "' is taken by a place.";
+            String question = "\nRename that place to '" + derivedName + "' and continue?";
+            if (!DialogUtils.showConfirmWarning(message, question)) {
                 return false;
             }
             setName(occupant, derivedName, true);

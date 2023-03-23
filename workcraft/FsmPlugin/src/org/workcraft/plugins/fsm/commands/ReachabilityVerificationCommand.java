@@ -51,10 +51,11 @@ public class ReachabilityVerificationCommand extends AbstractVerificationCommand
             DialogUtils.showInfo("The model does not have unreachable states.", TITLE);
         } else {
             String refStr = ReferenceHelper.getNodesAsWrapString(fsm, unreachableStates);
-            String msg = "The model has unreachable state:\n" + refStr + "\n\nSelect unreachable states?\n";
-            if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
-                final Framework framework = Framework.getInstance();
-                final MainWindow mainWindow = framework.getMainWindow();
+            String message = "The model has unreachable state:\n" + refStr;
+            String question = "\n\nSelect unreachable states?\n";
+            Framework framework = Framework.getInstance();
+            if (DialogUtils.showConfirmInfo(message, question, TITLE, true) && framework.isInGuiMode()) {
+                MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 SelectionHelper.selectByReferencedComponents(visualFsm, unreachableStates);

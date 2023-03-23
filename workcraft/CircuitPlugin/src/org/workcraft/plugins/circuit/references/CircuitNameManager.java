@@ -86,10 +86,9 @@ public class CircuitNameManager extends DefaultNameManager {
                 throw new ArgumentException("Name '" + name + "' is unavailable.");
             }
             String derivedName = getDerivedName(occupant, name);
-            String msg = "Name '" + name + "' is already taken by a component.\n" +
-                    "Rename that component to '" + derivedName + "' and continue?";
-
-            if (!DialogUtils.showConfirmWarning(msg)) {
+            String message = "Name '" + name + "' is taken by a component.";
+            String question = "\nRename that component to '" + derivedName + "' and continue?";
+            if (!DialogUtils.showConfirmWarning(message, question)) {
                 return false;
             }
             setName(occupant, derivedName, true);

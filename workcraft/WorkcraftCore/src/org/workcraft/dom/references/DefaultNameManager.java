@@ -58,13 +58,13 @@ public class DefaultNameManager implements NameManager {
             nodes.removeValue(node);
             nodes.put(name, node);
         } else {
-            String msg = "Name '" + name + "' is already taken by another node.";
+            String message = "Name '" + name + "' is taken by another node.";
             if (force) {
-                DialogUtils.showError(msg);
+                DialogUtils.showError(message);
             } else {
                 String derivedName = getDerivedName(occupant, name);
-                msg += "\nRename that node to '" + derivedName + "' and continue?";
-                if (DialogUtils.showConfirmWarning(msg)) {
+                String question = "\nRename that node to '" + derivedName + "' and continue?";
+                if (DialogUtils.showConfirmWarning(message, question)) {
                     setName(occupant, derivedName, true);
                     setName(node, name, true);
                 }

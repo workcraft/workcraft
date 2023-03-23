@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 
-    private final class HugeSgRunnable implements Runnable {
+    private static final class HugeSgRunnable implements Runnable {
         private final String stateCountMsg;
         private boolean hugeSgConfirmed = false;
 
@@ -34,11 +34,9 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 
         @Override
         public void run() {
-            String msg = "The state graph contains " + stateCountMsg + " states."
-                    + "It may take a very long time to be processed.\n\n"
-                    + "Are you sure you want to display it?";
-
-            hugeSgConfirmed = DialogUtils.showConfirmWarning(msg, "Building state graph", false);
+            String message = "The state graph contains " + stateCountMsg + " states and may take a very long time to be processed";
+            String question = ".\n\nAre you sure you want to display it?";
+            hugeSgConfirmed = DialogUtils.showConfirmWarning(message, question, "Building state graph", false);
         }
 
         public boolean isHugeSgConfirmed() {
@@ -117,7 +115,6 @@ public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
                     SwingUtilities.invokeAndWait(hugeSgRunnable);
                     if (hugeSgRunnable.isHugeSgConfirmed()) {
                         writeSgOptions.add("-huge");
-                        continue;
                     } else {
                         return Result.cancel();
                     }

@@ -130,8 +130,8 @@ public final class VerificationUtils {
         }
 
         if (!msg.isEmpty()) {
-            msg = "The circuit has the following issues:\n" + msg + "\n\nProceed anyway?";
-            return DialogUtils.showConfirmWarning(msg);
+            return DialogUtils.showConfirmWarning("The circuit has the following issues:\n" + msg,
+                    "\n\nProceed anyway?");
         }
         return true;
     }
@@ -220,10 +220,8 @@ public final class VerificationUtils {
 
         if (!blackboxComponents.isEmpty()) {
             Collection<String> refs = ReferenceHelper.getReferenceList(circuit, blackboxComponents);
-            String msg = TextUtils.wrapMessageWithItems("Circuit has blackbox component", refs)
-                    + "\n\nProceed anyway?";
-
-            return DialogUtils.showConfirmWarning(msg);
+            String msg = TextUtils.wrapMessageWithItems("Circuit has blackbox component", refs);
+            return DialogUtils.showConfirmWarning(msg, "\n\nProceed anyway?");
         }
         return true;
     }

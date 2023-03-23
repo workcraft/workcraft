@@ -8,7 +8,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-@SuppressWarnings("serial")
 public class PresetManagerPanel<T> extends JPanel {
 
     class PresetComboBox extends JComboBox<Preset<T>> {
@@ -167,8 +166,8 @@ public class PresetManagerPanel<T> extends JPanel {
         Preset<T> preset = getSelectedPreset();
         if (preset != null) {
             String description = preset.getDescription();
-            String msg = "Are you sure you want to delete preset '" + description + "'?";
-            if (DialogUtils.showConfirm(msg, "Delete preset", false)) {
+            String question = "Are you sure you want to delete preset '" + description + "'?";
+            if (DialogUtils.showConfirm(null, question, "Delete preset", false)) {
                 presetManager.deletePreset(preset);
                 fillPresetComboAndSelect(null);
             }

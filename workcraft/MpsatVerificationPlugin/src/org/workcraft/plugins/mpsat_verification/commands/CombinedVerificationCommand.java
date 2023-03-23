@@ -68,10 +68,11 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
 
         boolean noDummies = stg.getDummyTransitions().isEmpty();
         if (!noDummies) {
-            String msg = "Input properness and Output persistency\n" +
-                    "can currently be checked only for STGs without dummies.\n\n" +
-                    "Proceed with verification of other properties?";
-            if (!DialogUtils.showConfirmWarning(msg)) {
+            String message = "Input properness and Output persistency\n" +
+                    "can currently be checked only for STGs without dummies";
+
+            String question = ". \n\nProceed with verification of other properties?";
+            if (!DialogUtils.showConfirmWarning(message, question)) {
                 monitor.isFinished(Result.cancel());
                 return monitor;
             }

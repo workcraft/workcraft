@@ -71,7 +71,7 @@ public final class PetriUtils {
     }
 
     public static boolean checkSoundness(PetriModel stg, boolean ask) {
-        String msg = "";
+        String message = "";
         Set<String> hangingTransitions = new HashSet<>();
         Set<String> unboundedTransitions = new HashSet<>();
         for (Transition transition : stg.getTransitions()) {
@@ -85,10 +85,10 @@ public final class PetriUtils {
             }
         }
         if (!hangingTransitions.isEmpty()) {
-            msg += TextUtils.wrapMessageWithItems("\n* Disconnected transition", hangingTransitions);
+            message += TextUtils.wrapMessageWithItems("\n* Disconnected transition", hangingTransitions);
         }
         if (!unboundedTransitions.isEmpty()) {
-            msg += TextUtils.wrapMessageWithItems("\n* Empty preset transition", unboundedTransitions);
+            message += TextUtils.wrapMessageWithItems("\n* Empty preset transition", unboundedTransitions);
         }
 
         Set<String> hangingPlaces = new HashSet<>();
@@ -104,19 +104,19 @@ public final class PetriUtils {
             }
         }
         if (!hangingPlaces.isEmpty()) {
-            msg += TextUtils.wrapMessageWithItems("\n* Disconnected place", hangingPlaces);
+            message += TextUtils.wrapMessageWithItems("\n* Disconnected place", hangingPlaces);
         }
         if (!deadPlaces.isEmpty()) {
-            msg += TextUtils.wrapMessageWithItems("\n* Dead place", deadPlaces);
+            message += TextUtils.wrapMessageWithItems("\n* Dead place", deadPlaces);
         }
 
-        if (!msg.isEmpty()) {
-            msg = "The model has the following issues:" + msg;
+        if (!message.isEmpty()) {
+            message = "The model has the following issues:" + message;
             if (ask) {
-                msg += "\n\n Proceed anyway?";
-                return DialogUtils.showConfirmWarning(msg, "Model validation", false);
+                String question = "\n\n Proceed anyway?";
+                return DialogUtils.showConfirmWarning(message, question, "Model validation", false);
             } else {
-                DialogUtils.showWarning(msg);
+                DialogUtils.showWarning(message);
             }
         }
         return true;

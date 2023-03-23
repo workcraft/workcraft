@@ -65,9 +65,9 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         File envFile = mathCircuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadOrImportStg(envFile);
         if (envStg == null) {
-            String msg = "Environment STG is missing, so conformation cannot be checked during optimisation.\n\n" +
-                    "Proceed checking output persistency only?";
-            if (!DialogUtils.showConfirmWarning(msg, TITLE, true)) {
+            String message = "Environment STG is missing, so conformation cannot be checked during optimisation";
+            String question = ".\n\nProceed checking output persistency only?";
+            if (!DialogUtils.showConfirmWarning(message, question, TITLE, true)) {
                 return;
             }
             checkConformation = false;
@@ -76,9 +76,9 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
                 return;
             }
             if (!envStg.getDummyTransitions().isEmpty()) {
-                String msg = "Environment STG has dummies, so output persistency cannot be checked during optimisation.\n\n" +
-                        "Proceed checking conformation only?";
-                if (!DialogUtils.showConfirmWarning(msg, TITLE, true)) {
+                String message = "Environment STG has dummies, so output persistency cannot be checked during optimisation";
+                String question = ".\n\nProceed checking conformation only?";
+                if (!DialogUtils.showConfirmWarning(message, question, TITLE, true)) {
                     return;
                 }
                 checkPersistency = false;
@@ -123,14 +123,14 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
                 DialogUtils.showInfo("All zero delay assumptions for the selected components are necessary.");
             }
         } else {
-            String infoString = TextUtils.wrapMessageWithItems(
+            String msg = TextUtils.wrapMessageWithItems(
                     "Zero delay assumption is removed for component", refs);
 
-            String questionString = refs.size() > 1
-                    ? "Update these components names to default values?"
-                    : "Update the component name to default value?";
+            String question = refs.size() > 1
+                    ? "\n\nUpdate these components names to default values?"
+                    : "\n\nUpdate the component name to default value?";
 
-            if (DialogUtils.showConfirmInfo(infoString + "\n\n" + questionString)) {
+            if (DialogUtils.showConfirmInfo(msg, question)) {
                 renameOptimisedComponents(mathCircuit, refs);
             }
             we.saveMemento();

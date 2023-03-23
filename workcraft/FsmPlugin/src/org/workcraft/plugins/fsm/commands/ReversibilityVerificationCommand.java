@@ -1,10 +1,5 @@
 package org.workcraft.plugins.fsm.commands;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
@@ -18,8 +13,13 @@ import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.utils.FsmUtils;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class ReversibilityVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
@@ -51,10 +51,11 @@ public class ReversibilityVerificationCommand extends AbstractVerificationComman
             DialogUtils.showInfo("The model is reversible.", TITLE);
         } else {
             String refStr = ReferenceHelper.getNodesAsWrapString(fsm, irreversibleStates);
-            String msg = "The model has irreversible states:\n" + refStr + "\n\nSelect irreversible states?\n";
-            if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
-                final Framework framework = Framework.getInstance();
-                final MainWindow mainWindow = framework.getMainWindow();
+            String message = "The model has irreversible states:\n" + refStr;
+            String question = "\n\nSelect irreversible states?\n";
+            Framework framework = Framework.getInstance();
+            if (DialogUtils.showConfirmInfo(message, question, TITLE, true) && framework.isInGuiMode()) {
+                MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 SelectionHelper.selectByReferencedComponents(visualFsm, irreversibleStates);

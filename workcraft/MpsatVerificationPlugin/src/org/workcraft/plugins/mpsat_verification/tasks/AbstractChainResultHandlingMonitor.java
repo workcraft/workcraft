@@ -3,8 +3,8 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.utils.ToggleUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
+import org.workcraft.plugins.stg.utils.ToggleUtils;
 import org.workcraft.tasks.AbstractResultHandlingMonitor;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.ExternalProcessOutput;
@@ -157,8 +157,8 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
     private void showSolutionMessage(Solution solution, String prefix, String suffix) {
         String message = prefix + solution.getComment() + suffix + ":\n" + solution;
         if (canProcessSolution()) {
-            message += "\n\nSimulate the problematic trace?";
-            if (DialogUtils.showConfirmError(message)) {
+            String question = "\n\nSimulate the problematic trace?";
+            if (DialogUtils.showConfirmError(message, question)) {
                 TraceUtils.playSolution(we, solution, suffix);
             }
         } else {

@@ -49,10 +49,11 @@ public class ReachabilityVerificationCommand extends AbstractVerificationCommand
             DialogUtils.showInfo("The graph does not have unreachable vertices.", TITLE);
         } else {
             String refStr = ReferenceHelper.getNodesAsWrapString(graph, unreachable);
-            String msg = "The graph has unreachable vertices:\n" + refStr + "\n\nSelect unreachable vertices?";
-            if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
-                final Framework framework = Framework.getInstance();
-                final MainWindow mainWindow = framework.getMainWindow();
+            String message = "The graph has unreachable vertices:\n" + refStr;
+            String question = "\n\nSelect unreachable vertices?";
+            Framework framework = Framework.getInstance();
+            if (DialogUtils.showConfirmInfo(message, question, TITLE, true) && framework.isInGuiMode()) {
+                MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 VisualModel visualGraph = we.getModelEntry().getVisualModel();
                 SelectionHelper.selectByReferencedComponents(visualGraph, unreachable);

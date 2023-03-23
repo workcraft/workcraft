@@ -17,7 +17,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-@SuppressWarnings("serial")
 public class WorkspaceWindow extends JPanel {
 
     private static final String DIALOG_OPEN_WORKSPACE = "Open workspace";
@@ -132,8 +131,9 @@ public class WorkspaceWindow extends JPanel {
                 return file;
             }
 
-            String msg = "The file '" + file.getName() + "' already exists.\n\n" + "Do you want to overwrite it?";
-            if (DialogUtils.showConfirmWarning(msg, DIALOG_SAVE_WORKSPACE_AS, false)) {
+            if (DialogUtils.showConfirmWarning("The file '" + file.getName() + "' already exists",
+                    ".\n\nDo you want to overwrite it?", DIALOG_SAVE_WORKSPACE_AS, false)) {
+
                 return file;
             }
         }
