@@ -17,19 +17,21 @@ public final class ConnectionUtils {
     private ConnectionUtils() {
     }
 
-    public static void moveInternalContacts(VisualConnection connection) {
+    public static void adjustInsideComponentContactPositions(VisualConnection connection) {
         if ((connection != null) && (connection.getGraphic() instanceof Polyline)) {
             Polyline polyline = (Polyline) connection.getGraphic();
             VisualNode first = connection.getFirst();
             VisualNode second = connection.getSecond();
             if (polyline.getControlPointCount() > 0) {
-                moveInternalContactsToControlPoints(first, second, polyline);
+                moveInsideComponentContactsToControlPoints(first, second, polyline);
             } else {
-                moveInternalContactsByGradient(first, second);
+                moveInsideComponentContactsByGradient(first, second);
             }
         }
     }
-    private static void moveInternalContactsToControlPoints(VisualNode first, VisualNode second, Polyline polyline) {
+    private static void moveInsideComponentContactsToControlPoints(
+            VisualNode first, VisualNode second, Polyline polyline) {
+
         ControlPoint firstControlPoint = polyline.getFirstControlPoint();
         Point2D firstPos = firstControlPoint.getRootSpacePosition();
         ControlPoint lastControlPoint = polyline.getLastControlPoint();
@@ -78,7 +80,7 @@ public final class ConnectionUtils {
         return 0;
     }
 
-    private static void moveInternalContactsByGradient(VisualNode first, VisualNode second) {
+    private static void moveInsideComponentContactsByGradient(VisualNode first, VisualNode second) {
         Point2D gradient = getGradient(first, second);
         if (gradient != null) {
             if (first instanceof VisualContact) {
@@ -110,13 +112,15 @@ public final class ConnectionUtils {
             Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
             if (bb.contains(contact.getPosition())) {
                 if (Math.abs(dy) > Math.abs(dx)) {
-                    VisualContact.Direction direction = (dy > 0) ? VisualContact.Direction.SOUTH : VisualContact.Direction.NORTH;
-                    boolean reverseProgression = dx < 0;
-                    component.setPositionByDirection(contact, direction, reverseProgression);
+                    VisualContact.Direction direction = (dy > 0) ? VisualContact.Direction.SOUTH
+                            : VisualContact.Direction.NORTH;
+
+                    component.setPositionByDirection(contact, direction, dx < 0);
                 } else {
-                    VisualContact.Direction direction = (dx > 0) ? VisualContact.Direction.EAST : VisualContact.Direction.WEST;
-                    boolean reverseProgression = dy < 0;
-                    component.setPositionByDirection(contact, direction, reverseProgression);
+                    VisualContact.Direction direction = (dx > 0) ? VisualContact.Direction.EAST
+                            : VisualContact.Direction.WEST;
+
+                    component.setPositionByDirection(contact, direction, dy < 0);
                 }
             }
         }

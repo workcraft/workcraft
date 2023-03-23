@@ -2,6 +2,9 @@ package org.workcraft.gui.tools;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.connections.ConnectionGraphic;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -17,10 +20,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 public class ConnectionTool extends AbstractGraphEditorTool {
 
@@ -30,9 +30,9 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     protected static final Color validConnectionColor = Color.BLUE;
     protected static final Color invalidConnectionColor = Color.RED;
 
-    protected boolean forbidSelfLoops = true;
-    protected boolean directedArcs = true;
-    protected boolean allLevels = true;
+    protected boolean forbidSelfLoops;
+    protected boolean directedArcs;
+    protected boolean allLevels;
 
     protected VisualNode firstNode = null;
     protected VisualNode currentNode = null;
@@ -198,7 +198,8 @@ public class ConnectionTool extends AbstractGraphEditorTool {
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (currentNode == null) {
                 if (firstNode != null) {
-                    continueConnection(e);
+                    controlPoints.add(currentPoint);
+                    lastPoint = currentPoint;
                 }
             } else {
                 if (firstNode == null) {
@@ -254,20 +255,6 @@ public class ConnectionTool extends AbstractGraphEditorTool {
         editor.getWorkspaceEntry().setCanModify(false);
     }
 
-    public void continueConnection(GraphEditorMouseEvent e) {
-        Set<Point2D> snaps = new HashSet<>();
-        if (controlPoints.isEmpty()) {
-            AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
-            Point2D p = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
-            snaps.add(p);
-        } else {
-            snaps.add(controlPoints.getLast());
-        }
-        Point2D snapPos = e.getEditor().snap(currentPoint, snaps);
-        controlPoints.add(snapPos);
-        lastPoint = snapPos;
-    }
-
     public VisualConnection finishConnection(GraphEditorMouseEvent e) {
         VisualConnection connection = null;
         try {
@@ -298,12 +285,43 @@ public class ConnectionTool extends AbstractGraphEditorTool {
                     connection.getGraphic().setDefaultControlPoints();
                 } else {
                     ConnectionHelper.addControlPoints(connection, controlPoints);
+                    snapControlPoints(e.getEditor(), connection);
                 }
             }
         } catch (InvalidConnectionException exception) {
             Toolkit.getDefaultToolkit().beep();
         }
         return connection;
+    }
+
+    public static void snapControlPoints(GraphEditor editor, VisualConnection connection) {
+        ConnectionGraphic graphic = connection.getGraphic();
+        if (graphic instanceof Polyline) {
+            Polyline polyline = (Polyline) graphic;
+            int count = polyline.getControlPointCount();
+
+            Point2D headSnapPoint = connection.getFirstCenter();
+            Point2D tailSnapPoint = connection.getSecondCenter();
+            for (int headIndex = 0; headIndex < (count + 1) / 2; headIndex++) {
+                int tailIndex = count - headIndex - 1;
+                if (headIndex == tailIndex) {
+                    ControlPoint controlPoint = polyline.getControlPoint(headIndex);
+                    Set<Point2D> snaps = new HashSet<>(Arrays.asList(headSnapPoint, tailSnapPoint));
+                    Point2D snapPos = editor.snap(controlPoint.getRootSpacePosition(), snaps);
+                    controlPoint.setRootSpacePosition(snapPos);
+                } else {
+                    ControlPoint headControlPoint = polyline.getControlPoint(headIndex);
+                    Set<Point2D> headSnaps = Collections.singleton(headSnapPoint);
+                    Point2D headSnapPos = editor.snap(headControlPoint.getRootSpacePosition(), headSnaps);
+                    headControlPoint.setRootSpacePosition(headSnapPos);
+
+                    ControlPoint tailControlPoint = polyline.getControlPoint(tailIndex);
+                    Set<Point2D> tailSnaps = Collections.singleton(tailSnapPoint);
+                    Point2D tailSnapPos = editor.snap(tailControlPoint.getRootSpacePosition(), tailSnaps);
+                    tailControlPoint.setRootSpacePosition(tailSnapPos);
+                }
+            }
+        }
     }
 
     @Override
