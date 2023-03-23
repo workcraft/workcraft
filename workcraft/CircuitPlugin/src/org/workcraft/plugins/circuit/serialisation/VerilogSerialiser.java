@@ -9,6 +9,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.Not;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.visitors.StringGenerator.Style;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
@@ -46,17 +47,8 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
     @Override
     public void serialise(Model model, OutputStream out) {
         if (model instanceof Circuit) {
-            Circuit circuit = (Circuit) model;
-            Set<FunctionComponent> badComponents = RefinementUtils.getIncompatibleRefinementCircuitComponents(circuit);
-            if (!badComponents.isEmpty()) {
-                String msg = TextUtils.wrapMessageWithItems("Incompatible refinement for component",
-                        ReferenceHelper.getReferenceSet(circuit, badComponents));
-
-                DialogUtils.showError(msg);
-                return;
-            }
-
             PrintWriter writer = new PrintWriter(out);
+            Circuit circuit = (Circuit) model;
             writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
             refinementCircuits.clear();
             writeCircuit(writer, circuit);
@@ -64,20 +56,6 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             writer.close();
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
-        }
-    }
-
-    private void writeRefinementCircuits(PrintWriter writer) {
-        Set<String> visited = new HashSet<>();
-        while (!refinementCircuits.isEmpty()) {
-            Pair<File, Circuit> refinement = refinementCircuits.remove();
-            String path = FileUtils.getFullPath(refinement.getFirst());
-            if (!visited.contains(path)) {
-                visited.add(path);
-                Circuit circuit = refinement.getSecond();
-                writer.println();
-                writeCircuit(writer, circuit);
-            }
         }
     }
 
@@ -92,11 +70,41 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
     }
 
     private void writeCircuit(PrintWriter writer, Circuit circuit) {
+        Set<FunctionComponent> badComponents = RefinementUtils.getIncompatibleRefinementCircuitComponents(circuit);
+        if (!badComponents.isEmpty()) {
+            String moduleName = circuit.getTitle();
+            LogUtils.logError(TextUtils.wrapMessageWithItems(
+                    "Verilog module '" + moduleName + "' uses incompatible refinement for component",
+                    ReferenceHelper.getReferenceSet(circuit, badComponents)));
+        }
         CircuitSignalInfo circuitInfo = new CircuitSignalInfo(circuit);
         writeHeader(writer, circuitInfo);
         writeInstances(writer, circuitInfo);
         writeInitialState(writer, circuitInfo);
         writer.println(KEYWORD_ENDMODULE);
+    }
+
+    private void writeRefinementCircuits(PrintWriter writer) {
+        Map<String, String> exportedModules = new HashMap<>();
+        while (!refinementCircuits.isEmpty()) {
+            Pair<File, Circuit> refinement = refinementCircuits.remove();
+            Circuit circuit = refinement.getSecond();
+            String moduleName = circuit.getTitle();
+            String path = FileUtils.getFullPath(refinement.getFirst());
+            if (!exportedModules.containsKey(moduleName)) {
+                exportedModules.put(moduleName, path);
+                writer.println();
+                writeCircuit(writer, circuit);
+            } else {
+                String exportedPath = exportedModules.get(moduleName);
+                if ((path != null) && !path.equals(exportedPath)) {
+                    LogUtils.logError(
+                            "Different circuit refinement has been used for Verilog module '" + moduleName + "'"
+                            + "\n" + PropertyHelper.BULLET_PREFIX + "Original refinement: " + exportedPath
+                            + "\n" + PropertyHelper.BULLET_PREFIX + "Conflict refinement: " + path);
+                }
+            }
+        }
     }
 
     private void writeHeader(PrintWriter writer, CircuitSignalInfo circuitInfo) {
