@@ -206,7 +206,7 @@ public class InitialisationState {
         return result;
     }
 
-    public boolean isRedundantForceInit(FunctionContact contact) {
+    public boolean isRedundantForcedInit(FunctionContact contact) {
         return false;
     }
 

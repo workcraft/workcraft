@@ -9,16 +9,16 @@ import org.workcraft.plugins.circuit.utils.ResetUtils;
 import java.util.Collection;
 import java.util.function.Function;
 
-public class ForceInitClearAllTagCommand extends AbstractTagCommand {
+public class ForcedInitAutoAppendTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return ResetUtils::tagForceInitClearAll;
+        return ResetUtils::tagForcedInitAutoAppend;
     }
 
     @Override
     public String getMessage() {
-        return "Cleared force init contact";
+        return "Auto-appended forced init pin";
     }
 
     @Override

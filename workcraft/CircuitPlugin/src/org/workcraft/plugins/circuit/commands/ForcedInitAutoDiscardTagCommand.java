@@ -9,16 +9,16 @@ import org.workcraft.plugins.circuit.utils.ResetUtils;
 import java.util.Collection;
 import java.util.function.Function;
 
-public class ForceInitAutoDiscardTagCommand extends AbstractTagCommand {
+public class ForcedInitAutoDiscardTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return ResetUtils::tagForceInitAutoDiscard;
+        return ResetUtils::tagForcedInitAutoDiscard;
     }
 
     @Override
     public String getMessage() {
-        return "Auto-discarded force init pin";
+        return "Auto-discarded forced init pin";
     }
 
     @Override

@@ -26,41 +26,41 @@ function getFileReference(value, baseWork) {
 framework.addJavaScriptHelp("setCircuitEnvironment", "work, env",
     "set 'env' STG file or work as environment for Circuit 'work'");
 
-function setCircuitEnvironment(circuitWork, env) {
-    circuitMathModel = circuitWork.getModelEntry().getMathModel();
-    circuitMathModel.setEnvironment(getFileReference(env, circuitWork));
+function setCircuitEnvironment(work, env) {
+    circuit = work.getModelEntry().getMathModel();
+    circuit.setEnvironment(getFileReference(env, work));
 }
 
 
 framework.addJavaScriptHelp("getCircuitEnvironment", "work",
     "get environment STG file for Circuit 'work'");
 
-function getCircuitEnvironment(circuitWork) {
-    circuitMathModel = circuitWork.getModelEntry().getMathModel();
-    return circuitMathModel.getEnvironmentFile();
+function getCircuitEnvironment(work) {
+    circuit = work.getModelEntry().getMathModel();
+    return circuit.getEnvironmentFile();
 }
 
-framework.addJavaScriptHelp("setCircuitComponentRefinement", "circuitWork, componentRef, refinement",
-    "set 'refinement' as refinement model for component 'componentRef' in Circuit 'circuitWork'");
+framework.addJavaScriptHelp("setCircuitComponentRefinement", "work, ref, refinement",
+    "set 'refinement' as refinement model for component 'ref' in Circuit 'work'");
 
-function setCircuitComponentRefinement(circuitWork, componentRef, refinement) {
-    circuitMathModel = circuitWork.getModelEntry().getMathModel();
-    component = circuitMathModel.getNodeByReference(componentRef);
+function setCircuitComponentRefinement(work, ref, refinement) {
+    circuit = work.getModelEntry().getMathModel();
+    component = circuit.getNodeByReference(ref);
     if (!(component instanceof org.workcraft.plugins.circuit.CircuitComponent)) {
-        throw "Circuit component '" + componentRef + "' not found";
+        throw "Circuit component '" + ref + "' not found";
     }
-    component.setRefinement(getFileReference(refinement, circuitWork));
+    component.setRefinement(getFileReference(refinement, work));
 }
 
 
-framework.addJavaScriptHelp("getCircuitComponentRefinement", "circuitWork, componentRef",
-    "get file path of refinement model for component 'componentRef' in Circuit 'circuitWork'");
+framework.addJavaScriptHelp("getCircuitComponentRefinement", "work, ref",
+    "get file path of refinement model for component 'ref' in Circuit 'work'");
 
-function getCircuitComponentRefinement(circuitWork, componentRef) {
-    circuitMathModel=circuitWork.getModelEntry().getMathModel();
-    component = circuitMathModel.getNodeByReference(componentRef);
+function getCircuitComponentRefinement(work, ref) {
+    circuit = work.getModelEntry().getMathModel();
+    component = circuit.getNodeByReference(ref);
     if (!(component instanceof org.workcraft.plugins.circuit.CircuitComponent)) {
-        throw "Circuit component '" + componentRef + "' not found";
+        throw "Circuit component '" + ref + "' not found";
     }
     refinement = component.getRefinement();
     if (!(refinement instanceof org.workcraft.dom.references.FileReference)) {

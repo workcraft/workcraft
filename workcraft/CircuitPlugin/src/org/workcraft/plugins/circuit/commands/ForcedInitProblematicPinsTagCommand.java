@@ -9,16 +9,16 @@ import org.workcraft.plugins.circuit.utils.ResetUtils;
 import java.util.Collection;
 import java.util.function.Function;
 
-public class ForceInitInputPortsTagCommand extends AbstractTagCommand {
+public class ForcedInitProblematicPinsTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return ResetUtils::tagForceInitInputPorts;
+        return ResetUtils::tagForcedInitProblematicPins;
     }
 
     @Override
     public String getMessage() {
-        return "Force init input port";
+        return "Force init problematic pin";
     }
 
     @Override
