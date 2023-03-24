@@ -9,16 +9,16 @@ import org.workcraft.plugins.circuit.utils.ResetUtils;
 import java.util.Collection;
 import java.util.function.Function;
 
-public class ForceInitSequentialPinsTagCommand extends AbstractTagCommand {
+public class ForcedInitClearAllTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return ResetUtils::tagForceInitSequentialPins;
+        return ResetUtils::tagForcedInitClearAll;
     }
 
     @Override
     public String getMessage() {
-        return "Force init sequential pin";
+        return "Cleared forced init contact";
     }
 
     @Override

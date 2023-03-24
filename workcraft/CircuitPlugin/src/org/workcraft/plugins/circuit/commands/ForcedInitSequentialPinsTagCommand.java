@@ -9,16 +9,16 @@ import org.workcraft.plugins.circuit.utils.ResetUtils;
 import java.util.Collection;
 import java.util.function.Function;
 
-public class ForceInitAutoAppendTagCommand extends AbstractTagCommand {
+public class ForcedInitSequentialPinsTagCommand extends AbstractTagCommand {
 
     @Override
     public Function<Circuit, Collection<Contact>> getFunction() {
-        return ResetUtils::tagForceInitAutoAppend;
+        return ResetUtils::tagForcedInitSequentialPins;
     }
 
     @Override
     public String getMessage() {
-        return "Auto-appended force init pin";
+        return "Force init sequential pin";
     }
 
     @Override

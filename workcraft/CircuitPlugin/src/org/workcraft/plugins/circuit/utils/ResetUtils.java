@@ -35,16 +35,16 @@ public final class ResetUtils {
     private ResetUtils() {
     }
 
-    public static Set<Contact> tagForceInitClearAll(Circuit circuit) {
-        return setForceInit(circuit.getFunctionContacts(), false);
+    public static Set<Contact> tagForcedInitClearAll(Circuit circuit) {
+        return setForcedInit(circuit.getFunctionContacts(), false);
     }
 
-    public static Set<Contact> tagForceInitInputPorts(Circuit circuit) {
-        return setForceInit(circuit.getInputPorts(), true);
+    public static Set<Contact> tagForcedInitInputPorts(Circuit circuit) {
+        return setForcedInit(circuit.getInputPorts(), true);
     }
 
-    public static Set<Contact> tagForceInitProblematicPins(Circuit circuit) {
-        return setForceInit(getProblematicPins(circuit), true);
+    public static Set<Contact> tagForcedInitProblematicPins(Circuit circuit) {
+        return setForcedInit(getProblematicPins(circuit), true);
     }
 
     public static Set<Contact> getProblematicPins(Circuit circuit) {
@@ -89,7 +89,7 @@ public final class ResetUtils {
                 && (!isEvaluatedLow(setFunction, resetFunction) || contact.getInitToOne());
     }
 
-    public static Set<Contact> tagForceInitSequentialPins(Circuit circuit) {
+    public static Set<Contact> tagForcedInitSequentialPins(Circuit circuit) {
         HashSet<FunctionContact> contacts = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             for (FunctionContact contact : component.getFunctionOutputs()) {
@@ -97,7 +97,7 @@ public final class ResetUtils {
                 contacts.add(contact);
             }
         }
-        return setForceInit(contacts, true);
+        return setForcedInit(contacts, true);
     }
 
     public static boolean isEvaluatedHigh(BooleanFormula setFunction, BooleanFormula resetFunction) {
@@ -109,7 +109,7 @@ public final class ResetUtils {
         return Zero.getInstance().equals(setFunction) && ((resetFunction == null) || One.getInstance().equals(resetFunction));
     }
 
-    public static Set<Contact> tagForceInitAutoAppend(Circuit circuit) {
+    public static Set<Contact> tagForcedInitAutoAppend(Circuit circuit) {
         Set<Contact> contacts = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (!component.getIsZeroDelay()) {
@@ -120,13 +120,13 @@ public final class ResetUtils {
                 }
             }
         }
-        Set<Contact> changedContacts = setForceInit(contacts, true);
-        Set<Contact> redundantContacts = simplifyForceInit(circuit, changedContacts);
+        Set<Contact> changedContacts = setForcedInit(contacts, true);
+        Set<Contact> redundantContacts = simplifyForcedInit(circuit, changedContacts);
         changedContacts.removeAll(redundantContacts);
         return changedContacts;
     }
 
-    private static Set<Contact> setForceInit(Collection<? extends Contact> contacts, boolean value) {
+    private static Set<Contact> setForcedInit(Collection<? extends Contact> contacts, boolean value) {
         HashSet<Contact> result = new HashSet<>();
         for (Contact contact : contacts) {
             if (contact.getForcedInit() != value) {
@@ -137,7 +137,7 @@ public final class ResetUtils {
         return result;
     }
 
-    private static Set<Contact> simplifyForceInit(Circuit circuit, Collection<? extends Contact> contacts) {
+    private static Set<Contact> simplifyForcedInit(Circuit circuit, Collection<? extends Contact> contacts) {
         Set<Contact> result = new HashSet<>();
         for (Contact contact : contacts) {
             contact.setForcedInit(false);
@@ -151,20 +151,20 @@ public final class ResetUtils {
         return result;
     }
 
-    public static Set<Contact> tagForceInitAutoDiscard(Circuit circuit) {
+    public static Set<Contact> tagForcedInitAutoDiscard(Circuit circuit) {
         HashSet<FunctionContact> contacts = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
                 contacts.add(contact);
             }
         }
-        return simplifyForceInit(circuit, contacts);
+        return simplifyForcedInit(circuit, contacts);
     }
 
     public static boolean insertReset(VisualCircuit circuit, boolean isActiveLow) {
         String portName = isActiveLow ? CircuitSettings.getResetActiveLowPort() : CircuitSettings.getResetActiveHighPort();
         List<VisualFunctionComponent> resetComponents = circuit.getVisualFunctionComponents().stream()
-                .filter(component -> hasForceInitOutput(component.getReferencedComponent())
+                .filter(component -> hasForcedInitOutput(component.getReferencedComponent())
                         || (CircuitUtils.getFunctionContact(circuit, component, portName) != null))
                 .collect(Collectors.toList());
 
@@ -198,11 +198,11 @@ public final class ResetUtils {
         }
         SpaceUtils.positionPort(circuit, resetPort, false);
         SpaceUtils.detachAndPositionJoint(circuit, resetPort);
-        forceInitResetCircuit(circuit, resetPort, isActiveLow);
+        setInitialisationProtocol(circuit, resetPort, isActiveLow);
         return true;
     }
 
-    public static boolean hasForceInitOutput(CircuitComponent component) {
+    public static boolean hasForcedInitOutput(CircuitComponent component) {
         for (Contact outputContact : component.getOutputs()) {
             if (outputContact.getForcedInit()) {
                 return true;
@@ -418,30 +418,30 @@ public final class ResetUtils {
     }
 
     private static Collection<VisualFunctionComponent> resetByAddingGate(VisualCircuit circuit,
-            VisualFunctionComponent component, Collection<VisualFunctionContact> forceInitOutputs,
+            VisualFunctionComponent component, Collection<VisualFunctionContact> forcedInitOutputs,
             VisualContact resetPort, boolean isActiveLow, boolean clearMapping) {
 
         Collection<VisualFunctionComponent> result = new HashSet<>();
-        for (VisualFunctionContact contact : forceInitOutputs) {
+        for (VisualFunctionContact contact : forcedInitOutputs) {
             VisualFunctionComponent resetGate = insertResetGate(circuit, resetPort, contact, isActiveLow);
             result.add(resetGate);
             if (clearMapping) {
                 resetGate.clearMapping();
             }
         }
-        GateUtils.propagateInitialState(circuit, component, forceInitOutputs);
+        GateUtils.propagateInitialState(circuit, component, forcedInitOutputs);
         return result;
     }
 
     private static Collection<VisualFunctionComponent> resetByReplacingGate(VisualCircuit circuit,
-            VisualFunctionComponent component, Collection<VisualFunctionContact> forceInitOutputs,
+            VisualFunctionComponent component, Collection<VisualFunctionContact> forcedInitOutputs,
             VisualContact resetPort, boolean isActiveLow, Pair<String, String> initGatePinPair) {
 
         Collection<VisualFunctionComponent> result = new HashSet<>();
-        if (!forceInitOutputs.isEmpty()) {
+        if (!forcedInitOutputs.isEmpty()) {
             VisualFunctionContact initContact = getOrCreateResetPin(circuit, component, initGatePinPair.getSecond());
             connectIfPossible(circuit, resetPort, initContact);
-            for (VisualFunctionContact contact : forceInitOutputs) {
+            for (VisualFunctionContact contact : forcedInitOutputs) {
                 insertResetFunction(contact, initContact, isActiveLow);
             }
             component.getReferencedComponent().setModule(initGatePinPair.getFirst());
@@ -526,7 +526,7 @@ public final class ResetUtils {
         }
     }
 
-    private static void forceInitResetCircuit(VisualCircuit circuit, VisualFunctionContact resetPort, boolean activeLow) {
+    private static void setInitialisationProtocol(VisualCircuit circuit, VisualFunctionContact resetPort, boolean activeLow) {
         resetPort.setInitToOne(!activeLow);
         resetPort.setForcedInit(true);
         resetPort.setSetFunction(activeLow ? One.getInstance() : Zero.getInstance());

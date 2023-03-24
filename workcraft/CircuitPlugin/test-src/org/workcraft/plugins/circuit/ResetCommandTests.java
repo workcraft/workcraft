@@ -53,30 +53,30 @@ class ResetCommandTests {
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         if (initNum >= 0) {
-            Assertions.assertEquals(initNum, getForceInitCount(we));
+            Assertions.assertEquals(initNum, getForcedInitCount(we));
         }
 
-        new ForceInitClearAllTagCommand().execute(we);
-        Assertions.assertEquals(0, getForceInitCount(we));
+        new ForcedInitClearAllTagCommand().execute(we);
+        Assertions.assertEquals(0, getForcedInitCount(we));
 
         if (inputNum >= 0) {
-            new ForceInitInputPortsTagCommand().execute(we);
-            Assertions.assertEquals(inputNum, getForceInitCount(we));
+            new ForcedInitInputPortsTagCommand().execute(we);
+            Assertions.assertEquals(inputNum, getForcedInitCount(we));
         }
 
         if (problematicNum >= 0) {
-            new ForceInitProblematicPinsTagCommand().execute(we);
-            Assertions.assertEquals(problematicNum, getForceInitCount(we));
+            new ForcedInitProblematicPinsTagCommand().execute(we);
+            Assertions.assertEquals(problematicNum, getForcedInitCount(we));
         }
 
         if (autoDiscardNum >= 0) {
-            new ForceInitAutoDiscardTagCommand().execute(we);
-            Assertions.assertEquals(autoDiscardNum, getForceInitCount(we));
+            new ForcedInitAutoDiscardTagCommand().execute(we);
+            Assertions.assertEquals(autoDiscardNum, getForcedInitCount(we));
         }
 
         if (autoAppendNum >= 0) {
-            new ForceInitAutoAppendTagCommand().execute(we);
-            Assertions.assertEquals(autoAppendNum, getForceInitCount(we));
+            new ForcedInitAutoAppendTagCommand().execute(we);
+            Assertions.assertEquals(autoAppendNum, getForcedInitCount(we));
         }
 
         if (finalNum >= 0) {
@@ -85,7 +85,7 @@ class ResetCommandTests {
             } else {
                 new ResetActiveHighInsertionCommand().execute(we);
             }
-            Assertions.assertEquals(finalNum, getForceInitCount(we));
+            Assertions.assertEquals(finalNum, getForcedInitCount(we));
         }
 
         Assertions.assertEquals(pass, new ResetVerificationCommand().execute(we));
@@ -93,7 +93,7 @@ class ResetCommandTests {
         framework.closeWork(we);
     }
 
-    private int getForceInitCount(WorkspaceEntry we) {
+    private int getForcedInitCount(WorkspaceEntry we) {
         int result = 0;
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         for (FunctionContact contact : circuit.getFunctionContacts()) {

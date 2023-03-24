@@ -110,19 +110,19 @@ public class CircuitPlugin implements Plugin {
         ScriptableCommandUtils.registerDataCommand(SpotAssertionVerificationCommand.class, "checkCircuitSpotAssertion",
                 "check the Circuit 'work' for SPOT assertion 'data'");
 
-        // Force init attributes and Reset insertion
-        ScriptableCommandUtils.registerCommand(ForceInitInputPortsTagCommand.class, "tagCircuitForceInitInputPorts",
+        // Forced init attributes and Reset insertion
+        ScriptableCommandUtils.registerCommand(ForcedInitInputPortsTagCommand.class, "tagCircuitForceInitInputPorts",
                 "force init all input ports in the Circuit 'work'  (environment must initialise them)");
-        ScriptableCommandUtils.registerCommand(ForceInitProblematicPinsTagCommand.class, "tagCircuitForceInitProblematicPins",
+        ScriptableCommandUtils.registerCommand(ForcedInitProblematicPinsTagCommand.class, "tagCircuitForceInitProblematicPins",
                 "force init output pins with problematic initial state in the Circuit 'work'");
-        ScriptableCommandUtils.registerCommand(ForceInitSequentialPinsTagCommand.class, "tagCircuitForceInitSequentialPins",
+        ScriptableCommandUtils.registerCommand(ForcedInitSequentialPinsTagCommand.class, "tagCircuitForceInitSequentialPins",
                 "force init output pins of sequential gates in the Circuit 'work'");
-        ScriptableCommandUtils.registerCommand(ForceInitAutoAppendTagCommand.class, "tagCircuitForceInitAutoAppend",
-                "auto-append force init pins as necessary to complete initialisation of the Circuit 'work'");
-        ScriptableCommandUtils.registerCommand(ForceInitAutoDiscardTagCommand.class, "tagCircuitForceInitAutoDiscard",
-                "auto-discard force init pins that are redundant for initialisation of the Circuit 'work'");
-        ScriptableCommandUtils.registerCommand(ForceInitClearAllTagCommand.class, "tagCircuitForceInitClearAll",
-                "clear all force init input ports and output pins in the Circuit 'work'");
+        ScriptableCommandUtils.registerCommand(ForcedInitAutoAppendTagCommand.class, "tagCircuitForceInitAutoAppend",
+                "auto-append forced init pins as necessary to complete initialisation of the Circuit 'work'");
+        ScriptableCommandUtils.registerCommand(ForcedInitAutoDiscardTagCommand.class, "tagCircuitForceInitAutoDiscard",
+                "auto-discard forced init pins that are redundant for initialisation of the Circuit 'work'");
+        ScriptableCommandUtils.registerCommand(ForcedInitClearAllTagCommand.class, "tagCircuitForceInitClearAll",
+                "clear all forced init input ports and output pins in the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(ResetActiveLowInsertionCommand.class, "insertCircuitResetActiveLow",
                 "insert active-low reset into the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(ResetActiveHighInsertionCommand.class, "insertCircuitResetActiveHigh",
