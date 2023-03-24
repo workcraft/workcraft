@@ -1,7 +1,7 @@
 package org.workcraft.plugins.petrify.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.Model;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.NoExporterException;
@@ -43,10 +43,6 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
         this.mutexes = mutexes;
     }
 
-    public WorkspaceEntry getWorkspaceEntry() {
-        return we;
-    }
-
     @Override
     public Result<? extends TransformationOutput> run(ProgressMonitor<? super TransformationOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
@@ -77,7 +73,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             command.add("-o");
             command.add(stgFile.getAbsolutePath());
 
-            Model model = we.getModelEntry().getMathModel();
+            MathModel model = we.getModelEntry().getMathModel();
 
             // Check for isolated marked places and temporary remove them is requested
             if (model instanceof PetriModel) {
@@ -85,10 +81,11 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
                 HashSet<Place> isolatedPlaces = PetriUtils.getIsolatedMarkedPlaces(petri);
                 if (!isolatedPlaces.isEmpty()) {
                     String refStr = ReferenceHelper.getNodesAsWrapString(petri, isolatedPlaces);
-                    String msg = "Petrify does not support isolated marked places.\n\n"
-                            + "Problematic places are:\n" + refStr + "\n\n"
-                            + "Proceed without these places?";
-                    if (!DialogUtils.showConfirmWarning(msg, "Petrify transformation", true)) {
+                    String message = "Petrify does not support isolated marked places.\n\n"
+                            + "Problematic places are:\n" + refStr;
+
+                    String question = "\n\nProceed without these places?";
+                    if (!DialogUtils.showConfirmWarning(message, question, "Petrify transformation", true)) {
                         return Result.cancel();
                     }
                     we.captureMemento();
@@ -131,7 +128,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
         }
     }
 
-    private File getInputFile(Model model, File directory) {
+    private File getInputFile(MathModel model, File directory) {
         Format format = null;
         if (model instanceof PetriModel) {
             format = StgFormat.getInstance();

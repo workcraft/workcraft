@@ -45,9 +45,8 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
         if (!isApplicableTo(we)) {
             return null;
         }
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
-        final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
+        Framework framework = Framework.getInstance();
+        Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> deadlockStates = checkDeadlock(fsm);
         if (deadlockStates.isEmpty()) {
             DialogUtils.showInfo("The model is deadlock-free.", TITLE);
@@ -68,8 +67,9 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
                 String stateStr = ReferenceHelper.getNodesAsWrapString(fsm, finalDeadlockStates);
                 message += "\n\nFinal deadlock states: \n" + stateStr;
             }
-            message += "\n\nSelect deadlock states?\n";
-            if (DialogUtils.showConfirmInfo(message, TITLE, true)) {
+            String question = "\n\nSelect deadlock states?\n";
+            if (DialogUtils.showConfirmInfo(message, question, TITLE, true) && framework.isInGuiMode()) {
+                MainWindow mainWindow = framework.getMainWindow();
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 SelectionHelper.selectByReferencedComponents(visualFsm, deadlockStates);

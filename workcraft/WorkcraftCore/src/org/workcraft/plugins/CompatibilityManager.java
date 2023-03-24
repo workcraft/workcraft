@@ -173,12 +173,11 @@ public class CompatibilityManager {
             Version compatibilityVersion = WorkUtils.extractCompatibilityVersion(zipFile);
             Version currentVersion = Info.getVersion();
             if ((compatibilityVersion != null) && (currentVersion != null) && (currentVersion.compareTo(compatibilityVersion) < 0)) {
-                String msg = "Workcraft v" + currentVersion
-                        + " may incorrectly read a file that is declared to be backward-compatible to v" + compatibilityVersion;
+                String message = "Workcraft v" + currentVersion + " may incorrectly read a file " +
+                        "that is declared to be backward-compatible to v" + compatibilityVersion;
 
-                String msgFull = msg + ".\nProceed with loading the file '" + file.getAbsolutePath() + "' anyway?";
-                boolean proceed = DialogUtils.showConfirmWarning(msgFull, "Open file", true);
-                if (!proceed) {
+                String question = ".\nProceed with loading the file '" + file.getAbsolutePath() + "' anyway?";
+                if (!DialogUtils.showConfirmWarning(message, question, "Open file", true)) {
                     throw new OperationCancelledException();
                 }
             }

@@ -23,129 +23,140 @@ public class DialogUtils {
     private static final String CONFIG_FILE_CHOOSER_WIDTH = "filechooser.width";
     private static final String CONFIG_FILE_CHOOSER_HEIGHT = "filechooser.height";
 
-    public static void showMessage(String msg, String title, int messageType, boolean log) {
-        if (log) {
+    private static void logMessage(String message, int messageType) {
+        if ((message != null) && !message.isEmpty()) {
             switch (messageType) {
             case JOptionPane.INFORMATION_MESSAGE:
-                LogUtils.logInfo(msg);
+                LogUtils.logInfo(message);
                 break;
             case JOptionPane.WARNING_MESSAGE:
-                LogUtils.logWarning(msg);
+                LogUtils.logWarning(message);
                 break;
             case JOptionPane.ERROR_MESSAGE:
-                LogUtils.logError(msg);
+                LogUtils.logError(message);
                 break;
             default:
-                LogUtils.logMessage(msg);
+                LogUtils.logMessage(message);
                 break;
             }
+        }
+    }
+
+    public static void showMessage(String message, String title, int messageType, boolean log) {
+        if (log) {
+            logMessage(message, messageType);
         }
         Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
             MainWindow mainWindow = framework.getMainWindow();
-            String text = TextUtils.truncateLines(msg, TRUNCATE_LENGTH);
+            String text = TextUtils.truncateLines(message, TRUNCATE_LENGTH);
             JOptionPane.showMessageDialog(mainWindow, text, title, messageType);
         }
     }
 
-    public static void showMessage(String msg) {
-        showMessage(msg, MESSAGE_TITLE);
+    public static void showMessage(String message) {
+        showMessage(message, MESSAGE_TITLE);
     }
 
-    public static void showMessage(String msg, String title) {
-        showMessage(msg, title, JOptionPane.PLAIN_MESSAGE, true);
+    public static void showMessage(String message, String title) {
+        showMessage(message, title, JOptionPane.PLAIN_MESSAGE, true);
     }
 
-    public static void showInfo(String msg) {
-        showInfo(msg, INFO_TITLE);
+    public static void showInfo(String message) {
+        showInfo(message, INFO_TITLE);
     }
 
-    public static void showInfo(String msg, String title) {
-        showMessage(msg, title, JOptionPane.INFORMATION_MESSAGE, true);
+    public static void showInfo(String message, String title) {
+        showMessage(message, title, JOptionPane.INFORMATION_MESSAGE, true);
     }
 
-    public static void showWarning(String msg) {
-        showWarning(msg, WARNING_TITLE);
+    public static void showWarning(String message) {
+        showWarning(message, WARNING_TITLE);
     }
 
-    public static void showWarning(String msg, String title) {
-        showMessage(msg, title, JOptionPane.WARNING_MESSAGE, true);
+    public static void showWarning(String message, String title) {
+        showMessage(message, title, JOptionPane.WARNING_MESSAGE, true);
     }
 
-    public static void showError(String msg) {
-        showError(msg, ERROR_TITLE);
+    public static void showError(String message) {
+        showError(message, ERROR_TITLE);
     }
 
-    public static void showError(String msg, String title) {
-        showMessage(msg, title, JOptionPane.ERROR_MESSAGE, true);
+    public static void showError(String message, String title) {
+        showMessage(message, title, JOptionPane.ERROR_MESSAGE, true);
     }
 
-    public static boolean showConfirm(String msg, String title, boolean defaultChoice) {
-        return showConfirm(msg, title, JOptionPane.QUESTION_MESSAGE, defaultChoice);
+    public static boolean showConfirm(String message, String question, String title, boolean defaultChoice) {
+        return showConfirm(message, question, title, defaultChoice, JOptionPane.QUESTION_MESSAGE, true);
     }
 
-    public static boolean showConfirmInfo(String msg) {
-        return showConfirmInfo(msg, INFO_TITLE, true);
+    public static boolean showConfirmInfo(String message, String question) {
+        return showConfirmInfo(message, question, INFO_TITLE, true);
     }
 
-    public static boolean showConfirmInfo(String msg, String title, boolean defaultChoice) {
-        return showConfirm(msg, title, JOptionPane.INFORMATION_MESSAGE, defaultChoice);
+    public static boolean showConfirmInfo(String message, String question, String title, boolean defaultChoice) {
+        return showConfirm(message, question, title, defaultChoice, JOptionPane.INFORMATION_MESSAGE, true);
     }
 
-    public static boolean showConfirmWarning(String msg) {
-        return showConfirmWarning(msg, WARNING_TITLE, true);
+    public static boolean showConfirmWarning(String message, String question) {
+        return showConfirmWarning(message, question, WARNING_TITLE, true);
     }
 
-    public static boolean showConfirmWarning(String msg, String title, boolean defaultChoice) {
-        return showConfirm(msg, title, JOptionPane.WARNING_MESSAGE, defaultChoice);
+    public static boolean showConfirmWarning(String message, String question, String title, boolean defaultChoice) {
+        return showConfirm(message, question, title, defaultChoice, JOptionPane.WARNING_MESSAGE, true);
     }
 
-    public static boolean showConfirmError(String msg) {
-        return showConfirmError(msg, ERROR_TITLE,  true);
+    public static boolean showConfirmError(String message, String question) {
+        return showConfirmError(message, question, ERROR_TITLE,  true);
     }
 
-    public static boolean showConfirmError(String msg,  String title, boolean defaultChoice) {
-        return showConfirm(msg, title, JOptionPane.ERROR_MESSAGE, defaultChoice);
+    public static boolean showConfirmError(String message, String question, String title, boolean defaultChoice) {
+        return showConfirm(message, question, title, defaultChoice, JOptionPane.ERROR_MESSAGE, true);
     }
 
-    private static boolean showConfirm(String msg, String title, int messageType, boolean defaultChoice) {
+    public static boolean showConfirm(String message, String question, String title, boolean defaultChoice,
+            int messageType, boolean log) {
+
         boolean result = defaultChoice;
+        if (log) {
+            logMessage(message, messageType);
+        }
         Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
             MainWindow mainWindow = framework.getMainWindow();
             String yesText = UIManager.getString("OptionPane.yesButtonText");
             String noText = UIManager.getString("OptionPane.noButtonText");
             String[] options = {yesText, noText};
-            int answer = JOptionPane.showOptionDialog(mainWindow, msg, title, JOptionPane.YES_NO_OPTION,
-                    messageType, null, options, defaultChoice ? yesText : noText);
+            int answer = JOptionPane.showOptionDialog(mainWindow, message + question, title,
+                    JOptionPane.YES_NO_OPTION, messageType, null, options, defaultChoice ? yesText : noText);
 
             result = answer == JOptionPane.YES_OPTION;
         }
         return result;
     }
 
-    public static String showInput(String msg, String initial) {
-        return showInput(msg, INPUT_TITLE, initial);
+    public static String showInput(String message, String initial) {
+        return showInput(message, INPUT_TITLE, initial);
     }
 
-    public static String showInput(String msg, String title, String initial) {
+    public static String showInput(String message, String title, String initial) {
         Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
             MainWindow mainWindow = framework.getMainWindow();
-            return (String) JOptionPane.showInputDialog(mainWindow, msg, title,
+            return (String) JOptionPane.showInputDialog(mainWindow, message, title,
                     JOptionPane.QUESTION_MESSAGE, null, null, initial);
         }
         return initial;
     }
 
-    public static int showYesNoCancel(String msg, String title, int defaultChoice) {
+    public static int showYesNoCancel(String message, String title, int defaultChoice) {
         String yesText = UIManager.getString("OptionPane.yesButtonText");
         String noText = UIManager.getString("OptionPane.noButtonText");
         String cancelText = UIManager.getString("OptionPane.cancelButtonText");
-        return showChoice(msg, title, yesText, noText, cancelText, defaultChoice);
+        return showChoice(message, title, yesText, noText, cancelText, defaultChoice);
     }
 
-    private static int showChoice(String msg, String title, String yesText, String noText, String cancelText,
+    private static int showChoice(String message, String title, String yesText, String noText, String cancelText,
             int defaultChoice) {
 
         int result = JOptionPane.CANCEL_OPTION;
@@ -153,7 +164,7 @@ public class DialogUtils {
         if (framework.isInGuiMode()) {
             MainWindow mainWindow = framework.getMainWindow();
             String[] options = {yesText, noText, cancelText};
-            result = JOptionPane.showOptionDialog(mainWindow, msg, title, JOptionPane.YES_NO_CANCEL_OPTION,
+            result = JOptionPane.showOptionDialog(mainWindow, message, title, JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE, null, options, options[defaultChoice]);
         }
         return result;
@@ -218,8 +229,9 @@ public class DialogUtils {
                 return file;
             }
 
-            String msg = "The file '" + file.getName() + "' already exists.\n" + "Overwrite it?";
-            if (DialogUtils.showConfirmWarning(msg, "Save work", false)) {
+            String message = "The file '" + file.getName() + "' already exists";
+            String question = ".\nOverwrite it?";
+            if (DialogUtils.showConfirmWarning(message, question, "Save work", false)) {
                 return file;
             }
         }

@@ -126,10 +126,11 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         HashSet<Place> isolatedPlaces = PetriUtils.getIsolatedMarkedPlaces(stg);
         if (!isolatedPlaces.isEmpty()) {
             String refStr = ReferenceHelper.getNodesAsWrapString(stg, isolatedPlaces);
-            String msg = "Petrify does not support isolated marked places.\n\n"
-                    + "Problematic places are:\n" + refStr + "\n\n"
-                    + "Proceed without these places?";
-            if (!DialogUtils.showConfirmWarning(msg, "Petrify synthesis", true)) {
+            String message = "Petrify does not support isolated marked places.\n\n"
+                    + "Problematic places are:\n" + refStr;
+
+            String question = "\n\nProceed without these places?";
+            if (!DialogUtils.showConfirmWarning(message, question, "Petrify synthesis", true)) {
                 return Result.cancel();
             }
             we.captureMemento();

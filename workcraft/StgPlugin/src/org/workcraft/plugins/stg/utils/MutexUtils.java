@@ -38,9 +38,9 @@ public class MutexUtils {
         }
         if (!problematicPlaces.isEmpty()) {
             String problematicPlacesString = ReferenceHelper.getNodesAsWrapString(stg, problematicPlaces);
-            String msg = "The following mutex places may not be implementable by mutex:\n\n" +
-                    problematicPlacesString + "\n\nProceed with synthesis anyway?";
-            if (!DialogUtils.showConfirmError(msg, "Synthesis", false)) {
+            String message = "The following mutex places may not be implementable by mutex:\n\n" + problematicPlacesString;
+            String question = "\n\nProceed with synthesis anyway?";
+            if (!DialogUtils.showConfirmError(message, question, "Synthesis", false)) {
                 result = null;
             }
         }

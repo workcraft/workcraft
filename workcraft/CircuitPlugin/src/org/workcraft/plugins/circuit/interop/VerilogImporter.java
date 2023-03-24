@@ -104,18 +104,18 @@ public class VerilogImporter implements Importer {
         Set<String> undefinedModules = VerilogUtils.getUndefinedModules(verilogModules);
         if (!undefinedModules.isEmpty()) {
             String prefix = TextUtils.wrapMessageWithItems("Verilog netlist refers to undefined module", undefinedModules);
-            String msg = TextUtils.getHeadAndTail(prefix, 10, 0)
+            String message = TextUtils.getHeadAndTail(prefix, 10, 0)
                     + "\n\nInstances of these modules may be interpreted incorrectly due to missing information about input/output pins."
                     + "\n\nPossible causes of the problem:"
                     + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect path to gate library GenLib file"
                     + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect setup for MUTEX and WAIT elements"
                     + "\n" + PropertyHelper.BULLET_PREFIX + "missing module definition in hierarchical Verilog netlist"
-                    + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect use of substitution rules for Verilog import"
-                    + "\n\nProceed with Verilog import anyway?";
+                    + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect use of substitution rules for Verilog import";
 
-            // Choose "Yes" default response in no-GUI mode
+            String question = "\n\nProceed with Verilog import anyway?";
+            // Choose "Yes" as default response in no-GUI mode
             boolean defaultChoice = !Framework.getInstance().isInGuiMode();
-            if (!DialogUtils.showConfirmWarning(msg, VERILOG_IMPORT_TITLE, defaultChoice)) {
+            if (!DialogUtils.showConfirmWarning(message, question, VERILOG_IMPORT_TITLE, defaultChoice)) {
                 throw new OperationCancelledException();
             }
         }
@@ -125,11 +125,10 @@ public class VerilogImporter implements Importer {
                 : verilogModules.stream().filter(m -> topModuleName.equals(m.name)).findAny().orElse(null);
 
         if (topVerilogModule == null) {
-            String msg = "Cannot find suggested top module '" + topModuleName + "'."
-                    + "\n\nProceed with Verilog import anyway?";
-
+            String message = "Cannot find suggested top module '" + topModuleName + "'";
+            String question = ".\n\nProceed with Verilog import anyway?";
             // Do not proceed in no-GUI mode if the suggested top module is incorrect
-            if (!DialogUtils.showConfirmWarning(msg, VERILOG_IMPORT_TITLE, false)) {
+            if (!DialogUtils.showConfirmWarning(message, question, VERILOG_IMPORT_TITLE, false)) {
                 throw new OperationCancelledException();
             }
             topVerilogModule = VerilogUtils.getTopModule(verilogModules);
@@ -173,11 +172,11 @@ public class VerilogImporter implements Importer {
         Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(instantiatedModules, dir);
         if (!existingSaveFilePaths.isEmpty()) {
             String delimiter = "\n" + PropertyHelper.BULLET_PREFIX;
-            String msg = "The following files already exist:" + delimiter
-                    + String.join(delimiter, existingSaveFilePaths)
-                    + "\n\nOverwrite these files and proceed with import?";
+            String message = "The following files already exist:" + delimiter
+                    + String.join(delimiter, existingSaveFilePaths);
 
-            if (!DialogUtils.showConfirmWarning(msg, VERILOG_IMPORT_TITLE, false)) {
+            String question = "\n\nOverwrite these files and proceed with import?";
+            if (!DialogUtils.showConfirmWarning(message, question, VERILOG_IMPORT_TITLE, false)) {
                 throw new OperationCancelledException();
             }
         }

@@ -66,14 +66,14 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
         if (envStg != null) {
             boolean noDummies = envStg.getDummyTransitions().isEmpty();
             if (!noDummies && checkPersistency) {
-                String msg = "Output persistency can currently be checked only for environment STGs without dummies.";
+                String message = "Output persistency can currently be checked only for environment STGs without dummies";
                 if (!checkConformation && !checkDeadlock) {
-                    DialogUtils.showError(msg);
+                    DialogUtils.showError(message);
                     monitor.isFinished(Result.cancel());
                     return monitor;
                 } else {
-                    msg += "\n\nProceed with verification of other properties?";
-                    if (!DialogUtils.showConfirmWarning(msg)) {
+                    String question = ".\n\nProceed with verification of other properties?";
+                    if (!DialogUtils.showConfirmWarning(message, question)) {
                         monitor.isFinished(Result.cancel());
                         return monitor;
                     }
@@ -81,16 +81,16 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
                 }
             }
         } else {
-            String msg = envFile == null ? ""
+            String message = envFile == null ? ""
                     : "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
 
             if (checkConformation) {
-                msg += "The circuit conformation cannot be checked without environment STG.\n";
+                message += "\nThe circuit conformation cannot be checked without environment STG.";
                 if (!checkDeadlock && !checkPersistency) {
-                    DialogUtils.showError(msg);
+                    DialogUtils.showError(message);
                 } else {
-                    msg += "Proceed with verification of the other properties?\n";
-                    boolean proceed = DialogUtils.showConfirmWarning(msg);
+                    String question = "\n\nProceed with verification of the other properties?";
+                    boolean proceed = DialogUtils.showConfirmWarning(message, question);
                     checkDeadlock &= proceed;
                     checkPersistency &= proceed;
                 }

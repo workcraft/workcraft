@@ -22,7 +22,6 @@ public class SettingsEditorDialog extends JDialog {
     private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
     private static final String SEPARATOR = " " + RIGHT_ARROW_SYMBOL + " ";
 
-    private static final String DIALOG_RESTORE_SETTINGS = "Restore settings";
     private static final long serialVersionUID = 1L;
 
     private final JLabel sectionLabel  = new JLabel();
@@ -240,8 +239,8 @@ public class SettingsEditorDialog extends JDialog {
             setObject(currentPage);
         } else {
             final Framework framework = Framework.getInstance();
-            String msg = "This will reset all the settings to defaults.\n" + "Continue?";
-            if (DialogUtils.showConfirmWarning(msg, DIALOG_RESTORE_SETTINGS, false)) {
+            if (DialogUtils.showConfirm("This will reset all the settings to defaults", ".\nContinue?",
+                    "Restore settings", false, JOptionPane.WARNING_MESSAGE, false)) {
                 framework.resetConfig();
             }
         }

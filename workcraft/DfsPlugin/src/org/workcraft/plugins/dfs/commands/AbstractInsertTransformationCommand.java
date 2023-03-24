@@ -69,10 +69,10 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
         result.removeAll(invalidConnections);
         if (!invalidConnections.isEmpty()) {
             String title = "Insertion of " + getTypeName();
-            String msgPrefix = "Cannot insert " + getTypeName() + " into ";
+            String messagePrefix = "Cannot insert " + getTypeName() + " into ";
             if (result.isEmpty()) {
                 String msgSuffix = invalidConnections.size() == 1 ? "selected arc." : "any of the selected arcs.";
-                DialogUtils.showError(msgPrefix + msgSuffix);
+                DialogUtils.showError(messagePrefix + msgSuffix);
             } else {
                 Collection<String> invalidConnectionRefs = new ArrayList<>();
                 for (VisualConnection connection : invalidConnections) {
@@ -80,10 +80,11 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
                     String toRef = model.getMathReference(connection.getSecond());
                     invalidConnectionRefs.add(fromRef + RIGHT_ARROW_SYMBOL + toRef);
                 }
-                String msgSuffix = TextUtils.wrapMessageWithItems("arc", invalidConnectionRefs);
-                LogUtils.logWarning(msgPrefix + msgSuffix);
-                String msg = msgPrefix + msgSuffix + "\n\nProceed with the other arcs?";
-                if (!DialogUtils.showConfirmWarning(msg, title, false)) {
+                String messageSuffix = TextUtils.wrapMessageWithItems("arc", invalidConnectionRefs);
+                LogUtils.logWarning(messagePrefix + messageSuffix);
+                String message = messagePrefix + messageSuffix;
+                String question = "\n\nProceed with the other arcs?";
+                if (!DialogUtils.showConfirmWarning(message, question, title, false)) {
                     result.clear();
                 }
             }

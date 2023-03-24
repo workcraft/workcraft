@@ -168,8 +168,8 @@ public class PresetManager<T> {
             DialogUtils.showError("Cannot overwrite example preset '" + preset.getDescription() + "'.");
             return false;
         }
-        String msg = "Preset '" + preset.getDescription() + "' already exists.\nOverwrite?";
-        return DialogUtils.showConfirm(msg, "Overwrite preset", false);
+        String message = "Preset '" + preset.getDescription() + "' already exists";
+        return DialogUtils.showConfirm(message, ".\nOverwrite?", "Overwrite preset", false);
     }
 
     public List<Preset<T>> getPresets() {

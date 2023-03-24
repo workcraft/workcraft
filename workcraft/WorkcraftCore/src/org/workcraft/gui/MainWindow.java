@@ -1038,9 +1038,9 @@ public class MainWindow extends JFrame {
     }
 
     public void resetLayout() {
-        if (DialogUtils.showConfirmWarning(
-                "This will close all works and reset the GUI to the default layout.\n\n"
-                        + "Are you sure you want to do this?", "Reset layout", false)) {
+        if (DialogUtils.showConfirm("This will close all works and reset the GUI to the default layout",
+                ".\n\nAre you sure you want to do this?", "Reset layout", false,
+                JOptionPane.WARNING_MESSAGE, false)) {
             try {
                 final Framework framework = Framework.getInstance();
                 framework.shutdownGUI();

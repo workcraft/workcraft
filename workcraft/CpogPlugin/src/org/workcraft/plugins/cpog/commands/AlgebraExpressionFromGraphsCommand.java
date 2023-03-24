@@ -51,8 +51,9 @@ public class AlgebraExpressionFromGraphsCommand extends AbstractAlgebraCommand {
                 }
                 File file = new File(filePath);
                 if (file.exists()) {
-                    String msg = "The file '" + file.getName() + "' already exists.\n" + "Overwrite it?";
-                    if (DialogUtils.showConfirmWarning(msg, DIALOG_SAVE_FILE, false)) {
+                    String message = "The file '" + file.getName() + "' already exists";
+                    String question = ".\nOverwrite it?";
+                    if (DialogUtils.showConfirmWarning(message, question, DIALOG_SAVE_FILE, false)) {
                         return;
                     }
                 }

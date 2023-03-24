@@ -90,13 +90,13 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
             }
         }
         if (!nonRegisterEntryRefs.isEmpty()) {
-            String msg = "It is advised to have registers at the entry to wagging slice.\n" +
+            String message = "It is advised to have registers at the entry to wagging slice.\n" +
                     "This enables the token to propagate into the active slice with the\n" +
                     "minimum delay and free the space for the next token.\n\n" +
-                    TextUtils.wrapMessageWithItems("Non-register entry component", nonRegisterEntryRefs) +
-                    "\n\nProceed anyway?";
+                    TextUtils.wrapMessageWithItems("Non-register entry component", nonRegisterEntryRefs);
 
-            return DialogUtils.showConfirmWarning(msg);
+            String question = "\n\nProceed anyway?";
+            return DialogUtils.showConfirmWarning(message, question);
         }
         return true;
     }
