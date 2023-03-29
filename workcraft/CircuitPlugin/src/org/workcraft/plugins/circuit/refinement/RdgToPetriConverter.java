@@ -136,14 +136,26 @@ public class RdgToPetriConverter {
         }
     }
 
+    public void highlightVertexes(Set<File> vertexes, Color color) {
+        if ((vertexes == null) || vertexes.isEmpty()) {
+            return;
+        }
+        for (File vertex : vertexes) {
+            VisualPage page = getVertexPage(vertex);
+            if (page != null) {
+                page.setForegroundColor(color);
+            }
+        }
+    }
+
     public void highlightInstances(Map<File, Set<String>> vertexToLabelsMap, Color color) {
-        if ((vertexToLabelsMap == null) || vertexToLabelsMap.isEmpty()) {
+        if (vertexToLabelsMap == null) {
             return;
         }
         for (File vertex : vertexToLabelsMap.keySet()) {
-            Set<String> labels = vertexToLabelsMap.get(vertex);
             VisualPage page = getVertexPage(vertex);
             if (page != null) {
+                Set<String> labels = vertexToLabelsMap.get(vertex);
                 for (VisualPlace place : getVertexPlaces(vertex)) {
                     if (labels.contains(place.getLabel())) {
                         place.setFillColor(color);

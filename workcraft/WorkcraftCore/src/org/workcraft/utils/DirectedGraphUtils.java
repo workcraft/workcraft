@@ -249,4 +249,13 @@ public class DirectedGraphUtils {
         return result;
     }
 
+    public static <T> Set<T> findRootVertices(Map<T, Set<T>> graph) {
+        if (graph == null) {
+            return null;
+        }
+        Set<T> vertices = new HashSet<>(graph.keySet());
+        graph.values().forEach(vertices::removeAll);
+        return vertices;
+    }
+
 }
