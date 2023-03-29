@@ -2,7 +2,9 @@ Cycle absence check: false
 Combined check: false
 Circuit analysis:
   Component count (mapped + unmapped) -  13 (12 + 1)
-  Area of mapped components -  40.0 + 2*TBUF_scan + 2*TINV_scan
+  Area -  40.0 + 2*TBUF_scan + 2*TINV_scan + 1*[unmapped]
+  Non-trivial component count (function + blackbox) -  8 (7 + 1)
+  Trivial gate count (buffer / 0-delay + inverter / 0-delay + const) -  5 (5 / 0 + 0 / 0 + 0)
   Driver pin count (combinational + sequential + undefined) -  14 (12 + 0 + 2)
   Literal count combinational / sequential (set + reset) -  27 / 0 (0 + 0)
   Port count (input + output) -  16 (10 + 6)
