@@ -63,6 +63,7 @@ public class CircuitSettings extends AbstractModelSettings {
      */
     private static final String keyContactFontSize = prefix + ".contactFontSize";
     private static final String keyShowZeroDelayNames = prefix + ".showZeroDelayNames";
+    private static final String keyShowContactFunctions = prefix + ".showContactFunctions";
     private static final String keyBorderWidth = prefix + ".borderWidth";
     private static final String keyWireWidth = prefix + ".wireWidth";
     private static final String keyActiveWireColor = prefix + ".activeWireColor";
@@ -112,6 +113,7 @@ public class CircuitSettings extends AbstractModelSettings {
      */
     private static final double defaultContactFontSize = 0.4f;
     private static final boolean defaultShowZeroDelayNames = false;
+    private static final boolean defaultShowContactFunctions = true;
     private static final Double defaultBorderWidth = 0.06;
     private static final Double defaultWireWidth = 0.04;
     private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
@@ -161,6 +163,7 @@ public class CircuitSettings extends AbstractModelSettings {
      */
     private static double contactFontSize = defaultContactFontSize;
     private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
+    private static boolean showContactFunctions = defaultShowContactFunctions;
     private static Double borderWidth = defaultBorderWidth;
     private static Double wireWidth = defaultWireWidth;
     private static Color activeWireColor = defaultActiveWireColor;
@@ -215,6 +218,11 @@ public class CircuitSettings extends AbstractModelSettings {
                 "Show names of zero-delay components",
                 CircuitSettings::setShowZeroDelayNames,
                 CircuitSettings::getShowZeroDelayNames));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Show set/reset functions of contacts",
+                CircuitSettings::setShowContactFunctions,
+                CircuitSettings::getShowContactFunctions));
 
         properties.add(new PropertyDeclaration<>(Double.class,
                 "Border width",
@@ -473,6 +481,7 @@ public class CircuitSettings extends AbstractModelSettings {
     public void load(Config config) {
         setContactFontSize(config.getDouble(keyContactFontSize, defaultContactFontSize));
         setShowZeroDelayNames(config.getBoolean(keyShowZeroDelayNames, defaultShowZeroDelayNames));
+        setShowContactFunctions(config.getBoolean(keyShowContactFunctions, defaultShowContactFunctions));
         setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
         setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
         setActiveWireColor(config.getColor(keyActiveWireColor, defaultActiveWireColor));
@@ -522,6 +531,7 @@ public class CircuitSettings extends AbstractModelSettings {
     public void save(Config config) {
         config.setDouble(keyContactFontSize, getContactFontSize());
         config.setBoolean(keyShowZeroDelayNames, getShowZeroDelayNames());
+        config.setBoolean(keyShowContactFunctions, getShowContactFunctions());
         config.setDouble(keyBorderWidth, getBorderWidth());
         config.setDouble(keyWireWidth, getWireWidth());
         config.setColor(keyActiveWireColor, getActiveWireColor());
@@ -581,6 +591,14 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setShowZeroDelayNames(boolean value) {
         showZeroDelayNames = value;
+    }
+
+    public static boolean getShowContactFunctions() {
+        return showContactFunctions;
+    }
+
+    public static void setShowContactFunctions(boolean value) {
+        showContactFunctions = value;
     }
 
     public static double getBorderWidth() {

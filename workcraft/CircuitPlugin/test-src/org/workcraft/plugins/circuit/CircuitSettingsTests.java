@@ -26,6 +26,9 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getShowZeroDelayNames()),
                 framework.getConfigVar(prefix + ".showZeroDelayNames", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getShowContactFunctions()),
+                framework.getConfigVar(prefix + ".showContactFunctions", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getBorderWidth()),
                 framework.getConfigVar(prefix + ".borderWidth", false));
 

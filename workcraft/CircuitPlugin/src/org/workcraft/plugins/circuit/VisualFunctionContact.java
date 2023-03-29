@@ -271,7 +271,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     private boolean needsFormulas() {
         boolean result = false;
         Node parent = getParent();
-        if (parent != null) {
+        if ((parent != null) && CircuitSettings.getShowContactFunctions()) {
             // Primary input port
             if (!(parent instanceof VisualCircuitComponent) && isInput()) {
                 result = true;

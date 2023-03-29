@@ -1,7 +1,5 @@
 Circuit analysis:
   Component count (mapped + unmapped) -  11 (11 + 0)
   Area -  156.0
-  Non-trivial component count (function + blackbox) -  7 (7 + 0)
-  Trivial gate count (buffer / 0-delay + inverter / 0-delay + const) -  4 (0 / 0 + 4 / 3 + 0)
   Port count (input + output) -  6 (3 + 3)
   Isolated components / ports / pins -  0 / 0 / 0
