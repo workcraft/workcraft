@@ -100,6 +100,36 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
                 }
             }
         }
+        int unmappedCount = components.size() - mappedCount;
+
+        int bufCount = 0;
+        int bufZeroDelayCount = 0;
+        int invCount = 0;
+        int invZeroDelayCount = 0;
+        int constCount = 0;
+        int blackboxCount = 0;
+        int otherCount = 0;
+        for (FunctionComponent component : components) {
+            if (component.isConst()) {
+                constCount++;
+            } else if (component.isBuffer()) {
+                bufCount++;
+                if (component.getIsZeroDelay()) {
+                    bufZeroDelayCount++;
+                }
+            } else if (component.isInverter()) {
+                invCount++;
+                if (component.getIsZeroDelay()) {
+                    invZeroDelayCount++;
+                }
+            } else if (component.isBlackbox()) {
+                blackboxCount++;
+            } else {
+                otherCount++;
+            }
+        }
+        int trivialCount = bufCount + invCount + constCount;
+        int nontrivialCount = otherCount + blackboxCount;
 
         int combCount = 0;
         int seqCount = 0;
@@ -107,8 +137,8 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
         int combLiteralCount = 0;
         int seqSetLiteralCount = 0;
         int seqResetLiteralCount = 0;
-        for (FunctionComponent component: components) {
-            for (FunctionContact contact: component.getFunctionContacts()) {
+        for (FunctionComponent component : components) {
+            for (FunctionContact contact : component.getFunctionContacts()) {
                 if (!contact.isOutput()) continue;
                 if (contact.getSetFunction() == null) {
                     undefinedCount++;
@@ -129,8 +159,14 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
 
         return "Circuit analysis:"
                 + "\n  Component count (mapped + unmapped) -  " + components.size()
-                + " (" + mappedCount + " + " + (components.size() - mappedCount) + ")"
-                + (mappedCount == 0 ? "" : "\n  Area of mapped components -  " + gateArea + getNamedComponentArea(namedComponents))
+                + " (" + mappedCount + " + " + unmappedCount + ")"
+                + "\n  Area -  " + gateArea + getNamedComponentArea(namedComponents)
+                + (unmappedCount == 0 ? "" : " + " + unmappedCount + "*[unmapped]")
+                + "\n  Non-trivial component count (function + blackbox) -  "
+                + nontrivialCount + " (" + otherCount + " + " + blackboxCount + ")"
+                + "\n  Trivial gate count (buffer / 0-delay + inverter / 0-delay + const) -  "
+                + trivialCount + " (" + bufCount + " / " + bufZeroDelayCount + " + "
+                + invCount + " / " + invZeroDelayCount + " + " + constCount + ")"
                 + "\n  Driver pin count (combinational + sequential + undefined) -  "
                 + driverCount + " (" + combCount + " + " + seqCount + " + " + undefinedCount + ")"
                 + "\n  Literal count combinational / sequential (set + reset) -  "

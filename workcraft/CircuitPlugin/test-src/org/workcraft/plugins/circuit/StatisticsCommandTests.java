@@ -32,7 +32,9 @@ class StatisticsCommandTests {
                         + "\n",
                 "Circuit analysis:"
                         + "\n  Component count (mapped + unmapped) -  1 (1 + 0)"
-                        + "\n  Area of mapped components -  0.0"
+                        + "\n  Area -  0.0"
+                        + "\n  Non-trivial component count (function + blackbox) -  0 (0 + 0)"
+                        + "\n  Trivial gate count (buffer / 0-delay + inverter / 0-delay + const) -  1 (1 / 0 + 0 / 0 + 0)"
                         + "\n  Driver pin count (combinational + sequential + undefined) -  1 (1 + 0 + 0)"
                         + "\n  Literal count combinational / sequential (set + reset) -  1 / 0 (0 + 0)"
                         + "\n  Port count (input + output) -  2 (1 + 1)"
@@ -53,7 +55,9 @@ class StatisticsCommandTests {
                         + "\n",
                 "Circuit analysis:"
                         + "\n  Component count (mapped + unmapped) -  5 (5 + 0)"
-                        + "\n  Area of mapped components -  72.0"
+                        + "\n  Area -  72.0"
+                        + "\n  Non-trivial component count (function + blackbox) -  5 (5 + 0)"
+                        + "\n  Trivial gate count (buffer / 0-delay + inverter / 0-delay + const) -  0 (0 / 0 + 0 / 0 + 0)"
                         + "\n  Driver pin count (combinational + sequential + undefined) -  5 (5 + 0 + 0)"
                         + "\n  Literal count combinational / sequential (set + reset) -  11 / 0 (0 + 0)"
                         + "\n  Port count (input + output) -  3 (2 + 1)"
@@ -74,7 +78,9 @@ class StatisticsCommandTests {
                         + "\n",
                 "Circuit analysis:"
                         + "\n  Component count (mapped + unmapped) -  21 (21 + 0)"
-                        + "\n  Area of mapped components -  292.0"
+                        + "\n  Area -  292.0"
+                        + "\n  Non-trivial component count (function + blackbox) -  9 (9 + 0)"
+                        + "\n  Trivial gate count (buffer / 0-delay + inverter / 0-delay + const) -  12 (0 / 0 + 12 / 9 + 0)"
                         + "\n  Driver pin count (combinational + sequential + undefined) -  21 (20 + 1 + 0)"
                         + "\n  Literal count combinational / sequential (set + reset) -  47 / 4 (2 + 2)"
                         + "\n  Port count (input + output) -  6 (3 + 3)"

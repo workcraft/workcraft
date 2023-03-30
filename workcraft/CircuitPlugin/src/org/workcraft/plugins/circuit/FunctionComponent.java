@@ -148,6 +148,30 @@ public class FunctionComponent extends CircuitComponent {
         return result;
     }
 
+    public boolean isTie1() {
+        Collection<FunctionContact> contacts = getFunctionContacts();
+        FunctionContact contact = contacts.size() != 1 ? null : contacts.iterator().next();
+        if ((contact != null) && contact.isOutput()) {
+            BooleanFormula resetFunction = contact.getResetFunction();
+            return contact.getInitToOne() && Zero.getInstance().equals(resetFunction);
+        }
+        return false;
+    }
+
+    public boolean isTie0() {
+        Collection<FunctionContact> contacts = getFunctionContacts();
+        FunctionContact contact = contacts.size() != 1 ? null : contacts.iterator().next();
+        if ((contact != null) && contact.isOutput()) {
+            BooleanFormula setFunction = contact.getSetFunction();
+            return !contact.getInitToOne() && Zero.getInstance().equals(setFunction);
+        }
+        return false;
+    }
+
+    public boolean isConst() {
+        return isTie1() || isTie0();
+    }
+
     public FunctionContact getGateOutput() {
         FunctionContact gateOutput = null;
         for (Node node: getChildren()) {
