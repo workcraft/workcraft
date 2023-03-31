@@ -53,6 +53,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final int GATE_INPUT_GROUP = 2;
     private static final int GATE_OUTPUT_GROUP = 3;
 
+    private static final String BUS_INDEX_PLACEHOLDER = "$";
+    private static final String MODULE_NAME_PLACEHOLDER = "$";
     private static final String FORK_FUNOUT_PLACEHOLDER = "$";
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -132,9 +134,9 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
     private static final String defaultVerilogAssignDelay = "";
-    private static final String defaultBusSuffix = "__" + VerilogUtils.BUS_INDEX_PLACEHOLDER;
+    private static final String defaultBusSuffix = "__" + BUS_INDEX_PLACEHOLDER;
     private static final boolean defaultDissolveSingletonBus = true;
-    private static final String defaultModuleFilePattern = VerilogUtils.MODULE_NAME_PLACEHOLDER + FileFilters.DOCUMENT_EXTENSION;
+    private static final String defaultModuleFilePattern = MODULE_NAME_PLACEHOLDER + FileFilters.DOCUMENT_EXTENSION;
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
     private static final String defaultResetActiveLowPort = "rst_n";
@@ -333,7 +335,7 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Bus split/merge suffix on Verilog import/export ("
-                        + VerilogUtils.BUS_INDEX_PLACEHOLDER + " denotes index)",
+                        + BUS_INDEX_PLACEHOLDER + " denotes index)",
                 CircuitSettings::setBusSuffix,
                 CircuitSettings::getBusSuffix));
 
@@ -344,7 +346,7 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "File pattern for import of hierarchical Verilog modules ("
-                        + VerilogUtils.MODULE_NAME_PLACEHOLDER + " denotes module name)",
+                        + MODULE_NAME_PLACEHOLDER + " denotes module name)",
                 CircuitSettings::setModuleFilePattern,
                 CircuitSettings::getModuleFilePattern));
 
@@ -446,7 +448,7 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Fork buffer pattern ("
-                        + VerilogUtils.MODULE_NAME_PLACEHOLDER + " denotes fanout)",
+                        + MODULE_NAME_PLACEHOLDER + " denotes fanout)",
                 CircuitSettings::setForkBufferPattern,
                 CircuitSettings::getForkBufferPattern));
     }
@@ -750,8 +752,8 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static void setBusSuffix(String value) {
-        if ((value == null) || !value.contains(VerilogUtils.BUS_INDEX_PLACEHOLDER)) {
-            DialogUtils.showError("Bus suffix must have index placeholder " + VerilogUtils.BUS_INDEX_PLACEHOLDER);
+        if ((value == null) || !value.contains(BUS_INDEX_PLACEHOLDER)) {
+            DialogUtils.showError("Bus suffix must have index placeholder " + BUS_INDEX_PLACEHOLDER);
         } else {
             busSuffix = value;
         }
@@ -770,8 +772,8 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static void setModuleFilePattern(String value) {
-        if ((value == null) || !value.contains(VerilogUtils.MODULE_NAME_PLACEHOLDER)) {
-            DialogUtils.showError("File pattern must have module name placeholder " + VerilogUtils.MODULE_NAME_PLACEHOLDER);
+        if ((value == null) || !value.contains(MODULE_NAME_PLACEHOLDER)) {
+            DialogUtils.showError("File pattern must have module name placeholder " + MODULE_NAME_PLACEHOLDER);
         } else {
             moduleFilePattern = value;
         }
@@ -1076,6 +1078,46 @@ public class CircuitSettings extends AbstractModelSettings {
         String portName = (split.length > 0) ? split[0] : null;
         String pinName = (split.length > 1) ? split[1] : portName;
         return Pair.of(portName, pinName);
+    }
+
+    public static Pattern getBusSignalPattern(String name) {
+        String busSuffix = getProcessedBusSuffix();
+        return Pattern.compile(name + busSuffix.replace(BUS_INDEX_PLACEHOLDER, "(\\d+)"));
+    }
+
+    public static Pattern getBusSignalPattern() {
+        String busSuffix = getProcessedBusSuffix();
+        return Pattern.compile("(.+)" + busSuffix.replace(BUS_INDEX_PLACEHOLDER, "(\\d+)"));
+    }
+
+    public static String getProcessedBusSuffix(String replacement) {
+        return getProcessedBusSuffix().replace(BUS_INDEX_PLACEHOLDER, replacement);
+    }
+
+    private static String getProcessedBusSuffix() {
+        String result = getBusSuffix();
+        if (result == null) {
+            result = BUS_INDEX_PLACEHOLDER;
+        }
+        if (!result.contains(BUS_INDEX_PLACEHOLDER)) {
+            result += BUS_INDEX_PLACEHOLDER;
+        }
+        return result;
+    }
+
+    public static String getModuleFileName(String moduleName) {
+        return getProcessedModuleFilePattern().replace(MODULE_NAME_PLACEHOLDER, moduleName);
+    }
+
+    private static String getProcessedModuleFilePattern() {
+        String result = getModuleFilePattern();
+        if (result == null) {
+            result = MODULE_NAME_PLACEHOLDER;
+        }
+        if (!result.contains(MODULE_NAME_PLACEHOLDER)) {
+            result = MODULE_NAME_PLACEHOLDER + result;
+        }
+        return result;
     }
 
 }

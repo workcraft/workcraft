@@ -15,7 +15,6 @@ import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
-import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogBus;
@@ -168,7 +167,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
     }
 
     private Set<String> getBusNames(Set<String> signals, CircuitSignalInfo circuitInfo) {
-        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Pattern pattern = CircuitSettings.getBusSignalPattern();
         Set<String> result = new HashSet<>();
         for (String signal : signals) {
             Matcher matcher = pattern.matcher(signal);
@@ -394,7 +393,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
 
     private Set<VerilogBus> extractSignalBuses(Set<String> signalNames, CircuitSignalInfo circuitInfo) {
         Map<String, Set<Integer>> nameToIndexesMap = new HashMap<>();
-        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Pattern pattern = CircuitSettings.getBusSignalPattern();
         for (String signalName : new HashSet<>(signalNames)) {
             Matcher matcher = pattern.matcher(signalName);
             if (matcher.matches()) {
@@ -423,7 +422,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
 
     private Map<String, Map<Integer, String>> extractContactBuses(Map<String, String> contactToSignalMap) {
         Map<String, Map<Integer, String>> result = new HashMap<>();
-        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Pattern pattern = CircuitSettings.getBusSignalPattern();
         Set<String> contactNames = new LinkedHashSet<>(contactToSignalMap.keySet());
         for (String contactName : contactNames) {
             Matcher matcher = pattern.matcher(contactName);
@@ -442,7 +441,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
     }
 
     private String getNetName(String signal, CircuitSignalInfo circuitInfo) {
-        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Pattern pattern = CircuitSettings.getBusSignalPattern();
         Matcher matcher = pattern.matcher(signal);
         if (matcher.matches()) {
             String busName = matcher.group(1);
