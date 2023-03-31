@@ -25,6 +25,7 @@ import org.workcraft.utils.TextUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class ResetUtils {
 
@@ -585,6 +586,13 @@ public final class ResetUtils {
                 + forcedPortText + uninitialisedPinText, VERIFICATION_RESULT_TITLE);
 
         return false;
+    }
+
+    public static boolean isResetInputPortName(String portName) {
+        Set<String> names = Stream.of(CircuitSettings.getResetActiveLowPort(), CircuitSettings.getResetActiveHighPort())
+                .filter(Objects::nonNull).collect(Collectors.toSet());
+
+        return names.contains(portName);
     }
 
 }

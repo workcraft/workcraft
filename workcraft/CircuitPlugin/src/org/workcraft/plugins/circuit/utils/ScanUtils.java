@@ -12,11 +12,10 @@ import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
 
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class ScanUtils {
 
@@ -551,6 +550,49 @@ public final class ScanUtils {
             }
         }
         return false;
+    }
+
+    public static boolean isScanInputPortName(String portName) {
+        return isScanInputPortName(portName, true, true);
+    }
+
+    public static boolean isScanInputPortName(String portName, boolean indexedScanin, boolean indexedScanen) {
+        String scaninPort = CircuitSettings.getScaninPort();
+        String scanenPort = CircuitSettings.getScanenPort();
+        String scanckPort = CircuitSettings.getScanckPort();
+        String scantmPort = CircuitSettings.getScantmPort();
+
+        Set<String> exactNames = Stream.of(scaninPort, scanenPort, scanckPort, scantmPort)
+                .filter(Objects::nonNull).collect(Collectors.toSet());
+
+        Set<Pattern> patterns = Stream.of(indexedScanin ? scaninPort : null, indexedScanen ? scanenPort : null)
+                .filter(Objects::nonNull)
+                .map(CircuitSettings::getBusSignalPattern)
+                .collect(Collectors.toSet());
+
+        return isAllowedName(portName, exactNames, patterns);
+    }
+
+    public static boolean isScanOutputPortName(String portName) {
+        return isScanOutputPortName(portName, true);
+    }
+
+    public static boolean isScanOutputPortName(String portName, boolean indexedScanout) {
+        String scanoutPort = CircuitSettings.getScanoutPort();
+        Set<String> exactNames = Stream.of(scanoutPort)
+                .filter(Objects::nonNull).collect(Collectors.toSet());
+
+        Set<Pattern> patterns = Stream.of(indexedScanout ? scanoutPort : null)
+                .filter(Objects::nonNull)
+                .map(CircuitSettings::getBusSignalPattern)
+                .collect(Collectors.toSet());
+
+        return isAllowedName(portName, exactNames, patterns);
+    }
+
+    private static boolean isAllowedName(String name, Set<String> exactNames, Collection<Pattern> patterns) {
+        return ((exactNames != null) && exactNames.contains(name)) ||
+                ((patterns != null) && patterns.stream().anyMatch(pattern -> pattern.matcher(name).matches()));
     }
 
 }

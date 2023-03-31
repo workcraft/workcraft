@@ -25,7 +25,7 @@ public class SquashUtils {
 
         boolean result = true;
         String componentRef = Identifier.truncateNamespaceSeparator(circuit.getMathReference(component));
-        if (RefinementUtils.isInconsistentSignalNames(component.getReferencedComponent(), componentModel.getMathModel())) {
+        if (RefinementUtils.hasInconsistentSignalNames(component.getReferencedComponent(), componentModel.getMathModel())) {
             result = false;
             LogUtils.logWarning("Inconsistent interface signals for component '" + componentRef
                     + "' and its circuit implementation");

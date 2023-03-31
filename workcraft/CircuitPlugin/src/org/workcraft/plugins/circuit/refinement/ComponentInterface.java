@@ -22,6 +22,10 @@ public class ComponentInterface {
         return outputs == null ? null : Collections.unmodifiableSet(outputs);
     }
 
+    public Set<String> getSignals() {
+        return createInputOutputSet();
+    }
+
     public Set<String> getMissingSignals(ComponentInterface that) {
         Set<String> result = that.createInputOutputSet();
         result.removeAll(this.createInputOutputSet());
@@ -42,6 +46,30 @@ public class ComponentInterface {
         Set<String> result = new HashSet<>();
         result.addAll(mismatchInputs);
         result.addAll(mismatchOutputs);
+        return result;
+    }
+
+    public Set<String> getMissingInputSignals(ComponentInterface that) {
+        Set<String> result = that.createInputSet();
+        result.removeAll(this.createInputSet());
+        return result;
+    }
+
+    public Set<String> getExtraInputSignals(ComponentInterface that) {
+        Set<String> result = this.createInputSet();
+        result.removeAll(that.createInputSet());
+        return result;
+    }
+
+    public Set<String> getMissingOutputSignals(ComponentInterface that) {
+        Set<String> result = that.createOutputSet();
+        result.removeAll(this.createOutputSet());
+        return result;
+    }
+
+    public Set<String> getExtraOutputSignals(ComponentInterface that) {
+        Set<String> result = this.createOutputSet();
+        result.removeAll(that.createOutputSet());
         return result;
     }
 

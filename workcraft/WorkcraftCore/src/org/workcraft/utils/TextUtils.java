@@ -1,5 +1,7 @@
 package org.workcraft.utils;
 
+import org.workcraft.gui.properties.PropertyHelper;
+
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Collection;
@@ -301,6 +303,19 @@ public class TextUtils {
             code /= 26;
         } while (code > 0);
         return result.toString();
+    }
+
+    public static String getBulletpointPair(String key, String value) {
+        return "\n" + PropertyHelper.BULLET_PREFIX + key
+                + ((value == null) || value.isEmpty() ? " is empty" : (": " + value));
+    }
+
+    public static String getBulletpointPair(String key, Collection<String> value) {
+        if (value.isEmpty()) {
+            return "";
+        }
+        return "\n" + PropertyHelper.BULLET_PREFIX + (value.size() > 1 ? makePlural(key) : key) + ": "
+                + TextUtils.wrapItems(value);
     }
 
 }

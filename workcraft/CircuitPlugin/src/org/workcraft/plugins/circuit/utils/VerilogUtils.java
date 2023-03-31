@@ -28,9 +28,6 @@ import java.util.stream.Collectors;
 
 public final class VerilogUtils {
 
-    public static final String BUS_INDEX_PLACEHOLDER = "$";
-    public static final String MODULE_NAME_PLACEHOLDER = "$";
-
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
 
@@ -54,7 +51,7 @@ public final class VerilogUtils {
     public static Map<VerilogModule, String> getModuleToFileMap(Collection<VerilogModule> modules) {
         Map<VerilogModule, String> result = new HashMap<>();
         for (VerilogModule module : modules) {
-            result.put(module, getModuleFileName(module.name));
+            result.put(module, CircuitSettings.getModuleFileName(module.name));
         }
         return result;
     }
@@ -99,7 +96,7 @@ public final class VerilogUtils {
     public static VerilogModule getTopModule(Collection<VerilogModule> verilogModules)
             throws DeserialisationException {
 
-        Collection<VerilogModule> topVerilogModules = VerilogUtils.getTopModules(verilogModules);
+        Collection<VerilogModule> topVerilogModules = getTopModules(verilogModules);
         if (topVerilogModules.isEmpty()) {
             throw new DeserialisationException("No top module found.");
         }
@@ -226,44 +223,12 @@ public final class VerilogUtils {
     }
 
     private static String getBusSuffix(Integer index) {
-        return (index == null) ? "" : getProcessedBusSuffix().replace(BUS_INDEX_PLACEHOLDER, Integer.toString(index));
+        return (index == null) ? "" : CircuitSettings.getProcessedBusSuffix(Integer.toString(index));
     }
 
     public static String getFormulaWithBusSuffixNames(String verilogFormula) {
-        String busSuffix = getProcessedBusSuffix();
-        String busSuffixReplacement = busSuffix.replace(BUS_INDEX_PLACEHOLDER, "$1");
+        String busSuffixReplacement = CircuitSettings.getProcessedBusSuffix("$1");
         return verilogFormula.replaceAll("\\[(\\d+)]", busSuffixReplacement);
-    }
-
-    public static Pattern getBusSignalPattern() {
-        String busSuffix = getProcessedBusSuffix();
-        return Pattern.compile("(.+)" + busSuffix.replace(BUS_INDEX_PLACEHOLDER, "(\\d+)"));
-    }
-
-    private static String getProcessedBusSuffix() {
-        String result = CircuitSettings.getBusSuffix();
-        if (result == null) {
-            result = BUS_INDEX_PLACEHOLDER;
-        }
-        if (!result.contains(BUS_INDEX_PLACEHOLDER)) {
-            result += BUS_INDEX_PLACEHOLDER;
-        }
-        return result;
-    }
-
-    public static String getModuleFileName(String moduleName) {
-        return getProcessedModuleFilePattern().replace(MODULE_NAME_PLACEHOLDER, moduleName);
-    }
-
-    private static String getProcessedModuleFilePattern() {
-        String result = CircuitSettings.getModuleFilePattern();
-        if (result == null) {
-            result = MODULE_NAME_PLACEHOLDER;
-        }
-        if (!result.contains(MODULE_NAME_PLACEHOLDER)) {
-            result = MODULE_NAME_PLACEHOLDER + result;
-        }
-        return result;
     }
 
     public static Set<String> getUndefinedModules(Collection<VerilogModule> verilogModules) {

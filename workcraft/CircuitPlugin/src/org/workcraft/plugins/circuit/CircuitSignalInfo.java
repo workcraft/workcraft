@@ -11,7 +11,6 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.Literal;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.utils.TextUtils;
 
 import java.util.*;
@@ -119,7 +118,7 @@ public class CircuitSignalInfo {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
 
         Map<String, Set<Integer>> result = new HashMap<>();
-        Pattern pattern = VerilogUtils.getBusSignalPattern();
+        Pattern pattern = CircuitSettings.getBusSignalPattern();
         for (String signal : signals) {
             Matcher matcher = pattern.matcher(signal);
             if (matcher.matches()) {
