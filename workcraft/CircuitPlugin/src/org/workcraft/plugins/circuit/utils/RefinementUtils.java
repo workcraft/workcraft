@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.*;
@@ -14,7 +13,10 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.utils.*;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -167,172 +169,6 @@ public final class RefinementUtils {
             return ((Stg) model).getSignalReferences(Signal.Type.OUTPUT);
         }
         return null;
-    }
-
-    public static boolean hasInconsistentSignalNames(Stg stg, Stg refinementStg) {
-        ComponentInterface stgInterface = RefinementUtils.getModelInterface(stg);
-        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementStg);
-
-        String messageIntro = getStgMessageIntro(stg);
-        if ((stgInterface == null) || (refinementInterface == null)) {
-            LogUtils.logError(messageIntro + " cannot be checked against its refinement STG");
-            return true;
-        }
-
-        // Abstract STG and its refinement STG:
-        // * Inputs must be the same in both STGs.
-        //   (If there is mismatch, then issue an error.)
-        // * Outputs must be the same in both STGs.
-        //   (If there is mismatch, then issue an error.)
-        Set<String> missingInputSignals = stgInterface.getMissingInputSignals(refinementInterface);
-        Set<String> extraInputSignals = stgInterface.getExtraInputSignals(refinementInterface);
-        Set<String> missingOutputSignals = stgInterface.getMissingOutputSignals(refinementInterface);
-        Set<String> extraOutputSignals = stgInterface.getExtraOutputSignals(refinementInterface);
-        boolean result = !missingInputSignals.isEmpty() || !extraInputSignals.isEmpty()
-                || !missingOutputSignals.isEmpty() || !extraOutputSignals.isEmpty();
-
-        if (result) {
-            String message = messageIntro + " has a mismatch of signals with its refinement STG"
-                    + TextUtils.getBulletpointPair("Missing input signal", missingInputSignals)
-                    + TextUtils.getBulletpointPair("Unexpected input signal", extraInputSignals)
-                    + TextUtils.getBulletpointPair("Missing output signal", missingOutputSignals)
-                    + TextUtils.getBulletpointPair("Unexpected output signal", extraOutputSignals);
-
-            LogUtils.logError(message);
-        }
-        return result;
-    }
-
-    public static boolean hasInconsistentSignalNames(Stg stg, Circuit refinementCircuit) {
-        ComponentInterface stgInterface = RefinementUtils.getModelInterface(stg);
-        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementCircuit);
-        String messageIntro = getStgMessageIntro(stg);
-        if ((stgInterface == null) || (refinementInterface == null)) {
-            LogUtils.logError(messageIntro + " cannot be checked against its Circuit implementation");
-            return true;
-        }
-
-        // Specification STG and its Circuit implementation:
-        // * All inputs must be the same, except the Circuit implementation may have extra reset and scan inputs.
-        //   (If there are other inputs, then issue an error.)
-        // * All outputs must be the same, except the Circuit implementation may have extra scan outputs.
-        //   (If there are other outputs, then issue an error.)
-        Set<String> extraInputSignals = stgInterface.getExtraInputSignals(refinementInterface);
-        Set<String> missingInputSignals = stgInterface.getMissingInputSignals(refinementInterface).stream()
-                .filter(name -> !ScanUtils.isScanInputPortName(name) && !ResetUtils.isResetInputPortName(name))
-                .collect(Collectors.toSet());
-
-        Set<String> extraOutputSignals = stgInterface.getExtraOutputSignals(refinementInterface);
-        Set<String> missingOutputSignals = stgInterface.getMissingOutputSignals(refinementInterface).stream()
-                .filter(name -> !ScanUtils.isScanOutputPortName(name))
-                .collect(Collectors.toSet());
-
-        boolean result = !extraInputSignals.isEmpty() || !missingInputSignals.isEmpty()
-                || !missingOutputSignals.isEmpty() || !extraOutputSignals.isEmpty();
-
-        if (result) {
-            String message = messageIntro + " has a mismatch of signals with its Circuit implementation"
-                    + TextUtils.getBulletpointPair("Missing input signal", missingInputSignals)
-                    + TextUtils.getBulletpointPair("Unexpected input signal", extraInputSignals)
-                    + TextUtils.getBulletpointPair("Missing output signal", missingOutputSignals)
-                    + TextUtils.getBulletpointPair("Unexpected output signal", extraOutputSignals);
-
-            LogUtils.logError(message);
-        }
-        return result;
-    }
-
-    public static void warnAboutReservedInterfaceSignals(Stg stg) {
-        ComponentInterface stgInterface = RefinementUtils.getModelInterface(stg);
-
-        Set<String> reservedInterfaceSignals = stgInterface.getSignals().stream()
-                .filter(name -> ResetUtils.isResetInputPortName(name)
-                        || ScanUtils.isScanInputPortName(name) || ScanUtils.isScanOutputPortName(name))
-                .collect(Collectors.toSet());
-
-        if (!reservedInterfaceSignals.isEmpty()) {
-            String message = getStgMessageIntro(stg) + " uses reserved interface signal";
-            LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, reservedInterfaceSignals));
-        }
-    }
-
-    public static boolean hasInconsistentSignalNames(Circuit circuit, CircuitComponent component, Stg refinementStg) {
-        ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component);
-        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementStg);
-        String messageIntro = getComponentMessageIntro(circuit, component);
-        if ((componentInterface == null) || (refinementInterface == null)) {
-            LogUtils.logError(messageIntro + " cannot be checked against its refinement STG");
-            return true;
-        }
-
-        // Circuit component and its refinement STG:
-        // * Inputs of circuit component must be the same as in its refinement STG,
-        //   with the addition of reset and scan inputs which are not in the refinement STG.
-        //   (If there are other inputs, then issue an error.)
-        // * Outputs of circuit component must be the same as in its refinement STG,
-        //   with the addition of scan outputs which are not in the refinement STG.
-        //   (If there are other outputs, then issue an error.)
-        Set<String> extraInputSignals = componentInterface.getExtraInputSignals(refinementInterface);
-        Set<String> missingInputSignals = componentInterface.getMissingInputSignals(refinementInterface).stream()
-                .filter(name ->  !ResetUtils.isResetInputPortName(name) && !ScanUtils.isScanInputPortName(name))
-                .collect(Collectors.toSet());
-
-        Set<String> extraOutputSignals = componentInterface.getExtraOutputSignals(refinementInterface);
-        Set<String> missingOutputSignals = componentInterface.getMissingOutputSignals(refinementInterface).stream()
-                .filter(name -> !ScanUtils.isScanOutputPortName(name)).collect(Collectors.toSet());
-
-        boolean result = !extraInputSignals.isEmpty() || !missingInputSignals.isEmpty()
-                || !extraOutputSignals.isEmpty() || !missingOutputSignals.isEmpty();
-
-        if (result) {
-            String message = messageIntro + " has a mismatch of signals with its refinement STG"
-                    + TextUtils.getBulletpointPair("Missing input signal", missingInputSignals)
-                    + TextUtils.getBulletpointPair("Unexpected input signal", extraInputSignals)
-                    + TextUtils.getBulletpointPair("Missing output signal", missingOutputSignals)
-                    + TextUtils.getBulletpointPair("Unexpected output signal", extraOutputSignals);
-
-            LogUtils.logError(message);
-        }
-        return result;
-    }
-
-    public static boolean hasInconsistentSignalNames(Circuit circuit, CircuitComponent component, Circuit refinementCircuit) {
-        ComponentInterface componentInterface = RefinementUtils.getComponentInterface(component);
-        ComponentInterface refinementInterface = RefinementUtils.getModelInterface(refinementCircuit);
-        String messageIntro = getComponentMessageIntro(circuit, component);
-        if ((componentInterface == null) || (refinementInterface == null)) {
-            LogUtils.logError(messageIntro + " cannot be checked against its refinement STG");
-            return true;
-        }
-
-        // Circuit component and its Circuit implementation (possibly via a series of refinement STGs):
-        // * All interface signals must be the same in Circuit component and its Circuit implementation.
-        //   (Note that we do not drop redundant inputs to support hierarchical Verilog export).
-        Set<String> missingPins = componentInterface.getMissingSignals(refinementInterface);
-        Set<String> extraPins = componentInterface.getExtraSignals(refinementInterface);
-        Set<String> mismatchPins = componentInterface.getMismatchSignals(refinementInterface);
-        boolean result = !missingPins.isEmpty() || !extraPins.isEmpty() || !mismatchPins.isEmpty();
-        if (result) {
-            String message = messageIntro + " has pins that do not match its Circuit implementation"
-                    + TextUtils.getBulletpointPair("Missing component pin", missingPins)
-                    + TextUtils.getBulletpointPair("Unexpected component pin", extraPins)
-                    + TextUtils.getBulletpointPair("Incorrect I/O type pin", mismatchPins);
-
-            LogUtils.logError(message);
-        }
-        return result;
-    }
-
-    private static String getStgMessageIntro(Stg stg) {
-        String title = stg.getTitle();
-        return "STG model" + (((title == null) || title.isEmpty()) ? "" : (" '" + title + "'"));
-    }
-
-    private static String getComponentMessageIntro(Circuit circuit, CircuitComponent component) {
-        String title = circuit.getTitle();
-        String location = ((title == null) || title.isEmpty()) ? "" : (" in circuit '" + title + "'");
-        String ref = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
-        return "Component '" + ref + "'" + location;
     }
 
     public static boolean hasInconsistentSignalNames(CircuitComponent component, Circuit refinementCircuit) {
