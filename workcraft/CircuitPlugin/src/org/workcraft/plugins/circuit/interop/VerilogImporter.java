@@ -55,6 +55,7 @@ public class VerilogImporter implements Importer {
     private final boolean sequentialAssign;
 
     private Map<VerilogModule, String> moduleToFileNameMap = null;
+    private boolean isFlatNetlist = false;
 
     private static class AssignGate {
         public final String outputName;
@@ -134,7 +135,8 @@ public class VerilogImporter implements Importer {
             topVerilogModule = VerilogUtils.getTopModule(verilogModules);
         }
 
-        return (verilogModules.size() == 1) ? createCircuitModelEntry(topVerilogModule)
+        isFlatNetlist = (verilogModules.size() == 1);
+        return isFlatNetlist ? createCircuitModelEntry(topVerilogModule)
                 : createCircuitModelEntryWithHierarchy(verilogModules, topVerilogModule);
     }
 
@@ -387,7 +389,9 @@ public class VerilogImporter implements Importer {
             String title = circuit.getTitle();
             String intro = "Issues with imported circuit" + (title.isEmpty() ? ":" : " '" + title + "':");
             LogUtils.logWarning(intro + longMessage);
-            DialogUtils.showMessage(intro + shortMessage, TITLE, JOptionPane.WARNING_MESSAGE, false);
+            if (isFlatNetlist) {
+                DialogUtils.showMessage(intro + shortMessage, TITLE, JOptionPane.WARNING_MESSAGE, false);
+            }
         }
     }
 
@@ -603,7 +607,7 @@ public class VerilogImporter implements Importer {
         try {
             expression = expressionParser.parseExpression();
         } catch (org.workcraft.plugins.circuit.jj.expression.ParseException e) {
-            LogUtils.logWarning("Could not parse assign expression '" + formula + "'.");
+            LogUtils.logError("Could not parse assign expression '" + formula + "'.");
         }
         return expression;
     }
