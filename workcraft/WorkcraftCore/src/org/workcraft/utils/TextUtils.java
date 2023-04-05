@@ -310,12 +310,11 @@ public class TextUtils {
                 + ((value == null) || value.isEmpty() ? " is empty" : (": " + value));
     }
 
-    public static String getBulletpointPair(String key, Collection<String> value) {
-        if (value.isEmpty()) {
+    public static String getBulletpointPair(String key, Collection<String> values) {
+        if (values.isEmpty()) {
             return "";
         }
-        return "\n" + PropertyHelper.BULLET_PREFIX + (value.size() > 1 ? makePlural(key) : key) + ": "
-                + TextUtils.wrapItems(value);
+        return wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX + key, values);
     }
 
 }

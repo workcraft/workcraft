@@ -49,7 +49,7 @@ import java.util.*;
 
 public class VerilogImporter implements Importer {
 
-    private static final String VERILOG_IMPORT_TITLE = "Import of Verilog netlist";
+    private static final String TITLE = "Import of Verilog netlist";
 
     private final boolean celementAssign;
     private final boolean sequentialAssign;
@@ -115,7 +115,7 @@ public class VerilogImporter implements Importer {
             String question = "\n\nProceed with Verilog import anyway?";
             // Choose "Yes" as default response in no-GUI mode
             boolean defaultChoice = !Framework.getInstance().isInGuiMode();
-            if (!DialogUtils.showConfirmWarning(message, question, VERILOG_IMPORT_TITLE, defaultChoice)) {
+            if (!DialogUtils.showConfirmWarning(message, question, TITLE, defaultChoice)) {
                 throw new OperationCancelledException();
             }
         }
@@ -128,7 +128,7 @@ public class VerilogImporter implements Importer {
             String message = "Cannot find suggested top module '" + topModuleName + "'";
             String question = ".\n\nProceed with Verilog import anyway?";
             // Do not proceed in no-GUI mode if the suggested top module is incorrect
-            if (!DialogUtils.showConfirmWarning(message, question, VERILOG_IMPORT_TITLE, false)) {
+            if (!DialogUtils.showConfirmWarning(message, question, TITLE, false)) {
                 throw new OperationCancelledException();
             }
             topVerilogModule = VerilogUtils.getTopModule(verilogModules);
@@ -176,7 +176,7 @@ public class VerilogImporter implements Importer {
                     + String.join(delimiter, existingSaveFilePaths);
 
             String question = "\n\nOverwrite these files and proceed with import?";
-            if (!DialogUtils.showConfirmWarning(message, question, VERILOG_IMPORT_TITLE, false)) {
+            if (!DialogUtils.showConfirmWarning(message, question, TITLE, false)) {
                 throw new OperationCancelledException();
             }
         }
@@ -387,7 +387,7 @@ public class VerilogImporter implements Importer {
             String title = circuit.getTitle();
             String intro = "Issues with imported circuit" + (title.isEmpty() ? ":" : " '" + title + "':");
             LogUtils.logWarning(intro + longMessage);
-            DialogUtils.showMessage(intro + shortMessage, VERILOG_IMPORT_TITLE, JOptionPane.WARNING_MESSAGE, false);
+            DialogUtils.showMessage(intro + shortMessage, TITLE, JOptionPane.WARNING_MESSAGE, false);
         }
     }
 
