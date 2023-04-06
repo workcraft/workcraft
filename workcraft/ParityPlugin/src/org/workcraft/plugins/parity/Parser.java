@@ -17,27 +17,27 @@ public class Parser {
      */
     static SolvableGame parseInputNodes(ArrayList<InputNode> inputnodes) {
 
-        boolean[] vertex = new boolean[inputnodes.size()];
+        Boolean[] vertex = new Boolean[inputnodes.size()];
         for (int popiter = 0; popiter < inputnodes.size(); ++popiter) {
             vertex[popiter] = true;
         }
 
         //ownership only has two rows: [0] for player 0, [1] for player 1
-        boolean[][] ownedBy = new boolean[2][inputnodes.size()];
+        Boolean[][] ownedBy = new Boolean[2][inputnodes.size()];
         for (int popiter = 0; popiter < 2; ++popiter) {
             for (int inner = 0; inner < inputnodes.size(); ++inner) {
                 ownedBy[popiter][inner] = false;
             }
         }
 
-        boolean[][] adjMatrix = new boolean[inputnodes.size()][inputnodes.size()];
+        Boolean[][] adjMatrix = new Boolean[inputnodes.size()][inputnodes.size()];
         for (int popiter = 0; popiter < inputnodes.size(); ++popiter) {
             for (int inner = 0; inner < inputnodes.size(); ++inner) {
                 adjMatrix[popiter][inner] = false;
             }
         }
 
-        int[] priority = new int[inputnodes.size()];
+        Integer[] priority = new Integer[inputnodes.size()];
         for (int popiter = 0; popiter < inputnodes.size(); ++popiter) {
             priority[popiter] = 0;
         }
@@ -69,8 +69,8 @@ public class Parser {
      *                          for each player, implying one exists
      * @return                  Built OutputNodes
      */
-    static ArrayList<OutputNode> buildOutputNodes(boolean[][] winningRegions,
-            int[][] strategy) {
+    static ArrayList<OutputNode> buildOutputNodes(Boolean[][] winningRegions,
+            Integer[][] strategy) {
 
         ArrayList<OutputNode> outputnodes = new ArrayList<>();
         for (int nodeIter = 0; nodeIter < winningRegions[0].length; ++nodeIter) {

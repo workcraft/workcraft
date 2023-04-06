@@ -6,10 +6,10 @@ package org.workcraft.plugins.parity;
  */
 public class SolvableGame {
 
-    boolean[] vertex;
-    boolean[][] ownedBy;
-    boolean[][] adjMatrix;
-    int[] priority;
+    Boolean[] vertex;
+    Boolean[][] ownedBy;
+    Boolean[][] adjMatrix;
+    Integer[] priority;
 
     /**
      * Constructor. Builds the gathered input nodes into boolean arrays, ready
@@ -20,8 +20,8 @@ public class SolvableGame {
      * @param adjMatrix    [n][n] matrix mapping all the edge transitions
      * @param priority     Bit vector of vertex priorities
      */
-    SolvableGame(boolean[] vertex, boolean[][] ownedBy, boolean[][] adjMatrix,
-            int[] priority) {
+    SolvableGame(Boolean[] vertex, Boolean[][] ownedBy, Boolean[][] adjMatrix,
+            Integer[] priority) {
 
         this.vertex = vertex;
         this.ownedBy = ownedBy;
@@ -34,20 +34,20 @@ public class SolvableGame {
      * @param game    game to be copied
      */
     SolvableGame(SolvableGame game) {
-        this.vertex = (boolean[]) game.vertex.clone();
-        this.ownedBy = new boolean[game.ownedBy.length][game.ownedBy[0].length];
+        this.vertex = (Boolean[]) game.vertex.clone();
+        this.ownedBy = new Boolean[game.ownedBy.length][game.ownedBy[0].length];
         for (int outer = 0; outer < game.ownedBy.length; ++outer) {
             for (int inner = 0; inner < game.ownedBy[outer].length; ++inner) {
                 this.ownedBy[outer][inner] = game.ownedBy[outer][inner];
             }
         }
-        this.adjMatrix = new boolean[game.adjMatrix.length][game.adjMatrix[0].length];
+        this.adjMatrix = new Boolean[game.adjMatrix.length][game.adjMatrix[0].length];
         for (int outer = 0; outer < game.adjMatrix.length; ++outer) {
             for (int inner = 0; inner < game.adjMatrix[outer].length; ++inner) {
                 this.adjMatrix[outer][inner] = game.adjMatrix[outer][inner];
             }
         }
-        this.priority = (int[]) game.priority.clone();
+        this.priority = (Integer[]) game.priority.clone();
     }
 
     /**
@@ -103,9 +103,9 @@ public class SolvableGame {
      * @param largest    Largest valid priority
      * @return           Bit vector of vertices with the largest priority
      */
-    boolean[] getHighPrioVertices(int largest) {
+    Boolean[] getHighPrioVertices(int largest) {
 
-        boolean[] prioVertex = new boolean[vertex.length];
+        Boolean[] prioVertex = new Boolean[vertex.length];
         for (int fillIter = 0; fillIter < vertex.length; ++fillIter) {
             prioVertex[fillIter] = false;
         }
@@ -123,8 +123,8 @@ public class SolvableGame {
      * @param arrToCheck    Array being checked
      * @return              true if no more valid vertices within array
      */
-    boolean isArrEmpty(boolean[] arrToCheck) {
-        for (boolean arrIter: arrToCheck) {
+    Boolean isArrEmpty(Boolean[] arrToCheck) {
+        for (Boolean arrIter: arrToCheck) {
             if (arrIter) {
                 return false;
             }
