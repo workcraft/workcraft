@@ -1,8 +1,7 @@
 package org.workcraft.plugins.circuit.genlib;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Library {
 
@@ -39,6 +38,12 @@ public class Library {
 
     public Set<String> getNames() {
         return gates.keySet();
+    }
+
+    public List<Gate> getGatesOrderedBySize() {
+        return gates.values().stream()
+                .sorted(Comparator.comparingDouble(gate -> gate.size))
+                .collect(Collectors.toList());
     }
 
 }

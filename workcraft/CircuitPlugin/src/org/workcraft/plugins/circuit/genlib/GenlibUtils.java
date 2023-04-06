@@ -89,8 +89,7 @@ public class GenlibUtils {
 
     public static Pair<Gate, Map<BooleanVariable, String>> findMapping(BooleanFormula formula, Library library) {
         if (library != null) {
-            for (String gateName : library.getNames()) {
-                Gate gate = library.get(gateName);
+            for (Gate gate : library.getGatesOrderedBySize()) {
                 Map<BooleanVariable, String> mapping = findMapping(formula, gate);
                 if (mapping != null) {
                     return Pair.of(gate, mapping);
