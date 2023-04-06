@@ -17,6 +17,8 @@ import java.util.Collection;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Class to model the entire Parity game.
@@ -297,8 +299,13 @@ public class Parity extends AbstractMathModel {
      */
     public ArrayList<OutputNode> solveGame(ArrayList<InputNode> inputNodes) {
         SolvableGame sg = Parser.parseInputNodes(inputNodes);
-        boolean[][] winner = Zielonka.solve(sg);
-        int[][] strategy = Zielonka.calcStrategy(sg, winner);
+        List<Entry<Boolean[], Integer[]>> winning = Zielonka.solve(sg);
+        Boolean[][] winner = new Boolean[2][inputNodes.size()];
+        winner[0] = winning.get(0).getKey();
+        winner[1] = winning.get(1).getKey();
+        Integer[][] strategy = new Integer[2][inputNodes.size()];
+        strategy[0] = winning.get(0).getValue();
+        strategy[1] = winning.get(1).getValue();
         return Parser.buildOutputNodes(winner, strategy);
     }
 

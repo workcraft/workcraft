@@ -1,5 +1,10 @@
 package org.workcraft.plugins.parity;
 
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+
 /**
  * Zielonka game solver class.
  * Zielonka's algorithm is then applied to a SolvableGame,to generate the
@@ -19,7 +24,7 @@ public class Zielonka {
      * @param game       Copy of current SolvableGame to be mutated
      * @param attrSet    Attractor set
      */
-    static SolvableGame subtractAttr(SolvableGame game, boolean[] attrSet) {
+    static SolvableGame subtractAttr(SolvableGame game, Boolean[] attrSet) {
 
         //remove vertices
         for (int vIter = 0; vIter < game.vertex.length; ++vIter) {
@@ -44,115 +49,142 @@ public class Zielonka {
     }
 
     /**
-     * Zielonka's recursive algorithm, as defined within Friedmann's paper.
-     * Although calculating the strategy is part of Zielonka, this shall be done
-     * in a later function. This function will return the winning regions for
-     * players 0 and 1.
-     * @param game    Current subgame that will be divided via recursion
-     * @return        2d bit vector of dimensions [2][n] to signify winning
-     *                regions. [0][n] = player 0 win, [1][n] = player 1 win
+     * Given two pairs of winning regions, union them together.
+     * @param firstWin     First winning region
+     * @param secondWin    Second winning region
+     * @return             The union of the two regions
      */
-    static boolean[][] solve(SolvableGame game) {
-
-        boolean[][] winningRegions = new boolean[2][game.vertex.length];
-        for (int outer = 0; outer < 2; ++outer) {
-            for (int inner = 0; inner < game.vertex.length; ++inner) {
-                winningRegions[outer][inner] = false;
-            }
+    static Boolean[] unionRegions(Boolean[] firstWin, Boolean[] secondWin) {
+        for (int winIter = 0; winIter < firstWin.length; ++winIter) {
+            firstWin[winIter] = firstWin[winIter] || secondWin[winIter];
         }
-        if (game.isArrEmpty(game.vertex)) {
-            return winningRegions;
-        }
-
-        int largestPrio = game.getHighPrio();
-        if (largestPrio == 0) {
-            winningRegions[0] = game.vertex;
-            return winningRegions;
-        }
-
-        //false if player 0, true if player 1
-        boolean maxPlayer = (largestPrio & 1) == 1;
-        boolean[] largestPrioVertex = game.getHighPrioVertices(largestPrio);
-        //Attractor set for max player
-        Attractor attrSetA = new Attractor(game.adjMatrix, game.ownedBy,
-                largestPrioVertex, game.vertex, maxPlayer);
-        SolvableGame gprime = subtractAttr(new SolvableGame(game), attrSetA.attrSet);
-        winningRegions = solve(gprime);
-
-        if (game.isArrEmpty(winningRegions[1 - (maxPlayer ? 1 : 0)])) {
-            winningRegions[maxPlayer ? 1 : 0] = game.vertex;
-            for (int winIter = 0;
-                    winIter < winningRegions[1 - (maxPlayer ? 1 : 0)].length;
-                    ++winIter) {
-                winningRegions[1 - (maxPlayer ? 1 : 0)][winIter] = false;
-                return winningRegions;
-            }
-        }
-
-        Attractor attrSetB = new Attractor(game.adjMatrix, game.ownedBy,
-                winningRegions[1 - (maxPlayer ? 1 : 0)], game.vertex, !maxPlayer);
-        SolvableGame gprimeprime = subtractAttr(new SolvableGame(game),
-                attrSetB.attrSet);
-        winningRegions = solve(gprimeprime);
-
-        for (int attrIter = 0; attrIter < attrSetB.attrSet.length; ++attrIter) {
-            if (attrSetB.attrSet[attrIter]) {
-                winningRegions[1 - (maxPlayer ? 1 : 0)][attrIter] = true;
-            }
-        }
-
-        return winningRegions;
+        return firstWin;
     }
 
     /**
-     * Given a SolvableGame and the generated winning regions, return an array
-     * of strategies that a player would follow, implying that the strategy is
-     * winning for the player. There will be at most one path decided for each
-     * player to take.
-     * @param game              The whole game before any mutation
-     * @param winningRegions    Generated winning regions
-     * @return                  2d Array of ints [2][n], signifying the vertex
-     *                          id the player would travel to for a winning
-     *                          strategy. [0] = p0, [1] = p1
+     * Given two pairs of strategies, union them together. We assert these will
+     * always be disjoint, and if they are not, then something has gone wrong
+     * within the code logic.
+     * @param firstStrat     First strategy
+     * @param secondStrat    Second strategy
+     * @return               The union of the two strategies
      */
-    static int[][] calcStrategy(SolvableGame game, boolean[][] winningRegions) {
+    static Integer[] unionStrategies(Integer[] firstStrat,
+            Integer[] secondStrat) {
+        Integer[] resultStrat = new Integer[firstStrat.length];
+        for (int stratIter = 0; stratIter < firstStrat.length; ++stratIter) {
+            resultStrat[stratIter] = -1;
+            if (firstStrat[stratIter] != -1) {
+                resultStrat[stratIter] = firstStrat[stratIter];
+            } else if (secondStrat[stratIter] != -1) {
+                resultStrat[stratIter] = secondStrat[stratIter];
+            }
+        }
+        return resultStrat;
+    }
+
+    /**
+     * Zielonka's recursive algorithm, as defined within Friedmann's paper.
+     * This function will return the winning regions for
+     * players 0 and 1, and also their strategy. These will be returned as a
+     * pair.
+     * @param game    Current subgame that will be divided via recursion
+     * @return        A List of two pairs: One for player 0, and one for
+     *                player 1. Each pair contains the winning region, followed
+     *                by the strategy.
+     */
+    static List<Entry<Boolean[], Integer[]>> solve(SolvableGame game) {
+
+        List<Entry<Boolean[], Integer[]>> resultPair = new ArrayList<>();
+        Boolean[] emptyVertices = new Boolean[game.vertex.length];
+        Integer[] emptyStrat = new Integer[game.vertex.length];
+        for (int gameIter = 0; gameIter < game.vertex.length; ++gameIter) {
+            emptyVertices[gameIter] = false;
+            emptyStrat[gameIter] = -1;
+        }
+        Entry<Boolean[], Integer[]> emptyPair = new SimpleEntry<>(emptyVertices,
+                emptyStrat);
+        resultPair.add(emptyPair);
+        resultPair.add(emptyPair);
 
         /**
-         * Strategy values are initialised as -1 to represent the player does
-         * not have a strategy at that vertex. This may be because:
-         * a) They do not own said vertex
-         * b) They lose on said vertex
+         * BASE CASE: When amount of vertices is 0, return empty winning
+         * regions and empty strategies
          */
-        int[][] strategy = new int[winningRegions.length][winningRegions[0].length];
-        for (int outer = 0; outer < winningRegions.length; ++outer) {
-            for (int inner = 0; inner < winningRegions[outer].length; ++inner) {
-                strategy[outer][inner] = -1;
-            }
+        if (game.isArrEmpty(game.vertex)) {
+            return resultPair;
+        }
+
+        // Find maximal priority p in graph
+        int largestPrio = game.getHighPrio();
+
+        /**
+         * player i will be equal to p mod 2.
+         * This is player who wins with maximal priority in graph.
+         * Also calculate set U, which by logic will be non-empty if we are at
+         * this point.
+         */
+        boolean maxPlayer = (largestPrio & 1) == 1;
+        int maxPlayerIndex = maxPlayer ? 1 : 0;
+        Boolean[] largestPrioVertex = game.getHighPrioVertices(largestPrio);
+
+        /**
+         * Calculate attractor pair for Player i. We have no idea who this will
+         * be at this point, but we know it generates the attractor set A and
+         * strategy Tau Union TauPrime
+         */
+        Attractor attrSetA = new Attractor(game.adjMatrix, game.ownedBy,
+                largestPrioVertex, game.vertex, maxPlayer);
+
+        //game G' = G \ A. Calc attractor pairs here for G'
+        SolvableGame gprime = subtractAttr(new SolvableGame(game),
+                attrSetA.attrSet);
+        List<Entry<Boolean[], Integer[]>> gprimeResult = solve(gprime);
+
+        /**
+         * check if winning_regions[1-i] is empty.
+         * if it is:
+         * a) Set attractor pair for i to be g.vertices, and set its strategy to
+         *    be the union of what it is in gprimeResult with i_attr_pair
+         * b) Set attractor pair for 1-i to be {EMPTY_SET, EMPTY_STRAT} like in
+         *    the base case
+         * c) Return this attractor pair
+         */
+        if (gprime.isArrEmpty(gprimeResult.get(1 - maxPlayerIndex).getKey())) {
+            Entry<Boolean[], Integer[]> replacement = new SimpleEntry<>(
+                    game.vertex, unionStrategies(
+                    gprimeResult.get(maxPlayerIndex).getValue(),
+                    attrSetA.strategy));
+            resultPair.set(maxPlayerIndex, replacement);
+            return resultPair;
         }
 
         /**
-         * Check if a winning region is present, and that the player also owns
-         * the vertex. If they do, identify a strategy by finding a vertex they
-         * can move to within their winning region.
+         * Calculate attractor pair for Player 1-i, using the winning region of
+         * 1-i in gprimeResult as the target vertices.
          */
-        for (int outer = 0; outer < winningRegions.length; ++outer) {
+        Attractor attrSetB = new Attractor(game.adjMatrix, game.ownedBy,
+                gprimeResult.get(1 - maxPlayerIndex).getKey(), game.vertex,
+                !maxPlayer);
 
-            for (int inner = 0; inner < winningRegions[outer].length; inner++) {
+        //Game G'' = G \ B
+        SolvableGame gprimeprime = subtractAttr(new SolvableGame(game),
+                attrSetB.attrSet);
+        List<Entry<Boolean[], Integer[]>> gprimeprimeResult =
+                solve(gprimeprime);
 
-                if (winningRegions[outer][inner] && game.ownedBy[outer][inner]) {
+        // Calculate attractor pairs for i and 1-i,
+        resultPair.set(maxPlayerIndex, gprimeprimeResult.get(maxPlayerIndex));
+        Boolean[] winRegion = unionRegions(gprimeprimeResult.get(
+                1 - maxPlayerIndex).getKey(), attrSetB.attrSet);
+        Integer[] winStrat = unionStrategies(gprimeprimeResult.get(
+                1 - maxPlayerIndex).getValue(), attrSetB.strategy);
+        winStrat = unionStrategies(winStrat, gprimeResult.get(
+                1 - maxPlayerIndex).getValue());
+        Entry<Boolean[], Integer[]> replacement = new SimpleEntry<>(winRegion,
+                winStrat);
+        resultPair.set(1 - maxPlayerIndex, replacement);
 
-                    for (int edgeIter = 0;
-                            edgeIter < game.adjMatrix[inner].length;
-                            ++edgeIter) {
-
-                        if (game.adjMatrix[inner][edgeIter] &&
-                                winningRegions[outer][edgeIter]) {
-                            strategy[outer][inner] = edgeIter;
-                        }
-                    }
-                }
-            }
-        }
-        return strategy;
+        return resultPair;
     }
 }
