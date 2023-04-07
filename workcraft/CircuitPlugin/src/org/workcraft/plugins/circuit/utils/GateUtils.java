@@ -8,6 +8,8 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.formula.workers.DumbBooleanWorker;
@@ -217,33 +219,38 @@ public final class GateUtils {
                 .map(FreeVariable::new)
                 .collect(Collectors.toList());
 
-        BooleanFormula formula = func.apply(inputVars);
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        BooleanFormula desiredGateFunction = func.apply(inputVars);
+        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(desiredGateFunction,
+                LibraryManager.getLibrary());
 
+        String functionString;
         List<String> inputNames;
         if (mapping == null) {
+            functionString = StringGenerator.toString(desiredGateFunction);
             inputNames = new ArrayList<>(defaultGateInterface.getInputs());
         } else {
             Gate gate = mapping.getFirst();
-            outputName = gate.function.name;
             component.setLabel(gate.name);
+            functionString = gate.function.formula;
+            outputName = gate.function.name;
             inputNames = inputVars.stream()
                     .map(mapping.getSecond()::get)
                     .collect(Collectors.toList());
         }
 
         double y = -0.5 * (inputNames.size() - 1);
-        List<Contact> inputContacts = new ArrayList<>();
         for (String inputName : inputNames) {
             VisualContact inputContact = circuit.getOrCreateContact(component, inputName, Contact.IOType.INPUT);
             inputContact.setPosition(new Point2D.Double(-1.5, y));
-            inputContacts.add(inputContact.getReferencedComponent());
             y += 1.0;
         }
         VisualFunctionContact outputContact = circuit.getOrCreateContact(component, outputName, Contact.IOType.OUTPUT);
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
-        BooleanFormula setFunction = FormulaUtils.replace(formula, inputVars, inputContacts);
-        outputContact.setSetFunction(setFunction);
+        try {
+            outputContact.setSetFunction(CircuitUtils.parsePinFunction(circuit, component, functionString));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
         return component;
     }
 
