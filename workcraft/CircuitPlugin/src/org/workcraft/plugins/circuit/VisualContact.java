@@ -5,6 +5,7 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.*;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
@@ -119,9 +120,6 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             }
         }
     }
-
-    public static final Color inputColor = Color.RED;
-    public static final Color outputColor = Color.BLUE;
 
     private static final double size = 0.3;
     private Direction direction = Direction.WEST;
@@ -315,7 +313,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     @Override
     public Color getNameColor() {
-        return isInput() ? inputColor : outputColor;
+        return isInput() ? SignalCommonSettings.getInputColor() : SignalCommonSettings.getOutputColor();
     }
 
     @Override

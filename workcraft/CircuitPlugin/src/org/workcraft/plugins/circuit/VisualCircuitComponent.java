@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.*;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.serialisation.NoAutoSerialisation;
@@ -532,7 +533,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         Color colorisation = d.getColorisation();
-        Color color = vc.isInput() ? VisualContact.inputColor : VisualContact.outputColor;
+        Color color = vc.isInput() ? SignalCommonSettings.getInputColor() : SignalCommonSettings.getOutputColor();
         g.setColor(ColorUtils.colorise(color, colorisation));
 
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
