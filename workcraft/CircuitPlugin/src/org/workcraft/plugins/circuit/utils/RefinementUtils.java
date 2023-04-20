@@ -76,7 +76,7 @@ public final class RefinementUtils {
 
     public static File getRefinementStgFile(CircuitComponent component) {
         File file = component.getRefinementFile();
-        if (file != null) {
+        if (FileUtils.isReadableFile(file)) {
             try {
                 ModelDescriptor modelDescriptor = WorkUtils.extractModelDescriptor(file);
                 if (modelDescriptor instanceof StgDescriptor) {
@@ -92,12 +92,10 @@ public final class RefinementUtils {
     public static File getRefinementCircuitFile(CircuitComponent component) {
         File file = component.getRefinementFile();
         Set<File> visited = new HashSet<>();
-        while (file != null) {
-            if (!FileUtils.checkFileReadability(file, false)) {
-                return null;
-            }
+        while (FileUtils.isReadableFile(file)) {
+            String fileDescription = "'" + FileUtils.getFullPath(file) + "'";
             if (visited.contains(file)) {
-                LogUtils.logError("Cyclic dependency on file '" + FileUtils.getFullPath(file) + "'");
+                LogUtils.logError("Cyclic dependency on file " + fileDescription);
                 return null;
             }
             visited.add(file);
@@ -111,11 +109,11 @@ public final class RefinementUtils {
                     Stg stg = WorkspaceUtils.getAs(me, Stg.class);
                     file = stg.getRefinementFile();
                 } else {
-                    LogUtils.logError("Unexpected model type in file '" + FileUtils.getFullPath(file) + "'");
+                    LogUtils.logError("Unexpected model type in file " + fileDescription);
                     return null;
                 }
             } catch (DeserialisationException e) {
-                LogUtils.logError("Cannot read model from file '" + FileUtils.getFullPath(file) + "':\n" + e.getMessage());
+                LogUtils.logError("Cannot read model from file " + fileDescription + ":\n" + e.getMessage());
                 return null;
             }
         }
@@ -290,11 +288,13 @@ public final class RefinementUtils {
     }
 
     public static boolean isInconsistentModelTitle(Stg stg, ModelEntry refinementModelEntry) {
-        return isInconsistentModelTitle(stg.getTitle(), refinementModelEntry.getModel().getTitle());
+        String refinementTitle = refinementModelEntry == null ? null : refinementModelEntry.getModel().getTitle();
+        return isInconsistentModelTitle(stg.getTitle(), refinementTitle);
     }
 
     public static boolean isInconsistentModelTitle(CircuitComponent component, ModelEntry refinementModelEntry) {
-        return isInconsistentModelTitle(component.getModule(), refinementModelEntry.getModel().getTitle());
+        String refinementTitle = refinementModelEntry == null ? null : refinementModelEntry.getModel().getTitle();
+        return isInconsistentModelTitle(component.getModule(), refinementTitle);
     }
 
     public static boolean isInconsistentModelTitle(String aTitle, String bTitle) {
@@ -416,8 +416,11 @@ public final class RefinementUtils {
     }
 
     public static Set<String> getSignalsWithInconsistentStates(Map<String, Boolean> is1, Map<String, Boolean> is2) {
-        Set<String> signals = new HashSet<>(is1.keySet());
-        signals.retainAll(is2.keySet());
+        Set<String> signals = new HashSet<>();
+        if ((is1 != null) && (is2 != null)) {
+            signals.addAll(is1.keySet());
+            signals.retainAll(is2.keySet());
+        }
         return signals.stream()
                 .filter(signal -> is1.get(signal) != is2.get(signal))
                 .collect(Collectors.toSet());
