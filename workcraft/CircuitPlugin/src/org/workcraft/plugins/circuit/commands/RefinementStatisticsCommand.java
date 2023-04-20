@@ -41,23 +41,26 @@ public class RefinementStatisticsCommand extends AbstractStatisticsCommand {
 
         RefinementDependencyGraph rdg = new RefinementDependencyGraph(we);
         Set<File> stgFiles = rdg.getStgFiles();
-        stgFiles.remove(topCircuitFile);
 
         Set<File> circuitFiles = rdg.getCircuitFiles();
         circuitFiles.remove(topCircuitFile);
 
+        Set<File> invalidFiles = rdg.getInvalidFiles();
+
         Set<File> extraEnvFiles = getEnvFiles(rdg);
         extraEnvFiles.removeAll(stgFiles);
         extraEnvFiles.removeAll(circuitFiles);
+        extraEnvFiles.removeAll(invalidFiles);
         extraEnvFiles.remove(topEnvFile);
         extraEnvFiles.remove(topCircuitFile);
 
         return "Refinement analysis:\n"
                 + getFileName("top-level Circuit", topCircuitFile)
                 + getFileName("top-level environment", topEnvFile)
-                + getFileNameList("Circuit dependencies", circuitFiles)
-                + getFileNameList("STG dependencies", stgFiles)
-                + getFileNameList("additional STG environments", extraEnvFiles);
+                + getFileNameList("Circuit dependency", circuitFiles)
+                + getFileNameList("STG dependency", stgFiles)
+                + getFileNameList("invalid dependency", invalidFiles)
+                + getFileNameList("additional STG environment", extraEnvFiles);
     }
 
     private Set<File> getEnvFiles(RefinementDependencyGraph rdg) {
@@ -84,14 +87,15 @@ public class RefinementStatisticsCommand extends AbstractStatisticsCommand {
 
     private String getFileNameList(String title, Collection<File> files) {
         if ((files == null) || files.isEmpty()) {
-            return PropertyHelper.BULLET_PREFIX + "No " + title + "\n";
+            return PropertyHelper.BULLET_PREFIX + "No " + TextUtils.makePlural(title) + "\n";
         }
         if (files.size() == 1) {
             File file = files.iterator().next();
             return PropertyHelper.BULLET_PREFIX + TextUtils.makeFirstCapital(title) + ":"
                     + "\n" + FILE_INDENT + FileUtils.getFullPath(file) + "\n";
         }
-        return PropertyHelper.BULLET_PREFIX + files.size() + " " + title + ":\n" + FILE_INDENT + files.stream()
+        return PropertyHelper.BULLET_PREFIX + files.size() + " " + TextUtils.makePlural(title) + ":\n" + FILE_INDENT
+                + files.stream()
                 .map(FileUtils::getFullPath)
                 .sorted(SortUtils::compareNatural)
                 .collect(Collectors.joining("\n" + FILE_INDENT)) + "\n";

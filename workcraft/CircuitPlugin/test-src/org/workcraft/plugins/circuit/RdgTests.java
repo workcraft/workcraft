@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.refinement.RdgToPetriConverter;
 import org.workcraft.plugins.circuit.refinement.RefinementDependencyGraph;
@@ -30,20 +31,30 @@ class RdgTests {
     }
 
     @Test
-    void testAcyclicRdg() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "rdg-acyclic/top.circuit.work");
-        testRdg(workName, 4, 6, 4, true);
+    void testInvalidRdg() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "rdg-invalid/top.circuit.work");
+        RefinementDependencyGraph rdg = buildRdg(workName);
+        testRdg(rdg, 5, 6, 4);
+        testPetri(rdg, 5, 7, 12, true);
     }
 
     @Test
     void testCyclicRdg() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "rdg-cyclic/top.circuit.work");
-        testRdg(workName, 4, 6, 5, false);
+        RefinementDependencyGraph rdg = buildRdg(workName);
+        testRdg(rdg, 3, 5, 4);
+        testPetri(rdg, 3, 6, 11, false);
     }
 
-    private void testRdg(String workName, int vertexCount, int edgeCount, int metaEdgeCount, boolean noCycles)
-            throws DeserialisationException {
+    @Test
+    void testAcyclicRdg() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "rdg-acyclic/top.circuit.work");
+        RefinementDependencyGraph rdg = buildRdg(workName);
+        testRdg(rdg, 4, 6, 4);
+        testPetri(rdg, 4, 7, 12, true);
+    }
 
+    private RefinementDependencyGraph buildRdg(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         URL srcUrl = classLoader.getResource(workName);
@@ -53,6 +64,10 @@ class RdgTests {
         RefinementDependencyGraph rdg = new RefinementDependencyGraph(srcWe);
         framework.closeWork(srcWe);
 
+        return rdg;
+    }
+
+    private void testRdg(RefinementDependencyGraph rdg, int vertexCount, int edgeCount, int metaEdgeCount) {
         Assertions.assertEquals(vertexCount, rdg.getVertices().size());
         Assertions.assertEquals(edgeCount, rdg.getVertices().stream()
                 .map(rdg::getInstanceDependencyMap)
@@ -62,21 +77,21 @@ class RdgTests {
         Map<File, Set<File>> graph = rdg.getSimpleGraph();
         Assertions.assertEquals(vertexCount, graph.size());
         Assertions.assertEquals(metaEdgeCount, rdg.getVertices().stream()
-                .mapToInt(f -> rdg.getDependencies(f).size())
+                .mapToInt(file -> rdg.getDependencies(file).size())
                 .sum());
+    }
 
+    private void testPetri(RefinementDependencyGraph rdg, int pageCount, int placeCount, int arcCount, boolean noCycles) {
         RdgToPetriConverter converter = new RdgToPetriConverter(rdg);
         VisualPetri petri = converter.getPetri();
-        Assertions.assertEquals(vertexCount, Hierarchy.getDescendantsOfType(petri.getRoot(), VisualPage.class).size());
-        Assertions.assertEquals(vertexCount, petri.getVisualTransitions().size());
+        Assertions.assertEquals(pageCount, Hierarchy.getDescendantsOfType(petri.getRoot(), VisualPage.class).size());
+        Assertions.assertEquals(pageCount, petri.getVisualTransitions().size());
 
-        int placeCount = noCycles ? edgeCount + 1 : edgeCount;
         Assertions.assertEquals(placeCount, petri.getVisualPlaces().size());
 
-        Assertions.assertEquals(edgeCount, petri.getVisualPlaces().stream()
-                .filter(place -> petri.getPreset(place).size() == 1)
-                .count());
+        Assertions.assertEquals(arcCount, Hierarchy.getDescendantsOfType(petri.getRoot(), VisualConnection.class).size());
 
+        Map<File, Set<File>> graph = rdg.getSimpleGraph();
         Set<List<File>> simpleCycles = DirectedGraphUtils.findSimpleCycles(graph);
         Assertions.assertEquals(noCycles, simpleCycles.isEmpty());
         if (!simpleCycles.isEmpty()) {

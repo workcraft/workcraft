@@ -37,15 +37,20 @@ public class RefinementDependencyGraph {
             File file = stack.pop();
             if ((file != null) && !visited.contains(file)) {
                 visited.add(file);
-                try {
-                    ModelEntry me = WorkUtils.loadModel(file);
-                    fileToModelMap.put(file, me);
-                    Map<String, File> dependencyMap = extractInstanceDependencyMap(me);
-                    stack.addAll(dependencyMap.values());
-                    detailedDependencyGraph.put(file, dependencyMap);
-                } catch (DeserialisationException e) {
-                    String filePath = FileUtils.getFullPath(file);
-                    LogUtils.logError("Cannot read model from file '" + filePath + "':\n" + e.getMessage());
+                if (!FileUtils.isReadableFile(file)) {
+                    fileToModelMap.put(file, null);
+                    detailedDependencyGraph.put(file, Collections.emptyMap());
+                } else {
+                    try {
+                        ModelEntry me = WorkUtils.loadModel(file);
+                        fileToModelMap.put(file, me);
+                        Map<String, File> dependencyMap = extractInstanceDependencyMap(me);
+                        stack.addAll(dependencyMap.values());
+                        detailedDependencyGraph.put(file, dependencyMap);
+                    } catch (DeserialisationException e) {
+                        String filePath = FileUtils.getFullPath(file);
+                        LogUtils.logError("Cannot read model from file '" + filePath + "':\n" + e.getMessage());
+                    }
                 }
             }
         }
@@ -132,6 +137,12 @@ public class RefinementDependencyGraph {
     public Set<File> getStgFiles() {
         return getVertices().stream()
                 .filter(this::isStg)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<File> getInvalidFiles() {
+        return getVertices().stream()
+                .filter(file -> !isStg(file) && !isCircuit(file))
                 .collect(Collectors.toSet());
     }
 

@@ -35,6 +35,44 @@ class RefinementStatisticsCommandTests {
                         + "    buffer-compact.stg.work\n"
                         + PropertyHelper.BULLET_PREFIX + "No Circuit dependencies\n"
                         + PropertyHelper.BULLET_PREFIX + "No STG dependencies\n"
+                        + PropertyHelper.BULLET_PREFIX + "No invalid dependencies\n"
+                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments"
+                        + "\n");
+    }
+
+    @Test
+    void testInvalidDependency() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "rdg-invalid/top.circuit.work");
+        testRefinementStatisticsCommand(workName,
+                "Refinement analysis:\n"
+                        + PropertyHelper.BULLET_PREFIX + "Top-level Circuit:\n"
+                        + "    rdg-invalid/top.circuit.work\n"
+                        + PropertyHelper.BULLET_PREFIX + "No top-level environment\n"
+                        + PropertyHelper.BULLET_PREFIX + "2 Circuit dependencies:\n"
+                        + "    rdg-invalid/buf.circuit.work\n"
+                        + "    rdg-invalid/mid.circuit.work\n"
+                        + PropertyHelper.BULLET_PREFIX + "STG dependency:\n"
+                        + "    rdg-invalid/buf.stg.work\n"
+                        + PropertyHelper.BULLET_PREFIX + "Invalid dependency:\n"
+                        + "    rdg-invalid/invalid.stg.work\n"
+                        + PropertyHelper.BULLET_PREFIX + "Additional STG environment:\n"
+                        + "    rdg-invalid/mid-env.stg.work\n"
+                        + "\n");
+    }
+
+    @Test
+    void testCyclicDependency() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "rdg-cyclic/top.circuit.work");
+        testRefinementStatisticsCommand(workName,
+                "Refinement analysis:\n"
+                        + PropertyHelper.BULLET_PREFIX + "Top-level Circuit:\n"
+                        + "    rdg-cyclic/top.circuit.work\n"
+                        + PropertyHelper.BULLET_PREFIX + "No top-level environment\n"
+                        + PropertyHelper.BULLET_PREFIX + "Circuit dependency:\n"
+                        + "    rdg-cyclic/mid.circuit.work\n"
+                        + PropertyHelper.BULLET_PREFIX + "STG dependency:\n"
+                        + "    rdg-cyclic/buf.stg.work\n"
+                        + PropertyHelper.BULLET_PREFIX + "No invalid dependencies\n"
                         + PropertyHelper.BULLET_PREFIX + "No additional STG environments"
                         + "\n");
     }
@@ -50,25 +88,9 @@ class RefinementStatisticsCommandTests {
                         + PropertyHelper.BULLET_PREFIX + "2 Circuit dependencies:\n"
                         + "    rdg-acyclic/buf.circuit.work\n"
                         + "    rdg-acyclic/mid.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "STG dependencies:\n"
+                        + PropertyHelper.BULLET_PREFIX + "STG dependency:\n"
                         + "    rdg-acyclic/buf.stg.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments"
-                        + "\n");
-    }
-
-    @Test
-    void testCyclicDependency() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "rdg-cyclic/top.circuit.work");
-        testRefinementStatisticsCommand(workName,
-                "Refinement analysis:\n"
-                        + PropertyHelper.BULLET_PREFIX + "Top-level Circuit:\n"
-                        + "    rdg-cyclic/top.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "No top-level environment\n"
-                        + PropertyHelper.BULLET_PREFIX + "2 Circuit dependencies:\n"
-                        + "    rdg-cyclic/buf.circuit.work\n"
-                        + "    rdg-cyclic/mid.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "STG dependencies:\n"
-                        + "    rdg-cyclic/buf.stg.work\n"
+                        + PropertyHelper.BULLET_PREFIX + "No invalid dependencies\n"
                         + PropertyHelper.BULLET_PREFIX + "No additional STG environments"
                         + "\n");
     }
@@ -79,17 +101,18 @@ class RefinementStatisticsCommandTests {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         URL url = classLoader.getResource(workName);
-        WorkspaceEntry we = framework.loadWork(url.getFile());
+        String workPath = url.getFile();
+        WorkspaceEntry we = framework.loadWork(workPath);
 
         StringBuilder expectedRefinementStatistics = new StringBuilder();
         Pattern pattern = Pattern.compile("^ {4}(.+\\.work)$");
         for (String line : expected.split("\n")) {
             Matcher matcher  = pattern.matcher(line);
             if (matcher.find()) {
-                String name = matcher.group(1);
-                String resourceName = PackageUtils.getPackagePath(getClass(), name);
-                File file = new File(classLoader.getResource(resourceName).getFile());
-                expectedRefinementStatistics.append("    ").append(FileUtils.getFullPath(file)).append("\n");
+                String refinementName = PackageUtils.getPackagePath(getClass(), matcher.group(1));
+                File refinementFile = new File(workPath.replaceFirst(workName + "$", refinementName));
+                String refinementPath = FileUtils.getFullPath(refinementFile);
+                expectedRefinementStatistics.append("    ").append(refinementPath).append("\n");
             } else {
                 expectedRefinementStatistics.append(line).append("\n");
             }
