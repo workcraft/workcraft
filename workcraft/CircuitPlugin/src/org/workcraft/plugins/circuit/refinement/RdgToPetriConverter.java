@@ -144,6 +144,7 @@ public class RdgToPetriConverter {
             VisualPage page = getVertexPage(vertex);
             if (page != null) {
                 page.setForegroundColor(color);
+                page.setFillColor(color);
             }
         }
     }
