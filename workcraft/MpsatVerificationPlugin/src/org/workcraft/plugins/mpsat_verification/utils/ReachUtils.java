@@ -57,7 +57,10 @@ public class ReachUtils {
             "    is_dummy e\n" +
             "}\n";
 
-    private static final String OUTPUT_PERSISTENCY_EXCEPTIONS_REPLACEMENT =
+    private static final String OUTPUT_PERSISTENCY_SKIP_NAMES_REPLACEMENT =
+            "/* insert signal names that should be skipped */"; // For example: "scanout__1", "scanout__2",
+
+    private static final String OUTPUT_PERSISTENCY_EXCEPTION_PAIRS_REPLACEMENT =
             "/* insert signal pairs of output persistency exceptions */"; // For example: {"me1_g1", "me1_g2"}, {"me2_g1", "me2_g2"},
 
     private static final String OUTPUT_PERSISTENCY_REACH =
@@ -66,12 +69,14 @@ public class ReachUtils {
             DUMMY_CHECK_REACH +
             "? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
-            "    EXCEPTIONS = {" + OUTPUT_PERSISTENCY_EXCEPTIONS_REPLACEMENT + "{\"\"}} \\ {{\"\"}},\n" +
-            "    SIGE = gather pair in EXCEPTIONS {\n" +
+            "    EXCEPTION_PAIRS = {" + OUTPUT_PERSISTENCY_EXCEPTION_PAIRS_REPLACEMENT + "{\"\"}} \\ {{\"\"}},\n" +
+            "    SKIP_NAMES = {" + OUTPUT_PERSISTENCY_SKIP_NAMES_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
+            "    EXCEPTION_SIGNALS = gather pair in EXCEPTION_PAIRS {\n" +
             "        gather str in pair { S str }\n" +
             "    },\n" +
+            "    SKIP_SIGNALS = gather str in SKIP_NAMES { S str },\n" +
             "    TR = tran EVENTS,\n" +
-            "    TRL = tran LOCAL * TR,\n" +
+            "    TRL = tran (LOCAL \\ SKIP_SIGNALS) * TR,\n" +
             "    TRPT = gather t in TRL s.t. ~is_minus t { t },\n" +
             "    TRMT = gather t in TRL s.t. ~is_plus t { t }\n" +
             "{\n" +
@@ -81,7 +86,7 @@ public class ReachUtils {
             "            OTHER_LOC = (tran sig t_loc \\ {t_loc}) * (is_plus t_loc ? TRPT : is_minus t_loc ? TRMT : TR) {\n" +
             "            // Check if some t can disable t_loc without enabling any other transition labelled by sig t_loc.\n" +
             "            exists t in post pre_t_loc * TR s.t. sig t != sig t_loc &\n" +
-            "                    ~({sig t, sig t_loc} in SIGE) & card ((pre t \\ post t) * pre_t_loc) != 0 {\n" +
+            "                    ~({sig t, sig t_loc} in EXCEPTION_SIGNALS) & card ((pre t \\ post t) * pre_t_loc) != 0 {\n" +
             "                forall t_loc1 in OTHER_LOC s.t. card (pre t_loc1 * (pre t \\ post t)) = 0 {\n" +
             "                    exists p in pre t_loc1 \\ post t { ~$p }\n" +
             "                }\n" +
@@ -98,18 +103,27 @@ public class ReachUtils {
         return getOutputPersistencyParameters(Collections.emptyList());
     }
 
-    public static VerificationParameters getOutputPersistencyParameters(Collection<Pair<String, String>> exceptionPairs) {
-        StringBuilder str = new StringBuilder();
-        if (exceptionPairs != null) {
-            for (Pair<String, String> exceptionPair: exceptionPairs) {
-                str.append("{\"");
-                str.append(exceptionPair.getFirst());
-                str.append("\", \"");
-                str.append(exceptionPair.getSecond());
-                str.append("\"}, ");
-            }
-        }
-        String reachOutputPersistence = OUTPUT_PERSISTENCY_REACH.replace(OUTPUT_PERSISTENCY_EXCEPTIONS_REPLACEMENT, str.toString());
+    public static VerificationParameters getOutputPersistencyParameters(
+            Collection<Pair<String, String>> exceptionPairs) {
+
+        return getOutputPersistencyParameters(exceptionPairs, Collections.emptyList());
+    }
+
+    public static VerificationParameters getOutputPersistencyParameters(
+            Collection<Pair<String, String>> exceptionPairs, Collection<String> skipSignals) {
+
+        String exceptionPairsString = exceptionPairs.stream()
+                .map(pair -> "{\"" + pair.getFirst() + "\", \"" + pair.getSecond() + "\"}, ")
+                .collect(Collectors.joining());
+
+        String skipSignalsString = skipSignals.stream()
+                .map(signal -> "\"" + signal + "\", ")
+                .collect(Collectors.joining());
+
+        String reachOutputPersistence = OUTPUT_PERSISTENCY_REACH
+                .replace(OUTPUT_PERSISTENCY_EXCEPTION_PAIRS_REPLACEMENT, exceptionPairsString)
+                .replace(OUTPUT_PERSISTENCY_SKIP_NAMES_REPLACEMENT, skipSignalsString);
+
         return new VerificationParameters("Output persistency",
                 VerificationMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
                 MpsatVerificationSettings.getSolutionMode(),

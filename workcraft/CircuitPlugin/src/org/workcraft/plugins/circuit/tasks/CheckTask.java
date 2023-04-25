@@ -10,6 +10,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.*;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
@@ -33,6 +34,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class CheckTask implements Task<VerificationChainOutput> {
 
@@ -60,7 +62,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = circuit.getMathModel().getEnvironmentFile();
-            LinkedList<Pair<String, String>> grantPairs = getMutexGrantPairs(we);
+            LinkedList<Pair<String, String>> grantPairs = getMutexGrantPairs(circuit.getMathModel());
 
             // Load device STG
             CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
@@ -256,7 +258,12 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
                 // Check for persistency (if requested)
                 if (checkPersistency) {
-                    VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(grantPairs);
+                    Set<String> scanoutSignals = circuit.getMathModel().getOutputPorts().stream()
+                                .map(Contact::getName)
+                                .filter(ScanUtils::isScanOutputPortName)
+                                .collect(Collectors.toSet());
+
+                    VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(grantPairs, scanoutSignals);
                     MpsatTask persistencyMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
                     SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                     Result<? extends MpsatOutput> persistencyMpsatResult = manager.execute(
@@ -330,9 +337,8 @@ public class CheckTask implements Task<VerificationChainOutput> {
         }
     }
 
-    private LinkedList<Pair<String, String>> getMutexGrantPairs(WorkspaceEntry we) {
+    private LinkedList<Pair<String, String>> getMutexGrantPairs(Circuit circuit) {
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         Set<String> mutexModuleNames = ArbitrationUtils.getMutexModuleNames();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             String moduleName = component.getModule();
