@@ -300,12 +300,15 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
             return null;
         }
         List<Solution> solutions = getOutput().getSolutions();
-        boolean propertyHolds = solutions.isEmpty();
+
+        boolean predicateSatisfiable = getOutput().hasSolutions();
+        boolean inversePredicate = getOutput().getVerificationParameters().isInversePredicate();
+        boolean propertyHolds = predicateSatisfiable != inversePredicate;
         String message = getMessage(propertyHolds);
-        if (propertyHolds) {
-            OutcomeUtils.showOutcome(true, message, isInteractive());
+        if (!predicateSatisfiable) {
+            OutcomeUtils.showOutcome(propertyHolds, message, isInteractive());
         } else {
-            OutcomeUtils.logOutcome(false, message);
+            OutcomeUtils.logOutcome(propertyHolds, message);
             logSolutions(solutions);
             reportSolutions(extendMessage(message), solutions);
         }

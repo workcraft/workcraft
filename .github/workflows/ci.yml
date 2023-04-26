@@ -8,19 +8,21 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04]
+        java-distribution: [temurin, zulu]
         java-version: [11, 17]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
+          submodules: recursive
 
       - name: Setup JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: ${{ matrix.java-distribution }}
           java-version: ${{ matrix.java-version }}
 
       - name: Run Checkstyle
@@ -49,19 +51,21 @@ jobs:
     strategy:
       matrix:
         os: [macos-10.15]
+        java-distribution: [temurin]
         java-version: [11, 17]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
+          submodules: recursive
 
       - name: Setup JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: ${{ matrix.java-distribution }}
           java-version: ${{ matrix.java-version }}
 
       - name: Assemble Workcraft
@@ -82,19 +86,21 @@ jobs:
     strategy:
       matrix:
         os: [windows-2019]
+        java-distribution: [temurin]
         java-version: [11, 17]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
-          submodules: 'recursive'
+          submodules: recursive
 
       - name: Setup JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: ${{ matrix.java-distribution }}
           java-version: ${{ matrix.java-version }}
 
       - name: Assemble Workcraft
@@ -110,3 +116,4 @@ jobs:
 #      - name: Setup tmate session for remote debugging in case of failure
 #        if: ${{ failure() }}
 #        uses: mxschmitt/action-tmate@v3
+#

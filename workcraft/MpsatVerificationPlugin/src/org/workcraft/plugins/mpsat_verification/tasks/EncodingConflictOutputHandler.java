@@ -15,7 +15,6 @@ import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -51,12 +50,10 @@ final class EncodingConflictOutputHandler extends AbstractOutputInterpreter<Mpsa
             List<Solution> solutions = getOutput().getSolutions();
             ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));
             if (isInteractive()) {
-                Collections.sort(cores, (c1, c2) -> {
+                cores.sort((c1, c2) -> {
                     if (c1.size() > c2.size()) return 1;
                     if (c1.size() < c2.size()) return -1;
-                    if (c1.toString().length() > c2.toString().length()) return 1;
-                    if (c1.toString().length() < c2.toString().length()) return -1;
-                    return 0;
+                    return Integer.compare(c1.toString().length(), c2.toString().length());
                 });
                 final MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 final Toolbox toolbox = mainWindow.getToolbox(getWorkspaceEntry());

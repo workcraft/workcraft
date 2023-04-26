@@ -267,9 +267,11 @@ class SynthesisCommandsTests {
 
         C command = cls.getDeclaredConstructor().newInstance();
         WorkspaceEntry dstWe = command.execute(srcWe);
+
         if ((minComponentCount == null) || (maxComponentCount == null)) {
             Assertions.assertNull(dstWe);
         } else {
+            Assertions.assertNotNull(dstWe);
             Circuit dstCircuit = WorkspaceUtils.getAs(dstWe, Circuit.class);
             Set<String> dstInputs = new HashSet<>();
             Set<String> dstOutputs = new HashSet<>();
