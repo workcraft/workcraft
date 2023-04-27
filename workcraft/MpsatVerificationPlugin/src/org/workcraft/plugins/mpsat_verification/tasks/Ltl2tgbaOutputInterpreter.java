@@ -26,8 +26,8 @@ public class Ltl2tgbaOutputInterpreter extends AbstractOutputInterpreter<Ltl2tgb
             }
         } else {
             String message = "The property is stutter-sensitive as shown by the following stutter-equivalent words:"
-                    + "\n" + PropertyHelper.BULLET_PREFIX + "Accepted word: " + example.getFirst()
-                    + "\n" + PropertyHelper.BULLET_PREFIX + "Rejected word: " + example.getSecond();
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "Accepted word: " + example.getFirst()
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "Rejected word: " + example.getSecond();
 
             if (isInteractive()) {
                 DialogUtils.showError(message);

@@ -394,7 +394,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
     private String getPropertyMessage(String message, boolean multiline) {
         if (multiline) {
-            return PropertyHelper.BULLET_PREFIX + message + "\n";
+            return PropertyHelper.BULLET_PREFIX + message + '\n';
         }
         return message;
     }

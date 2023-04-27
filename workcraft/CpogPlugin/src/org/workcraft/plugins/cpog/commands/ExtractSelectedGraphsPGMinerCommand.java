@@ -33,7 +33,7 @@ public class ExtractSelectedGraphsPGMinerCommand extends AbstractPGMinerCommand 
 
             int i = allGraphs.indexOf(" + ");
             while (i > -1) {
-                allGraphs = allGraphs.substring(0, i) + "\n" + allGraphs.substring(i + 2);
+                allGraphs = allGraphs.substring(0, i) + '\n' + allGraphs.substring(i + 2);
                 i = allGraphs.indexOf(" + ");
             }
             allGraphs += "\n";

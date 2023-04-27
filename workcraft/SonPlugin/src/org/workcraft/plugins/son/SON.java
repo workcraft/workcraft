@@ -52,7 +52,7 @@ public class SON extends AbstractMathModel {
 
     public SONConnection connect(MathNode first, MathNode second, Semantics semantics) throws InvalidConnectionException {
         if (getSONConnection(first, second) != null) {
-            throw new InvalidConnectionException("Duplicate Connections" + getNodeReference(first) + " " + getNodeReference(second));
+            throw new InvalidConnectionException("Duplicate Connections" + getNodeReference(first) + ' ' + getNodeReference(second));
         }
 
         SONConnection con = new SONConnection(first, second, semantics);

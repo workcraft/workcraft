@@ -38,7 +38,7 @@ import java.util.function.Function;
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     private static final String WARNING_SYMBOL = Character.toString((char) 0x26A0);
-    private static final String WARNING_PREFIX = WARNING_SYMBOL + " ";
+    private static final String WARNING_PREFIX = WARNING_SYMBOL + ' ';
 
     private CycleState cycleState = null;
     private final DriverPinTable driverPinTable = new DriverPinTable();

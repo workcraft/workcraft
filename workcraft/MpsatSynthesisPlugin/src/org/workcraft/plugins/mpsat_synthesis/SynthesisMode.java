@@ -25,7 +25,7 @@ public enum SynthesisMode {
         if (modeParameter == null) {
             result.add(mode);
         } else {
-            result.add(mode + "=" + modeParameter);
+            result.add(mode + '=' + modeParameter);
         }
         result.addAll(options);
         return result;

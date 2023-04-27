@@ -174,9 +174,9 @@ public final class VerilogUtils {
 
         LogUtils.logMessage("module " + verilogModule.name + " (" + portNames + ");");
         for (VerilogPort verilogPort : verilogModule.ports) {
-            LogUtils.logMessage("    " + verilogPort.type + " "
-                    + ((verilogPort.range == null) ? "" : verilogPort.range + " ")
-                    + verilogPort.name + ";");
+            LogUtils.logMessage("    " + verilogPort.type + ' '
+                    + ((verilogPort.range == null) ? "" : verilogPort.range.toString() + ' ')
+                    + verilogPort.name + ';');
         }
         for (VerilogAssign verilogAssign : verilogModule.assigns) {
             String wireName = getNetBusIndexName(verilogAssign.net);
@@ -191,7 +191,7 @@ public final class VerilogUtils {
                     .map(VerilogUtils::getConnectionString)
                     .collect(Collectors.joining(", "));
 
-            LogUtils.logMessage("    " + verilogInstance.moduleName + " " + instanceName + " (" + pinNames + ");");
+            LogUtils.logMessage("    " + verilogInstance.moduleName + ' ' + instanceName + " (" + pinNames + ");");
         }
         LogUtils.logMessage("endmodule\n");
     }

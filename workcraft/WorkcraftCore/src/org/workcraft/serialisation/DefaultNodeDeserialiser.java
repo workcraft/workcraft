@@ -61,7 +61,7 @@ class DefaultNodeDeserialiser {
         } catch (IllegalArgumentException | IllegalAccessException | InstantiationException | IntrospectionException e) {
             throw new DeserialisationException(e);
         } catch (InvocationTargetException e) {
-            throw new DeserialisationException(instance.getClass().getName() + " " + currentLevel.getName() + " " + e.getMessage(), e);
+            throw new DeserialisationException(instance.getClass().getName() + ' ' + currentLevel.getName() + ' ' + e.getMessage(), e);
         }
     }
 

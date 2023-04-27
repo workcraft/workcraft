@@ -125,8 +125,7 @@ public class Interval {
     }
 
     public static Interval getOverlapping(Interval first, Interval second) {
-        // System.out.println("first "+first.toString()+ " second "+
-        // second.toString() +" "+ first.isOverlapping(second));
+        // System.out.println("first " + first.toString() + " second " + second.toString() + ' ' + first.isOverlapping(second));
         if (first.isOverlapping(second)) {
             return new Interval(Math.max(first.getMin(), second.getMin()), Math.min(first.getMax(), second.getMax()));
         } else {

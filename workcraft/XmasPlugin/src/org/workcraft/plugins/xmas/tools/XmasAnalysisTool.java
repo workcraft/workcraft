@@ -154,7 +154,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
             nxt = new Scanner(line.next());
             String str = nxt.next();
             int num = Integer.parseInt(str);
-            //System.out.println("qsl " + check + " " + str + " " + num);
+            //System.out.println("qsl " + check + ' ' + str + ' ' + num);
             qslist.add(new Qslist(check, num));
         }
     }

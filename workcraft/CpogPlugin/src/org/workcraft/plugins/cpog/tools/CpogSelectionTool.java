@@ -250,7 +250,7 @@ public class CpogSelectionTool extends SelectionTool {
             coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
             for (String s : expressions) {
                 if (!s.contains("=")) {
-                    exp2 += " " + s;
+                    exp2 += ' ' + s;
                 } else {
                     if (!exp2.isEmpty()) {
                         insertExpression(exp2, visualCpog, false, true, false);
@@ -442,9 +442,9 @@ public class CpogSelectionTool extends SelectionTool {
         while (it1.hasNext()) {
             ac = it1.next();
             if (ac.getBoolForm().isEmpty()) {
-                normalForm += " " + CpogFormulaToString.toString(ac.getFormula());
+                normalForm += ' ' + CpogFormulaToString.toString(ac.getFormula());
             } else {
-                normalForm += "[" + ac.getBoolForm() + "](" + CpogFormulaToString.toString(ac.getFormula()) + ")";
+                normalForm += '[' + ac.getBoolForm() + "](" + CpogFormulaToString.toString(ac.getFormula()) + ')';
             }
             if (it1.hasNext()) {
                 normalForm += " + ";
@@ -969,7 +969,7 @@ public class CpogSelectionTool extends SelectionTool {
         String expression = "";
 
         while (fileIn.hasNextLine()) {
-            expression += fileIn.nextLine() + "\n";
+            expression += fileIn.nextLine() + '\n';
         }
         fileIn.close();
 
@@ -980,7 +980,7 @@ public class CpogSelectionTool extends SelectionTool {
         String[] expressions = expression.split("\n");
         for (String s : expressions) {
             if (!s.contains("=")) {
-                exp += " " + s;
+                exp += ' ' + s;
             } else {
                 if (!exp.isEmpty()) {
                     insertExpression(exp, visualCpog, false, true, false);

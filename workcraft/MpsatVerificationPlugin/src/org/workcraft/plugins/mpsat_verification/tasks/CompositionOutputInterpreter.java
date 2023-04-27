@@ -138,7 +138,7 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
             LogUtils.logMessage(indent + prefix + title);
             prefix.append("| ");
         }
-        LogUtils.logMessage(indent + prefix + " " + extraTitle);
+        LogUtils.logMessage(indent + prefix + ' ' + extraTitle);
         int n = prefix.length() + extraTitle.length() + 1;
         String separator = TextUtils.repeat("-", n);
         LogUtils.logMessage(indent + separator);
@@ -158,11 +158,11 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
                         : new ProjectionEvent(ProjectionEvent.Tag.NONE, null);
 
                 projectionSlice.put(we, projectedEvent);
-                line.append(convertTagToString(projectedEvent.tag)).append(" ");
+                line.append(convertTagToString(projectedEvent.tag)).append(' ');
             }
             String suggestedEvent = getSuggestedEventRef(projectionSlice);
             if (suggestedEvent != null) {
-                line.append(" ").append(suggestedEvent);
+                line.append(' ').append(suggestedEvent);
             }
             LogUtils.logMessage(line.toString());
         }
@@ -226,7 +226,7 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
             }
             String prefix = getSuggestedEventRef(projectionSlice);
             String suffix  = !internalWorkTitles.isEmpty() ? String.join(", ", internalWorkTitles)
-                    : (String.join(", ", outputWorkTitles) + " " + RIGHT_ARROW_SYMBOL
+                    : (String.join(", ", outputWorkTitles) + ' ' + RIGHT_ARROW_SYMBOL
                         + " " + String.join(", ", inputWorkTitles));
 
             partitionedLines.add(Pair.of(prefix, suffix));

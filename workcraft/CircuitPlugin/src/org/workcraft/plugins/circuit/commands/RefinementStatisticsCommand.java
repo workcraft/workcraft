@@ -79,26 +79,26 @@ public class RefinementStatisticsCommand extends AbstractStatisticsCommand {
     }
     private String getFileName(String title, File file) {
         if (file == null) {
-            return PropertyHelper.BULLET_PREFIX + "No " + title + "\n";
+            return PropertyHelper.BULLET_PREFIX + "No " + title + '\n';
         }
-        return  PropertyHelper.BULLET_PREFIX + TextUtils.makeFirstCapital(title) + ":"
-                + "\n" + FILE_INDENT + FileUtils.getFullPath(file) + "\n";
+        return  PropertyHelper.BULLET_PREFIX + TextUtils.makeFirstCapital(title) + ":\n"
+                + FILE_INDENT + FileUtils.getFullPath(file) + '\n';
     }
 
     private String getFileNameList(String title, Collection<File> files) {
         if ((files == null) || files.isEmpty()) {
-            return PropertyHelper.BULLET_PREFIX + "No " + TextUtils.makePlural(title) + "\n";
+            return PropertyHelper.BULLET_PREFIX + "No " + TextUtils.makePlural(title) + '\n';
         }
         if (files.size() == 1) {
             File file = files.iterator().next();
-            return PropertyHelper.BULLET_PREFIX + TextUtils.makeFirstCapital(title) + ":"
-                    + "\n" + FILE_INDENT + FileUtils.getFullPath(file) + "\n";
+            return PropertyHelper.BULLET_PREFIX + TextUtils.makeFirstCapital(title) + ":\n"
+                    + FILE_INDENT + FileUtils.getFullPath(file) + '\n';
         }
-        return PropertyHelper.BULLET_PREFIX + files.size() + " " + TextUtils.makePlural(title) + ":\n" + FILE_INDENT
-                + files.stream()
+        return PropertyHelper.BULLET_PREFIX + files.size() + ' ' + TextUtils.makePlural(title) + ":\n"
+                + FILE_INDENT + files.stream()
                 .map(FileUtils::getFullPath)
                 .sorted(SortUtils::compareNatural)
-                .collect(Collectors.joining("\n" + FILE_INDENT)) + "\n";
+                .collect(Collectors.joining('\n' + FILE_INDENT)) + '\n';
     }
 
 }

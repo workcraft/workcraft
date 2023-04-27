@@ -180,7 +180,7 @@ class ImportExportTests {
         }
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             String ref = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
-            gates.add(component.getModule() + " " + NamespaceHelper.flattenReference(ref));
+            gates.add(component.getModule() + ' ' + NamespaceHelper.flattenReference(ref));
         }
     }
 

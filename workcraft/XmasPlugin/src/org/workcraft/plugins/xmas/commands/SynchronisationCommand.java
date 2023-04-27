@@ -162,10 +162,10 @@ public class SynchronisationCommand implements Command {
                 String rstr3;
                 rstr3 = s.name3;
                 rstr3 = rstr3.replace(rstr3.charAt(0), Character.toUpperCase(rstr3.charAt(0)));
-                System.out.println("//gensync2s " + str + " " + s.g1 + " " + s.g2 + " " + s.typ);
-                writerS.println("//gensync2s " + str + " " + s.g1 + " " + s.g2 + " " + s.typ);
-                System.out.println(rstr2 + " " + s.l1 + " " + rstr3 + " " + s.l2 + " " + "0");
-                writerS.println(rstr2 + " " + s.l1 + " " + rstr3 + " " + s.l2 + " " + "0");
+                System.out.println("//gensync2s " + str + ' ' + s.g1 + ' ' + s.g2 + ' ' + s.typ);
+                writerS.println("//gensync2s " + str + ' ' + s.g1 + ' ' + s.g2 + ' ' + s.typ);
+                System.out.println(rstr2 + ' ' + s.l1 + ' ' + rstr3 + ' ' + s.l2 + ' ' + '0');
+                writerS.println(rstr2 + ' ' + s.l1 + ' ' + rstr3 + ' ' + s.l2 + ' ' + '0');
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -369,9 +369,9 @@ public class SynchronisationCommand implements Command {
                 if (node instanceof VisualSyncComponent) {   //won't work for sync
                     VisualSyncComponent vsc1 = (VisualSyncComponent) node;
                     SyncComponent sc1 = vsc1.getReferencedComponent();
-                    System.out.println("Sync component " + "Sync" + no + " = " + slist.get(no));
-                    System.out.println("group1 = " + grnums1.get(no) + " " + "group2 = " + grnums2.get(no));
-                    System.out.println("Clk1 = " + slist1.get(no) + " " + "Clk2 = " + slist2.get(no));
+                    System.out.println("Sync component Sync" + no + " = " + slist.get(no));
+                    System.out.println("group1 = " + grnums1.get(no) + " group2 = " + grnums2.get(no));
+                    System.out.println("Clk1 = " + slist1.get(no) + " Clk2 = " + slist2.get(no));
                     String gp1 = slist1.get(no);
                     sc1.setGp1(gp1);
                     String gp2 = slist2.get(no);
@@ -428,12 +428,12 @@ public class SynchronisationCommand implements Command {
                     VisualForkComponent vsc = (VisualForkComponent) vp;
                     ForkComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
-                    //System.out.println("Fork no = " + gno + " " + sc.getGr());
+                    //System.out.println("Fork no = " + gno + ' ' + sc.getGr());
                 } else if (vp instanceof VisualJoinComponent) {
                     VisualJoinComponent vsc = (VisualJoinComponent) vp;
                     JoinComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
-                    //System.out.println("Join no = " + gno + " " + sc.getGr());
+                    //System.out.println("Join no = " + gno + ' ' + sc.getGr());
                 } else if (vp instanceof VisualSwitchComponent) {
                     VisualSwitchComponent vsc = (VisualSwitchComponent) vp;
                     SwitchComponent sc = vsc.getReferencedComponent();

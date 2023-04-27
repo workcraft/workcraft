@@ -20,7 +20,7 @@ import java.util.function.Function;
 public class CommandUtils {
 
     public static String makePromotedSectionTitle(String title, int order) {
-        return "!" + TextUtils.repeat(" ", 9 - order) + title;
+        return '!' + TextUtils.repeat(" ", 9 - order) + title;
     }
 
     public static List<Command> getCommands(Function<Command, Boolean> filter) {

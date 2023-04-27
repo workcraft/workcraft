@@ -85,7 +85,7 @@ public class CpogStatisticsCommand extends AbstractStatisticsCommand {
         if (conditions.isEmpty()) {
             return "\n";
         }
-        return "\n  Conditions (" + conditions.size() + " in total) - " + String.join(", ", conditions) + "\n";
+        return "\n  Conditions (" + conditions.size() + " in total) - " + String.join(", ", conditions) + '\n';
     }
 
 }

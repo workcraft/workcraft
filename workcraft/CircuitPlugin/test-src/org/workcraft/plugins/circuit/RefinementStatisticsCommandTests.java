@@ -36,8 +36,7 @@ class RefinementStatisticsCommandTests {
                         + PropertyHelper.BULLET_PREFIX + "No Circuit dependencies\n"
                         + PropertyHelper.BULLET_PREFIX + "No STG dependencies\n"
                         + PropertyHelper.BULLET_PREFIX + "No invalid dependencies\n"
-                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments"
-                        + "\n");
+                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments\n");
     }
 
     @Test
@@ -56,8 +55,7 @@ class RefinementStatisticsCommandTests {
                         + PropertyHelper.BULLET_PREFIX + "Invalid dependency:\n"
                         + "    rdg-invalid/invalid.stg.work\n"
                         + PropertyHelper.BULLET_PREFIX + "Additional STG environment:\n"
-                        + "    rdg-invalid/mid-env.stg.work\n"
-                        + "\n");
+                        + "    rdg-invalid/mid-env.stg.work\n\n");
     }
 
     @Test
@@ -73,8 +71,7 @@ class RefinementStatisticsCommandTests {
                         + PropertyHelper.BULLET_PREFIX + "STG dependency:\n"
                         + "    rdg-cyclic/buf.stg.work\n"
                         + PropertyHelper.BULLET_PREFIX + "No invalid dependencies\n"
-                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments"
-                        + "\n");
+                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments\n");
     }
 
     @Test
@@ -91,8 +88,7 @@ class RefinementStatisticsCommandTests {
                         + PropertyHelper.BULLET_PREFIX + "STG dependency:\n"
                         + "    rdg-acyclic/buf.stg.work\n"
                         + PropertyHelper.BULLET_PREFIX + "No invalid dependencies\n"
-                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments"
-                        + "\n");
+                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments\n");
     }
 
     private void testRefinementStatisticsCommand(String workName, String expected)
@@ -112,9 +108,9 @@ class RefinementStatisticsCommandTests {
                 String refinementName = PackageUtils.getPackagePath(getClass(), matcher.group(1));
                 File refinementFile = new File(workPath.replaceFirst(workName + "$", refinementName));
                 String refinementPath = FileUtils.getFullPath(refinementFile);
-                expectedRefinementStatistics.append("    ").append(refinementPath).append("\n");
+                expectedRefinementStatistics.append("    ").append(refinementPath).append('\n');
             } else {
-                expectedRefinementStatistics.append(line).append("\n");
+                expectedRefinementStatistics.append(line).append('\n');
             }
         }
 

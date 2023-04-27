@@ -78,9 +78,9 @@ class GenlibUtilsTests {
             System.out.print(StringGenerator.toString(func) + " == " + gate.function.formula + " [");
             Map<BooleanVariable, String> assignments = mapping.getSecond();
             for (Map.Entry<BooleanVariable, String> entry : assignments.entrySet()) {
-                System.out.print(" " + entry.getKey().getLabel() + " -> " + entry.getValue() + " ");
+                System.out.print(' ' + entry.getKey().getLabel() + " -> " + entry.getValue() + ' ');
             }
-            System.out.println("]");
+            System.out.println(']');
         }
     }
 

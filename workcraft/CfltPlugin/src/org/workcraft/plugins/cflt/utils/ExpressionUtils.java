@@ -206,8 +206,8 @@ public class ExpressionUtils {
 
     private static void checkMode(Mode mode) {
         if (mode == Mode.SLOW_EXACT) {
-            DialogUtils.showWarning("The exhaustive search algorithm may take a long time to compute," + "\n" +
-                    "heuristics may be used instead.");
+            DialogUtils.showWarning("The exhaustive search algorithm may take a long time to compute,\n"
+                    + "heuristics may be used instead.");
         }
     }
 

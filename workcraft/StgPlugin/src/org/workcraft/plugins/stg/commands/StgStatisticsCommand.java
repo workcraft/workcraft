@@ -189,7 +189,7 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n    * Free choice -  " + CheckUtils.isFreeChoice(stg)
                 + "\n    * Extended free choice -  " + CheckUtils.isExtendedFreeChoice(stg)
                 + "\n    * Pure -  " + CheckUtils.isPure(stg)
-                + "\n";
+                + '\n';
     }
 
 }

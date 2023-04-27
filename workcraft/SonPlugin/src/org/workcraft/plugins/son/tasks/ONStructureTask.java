@@ -49,7 +49,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
         }
 
         infoMsg("Selected Groups = " + groups.size());
-        infoMsg("Group Components = " + components.size() + "\n");
+        infoMsg("Group Components = " + components.size() + '\n');
 
         for (ONGroup group : groups) {
             Collection<MathNode> task1;

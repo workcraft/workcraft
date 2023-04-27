@@ -141,7 +141,7 @@ public class Workspace {
         }
         Path<String> path = Path.append(dir, desiredName);
         while (!isFreePath(path)) {
-            path = Path.append(dir, name + " " + i++ + (ext == null ? "" : "." + ext));
+            path = Path.append(dir, name + ' ' + i++ + (ext == null ? "" : '.' + ext));
         }
         return path;
     }

@@ -63,13 +63,13 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         if (settings.getTabIndex() == 0) {
             infoMsg("Initialising selected scenario...");
             checkList = consistencyAlg.getScenario().getNodes(net);
-            infoMsg("Nodes = " + checkList.size() + "\n");
+            infoMsg("Nodes = " + checkList.size() + '\n');
 
         } else if (settings.getTabIndex() == 1) {
             // node info
             infoMsg("Initialising selected components...");
             checkList = settings.getSeletedNodes();
-            infoMsg("Selected nodes = " + checkList.size() + "\n");
+            infoMsg("Selected nodes = " + checkList.size() + '\n');
         }
 
         // create partial node map
@@ -146,10 +146,10 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
                 String value = "";
                 Boolean[] s = partialNodesMap.get(node);
                 if (!s[0] && n.getStartTime().isSpecified()) {
-                    value = "Estimated start = " + ((Time) node).getStartTime() + " ";
+                    value = "Estimated start = " + ((Time) node).getStartTime() + ' ';
                 }
                 if (!s[1] && n.getDuration().isSpecified()) {
-                    value += "Estimated duration = " + ((Time) node).getDuration() + " ";
+                    value += "Estimated duration = " + ((Time) node).getDuration() + ' ';
                 }
                 if (!s[2] && n.getEndTime().isSpecified()) {
                     value += "Estimated finish = " + ((Time) node).getEndTime();

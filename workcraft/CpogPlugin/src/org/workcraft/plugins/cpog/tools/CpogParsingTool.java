@@ -316,7 +316,7 @@ public class CpogParsingTool {
                     if (total.endsWith("\n") || total.isEmpty()) {
                         total += ex;
                     } else {
-                        total += " " + ex;
+                        total += ' ' + ex;
                     }
                 }
             }
@@ -431,7 +431,7 @@ public class CpogParsingTool {
                 }
 
                 if (toBeRemoved.size() > 1) {
-                    insert += "(";
+                    insert += '(';
                 }
 
                 for (VisualArc a : toBeRemoved) {
@@ -443,7 +443,7 @@ public class CpogParsingTool {
                 }
 
                 if (toBeRemoved.size() > 1) {
-                    insert += ")";
+                    insert += ')';
                 }
 
                 visitedConnections.addAll(toBeRemoved);
@@ -455,7 +455,7 @@ public class CpogParsingTool {
         } else {
             String insert = "";
             if (!"1".equals(currentCondition)) {
-                insert = "[" + currentCondition + "]";
+                insert = '[' + currentCondition + ']';
             }
             insert += current.getLabel();
             expression.add(insert);
@@ -651,41 +651,41 @@ public class CpogParsingTool {
         boolean added;
         for (String k : refMap.keySet()) {
             added = false;
-            if (text.contains(" " + k + " ")) {
+            if (text.contains(' ' + k + ' ')) {
                 if (k.startsWith("[")) {
-                    text = text.replace(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
+                    text = text.replace(' ' + k + ' ', " (" + refMap.get(k).getNormalForm() + ") ");
                     added = true;
                 } else {
-                    text = text.replace(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
+                    text = text.replace(' ' + k + ' ', " (" + refMap.get(k).getNormalForm() + ") ");
                     added = true;
                 }
             }
-            if (text.contains("]" + k + " ")) {
-                text = text.replace("]" + k + " ", "](" + refMap.get(k).getNormalForm() + ") ");
+            if (text.contains(']' + k + ' ')) {
+                text = text.replace(']' + k + ' ', "](" + refMap.get(k).getNormalForm() + ") ");
                 added = true;
             }
-            if (text.contains("(" + k + ")")) {
-                text = text.replace("(" + k + ")", "(" + refMap.get(k).getNormalForm() + ")");
+            if (text.contains('(' + k + ')')) {
+                text = text.replace('(' + k + ')', "(" + refMap.get(k).getNormalForm() + ")");
                 added = true;
             }
-            if (text.contains("(" + k + " ")) {
-                text = text.replace("(" + k + " ", "((" + refMap.get(k).getNormalForm() + ") ");
+            if (text.contains('(' + k + ' ')) {
+                text = text.replace('(' + k + ' ', "((" + refMap.get(k).getNormalForm() + ") ");
                 added = true;
             }
-            if (text.contains(" " + k + ")")) {
-                text = text.replace(" " + k + ")", " (" + refMap.get(k).getNormalForm() + "))");
+            if (text.contains(' ' + k + ')')) {
+                text = text.replace(' ' + k + ')', " (" + refMap.get(k).getNormalForm() + "))");
                 added = true;
             }
-            if (text.endsWith(" " + k)) {
-                text = text.replace(" " + k, " (" + refMap.get(k).getNormalForm() + ")");
+            if (text.endsWith(' ' + k)) {
+                text = text.replace(' ' + k, " (" + refMap.get(k).getNormalForm() + ")");
                 added = true;
             }
-            if (text.endsWith("]" + k)) {
-                text = text.replace("]" + k, "](" + refMap.get(k).getNormalForm() + ")");
+            if (text.endsWith(']' + k)) {
+                text = text.replace(']' + k, "](" + refMap.get(k).getNormalForm() + ")");
                 added = true;
             }
-            if (text.endsWith(" " + k + ")")) {
-                text = text.replace(" " + k + ")", " (" + refMap.get(k).getNormalForm() + "))");
+            if (text.endsWith(' ' + k + ')')) {
+                text = text.replace(' ' + k + ')', " (" + refMap.get(k).getNormalForm() + "))");
                 added = true;
             }
 

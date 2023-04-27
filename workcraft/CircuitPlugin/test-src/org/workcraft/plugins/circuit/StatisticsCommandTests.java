@@ -29,7 +29,7 @@ class StatisticsCommandTests {
                 "Component count:"
                         + "\n  Component -  1"
                         + "\n  Port -  2"
-                        + "\n",
+                        + '\n',
                 "Circuit analysis:"
                         + "\n  Component count (mapped + unmapped) -  1 (1 + 0)"
                         + "\n  Area -  0.0"
@@ -42,7 +42,7 @@ class StatisticsCommandTests {
                         + "\n  Fanin distribution [0 / 1 / 2 ...] -  0 / 1"
                         + "\n  Fanout distribution [0 / 1 / 2 ...] -  0 / 2"
                         + "\n  Isolated components / ports / pins -  0 / 0 / 0"
-                        + "\n");
+                        + '\n');
     }
 
     @Test
@@ -52,7 +52,7 @@ class StatisticsCommandTests {
                 "Component count:"
                         + "\n  Component -  5"
                         + "\n  Port -  3"
-                        + "\n",
+                        + '\n',
                 "Circuit analysis:"
                         + "\n  Component count (mapped + unmapped) -  5 (5 + 0)"
                         + "\n  Area -  72.0"
@@ -65,7 +65,7 @@ class StatisticsCommandTests {
                         + "\n  Fanin distribution [0 / 1 / 2 ...] -  0 / 0 / 4 / 1"
                         + "\n  Fanout distribution [0 / 1 / 2 ...] -  0 / 2 / 5"
                         + "\n  Isolated components / ports / pins -  0 / 0 / 0"
-                        + "\n");
+                        + '\n');
     }
 
     @Test
@@ -75,7 +75,7 @@ class StatisticsCommandTests {
                 "Component count:"
                         + "\n  Component -  21"
                         + "\n  Port -  6"
-                        + "\n",
+                        + '\n',
                 "Circuit analysis:"
                         + "\n  Component count (mapped + unmapped) -  21 (21 + 0)"
                         + "\n  Area -  292.0"
@@ -88,7 +88,7 @@ class StatisticsCommandTests {
                         + "\n  Fanin distribution [0 / 1 / 2 ...] -  0 / 12 / 2 / 1 / 1 / 4 / 1"
                         + "\n  Fanout distribution [0 / 1 / 2 ...] -  0 / 17 / 1 / 1 / 2 / 0 / 1 / 0 / 2"
                         + "\n  Isolated components / ports / pins -  0 / 0 / 0"
-                        + "\n");
+                        + '\n');
     }
 
     private void testStatisticsCommand(String workName, String expectedBasicStatistics, String expectedAdvancedStatistics)

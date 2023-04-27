@@ -20,7 +20,7 @@ import java.awt.event.WindowEvent;
 public class SettingsEditorDialog extends JDialog {
 
     private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
-    private static final String SEPARATOR = " " + RIGHT_ARROW_SYMBOL + " ";
+    private static final String SEPARATOR = ' ' + RIGHT_ARROW_SYMBOL + ' ';
 
     private static final long serialVersionUID = 1L;
 

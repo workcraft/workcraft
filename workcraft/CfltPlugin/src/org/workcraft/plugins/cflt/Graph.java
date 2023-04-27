@@ -36,7 +36,7 @@ public class Graph {
 
     public void printGraph() {
         for (Edge edge : getEdges()) {
-            System.out.println("Edge: " + edge.getFirstVertex() + " " + edge.getSecondVertex());
+            System.out.println("Edge: " + edge.getFirstVertex() + ' ' + edge.getSecondVertex());
         }
         for (String s : getVertices()) {
             System.out.println("Vertex: " + s);

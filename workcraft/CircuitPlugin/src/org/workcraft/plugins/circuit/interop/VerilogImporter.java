@@ -108,10 +108,10 @@ public class VerilogImporter implements Importer {
             String message = TextUtils.getHeadAndTail(prefix, 10, 0)
                     + "\n\nInstances of these modules may be interpreted incorrectly due to missing information about input/output pins."
                     + "\n\nPossible causes of the problem:"
-                    + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect path to gate library GenLib file"
-                    + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect setup for MUTEX and WAIT elements"
-                    + "\n" + PropertyHelper.BULLET_PREFIX + "missing module definition in hierarchical Verilog netlist"
-                    + "\n" + PropertyHelper.BULLET_PREFIX + "incorrect use of substitution rules for Verilog import";
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "incorrect path to gate library GenLib file"
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "incorrect setup for MUTEX and WAIT elements"
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "missing module definition in hierarchical Verilog netlist"
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "incorrect use of substitution rules for Verilog import";
 
             String question = "\n\nProceed with Verilog import anyway?";
             // Choose "Yes" as default response in no-GUI mode
@@ -569,8 +569,8 @@ public class VerilogImporter implements Importer {
         Expression resetExpression = convertFormulaToExpression(resetFunction);
         if (DebugCommonSettings.getVerboseImport()) {
             LogUtils.logMessage("Extracting SET and RESET from assign " + netName + " = " + formula
-                    + "\n" + PropertyHelper.BULLET_PREFIX + "Set function: " + setFunction
-                    + "\n" + PropertyHelper.BULLET_PREFIX + "Reset function: " + resetFunction);
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "Set function: " + setFunction
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "Reset function: " + resetFunction);
         }
         HashMap<String, String> connections = new HashMap<>();
         String outputName = VerilogUtils.getPrimitiveGatePinName(0);

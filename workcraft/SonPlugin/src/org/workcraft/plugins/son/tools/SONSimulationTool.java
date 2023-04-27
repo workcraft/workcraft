@@ -545,7 +545,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
     private void copyState(final GraphEditor editor) {
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-        StringSelection stringSelection = new StringSelection(mainTrace + "\n" + branchTrace + "\n");
+        StringSelection stringSelection = new StringSelection(mainTrace.toString() + '\n' + branchTrace.toString() + '\n');
         clip.setContents(stringSelection, this);
         updateState(editor);
     }

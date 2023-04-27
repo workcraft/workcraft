@@ -268,8 +268,8 @@ public class ScencoExecutionSupport {
                     for (VisualComponent component : scenarios.get(k).getComponents()) {
                         if (component instanceof VisualVertex) {
                             VisualVertex vertex = (VisualVertex) component;
-                            output.println(settings.GO_SIGNAL + " " + vertex.getLabel());
-                            output.println(vertex.getLabel() + " " + settings.DONE_SIGNAL);
+                            output.println(settings.GO_SIGNAL + ' ' + vertex.getLabel());
+                            output.println(vertex.getLabel() + ' ' + settings.DONE_SIGNAL);
                         }
                     }
                 }
@@ -283,7 +283,7 @@ public class ScencoExecutionSupport {
                         if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
                             nodes.put(((VisualVertex) c1).getLabel(), 0);
                             nodes.put(((VisualVertex) c2).getLabel(), 0);
-                            output.println(((VisualVertex) c1).getLabel() + " " + ((VisualVertex) c2).getLabel());
+                            output.println(((VisualVertex) c1).getLabel() + ' ' + ((VisualVertex) c2).getLabel());
                         }
                     }
                 }

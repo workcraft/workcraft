@@ -28,7 +28,7 @@ class StatisticsCommandTests {
                         + "\n  Place -  8"
                         + "\n  Transition -  6"
                         + "\n  Arc -  16"
-                        + "\n",
+                        + '\n',
                 "Signal Transition Graph analysis:"
                         + "\n  Signal count -  3"
                         + "\n    * Input / output / internal -  2 / 1 / 0"
@@ -54,7 +54,7 @@ class StatisticsCommandTests {
                         + "\n    * Free choice -  true"
                         + "\n    * Extended free choice -  true"
                         + "\n    * Pure -  true"
-                        + "\n");
+                        + '\n');
     }
 
     @Test
@@ -65,7 +65,7 @@ class StatisticsCommandTests {
                         + "\n  Place -  29"
                         + "\n  Transition -  28"
                         + "\n  Arc -  62"
-                        + "\n",
+                        + '\n',
                 "Signal Transition Graph analysis:"
                         + "\n  Signal count -  7"
                         + "\n    * Input / output / internal -  5 / 2 / 0"
@@ -91,7 +91,7 @@ class StatisticsCommandTests {
                         + "\n    * Free choice -  true"
                         + "\n    * Extended free choice -  true"
                         + "\n    * Pure -  true"
-                        + "\n");
+                        + '\n');
     }
 
     @Test
@@ -102,7 +102,7 @@ class StatisticsCommandTests {
                         + "\n  Place -  17"
                         + "\n  Transition -  17"
                         + "\n  Arc -  38"
-                        + "\n",
+                        + '\n',
                 "Signal Transition Graph analysis:"
                         + "\n  Signal count -  6"
                         + "\n    * Input / output / internal -  3 / 3 / 0"
@@ -128,7 +128,7 @@ class StatisticsCommandTests {
                         + "\n    * Free choice -  false"
                         + "\n    * Extended free choice -  false"
                         + "\n    * Pure -  true"
-                        + "\n");
+                        + '\n');
     }
 
     private void testStgStatisticsCommands(String workName, String expectedBasicStatistics, String expectedAdvancedStatistics)

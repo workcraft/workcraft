@@ -336,9 +336,9 @@ public final class Framework {
     public void addJavaScriptHelp(String name, String params, String description) {
         JavascriptItem item = new JavascriptItem(name, params, description);
         if (javascriptHelp.containsKey(name)) {
-            LogUtils.logWarning("Overwriting JavaScrip function '" + name + "':\n"
-                    + "  Old: " + javascriptHelp.get(name) + "\n"
-                    + "  New: " + item);
+            LogUtils.logWarning("Overwriting JavaScrip function '" + name + "':"
+                    + "\n  Old: " + javascriptHelp.get(name)
+                    + "\n  New: " + item);
         }
         javascriptHelp.put(name, item);
     }
@@ -356,7 +356,7 @@ public final class Framework {
             Matcher nameMatcher = pattern.matcher(name);
             Matcher descriptionMatcher = pattern.matcher(item.description);
             if (nameMatcher.find() || (searchDescription && descriptionMatcher.find())) {
-                result.add(item + "\n");
+                result.add(item.toString() + '\n');
             }
         }
         Collections.sort(result);

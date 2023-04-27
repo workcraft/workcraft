@@ -68,11 +68,11 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
         } else {
             List<VerificationParameters> verificationParametersList = chainOutput.getVerificationParametersList();
             for (VerificationParameters verificationParameters : verificationParametersList) {
-                msg.append("\n").append(PropertyHelper.BULLET_PREFIX).append(verificationParameters.getDescription());
+                msg.append('\n').append(PropertyHelper.BULLET_PREFIX).append(verificationParameters.getDescription());
             }
             if (vacuousMutexImplementability) {
                 // Add trivial mutex implementability result if no mutex places found
-                msg.append("\n").append(PropertyHelper.BULLET_PREFIX).append("Mutex implementability (vacuously)");
+                msg.append('\n').append(PropertyHelper.BULLET_PREFIX).append("Mutex implementability (vacuously)");
             }
             if (msg.length() == 0) {
                 msg.append("All checks passed.");

@@ -141,7 +141,7 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n    * Free choice -  " + CheckUtils.isFreeChoice(petri)
                 + "\n    * Extended free choice -  " + CheckUtils.isExtendedFreeChoice(petri)
                 + "\n    * Pure -  " + CheckUtils.isPure(petri)
-                + "\n";
+                + '\n';
     }
 
 }

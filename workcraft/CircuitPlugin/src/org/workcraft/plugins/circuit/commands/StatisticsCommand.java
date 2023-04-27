@@ -177,7 +177,7 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
                 + "\n  Fanout distribution [0 / 1 / 2 ...] -  " + getDistribution(fanout)
                 + "\n  Isolated components / ports / pins -  "
                 + isolatedComponentCount + " / " + isolatedPortCount + " / " + isolatedPinCount
-                + "\n";
+                + '\n';
     }
 
     private int getMaxValue(MultiSet<Integer> multiset) {
