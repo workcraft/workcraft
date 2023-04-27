@@ -56,7 +56,7 @@ public final class MergeTransitionTransformationCommand extends AbstractMergeTra
                 if (resultSignalName == null) {
                     resultSignalName = signalName;
                 } else {
-                    resultSignalName = resultSignalName + "_" + signalName;
+                    resultSignalName += "_" + signalName;
                 }
             }
             if (resultSignalName != null) {

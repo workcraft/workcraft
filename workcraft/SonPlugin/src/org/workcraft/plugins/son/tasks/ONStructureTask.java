@@ -84,7 +84,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
             if (task1.isEmpty()) {
                 infoMsg("Valid occurrence net input.");
             } else {
-                errNumber = errNumber + task1.size();
+                errNumber += task1.size();
                 for (Node node : task1) {
                     relationErrors.add(node);
                     errMsg("Invalid initial state (initial state is not a condition).", node);
@@ -96,7 +96,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
             if (task2.isEmpty()) {
                 infoMsg("Valid occurrence net output.");
             } else {
-                errNumber = errNumber + task2.size();
+                errNumber += task2.size();
                 for (Node node : task2) {
                     relationErrors.add(node);
                     errMsg("Invalid final state (final state is not a condition).", node);

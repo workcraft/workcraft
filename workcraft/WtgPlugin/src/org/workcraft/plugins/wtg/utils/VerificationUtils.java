@@ -584,7 +584,7 @@ public class VerificationUtils {
                     TransitionEvent transition = (TransitionEvent) e;
                     reachableTransitions.add(transition);
                     eventsToVisit.add(transition);
-                    nonReachableTransitions = nonReachableTransitions - 1;
+                    nonReachableTransitions -= 1;
                 }
             }
         }
@@ -731,7 +731,7 @@ public class VerificationUtils {
                             for (Map.Entry<String, Signal.State> signal : signalStates.get(successorNode).entrySet()) {
                                 if ((finalWaveformSignalState.containsKey(signal.getKey())) &&
                                         (!finalWaveformSignalState.get(signal.getKey()).equals(signal.getValue()))) {
-                                    msg = msg + " " + signal.getKey();
+                                    msg += " " + signal.getKey();
                                 }
                             }
                             DialogUtils.showError(msg);

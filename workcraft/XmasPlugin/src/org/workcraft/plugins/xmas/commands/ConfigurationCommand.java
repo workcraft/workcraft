@@ -156,7 +156,7 @@ public class ConfigurationCommand implements Command {
         System.out.println("loaded = " + loaded);
         List<JPanel> panellist = new ArrayList<>();
         cntSyncNodes = 1;
-        for (int no = 0; no < cntSyncNodes; no = no + 1) {
+        for (int no = 0; no < cntSyncNodes; no++) {
             panellist.add(new JPanel());
             panellist.get(panellist.size() - 1).add(new JLabel(" Trace "));
             panellist.get(panellist.size() - 1).add(trcombob = new JComboBox(trchoices));

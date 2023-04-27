@@ -312,7 +312,7 @@ public class SynchronisationCommand implements Command {
 
         System.out.println("loaded = " + loaded);
         List<JPanel> panellist = new ArrayList<>();
-        for (int no = 0; no < cntSyncnodes; no = no + 1) {
+        for (int no = 0; no < cntSyncnodes; no++) {
             if (loaded == 0) slist1.add("1");
             if (loaded == 0) slist2.add("1");
             panellist.add(new JPanel());

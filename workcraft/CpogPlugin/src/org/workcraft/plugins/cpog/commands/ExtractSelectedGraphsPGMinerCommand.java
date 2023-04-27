@@ -36,7 +36,7 @@ public class ExtractSelectedGraphsPGMinerCommand extends AbstractPGMinerCommand 
                 allGraphs = allGraphs.substring(0, i) + "\n" + allGraphs.substring(i + 2);
                 i = allGraphs.indexOf(" + ");
             }
-            allGraphs = allGraphs + "\n";
+            allGraphs += "\n";
             allGraphs = allGraphs.replace(" -> ", " ");
             String[] graphList = allGraphs.split("\n");
 

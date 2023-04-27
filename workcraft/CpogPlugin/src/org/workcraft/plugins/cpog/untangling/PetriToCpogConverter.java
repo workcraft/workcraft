@@ -162,7 +162,7 @@ public class PetriToCpogConverter {
                     sourceVertex = nodes.get(sourceName);
                 } else {
                     sourceVertex.setPosition(new Point2D.Double(xPos, yPos));
-                    xPos = xPos + 5;
+                    xPos += 5;
                     nodes.put(sourceName, sourceVertex);
                 }
 
@@ -170,7 +170,7 @@ public class PetriToCpogConverter {
                     targetVertex = nodes.get(targetName);
                 } else {
                     targetVertex.setPosition(new Point2D.Double(xPos, yPos));
-                    xPos = xPos + 5;
+                    xPos += 5;
                     nodes.put(targetName, targetVertex);
                 }
 
@@ -220,7 +220,7 @@ public class PetriToCpogConverter {
         if (visualCpog.getPostset(vertex).isEmpty()) {
 
             // last vertex must be place after all the other ones
-            xRightmostVertex = xRightmostVertex + 5;
+            xRightmostVertex += 5;
 
             int numberPreConnections = visualCpog.getConnections(vertex).size();
 
@@ -266,16 +266,16 @@ public class PetriToCpogConverter {
                 vertex.setPosition(new Point2D.Double(x, y));
 
                 // increment horizontal position
-                x = x + 5;
+                x += 5;
 
                 // if more post vertices exist, modify the vertical
                 // position of them (next vertices)
                 if (numberPostConnections > 1 && nc == 1) {
-                    y = y - numberPostConnections;
+                    y -= numberPostConnections;
                 } else {
                     if (numberPostConnections != 1) {
                         for (int j = 0; j < nc; j++) {
-                            y = y + numberPostConnections;
+                            y += numberPostConnections;
                         }
                     }
                 }
@@ -284,7 +284,7 @@ public class PetriToCpogConverter {
                 visitGraph(postVertex, x, y);
 
                 // backtrack in case of more post vertices
-                x = x - 5;
+                x -= 5;
 
             }
         }

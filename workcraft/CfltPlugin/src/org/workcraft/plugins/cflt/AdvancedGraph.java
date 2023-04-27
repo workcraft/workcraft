@@ -73,7 +73,7 @@ public class AdvancedGraph extends Graph {
                     if ((allEdges.containsKey(n1 + n2) || allEdges.containsKey(n2 + n1)) && !n1.equals(n2)) { c++; }
                 }
             }
-            c = c / 2;
+            c /= 2;
             c += cn.size() * 2;
             // Number of edges interconnecting the common neighbours of v1 and v2 of the edge  (excluding the edge itself)
             HashMap<Edge, Integer> cnInterconnectingEdgeNo = new HashMap<>();
@@ -172,7 +172,7 @@ public class AdvancedGraph extends Graph {
                     if ((allEdges.containsKey(n1 + n2) || allEdges.containsKey(n2 + n1)) && !n1.equals(n2)) { c++; }
                 }
             }
-            c = c / 2;
+            c /= 2;
             c += cn.size() * 2;
             uncoveredCnInterconnectingEdgeNo.replace(set.getValue(), c);
         }

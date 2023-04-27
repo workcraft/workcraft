@@ -41,9 +41,9 @@ public class EquationUtils {
             return solveQuadraticEquation(b, c, d);
         }
         Set<Double> result = new HashSet<>();
-        b = b / a;
-        c = c / a;
-        d = d / a;
+        b /= a;
+        c /= a;
+        d /= a;
 
         double p = c / 3 - b * b / 9;
         double q = b * b * b / 27 - b * c / 6 + d / 2;

@@ -97,7 +97,7 @@ public class WtgUtils {
                     String signalName = wtg.getName(signal);
                     if (!result.containsKey(signalName)) {
                         result.put(signalName, signal.getInitialState());
-                        remainingSignals = remainingSignals - 1;
+                        remainingSignals -= 1;
                     }
                 }
             }

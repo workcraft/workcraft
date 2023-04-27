@@ -188,7 +188,7 @@ public class CpogParsingTool {
         ArrayList<String> expression = new ArrayList<>();
         String total = "";
 
-        //Add vertices from group
+        // Add vertices from group
         if (!groups.isEmpty()) {
             for (VisualTransformableNode group : groups) {
                 expression.add(group.getLabel() + " =");
@@ -305,18 +305,18 @@ public class CpogParsingTool {
 
         for (String ex : expression) {
             if (ex.contains("=")) {
-                total = total + ex;
+                total += ex;
             } else if ("\n".equals(ex)) {
                 while (total.endsWith(" ") || total.endsWith("+")) {
                     total = total.substring(0, total.length() - 1);
                 }
-                total = total + ex;
+                total += ex;
             } else if ((ex.contains(" ") || "+".equals(ex)) || (!total.contains(" " + ex + " ") && !total.startsWith(ex + " ") && !total.endsWith(" " + ex))) {
                 if (!("+".equals(ex) && total.endsWith("+"))) {
                     if (total.endsWith("\n") || total.isEmpty()) {
-                        total = total + ex;
+                        total += ex;
                     } else {
-                        total = total + " " + ex;
+                        total += " " + ex;
                     }
                 }
             }
@@ -352,17 +352,17 @@ public class CpogParsingTool {
             }
 
             if (!"1".equals(currentCondition) || currentCondition.compareTo(arcCondition) != 0) {
-                insert = insert + "[" + currentCondition + "]";
+                insert += "[" + currentCondition + "]";
             }
 
-            insert = insert + current.getLabel() + " -> ";
+            insert += current.getLabel() + " -> ";
             VisualVertex child = (VisualVertex) arc.getSecond();
 
             if (!"1".equals(formulaToString(child.getCondition())) || !formulaToString(child.getCondition()).equals(arcCondition)) {
-                insert = insert + "[" + formulaToString(child.getCondition()) + "]";
+                insert += "[" + formulaToString(child.getCondition()) + "]";
             }
 
-            insert = insert + child.getLabel();
+            insert += child.getLabel();
             visitedConnections.add(arc);
 
             HashSet<VisualArc> localVisitedArcs = new HashSet<>();
@@ -379,13 +379,13 @@ public class CpogParsingTool {
                     if (!localVisitedArcs.contains(nextArc)) {
 
                         if (formulaToString(nextArc.getCondition()).equals(arcCondition)) {
-                            insert = insert + " -> ";
+                            insert += " -> ";
                             String nextVertexCondition = formulaToString(nextVertex.getCondition());
                             String childCondition = formulaToString(child.getCondition());
                             if (!"1".equals(nextVertexCondition) || !childCondition.equals(arcCondition)) {
-                                insert = insert + "[" + formulaToString(child.getCondition()) + "]";
+                                insert += "[" + formulaToString(child.getCondition()) + "]";
                             }
-                            insert = insert + nextVertex.getLabel();
+                            insert += nextVertex.getLabel();
                             visitedConnections.add(nextArc);
                             localVisitedArcs.add(nextArc);
                             child = nextVertex;
@@ -400,7 +400,7 @@ public class CpogParsingTool {
             }
 
             if (!"1".equals(arcCondition)) {
-                insert = insert + ")";
+                insert += ")";
             }
             expression.add(insert);
         } else if (connections.size() > 1) {
@@ -415,10 +415,10 @@ public class CpogParsingTool {
                 }
 
                 if (!"1".equals(currentCondition) || !currentCondition.equals(arcCondition)) {
-                    insert = insert + "[" + currentCondition + "]";
+                    insert += "[" + currentCondition + "]";
                 }
 
-                insert = insert + current.getLabel() + " -> ";
+                insert += current.getLabel() + " -> ";
 
                 ArrayList<VisualArc> toBeRemoved = new ArrayList<>();
 
@@ -431,11 +431,11 @@ public class CpogParsingTool {
                 }
 
                 if (toBeRemoved.size() > 1) {
-                    insert = insert + "("; // + arc.getSecond().getLabel() + " + ";
+                    insert += "(";
                 }
 
                 for (VisualArc a : toBeRemoved) {
-                    insert = insert + ((VisualVertex) a.getSecond()).getLabel() + " + ";
+                    insert += ((VisualVertex) a.getSecond()).getLabel() + " + ";
                 }
 
                 while ((insert.endsWith(" ")) || (insert.endsWith("+"))) {
@@ -443,7 +443,7 @@ public class CpogParsingTool {
                 }
 
                 if (toBeRemoved.size() > 1) {
-                    insert = insert + ")";
+                    insert += ")";
                 }
 
                 visitedConnections.addAll(toBeRemoved);
@@ -457,7 +457,7 @@ public class CpogParsingTool {
             if (!"1".equals(currentCondition)) {
                 insert = "[" + currentCondition + "]";
             }
-            insert = insert + current.getLabel();
+            insert += current.getLabel();
             expression.add(insert);
         }
     }
@@ -473,11 +473,11 @@ public class CpogParsingTool {
         VisualConnection connection;
         boolean second = false;
 
-        //get root(s)
+        // Get root(s)
         for (VisualNode v : vertices) {
             arcs = visualCpog.getConnections(v);
             it = arcs.iterator();
-            //The following covers root nodes, and nodes with no connections
+            // The following covers root nodes, and nodes with no connections
             while (it.hasNext()) {
                 connection = it.next();
                 if ((!connection.getFirst().equals(v)) && (vertices.contains(connection.getFirst()))) {

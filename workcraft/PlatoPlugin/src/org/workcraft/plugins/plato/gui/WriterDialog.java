@@ -210,16 +210,16 @@ public class WriterDialog extends JDialog {
 
     private String getDefaultComponentText() {
         String result = "module Concept where\n" + "\n" + "import Tuura.Concept.";
-        result = result + (fst ? "FSM" : "STG");
-        result = result + "\n\n" + "component a b c = \n" + "  where";
+        result += (fst ? "FSM" : "STG");
+        result += "\n\n" + "component a b c = \n" + "  where";
         return result;
     }
 
     private String getDefaultSystemText() {
         String result = "module Concept where\n" + "\n" + "import Tuura.Concept.";
-        result = result + (fst ? "FSM" : "STG") + "\n\n";
-        result = result + "data Signal = A | B | C deriving (Bounded, Enum, Eq)";
-        result = result + "\n\n" + "system = \n" + "  where";
+        result += (fst ? "FSM" : "STG") + "\n\n";
+        result += "data Signal = A | B | C deriving (Bounded, Enum, Eq)";
+        result += "\n\n" + "system = \n" + "  where";
         return result;
     }
 
@@ -228,7 +228,7 @@ public class WriterDialog extends JDialog {
         String fileText = new String();
         if (scanner.hasNextLine()) {
             do {
-                fileText = fileText + scanner.nextLine() + "\n";
+                fileText += scanner.nextLine() + "\n";
             } while (scanner.hasNextLine());
             scanner.close();
             conceptsText.setText(fileText);

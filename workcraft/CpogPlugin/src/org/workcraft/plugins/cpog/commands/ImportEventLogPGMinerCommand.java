@@ -44,7 +44,7 @@ public class ImportEventLogPGMinerCommand extends AbstractPGMinerCommand {
                     while (k.hasNext()) {
                         String line = k.nextLine();
                         tool.insertEventLog(visualCpog, i++, line.split(" "), yPos);
-                        yPos = yPos + 5;
+                        yPos += 5;
                     }
                     k.close();
                     we.saveMemento();

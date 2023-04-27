@@ -49,7 +49,7 @@ public class ConceptsLayout {
             for (Signal.Type t: typeList) {
                 if (typeMap.containsKey(t)) {
                     centreX = arrangeNodes(visualStg, typeMap.get(t), centreX, centreY);
-                    centreY = centreY + (yDiff * 2) + 2;
+                    centreY += (yDiff * 2) + 2;
                 }
             }
 
@@ -66,10 +66,10 @@ public class ConceptsLayout {
         int mapSize = nodeMap.values().size();
 
         if (x != 0 && nodeMap.values().size() > 1) {
-            x = x - (((nodeMap.values().size() - 1) / 2) * centreXDiff);
+            x -= ((nodeMap.values().size() - 1) / 2) * centreXDiff;
             if (prevSize != 0) {
                 if (mapSize % 2 == 0) {
-                    x = x - centreXDiff / 2;
+                    x -= centreXDiff / 2;
                 }
             }
         }

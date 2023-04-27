@@ -145,7 +145,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             data[i][0] = name;
             data[i][1] = "";
             for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
-                data[i][1] = data[i][1] + ScencoHelper.dontCareBit;
+                data[i][1] += ScencoHelper.dontCareBit;
             }
         }
         encodingTable = new JTable(data, columnNames);
@@ -187,7 +187,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         for (int i = 0; i < m; i++) {
             String data = "";
             for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
-                data = data + ScencoHelper.dontCareBit;
+                data += ScencoHelper.dontCareBit;
             }
             encodingTable.getModel().setValueAt(data, i, 1);
         }
