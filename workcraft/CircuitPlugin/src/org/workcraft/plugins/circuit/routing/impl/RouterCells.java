@@ -52,7 +52,7 @@ public class RouterCells {
 
         for (int y = y1; y <= y2; y++) {
             for (int x = x1; x <= x2; x++) {
-                cells[x][y] = cells[x][y] & (~value);
+                cells[x][y] &= (~value);
             }
         }
     }

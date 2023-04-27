@@ -64,14 +64,14 @@ public class SONMainTask implements Task<VerificationResult> {
             relationErrors.addAll(bsonSTask.getRelationErrors());
             cycleErrors.addAll(bsonSTask.getCycleErrors());
 
-            totalErrNum = totalErrNum + onSTask.getErrNumber();
-            totalWarningNum = totalWarningNum + onSTask.getWarningNumber();
+            totalErrNum += onSTask.getErrNumber();
+            totalWarningNum += onSTask.getWarningNumber();
 
-            totalErrNum = totalErrNum + csonSTask.getErrNumber();
-            totalWarningNum = totalWarningNum + csonSTask.getWarningNumber();
+            totalErrNum += csonSTask.getErrNumber();
+            totalWarningNum += csonSTask.getWarningNumber();
 
-            totalErrNum = totalErrNum + bsonSTask.getErrNumber();
-            totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
+            totalErrNum += bsonSTask.getErrNumber();
+            totalWarningNum += bsonSTask.getWarningNumber();
 
             //if (settings.getOuputBefore())
                 //outputBefore(net);
@@ -101,8 +101,8 @@ public class SONMainTask implements Task<VerificationResult> {
             relationErrors.addAll(csonSTask.getRelationErrors());
             cycleErrors.addAll(csonSTask.getCycleErrors());
 
-            totalErrNum = totalErrNum + csonSTask.getErrNumber();
-            totalWarningNum = totalWarningNum + csonSTask.getWarningNumber();
+            totalErrNum += csonSTask.getErrNumber();
+            totalWarningNum += csonSTask.getWarningNumber();
 
         }
 
@@ -115,8 +115,8 @@ public class SONMainTask implements Task<VerificationResult> {
             relationErrors.addAll(bsonSTask.getRelationErrors());
             cycleErrors.addAll(bsonSTask.getCycleErrors());
 
-            totalErrNum = totalErrNum + bsonSTask.getErrNumber();
-            totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
+            totalErrNum += bsonSTask.getErrNumber();
+            totalWarningNum += bsonSTask.getWarningNumber();
         }
 
         BlockConnector.blockInternalConnector(visualNet);
@@ -130,8 +130,8 @@ public class SONMainTask implements Task<VerificationResult> {
             relationErrors.addAll(tsonSTask.getRelationErrors());
             cycleErrors.addAll(tsonSTask.getCycleErrors());
 
-            totalErrNum = totalErrNum + tsonSTask.getErrNumber();
-            totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
+            totalErrNum += tsonSTask.getErrNumber();
+            totalWarningNum += tsonSTask.getWarningNumber();
         }
 
         if (settings.getType() == 4) {
@@ -142,8 +142,8 @@ public class SONMainTask implements Task<VerificationResult> {
             relationErrors.addAll(tsonSTask.getRelationErrors());
             cycleErrors.addAll(tsonSTask.getCycleErrors());
 
-            totalErrNum = totalErrNum + tsonSTask.getErrNumber();
-            totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
+            totalErrNum += tsonSTask.getErrNumber();
+            totalWarningNum += tsonSTask.getWarningNumber();
         }
 
         if (settings.getOuputBefore()) {

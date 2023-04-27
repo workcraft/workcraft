@@ -55,8 +55,8 @@ public final class PathbreakSerialiserUtils {
                     String inputName = SubstitutionUtils.getContactSubstitutionName(
                             inputContact.getName(), substitutionRule, msg);
 
-                    writer.write(KEYWORD_SET_DISABLE_TIMING + " " + instanceFlatName + " " +
-                            KEYWORD_FROM + " " + inputName + " " + KEYWORD_TO + " " + outputName + "\n");
+                    writer.write(KEYWORD_SET_DISABLE_TIMING + ' ' + instanceFlatName + ' ' +
+                            KEYWORD_FROM + ' ' + inputName + ' ' + KEYWORD_TO + ' ' + outputName + '\n');
                 }
             }
         }

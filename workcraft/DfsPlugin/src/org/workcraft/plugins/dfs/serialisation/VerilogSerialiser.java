@@ -94,11 +94,11 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
                 ports.add(new Pair<>(PREFIX_AO + ref, false));
             }
         }
-        out.println(KEYWORD_MODULE + " " + topName + " (");
+        out.println(KEYWORD_MODULE + ' ' + topName + " (");
         boolean isFirstPort = true;
         for (Pair<String, Boolean> port: ports) {
             if (!isFirstPort) {
-                out.print(",");
+                out.print(',');
             }
             out.println();
             out.print("    " + port.getFirst());
@@ -113,7 +113,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             } else {
                 out.print(KEYWORD_INPUT);
             }
-            out.println(" " + port.getFirst() + ";");
+            out.println(' ' + port.getFirst() + ';');
         }
         out.println();
     }
@@ -141,7 +141,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         int inCount = preset.isEmpty() ? 1 : preset.size();
         int outCount = postset.isEmpty() ? 1 : postset.size();
         String moduleName = className + SEPARATOR + inCount + SEPARATOR + outCount;
-        out.print("    " + moduleName + " " + instanceName + " (");
+        out.print("    " + moduleName + ' ' + instanceName + " (");
         boolean isFirstContact = true;
         int inIndex = 0;
         if (preset.isEmpty()) {
@@ -233,14 +233,14 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
     private void writeCelement(PrintWriter out, String instanceName, ArrayList<String> inWireNames, String outWireName) {
         int inCount = inWireNames.size();
         if (inCount == 1) {
-            out.print("    " + NAME_BUFFER + " " + instanceName + " (");
+            out.print("    " + NAME_BUFFER + ' ' + instanceName + " (");
             String inWireName = inWireNames.get(0);
             writeContact(out, NAME_IN, inWireName, true);
             writeContact(out, NAME_OUT, outWireName, false);
             out.println(");");
         } else if (inCount > 1) {
             String moduleName = PREFIX_CELEMENT + inCount;
-            out.print("    " + moduleName + " " + instanceName + " (");
+            out.print("    " + moduleName + ' ' + instanceName + " (");
             boolean isFirstContact = true;
             int inIndex = 0;
             for (String inWireName: inWireNames) {

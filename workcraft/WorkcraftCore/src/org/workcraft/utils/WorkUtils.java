@@ -69,7 +69,7 @@ public final class WorkUtils {
 
     private static final String META_COMPATIBILITY_WORK_ELEMENT = "compatibility";
     private static final Pattern META_COMPATIBILITY_PATTERN = Pattern.compile(
-            "<" + META_COMPATIBILITY_WORK_ELEMENT + " "
+            '<' + META_COMPATIBILITY_WORK_ELEMENT + ' '
                     + MAJOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" "
                     + MINOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" "
                     + REVISION_WORK_ATTRIBUTE + "=\"([0-9]+)\" "

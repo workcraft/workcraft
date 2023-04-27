@@ -11,7 +11,7 @@ public class HourMins extends AbstractTimeGranularity {
 
         int addMins = duration + mins;
         hour = floorDiv(addMins, 60) + hour;
-        hour = hour % 24;
+        hour %= 24;
         mins = addMins % 60;
 
         String merge = hour.toString() + autoComplete(mins);
@@ -31,12 +31,12 @@ public class HourMins extends AbstractTimeGranularity {
         int minusHour = floorDiv(duration, 60);
         int minusMins = duration % 60;
 
-        hour = hour - minusHour;
-        mins = mins - minusMins;
+        hour -= minusHour;
+        mins -= minusMins;
 
         if (mins < 0) {
-            mins = mins + 60;
-            hour = hour - 1;
+            mins += 60;
+            hour -= 1;
         }
         if (hour < 0) {
             hour = (24 + hour % 24) % 24;
@@ -72,8 +72,8 @@ public class HourMins extends AbstractTimeGranularity {
         }
 
         if (mins < 0) {
-            mins = mins + 60;
-            hour = hour - 1;
+            mins += 60;
+            hour -= 1;
         }
 
         String merge = hour.toString() + autoComplete(mins);

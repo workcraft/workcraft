@@ -39,7 +39,7 @@ import java.util.function.Function;
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private static final String WARNING_SYMBOL = Character.toString((char) 0x26A0);
-    private static final String WARNING_PREFIX = WARNING_SYMBOL + " ";
+    private static final String WARNING_PREFIX = WARNING_SYMBOL + ' ';
 
     private InitialisationState initState = null;
     private final PortTable portTable = new PortTable();
@@ -78,7 +78,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     private String getHtmlPinLegend(String key, String description) {
         String highKey = TextUtils.getHtmlSpanColor(key, CircuitSettings.getActiveWireColor());
         String lowKey = TextUtils.getHtmlSpanColor(key, CircuitSettings.getInactiveWireColor());
-        return highKey + " / " + lowKey + " " + description;
+        return highKey + " / " + lowKey + ' ' + description;
     }
 
     private JPanel getForcedControlsPanel(final GraphEditor editor) {

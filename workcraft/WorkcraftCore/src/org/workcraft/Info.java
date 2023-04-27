@@ -34,7 +34,7 @@ public class Info {
     }
 
     public static String getTitle() {
-        return TITLE + " " + VERSION.major;
+        return TITLE + ' ' + Integer.toString(VERSION.major);
     }
 
     public static String getSubtitle() {
@@ -72,7 +72,7 @@ public class Info {
     }
 
     public static String getCopyright() {
-        return "Copyright " + START_YEAR + "-" + CURRENT_YEAR + " " + ORGANISATION;
+        return "Copyright " + Integer.toString(START_YEAR) + '-' + Integer.toString(CURRENT_YEAR) + ' ' + ORGANISATION;
     }
 
     public static String getHomepage() {

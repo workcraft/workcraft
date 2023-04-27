@@ -98,7 +98,7 @@ public class ErrorTracingAlg extends SimulationAlg {
         //get err number from lower conditions and channel places
         for (MathNode pre : net.getPreset((MathNode) e)) {
             if (pre instanceof PlaceNode) {
-                err = err + ((PlaceNode) pre).getErrors();
+                err += ((PlaceNode) pre).getErrors();
             }
         }
 
@@ -127,12 +127,12 @@ public class ErrorTracingAlg extends SimulationAlg {
             }
             for (MathNode pre : net.getPreset((MathNode) e)) {
                 if (pre instanceof Condition) {
-                    err = err + ((Condition) pre).getErrors();
+                    err += ((Condition) pre).getErrors();
                 }
                 if (pre instanceof ChannelPlace) {
                     for (Node n : net.getPreset(pre)) {
                         if (!sync.contains(n)) {
-                            err = err + ((ChannelPlace) pre).getErrors();
+                            err += ((ChannelPlace) pre).getErrors();
                         }
                     }
                 }
@@ -221,7 +221,7 @@ public class ErrorTracingAlg extends SimulationAlg {
         //get err number from lower conditions and channel places
         for (MathNode pre : net.getPreset((MathNode) e)) {
             if (pre instanceof PlaceNode) {
-                err = err + ((PlaceNode) pre).getErrors();
+                err += ((PlaceNode) pre).getErrors();
             }
         }
 
@@ -251,12 +251,12 @@ public class ErrorTracingAlg extends SimulationAlg {
             }
             for (MathNode pre : net.getPreset((MathNode) e)) {
                 if (pre instanceof Condition) {
-                    err = err + ((Condition) pre).getErrors();
+                    err += ((Condition) pre).getErrors();
                 }
                 if (pre instanceof ChannelPlace) {
                     for (MathNode n : net.getPreset(pre)) {
                         if (!sync.contains(n)) {
-                            err = err + ((ChannelPlace) pre).getErrors();
+                            err += ((ChannelPlace) pre).getErrors();
                         }
                     }
                 }

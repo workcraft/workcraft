@@ -28,12 +28,12 @@ class StatisticsCommandTests {
                         + "\n  Vertex -  10"
                         + "\n  Arc -  4"
                         + "\n  PageNode -  3"
-                        + "\n",
+                        + '\n',
                 "Statistics for selected scenarios:"
                         + "\n  Vertex count -  10 (10 unconditional)"
                         + "\n  Arc count -  4 (4 unconditional)"
                         + "\n  Variable count -  0"
-                        + "\n");
+                        + '\n');
     }
 
     @Test
@@ -44,13 +44,13 @@ class StatisticsCommandTests {
                         + "\n  Variable -  2"
                         + "\n  Vertex -  4"
                         + "\n  Arc -  2"
-                        + "\n",
+                        + '\n',
                 "Statistics for current scenario:"
                         + "\n  Vertex count -  4 (2 unconditional)"
                         + "\n  Arc count -  2 (2 unconditional)"
                         + "\n  Variable count -  2"
                         + "\n  Conditions (2 in total) - x_0, x_1"
-                        + "\n");
+                        + '\n');
     }
 
     private void testCpogStatisticsCommands(String workName, String expectedBasicStatistics, String expectedAdvancedStatistics)

@@ -24,21 +24,21 @@ public class MiniSatCnfPrinter {
                     numbers.put(variable, number);
                 }
                 if (literal.getNegation()) {
-                    result.append("-");
+                    result.append('-');
                 }
                 result.append(number.toString());
-                result.append(" ");
+                result.append(' ');
             }
-            result.append("0");
-            result.append("\n");
+            result.append('0');
+            result.append('\n');
         }
-        result.insert(0, "p cnf " + varCount + " " + cnf.getClauses().size() + "\n");
+        result.insert(0, "p cnf " + varCount + ' ' + cnf.getClauses().size() + '\n');
 
         StringBuilder head = new StringBuilder();
         for (BooleanVariable var : new TreeMap<>(numbers).keySet()) {
             String label = var.getLabel();
             if (!label.isEmpty()) {
-                head.append("c " + numbers.get(var) + " " + label + "\n");
+                head.append("c " + numbers.get(var) + ' ' + label + '\n');
             }
         }
         result.insert(0, head.toString());

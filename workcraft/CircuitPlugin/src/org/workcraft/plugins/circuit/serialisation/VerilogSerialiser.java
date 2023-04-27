@@ -99,8 +99,8 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
                 if ((path != null) && !path.equals(exportedPath)) {
                     LogUtils.logError(
                             "Different circuit refinement has been used for Verilog module '" + moduleName + "'"
-                            + "\n" + PropertyHelper.BULLET_PREFIX + "Original refinement: " + exportedPath
-                            + "\n" + PropertyHelper.BULLET_PREFIX + "Conflict refinement: " + path);
+                            + '\n' + PropertyHelper.BULLET_PREFIX + "Original refinement: " + exportedPath
+                            + '\n' + PropertyHelper.BULLET_PREFIX + "Conflict refinement: " + path);
                 }
             }
         }
@@ -191,7 +191,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         ports.addAll(outputPorts);
         ports.addAll(outputBuses.stream().map(VerilogBus::getName).collect(Collectors.toList()));
 
-        writer.print(KEYWORD_MODULE + " " + title + " (");
+        writer.print(KEYWORD_MODULE + ' ' + title + " (");
         boolean isFirstPort = true;
         for (String port : ports) {
             if (isFirstPort) {
@@ -206,13 +206,13 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
 
     private void writeSignalDefinitions(PrintWriter writer, String keyword, Set<String> signals, Set<VerilogBus> buses) {
         if (!signals.isEmpty()) {
-            writer.println("    " + keyword + " " + String.join(", ", signals) + ";");
+            writer.println("    " + keyword + ' ' + String.join(", ", signals) + ';');
         }
         for (VerilogBus bus : buses) {
             Integer maxIndex = bus.getMaxIndex();
             Integer minIndex = bus.getMinIndex();
             String name = bus.getName();
-            writer.println("    " + keyword + " [" + maxIndex + ":" + minIndex + "] " + name + ";");
+            writer.println("    " + keyword + " [" + maxIndex + ':' + minIndex + "] " + name + ';');
         }
     }
 
@@ -267,7 +267,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
                 expr = resetExpr;
             }
             if (expr != null) {
-                writer.println("    " + KEYWORD_ASSIGN + getDelayParameter() + " " + signalName + " = " + expr + ";");
+                writer.println("    " + KEYWORD_ASSIGN + getDelayParameter() + ' ' + signalName + " = " + expr + ';');
                 result = true;
             }
         }
@@ -277,7 +277,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
     private String getDelayParameter() {
         String assignDelay = CircuitSettings.getVerilogAssignDelay();
         return (assignDelay == null) || assignDelay.isEmpty() || "0".equals(assignDelay.trim())
-                ? "" : " " + KEYWORD_ASSIGN_DELAY + assignDelay;
+                ? "" : ' ' + KEYWORD_ASSIGN_DELAY + assignDelay;
     }
 
     private void writeInstance(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
@@ -320,7 +320,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             writer.println("    // This inverter should have a short delay");
         }
 
-        writer.print("    " + moduleName + " " + instanceFlatName + " (");
+        writer.print("    " + moduleName + ' ' + instanceFlatName + " (");
         writeInstanceContacts(writer, circuitInfo, contactToSignalMap);
         writer.println(");");
     }

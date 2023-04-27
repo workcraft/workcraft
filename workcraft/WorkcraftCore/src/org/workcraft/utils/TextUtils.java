@@ -28,7 +28,7 @@ public class TextUtils {
             if (firstLine) {
                 firstLine = false;
             } else {
-                result.append("\n");
+                result.append('\n');
             }
             result.append(truncateLine(line, length));
         }
@@ -67,7 +67,7 @@ public class TextUtils {
             if (firstLine) {
                 firstLine = false;
             } else {
-                result.append("\n");
+                result.append('\n');
             }
             result.append(wrapLine(line, length));
         }
@@ -88,10 +88,10 @@ public class TextUtils {
             int wordLength = word.length();
             if (curLength > 0) {
                 if (curLength + wordLength < length) {
-                    result.append(" ");
+                    result.append(' ');
                     curLength++;
                 } else {
-                    result.append("\n");
+                    result.append('\n');
                     curLength = 0;
                 }
             }
@@ -123,11 +123,11 @@ public class TextUtils {
         for (String line : lines) {
             if ((index < firstCount) || (index >= lines.size() - lastCount)) {
                 if (index > 0) {
-                    result.append("\n");
+                    result.append('\n');
                 }
                 result.append(line);
             } else if (!dotsInserted) {
-                result.append("\n");
+                result.append('\n');
                 result.append(ELLIPSIS_SYMBOL);
                 dotsInserted = true;
             }
@@ -158,9 +158,9 @@ public class TextUtils {
         String text = makePlural(message) + ":";
         String str = String.join(", ", items);
         if (text.length() + str.length() > length) {
-            text += "\n";
+            text += '\n';
         } else {
-            text += " ";
+            text += ' ';
         }
         return text + wrapItems(items, length);
     }

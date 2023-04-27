@@ -52,7 +52,7 @@ class ParallelCompositionCommandTests {
         URL chargeUrl = classLoader.getResource(chargeWorkName);
 
         ParallelCompositionCommand command = new ParallelCompositionCommand();
-        String data = cycleUrl.getFile() + " " + chargeUrl.getFile();
+        String data = cycleUrl.getFile() + ' ' + chargeUrl.getFile();
         Pair<Collection<WorkspaceEntry>, PcompParameters> dataOriginal = command.deserialiseData(data);
         Pair<Collection<WorkspaceEntry>, PcompParameters> dataModified = Pair.of(dataOriginal.getFirst(),
                 new PcompParameters(PcompParameters.SharedSignalMode.INTERNAL, false, false));

@@ -36,7 +36,7 @@ public class JavaScriptWindow extends JPanel {
                     txtScript.setText("");
                 } catch (org.mozilla.javascript.WrappedException e) {
                     Throwable we = e.getWrappedException();
-                    System.err.println(we.getClass().getName() + " " + we.getMessage());
+                    System.err.println(we.getClass().getName() + ' ' + we.getMessage());
                 } catch (org.mozilla.javascript.RhinoException e) {
                     System.err.println(e.getMessage());
                 }

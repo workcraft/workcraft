@@ -20,7 +20,7 @@ public class Wait {
 
     @Override
     public String toString() {
-        return type + " " + name + " (.sig(" + sig.name + "), .ctrl(" + ctrl.name + "), .san(" + san.name + "))";
+        return type.toString() + ' ' + name + " (.sig(" + sig.name + "), .ctrl(" + ctrl.name + "), .san(" + san.name + "))";
     }
 
 }

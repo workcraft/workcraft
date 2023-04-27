@@ -294,7 +294,7 @@ public class MutexUtils {
     public static String getMutexPlaceExtendedTitles(Collection<Mutex> mutexes) {
         StringBuilder result = new StringBuilder();
         for (Mutex mutex : mutexes) {
-            result.append("\n").append(PropertyHelper.BULLET_PREFIX).append(getMutexPlaceExtendedTitle(mutex));
+            result.append('\n').append(PropertyHelper.BULLET_PREFIX).append(getMutexPlaceExtendedTitle(mutex));
         }
         return result.toString();
     }

@@ -71,7 +71,7 @@ public class TSONStructureTask extends AbstractStructuralVerification {
                 if (!result3.isEmpty()) {
                     relationErrors.addAll(result3);
                     relationErrors.add(block);
-                    errNumber = errNumber + result3.size();
+                    errNumber += result3.size();
                     for (Node node : result3) {
                         errMsg("ERROR : Invalid causally relation, the input does not causally precede all block outputs.", node);
                     }

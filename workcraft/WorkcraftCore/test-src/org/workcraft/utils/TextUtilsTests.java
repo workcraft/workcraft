@@ -68,7 +68,7 @@ class TextUtilsTests {
         String aLine = TextUtils.repeat("a ", n);
         String bLine = TextUtils.repeat("b ", n);
         String cLine = TextUtils.repeat("c ", n);
-        Assertions.assertEquals(aLine.trim() + "\n" + bLine.trim() + "\n" + cLine.trim(),
+        Assertions.assertEquals(aLine.trim() + '\n' + bLine.trim() + '\n' + cLine.trim(),
                 TextUtils.wrapLine(aLine + bLine + cLine));
     }
 
@@ -83,8 +83,8 @@ class TextUtilsTests {
         String a2Line = TextUtils.repeat("a ", n / 2);
         String bLine = TextUtils.repeat("b ", n);
         String cLine = TextUtils.repeat("c ", n);
-        Assertions.assertEquals(aLine.trim() + "\n" + a2Line.trim() + "\n" + bLine.trim() + "\n" + cLine.trim(),
-                TextUtils.wrapText(aLine + a2Line + "\n" + bLine + cLine));
+        Assertions.assertEquals(aLine.trim() + '\n' + a2Line.trim() + '\n' + bLine.trim() + '\n' + cLine.trim(),
+                TextUtils.wrapText(aLine + a2Line + '\n' + bLine + cLine));
     }
 
     @Test

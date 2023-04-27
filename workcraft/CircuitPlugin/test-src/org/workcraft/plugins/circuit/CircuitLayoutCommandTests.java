@@ -81,7 +81,7 @@ class CircuitLayoutCommandTests {
         }
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             String ref = circuit.getNodeReference(component);
-            gates.add(component.getModule() + " " + Identifier.truncateNamespaceSeparator(ref));
+            gates.add(component.getModule() + ' ' + Identifier.truncateNamespaceSeparator(ref));
         }
     }
 

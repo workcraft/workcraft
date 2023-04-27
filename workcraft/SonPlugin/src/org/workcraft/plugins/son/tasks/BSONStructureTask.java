@@ -142,8 +142,8 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         infoMsg("Cycle detection task complete.");
         infoMsg("Model strucuture and component relation tasks complete.\n");
 
-        errNumber = errNumber + relationErrors.size();
-        errNumber = errNumber + groupErrors.size();
+        errNumber += relationErrors.size();
+        errNumber += groupErrors.size();
     }
 
     private Collection<ONGroup> groupTask1(Collection<ONGroup> groups) {

@@ -9,12 +9,12 @@ public class ExpandHandshakeReqAckTransformationCommand extends ExpandHandshakeT
 
     @Override
     public String getDisplayName() {
-        return "Expand selected handshake transitions (" + SUFFIX_REQ + " " + SUFFIX_ACK + ")";
+        return "Expand selected handshake transitions (" + SUFFIX_REQ + ' ' + SUFFIX_ACK + ')';
     }
 
     @Override
     public String getPopupName() {
-        return "Expand handshake transition (" + SUFFIX_REQ + " " + SUFFIX_ACK + ")";
+        return "Expand handshake transition (" + SUFFIX_REQ + ' ' + SUFFIX_ACK + ')';
     }
 
     @Override

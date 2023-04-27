@@ -41,7 +41,7 @@ public class GenlibUtils {
         String setFunction = getSetFunction(gate);
         String resetFunction = getResetFunction(gate);
         if (DebugCommonSettings.getVerboseImport()) {
-            LogUtils.logInfo("Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
+            LogUtils.logInfo("Instantiating gate " + gate.name + ' ' + gate.function.name + '=' + gate.function.formula);
             LogUtils.logInfo("  Set function: " + setFunction);
             LogUtils.logInfo("  Reset function: " + resetFunction);
         }

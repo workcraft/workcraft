@@ -166,7 +166,7 @@ class PetriParserTests {
     void tabSpaceMultipleLinesHandling() {
         boolean thrown = false;
         try {
-            parseExpression("a # b             //((((a # b $ % }}" + "\n" + "        #     c" + "\n" + "//%$%$}}}");
+            parseExpression("a # b             //((((a # b $ % }}\n        #     c\n//%$%$}}}");
         } catch (ParseException e) {
             Assertions.assertEquals(e.getClass(), ParseException.class);
             thrown = true;

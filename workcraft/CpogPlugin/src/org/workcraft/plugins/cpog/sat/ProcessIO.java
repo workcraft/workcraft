@@ -24,7 +24,7 @@ public class ProcessIO {
             String line;
             StringBuilder result = new StringBuilder();
             while ((line = reader.readLine()) != null) {
-                result.append(line + "\n");
+                result.append(line).append('\n');
             }
 
             String output = result.toString();
@@ -73,7 +73,7 @@ public class ProcessIO {
         StringBuilder sb = new StringBuilder();
         String line;
         while ((line = reader.readLine()) != null) {
-            sb.append(line + "\n");
+            sb.append(line).append('\n');
         }
         reader.close();
         return sb.toString();
@@ -86,3 +86,4 @@ public class ProcessIO {
     }
 
 }
+

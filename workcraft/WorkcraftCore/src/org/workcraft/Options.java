@@ -40,12 +40,12 @@ public class Options {
             + "\n  " + VERSION_OPTION + "           report the version information and exit"
             + "\n  " + HELP_OPTION + "              display this help message and exit"
             + "\nFILES - space-separated list of work files to open or arguments for SCRIPT"
-            + "\n"
+            + '\n'
             + "\nNote that file path parameters CONFIG, SCRIPT and FILES are relative to the working directory."
-            + "\n"
+            + '\n'
             + "\nUse environment variables " + CONFIG_ENV + " and " + CONFIG_ADD_ENV + " as lower priority"
             + "\nalternatives to command line options " + CONFIG_OPTION + " and " + CONFIG_ADD_OPTION + " respectively."
-            + "\n";
+            + '\n';
 
     private final Collection<String> paths;
     private final File directory;

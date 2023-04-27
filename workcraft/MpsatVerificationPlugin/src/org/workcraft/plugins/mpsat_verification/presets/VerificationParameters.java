@@ -106,7 +106,7 @@ public class VerificationParameters {
             args.add(getMode().getModeArgument());
         } else {
             File assertionFile = createAssertionFile(expression, workingDirectory);
-            args.add(getMode().getModeArgument() + "=" + assertionFile.getAbsolutePath());
+            args.add(getMode().getModeArgument() + '=' + assertionFile.getAbsolutePath());
         }
 
         // Verbosity

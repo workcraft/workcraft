@@ -27,7 +27,7 @@ class StatisticsCommandTests {
                         + "\n  State -  24"
                         + "\n  Signal -  6"
                         + "\n  SignalEvent -  33"
-                        + "\n");
+                        + '\n');
     }
 
     private void testCpogStatisticsCommands(String workName, String expectedStatistics)

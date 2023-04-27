@@ -52,7 +52,7 @@ public class SerialiserUtils {
         } else {
             writePetri(writer, petri);
         }
-        writer.write(KEYWORD_END + "\n");
+        writer.write(KEYWORD_END + '\n');
         writer.close();
     }
 
@@ -62,7 +62,7 @@ public class SerialiserUtils {
 
         String keyword = (style == Style.LPN) ? KEYWORD_NAME : KEYWORD_MODEL;
         String title = ExportUtils.asIdentifier(petri.getTitle());
-        writer.write(keyword + " " + title + "\n");
+        writer.write(keyword + ' ' + title + '\n');
     }
 
     private static void writeInitialState(PrintWriter writer, StgModel stg, Style style) {
@@ -85,9 +85,9 @@ public class SerialiserUtils {
             for (String signal : sort(stg.getSignalReferences(type))) {
                 Boolean signalState = initialState.get(signal);
                 if ((signalState == null) || !signalState) {
-                    writer.write("0");
+                    writer.write('0');
                 } else {
-                    writer.write("1");
+                    writer.write('1');
                 }
             }
         }
@@ -99,14 +99,14 @@ public class SerialiserUtils {
         for (final Signal.Type type : Signal.Type.values()) {
             for (String signal : sort(stg.getSignalReferences(type))) {
                 Boolean signalState = initialState.get(signal);
-                writer.write(" ");
+                writer.write(' ');
                 if ((signalState == null) || !signalState) {
-                    writer.write("!");
+                    writer.write('!');
                 }
                 writer.write(signal);
             }
         }
-        writer.write("\n");
+        writer.write('\n');
     }
 
     private static boolean hasInstanceNumbers(PetriModel petri) {
@@ -137,10 +137,10 @@ public class SerialiserUtils {
         if (!signals.isEmpty()) {
             out.write(declarationKeyword);
             for (String signal: signals) {
-                out.write(" ");
+                out.write(' ');
                 out.write(signal);
             }
-            out.write("\n");
+            out.write('\n');
         }
     }
 
@@ -168,15 +168,15 @@ public class SerialiserUtils {
                     }
                     Node succTransition = succPostset.iterator().next();
                     String succTransitionRef = getReference(petri, succTransition, needInstanceNumbers);
-                    out.write(" " + succTransitionRef);
+                    out.write(' ' + succTransitionRef);
                 } else {
-                    out.write(" " + succNodeRef);
+                    out.write(' ' + succNodeRef);
                 }
             } else {
-                out.write(" " + succNodeRef);
+                out.write(' ' + succNodeRef);
             }
         }
-        out.write("\n");
+        out.write('\n');
     }
 
 
@@ -188,7 +188,7 @@ public class SerialiserUtils {
     }
 
     private static void writeStg(PrintWriter out, StgModel stg, boolean needInstanceNumbers) {
-        out.write(KEYWORD_GRAPH + "\n");
+        out.write(KEYWORD_GRAPH + '\n');
         for (MathNode node : sortNodes(stg.getSignalTransitions(), stg)) {
             writeGraphEntry(out, stg, node, needInstanceNumbers);
         }
@@ -231,7 +231,7 @@ public class SerialiserUtils {
             if (tokens == 1) {
                 markingEntries.add(reference);
             } else if (tokens > 1) {
-                markingEntries.add(reference + "=" + tokens);
+                markingEntries.add(reference + '=' + tokens);
             }
         }
         Collections.sort(markingEntries);
@@ -239,7 +239,7 @@ public class SerialiserUtils {
         boolean first = true;
         for (String m : markingEntries) {
             if (!first) {
-                out.write(" ");
+                out.write(' ');
             } else {
                 first = false;
             }
@@ -250,11 +250,11 @@ public class SerialiserUtils {
         for (Place p : places) {
             if (p.getCapacity() != 1) {
                 String placeRef = getReference(petri, p, needInstanceNumbers);
-                capacity.append(" ").append(placeRef).append("=").append(p.getCapacity());
+                capacity.append(' ').append(placeRef).append('=').append(p.getCapacity());
             }
         }
         if (capacity.length() > 0) {
-            out.write(KEYWORD_CAPACITY + capacity + "\n");
+            out.write(KEYWORD_CAPACITY + capacity + '\n');
         }
     }
 
@@ -265,7 +265,7 @@ public class SerialiserUtils {
             transitions.add(transitionRef);
         }
         writeSignalDeclaration(out, transitions, KEYWORD_DUMMY);
-        out.write(KEYWORD_GRAPH + "\n");
+        out.write(KEYWORD_GRAPH + '\n');
         for (Transition t : petri.getTransitions()) {
             writeGraphEntry(out, petri, t, false);
         }

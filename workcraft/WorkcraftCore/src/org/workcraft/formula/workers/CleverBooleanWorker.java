@@ -153,7 +153,7 @@ public final class CleverBooleanWorker implements BooleanWorker {
             } else {
                 result = x.substring(0, op) + "'";
             }
-            result = result + x.substring(op, op + 2) + invertString(x.substring(op + 2));
+            result += x.substring(op, op + 2) + invertString(x.substring(op + 2));
             return result;
         }
         if (op == -1) {
@@ -168,7 +168,7 @@ public final class CleverBooleanWorker implements BooleanWorker {
         } else {
             result = x.substring(0, op) + "'";
         }
-        result = result + x.charAt(op) + invertString(x.substring(op + 1));
+        result += x.charAt(op) + invertString(x.substring(op + 1));
         return result;
     }
 

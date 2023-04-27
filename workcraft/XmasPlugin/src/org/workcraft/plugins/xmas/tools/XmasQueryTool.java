@@ -89,7 +89,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
             if (check.startsWith("trace")) {
                 nxt = new Scanner(line.next());
                 targ = "-t";
-                targ = targ + nxt.next();
+                targ += nxt.next();
             } else if (check.startsWith("level")) {
                 nxt = new Scanner(line.next());
                 larg = "-v";
@@ -163,7 +163,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str = str + line + '\n';
+            str += line + '\n';
         }
         return str;
     }
@@ -183,7 +183,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
             nxt = new Scanner(line.next());
             String str = nxt.next();
             int num = Integer.parseInt(str);
-            //System.out.println("qsl " + check + " " + str + " " + num);
+            //System.out.println("qsl " + check + ' ' + str + ' ' + num);
             qslist.add(new Qslist(check, num));
         }
     }
@@ -199,7 +199,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str = str + line + '\n';
+            str += line + '\n';
         }
         return str;
     }
@@ -215,7 +215,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str = str + line + '\n';
+            str += line + '\n';
         }
         return str;
     }
@@ -582,7 +582,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                     initHighlight(xnet, vnet);
                     while ((s = stdInput.readLine()) != null) {
                         if (test == -1) test = checkType(s);
-                        if (n > 0) str = str + s + '\n';
+                        if (n > 0) str += s + '\n';
                         n++;
                         System.out.println(s);
                     }

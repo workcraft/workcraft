@@ -36,9 +36,9 @@ public class Console {
     }
 
     public static void main(String[] args) {
-        LogUtils.logMessage(Info.getFullTitle() + "\n"
-                + Info.getCopyright() + "\n"
-                + Info.getJavaDescription() + "\n");
+        LogUtils.logMessage(Info.getFullTitle() + '\n'
+                + Info.getCopyright() + '\n'
+                + Info.getJavaDescription() + '\n');
 
         Options options = new Options(args);
 
@@ -109,7 +109,7 @@ public class Console {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
             for (String path : paths) {
                 File file = FileUtils.getFileByAbsoluteOrRelativePath(path, directory);
-                writer.write(file.getAbsolutePath() + "\n");
+                writer.write(file.getAbsolutePath() + '\n');
                 writer.flush();
             }
             return true;
@@ -229,7 +229,7 @@ public class Console {
             }
         } catch (org.mozilla.javascript.WrappedException e) {
             Throwable we = e.getWrappedException();
-            System.err.println(we.getClass().getName() + " " + we.getMessage());
+            System.err.println(we.getClass().getName() + ' ' + we.getMessage());
         } catch (IOException | org.mozilla.javascript.RhinoException e) {
             System.err.println(e.getMessage());
         }

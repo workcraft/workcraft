@@ -60,7 +60,7 @@ public class HandshakeParameters {
             "    ACK_NAMES = {" + ACK_NAMES_REPLACEMENT + "},\n" +
             "    // The following two values specify the initial state of the handshake.\n" +
             "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + "\n" +
+            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + '\n' +
             "{\n" +
             "    // Check that either inversions are allowed or the initial values of requests are equal to REQ_INITIALLY_ASSERTED.\n" +
             "    exists nm in REQ_NAMES { is_init S nm ^ REQ_INITIALLY_ASSERTED }\n" +
@@ -78,7 +78,7 @@ public class HandshakeParameters {
             "    ACK_NAMES = {" + ACK_NAMES_REPLACEMENT + "},\n" +
             "    // The following two values specify the initial state of the handshake.\n" +
             "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + "\n" +
+            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + '\n' +
             "{\n" +
             "    // Check that the requests are 1-hot (correcting for the polarity and initial state of handshake).\n" +
             "    threshold nm in REQ_NAMES { $S nm ^ (is_init S nm ^ REQ_INITIALLY_ASSERTED) }\n" +

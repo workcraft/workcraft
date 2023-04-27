@@ -47,9 +47,9 @@ public class MpsatUtils {
             Collection<String> problematicPlacesRefs = ReferenceHelper.getReferenceList(stg, problematicPlaces);
             String msg = TextUtils.wrapMessageWithItems("Failed to determine requests or grants for mutex place",
                     problematicPlacesRefs)
-                    + "\n" + PropertyHelper.BULLET_PREFIX
+                    + '\n' + PropertyHelper.BULLET_PREFIX
                     + "postset of mutex place must comprise rising transitions of 2 distinct output or internal signals (grants)"
-                    + "\n" + PropertyHelper.BULLET_PREFIX
+                    + '\n' + PropertyHelper.BULLET_PREFIX
                     + "rising transitions of each grant must be triggered by rising transitions of the same signal (request)";
 
             DialogUtils.showError(msg, "Model validation");

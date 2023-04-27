@@ -27,7 +27,7 @@ public class SgSerialiser extends AbstractBasicModelSerialiser {
         PrintWriter writer = new PrintWriter(out);
         writer.write(Info.getGeneratedByText("# SG file ", "\n"));
         String title = ExportUtils.asIdentifier(model.getTitle());
-        writer.write(".model " + title + "\n");
+        writer.write(".model " + title + '\n');
         if (model instanceof Fsm) {
             writeFsm(writer, (Fsm) model);
         } else {
@@ -92,9 +92,9 @@ public class SgSerialiser extends AbstractBasicModelSerialiser {
                 break;
             }
             for (String name: names) {
-                out.write(" " + name);
+                out.write(' ' + name);
             }
-            out.write("\n");
+            out.write('\n');
         }
     }
 
@@ -107,9 +107,9 @@ public class SgSerialiser extends AbstractBasicModelSerialiser {
         if (!names.isEmpty()) {
             out.write(".dummy");
             for (String s: names) {
-                out.write(" " + s);
+                out.write(' ' + s);
             }
-            out.write("\n");
+            out.write('\n');
         }
     }
 
@@ -121,7 +121,7 @@ public class SgSerialiser extends AbstractBasicModelSerialiser {
                 String eventName = getSerialisedEventName(fsm, event);
                 String firstStateName = getSerialisedNodeName(fsm, firstState);
                 String secondStateName = getSerialisedNodeName(fsm, secondState);
-                out.write(firstStateName + " " + eventName + " " + secondStateName + "\n");
+                out.write(firstStateName + ' ' + eventName + ' ' + secondStateName + '\n');
             }
         }
     }
