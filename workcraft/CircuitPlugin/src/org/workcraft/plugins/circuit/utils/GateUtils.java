@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.VisualComponent;
@@ -31,6 +32,9 @@ public final class GateUtils {
 
     private static final BooleanWorker DUMB_WORKER = DumbBooleanWorker.getInstance();
     private static final BooleanWorker CLEVER_WORKER = CleverBooleanWorker.getInstance();
+
+    private GateUtils() {
+    }
 
     public static void insertGateAfter(VisualCircuit circuit, VisualCircuitComponent component,
             VisualContact predContact) {
@@ -384,6 +388,28 @@ public final class GateUtils {
             vars.add(inputContact.getReferencedComponent());
         }
         return vars;
+    }
+
+    public static VisualFunctionComponent insertOrReuseBuffer(VisualCircuit circuit, VisualContact contact) {
+        VisualFunctionComponent result = null;
+        // Try to reuse existing buffer or inverter
+        Node parent = contact.getParent();
+        if (parent instanceof VisualFunctionComponent) {
+            VisualFunctionComponent component = (VisualFunctionComponent) parent;
+            if (component.isBuffer()) {
+                result = component;
+            }
+        }
+
+        // Insert fork buffer if reuse did not work out
+        if (result == null) {
+            SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
+            result = GateUtils.createBufferGate(circuit);
+            GateUtils.insertGateAfter(circuit, result, contact);
+            VisualFunctionContact gateOutput = result.getGateOutput();
+            gateOutput.setInitToOne(contact.getInitToOne());
+        }
+        return result;
     }
 
 }

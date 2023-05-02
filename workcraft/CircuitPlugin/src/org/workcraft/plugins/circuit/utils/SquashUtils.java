@@ -18,7 +18,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class SquashUtils {
+public final class SquashUtils {
+
+    private SquashUtils() {
+    }
 
     public static boolean checkInterfaceConsistency(VisualCircuit circuit, VisualFunctionComponent component,
             VisualCircuit componentModel) {

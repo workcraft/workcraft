@@ -34,7 +34,10 @@ import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class CircuitUtils {
+public final class CircuitUtils {
+
+    private CircuitUtils() {
+    }
 
     public static BooleanFormula getDriverFormula(Circuit circuit, BooleanFormula formula) {
         if (formula == null) {
