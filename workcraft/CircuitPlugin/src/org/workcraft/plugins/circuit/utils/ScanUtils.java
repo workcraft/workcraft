@@ -28,6 +28,9 @@ public final class ScanUtils {
         public final String scanoutPinName = CircuitSettings.getScanoutPin();
     }
 
+    private ScanUtils() {
+    }
+
     public static List<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
         List<VisualFunctionComponent> result = new ArrayList<>();
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
