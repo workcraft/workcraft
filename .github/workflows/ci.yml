@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
 
-  linux:
+  linux-build:
     strategy:
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04]
@@ -25,12 +25,6 @@ jobs:
           distribution: ${{ matrix.java-distribution }}
           java-version: ${{ matrix.java-version }}
 
-      - name: Run Checkstyle
-        run: ./gradlew checkstyle
-
-      - name: Run PMD checks
-        run: ./gradlew pmd
-
       - name: Assemble Workcraft
         run: ./gradlew assemble
 
@@ -47,7 +41,8 @@ jobs:
         with:
           run: ./ci/run.sh
 
-  osx:
+
+  osx-build:
     strategy:
       matrix:
         os: [macos-10.15]
@@ -82,7 +77,8 @@ jobs:
         with:
           run: ./ci/run.sh exec help workspace ci/export-* ci/import-* ci/property-* ci/statistics-*
 
-  windows:
+
+  windows-build:
     strategy:
       matrix:
         os: [windows-2019]
@@ -112,6 +108,47 @@ jobs:
       - name: Run integration tests
         run: ./ci/run.sh
         shell: bash
+
+
+  code-analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: 11
+
+      - name: Run Checkstyle
+        run: ./gradlew checkstyle
+
+      - name: Run PMD checks
+        run: ./gradlew pmd
+
+      - name: Assemble Workcraft
+        run: ./gradlew assemble
+
+      - name: Install clasp
+        run: sudo apt-get install clasp
+
+      - name: Run unit tests
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: ./gradlew test
+
+      - name: Run caverage analysis
+        run: ./gradlew coverall
+
+      - name: Integrate with coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          format: jacoco
 
 #      - name: Setup tmate session for remote debugging in case of failure
 #        if: ${{ failure() }}
