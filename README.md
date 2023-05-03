@@ -3,7 +3,7 @@
 ![Build status](https://github.com/workcraft/workcraft/workflows/CI/badge.svg)
 [![Code maintainability](https://codeclimate.com/github/workcraft/workcraft/badges/gpa.svg)](https://codeclimate.com/github/workcraft/workcraft)
 [![OpenSSF best practices](https://bestpractices.coreinfrastructure.org/projects/3775/badge)](https://bestpractices.coreinfrastructure.org/projects/3775)
-[![Coverage status](https://coveralls.io/repos/github/workcraft/workcraft/badge.svg)](https://coveralls.io/github/workcraft/workcraft)
+[![Coverage status](https://coveralls.io/repos/github/workcraft/workcraft/badge.svg?kill_cache=1)](https://coveralls.io/github/workcraft/workcraft)
 ![Repo size](https://img.shields.io/github/repo-size/workcraft/workcraft.svg)
 ![Code size](https://img.shields.io/github/languages/code-size/workcraft/workcraft.svg)
 [![Current release](https://img.shields.io/github/release/workcraft/workcraft.svg)](https://github.com/workcraft/workcraft/releases)
