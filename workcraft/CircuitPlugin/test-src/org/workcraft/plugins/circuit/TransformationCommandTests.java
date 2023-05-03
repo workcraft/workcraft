@@ -34,6 +34,8 @@ class TransformationCommandTests {
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
+        CircuitSettings.setForkHighFanout(4);
+        CircuitSettings.setForkBufferPattern("high_fanout_fork_buffer_x$_");
     }
 
     @Test
@@ -109,6 +111,14 @@ class TransformationCommandTests {
         Set<VisualFunctionComponent> trivialGatesAfter = getTrivialGates(circuit);
         Assertions.assertEquals(trivialGatesBefore.size() - buffers.size(), trivialGatesAfter.size());
         Assertions.assertEquals(true, new CombinedVerificationCommand().execute(we));
+
+        BufferHighFanoutTransformationCommand bufferCommand = new BufferHighFanoutTransformationCommand();
+        bufferCommand.execute(we);
+        long count = circuit.getVisualFunctionComponents().stream()
+                .filter(component -> CircuitSettings.isForkBufferReference(circuit.getMathReference(component)))
+                .count();
+
+        Assertions.assertEquals(5, count);
 
         framework.closeWork(we);
     }

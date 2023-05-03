@@ -13,7 +13,7 @@ import java.io.File;
 
 public class DialogUtils {
 
-    private static final int TRUNCATE_LENGTH = 100;
+    private static final int TRUNCATE_LENGTH = 120;
     private static final String MESSAGE_TITLE = "Message";
     private static final String INFO_TITLE = "Information";
     private static final String ERROR_TITLE = "Error";
@@ -127,7 +127,8 @@ public class DialogUtils {
             String yesText = UIManager.getString("OptionPane.yesButtonText");
             String noText = UIManager.getString("OptionPane.noButtonText");
             String[] options = {yesText, noText};
-            int answer = JOptionPane.showOptionDialog(mainWindow, message + question, title,
+            String text = TextUtils.truncateLines(message, TRUNCATE_LENGTH);
+            int answer = JOptionPane.showOptionDialog(mainWindow, text + question, title,
                     JOptionPane.YES_NO_OPTION, messageType, null, options, defaultChoice ? yesText : noText);
 
             result = answer == JOptionPane.YES_OPTION;
