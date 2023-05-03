@@ -25,7 +25,10 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
 
         @Override
         public String toString() {
-            return "<html>" + object + "<i> - " + description + "</i></html>";
+            String prefix = (object == null) ? "" : object.toString();
+            String delimiter = (object == null) || (description == null) || description.isEmpty() ? "" : " &ndash; ";
+            String suffix = (description == null) || description.isEmpty() ? "" : ("<i>" + description + "</i>");
+            return "<html>" + prefix + delimiter + suffix + "</html>";
         }
     }
 
