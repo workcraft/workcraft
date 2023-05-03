@@ -1,6 +1,8 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.Config;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
@@ -990,6 +992,14 @@ public class CircuitSettings extends AbstractModelSettings {
         } else {
             forkBufferPattern = value;
         }
+    }
+
+    public static boolean isForkBufferReference(String ref) {
+        Pattern pattern = Pattern.compile('^' + getForkBufferPattern()
+                .replace(FORK_FUNOUT_PLACEHOLDER, "(\\d+)"));
+
+        String name = NamespaceHelper.getReferenceName(Identifier.truncateNamespaceSeparator(ref));
+        return pattern.matcher(name).find();
     }
 
     public static int getForkHighFanout() {
