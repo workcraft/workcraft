@@ -6,7 +6,7 @@ public class TechnologyMappingSynthesisCommand extends AbstractSynthesisCommand 
 
     @Override
     public SynthesisMode getSynthesisMode() {
-        return SynthesisMode.TECH_MAPPING;
+        return SynthesisMode.TECHNOLOGY_MAPPING;
     }
 
     @Override

@@ -63,7 +63,7 @@ public class MpsatTask implements Task<MpsatOutput> {
 
         String modeParameter = null;
         // Technology mapping library (if needed and accepted)
-        if (mode == SynthesisMode.TECH_MAPPING) {
+        if (mode == SynthesisMode.TECHNOLOGY_MAPPING) {
             String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
             if ((gateLibrary == null) || gateLibrary.isEmpty()) {
                 return Result.exception(new IOException("Gate library is not specified.\n" +
@@ -88,6 +88,14 @@ public class MpsatTask implements Task<MpsatOutput> {
 
         if (MpsatSynthesisSettings.getReplicateSelfloopPlaces()) {
             command.add("-l");
+        }
+
+        // Cost function coefficients
+        if (mode == SynthesisMode.RESOLVE_ENCODING_CONFLICTS) {
+            command.addAll(TextUtils.splitWords(MpsatSynthesisSettings.getCostFunctionConflictResolution()));
+        }
+        if (mode == SynthesisMode.TECHNOLOGY_MAPPING) {
+            command.addAll(TextUtils.splitWords(MpsatSynthesisSettings.getCostFunctionTechnologyMapping()));
         }
 
         // Extra arguments (should go before the file parameters)

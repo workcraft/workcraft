@@ -32,6 +32,12 @@ class MpsatSynthesisSettingsTests {
         Assertions.assertEquals(Config.toString(MpsatSynthesisSettings.getArgs()),
                 framework.getConfigVar(prefix + ".args", false));
 
+        Assertions.assertEquals(Config.toString(MpsatSynthesisSettings.getCostFunctionConflictResolution()),
+                framework.getConfigVar(prefix + ".costFunctionConflictResolution", false));
+
+        Assertions.assertEquals(Config.toString(MpsatSynthesisSettings.getCostFunctionTechnologyMapping()),
+                framework.getConfigVar(prefix + ".costFunctionTechnologyMapping", false));
+
         Assertions.assertEquals(Config.toString(MpsatSynthesisSettings.getAdvancedMode()),
                 framework.getConfigVar(prefix + ".advancedMode", false));
 

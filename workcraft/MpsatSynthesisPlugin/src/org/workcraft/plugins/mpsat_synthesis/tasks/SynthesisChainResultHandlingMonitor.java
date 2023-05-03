@@ -75,7 +75,7 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         case STANDARD_CELEMENT_IMPLEMENTATION:
             return handleSynthesisOutput(mpsatOutput, true, false, RenderType.GATE, false);
 
-        case TECH_MAPPING:
+        case TECHNOLOGY_MAPPING:
             return handleSynthesisOutput(mpsatOutput, false, false, RenderType.GATE, true);
 
         default:
