@@ -38,8 +38,8 @@ public class Grid implements ViewportListener {
 
     /**
      * Recalculates visible grid lines based on the viewport parameters.
-     * @param viewport
-     * The viewport to calculate gridlines for.
+     *
+     * @param viewport The viewport to calculate gridlines for.
      */
     public void updateGrid(Viewport viewport) {
         Rectangle view = viewport.getShape();
@@ -69,7 +69,7 @@ public class Grid implements ViewportListener {
                 majorInterval *= INTERVAL_SCALE_FACTOR;
             }
             double maxInterval = INTERVAL_MAX_SCREEN_MM * SizeHelper.getScreenDpmm() / scale;
-            while (majorInterval  > maxInterval) {
+            while (majorInterval > maxInterval) {
                 majorInterval /= INTERVAL_SCALE_FACTOR;
             }
         }
@@ -159,8 +159,8 @@ public class Grid implements ViewportListener {
         Point2D pScreen = new Point2D.Double();
         Rectangle r = getGridBounds(viewport, interval);
 
-         // Build the gridlines positions, store them as user-space coordinates,
-         // screen-space coordinates, and as a drawable path (in screen-space)
+        // Build the gridlines positions, store them as user-space coordinates,
+        // screen-space coordinates, and as a drawable path (in screen-space)
         int xCount = Math.max(0, r.width + 1);
         int yCount = Math.max(0, r.height + 1);
         if ((xCount > MAX_GRID_COUNT) || (yCount > MAX_GRID_COUNT)) {
@@ -190,8 +190,8 @@ public class Grid implements ViewportListener {
     /**
      * Draws the grid. <i>Note that this drawing procedure assumes that the Graphics2D object will draw in screen coordinates.</i>
      * Please restore the graphics transform object to the original state before calling this method.
-     * @param g
-     * Graphics2D object for the component the viewport is drawn onto.
+     *
+     * @param g Graphics2D object for the component the viewport is drawn onto.
      */
     public void draw(Graphics2D g) {
         g.setStroke(stroke);
@@ -205,10 +205,8 @@ public class Grid implements ViewportListener {
      * Returns major grid lines positions <i>in user space, double precision</i> as a 2-dimensional array. First row of the array contains x-coordinates of the vertical grid lines,
      * second row contains y-coordinates of the horizontal grid lines.
      *
-     * @return
-     * getMajorPositions()[0] - the array containing vertical grid lines positions
+     * @return getMajorPositions()[0] - the array containing vertical grid lines positions
      * getMajorPositions()[1] - the array containing horizontal grid lines positions
-     *
      */
     public double[][] getMajorPositions() {
         return majorPositions;
@@ -217,10 +215,9 @@ public class Grid implements ViewportListener {
     /**
      * Returns minor grid lines positions <i>in screen space space, integer precision</i> as a 2-dimensional array.
      * First row of the array contains x-coordinates of the vertical grid lines, second row contains y-coordinates of the horizontal grid lines,
-     * @return
-     * getMinorScreenPositions()[0] - the array containing vertical grid lines positions
-     * getMinorScreenPositions()[1] - the array containing horizontal grid lines positions
      *
+     * @return getMinorScreenPositions()[0] - the array containing vertical grid lines positions
+     * getMinorScreenPositions()[1] - the array containing horizontal grid lines positions
      */
     public int[][] getMinorScreenPositions() {
         return minorScreenPositions;
@@ -230,10 +227,8 @@ public class Grid implements ViewportListener {
      * Returns major grid lines positions <i>in screen space space, integer precision</i> as a 2-dimensional array. First row of the array contains Y-coordinates of the horizontal grid lines,
      * second row contains X-coordinates of the vertical grid lines.
      *
-     * @return
-     * getMajorScreenPositions()[0] - the array containing vertical grid lines positions
+     * @return getMajorScreenPositions()[0] - the array containing vertical grid lines positions
      * getMajorScreenPositions()[1] - the array containing horizontal grid lines positions
-     *
      */
     public int[][] getMajorScreenPositions() {
         return majorScreenPositions;
@@ -251,8 +246,8 @@ public class Grid implements ViewportListener {
 
     /**
      * Registers a new grid listener that will be notified if grid parameters change.
-     * @param listener
-     * The new listener.
+     *
+     * @param listener The new listener.
      */
     public void addListener(GridListener listener) {
         listeners.add(listener);
@@ -260,8 +255,8 @@ public class Grid implements ViewportListener {
 
     /**
      * Removes a listener.
-     * @param listener
-     * The listener to remove.
+     *
+     * @param listener The listener to remove.
      */
     public void removeListener(GridListener listener) {
         listeners.remove(listener);
@@ -269,12 +264,13 @@ public class Grid implements ViewportListener {
 
     /**
      * Snap coordinate to the closest minor grid line.
-     * @param x coordinate value
+     * @param value coordinate value
+     * @param subdivideCount number of subdivisions pet interval
      * @return snapped coordinate value
      */
-    public double snapCoordinate(double x) {
-        double m = majorInterval * MINOR_INTERVAL_FACTOR;
-        return Math.floor(x / m + 0.5) * m;
+    public double snapCoordinate(double value, int subdivideCount) {
+        double m = majorInterval * MINOR_INTERVAL_FACTOR / (double) subdivideCount;
+        return Math.floor(value / m + 0.5) * m;
     }
 
 }

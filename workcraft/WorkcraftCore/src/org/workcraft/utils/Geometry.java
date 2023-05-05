@@ -11,6 +11,8 @@ import java.util.Set;
 
 public class Geometry {
 
+    private static final double EPSILON = 0.000_000_1;
+
     public static Point2D lerp(Point2D p1, Point2D p2, double t) {
         return new Point2D.Double(p1.getX() * (1 - t) + p2.getX() * t, p1.getY() * (1 - t) + p2.getY() * t);
     }
@@ -40,7 +42,7 @@ public class Geometry {
     public static Point2D normalize(Point2D p) {
         Point2D result = (Point2D) p.clone();
         double length = p.distance(0, 0);
-        if (length < 0.0000001) {
+        if (length < EPSILON) {
             result.setLocation(0, 0);
         } else {
             result.setLocation(p.getX() / length, p.getY() / length);
@@ -133,13 +135,11 @@ public class Geometry {
         }
     }
 
-    public static double getBorderPointParameter(Touchable collisionNode, ParametricCurve curve, double tStart, double tEnd) {
-        Point2D point = new Point2D.Double();
-        while (Math.abs(tEnd - tStart) > 0.000001) {
+    public static double getBorderPointParameter(Touchable node, ParametricCurve curve, double tStart, double tEnd) {
+        while (Math.abs(tEnd - tStart) > EPSILON) {
             double t = (tStart + tEnd) * 0.5;
-            point = curve.getPointOnCurve(t);
-
-            if (collisionNode.hitTest(point)) {
+            Point2D point = curve.getPointOnCurve(t);
+            if (node.hitTest(point)) {
                 tStart = t;
             } else {
                 tEnd = t;
@@ -148,7 +148,9 @@ public class Geometry {
         return tStart;
     }
 
-    public static PartialCurveInfo buildConnectionCurveInfo(VisualConnectionProperties connectionInfo, ParametricCurve curve, double endCutoff) {
+    public static PartialCurveInfo buildConnectionCurveInfo(VisualConnectionProperties connectionInfo,
+            ParametricCurve curve, double endCutoff) {
+
         PartialCurveInfo info = new PartialCurveInfo();
         info.tStart = getBorderPointParameter(connectionInfo.getFirstShape(), curve, 0, 1);
         info.tEnd = getBorderPointParameter(connectionInfo.getSecondShape(), curve, 1, endCutoff);
@@ -173,14 +175,14 @@ public class Geometry {
     }
 
     public static Point2D changeBasis(Point2D p, Point2D vx, Point2D vy) {
-        if (dotProduct(vx, vy) > 0.0000001) {
+        if (dotProduct(vx, vy) > EPSILON) {
             throw new RuntimeException("Vectors vx and vy must be orthogonal");
         }
 
         double vysq = vy.distanceSq(0, 0);
         double vxsq = vx.distanceSq(0, 0);
 
-        if (vysq < 0.0000001 || vxsq < 0.0000001) {
+        if ((vysq < EPSILON) || (vxsq < EPSILON)) {
             throw new RuntimeException("Vectors vx and vy must not have zero length");
         }
 
@@ -346,6 +348,10 @@ public class Geometry {
         double c = -3 * p0 + 3 * p1;
         double d = p0 - s;
         return EquationUtils.solveCubicEquation(a, b, c, d);
+    }
+
+    public static boolean isAligned(double v1, double v2) {
+        return Math.abs(v1 - v2) < EPSILON;
     }
 
 }

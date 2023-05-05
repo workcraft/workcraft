@@ -1,7 +1,6 @@
 package org.workcraft.gui.editor;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ControlPoint;
@@ -215,7 +214,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         }
         g2d.setTransform(screenTransform);
 
-        Boolean rulerVisibility = EditorCommonSettings.getRulerVisibility();
+        boolean rulerVisibility = EditorCommonSettings.getRulerVisibility();
         if (rulerVisibility) {
             ruler.draw(g2d);
         }
@@ -234,10 +233,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     @Override
-    /**
-     * Redraw one pixel to force redrawing of the whole model. This is usually necessary
-     * to recalculate bounding boxes of children components and correctly estimate the
-     * bounding boxes of their parents.
+    /*
+      Redraw one pixel to force redrawing of the whole model. This is usually necessary
+      to recalculate bounding boxes of children components and correctly estimate the
+      bounding boxes of their parents.
      */
     public void forceRedraw() {
         super.paintImmediately(0, 0, 1, 1);
@@ -266,22 +265,19 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
         Point2D pos = TransformHelper.transform(component, localToRootTransform).getCenter();
         result.add(pos);
-        for (Connection connection: getModel().getConnections(component)) {
-            if (connection instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection) connection;
-                if (vc.getConnectionType() == ConnectionType.POLYLINE) {
-                    Polyline polyline = (Polyline) vc.getGraphic();
-                    ControlPoint firstControlPoint = polyline.getFirstControlPoint();
-                    if ((component == connection.getFirst()) && (firstControlPoint != null)) {
-                        result.add(firstControlPoint.getPosition());
-                    }
-                    ControlPoint lastControlPoint = polyline.getLastControlPoint();
-                    if ((component == connection.getSecond()) && (lastControlPoint != null)) {
-                        result.add(lastControlPoint.getPosition());
-                    }
+        for (VisualConnection connection : getModel().getConnections(component)) {
+            if (connection.getConnectionType() == ConnectionType.POLYLINE) {
+                Polyline polyline = (Polyline) connection.getGraphic();
+                ControlPoint firstControlPoint = polyline.getFirstControlPoint();
+                if ((component == connection.getFirst()) && (firstControlPoint != null)) {
+                    result.add(firstControlPoint.getPosition());
                 }
-                result.addAll(calcConnectionSnaps(vc));
+                ControlPoint lastControlPoint = polyline.getLastControlPoint();
+                if ((component == connection.getSecond()) && (lastControlPoint != null)) {
+                    result.add(lastControlPoint.getPosition());
+                }
             }
+            result.addAll(calcConnectionSnaps(connection));
         }
         return result;
     }
@@ -318,8 +314,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     @Override
     public Point2D snap(Point2D pos, Set<Point2D> snaps) {
-        double x = grid.snapCoordinate(pos.getX());
-        double y = grid.snapCoordinate(pos.getY());
+        double x = grid.snapCoordinate(pos.getX(), 2);
+        double y = grid.snapCoordinate(pos.getY(), 2);
         if (snaps != null) {
             for (Point2D snap: snaps) {
                 if (Math.abs(pos.getX() - snap.getX()) < Math.abs(pos.getX() - x)) {
