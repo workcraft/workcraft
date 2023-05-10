@@ -319,9 +319,11 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
             writer.println("    // This inverter should have a short delay");
         }
-
         writer.print("    " + moduleName + ' ' + instanceFlatName + " (");
         writeInstanceContacts(writer, circuitInfo, contactToSignalMap);
+        if ((substitutionRule != null) && (substitutionRule.extras != null)) {
+            writer.print(substitutionRule.extras);
+        }
         writer.println(");");
     }
 
