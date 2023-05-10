@@ -104,12 +104,6 @@ TOKEN:
 |
     <PETRIFY_NAME : ["A"-"Z", "a"-"z", "_", "/"] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "\\", "-"])*>
 |
-    <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
-|
-    <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
-|
-    <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
-|
     <LOGIC0 : "1'b0">
 |
     <LOGIC1 : "1'b1">

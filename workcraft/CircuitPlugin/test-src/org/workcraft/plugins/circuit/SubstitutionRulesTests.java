@@ -35,6 +35,9 @@ class SubstitutionRulesTests {
         String vWorkcraftName = PackageUtils.getPackagePath(getClass(), "vme-tm.workcraft.v");
         File vWorkcraftFile = new File(classLoader.getResource(vWorkcraftName).getFile());
 
+        String vExtrasName = PackageUtils.getPackagePath(getClass(), "vme-tm.extras.v");
+        File vExtrasFile = new File(classLoader.getResource(vExtrasName).getFile());
+
         String vTsmcghpName = PackageUtils.getPackagePath(getClass(), "vme-tm.tsmc_ghp.v");
         File vTsmcghpFile = new File(classLoader.getResource(vTsmcghpName).getFile());
 
@@ -62,6 +65,14 @@ class SubstitutionRulesTests {
         File vWorkcraftTsmcbcdFile = new File(tmpDirectory, "vme-tm.workcraft-tsmc_bcd.v");
         framework.exportWork(vWorkcraftWe, vWorkcraftTsmcbcdFile, VerilogFormat.getInstance());
         Assertions.assertEquals(FileUtils.readAllText(vTsmcbcdFile), FileUtils.readAllText(vWorkcraftTsmcbcdFile));
+
+        // Export Workcraft-mapped Verilog with extras
+        CircuitSettings.setExportSubstitutionLibrary(classLoader.getResource(
+                PackageUtils.getPackagePath(getClass(), "workcraft-extras.cnv")).getFile());
+
+        File vWorkcraftExtrasFile = new File(tmpDirectory, "vme-tm.workcraft-extras.v");
+        framework.exportWork(vWorkcraftWe, vWorkcraftExtrasFile, VerilogFormat.getInstance());
+        Assertions.assertEquals(FileUtils.readAllText(vExtrasFile), FileUtils.readAllText(vWorkcraftExtrasFile));
 
         framework.closeWork(vWorkcraftWe);
 

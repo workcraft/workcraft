@@ -58,6 +58,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String BUS_INDEX_PLACEHOLDER = "$";
     private static final String MODULE_NAME_PLACEHOLDER = "$";
     private static final String FORK_FUNOUT_PLACEHOLDER = "$";
+    private static final String INITIAL_STATE_PLACEHOLDER = "$";
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
@@ -147,7 +148,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Scan
     private static final String defaultTbufData = "TBUF (I, O)";
     private static final String defaultTinvData = "TINV (I, ON)";
-    private static final String defaultTestInstancePrefix = "test_";
+    private static final String defaultTestInstancePrefix = "test_init" + INITIAL_STATE_PLACEHOLDER + "_";
     private static final boolean defaultUseTestPathBreaker = true;
     private static final String defaultScanSuffix = "_scan";
     private static final String defaultScaninData = "scanin / SI";
@@ -387,7 +388,8 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getTinvData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Testable instance prefix",
+                PropertyHelper.BULLET_PREFIX + "Testable instance prefix (optional "
+                        + INITIAL_STATE_PLACEHOLDER + " denotes initial state)",
                 CircuitSettings::setTestInstancePrefix,
                 CircuitSettings::getTestInstancePrefix));
 
@@ -450,7 +452,7 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Fork buffer pattern ("
-                        + MODULE_NAME_PLACEHOLDER + " denotes fanout)",
+                        + FORK_FUNOUT_PLACEHOLDER + " denotes fanout)",
                 CircuitSettings::setForkBufferPattern,
                 CircuitSettings::getForkBufferPattern));
     }
@@ -846,6 +848,14 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static String getTestInstancePrefix() {
         return testInstancePrefix;
+    }
+
+    public static String getTestInstanceName(boolean initToOne) {
+        String pattern = getTestInstancePrefix();
+        if (pattern == null) {
+            pattern = defaultTestInstancePrefix;
+        }
+        return pattern.replace(INITIAL_STATE_PLACEHOLDER, initToOne ? "1" : "0");
     }
 
     public static void setTestInstancePrefix(String value) {

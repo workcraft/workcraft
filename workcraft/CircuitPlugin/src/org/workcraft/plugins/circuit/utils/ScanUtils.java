@@ -42,11 +42,10 @@ public final class ScanUtils {
                 }
             }
         }
-        int index = 0;
-        String testInstancePrefix = CircuitSettings.getTestInstancePrefix();
         for (VisualFunctionComponent testableGate : result) {
-            circuit.setMathName(testableGate, testInstancePrefix + index);
-            index++;
+            boolean initToOne = testableGate.getFirstVisualOutput().getInitToOne();
+            String testInstanceName = CircuitSettings.getTestInstanceName(initToOne);
+            circuit.setMathName(testableGate, testInstanceName);
         }
         return result;
     }

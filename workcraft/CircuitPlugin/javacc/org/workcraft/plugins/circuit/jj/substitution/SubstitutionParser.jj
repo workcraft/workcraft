@@ -47,24 +47,29 @@ SKIP:
 |
     <"//" (~["\r", "\n"])*>
 |
+    "/*" : WITHIN_COMMENT
+|
     <"`" (~["\r", "\n"])*>
+}
+
+<WITHIN_COMMENT> SKIP:
+{
+    "*/" : DEFAULT
+|
+    <~[]>
 }
 
 TOKEN :
 {
     <EXTENDED_NAME : ["A"-"Z", "a"-"z", "_", "/" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "\\", "-"])*>
-|
-    "("
-|
-    ")"
-|
-    ","
+    |
+    <STRING : "\"" (~["\""])+ "\"">
 }
 
 List<SubstitutionRule> parseSubstitutionRules() :
 {
     SubstitutionRule rule;
-    List<SubstitutionRule> rules = new LinkedList<SubstitutionRule>();
+    List<SubstitutionRule> rules = new LinkedList<>();
 }
 {
     (
@@ -82,36 +87,46 @@ SubstitutionRule parseSubstitutionRule() :
 {
     Pair<String, String> gateSubstitution;
     Pair<String, String> portSubstitution;
-    Map<String, String> portSubstitutions = new HashMap<String, String>();
+    Map<String, String> portSubstitutions = new HashMap<>();
+    Token extrasToken;
+    String extras = null;
 }
 {
     gateSubstitution = parseSubstitution()
-    [ "("
-        (
-            portSubstitution = parseSubstitution() [","]
-            {
-                String oldPortName = portSubstitution.getFirst();
-                String newPortName = portSubstitution.getSecond();
-                portSubstitutions.put(oldPortName, newPortName);
-            }
-        )*
+    [
+        "("
+            (
+                portSubstitution = parseSubstitution() [","]
+                {
+                    String oldPortName = portSubstitution.getFirst();
+                    String newPortName = portSubstitution.getSecond();
+                    portSubstitutions.put(oldPortName, newPortName);
+                }
+            )*
         ")"
+    ]
+    [
+        extrasToken = <STRING>
+        {
+            extras = extrasToken.image.substring(1, extrasToken.image.length() - 1);
+        }
     ]
     {
         String oldGateName = gateSubstitution.getFirst();
         String newGateName = gateSubstitution.getSecond();
-        return new SubstitutionRule(oldGateName, newGateName, portSubstitutions);
+        return new SubstitutionRule(oldGateName, newGateName, portSubstitutions, extras);
     }
 }
 
 Pair<String, String> parseSubstitution():
 {
-    Token oldName;
-    Token newName;
+    Token oldNameToken;
+    Token newNameToken;
 }
 {
-    oldName = <EXTENDED_NAME> "=" newName = <EXTENDED_NAME>
+    oldNameToken = <EXTENDED_NAME> "=" newNameToken = <EXTENDED_NAME>
     {
-        return invertRules ? new Pair(newName.image, oldName.image) : new Pair(oldName.image, newName.image);
+        return invertRules ? new Pair<>(newNameToken.image, oldNameToken.image)
+         : new Pair<>(oldNameToken.image, newNameToken.image);
     }
 }
