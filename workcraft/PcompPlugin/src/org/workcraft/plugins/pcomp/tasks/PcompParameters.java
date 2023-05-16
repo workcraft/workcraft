@@ -24,7 +24,6 @@ public class PcompParameters {
     private final boolean improvedComposition;
 
     public PcompParameters(SharedSignalMode sharedSignalMode, boolean sharedOutputs, boolean improvedComposition) {
-
         this.sharedSignalMode = sharedSignalMode;
         this.sharedOutputs = sharedOutputs;
         this.improvedComposition = improvedComposition;

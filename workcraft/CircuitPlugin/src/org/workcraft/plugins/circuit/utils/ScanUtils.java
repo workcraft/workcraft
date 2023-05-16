@@ -597,4 +597,11 @@ public final class ScanUtils {
                 ((patterns != null) && patterns.stream().anyMatch(pattern -> pattern.matcher(name).matches()));
     }
 
+    public static Set<String> getScanoutSignals(Circuit circuit) {
+        return circuit.getOutputPorts().stream()
+                .map(Contact::getName)
+                .filter(ScanUtils::isScanOutputPortName)
+                .collect(Collectors.toSet());
+    }
+
 }

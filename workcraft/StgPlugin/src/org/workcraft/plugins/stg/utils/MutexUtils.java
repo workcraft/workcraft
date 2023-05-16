@@ -16,13 +16,13 @@ public class MutexUtils {
 
     private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
 
-    public static LinkedList<Pair<String, String>> getMutexGrantPairs(Stg stg) {
-        LinkedList<Pair<String, String>> exceptions = new LinkedList<>();
+    public static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Stg stg) {
+        LinkedList<Pair<String, String>> result = new LinkedList<>();
         for (Mutex mutex: getMutexes(stg)) {
-            Pair<String, String> exception = Pair.of(mutex.g1.name, mutex.g2.name);
-            exceptions.add(exception);
+            result.add(Pair.of(mutex.g1.name, mutex.g2.name));
+            result.add(Pair.of(mutex.g2.name, mutex.g1.name));
         }
-        return exceptions;
+        return result;
     }
 
     public static LinkedList<Mutex> getImplementableMutexes(Stg stg) {

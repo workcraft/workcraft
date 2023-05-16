@@ -4,15 +4,12 @@ import org.workcraft.formula.And;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.Not;
 import org.workcraft.formula.Or;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
+import org.workcraft.types.Pair;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ArbitrationUtils {
@@ -109,6 +106,32 @@ public class ArbitrationUtils {
         return Arrays.stream(Mutex.Protocol.values())
                 .map(protocol -> appendMutexProtocolSuffix(mutex.name, protocol))
                 .collect(Collectors.toSet());
+    }
+
+    public static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Circuit circuit) {
+        LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
+        Set<String> mutexModuleNames = ArbitrationUtils.getMutexModuleNames();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            String moduleName = component.getModule();
+            if (mutexModuleNames.contains(moduleName)) {
+                Collection<Contact> outputs = component.getOutputs();
+                if (outputs.size() == 2) {
+                    Iterator<Contact> iterator = outputs.iterator();
+
+                    Contact contact1 = iterator.next();
+                    Contact signal1 = CircuitUtils.findSignal(circuit, contact1, true);
+                    String name1 = circuit.getNodeReference(signal1);
+
+                    Contact contact2 = iterator.next();
+                    Contact signal2 = CircuitUtils.findSignal(circuit, contact2, true);
+                    String name2 = circuit.getNodeReference(signal2);
+
+                    grantPairs.add(Pair.of(name1, name2));
+                    grantPairs.add(Pair.of(name2, name1));
+                }
+            }
+        }
+        return grantPairs;
     }
 
 }

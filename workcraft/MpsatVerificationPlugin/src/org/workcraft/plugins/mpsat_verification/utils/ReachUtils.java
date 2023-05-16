@@ -61,7 +61,7 @@ public class ReachUtils {
             "/* insert signal names that should be skipped */"; // For example: "scanout__1", "scanout__2",
 
     private static final String OUTPUT_PERSISTENCY_EXCEPTION_PAIRS_REPLACEMENT =
-            "/* insert signal pairs of output persistency exceptions */"; // For example: {"me1_g1", "me1_g2"}, {"me2_g1", "me2_g2"},
+            "/* insert signal pairs of output persistency exceptions */"; // For example: ("me_g1", "me_g2"), ("me_g2", "me_g1"),
 
     private static final String OUTPUT_PERSISTENCY_REACH =
             "// Checks whether the STG is output-persistent, i.e. no local signal can be disabled by any other signal,\n" +
@@ -69,10 +69,10 @@ public class ReachUtils {
             DUMMY_CHECK_REACH +
             "? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
-            "    EXCEPTION_PAIRS = {" + OUTPUT_PERSISTENCY_EXCEPTION_PAIRS_REPLACEMENT + "{\"\"}} \\ {{\"\"}},\n" +
+            "    EXCEPTION_PAIRS = {" + OUTPUT_PERSISTENCY_EXCEPTION_PAIRS_REPLACEMENT + "(\"\", \"\")} \\ {(\"\", \"\")},\n" +
             "    SKIP_NAMES = {" + OUTPUT_PERSISTENCY_SKIP_NAMES_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
             "    EXCEPTION_SIGNALS = gather pair in EXCEPTION_PAIRS {\n" +
-            "        gather str in pair { S str }\n" +
+            "        (S pair[0], S pair[1])\n" +
             "    },\n" +
             "    SKIP_SIGNALS = gather str in SKIP_NAMES { S str },\n" +
             "    TR = tran EVENTS,\n" +
@@ -86,7 +86,7 @@ public class ReachUtils {
             "            OTHER_LOC = (tran sig t_loc \\ {t_loc}) * (is_plus t_loc ? TRPT : is_minus t_loc ? TRMT : TR) {\n" +
             "            // Check if some t can disable t_loc without enabling any other transition labelled by sig t_loc.\n" +
             "            exists t in post pre_t_loc * TR s.t. sig t != sig t_loc &\n" +
-            "                    ~({sig t, sig t_loc} in EXCEPTION_SIGNALS) & card ((pre t \\ post t) * pre_t_loc) != 0 {\n" +
+            "                    ~((sig t, sig t_loc) in EXCEPTION_SIGNALS) & card ((pre t \\ post t) * pre_t_loc) != 0 {\n" +
             "                forall t_loc1 in OTHER_LOC s.t. card (pre t_loc1 * (pre t \\ post t)) = 0 {\n" +
             "                    exists p in pre t_loc1 \\ post t { ~$p }\n" +
             "                }\n" +
@@ -113,7 +113,7 @@ public class ReachUtils {
             Collection<Pair<String, String>> exceptionPairs, Collection<String> skipSignals) {
 
         String exceptionPairsString = exceptionPairs.stream()
-                .map(pair -> "{\"" + pair.getFirst() + "\", \"" + pair.getSecond() + "\"}, ")
+                .map(pair -> "(\"" + pair.getFirst() + "\", \"" + pair.getSecond() + "\"), ")
                 .collect(Collectors.joining());
 
         String skipSignalsString = skipSignals.stream()

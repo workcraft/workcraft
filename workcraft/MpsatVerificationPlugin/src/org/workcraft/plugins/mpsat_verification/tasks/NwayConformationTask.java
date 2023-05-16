@@ -327,7 +327,7 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
         PcompParameters pcompParameters = new PcompParameters(
                 PcompParameters.SharedSignalMode.OUTPUT, false, false);
 
-        // Note: the order of STG files is important, as it ts used in the analysis of violation traces
+        // Note: the order of STG files is important, as it is used in the analysis of violation traces
         PcompTask task = new PcompTask(componentStgFiles, pcompParameters, directory);
 
         Result<? extends PcompOutput> pcompResult = Framework.getInstance().getTaskManager().execute(
