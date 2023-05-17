@@ -3,13 +3,9 @@ package org.workcraft.plugins.circuit.tasks;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
-import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.ScanUtils;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.*;
@@ -34,7 +30,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CheckTask implements Task<VerificationChainOutput> {
 
@@ -62,7 +57,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = circuit.getMathModel().getEnvironmentFile();
-            LinkedList<Pair<String, String>> grantPairs = getMutexGrantPairs(circuit.getMathModel());
+            LinkedList<Pair<String, String>> grantPairs = ArbitrationUtils.getMutexGrantPersistencyExceptions(circuit.getMathModel());
 
             // Load device STG
             CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
@@ -258,10 +253,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
                 // Check for persistency (if requested)
                 if (checkPersistency) {
-                    Set<String> scanoutSignals = circuit.getMathModel().getOutputPorts().stream()
-                                .map(Contact::getName)
-                                .filter(ScanUtils::isScanOutputPortName)
-                                .collect(Collectors.toSet());
+                    Set<String> scanoutSignals = ScanUtils.getScanoutSignals(circuit.getMathModel());
 
                     VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(grantPairs, scanoutSignals);
                     MpsatTask persistencyMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
@@ -335,29 +327,6 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 stg.setSignalType(g2SignalName, Signal.Type.OUTPUT);
             }
         }
-    }
-
-    private LinkedList<Pair<String, String>> getMutexGrantPairs(Circuit circuit) {
-        LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
-        Set<String> mutexModuleNames = ArbitrationUtils.getMutexModuleNames();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            String moduleName = component.getModule();
-            if (mutexModuleNames.contains(moduleName)) {
-                Collection<Contact> outputs = component.getOutputs();
-                if (outputs.size() == 2) {
-                    Iterator<Contact> iterator = outputs.iterator();
-                    Contact contact1 = iterator.next();
-                    Contact signal1 = CircuitUtils.findSignal(circuit, contact1, true);
-                    String name1 = circuit.getNodeReference(signal1);
-                    Contact contact2 = iterator.next();
-                    Contact signal2 = CircuitUtils.findSignal(circuit, contact2, true);
-                    String name2 = circuit.getNodeReference(signal2);
-                    Pair<String, String> grantPair = Pair.of(name1, name2);
-                    grantPairs.add(grantPair);
-                }
-            }
-        }
-        return grantPairs;
     }
 
     private String getSuccessMessage(File environmentFile) {

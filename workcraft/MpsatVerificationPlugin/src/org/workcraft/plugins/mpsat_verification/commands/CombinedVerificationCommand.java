@@ -93,7 +93,7 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         verificationParametersList.addAll(ReachUtils.getMutexImplementabilityParameters(mutexes));
         if (noDummies) {
-            LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
+            LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPersistencyExceptions(stg);
             verificationParametersList.add(ReachUtils.getOutputPersistencyParameters(exceptions));
         }
 
