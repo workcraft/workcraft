@@ -57,14 +57,16 @@ public class CheckTask implements Task<VerificationChainOutput> {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = circuit.getMathModel().getEnvironmentFile();
-            LinkedList<Pair<String, String>> grantPairs = ArbitrationUtils.getMutexGrantPersistencyExceptions(circuit.getMathModel());
+            LinkedList<Pair<String, String>> exceptionPairs = new LinkedList<>();
+            exceptionPairs.addAll(ArbitrationUtils.getMutexGrantPersistencyExceptions(circuit.getMathModel()));
+            exceptionPairs.addAll(ArbitrationUtils.getWaitPersistencyExceptions(circuit.getMathModel(), false));
 
             // Load device STG
             CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
             Stg devStg = converter.getStg().getMathModel();
             // Expose mutex grants as outputs in the device STG (store the original signal type to apply in composition STG)
             Map<String, Signal.Type> originalMutexGrantTypes = new HashMap<>();
-            exposeMutexGrants(devStg, grantPairs, originalMutexGrantTypes);
+            exposeMutexGrants(devStg, exceptionPairs, originalMutexGrantTypes);
 
             // Load environment STG
             File envStgFile = null;
@@ -133,7 +135,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 Stg modSysStg = StgUtils.loadOrImportStg(modSysStgFile);
                 // Restore the original types of mutex grant in modified system STG (if needed)
                 if (!originalMutexGrantTypes.isEmpty()) {
-                    restoreMutexGrants(modSysStg, grantPairs, originalMutexGrantTypes);
+                    restoreMutexGrants(modSysStg, exceptionPairs, originalMutexGrantTypes);
                     modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
                     StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
                 }
@@ -207,7 +209,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 // Restore the original types of mutex grant in system STG (if needed)
                 if (!originalMutexGrantTypes.isEmpty()) {
                     Stg sysStg = StgUtils.loadOrImportStg(sysStgFile);
-                    restoreMutexGrants(sysStg, grantPairs, originalMutexGrantTypes);
+                    restoreMutexGrants(sysStg, exceptionPairs, originalMutexGrantTypes);
                     sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
                     StgUtils.exportStg(sysStg, sysStgFile, monitor);
                 }
@@ -255,7 +257,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 if (checkPersistency) {
                     Set<String> scanoutSignals = ScanUtils.getScanoutSignals(circuit.getMathModel());
 
-                    VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(grantPairs, scanoutSignals);
+                    VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(exceptionPairs, scanoutSignals);
                     MpsatTask persistencyMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
                     SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                     Result<? extends MpsatOutput> persistencyMpsatResult = manager.execute(
