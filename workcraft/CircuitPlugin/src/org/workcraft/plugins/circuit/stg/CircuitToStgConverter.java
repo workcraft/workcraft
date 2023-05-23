@@ -426,8 +426,9 @@ public class CircuitToStgConverter {
 
     private void removeRedundantTransitionsExceptLastOne(Collection<VisualSignalTransition> transitions,
             Set<VisualNode> redundantTransitions) {
+
         if (transitions.size() > 1) {
-            Set<VisualSignalTransition> unneededTransitions = new HashSet(transitions);
+            Set<VisualSignalTransition> unneededTransitions = new HashSet<>(transitions);
             unneededTransitions.retainAll(redundantTransitions);
             if (unneededTransitions.size() == transitions.size()) {
                 unneededTransitions.remove(unneededTransitions.iterator().next());
