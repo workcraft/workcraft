@@ -138,8 +138,8 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
         setCommand(config.getString(keyCommand, defaultCommand));
         setThreadCount(config.getInt(keyThreadCount, defaultThreadCount));
         setReplicateSelfloopPlaces(config.getBoolean(keyReplicateSelfloopPlaces, defaultReplicateSelfloopPlaces));
-        setArgs(config.getString(keyCostFunctionConflictResolution, defaultCostFunctionConflictResolution));
-        setArgs(config.getString(keyCostFunctionTechnologyMapping, defaultCostFunctionTechnologyMapping));
+        setCostFunctionConflictResolution(config.getString(keyCostFunctionConflictResolution, defaultCostFunctionConflictResolution));
+        setCostFunctionTechnologyMapping(config.getString(keyCostFunctionTechnologyMapping, defaultCostFunctionTechnologyMapping));
         setArgs(config.getString(keyArgs, defaultArgs));
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
