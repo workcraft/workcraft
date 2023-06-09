@@ -17,4 +17,6 @@ cp -f ${test_dir}/config-new-env.xml.min ${test_dir}/config-additional-env.xml
 export WORKCRAFT_CONFIG=config-new-env.xml
 export WORKCRAFT_CONFIG_ADD=config-additional-env.xml
 ./gradlew run --args="-nogui -noconfig-load -dir:${test_dir} -exec:'exit();'" >${log_file}
+unset WORKCRAFT_CONFIG
+unset WORKCRAFT_CONFIG_ADD
 rm ${test_dir}/config-additional-env.xml
