@@ -42,18 +42,19 @@ public class BatikUtils {
     }
 
     private static void generateSvgGraphics(VisualModel model, OutputStream out) throws SerialisationException {
+        Document doc = XmlUtils.createDocument();
+        SVGGraphics2D g2d = new SVGGraphics2D(doc);
+        g2d.setUnsupportedAttributes(null);
+        g2d.scale(SCALE_FACTOR, SCALE_FACTOR);
+        VisualGroup visualGroup = (VisualGroup) model.getRoot();
+        ModelUtils.refreshBoundingBox(model);
+        Rectangle2D bounds = visualGroup.getBoundingBoxInLocalSpace();
+        g2d.translate(-bounds.getMinX(), -bounds.getMinY());
+        int canvasWidth = (int) (bounds.getWidth() * SCALE_FACTOR);
+        int canvasHeight = (int) (bounds.getHeight() * SCALE_FACTOR);
+        g2d.setSVGCanvasSize(new Dimension(canvasWidth, canvasHeight));
+        model.draw(g2d, Decorator.Empty.INSTANCE);
         try {
-            Document doc = XmlUtils.createDocument();
-            SVGGraphics2D g2d = new SVGGraphics2D(doc);
-            g2d.setUnsupportedAttributes(null);
-            g2d.scale(SCALE_FACTOR, SCALE_FACTOR);
-            VisualGroup visualGroup = (VisualGroup) model.getRoot();
-            Rectangle2D bounds = visualGroup.getBoundingBoxInLocalSpace();
-            g2d.translate(-bounds.getMinX(), -bounds.getMinY());
-            int canvasWidth = (int) (bounds.getWidth() * SCALE_FACTOR);
-            int canvasHeight = (int) (bounds.getHeight() * SCALE_FACTOR);
-            g2d.setSVGCanvasSize(new Dimension(canvasWidth, canvasHeight));
-            model.draw(g2d, Decorator.Empty.INSTANCE);
             g2d.stream(new OutputStreamWriter(out, StandardCharsets.UTF_8));
             out.flush();
         } catch (IOException e) {
