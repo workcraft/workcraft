@@ -82,10 +82,16 @@ public class Console {
 
         if (!options.hasNoGuiFlag()) {
             framework.startGUI();
-            openWorkFiles(options.getPaths());
+            // In absence of JavaScript, treat additional command line parameters as work files to open
+            if (options.getScript() == null) {
+                openWorkFiles(options.getPaths());
+            }
         }
 
-        execScriptParameter(options.getScript(), options.getPaths());
+        // In presence of JavaScript, pass additional command line parameters to the script
+        if (options.getScript() != null) {
+            execScriptParameter(options.getScript(), options.getPaths());
+        }
 
         // Wait for external requests via socket port
         if (port != null) {
