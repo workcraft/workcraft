@@ -29,7 +29,7 @@ final class DrawMan {
         new DrawMan(model, graphics, decorator).draw(Decoration.Empty.INSTANCE, node);
     }
 
-    public void draw(Decoration currentDecoration, Node node) {
+    private void draw(Decoration currentDecoration, Node node) {
         Decoration decoration = decorator.getDecoration(node);
         if (decoration == null) {
             decoration = currentDecoration;

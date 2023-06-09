@@ -79,7 +79,7 @@ public class GuiUtils {
         return ImageIO.read(res);
     }
 
-    private static ImageIcon createIconFromSVG(String path, int width, int height, Color background) {
+    private static ImageIcon createIconFromSVG(String path, int width, int height) {
         try {
             System.setProperty("org.apache.batik.warn_destination", "false");
             Document document;
@@ -99,12 +99,7 @@ public class GuiUtils {
             double sizeX = bridgeContext.getDocumentSize().getWidth();
 
             BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-
             Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
-            if (background != null) {
-                g2d.setColor(background);
-                g2d.fillRect(0, 0, width, height);
-            }
 
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
@@ -130,7 +125,7 @@ public class GuiUtils {
 
     public static ImageIcon createIconFromSVG(String svgPath) {
         int iconSize = SizeHelper.getToolIconSize();
-        return createIconFromSVG(svgPath, iconSize, iconSize, null);
+        return createIconFromSVG(svgPath, iconSize, iconSize);
     }
 
     public static Cursor createCursorFromSVG(String svgPath) {

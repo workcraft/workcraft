@@ -62,7 +62,9 @@ public class CircuitToStgConverter {
             simplifyDriverStgs(drivers);
         }
         positionDriverStgs(drivers);
-        groupDriverStgs(drivers);
+        if (StgSettings.getGroupSignalConversion()) {
+            groupDriverStgs(drivers);
+        }
         cleanupPages();
     }
 
@@ -74,7 +76,9 @@ public class CircuitToStgConverter {
         // STGs already exist, just associate them with the drivers
         this.driverToStgMap = associateDriversToStgs(drivers);
         positionDriverStgs(drivers);
-        groupDriverStgs(drivers);
+        if (StgSettings.getGroupSignalConversion()) {
+            groupDriverStgs(drivers);
+        }
     }
 
     public VisualStg getStg() {
@@ -426,8 +430,9 @@ public class CircuitToStgConverter {
 
     private void removeRedundantTransitionsExceptLastOne(Collection<VisualSignalTransition> transitions,
             Set<VisualNode> redundantTransitions) {
+
         if (transitions.size() > 1) {
-            Set<VisualSignalTransition> unneededTransitions = new HashSet(transitions);
+            Set<VisualSignalTransition> unneededTransitions = new HashSet<>(transitions);
             unneededTransitions.retainAll(redundantTransitions);
             if (unneededTransitions.size() == transitions.size()) {
                 unneededTransitions.remove(unneededTransitions.iterator().next());
@@ -605,20 +610,18 @@ public class CircuitToStgConverter {
     }
 
     private void groupDriverStgs(HashSet<VisualContact> drivers) {
-        if (StgSettings.getGroupSignalConversion()) {
-            for (VisualContact driver: drivers) {
-                SignalStg signalStg = driverToStgMap.getValue(driver);
-                if (signalStg != null) {
-                    Collection<VisualNode> nodes = signalStg.getAllNodes();
-                    Container container = Hierarchy.getNearestContainer(nodes);
-                    stg.setCurrentLevel(container);
-                    stg.select(nodes);
-                    stg.groupSelection();
-                }
+        for (VisualContact driver: drivers) {
+            SignalStg signalStg = driverToStgMap.getValue(driver);
+            if (signalStg != null) {
+                Collection<VisualNode> nodes = signalStg.getAllNodes();
+                Container container = Hierarchy.getNearestContainer(nodes);
+                stg.setCurrentLevel(container);
+                stg.select(nodes);
+                stg.groupSelection();
             }
-            stg.selectNone();
-            stg.setCurrentLevel(stg.getRoot());
         }
+        stg.selectNone();
+        stg.setCurrentLevel(stg.getRoot());
     }
 
     private void cleanupPages() {

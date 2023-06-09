@@ -34,10 +34,11 @@ import java.util.Set;
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
 
     private static final String RESET_TO_DEFAULTS = "Reset to defaults";
-    public static final String TITLE_SUFFIX_TEMPLATE = "template";
-    public static final String TITLE_SUFFIX_MODEL = "model";
-    public static final String TITLE_SUFFIX_SINGLE_ITEM = "single item";
-    public static final String TITLE_SUFFIX_SELECTED_ITEMS = " selected items";
+    private static final String TITLE_PROPERTY_EDITOR = "Property editor";
+    private static final String TITLE_SUFFIX_TEMPLATE = "template";
+    private static final String TITLE_SUFFIX_MODEL = "model";
+    private static final String TITLE_SUFFIX_SINGLE_ITEM = "single item";
+    private static final String TITLE_SUFFIX_SELECTED_ITEMS = " selected items";
     private static final int VIEWPORT_MARGIN = 25;
     private static final int STEP = 20;
 
@@ -387,7 +388,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         ModelProperties properties;
         final VisualNode defaultNode = we.getDefaultNode();
         final VisualNode templateNode = we.getTemplateNode();
-        String title = MainWindow.TITLE_PROPERTY_EDITOR;
+        String title = TITLE_PROPERTY_EDITOR;
         if (templateNode != null) {
             properties = ModelPropertyUtils.getTemplateProperties(getModel(), templateNode);
             title += " [" + TITLE_SUFFIX_TEMPLATE + "]";

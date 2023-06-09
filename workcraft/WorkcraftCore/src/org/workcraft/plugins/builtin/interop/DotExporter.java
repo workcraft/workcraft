@@ -9,6 +9,7 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.builtin.settings.DotLayoutSettings;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.ModelUtils;
 
 import java.awt.geom.Rectangle2D;
 import java.io.OutputStream;
@@ -37,6 +38,7 @@ public class DotExporter implements Exporter {
         double ranksep = DotLayoutSettings.getRanksep();
         String rankdir = DotLayoutSettings.getRankdir().value;
         String spline = DotLayoutSettings.getUseSplineArcs() ? "true" : "false";
+        ModelUtils.refreshBoundingBox(model);
 
         out.println("digraph work {");
         out.println(INDENT + "graph [overlap=false, splines=" + spline + ", nodesep=" + nodesep

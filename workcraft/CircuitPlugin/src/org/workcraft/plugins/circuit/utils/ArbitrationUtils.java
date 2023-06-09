@@ -1,5 +1,6 @@
 package org.workcraft.plugins.circuit.utils;
 
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.formula.And;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.Not;
@@ -9,7 +10,10 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ArbitrationUtils {
@@ -111,27 +115,58 @@ public class ArbitrationUtils {
     public static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Circuit circuit) {
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
         Set<String> mutexModuleNames = ArbitrationUtils.getMutexModuleNames();
+        Mutex mutexModule = CircuitSettings.parseMutexData();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            String moduleName = component.getModule();
-            if (mutexModuleNames.contains(moduleName)) {
-                Collection<Contact> outputs = component.getOutputs();
-                if (outputs.size() == 2) {
-                    Iterator<Contact> iterator = outputs.iterator();
-
-                    Contact contact1 = iterator.next();
-                    Contact signal1 = CircuitUtils.findSignal(circuit, contact1, true);
-                    String name1 = circuit.getNodeReference(signal1);
-
-                    Contact contact2 = iterator.next();
-                    Contact signal2 = CircuitUtils.findSignal(circuit, contact2, true);
-                    String name2 = circuit.getNodeReference(signal2);
-
-                    grantPairs.add(Pair.of(name1, name2));
-                    grantPairs.add(Pair.of(name2, name1));
+            if (component.getIsArbitrationPrimitive()) {
+                String moduleName = component.getModule();
+                if (mutexModuleNames.contains(moduleName)) {
+                    String g1Signal = getPinSignal(circuit, component, mutexModule.g1.name);
+                    String g2Signal = getPinSignal(circuit, component, mutexModule.g2.name);
+                    if ((g1Signal != null) && (g2Signal != null)) {
+                        grantPairs.add(Pair.of(g1Signal, g2Signal));
+                        grantPairs.add(Pair.of(g2Signal, g1Signal));
+                    }
                 }
             }
         }
         return grantPairs;
+    }
+
+    public static LinkedList<Pair<String, String>> getWaitPersistencyExceptions(Circuit circuit,
+            boolean useInternalSignal) {
+
+        LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
+        Set<String> waitModuleNames = ArbitrationUtils.getWaitModuleNames();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getIsArbitrationPrimitive()) {
+                String moduleName = component.getModule();
+                if (waitModuleNames.contains(moduleName)) {
+                    Wait waitModule = getWaitModule(moduleName);
+                    if (waitModule != null) {
+                        String sanSignal = getPinSignal(circuit, component, waitModule.san.name);
+                        if (useInternalSignal && (sanSignal != null)) {
+                            String intRef = circuit.getNodeReference(component) + "internal";
+                            grantPairs.add(Pair.of(sanSignal, intRef));
+                            grantPairs.add(Pair.of(intRef, sanSignal));
+                        }
+                        String sigSignal = getPinSignal(circuit, component, waitModule.sig.name);
+                        if ((sigSignal != null) && (sanSignal != null)) {
+                            grantPairs.add(Pair.of(sigSignal, sanSignal));
+                        }
+                    }
+                }
+            }
+        }
+        return grantPairs;
+    }
+
+    private static String getPinSignal(Circuit circuit, CircuitComponent component, String pinName) {
+        MathNode node = circuit.getNodeByReference(component, pinName);
+        if (node instanceof Contact) {
+            Contact signal = CircuitUtils.findSignal(circuit, (Contact) node, true);
+            return CircuitUtils.getSignalReference(circuit, signal);
+        }
+        return null;
     }
 
 }

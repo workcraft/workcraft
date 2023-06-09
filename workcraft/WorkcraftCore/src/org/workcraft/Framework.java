@@ -620,7 +620,8 @@ public final class Framework {
                     + "\nlayout (" + nodeCount + " elements)."
                     + "\nPerform layout anyway before opening in editor?";
 
-            answer = DialogUtils.showYesNoCancel(message, "Layout", 1);
+            answer = DialogUtils.showYesNoCancel(message, "Graph layout",
+                    JOptionPane.QUESTION_MESSAGE, JOptionPane.NO_OPTION);
         }
 
         if (answer > 1) {

@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 
 class HierarchicalUniqueNameReferenceManagerTest {
 
-    private static HashMap<String, Pair<String, String>> headTails = new HashMap<String, Pair<String, String>>() {
+    private static HashMap<String, Pair<String, String>> headTails = new HashMap<>() {
         private static final long serialVersionUID = -2931077011392124649L;
         {
             put("abc", Pair.of("abc", ""));
@@ -40,7 +40,7 @@ class HierarchicalUniqueNameReferenceManagerTest {
         }
     }
 
-    private static HashMap<String, String> referencePaths = new HashMap<String, String>() {
+    private static HashMap<String, String> referencePaths = new HashMap<>() {
         private static final long serialVersionUID = -2931077011392124649L;
         {
             put("abc", "");

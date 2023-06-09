@@ -8,6 +8,7 @@ import org.workcraft.formula.workers.DumbBooleanWorker;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 
 class FormulaUtilsTests {
 
@@ -80,7 +81,7 @@ class FormulaUtilsTests {
         BooleanFormula muxFormula = FormulaUtils.createMux(aVar, bVar, cVar);
         Assertions.assertEquals(4, FormulaUtils.countLiterals(muxFormula));
         Assertions.assertEquals(Arrays.asList(aVar, cVar, bVar), FormulaUtils.extractOrderedVariables(muxFormula));
-        Assertions.assertEquals(new HashSet(Arrays.asList(cVar)), FormulaUtils.extractNegatedVariables(muxFormula));
+        Assertions.assertEquals(new HashSet<>(List.of(cVar)), FormulaUtils.extractNegatedVariables(muxFormula));
     }
 
     @Test
