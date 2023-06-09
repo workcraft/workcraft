@@ -174,11 +174,22 @@ public class VerilogImporter implements Importer {
         Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(instantiatedModules, dir);
         if (!existingSaveFilePaths.isEmpty()) {
             String delimiter = "\n" + PropertyHelper.BULLET_PREFIX;
-            String message = "The following files already exist:" + delimiter
-                    + String.join(delimiter, existingSaveFilePaths);
+            int existingSaveFileCount = existingSaveFilePaths.size();
+            String message = existingSaveFileCount > 1
+                    ? "The following " + existingSaveFileCount + " files already exist:"
+                    : "The following file already exists:";
 
-            String question = "\n\nOverwrite these files and proceed with import?";
-            if (!DialogUtils.showConfirmWarning(message, question, TITLE, false)) {
+            message += delimiter + String.join(delimiter, existingSaveFilePaths);
+            LogUtils.logWarning(message);
+
+            String question = existingSaveFileCount == 1
+                    ? "\n\nOverwrite these files and proceed with import?"
+                    : "\n\nOverwrite this file and proceed with import?";
+
+            String shortMessage = TextUtils.getHeadAndTail(message, 10, 0);
+            if (!DialogUtils.showConfirm(shortMessage, question, TITLE,
+                    false, JOptionPane.WARNING_MESSAGE, false)) {
+
                 throw new OperationCancelledException();
             }
         }

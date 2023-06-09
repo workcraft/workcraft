@@ -132,10 +132,10 @@ public class CircuitPropertyHelper {
         } catch (DeserialisationException e) {
             String path = FileUtils.getFullPath(file);
             String details = e.getMessage();
-            String msg = "Cannot read refinement model from '" + path + "'"
+            String message = "Cannot read refinement model from '" + path + "'"
                     + ((details == null) || details.isEmpty() ? "" : (":\n " + details));
 
-            DialogUtils.showError(msg, title);
+            DialogUtils.showError(message, title);
             return;
         }
 
@@ -148,13 +148,12 @@ public class CircuitPropertyHelper {
         String refinementTitle = refinementModel.getTitle();
         String componentLabel = component.getLabel();
         if (RefinementUtils.isInconsistentModelTitle(componentLabel, refinementTitle)) {
-            int answer = DialogUtils.showYesNoCancel(
-                    "Refinement title does not match component label."
-                            + TextUtils.getBulletpointPair("Refinement title", refinementTitle)
-                            + TextUtils.getBulletpointPair("Component label", componentLabel)
-                            + "\n\nUpdate component label to match refinement title?",
-                    title, 0);
+            String message = "Refinement title does not match component label."
+                    + TextUtils.getBulletpointPair("Refinement title", refinementTitle)
+                    + TextUtils.getBulletpointPair("Component label", componentLabel)
+                    + "\n\nUpdate component label to match refinement title?";
 
+            int answer = DialogUtils.showYesNoCancel(message, title);
             if (answer == 2) {
                 return;
             }
@@ -169,13 +168,13 @@ public class CircuitPropertyHelper {
             Set<String> missingPins = componentInterface.getMissingSignals(refinementInterface);
             Set<String> extraPins = componentInterface.getExtraSignals(refinementInterface);
             Set<String> mismatchPins = componentInterface.getMismatchSignals(refinementInterface);
-            int answer = DialogUtils.showYesNoCancel("Refinement interface signals do not match component pins."
-                            + TextUtils.getBulletpointPair("Missing component pin", missingPins)
-                            + TextUtils.getBulletpointPair("Unexpected component pin", extraPins)
-                            + TextUtils.getBulletpointPair("Incorrect I/O type pin", mismatchPins)
-                            + "\n\nUpdate component pins to match refinement model signals?",
-                    title, 0);
+            String message = "Refinement interface signals do not match component pins."
+                    + TextUtils.getBulletpointPair("Missing component pin", missingPins)
+                    + TextUtils.getBulletpointPair("Unexpected component pin", extraPins)
+                    + TextUtils.getBulletpointPair("Incorrect I/O type pin", mismatchPins)
+                    + "\n\nUpdate component pins to match refinement model signals?";
 
+            int answer = DialogUtils.showYesNoCancel(message, title);
             if (answer == 2) {
                 return;
             }
@@ -199,12 +198,12 @@ public class CircuitPropertyHelper {
                 componentOutputInitialState, refinementOutputInitialState);
 
         if (!inconsistentInitialStateOutputs.isEmpty()) {
-            int answer = DialogUtils.showYesNoCancel("Initial state of output signals in the refinement model differs\n"
-                            + "from the initial state of the component output pins."
-                            + TextUtils.getBulletpointPair("Inconsistent initial state pin", inconsistentInitialStateOutputs)
-                            + "\n\nUpdate initial state of the component output pins?",
-                    title, 0);
+            String message = "Initial state of output signals in the refinement model differs\n"
+                    + "from the initial state of the component output pins."
+                    + TextUtils.getBulletpointPair("Inconsistent initial state pin", inconsistentInitialStateOutputs)
+                    + "\n\nUpdate initial state of the component output pins?";
 
+            int answer = DialogUtils.showYesNoCancel(message, title);
             if (answer == 2) {
                 return;
             }
@@ -216,10 +215,10 @@ public class CircuitPropertyHelper {
 
         Set<String> constrainedPins = RefinementUtils.getConstrainedPins(component);
         if (!constrainedPins.isEmpty()) {
-            int answer = DialogUtils.showYesNoCancel("Component has constrained pins that may conflict with the refinement model."
-                            + "\n\nRemove set/reset functions for the component pins?",
-                    title, 0);
+            String message = "Component has constrained pins that may conflict with the refinement model."
+                    + "\n\nRemove set/reset functions for the component pins?";
 
+            int answer = DialogUtils.showYesNoCancel(message, title);
             if (answer == 2) {
                 return;
             }

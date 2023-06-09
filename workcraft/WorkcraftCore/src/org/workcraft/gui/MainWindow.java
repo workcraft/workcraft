@@ -76,17 +76,18 @@ public class MainWindow extends JFrame {
     private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_HEIGHT = 450;
 
-    public static final String TITLE_WORKCRAFT = "Workcraft";
-    public static final String TITLE_OUTPUT = "Output";
-    public static final String TITLE_PROBLEMS = "Problems";
-    public static final String TITLE_JAVASCRIPT = "Javascript";
-    public static final String TITLE_TASKS = "Tasks";
-    public static final String TITLE_WORKSPACE = "Workspace";
-    public static final String TITLE_PROPERTY_EDITOR = "Property editor";
-    public static final String TITLE_MODEL_TOOLS = "Model tools";
-    public static final String TITLE_TOOL_CONTROLS = "Tool controls";
-    public static final String TITLE_PLACEHOLDER = "";
-    public static final String PREFIX_DOCUMENT = "Document";
+    private static final String TITLE_WORKCRAFT = "Workcraft";
+    private static final String TITLE_OUTPUT = "Output";
+    private static final String TITLE_PROBLEMS = "Problems";
+    private static final String TITLE_JAVASCRIPT = "Javascript";
+    private static final String TITLE_TASKS = "Tasks";
+    private static final String TITLE_WORKSPACE = "Workspace";
+    private static final String TITLE_PROPERTY_EDITOR = "Property editor";
+    private static final String TITLE_MODEL_TOOLS = "Model tools";
+    private static final String TITLE_TOOL_CONTROLS = "Tool controls";
+    private static final String TITLE_PLACEHOLDER = "";
+    private static final String PREFIX_DOCUMENT = "Document";
+    private static final String TITLE_CLOSE_WORK = "Close work";
 
     private MultiBorderLayout layout;
     private JPanel content;
@@ -354,12 +355,8 @@ public class MainWindow extends JFrame {
     private void saveChangedOrCancel(WorkspaceEntry we) throws OperationCancelledException {
         if (we.isChanged()) {
             requestFocus(we);
-            String title = we.getTitle();
-            int returnValue = JOptionPane.showConfirmDialog(this,
-                    "Document '" + title + "' has unsaved changes.\n" + "Save before closing?",
-                    "Close work", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            switch (returnValue) {
+            String message = "Document '" + we.getTitle() + "' has unsaved changes.\n" + "Save before closing?";
+            switch (DialogUtils.showYesNoCancel(message, TITLE_CLOSE_WORK)) {
             case JOptionPane.YES_OPTION:
                 saveWorkOrCancel(we);
                 break;
@@ -482,11 +479,8 @@ public class MainWindow extends JFrame {
 
         Workspace workspace = Framework.getInstance().getWorkspace();
         if (workspace.isChanged() && !workspace.isTemporary()) {
-            int result = JOptionPane.showConfirmDialog(this,
-                    "!Current workspace has unsaved changes.\n" + "Save before closing?",
-                    "Close work", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-            switch (result) {
+            String message = "Current workspace has unsaved changes.\n" + "Save before closing?";
+            switch (DialogUtils.showYesNoCancel(message, TITLE_CLOSE_WORK)) {
             case JOptionPane.YES_OPTION:
                 workspaceWindow.saveWorkspace();
                 break;

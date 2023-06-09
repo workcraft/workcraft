@@ -9,6 +9,7 @@ import org.workcraft.workspace.FileFilters;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.io.File;
 
 public class DialogUtils {
@@ -22,6 +23,9 @@ public class DialogUtils {
 
     private static final String CONFIG_FILE_CHOOSER_WIDTH = "filechooser.width";
     private static final String CONFIG_FILE_CHOOSER_HEIGHT = "filechooser.height";
+    private static final String YES_BUTTON_LABEL = "Yes";
+    private static final String NO_BUTTON_LABEL = "No";
+    private static final String CANCEL_BUTTON_LABEL = "Cancel";
 
     private static void logMessage(String message, int messageType) {
         if ((message != null) && !message.isEmpty()) {
@@ -123,17 +127,75 @@ public class DialogUtils {
         }
         Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
-            MainWindow mainWindow = framework.getMainWindow();
-            String yesText = UIManager.getString("OptionPane.yesButtonText");
-            String noText = UIManager.getString("OptionPane.noButtonText");
-            String[] options = {yesText, noText};
-            String text = TextUtils.truncateLines(message, TRUNCATE_LENGTH);
-            int answer = JOptionPane.showOptionDialog(mainWindow, text + question, title,
-                    JOptionPane.YES_NO_OPTION, messageType, null, options, defaultChoice ? yesText : noText);
+            JButton yesButton = new JButton();
+            JButton noButton = new JButton();
+            JButton[] options = {yesButton, noButton};
+            JOptionPane pane = new JOptionPane(TextUtils.truncateLines(message, TRUNCATE_LENGTH) + question,
+                    messageType, JOptionPane.YES_NO_OPTION, null, options, defaultChoice ? yesButton : noButton);
 
-            result = answer == JOptionPane.YES_OPTION;
+            JDialog dialog = pane.createDialog(framework.getMainWindow(), title);
+            dialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            setupDialogPaneButton(dialog, pane, yesButton, YES_BUTTON_LABEL);
+            setupDialogPaneButton(dialog, pane, noButton, NO_BUTTON_LABEL);
+
+            dialog.setVisible(true);
+            result = pane.getValue() == yesButton;
         }
         return result;
+    }
+
+    public static int showYesNoCancel(String message, String title) {
+        return showYesNoCancel(message, title, JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE);
+    }
+
+    public static int showYesNoCancel(String message, String title, int defaultChoice, int messageType) {
+        int result = JOptionPane.CANCEL_OPTION;
+        Framework framework = Framework.getInstance();
+        if (framework.isInGuiMode()) {
+            JButton yesButton = new JButton();
+            JButton noButton = new JButton();
+            JButton cancelButton = new JButton();
+
+            JButton[] options = {yesButton, noButton, cancelButton};
+            JButton defaultOption = cancelButton;
+            if (defaultChoice == JOptionPane.YES_OPTION) {
+                defaultOption = yesButton;
+            } else if (defaultChoice == JOptionPane.NO_OPTION) {
+                defaultOption = noButton;
+            }
+            JOptionPane pane = new JOptionPane(message, messageType, JOptionPane.YES_NO_CANCEL_OPTION,
+                    null, options, defaultOption);
+
+            JDialog dialog = pane.createDialog(framework.getMainWindow(), title);
+            dialog.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            setupDialogPaneButton(dialog, pane, yesButton, YES_BUTTON_LABEL);
+            setupDialogPaneButton(dialog, pane, noButton, NO_BUTTON_LABEL);
+            setupDialogPaneButton(dialog, pane, cancelButton, CANCEL_BUTTON_LABEL);
+
+            dialog.setVisible(true);
+            if (pane.getValue() == yesButton) {
+                result = JOptionPane.YES_OPTION;
+            } else if (pane.getValue() == noButton) {
+                result = JOptionPane.NO_OPTION;
+            }
+        }
+        return result;
+    }
+
+    private static void setupDialogPaneButton(JDialog dialog, JOptionPane pane, JButton button, String label) {
+        button.setText(label);
+        char mnemonic = label.charAt(0);
+        button.setMnemonic(mnemonic);
+        int key = KeyEvent.getExtendedKeyCodeForChar(mnemonic);
+        button.addActionListener(l -> buttonAction(dialog, pane, button));
+        dialog.getRootPane().registerKeyboardAction(event -> buttonAction(dialog, pane, button),
+                KeyStroke.getKeyStroke(key, 0),
+                JComponent.WHEN_IN_FOCUSED_WINDOW);
+    }
+
+    private static void buttonAction(JDialog dialog, JOptionPane pane, JButton button) {
+        pane.setValue(button);
+        dialog.setVisible(false);
     }
 
     public static String showInput(String message, String initial) {
@@ -148,27 +210,6 @@ public class DialogUtils {
                     JOptionPane.QUESTION_MESSAGE, null, null, initial);
         }
         return initial;
-    }
-
-    public static int showYesNoCancel(String message, String title, int defaultChoice) {
-        String yesText = UIManager.getString("OptionPane.yesButtonText");
-        String noText = UIManager.getString("OptionPane.noButtonText");
-        String cancelText = UIManager.getString("OptionPane.cancelButtonText");
-        return showChoice(message, title, yesText, noText, cancelText, defaultChoice);
-    }
-
-    private static int showChoice(String message, String title, String yesText, String noText, String cancelText,
-            int defaultChoice) {
-
-        int result = JOptionPane.CANCEL_OPTION;
-        Framework framework = Framework.getInstance();
-        if (framework.isInGuiMode()) {
-            MainWindow mainWindow = framework.getMainWindow();
-            String[] options = {yesText, noText, cancelText};
-            result = JOptionPane.showOptionDialog(mainWindow, message, title, JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE, null, options, options[defaultChoice]);
-        }
-        return result;
     }
 
     public static JFileChooser createFileOpener(String title, boolean allowWorkFiles, Format format) {
