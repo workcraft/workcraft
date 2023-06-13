@@ -239,9 +239,6 @@ public class Menu extends JMenuBar {
         ActionMenuItem miBugreport = new ActionMenuItem(MainWindowActions.HELP_BUGREPORT_ACTION);
         mnHelp.add(miBugreport);
 
-        ActionMenuItem miQuestion = new ActionMenuItem(MainWindowActions.HELP_EMAIL_ACTION);
-        mnHelp.add(miQuestion);
-
         mnHelp.addSeparator();
 
         ActionMenuItem miAbout = new ActionMenuItem(MainWindowActions.HELP_ABOUT_ACTION);
