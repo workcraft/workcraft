@@ -28,13 +28,14 @@ public class Info {
 
     private static final Pattern EDITION_PATTERN = Pattern.compile("^WORKCRAFT_EDITION=\"(.+)\"$", Pattern.MULTILINE);
     private static final File RELEASE_FILE = new File("release");
+    private static final String DEVELOPMENT_TEXT = "development mode";
 
     public static Version getVersion() {
         return VERSION;
     }
 
     public static String getTitle() {
-        return TITLE + ' ' + Integer.toString(VERSION.major);
+        return TITLE + ' ' + VERSION.major;
     }
 
     public static String getSubtitle() {
@@ -47,16 +48,25 @@ public class Info {
         }
     }
 
-    private static String getEdition() {
-        if (RELEASE_FILE.isFile() && RELEASE_FILE.exists()) {
-            try {
-                String text = FileUtils.readAllText(RELEASE_FILE);
-                Matcher matcher = EDITION_PATTERN.matcher(text);
-                if (matcher.find()) {
-                    return matcher.group(1);
-                }
-            } catch (IOException ignored) {
+    public static boolean isReleaseMode() {
+        return RELEASE_FILE.exists() && RELEASE_FILE.isFile();
+    }
+
+    public static boolean isDevelopmentMode() {
+        return !isReleaseMode();
+    }
+
+    public static String getEdition() {
+        if (isDevelopmentMode()) {
+            return DEVELOPMENT_TEXT;
+        }
+        try {
+            String text = FileUtils.readAllText(RELEASE_FILE);
+            Matcher matcher = EDITION_PATTERN.matcher(text);
+            if (matcher.find()) {
+                return matcher.group(1);
             }
+        } catch (IOException ignored) {
         }
         return "";
     }
@@ -72,7 +82,7 @@ public class Info {
     }
 
     public static String getCopyright() {
-        return "Copyright " + Integer.toString(START_YEAR) + '-' + Integer.toString(CURRENT_YEAR) + ' ' + ORGANISATION;
+        return "Copyright " + START_YEAR + '-' + CURRENT_YEAR + ' ' + ORGANISATION;
     }
 
     public static String getHomepage() {
