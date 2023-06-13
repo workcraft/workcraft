@@ -1,7 +1,6 @@
 package org.workcraft.gui;
 
 import org.workcraft.Framework;
-import org.workcraft.Info;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.dialogs.AboutDialog;
@@ -224,7 +223,7 @@ public class MainWindowActions {
     public static final Action HELP_TUTORIALS_ACTION = new Action("Tutorials",
             () -> FileUtils.openExternally("tutorial/start.html", "Tutorials access error"));
 
-    public static final Action HELP_BUGREPORT_ACTION = new Action("Report a bug at GitHub",
+    public static final Action HELP_BUGREPORT_ACTION = new Action("Report issue at GitHub",
             () -> {
                 try {
                     URI uri = new URI("https://github.com/tuura/workcraft/issues/new");
@@ -233,9 +232,6 @@ public class MainWindowActions {
                     LogUtils.logError(e.getMessage());
                 }
             });
-
-    public static final Action HELP_EMAIL_ACTION = new Action("Contact developers by e-mail",
-            () -> DesktopApi.mail(Info.getEmail(), "", ""));
 
     public static final Action HELP_ABOUT_ACTION = new Action("About Workcraft",
             () -> new AboutDialog(Framework.getInstance().getMainWindow()).reveal());

@@ -24,7 +24,6 @@ public class Info {
     private static final int CURRENT_YEAR = Calendar.getInstance().get(Calendar.YEAR);
     private static final String ORGANISATION = "Newcastle University";
     private static final String HOMEPAGE = "https://workcraft.org/";
-    private static final String EMAIL = "support@workcraft.org";
 
     private static final Pattern EDITION_PATTERN = Pattern.compile("^WORKCRAFT_EDITION=\"(.+)\"$", Pattern.MULTILINE);
     private static final File RELEASE_FILE = new File("release");
@@ -87,10 +86,6 @@ public class Info {
 
     public static String getHomepage() {
         return HOMEPAGE;
-    }
-
-    public static String getEmail() {
-        return EMAIL;
     }
 
     public static String getGeneratedByText(String prefix, String suffix) {

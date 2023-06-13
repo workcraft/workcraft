@@ -36,14 +36,14 @@ public class DesktopApi {
     public static boolean mail(URI uri) {
         if (mailDesktop(uri)) return true;
         if (openSystemSpecific(uri.toString())) return true;
-        LogUtils.logError("Cannot open a mailer for '" + uri.toString() + "'");
+        LogUtils.logError("Cannot open a mailer for '" + uri + "'");
         return false;
     }
 
     public static boolean browse(URI uri) {
         if (browseDesktop(uri)) return true;
         if (openSystemSpecific(uri.toString())) return true;
-        LogUtils.logError("Cannot open a browser for '" + uri.toString() + "'");
+        LogUtils.logError("Cannot open a browser for '" + uri + "'");
         return false;
     }
 
@@ -231,10 +231,6 @@ public class DesktopApi {
         return getOs().isMac() ? e.isMetaDown() : e.isControlDown();
     }
 
-    public static int getMenuKeyCode() {
-        return getOs().isMac() ? KeyEvent.VK_META : KeyEvent.VK_CONTROL;
-    }
-
     public static KeyStroke getUndoKeyStroke() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_Z, getMenuKeyMask());
     }
@@ -253,10 +249,6 @@ public class DesktopApi {
 
     public static KeyStroke getRestoreKeyStroke() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_0, getMenuKeyMask());
-    }
-
-    public static KeyStroke getSelectAllKeyStroke() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_A, getMenuKeyMask());
     }
 
 }
