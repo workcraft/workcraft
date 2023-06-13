@@ -39,12 +39,20 @@ public class MpsatLtlxTask implements Task<MpsatOutput> {
         String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatVerificationSettings.getCommand());
         command.add(toolName);
 
+        // MPSat mode (must be the first argument)
+        command.add("-B=" + hoaFile.getAbsolutePath());
+
+        // Global arguments
+        command.add("-c");
+        int threadCount = MpsatVerificationSettings.getThreadCount();
+        if (threadCount > 0) {
+            command.add("-j" + threadCount);
+        }
+
         // Extra arguments (should go before the file parameters)
         command.addAll(TextUtils.splitWords(MpsatVerificationSettings.getArgs()));
 
-        // Built-in arguments
-        command.add("-B=" + hoaFile.getAbsolutePath());
-        command.add("-c");
+        // STG file
         command.add(netFile.getAbsolutePath());
 
         boolean printStdout = MpsatVerificationSettings.getPrintStdout();
