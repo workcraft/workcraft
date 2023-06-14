@@ -3,11 +3,8 @@ package org.workcraft.plugins.circuit.interop;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.FileReference;
-import org.workcraft.dom.references.HierarchyReferenceManager;
-import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.*;
 import org.workcraft.formula.BooleanFormula;
@@ -925,12 +922,8 @@ public class VerilogImporter implements Importer {
                 circuit.reparent(container, circuit, circuit.getRoot(), Collections.singletonList(component));
             }
         }
-        HierarchyReferenceManager refManager = circuit.getReferenceManager();
-        NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(component);
-        NameManager nameManager = refManager.getNameManager(namespaceProvider);
         String name = NamespaceHelper.getReferenceName(ref);
-        String derivedName = nameManager.getDerivedName(component, name);
-        circuit.setName(component, derivedName);
+        circuit.setName(component, name);
     }
 
     private FunctionComponent createWait(Circuit circuit, Wait instance, HashMap<String, Net> nets) {
