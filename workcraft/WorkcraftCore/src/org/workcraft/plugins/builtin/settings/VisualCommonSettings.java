@@ -1,6 +1,7 @@
 package org.workcraft.plugins.builtin.settings;
 
 import org.workcraft.Config;
+import org.workcraft.dom.visual.Alignment;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.properties.PropertyDeclaration;
@@ -43,6 +44,14 @@ public class VisualCommonSettings extends AbstractCommonSettings {
     private static final String keyConnectionArrowLength = prefix + ".connectionArrowLength";
     private static final String keyConnectionBubbleSize = prefix + ".connectionBubbleSize";
     private static final String keyConnectionColor = prefix + ".connectionColor";
+    // Comment
+    private static final String keyCommentBaseSize = prefix + ".commentBaseSize";
+    private static final String keyCommentStrokeWidth = prefix + ".commentStrokeWidth";
+    private static final String keyCommentTextAlignment = prefix + ".commentTextAlignment";
+    private static final String keyCommentTextColor = prefix + ".commentTextColor";
+    private static final String keyCommentBorderColor = prefix + ".commentBorderColor";
+    private static final String keyCommentFillColor = prefix + ".commentFillColor";
+    private static final String keyCommentFontSize = prefix + ".commentFontSize";
     // Pivot
     private static final String keyPivotSize = prefix + ".pivotSize";
     private static final String keyPivotWidth = prefix + ".pivotWidth";
@@ -57,9 +66,6 @@ public class VisualCommonSettings extends AbstractCommonSettings {
     private static final double defaultStrokeWidth = 0.1;
     private static final Color defaultBorderColor = Color.BLACK;
     private static final Color defaultFillColor = Color.WHITE;
-    // Pivot
-    private static final double defaultPivotSize = 0.2;
-    private static final double defaultPivotWidth = 0.02;
     // Label
     private static final boolean defaultLabelVisibility = true;
     private static final Positioning defaultLabelPositioning = Positioning.TOP;
@@ -78,6 +84,17 @@ public class VisualCommonSettings extends AbstractCommonSettings {
     private static final double defaultConnectionArrowLength = 0.4;
     private static final double defaultConnectionBubbleSize = 0.2;
     private static final Color defaultConnectionColor = Color.BLACK;
+    // Comment
+    private static final double defaultCommentBaseSize = 1.0;
+    private static final double defaultCommentStrokeWidth = 0.02;
+    private static final Alignment defaultCommentTextAlignment = Alignment.CENTER;
+    private static final Color defaultCommentTextColor = Color.BLACK;
+    private static final Color defaultCommentBorderColor = Color.GRAY;
+    private static final Color defaultCommentFillColor = new Color(255, 255, 200);
+    private static final double defaultCommentFontSize = 0.5f;
+    // Pivot
+    private static final double defaultPivotSize = 0.2;
+    private static final double defaultPivotWidth = 0.02;
     // Expression
     private static final boolean defaultUseSubscript = false;
 
@@ -107,6 +124,14 @@ public class VisualCommonSettings extends AbstractCommonSettings {
     private static double connectionArrowLength = defaultConnectionArrowLength;
     private static double connectionBubbleSize = defaultConnectionBubbleSize;
     private static Color connectionColor = defaultConnectionColor;
+    // Comment
+    private static double commentBaseSize = defaultCommentBaseSize;
+    private static double commentStrokeWidth = defaultCommentStrokeWidth;
+    private static Alignment commentTextAlignment = defaultCommentTextAlignment;
+    private static Color commentTextColor = defaultCommentTextColor;
+    private static Color commentBorderColor = defaultCommentBorderColor;
+    private static Color commentFillColor = defaultCommentFillColor;
+    private static double commentFontSize = defaultCommentFontSize;
     // Pivot
     private static double pivotSize = defaultPivotSize;
     private static double pivotWidth = defaultPivotWidth;
@@ -202,7 +227,7 @@ public class VisualCommonSettings extends AbstractCommonSettings {
                 VisualCommonSettings::setConnectionArrowWidth,
                 VisualCommonSettings::getConnectionArrowWidth));
 
-        properties.add(new PropertyDeclaration<Double>(Double.class,
+        properties.add(new PropertyDeclaration<>(Double.class,
                 PropertyHelper.BULLET_PREFIX + "Arrow length (cm)",
                 VisualCommonSettings::setConnectionArrowLength,
                 VisualCommonSettings::getConnectionArrowLength) {
@@ -221,6 +246,43 @@ public class VisualCommonSettings extends AbstractCommonSettings {
                 PropertyHelper.BULLET_PREFIX + "Color",
                 VisualCommonSettings::setConnectionColor,
                 VisualCommonSettings::getConnectionColor));
+
+        properties.add(PropertyHelper.createSeparatorProperty("Comment"));
+
+        properties.add(new PropertyDeclaration<>(Double.class,
+                PropertyHelper.BULLET_PREFIX + "Base size (cm)",
+                VisualCommonSettings::setCommentBaseSize,
+                VisualCommonSettings::getCommentBaseSize));
+
+        properties.add(new PropertyDeclaration<>(Double.class,
+                PropertyHelper.BULLET_PREFIX + "Stroke width (cm)",
+                VisualCommonSettings::setCommentStrokeWidth,
+                VisualCommonSettings::getCommentStrokeWidth));
+
+        properties.add(new PropertyDeclaration<>(Alignment.class,
+                PropertyHelper.BULLET_PREFIX + "Text alignment",
+                VisualCommonSettings::setCommentTextAlignment,
+                VisualCommonSettings::getCommentTextAlignment));
+
+        properties.add(new PropertyDeclaration<>(Color.class,
+                PropertyHelper.BULLET_PREFIX + "Text color",
+                VisualCommonSettings::setCommentTextColor,
+                VisualCommonSettings::getCommentTextColor));
+
+        properties.add(new PropertyDeclaration<>(Color.class,
+                PropertyHelper.BULLET_PREFIX + "Border color",
+                VisualCommonSettings::setCommentBorderColor,
+                VisualCommonSettings::getCommentBorderColor));
+
+        properties.add(new PropertyDeclaration<>(Color.class,
+                PropertyHelper.BULLET_PREFIX + "Fill color",
+                VisualCommonSettings::setCommentFillColor,
+                VisualCommonSettings::getCommentFillColor));
+
+        properties.add(new PropertyDeclaration<>(Double.class,
+                PropertyHelper.BULLET_PREFIX + "Font size (cm)",
+                VisualCommonSettings::setCommentFontSize,
+                VisualCommonSettings::getCommentFontSize));
 
         properties.add(PropertyHelper.createSeparatorProperty("Pivot"));
 
@@ -272,6 +334,14 @@ public class VisualCommonSettings extends AbstractCommonSettings {
         setConnectionArrowLength(config.getDouble(keyConnectionArrowLength, defaultConnectionArrowLength));
         setConnectionBubbleSize(config.getDouble(keyConnectionBubbleSize, defaultConnectionBubbleSize));
         setConnectionColor(config.getColor(keyConnectionColor, defaultConnectionColor));
+        // Comment
+        setCommentBaseSize(config.getDouble(keyCommentBaseSize, defaultCommentBaseSize));
+        setCommentStrokeWidth(config.getDouble(keyCommentStrokeWidth, defaultCommentStrokeWidth));
+        setCommentTextAlignment(config.getEnum(keyCommentTextAlignment, Alignment.class, defaultCommentTextAlignment));
+        setCommentTextColor(config.getColor(keyCommentTextColor, defaultCommentTextColor));
+        setCommentBorderColor(config.getColor(keyCommentBorderColor, defaultCommentBorderColor));
+        setCommentFillColor(config.getColor(keyCommentFillColor, defaultCommentFillColor));
+        setCommentFontSize(config.getDouble(keyCommentFontSize, defaultCommentFontSize));
         // Pivot
         setPivotSize(config.getDouble(keyPivotSize, defaultPivotSize));
         setPivotWidth(config.getDouble(keyPivotWidth, defaultPivotWidth));
@@ -304,6 +374,14 @@ public class VisualCommonSettings extends AbstractCommonSettings {
         config.setDouble(keyConnectionArrowLength, getConnectionArrowLength());
         config.setDouble(keyConnectionBubbleSize, getConnectionBubbleSize());
         config.setColor(keyConnectionColor, getConnectionColor());
+        // Comment
+        config.setDouble(keyCommentBaseSize, getCommentBaseSize());
+        config.setDouble(keyCommentStrokeWidth, getCommentStrokeWidth());
+        config.setEnum(keyCommentTextAlignment, getCommentTextAlignment());
+        config.setColor(keyCommentTextColor, getCommentTextColor());
+        config.setColor(keyCommentBorderColor, getCommentBorderColor());
+        config.setColor(keyCommentFillColor, getCommentFillColor());
+        config.setDouble(keyCommentFontSize, getCommentFontSize());
         // Pivot
         config.setDouble(keyPivotSize, getPivotSize());
         config.setDouble(keyPivotWidth, getPivotWidth());
@@ -346,22 +424,6 @@ public class VisualCommonSettings extends AbstractCommonSettings {
 
     public static void setFillColor(Color value) {
         fillColor = value;
-    }
-
-    public static double getPivotSize() {
-        return pivotSize;
-    }
-
-    public static void setPivotSize(double value) {
-        pivotSize = value;
-    }
-
-    public static double getPivotWidth() {
-        return pivotWidth;
-    }
-
-    public static void setPivotWidth(double value) {
-        pivotWidth = value;
     }
 
     public static double getLineSpacing() {
@@ -482,6 +544,78 @@ public class VisualCommonSettings extends AbstractCommonSettings {
 
     public static void setConnectionColor(Color value) {
         connectionColor = value;
+    }
+
+    public static double getCommentBaseSize() {
+        return commentBaseSize;
+    }
+
+    public static void setCommentBaseSize(double value) {
+        commentBaseSize = value;
+    }
+
+    public static double getCommentStrokeWidth() {
+        return commentStrokeWidth;
+    }
+
+    public static void setCommentStrokeWidth(double value) {
+        commentStrokeWidth = value;
+    }
+
+    public static Alignment getCommentTextAlignment() {
+        return commentTextAlignment;
+    }
+
+    public static void setCommentTextAlignment(Alignment value) {
+        commentTextAlignment = value;
+    }
+
+    public static Color getCommentTextColor() {
+        return commentTextColor;
+    }
+
+    public static void setCommentTextColor(Color value) {
+        commentTextColor = value;
+    }
+
+    public static Color getCommentBorderColor() {
+        return commentBorderColor;
+    }
+
+    public static void setCommentBorderColor(Color value) {
+        commentBorderColor = value;
+    }
+
+    public static Color getCommentFillColor() {
+        return commentFillColor;
+    }
+
+    public static void setCommentFillColor(Color value) {
+        commentFillColor = value;
+    }
+
+    public static double getCommentFontSize() {
+        return commentFontSize;
+    }
+
+    public static void setCommentFontSize(double value) {
+        commentFontSize = value;
+    }
+
+    public static double getPivotSize() {
+        return pivotSize;
+    }
+
+    public static void setPivotSize(double value) {
+        pivotSize = value;
+    }
+
+    public static double getPivotWidth() {
+        return pivotWidth;
+    }
+
+    public static void setPivotWidth(double value) {
+        pivotWidth = value;
     }
 
     public static boolean getUseSubscript() {

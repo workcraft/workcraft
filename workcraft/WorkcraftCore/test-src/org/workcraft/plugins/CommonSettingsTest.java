@@ -17,33 +17,6 @@ class CommonSettingsTest {
     }
 
     @Test
-    void commonCommentSettingsTest() {
-        final Framework framework = Framework.getInstance();
-        String prefix = "CommonCommentSettings";
-
-        Assertions.assertEquals(Config.toString(CommentCommonSettings.getBaseSize()),
-                framework.getConfigVar(prefix + ".baseSize", false));
-
-        Assertions.assertEquals(Config.toString(CommentCommonSettings.getStrokeWidth()),
-                framework.getConfigVar(prefix + ".strokeWidth", false));
-
-        Assertions.assertEquals(Config.toString(CommentCommonSettings.getTextAlignment()),
-                framework.getConfigVar(prefix + ".textAlignment", false));
-
-        Assertions.assertEquals(Config.toString(CommentCommonSettings.getTextColor()),
-                framework.getConfigVar(prefix + ".textColor", false));
-
-        Assertions.assertEquals(Config.toString(CommentCommonSettings.getBorderColor()),
-                framework.getConfigVar(prefix + ".borderColor", false));
-
-        Assertions.assertEquals(Config.toString(CommentCommonSettings.getFillColor()),
-                framework.getConfigVar(prefix + ".fillColor", false));
-
-        Assertions.assertEquals(Config.toString(CommentCommonSettings.getFontSize()),
-                framework.getConfigVar(prefix + ".fontSize", false));
-    }
-
-    @Test
     void commonDebugSettingsTest() {
         final Framework framework = Framework.getInstance();
         String prefix = "CommonDebugSettings";
@@ -251,6 +224,29 @@ class CommonSettingsTest {
 
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getConnectionColor()),
                 framework.getConfigVar(prefix + ".connectionColor", false));
+
+        // Comment
+
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getCommentBaseSize()),
+                framework.getConfigVar(prefix + ".commentBaseSize", false));
+
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getCommentStrokeWidth()),
+                framework.getConfigVar(prefix + ".commentStrokeWidth", false));
+
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getCommentTextAlignment()),
+                framework.getConfigVar(prefix + ".commentTextAlignment", false));
+
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getCommentTextColor()),
+                framework.getConfigVar(prefix + ".commentTextColor", false));
+
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getCommentBorderColor()),
+                framework.getConfigVar(prefix + ".commentBorderColor", false));
+
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getCommentFillColor()),
+                framework.getConfigVar(prefix + ".commentFillColor", false));
+
+        Assertions.assertEquals(Config.toString(VisualCommonSettings.getCommentFontSize()),
+                framework.getConfigVar(prefix + ".commentFontSize", false));
 
         // Pivot
         Assertions.assertEquals(Config.toString(VisualCommonSettings.getPivotSize()),

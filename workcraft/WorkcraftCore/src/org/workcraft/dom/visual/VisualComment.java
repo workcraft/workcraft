@@ -6,7 +6,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.builtin.settings.CommentCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
@@ -20,16 +20,16 @@ import java.awt.geom.Rectangle2D;
 public class VisualComment extends VisualComponent {
     public static final String PROPERTY_TEXT_ALIGNMENT = "Text alignment";
 
-    protected double size = CommentCommonSettings.getBaseSize();
-    protected double strokeWidth = CommentCommonSettings.getStrokeWidth();
-    protected Alignment textAlignment = CommentCommonSettings.getTextAlignment();
+    protected double size = VisualCommonSettings.getCommentBaseSize();
+    protected double strokeWidth = VisualCommonSettings.getCommentStrokeWidth();
+    protected Alignment textAlignment = VisualCommonSettings.getCommentTextAlignment();
 
     public VisualComment(CommentNode note) {
         super(note);
         setLabelPositioning(Positioning.CENTER);
-        setForegroundColor(CommentCommonSettings.getBorderColor());
-        setFillColor(CommentCommonSettings.getFillColor());
-        setLabelColor(CommentCommonSettings.getTextColor());
+        setForegroundColor(VisualCommonSettings.getCommentBorderColor());
+        setFillColor(VisualCommonSettings.getCommentFillColor());
+        setLabelColor(VisualCommonSettings.getCommentTextColor());
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
         removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
         removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
@@ -54,7 +54,7 @@ public class VisualComment extends VisualComponent {
 
     @Override
     public Font getLabelFont() {
-        return LABEL_FONT.deriveFont((float) CommentCommonSettings.getFontSize());
+        return LABEL_FONT.deriveFont((float) VisualCommonSettings.getCommentFontSize());
     }
 
     @Override
