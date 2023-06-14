@@ -111,6 +111,8 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     // Layout
     private static final String keyOpenNonvisual = prefix + ".openNonvisual";
     private static final String keyLargeModelSize = prefix + ".largeModelSize";
+    // Export
+    private static final String keyFlatnameSeparator = prefix + ".flatnameSeparator";
 
     /*
      * Defaults
@@ -140,6 +142,8 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     // Layout
     private static final boolean defaultOpenNonvisual = true;
     private static final int defaultLargeModelSize = 500;
+    // Export
+    private static final String defaultFlatnameSeparator = "_";
 
     /*
      * Variables
@@ -169,6 +173,8 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     // Layout
     private static boolean openNonvisual = defaultOpenNonvisual;
     private static int largeModelSize = defaultLargeModelSize;
+    // Export
+    private static String flatnameSeparator = defaultFlatnameSeparator;
 
     static {
         properties.add(PropertyHelper.createSeparatorProperty("GUI decoration"));
@@ -285,6 +291,13 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 PropertyHelper.BULLET_PREFIX + "Model size for layout warning (0-9999 elements)",
                 EditorCommonSettings::setLargeModelSize,
                 EditorCommonSettings::getLargeModelSize));
+
+        properties.add(PropertyHelper.createSeparatorProperty("Model export"));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Separator for converting page references into flat name",
+                EditorCommonSettings::setFlatnameSeparator,
+                EditorCommonSettings::getFlatnameSeparator));
     }
 
     @Override
@@ -319,6 +332,8 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         // Layout
         setOpenNonvisual(config.getBoolean(keyOpenNonvisual, defaultOpenNonvisual));
         setLargeModelSize(config.getInt(keyLargeModelSize, defaultLargeModelSize));
+        // Export
+        setFlatnameSeparator(config.getString(keyFlatnameSeparator, defaultFlatnameSeparator));
     }
 
     @Override
@@ -348,6 +363,8 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         // Layout
         config.setBoolean(keyOpenNonvisual, getOpenNonvisual());
         config.setInt(keyLargeModelSize, getLargeModelSize());
+        // Export
+        config.set(keyFlatnameSeparator, getFlatnameSeparator());
     }
 
     @Override
@@ -525,6 +542,14 @@ public class EditorCommonSettings extends AbstractCommonSettings {
             value = 9999;
         }
         largeModelSize = value;
+    }
+
+    public static String getFlatnameSeparator() {
+        return flatnameSeparator;
+    }
+
+    public static void setFlatnameSeparator(String value) {
+        flatnameSeparator = value;
     }
 
 }

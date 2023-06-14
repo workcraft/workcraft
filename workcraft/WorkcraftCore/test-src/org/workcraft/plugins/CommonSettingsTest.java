@@ -100,6 +100,10 @@ class CommonSettingsTest {
 
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getLargeModelSize()),
                 framework.getConfigVar(prefix + ".largeModelSize", false));
+
+        // Export
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getFlatnameSeparator()),
+                framework.getConfigVar(prefix + ".flatnameSeparator", false));
     }
 
     @Test
