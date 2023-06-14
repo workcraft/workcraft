@@ -224,7 +224,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
                 if (writeAssigns(writer, circuitInfo, component)) {
                     hasAssignments = true;
                 } else {
-                    String ref = circuitInfo.getComponentReference(component);
+                    String ref = circuitInfo.circuit.getComponentReference(component);
                     LogUtils.logError("Unmapped component '" + ref + "' cannot be exported as assign statements.");
                 }
             }

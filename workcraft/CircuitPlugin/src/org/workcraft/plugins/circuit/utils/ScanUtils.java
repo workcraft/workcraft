@@ -340,7 +340,7 @@ public final class ScanUtils {
 
         VisualFunctionContact pin = circuit.getPin(component, pinName);
         if (pin == null) {
-            String componentRef = Identifier.truncateNamespaceSeparator(circuit.getMathReference(component));
+            String componentRef = circuit.getMathModel().getComponentReference(component.getReferencedComponent());
             LogUtils.logError("Cannot find pin '" + pinName + "' in scan component '" + componentRef + "'");
         }
         return pin;

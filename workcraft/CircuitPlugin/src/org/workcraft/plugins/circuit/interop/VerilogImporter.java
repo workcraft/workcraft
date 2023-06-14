@@ -319,10 +319,10 @@ public class VerilogImporter implements Importer {
             FunctionComponent component;
             if (gate != null) {
                 component = createLibraryGate(circuit, verilogInstance, nets, gate, substitutionRule);
-            } else if (VerilogUtils.isWaitInstance(moduleName)) {
+            } else if (VerilogUtils.isWaitModule(moduleName)) {
                 Wait waitInstance = instanceToWaitWithType(verilogInstance);
                 component = createWait(circuit, waitInstance, nets);
-            } else if (VerilogUtils.isMutexInstance(moduleName)) {
+            } else if (VerilogUtils.isMutexModule(moduleName)) {
                 Mutex mutexInstance = instanceToMutexWithProtocol(verilogInstance, mutexes);
                 component = createMutex(circuit, mutexInstance, nets);
             } else {

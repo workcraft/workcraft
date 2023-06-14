@@ -7,7 +7,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -245,7 +244,7 @@ public final class CircuitUtils {
             } else {
                 // If the component has a single output, use the component name. Otherwise, append the contact.
                 if (component.getOutputs().size() == 1) {
-                    result = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
+                    result = circuit.getComponentReference(component);
                 } else {
                     result = circuit.getNodeReference(contact);
                 }
@@ -398,7 +397,7 @@ public final class CircuitUtils {
     }
 
     public static String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
-        String result = Identifier.truncateNamespaceSeparator(circuit.getMathReference(gate));
+        String result = circuit.getMathModel().getComponentReference(gate.getReferencedComponent());
 
         VisualFunctionContact outputContact = gate.getGateOutput();
         String outputName = outputContact.getName();

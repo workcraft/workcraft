@@ -28,7 +28,7 @@ public class NamespaceHelper {
 
     public static String convertLegacyHierarchySeparators(String ref) {
         // Use negative lookahead (?![0-9]) to make sure that hierarchy separator is not followed by a number.
-        // This is because "/[0-9]" is used in in STG for transition instances.
+        // This is because "/[0-9]" is used in STG for transition instances.
         return ref.replaceAll("/(?![0-9])", HIERARCHY_SEPARATOR);
     }
 

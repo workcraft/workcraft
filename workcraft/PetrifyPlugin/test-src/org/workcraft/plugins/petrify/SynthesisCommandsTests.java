@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
@@ -313,8 +312,7 @@ class SynthesisCommandsTests {
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             String moduleName = component.getModule();
             if (mutexModuleNames.contains(moduleName)) {
-                String ref = circuit.getNodeReference(component);
-                result.add(Identifier.truncateNamespaceSeparator(ref));
+                result.add(circuit.getComponentReference(component));
             }
         }
         return result;

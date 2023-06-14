@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.gui.properties.PropertyHelper;
@@ -262,8 +261,8 @@ public final class VerilogUtils {
 
     public static boolean isUndefinedModule(String moduleName) {
         return !isPrimitiveGate(moduleName)
-                && !isWaitInstance(moduleName)
-                && !isMutexInstance(moduleName)
+                && !isWaitModule(moduleName)
+                && !isMutexModule(moduleName)
                 && !isLibraryGate(moduleName);
     }
 
@@ -287,11 +286,11 @@ public final class VerilogUtils {
         }
     }
 
-    public static boolean isWaitInstance(String moduleName) {
+    public static boolean isWaitModule(String moduleName) {
         return ArbitrationUtils.getWaitModuleNames().contains(moduleName);
     }
 
-    public static boolean isMutexInstance(String moduleName) {
+    public static boolean isMutexModule(String moduleName) {
         return ArbitrationUtils.getMutexModuleNames().contains(moduleName);
     }
 
@@ -333,7 +332,7 @@ public final class VerilogUtils {
         Node parent = contact.getParent();
         if (parent instanceof CircuitComponent) {
             CircuitComponent component = (CircuitComponent) parent;
-            String instanceRef = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
+            String instanceRef = circuit.getComponentReference(component);
             String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
             String contactName = getPortNameWithSubstitutions(component.getModule(), contact.getName());
             return instanceFlatName + "/" + contactName;

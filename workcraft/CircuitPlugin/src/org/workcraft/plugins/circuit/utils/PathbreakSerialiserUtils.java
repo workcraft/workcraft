@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.Info;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -35,7 +34,7 @@ public final class PathbreakSerialiserUtils {
     }
 
     private static void writeInstance(PrintWriter writer, Circuit circuit, FunctionComponent component) {
-        String instanceRef = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
+        String instanceRef = circuit.getComponentReference(component);
         String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
         String msg = "Processing instance '" + instanceFlatName + "': ";
         if (!component.isMapped()) {

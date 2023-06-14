@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit.refinement;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -82,8 +81,7 @@ public class RefinementDependencyGraph {
     }
 
     public static String createCompositeLabel(Circuit circuit, FunctionComponent component) {
-        return Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component))
-                + COMPOSITE_LABEL_SEPARATOR + component.getModule();
+        return circuit.getComponentReference(component) + COMPOSITE_LABEL_SEPARATOR + component.getModule();
     }
 
     public static boolean isCompositeLabel(String label) {

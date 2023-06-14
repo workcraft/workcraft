@@ -2,11 +2,11 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.CircuitComponent;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.tools.CycleAnalyserTool;
@@ -154,9 +154,9 @@ public final class CycleUtils {
         Map<Contact, Set<Contact>> graph = buildGraph(circuit);
         for (Contact contact : DirectedGraphUtils.findLoopedVertices(graph)) {
             Node parent = contact.getParent();
-            if (parent instanceof FunctionComponent) {
-                String componentRef = circuit.getNodeReference(parent);
-                cycleComponentRefs.add(Identifier.truncateNamespaceSeparator(componentRef));
+            if (parent instanceof CircuitComponent) {
+                String componentRef = circuit.getComponentReference((CircuitComponent) parent);
+                cycleComponentRefs.add(componentRef);
             }
         }
 
