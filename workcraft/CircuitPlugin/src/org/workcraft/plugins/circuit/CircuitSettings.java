@@ -214,55 +214,57 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String forkBufferPattern = defaultForkBufferPattern;
 
     static {
+        properties.add(PropertyHelper.createSeparatorProperty("Visualisation"));
+
         properties.add(new PropertyDeclaration<>(Double.class,
-                "Contact font size (cm)",
+                PropertyHelper.BULLET_PREFIX + "Contact font size (cm)",
                 CircuitSettings::setContactFontSize,
                 CircuitSettings::getContactFontSize));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Show names of zero-delay components",
+                PropertyHelper.BULLET_PREFIX + "Show names of zero-delay components",
                 CircuitSettings::setShowZeroDelayNames,
                 CircuitSettings::getShowZeroDelayNames));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Show set/reset functions of contacts",
+                PropertyHelper.BULLET_PREFIX + "Show set/reset functions of contacts",
                 CircuitSettings::setShowContactFunctions,
                 CircuitSettings::getShowContactFunctions));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                "Border width",
+                PropertyHelper.BULLET_PREFIX + "Border width",
                 CircuitSettings::setBorderWidth,
                 CircuitSettings::getBorderWidth));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                "Wire width",
+                PropertyHelper.BULLET_PREFIX + "Wire width",
                 CircuitSettings::setWireWidth,
                 CircuitSettings::getWireWidth));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                "Active wire",
+                PropertyHelper.BULLET_PREFIX + "Active wire",
                 CircuitSettings::setActiveWireColor,
                 CircuitSettings::getActiveWireColor));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                "Inactive wire",
+                PropertyHelper.BULLET_PREFIX + "Inactive wire",
                 CircuitSettings::setInactiveWireColor,
                 CircuitSettings::getInactiveWireColor));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Simplify generated circuit STG",
+                PropertyHelper.BULLET_PREFIX + "Simplify generated circuit STG",
                 CircuitSettings::setSimplifyStg,
                 CircuitSettings::getSimplifyStg));
 
         properties.add(PropertyHelper.createSeparatorProperty("Gates and arbitration primitives"));
 
         properties.add(new PropertyDeclaration<>(File.class,
-                GATE_LIBRARY_TITLE,
+                PropertyHelper.BULLET_PREFIX + GATE_LIBRARY_TITLE,
                 value -> setGateLibrary(getBaseRelativePath(value)),
                 () -> getBaseRelativeFile(getGateLibrary())));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "WAIT name, dirty input and clean handshake",
+                PropertyHelper.BULLET_PREFIX + "WAIT name, dirty input and clean handshake",
                 value -> {
                     if (parseWaitData(value, Wait.Type.WAIT1) != null) {
                         setWaitData(value);
@@ -273,7 +275,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getWaitData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "WAIT0 name, dirty input and clean handshake",
+                PropertyHelper.BULLET_PREFIX + "WAIT0 name, dirty input and clean handshake",
                 value -> {
                     if (parseWaitData(value, Wait.Type.WAIT0) != null) {
                         setWait0Data(value);
@@ -284,7 +286,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getWait0Data));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "MUTEX name and request-grant pairs",
+                PropertyHelper.BULLET_PREFIX + "MUTEX name and request-grant pairs",
                 value -> {
                     if (parseMutexDataOrNull(value) != null) {
                         setMutexData(value);
@@ -295,17 +297,17 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getMutexData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Late protocol MUTEX module suffix",
+                PropertyHelper.BULLET_PREFIX + "Late protocol MUTEX module suffix",
                 CircuitSettings::setMutexLateSuffix,
                 CircuitSettings::getMutexLateSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Early protocol MUTEX module suffix",
+                PropertyHelper.BULLET_PREFIX + "Early protocol MUTEX module suffix",
                 CircuitSettings::setMutexEarlySuffix,
                 CircuitSettings::getMutexEarlySuffix));
 
         properties.add(new PropertyDeclaration<>(Mutex.Protocol.class,
-                "MUTEX protocol",
+                PropertyHelper.BULLET_PREFIX + "MUTEX protocol",
                 StgSettings::setMutexProtocol,
                 StgSettings::getMutexProtocol));
 
