@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.utils.Hierarchy;
 
 import java.util.HashMap;
@@ -18,7 +19,6 @@ import java.util.regex.Pattern;
 public class NamespaceHelper {
 
     private static final String HIERARCHY_SEPARATOR = ".";
-    private static final String FLATNAME_SEPARATOR = "_";
 
     private static final Pattern HEAD_TAIL_PATTERN = Pattern.compile(
             "((.+?" + Pattern.quote(HIERARCHY_SEPARATOR) + ")|(.+?$))" + "(.*)");
@@ -28,7 +28,7 @@ public class NamespaceHelper {
 
     public static String convertLegacyHierarchySeparators(String ref) {
         // Use negative lookahead (?![0-9]) to make sure that hierarchy separator is not followed by a number.
-        // This is because "/[0-9]" is used in in STG for transition instances.
+        // This is because "/[0-9]" is used in STG for transition instances.
         return ref.replaceAll("/(?![0-9])", HIERARCHY_SEPARATOR);
     }
 
@@ -37,7 +37,7 @@ public class NamespaceHelper {
     }
 
     public static String flattenReference(String reference) {
-        return reference.replaceAll(Pattern.quote(HIERARCHY_SEPARATOR), FLATNAME_SEPARATOR);
+        return reference.replaceAll(Pattern.quote(HIERARCHY_SEPARATOR), EditorCommonSettings.getFlatnameSeparator());
     }
 
     private static LinkedList<String> splitReference(String reference) {

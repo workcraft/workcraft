@@ -27,7 +27,7 @@ public final class SquashUtils {
             VisualCircuit componentModel) {
 
         boolean result = true;
-        String componentRef = Identifier.truncateNamespaceSeparator(circuit.getMathReference(component));
+        String componentRef = circuit.getMathModel().getComponentReference(component.getReferencedComponent());
         if (RefinementUtils.hasInconsistentSignalNames(component.getReferencedComponent(), componentModel.getMathModel())) {
             result = false;
             LogUtils.logWarning("Inconsistent interface signals for component '" + componentRef

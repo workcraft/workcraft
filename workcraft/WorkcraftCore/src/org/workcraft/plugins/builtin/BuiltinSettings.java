@@ -21,7 +21,6 @@ public class BuiltinSettings implements Plugin {
         pm.registerSettings(FavoriteCommonSettings.class);
         pm.registerSettings(EditorCommonSettings.class);
         pm.registerSettings(VisualCommonSettings.class);
-        pm.registerSettings(CommentCommonSettings.class);
         pm.registerSettings(DebugCommonSettings.class);
         pm.registerSettings(LogCommonSettings.class);
         pm.registerSettings(SignalCommonSettings.class);

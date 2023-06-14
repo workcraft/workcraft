@@ -5,6 +5,7 @@ import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.FileReference;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.observers.FunctionConsistencySupervisor;
 import org.workcraft.plugins.circuit.observers.IOTypeConsistencySupervisor;
@@ -118,6 +119,16 @@ public class Circuit extends AbstractMathModel {
             environment = new FileReference();
         }
         environment.setPath(path);
+    }
+
+    public String getComponentName(CircuitComponent component) {
+        String nodeName = getName(component);
+        return nodeName == null ? null : Identifier.truncateNamespaceSeparator(nodeName);
+    }
+
+    public String getComponentReference(CircuitComponent component) {
+        String nodeRef = getNodeReference(component);
+        return nodeRef == null ? null : Identifier.truncateNamespaceSeparator(nodeRef);
     }
 
 }

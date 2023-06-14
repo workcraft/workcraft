@@ -5,7 +5,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.circuit.commands.SquashComponentTransformationCommand;
@@ -179,7 +178,7 @@ class ImportExportTests {
             }
         }
         for (FunctionComponent component: circuit.getFunctionComponents()) {
-            String ref = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
+            String ref = circuit.getComponentReference(component);
             gates.add(component.getModule() + ' ' + NamespaceHelper.flattenReference(ref));
         }
     }

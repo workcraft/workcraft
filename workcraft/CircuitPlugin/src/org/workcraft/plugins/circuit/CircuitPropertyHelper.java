@@ -4,7 +4,6 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
@@ -59,7 +58,7 @@ public class CircuitPropertyHelper {
     }
 
     private static PropertyDescriptor getComponentProperty(VisualCircuit circuit, VisualFunctionComponent component) {
-        String name = Identifier.truncateNamespaceSeparator(circuit.getMathName(component));
+        String name = circuit.getMathModel().getComponentName(component.getReferencedComponent());
 
         Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
                 () -> circuit.select(component),
@@ -119,7 +118,7 @@ public class CircuitPropertyHelper {
         }
 
         String title = "Refinement model for component "
-                + Identifier.truncateNamespaceSeparator(circuit.getMathReference(component));
+                + circuit.getMathModel().getComponentReference(component.getReferencedComponent());
 
         MathModel refinementModel;
         File file = value.getFile();

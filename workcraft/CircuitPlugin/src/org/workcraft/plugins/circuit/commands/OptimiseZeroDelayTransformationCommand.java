@@ -5,7 +5,6 @@ import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -102,7 +101,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         for (VisualFunctionComponent component : components) {
             if (component.getIsZeroDelay()) {
                 component.setIsZeroDelay(false);
-                String ref = Identifier.truncateNamespaceSeparator(circuit.getMathReference(component));
+                String ref = circuit.getMathModel().getComponentReference(component.getReferencedComponent());
                 String descriptionIteration = MpsatUtils.getToolchainDescription("zero delay '" + ref + "'");
                 Boolean isGoodIteration = checkSpeedIndependence(we, descriptionIteration, checkConformation, checkPersistency);
                 if (isGoodIteration == null) {

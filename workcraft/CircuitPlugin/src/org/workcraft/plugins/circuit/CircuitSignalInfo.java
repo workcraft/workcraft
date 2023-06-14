@@ -154,13 +154,8 @@ public class CircuitSignalInfo {
         return result;
     }
 
-    public String getComponentReference(FunctionComponent component) {
-        return Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
-    }
-
     public String getComponentFlattenReference(FunctionComponent component) {
-        String ref = getComponentReference(component);
-        return NamespaceHelper.flattenReference(ref);
+        return NamespaceHelper.flattenReference(circuit.getComponentReference(component));
     }
 
     public Set<Integer> getBusIndexes(String busName) {

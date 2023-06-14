@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.utils.BackendUtils;
@@ -80,8 +79,7 @@ class CircuitLayoutCommandTests {
             }
         }
         for (FunctionComponent component: circuit.getFunctionComponents()) {
-            String ref = circuit.getNodeReference(component);
-            gates.add(component.getModule() + ' ' + Identifier.truncateNamespaceSeparator(ref));
+            gates.add(component.getModule() + ' ' + circuit.getComponentReference(component));
         }
     }
 

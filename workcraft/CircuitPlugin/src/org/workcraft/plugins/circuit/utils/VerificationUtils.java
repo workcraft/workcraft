@@ -1,6 +1,5 @@
 package org.workcraft.plugins.circuit.utils;
 
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -210,8 +209,7 @@ public final class VerificationUtils {
         Set<String> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (!component.getIsZeroDelay() && GateUtils.isExcitedComponent(circuit, component)) {
-                String componentRef = Identifier.truncateNamespaceSeparator(circuit.getNodeReference(component));
-                result.add(componentRef);
+                result.add(circuit.getComponentReference(component));
             }
         }
         return result;
