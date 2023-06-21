@@ -19,14 +19,12 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
     static {
         COST_FUNCTION_CONFLICT_RESOLUTION.put("", "Use default coefficients");
         COST_FUNCTION_CONFLICT_RESOLUTION.put(
-                "-fconc=\"#s*10\" -fcsc=\"#s*10\" -fcomp_csc=\"#s*1\" -fusc=\"#s*5\" -fcomp_usc=\"#s*0\" " +
-                        "-ftrig=\"#s*4\" -fseq=\"#s*1\" -fseq_inc=\"#s*4\" -flock=51",
+                "-fconc=#s*10 -fcsc=#s*10 -fcomp_csc=#s*1 -fusc=#s*5 -fcomp_usc=#s*0 -ftrig=#s*4 -fseq=#s*1 -fseq_inc=#s*4 -flock=51",
                 "");
 
         COST_FUNCTION_TECHNOLOGY_MAPPING.put("", "Use default coefficients");
         COST_FUNCTION_TECHNOLOGY_MAPPING.put(
-                "-fconc=\"#s*10\" -fcsc=\"#s*0\" -fcomp_csc=\"#s*0\" -fusc=\"#s*0\" -fcomp_usc=\"#s*0\" " +
-                        "-ftrig=\"#s*40\" -fseq=\"#s*1\" -fseq_inc=\"#s*2\" -flock=16",
+                "-fconc=#s*10 -fcsc=#s*0 -fcomp_csc=#s*0 -fusc=#s*0 -fcomp_usc=#s*0 -ftrig=#s*40 -fseq=#s*1 -fseq_inc=#s*2 -flock=16",
                 "");
     }
 
