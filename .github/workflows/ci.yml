@@ -150,7 +150,11 @@ jobs:
         with:
           format: jacoco
 
+#      - name: Run a specific unit test
+#        uses: GabrielBB/xvfb-action@v1
+#        with:
+#           run: ./gradlew :MpsatSynthesisPlugin:test --tests org.workcraft.plugins.mpsat_synthesis.SynthesisCommandsTests.bufferTechnologyMappingSynthesis
+
 #      - name: Setup tmate session for remote debugging in case of failure
 #        if: ${{ failure() }}
 #        uses: mxschmitt/action-tmate@v3
-#

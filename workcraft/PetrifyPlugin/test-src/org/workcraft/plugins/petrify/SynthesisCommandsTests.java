@@ -144,12 +144,16 @@ class SynthesisCommandsTests {
 
     @Test
     void edcStandardCelementSynthesis() {
+        // FIXME: Skip this test on Windows as petrify.exe produces significantly different circuit
+        Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
         String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
         testStandardCelementSynthesisCommand(workName, 7);
     }
 
     @Test
     void arbitrationStandardCelementSynthesis() {
+        // FIXME: Skip this test on Windows as petrify.exe produces significantly different circuit
+        Assumptions.assumeFalse(DesktopApi.getOs().isWindows());
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3-hierarchy.stg.work");
         testStandardCelementSynthesisCommand(workName, 6);
     }
