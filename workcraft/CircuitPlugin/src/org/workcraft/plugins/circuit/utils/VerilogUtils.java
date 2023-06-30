@@ -16,6 +16,8 @@ import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.SortUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -100,14 +102,20 @@ public final class VerilogUtils {
             throw new DeserialisationException("No top module found.");
         }
         if (topVerilogModules.size() > 1) {
-            throw new DeserialisationException("More than one top module are found.");
+            List<String> moduleNames = topVerilogModules.stream()
+                    .map(m -> m.name)
+                    .sorted(SortUtils::compareNatural)
+                    .collect(Collectors.toList());
+
+            throw new DeserialisationException(TextUtils.wrapMessageWithItems(
+                    "Found " + topVerilogModules.size() + " top module", moduleNames));
         }
         return topVerilogModules.iterator().next();
     }
 
     public static Collection<VerilogModule> getTopModules(Collection<VerilogModule> verilogModules) {
-        HashMap<String, VerilogModule> nameToModuleMap = getNameToModuleMap(verilogModules);
-        HashSet<VerilogModule> result = new HashSet<>(verilogModules);
+        Map<String, VerilogModule> nameToModuleMap = getNameToModuleMap(verilogModules);
+        Set<VerilogModule> result = new HashSet<>(verilogModules);
         if (verilogModules.size() > 1) {
             for (VerilogModule verilogModule : verilogModules) {
                 if (verilogModule.isEmpty()) {
