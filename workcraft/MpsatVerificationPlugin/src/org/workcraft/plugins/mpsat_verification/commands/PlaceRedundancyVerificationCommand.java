@@ -37,8 +37,7 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
             "// sense that no transition can be disabled solely because of the absence of tokens on any of these places.\n" +
             "let\n" +
             "    PNAMES = {" + PLACE_REDUNDANCY_NAMES_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
-            "    PL = gather pn in PNAMES { P pn } +\n" +
-            "        gather p in PLACES s.t. exists pn in PNAMES { (name p)[..len pn] = pn + \"@\" } { p }\n" +
+            "    PL = P PNAMES + gather p in PLACES s.t. exists pn in PNAMES { (name p)[..len pn] = pn + \"@\" } { p }\n" +
             "{\n" +
             "    exists t in post PL {\n" +
             "        ~@t\n" +

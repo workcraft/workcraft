@@ -37,7 +37,7 @@ public class ReachUtils {
     private static final String CONSISTENCY_REACH =
             "// Checks whether the STG is consistent, i.e. rising and falling transitions of every signal alternate in all traces\n" +
             "exists s in SIGNALS \\ DUMMY {\n" +
-            "    let Es = ev s {\n" +
+            "    let Es = E s {\n" +
             "        $s & exists e in Es s.t. is_plus e { @e }\n" +
             "        |\n" +
             "        ~$s & exists e in Es s.t. is_minus e { @e }\n" +
@@ -70,24 +70,23 @@ public class ReachUtils {
             "? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
             "    EXCEPTION_PAIRS = {" + OUTPUT_PERSISTENCY_EXCEPTION_PAIRS_REPLACEMENT + "(\"\", \"\")} \\ {(\"\", \"\")},\n" +
-            "    SKIP_NAMES = {" + OUTPUT_PERSISTENCY_SKIP_NAMES_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
+            "    SKIP_SIGNALS = S ( {" + OUTPUT_PERSISTENCY_SKIP_NAMES_REPLACEMENT + "\"\"} \\ {\"\"} ),\n" +
             "    EXCEPTION_SIGNALS = gather pair in EXCEPTION_PAIRS {\n" +
             "        (S pair[0], S pair[1])\n" +
             "    },\n" +
-            "    SKIP_SIGNALS = gather str in SKIP_NAMES { S str },\n" +
-            "    TR = tran EVENTS,\n" +
-            "    TRL = tran (LOCAL \\ SKIP_SIGNALS) * TR,\n" +
+            "    TR = T EVENTS,\n" +
+            "    TRL = T (LOCAL \\ SKIP_SIGNALS) * TR,\n" +
             "    TRPT = gather t in TRL s.t. ~is_minus t { t },\n" +
             "    TRMT = gather t in TRL s.t. ~is_plus t { t }\n" +
             "{\n" +
             "    exists t_loc in TRL {\n" +
             "        let\n" +
             "            pre_t_loc = pre t_loc,\n" +
-            "            OTHER_LOC = (tran sig t_loc \\ {t_loc}) * (is_plus t_loc ? TRPT : is_minus t_loc ? TRMT : TR) {\n" +
-            "            // Check if some t can disable t_loc without enabling any other transition labelled by sig t_loc.\n" +
-            "            exists t in post pre_t_loc * TR s.t. sig t != sig t_loc &\n" +
-            "                    ~((sig t, sig t_loc) in EXCEPTION_SIGNALS) & card ((pre t \\ post t) * pre_t_loc) != 0 {\n" +
-            "                forall t_loc1 in OTHER_LOC s.t. card (pre t_loc1 * (pre t \\ post t)) = 0 {\n" +
+            "            OTHER_LOC = (T S t_loc \\ {t_loc}) * (is_plus t_loc ? TRPT : is_minus t_loc ? TRMT : TR) {\n" +
+            "            // Check if some t can disable t_loc without enabling any other transition labelled by S t_loc.\n" +
+            "            exists t in post pre_t_loc * TR s.t. S t != S t_loc &\n" +
+            "                    ~((S t, S t_loc) in EXCEPTION_SIGNALS) & ~is_empty((pre t \\ post t) * pre_t_loc) {\n" +
+            "                forall t_loc1 in OTHER_LOC s.t. is_empty(pre t_loc1 * (pre t \\ post t)) {\n" +
             "                    exists p in pre t_loc1 \\ post t { ~$p }\n" +
             "                }\n" +
             "                &\n" +
@@ -136,18 +135,18 @@ public class ReachUtils {
             DUMMY_CHECK_REACH +
             "? fail \"Delay insensitivity can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
-            "    TRINP = tran INPUTS * tran EVENTS\n" +
+            "    TRINP = T INPUTS * T EVENTS\n" +
             "{\n" +
             "    exists ti in TRINP {\n" +
             "        let pre_ti = pre ti {\n" +
             "            // Check if some ti_trig can trigger ti\n" +
-            "            exists ti_trig in pre pre_ti * TRINP s.t. sig ti_trig != sig ti & card((post ti_trig \\ pre ti_trig) * pre_ti) != 0 {\n" +
+            "            exists ti_trig in pre pre_ti * TRINP s.t. S ti_trig != S ti & ~is_empty((post ti_trig \\ pre ti_trig) * pre_ti) {\n" +
             "                forall p in pre_ti \\ post ti_trig { $p }\n" +
             "                &\n" +
             "                @ti_trig\n" +
             "            }\n" +
             "            &\n" +
-            "            ~@sig ti\n" +
+            "            ~@S ti\n" +
             "        }\n" +
             "    }\n" +
             "}\n";
@@ -165,29 +164,29 @@ public class ReachUtils {
             DUMMY_CHECK_REACH +
             "? fail \"Input properness can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
-            "    TR = tran EVENTS,\n" +
-            "    TRINP = tran INPUTS * TR,\n" +
-            "    TRI = tran INTERNAL * TR,\n" +
-            "    TRL = tran LOCAL * TR,\n" +
+            "    TR = T EVENTS,\n" +
+            "    TRINP = T INPUTS * TR,\n" +
+            "    TRI = T INTERNAL * TR,\n" +
+            "    TRL = T LOCAL * TR,\n" +
             "    TRPT = gather t in TRINP s.t. ~is_minus t { t },\n" +
             "    TRMT = gather t in TRINP s.t. ~is_plus t { t }\n" +
             "{\n" +
             "    exists t_inp in TRINP {\n" +
             "        let\n" +
             "            pre_t_inp = pre t_inp,\n" +
-            "            OTHER_INP = (tran sig t_inp \\ {t_inp}) * (is_plus t_inp ? TRPT : is_minus t_inp ? TRMT : TR) {\n" +
+            "            OTHER_INP = (T S t_inp \\ {t_inp}) * (is_plus t_inp ? TRPT : is_minus t_inp ? TRMT : TR) {\n" +
             "            // Check if some t_int can trigger t_inp.\n" +
-            "            exists t_int in pre pre_t_inp * TRI s.t. card((post t_int \\ pre t_int) * pre_t_inp) != 0 {\n" +
+            "            exists t_int in pre pre_t_inp * TRI s.t. ~is_empty((post t_int \\ pre t_int) * pre_t_inp) {\n" +
             "                forall p in pre_t_inp \\ post t_int { $p }\n" +
             "                &\n" +
             "                @t_int\n" +
             "            }\n" +
             "            &\n" +
-            "            ~@sig t_inp\n" +
+            "            ~@S t_inp\n" +
             "            |\n" +
-            "            // Check if some t_loc can disable t_inp without enabling any other transition labelled by sig t_inp.\n" +
-            "            exists t_loc in post pre_t_inp * TRL s.t. card((pre t_loc \\ post t_loc) * pre_t_inp) !=0 {\n" +
-            "                forall t_inp1 in OTHER_INP s.t. card (pre t_inp1 * (pre t_loc \\ post t_loc)) = 0 {\n" +
+            "            // Check if some t_loc can disable t_inp without enabling any other transition labelled by S t_inp.\n" +
+            "            exists t_loc in post pre_t_inp * TRL s.t. ~is_empty((pre t_loc \\ post t_loc) * pre_t_inp) {\n" +
+            "                forall t_inp1 in OTHER_INP s.t. is_empty(pre t_inp1 * (pre t_loc \\ post t_loc)) {\n" +
             "                    exists p in pre t_inp1 \\ post t_loc { ~$p }\n" +
             "                }\n" +
             "                &\n" +
@@ -216,16 +215,15 @@ public class ReachUtils {
             "// Configurations with maximal dummies are assumed to be allowed.\n" +
             "let\n" +
             "    // Set of phantom output transition names in the whole composed STG.\n" +
-            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
-            "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS = T ( {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"} )\n" +
             "{\n" +
             "    // Optimisation: make sure phantom events are not in the configuration.\n" +
-            "    forall e in ev SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
+            "    forall e in E SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
             "    &\n" +
             "    // Check if some output signal is enabled due to phantom transitions only;\n" +
             "    // this would mean that some component STG does not conform to the rest of the composition.\n" +
             "    exists o in OUTPUTS {\n" +
-            "        let tran_o = tran o {\n" +
+            "        let tran_o = T o {\n" +
             "            exists t in tran_o * SHADOW_OUTPUT_TRANSITIONS {\n" +
             "                forall p in pre t { $p }\n" +
             "            }\n" +

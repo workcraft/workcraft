@@ -55,18 +55,17 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
             "// Configurations with maximal dummies are assumed to be allowed.\n" +
             "let\n" +
             "    // Set of phantom output transition names in the whole composed STG.\n" +
-            "    SHADOW_OUTPUT_TRANSITIONS_NAMES = {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
-            "    SHADOW_OUTPUT_TRANSITIONS = gather n in SHADOW_OUTPUT_TRANSITIONS_NAMES { T n }\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS = T ( {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"} )\n" +
             "{\n" +
             "    // Optimisation: make sure phantom events are not in the configuration.\n" +
-            "    forall e in ev SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
+            "    forall e in E SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
             "    &\n" +
             "    // Check if some output signal in the composition is enabled due to phantom transitions only;\n" +
             "    // this would mean that in the original STG there are two executions with the same visible\n" +
             "    // traces, leading to two markings M1 and M2 such that M1 enables some output signal o\n" +
             "    // but M2 does not enable o, so the output-determinacy is violated.\n" +
             "    exists o in OUTPUTS {\n" +
-            "        let tran_o = tran o {\n" +
+            "        let tran_o = T o {\n" +
             "            exists t in tran_o * SHADOW_OUTPUT_TRANSITIONS {\n" +
             "                forall p in pre t { $p }\n" +
             "            }\n" +
