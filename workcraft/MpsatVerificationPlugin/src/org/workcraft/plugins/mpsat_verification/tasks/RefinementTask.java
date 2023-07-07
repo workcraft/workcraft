@@ -43,16 +43,15 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             "// dummies are assumed to be allowed - this corresponds to the -Fe mode of MPSAT.\n" +
             "let\n" +
             "    // Names of all shadow transitions in the composed STG.\n" +
-            "    SHADOW_TRANSITIONS_NAMES = {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"},\n" +
-            "    SHADOW_TRANSITIONS = gather n in SHADOW_TRANSITIONS_NAMES { T n }\n" +
+            "    SHADOW_TRANSITIONS = T ( {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"} )\n" +
             "{\n" +
             "    // Optimisation: make sure shadow events are not in the configuration.\n" +
-            "    forall e in ev SHADOW_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
+            "    forall e in E SHADOW_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
             "    &\n" +
             "    // Check if some signal is enabled due to shadow transitions only,\n" +
             "    // which would mean that some condition of violation witness holds.\n" +
             "    exists s in (INPUTS + OUTPUTS) {\n" +
-            "        let tran_s = tran s {\n" +
+            "        let tran_s = T s {\n" +
             "            exists t in tran_s * SHADOW_TRANSITIONS {\n" +
             "                forall p in pre t { $p }\n" +
             "            }\n" +
