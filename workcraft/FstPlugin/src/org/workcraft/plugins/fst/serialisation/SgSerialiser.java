@@ -1,6 +1,5 @@
 package org.workcraft.plugins.fst.serialisation;
 
-import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
@@ -25,8 +24,9 @@ public class SgSerialiser extends AbstractBasicModelSerialiser {
     @Override
     public void serialise(Model model, OutputStream out) {
         PrintWriter writer = new PrintWriter(out);
-        writer.write(Info.getGeneratedByText("# SG file ", "\n"));
-        String title = ExportUtils.asIdentifier(model.getTitle());
+        String title = ExportUtils.getTitleAsIdentifier(model.getTitle());
+        SgFormat format = SgFormat.getInstance();
+        writer.write(ExportUtils.getExportHeader("SG file", "#", title, format));
         writer.write(".model " + title + '\n');
         if (model instanceof Fsm) {
             writeFsm(writer, (Fsm) model);

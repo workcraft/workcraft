@@ -1,4 +1,4 @@
-setConfigVar("CommonDebugSettings.shortExportHeader", "true");
+setConfigVar("CommonEditorSettings.exportHeaderStyle", "BRIEF");
 
 we = load("vme.stg.work");
 

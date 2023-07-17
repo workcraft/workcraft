@@ -29,9 +29,6 @@ class CommonSettingsTest {
 
         Assertions.assertEquals(Config.toString(DebugCommonSettings.getVerboseCompatibilityManager()),
                 framework.getConfigVar(prefix + ".verboseCompatibilityManager", false));
-
-        Assertions.assertEquals(Config.toString(DebugCommonSettings.getShortExportHeader()),
-                framework.getConfigVar(prefix + ".shortExportHeader", false));
     }
 
     @Test
@@ -104,6 +101,9 @@ class CommonSettingsTest {
         // Export
         Assertions.assertEquals(Config.toString(EditorCommonSettings.getFlatnameSeparator()),
                 framework.getConfigVar(prefix + ".flatnameSeparator", false));
+
+        Assertions.assertEquals(Config.toString(EditorCommonSettings.getExportHeaderStyle()),
+                framework.getConfigVar(prefix + ".exportHeaderStyle", false));
     }
 
     @Test

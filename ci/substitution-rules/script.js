@@ -1,4 +1,4 @@
-setConfigVar("CommonDebugSettings.shortExportHeader", "true");
+setConfigVar("CommonEditorSettings.exportHeaderStyle", "BRIEF");
 
 setConfigVar("CircuitSettings.invertImportSubstitutionRules", "true");
 setConfigVar("CircuitSettings.invertExportSubstitutionRules", "false");

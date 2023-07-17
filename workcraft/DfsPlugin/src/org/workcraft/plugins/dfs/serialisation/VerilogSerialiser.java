@@ -1,6 +1,5 @@
 package org.workcraft.plugins.dfs.serialisation;
 
-import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
@@ -8,7 +7,7 @@ import org.workcraft.plugins.dfs.*;
 import org.workcraft.plugins.dfs.interop.VerilogFormat;
 import org.workcraft.serialisation.AbstractBasicModelSerialiser;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.ExportUtils;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -43,8 +42,10 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
     public void serialise(Model model, OutputStream out) {
         if (model instanceof Dfs) {
             PrintWriter writer = new PrintWriter(out);
-            writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
-            writeModule(writer, (Dfs) model);
+            String moduleName = ExportUtils.getTitleAsIdentifier(model.getTitle());
+            VerilogFormat format = VerilogFormat.getInstance();
+            writer.write(ExportUtils.getExportHeader("Verilog netlist", "//", moduleName, format));
+            writeModule(writer, (Dfs) model, moduleName);
             writer.close();
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
@@ -61,18 +62,13 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         return VerilogFormat.getInstance().getUuid();
     }
 
-    private void writeModule(PrintWriter out, Dfs dfs) {
-        writeHeader(out, dfs);
+    private void writeModule(PrintWriter out, Dfs dfs, String moduleName) {
+        writeHeader(out, dfs, moduleName);
         writeInstances(out, dfs);
         out.println(KEYWORD_ENDMODULE);
     }
 
-    private void writeHeader(PrintWriter out, Dfs dfs) {
-        String topName = dfs.getTitle();
-        if ((topName == null) || topName.isEmpty()) {
-            topName = "UNTITLED";
-            LogUtils.logWarning("The top module does not have a name. Exporting as '" + topName + "' module.");
-        }
+    private void writeHeader(PrintWriter out, Dfs dfs, String moduleName) {
         ArrayList<Pair<String, Boolean>> ports = new ArrayList<>();
         for (MathNode node: dfs.getAllNodes()) {
             String ref = dfs.getNodeReference(node);
@@ -94,7 +90,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
                 ports.add(new Pair<>(PREFIX_AO + ref, false));
             }
         }
-        out.println(KEYWORD_MODULE + ' ' + topName + " (");
+        out.println(KEYWORD_MODULE + ' ' + moduleName + " (");
         boolean isFirstPort = true;
         for (Pair<String, Boolean> port: ports) {
             if (!isFirstPort) {

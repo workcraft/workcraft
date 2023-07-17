@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 public class CircuitSignalInfo {
 
-    public final Circuit circuit;
+    private final Circuit circuit;
     private final Map<Contact, Contact> contactDriverMap = new HashMap<>();
     private final Map<Contact, String> driverFlatNameMap = new HashMap<>();
     private final Set<String> takenFlatNames = new HashSet<>();

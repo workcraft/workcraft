@@ -3,6 +3,10 @@ package org.workcraft.utils;
 import org.workcraft.gui.properties.PropertyHelper;
 
 import java.awt.*;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -315,6 +319,12 @@ public class TextUtils {
             return "";
         }
         return wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX + key, values);
+    }
+
+    public static String getCurrentTimestamp() {
+        long currentTime = System.currentTimeMillis();
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), ZoneId.systemDefault());
+        return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 
 }

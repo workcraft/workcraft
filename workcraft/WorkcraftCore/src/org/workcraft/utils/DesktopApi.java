@@ -177,7 +177,7 @@ public class DesktopApi {
         OsType result = OsType.UNKNOWN;
         if (s.contains("win")) {
             result = OsType.WINDOWS;
-        } else     if (s.contains("mac")) {
+        } else if (s.contains("mac")) {
             result = OsType.MACOS;
         } else if (s.contains("solaris")) {
             result = OsType.SOLARIS;

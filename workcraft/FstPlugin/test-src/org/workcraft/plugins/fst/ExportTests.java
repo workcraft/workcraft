@@ -4,10 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
-import org.workcraft.Info;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.fst.interop.SgFormat;
+import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -23,6 +24,7 @@ class ExportTests {
     static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
+        EditorCommonSettings.setExportHeaderStyle(EditorCommonSettings.ExportHeaderStyle.BRIEF);
     }
 
     @Test
@@ -37,7 +39,7 @@ class ExportTests {
         File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(workName));
 
         // .sg
-        String sgHeader = Info.getGeneratedByText("# SG file ", "\n") +
+        String sgHeader = ExportUtils.getExportHeader("SG file", "#", null, null) +
                 ".model VME\n" +
                 ".inputs dsr dsw ldtack\n" +
                 ".outputs d lds dtack\n" +
