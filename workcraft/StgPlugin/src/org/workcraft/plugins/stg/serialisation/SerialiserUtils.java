@@ -1,15 +1,17 @@
 package org.workcraft.plugins.stg.serialisation;
 
-import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
+import org.workcraft.interop.Format;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.interop.LpnFormat;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.utils.ExportUtils;
@@ -57,11 +59,11 @@ public class SerialiserUtils {
     }
 
     private static void writeIntro(PrintWriter writer, PetriModel petri, Style style) {
-        String prefix = (style == Style.LPN) ? "# LPN file " : "# STG file ";
-        writer.write(Info.getGeneratedByText(prefix, "\n"));
-
+        String prefix = (style == Style.LPN) ? "LPN file" : "STG file";
+        String title = ExportUtils.getTitleAsIdentifier(petri.getTitle());
+        Format format = style == Style.LPN ? LpnFormat.getInstance() : StgFormat.getInstance();
+        writer.write(ExportUtils.getExportHeader(prefix, "#", title, format));
         String keyword = (style == Style.LPN) ? KEYWORD_NAME : KEYWORD_MODEL;
-        String title = ExportUtils.asIdentifier(petri.getTitle());
         writer.write(keyword + ' ' + title + '\n');
     }
 

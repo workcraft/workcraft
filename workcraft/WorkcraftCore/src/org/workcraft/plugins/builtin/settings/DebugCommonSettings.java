@@ -15,17 +15,14 @@ public class DebugCommonSettings extends AbstractCommonSettings {
     private static final String keyVerboseImport = prefix + ".verboseImport";
     private static final String keyParserTracing = prefix + ".parserTracing";
     private static final String keyVerboseCompatibilityManager = prefix + ".verboseCompatibilityManager";
-    private static final String keyShortExportHeader = prefix + ".shortExportHeader";
 
     private static final boolean defaultVerboseImport = false;
     private static final boolean defaultParserTracing = false;
     private static final boolean defaultVerboseCompatibilityManager = false;
-    private static final boolean defaultShortExportHeader = false;
 
     private static boolean verboseImport = defaultVerboseImport;
     private static boolean parserTracing = defaultParserTracing;
     private static boolean verboseCompatibilityManager = defaultVerboseCompatibilityManager;
-    private static boolean shortExportHeader = defaultShortExportHeader;
 
     static {
         properties.add(new PropertyDeclaration<>(Boolean.class,
@@ -42,11 +39,6 @@ public class DebugCommonSettings extends AbstractCommonSettings {
                 "Log compatibility manager substitutions",
                 DebugCommonSettings::setVerboseCompatibilityManager,
                 DebugCommonSettings::getVerboseCompatibilityManager));
-
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Use short header in exported files",
-                DebugCommonSettings::setShortExportHeader,
-                DebugCommonSettings::getShortExportHeader));
     }
 
     @Override
@@ -59,7 +51,6 @@ public class DebugCommonSettings extends AbstractCommonSettings {
         setVerboseImport(config.getBoolean(keyVerboseImport, defaultVerboseImport));
         setParserTracing(config.getBoolean(keyParserTracing, defaultParserTracing));
         setVerboseCompatibilityManager(config.getBoolean(keyVerboseCompatibilityManager, defaultVerboseCompatibilityManager));
-        setShortExportHeader(config.getBoolean(keyShortExportHeader, defaultShortExportHeader));
     }
 
     @Override
@@ -67,7 +58,6 @@ public class DebugCommonSettings extends AbstractCommonSettings {
         config.setBoolean(keyVerboseImport, getVerboseImport());
         config.setBoolean(keyParserTracing, getParserTracing());
         config.setBoolean(keyVerboseCompatibilityManager, getVerboseCompatibilityManager());
-        config.setBoolean(keyShortExportHeader, getShortExportHeader());
     }
 
     @Override
@@ -97,14 +87,6 @@ public class DebugCommonSettings extends AbstractCommonSettings {
 
     public static void setVerboseCompatibilityManager(boolean value) {
         verboseCompatibilityManager = value;
-    }
-
-    public static boolean getShortExportHeader() {
-        return shortExportHeader;
-    }
-
-    public static void setShortExportHeader(boolean value) {
-        shortExportHeader = value;
     }
 
 }

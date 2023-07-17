@@ -80,6 +80,23 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         }
     }
 
+    public enum ExportHeaderStyle {
+        NONE("none"),
+        BRIEF("brief"),
+        DETAILED("detailed");
+
+        public final String name;
+
+        ExportHeaderStyle(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonEditorSettings";
 
@@ -113,6 +130,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static final String keyLargeModelSize = prefix + ".largeModelSize";
     // Export
     private static final String keyFlatnameSeparator = prefix + ".flatnameSeparator";
+    private static final String keyExportHeaderStyle = prefix + ".exportHeaderStyle";
 
     /*
      * Defaults
@@ -144,6 +162,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static final int defaultLargeModelSize = 500;
     // Export
     private static final String defaultFlatnameSeparator = "_";
+    private static final ExportHeaderStyle defaultExportHeaderStyle = ExportHeaderStyle.DETAILED;
 
     /*
      * Variables
@@ -175,6 +194,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static int largeModelSize = defaultLargeModelSize;
     // Export
     private static String flatnameSeparator = defaultFlatnameSeparator;
+    private static ExportHeaderStyle exportHeaderStyle = defaultExportHeaderStyle;
 
     static {
         properties.add(PropertyHelper.createSeparatorProperty("GUI decoration"));
@@ -298,6 +318,11 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 PropertyHelper.BULLET_PREFIX + "Separator for converting page references into flat name",
                 EditorCommonSettings::setFlatnameSeparator,
                 EditorCommonSettings::getFlatnameSeparator));
+
+        properties.add(new PropertyDeclaration<>(ExportHeaderStyle.class,
+                PropertyHelper.BULLET_PREFIX + "File header style",
+                EditorCommonSettings::setExportHeaderStyle,
+                EditorCommonSettings::getExportHeaderStyle));
     }
 
     @Override
@@ -334,6 +359,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         setLargeModelSize(config.getInt(keyLargeModelSize, defaultLargeModelSize));
         // Export
         setFlatnameSeparator(config.getString(keyFlatnameSeparator, defaultFlatnameSeparator));
+        setExportHeaderStyle(config.getEnum(keyExportHeaderStyle, ExportHeaderStyle.class, defaultExportHeaderStyle));
     }
 
     @Override
@@ -365,6 +391,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         config.setInt(keyLargeModelSize, getLargeModelSize());
         // Export
         config.set(keyFlatnameSeparator, getFlatnameSeparator());
+        config.setEnum(keyExportHeaderStyle, getExportHeaderStyle());
     }
 
     @Override
@@ -550,6 +577,14 @@ public class EditorCommonSettings extends AbstractCommonSettings {
 
     public static void setFlatnameSeparator(String value) {
         flatnameSeparator = value;
+    }
+
+    public static ExportHeaderStyle getExportHeaderStyle() {
+        return exportHeaderStyle;
+    }
+
+    public static void setExportHeaderStyle(ExportHeaderStyle value) {
+        exportHeaderStyle = value;
     }
 
 }

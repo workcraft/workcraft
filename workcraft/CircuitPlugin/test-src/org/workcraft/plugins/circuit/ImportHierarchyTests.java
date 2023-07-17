@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.FileUtils;
@@ -25,7 +25,7 @@ class ImportHierarchyTests {
         final Framework framework = Framework.getInstance();
         framework.init();
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
-        DebugCommonSettings.setShortExportHeader(true);
+        EditorCommonSettings.setExportHeaderStyle(EditorCommonSettings.ExportHeaderStyle.BRIEF);
     }
 
     @Test

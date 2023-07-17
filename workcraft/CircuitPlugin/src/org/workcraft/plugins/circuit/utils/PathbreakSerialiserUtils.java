@@ -1,6 +1,5 @@
 package org.workcraft.plugins.circuit.utils;
 
-import org.workcraft.Info;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
@@ -8,6 +7,7 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
+import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
 
@@ -26,7 +26,8 @@ public final class PathbreakSerialiserUtils {
 
     public static void write(Circuit circuit, OutputStream out) {
         PrintWriter writer = new PrintWriter(out);
-        writer.write(Info.getGeneratedByText("# Path break SDC file ", "\n"));
+        String moduleName = ExportUtils.getTitleAsIdentifier(circuit.getTitle());
+        writer.write(ExportUtils.getExportHeader("Path break SDC file", "#", moduleName, null));
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
             writeInstance(writer, circuit, component);
         }

@@ -4,12 +4,13 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
-import org.workcraft.Info;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.builtin.interop.*;
+import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.stg.interop.LpnFormat;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.utils.ExportUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -25,6 +26,7 @@ class ExportTests {
     static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
+        EditorCommonSettings.setExportHeaderStyle(EditorCommonSettings.ExportHeaderStyle.BRIEF);
     }
 
     @Test
@@ -38,7 +40,7 @@ class ExportTests {
         File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(workName));
 
         // .g
-        String gHeader = Info.getGeneratedByText("# STG file ", "\n") +
+        String gHeader = ExportUtils.getExportHeader("STG file", "#", null, null) +
                 ".model Untitled\n" +
                 ".inputs dsr dsw ldtack\n" +
                 ".outputs d dtack lds\n" +
@@ -49,7 +51,7 @@ class ExportTests {
         Assertions.assertEquals(gHeader, FileUtils.readHeaderUtf8(gFile, gHeader.length()));
 
         // .lpn
-        String lpnHeader = Info.getGeneratedByText("# LPN file ", "\n") +
+        String lpnHeader = ExportUtils.getExportHeader("LPN file", "#", null, null) +
                 ".name Untitled\n" +
                 ".inputs dsr dsw ldtack\n" +
                 ".outputs d dtack lds\n" +

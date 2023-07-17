@@ -1,6 +1,5 @@
 package org.workcraft.plugins.circuit.serialisation;
 
-import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
@@ -48,9 +47,11 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         if (model instanceof Circuit) {
             PrintWriter writer = new PrintWriter(out);
             Circuit circuit = (Circuit) model;
-            writer.println(Info.getGeneratedByText("// Verilog netlist ", ""));
+            String moduleName = ExportUtils.getTitleAsIdentifier(circuit.getTitle());
+            VerilogFormat format = VerilogFormat.getInstance();
+            writer.write(ExportUtils.getExportHeader("Verilog netlist", "//", moduleName, format));
             refinementCircuits.clear();
-            writeCircuit(writer, circuit);
+            writeCircuit(writer, circuit, moduleName);
             writeRefinementCircuits(writer);
             writer.close();
         } else {
@@ -68,19 +69,19 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         return VerilogFormat.getInstance().getUuid();
     }
 
-    private void writeCircuit(PrintWriter writer, Circuit circuit) {
+    private void writeCircuit(PrintWriter writer, Circuit circuit, String moduleName) {
         Set<FunctionComponent> badComponents = RefinementUtils.getIncompatibleRefinementCircuitComponents(circuit);
         if (!badComponents.isEmpty()) {
-            String moduleName = circuit.getTitle();
             LogUtils.logError(TextUtils.wrapMessageWithItems(
                     "Verilog module '" + moduleName + "' uses incompatible refinement for component",
                     ReferenceHelper.getReferenceSet(circuit, badComponents)));
         }
         CircuitSignalInfo circuitInfo = new CircuitSignalInfo(circuit);
-        writeHeader(writer, circuitInfo);
+        writeHeader(writer, circuitInfo, moduleName);
         writeInstances(writer, circuitInfo);
         writeInitialState(writer, circuitInfo);
-        writer.println(KEYWORD_ENDMODULE);
+        writer.write(KEYWORD_ENDMODULE);
+        writer.write('\n');
     }
 
     private void writeRefinementCircuits(PrintWriter writer) {
@@ -88,12 +89,12 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         while (!refinementCircuits.isEmpty()) {
             Pair<File, Circuit> refinement = refinementCircuits.remove();
             Circuit circuit = refinement.getSecond();
-            String moduleName = circuit.getTitle();
+            String moduleName = ExportUtils.getTitleAsIdentifier(circuit.getTitle());
             String path = FileUtils.getFullPath(refinement.getFirst());
             if (!exportedModules.containsKey(moduleName)) {
                 exportedModules.put(moduleName, path);
-                writer.println();
-                writeCircuit(writer, circuit);
+                writer.write('\n');
+                writeCircuit(writer, circuit, moduleName);
             } else {
                 String exportedPath = exportedModules.get(moduleName);
                 if ((path != null) && !path.equals(exportedPath)) {
@@ -106,7 +107,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         }
     }
 
-    private void writeHeader(PrintWriter writer, CircuitSignalInfo circuitInfo) {
+    private void writeHeader(PrintWriter writer, CircuitSignalInfo circuitInfo, String moduleName) {
         Set<String> inputPorts = new LinkedHashSet<>();
         Set<String> outputPorts = new LinkedHashSet<>();
         for (Contact contact : circuitInfo.getCircuit().getPorts()) {
@@ -138,14 +139,13 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
 
         Set<VerilogBus> inputBuses = extractSignalBuses(inputPorts, circuitInfo);
         Set<VerilogBus> outputBuses = extractSignalBuses(outputPorts, circuitInfo);
-        String title = ExportUtils.asIdentifier(circuitInfo.getCircuit().getTitle());
-        writePortDeclarations(writer, title, inputPorts, inputBuses, outputPorts, outputBuses);
+        writePortDeclarations(writer, moduleName, inputPorts, inputBuses, outputPorts, outputBuses);
 
         writeSignalDefinitions(writer, KEYWORD_INPUT, inputPorts, inputBuses);
         writeSignalDefinitions(writer, KEYWORD_OUTPUT, outputPorts, outputBuses);
         Set<VerilogBus> wireBuses = extractSignalBuses(wires, circuitInfo);
         writeSignalDefinitions(writer, KEYWORD_WIRE, wires, wireBuses);
-        writer.println();
+        writer.write('\n');
     }
 
     private void adjustBuses(Set<String> inputs, Set<String> outputs, Set<String> wires,
@@ -191,28 +191,28 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         ports.addAll(outputPorts);
         ports.addAll(outputBuses.stream().map(VerilogBus::getName).collect(Collectors.toList()));
 
-        writer.print(KEYWORD_MODULE + ' ' + title + " (");
+        writer.write(KEYWORD_MODULE + ' ' + title + " (");
         boolean isFirstPort = true;
         for (String port : ports) {
             if (isFirstPort) {
                 isFirstPort = false;
             } else {
-                writer.print(", ");
+                writer.write(", ");
             }
-            writer.print(port);
+            writer.write(port);
         }
-        writer.println(");");
+        writer.write(");\n");
     }
 
     private void writeSignalDefinitions(PrintWriter writer, String keyword, Set<String> signals, Set<VerilogBus> buses) {
         if (!signals.isEmpty()) {
-            writer.println("    " + keyword + ' ' + String.join(", ", signals) + ';');
+            writer.write("    " + keyword + ' ' + String.join(", ", signals) + ";\n");
         }
         for (VerilogBus bus : buses) {
             Integer maxIndex = bus.getMaxIndex();
             Integer minIndex = bus.getMinIndex();
             String name = bus.getName();
-            writer.println("    " + keyword + " [" + maxIndex + ':' + minIndex + "] " + name + ';');
+            writer.write("    " + keyword + " [" + maxIndex + ':' + minIndex + "] " + name + ";\n");
         }
     }
 
@@ -224,13 +224,13 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
                 if (writeAssigns(writer, circuitInfo, component)) {
                     hasAssignments = true;
                 } else {
-                    String ref = circuitInfo.circuit.getComponentReference(component);
+                    String ref = circuitInfo.getCircuit().getComponentReference(component);
                     LogUtils.logError("Unmapped component '" + ref + "' cannot be exported as assign statements.");
                 }
             }
         }
         if (hasAssignments) {
-            writer.println();
+            writer.write('\n');
         }
         // Write writer mapped components
         boolean hasMappedComponents = false;
@@ -241,7 +241,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             }
         }
         if (hasMappedComponents) {
-            writer.println();
+            writer.write('\n');
         }
     }
 
@@ -267,7 +267,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
                 expr = resetExpr;
             }
             if (expr != null) {
-                writer.println("    " + KEYWORD_ASSIGN + getDelayParameter() + ' ' + signalName + " = " + expr + ';');
+                writer.write("    " + KEYWORD_ASSIGN + getDelayParameter() + ' ' + signalName + " = " + expr + ";\n");
                 result = true;
             }
         }
@@ -293,7 +293,7 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             } catch (DeserialisationException ignored) {
             }
         }
-        String moduleName = ExportUtils.asIdentifier(title);
+        String moduleName = ExportUtils.getTitleAsIdentifier(title);
         // Instance name
         String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
         Map<String, SubstitutionRule> substitutionRules = LibraryManager.getExportSubstitutionRules();
@@ -317,14 +317,14 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
         }
 
         if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
-            writer.println("    // This inverter should have a short delay");
+            writer.write("    // This inverter should have a short delay\n");
         }
-        writer.print("    " + moduleName + ' ' + instanceFlatName + " (");
+        writer.write("    " + moduleName + ' ' + instanceFlatName + " (");
         writeInstanceContacts(writer, circuitInfo, contactToSignalMap);
         if ((substitutionRule != null) && (substitutionRule.extras != null)) {
             writer.print(substitutionRule.extras);
         }
-        writer.println(");");
+        writer.write(");\n");
     }
 
     private void writeInstanceContacts(PrintWriter writer, CircuitSignalInfo circuitInfo,
@@ -340,13 +340,13 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             }
             String signalName = contactToSignalMap.getOrDefault(contactName, "");
             String netName = getNetName(signalName, circuitInfo);
-            writer.print("." + contactName + "(" + netName + ")");
+            writer.write("." + contactName + "(" + netName + ")");
         }
         for (String contactBusName : contactBusToIndexedSignalMap.keySet()) {
             if (first) {
                 first = false;
             } else {
-                writer.print(", ");
+                writer.write(", ");
             }
             Map<Integer, String> indexedSignals = contactBusToIndexedSignalMap.get(contactBusName);
             Set<Integer> indexes = indexedSignals.keySet();
@@ -359,10 +359,9 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             }
             String joinedNetNames = String.join(", ", netNames);
             if (CircuitSettings.getDissolveSingletonBus() && (netNames.size() < 2)) {
-                writer.print(" ." + contactBusName + "(" + joinedNetNames + ")");
+                writer.write(" ." + contactBusName + "(" + joinedNetNames + ")");
             } else {
-                writer.println();
-                writer.print("        ." + contactBusName + "( {" + joinedNetNames + "} )");
+                writer.write("\n        ." + contactBusName + "( {" + joinedNetNames + "} )");
             }
         }
     }
@@ -381,15 +380,15 @@ public class VerilogSerialiser extends AbstractBasicModelSerialiser {
             }
         }
         if (!signalInitState.isEmpty()) {
-            writer.println("    // signal values at the initial state:");
-            writer.print("    //");
+            writer.write("    // signal values at the initial state:\n");
+            writer.write("    //");
             for (Map.Entry<String, Boolean> entry : signalInitState.entrySet()) {
                 Boolean state = entry.getValue();
                 String signal = entry.getKey();
                 String netName = getNetName(signal, circuitInfo);
-                writer.print((state ? " " : " !") + netName);
+                writer.write((state ? " " : " !") + netName);
             }
-            writer.println();
+            writer.write('\n');
         }
     }
 
