@@ -1,5 +1,4 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm'
     id 'ca.coglinc.javacc'
     id 'com.github.kt3k.coveralls'
     id 'de.aaschmid.cpd'
@@ -34,17 +33,6 @@ subprojects {
         }
     }
 
-    apply plugin: 'kotlin'
-
-    sourceSets {
-        main.kotlin.srcDirs = ['src']
-        test.kotlin.srcDirs = ['test-src']
-    }
-
-    compileKotlin {
-        kotlinOptions.jvmTarget = gradle.javaTargetVersion
-    }
-
     apply plugin: 'ca.coglinc.javacc'
 
     compileJavacc {
@@ -64,50 +52,12 @@ subprojects {
 
     dependencies {
         lib fileTree(dir: gradle.libDir, include: ['**/*.jar'])
-        configurations.api.extendsFrom(configurations.lib)
+        configurations.implementation.extendsFrom(configurations.lib)
         testImplementation gradle.junit
         testRuntimeOnly gradle.junit
         javacc gradle.javacc
     }
 
-    apply plugin: 'eclipse'
-
-    eclipse {
-        project {
-            buildCommand 'org.jetbrains.kotlin.ui.kotlinBuilder'
-            natures 'org.jetbrains.kotlin.core.kotlinNature'
-        }
-        classpath {
-            containers 'org.jetbrains.kotlin.core.KOTLIN_CONTAINER'
-            defaultOutputDir = file('build/eclipse/bin/')
-            file.whenMerged {
-                entries.each {
-                    if (it.kind == 'src' && it.hasProperty('output')) {
-                        it.output = it.output.replace('bin/', 'build/eclipse/')
-                    }
-                }
-            }
-        }
-    }
-
-    eclipseClasspath.dependsOn compileJavacc
-
-    apply plugin: 'idea'
-
-    idea.module {
-        sourceDirs = [file('src'), file('javacc'), file('src-gen')]
-        generatedSourceDirs = [file('src-gen')]
-        resourceDirs = [file('res'), file('models')]
-        testSourceDirs = [file('test-src')]
-        testResourceDirs = [file('test-res')]
-        excludeDirs = [file('.gradle'), file('.settings'), file('bin'), file('build'), file('gradle')]
-        inheritOutputDirs = false
-        outputDir = file('build/idea/')
-    }
-
-    ideaModule.dependsOn compileJavacc
-
-    task cleanAll(dependsOn: ['clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'])
 
     test {
         useJUnitPlatform()
@@ -122,6 +72,7 @@ subprojects {
         }
     }
 
+
     apply plugin: 'checkstyle'
 
     checkstyle {
@@ -132,6 +83,7 @@ subprojects {
     checkstyleMain.exclude gradle.javaccExclude
 
     task checkstyle(dependsOn: tasks.withType(Checkstyle)*.name)
+
 
     apply plugin: 'pmd'
 
@@ -146,6 +98,7 @@ subprojects {
     pmdMain.exclude gradle.javaccExclude
 
     task pmd(dependsOn: tasks.withType(Pmd)*.name)
+
 
     apply plugin: 'de.aaschmid.cpd'
 
@@ -191,26 +144,46 @@ subprojects {
             }
         }
     }
+
+
+    apply plugin: 'eclipse'
+
+    eclipse {
+        classpath {
+            defaultOutputDir = file('build/eclipse/bin/')
+            file.whenMerged {
+                entries.each {
+                    if (it.kind == 'src' && it.hasProperty('output')) {
+                        it.output = it.output.replace('bin/', 'build/eclipse/')
+                    }
+                }
+            }
+        }
+    }
+
+    eclipseClasspath.dependsOn compileJavacc
+
+
+    apply plugin: 'idea'
+
+    idea.module {
+        sourceDirs = [file('src'), file('javacc'), file('src-gen')]
+        generatedSourceDirs = [file('src-gen')]
+        resourceDirs = [file('res'), file('models')]
+        testSourceDirs = [file('test-src')]
+        testResourceDirs = [file('test-res')]
+        excludeDirs = [file('.gradle'), file('.settings'), file('bin'), file('build'), file('gradle')]
+        inheritOutputDirs = false
+        outputDir = file('build/idea/')
+    }
+
+    ideaModule.dependsOn compileJavacc
+
+    task cleanAll(dependsOn: ['clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'])
 }
 
 
-apply plugin: 'com.github.jk1.dependency-license-report'
-
-import com.github.jk1.license.filter.*
-
-licenseReport {
-    configurations = ['runtimeClasspath', 'compileClasspath']
-    renderers = [new com.github.jk1.license.render.InventoryHtmlReportRenderer()]
-    allowedLicensesFile = new File("${project.rootDir}/config/license/allowed.json")
-    filters = [new ReduceDuplicateLicensesFilter(), new LicenseBundleNormalizer()]
-}
-
-checkLicense.group = 'Verification'
-generateLicenseReport.group = 'Verification'
-checkLicensePreparation.group = null
-// License checking takes too long (>2min), has deprecated calls and may run out of memory
-/* check.dependsOn checkLicense */
-
+apply plugin: 'java'
 
 cpdCheck {
     dependsOn compileJavacc
@@ -272,6 +245,24 @@ tasks.coveralls {
 }
 
 
+apply plugin: 'com.github.jk1.dependency-license-report'
+
+import com.github.jk1.license.filter.*
+
+licenseReport {
+    configurations = ['runtimeClasspath', 'compileClasspath']
+    renderers = [new com.github.jk1.license.render.InventoryHtmlReportRenderer()]
+    allowedLicensesFile = new File("${project.rootDir}/config/license/allowed.json")
+    filters = [new ReduceDuplicateLicensesFilter(), new LicenseBundleNormalizer()]
+}
+
+checkLicense.group = 'Verification'
+generateLicenseReport.group = 'Verification'
+checkLicensePreparation.group = null
+// License checking takes too long (>2min), has deprecated calls and may run out of memory
+/* check.dependsOn checkLicense */
+
+
 apply plugin: 'idea'
 
 idea.module {
@@ -303,9 +294,11 @@ tasks.cleanIdea.doLast {
 task cleanAll(dependsOn: 'cleanIdea')
 
 allprojects {
-    javadoc.group = null  // Exclude javadoc from the list of tasks
+	javadoc.group = null  // Exclude javadoc from the list of tasks
 }
 
+/*
 tasks.cleanAll.doLast {
     project.delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
 }
+*/

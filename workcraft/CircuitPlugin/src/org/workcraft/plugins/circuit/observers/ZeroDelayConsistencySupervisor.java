@@ -6,9 +6,9 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.utils.StructureUtilsKt;
+import org.workcraft.plugins.circuit.utils.StructureUtils;
 
-import java.util.HashSet;
+import java.util.Set;
 
 public class ZeroDelayConsistencySupervisor extends StateSupervisor {
 
@@ -55,7 +55,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
                 component.setIsZeroDelay(false);
                 throw new ArgumentException("Only inverters and buffers can be zero delay.");
             }
-            HashSet<CircuitComponent> componentPreset = StructureUtilsKt.getPresetComponents(circuit, component);
+            Set<CircuitComponent> componentPreset = StructureUtils.getPresetComponents(circuit, component);
             for (CircuitComponent predComponent: componentPreset) {
                 if (predComponent instanceof FunctionComponent) {
                     FunctionComponent predFunctionComponent = (FunctionComponent) predComponent;
@@ -65,7 +65,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
                     }
                 }
             }
-            HashSet<CircuitComponent> componentPostset = StructureUtilsKt.getPostsetComponents(circuit, component);
+            Set<CircuitComponent> componentPostset = StructureUtils.getPostsetComponents(circuit, component);
             for (CircuitComponent succComponent: componentPostset) {
                 if (succComponent instanceof FunctionComponent) {
                     FunctionComponent succFunctionComponent = (FunctionComponent) succComponent;
@@ -75,7 +75,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
                     }
                 }
             }
-            HashSet<Contact> portPostset = StructureUtilsKt.getPostsetPorts(circuit, component);
+            Set<Contact> portPostset = StructureUtils.getPostsetPorts(circuit, component);
             for (Contact succContact: portPostset) {
                 if (succContact.isPort()) {
                     component.setIsZeroDelay(false);

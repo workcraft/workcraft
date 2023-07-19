@@ -1,6 +1,5 @@
 pluginManagement {
     plugins {
-        id 'org.jetbrains.kotlin.jvm' version '1.8.22'
         id 'ca.coglinc.javacc' version '2.4.0'
         id 'com.github.kt3k.coveralls' version '2.12.2'
         id 'de.aaschmid.cpd' version '3.3'
