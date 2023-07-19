@@ -12,14 +12,6 @@ import java.io.OutputStream;
 public class PdfExporter implements Exporter {
 
     @Override
-    public void exportTo(Model model, OutputStream out) throws SerialisationException {
-        if (!(model instanceof VisualModel)) {
-            throw new SerialisationException("Non-visual model cannot be exported as PDF file.");
-        }
-        BatikUtils.transcode((VisualModel) model, out, new PDFTranscoder());
-    }
-
-    @Override
     public boolean isCompatible(Model model) {
         return  model instanceof VisualModel;
     }
@@ -27,6 +19,11 @@ public class PdfExporter implements Exporter {
     @Override
     public PdfFormat getFormat() {
         return PdfFormat.getInstance();
+    }
+
+    @Override
+    public void serialise(Model model, OutputStream out) throws SerialisationException {
+        BatikUtils.transcode((VisualModel) model, out, new PDFTranscoder());
     }
 
 }

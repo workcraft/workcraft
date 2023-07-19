@@ -6,7 +6,6 @@ import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
-import org.workcraft.plugins.fst.utils.FstUtils;
 
 import java.awt.*;
 
@@ -28,10 +27,7 @@ public class VisualSignalEvent extends VisualEvent {
     @Override
     public Color getLabelColor() {
         Signal signal = getReferencedConnection().getSymbol();
-        if (signal != null) {
-            return FstUtils.getTypeColor(signal.getType());
-        }
-        return super.getLabelColor();
+        return signal != null ? signal.getType().getColor() : super.getLabelColor();
     }
 
     @Override

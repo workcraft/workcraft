@@ -838,7 +838,7 @@ public class MainWindow extends JFrame {
             }
 
             try {
-                ModelEntry me = importer.importFrom(file, null);
+                ModelEntry me = importer.importFromFile(file, null);
                 // Set model title, if empty
                 String title = me.getMathModel().getTitle();
                 if ((title == null) || title.isEmpty()) {

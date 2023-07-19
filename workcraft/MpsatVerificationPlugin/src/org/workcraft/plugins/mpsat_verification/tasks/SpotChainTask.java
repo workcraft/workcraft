@@ -64,7 +64,7 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             Stg stg = WorkspaceUtils.getAs(we, Stg.class);
             File gFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + stgFileExtension);
             FileOutputStream gStream = new FileOutputStream(gFile);
-            SerialiserUtils.writeModel(stg, gStream, SerialiserUtils.Style.STG, true);
+            SerialiserUtils.writeModel(stg, gStream, gFile, SerialiserUtils.Style.STG, true);
             gStream.close();
             monitor.progressUpdate(0.3);
 

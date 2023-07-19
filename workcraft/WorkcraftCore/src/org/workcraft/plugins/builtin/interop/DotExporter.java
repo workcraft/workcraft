@@ -21,16 +21,23 @@ public class DotExporter implements Exporter {
     private static final String INDENT = "  ";
 
     @Override
-    public void exportTo(Model model, OutputStream outStream) throws SerialisationException {
-        if (!(model instanceof VisualModel)) {
-            throw new SerialisationException("Non-visual model cannot be exported to Graphviz DOT file.");
-        }
+    public DotFormat getFormat() {
+        return DotFormat.getInstance();
+    }
+
+    @Override
+    public boolean isCompatible(Model model) {
+        return model instanceof VisualModel;
+    }
+
+    @Override
+    public void serialise(Model model, OutputStream out) throws SerialisationException {
         for (VisualNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
             if ((node instanceof Container) && !(node instanceof VisualGroup) && !(node instanceof VisualPage)) {
                 throw new SerialisationException("Models with ports cannot be exported to Graphviz DOT file.");
             }
         }
-        exportGraph((VisualModel) model, new PrintStream(outStream));
+        exportGraph((VisualModel) model, new PrintStream(out));
     }
 
     private void exportGraph(VisualModel model, PrintStream out) {
@@ -84,16 +91,6 @@ public class DotExporter implements Exporter {
         String secondRef = model.getNodeReference(second);
         String comment = "(" + model.getMathReference(first) + ", " + model.getMathReference(second) + ")";
         out.println(indent + firstRef + " -> " + secondRef + "; // " + comment);
-    }
-
-    @Override
-    public boolean isCompatible(Model model) {
-        return model instanceof VisualModel;
-    }
-
-    @Override
-    public DotFormat getFormat() {
-        return DotFormat.getInstance();
     }
 
 }

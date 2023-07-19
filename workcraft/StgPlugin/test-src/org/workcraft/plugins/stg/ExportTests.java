@@ -40,7 +40,7 @@ class ExportTests {
         File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(workName));
 
         // .g
-        String gHeader = ExportUtils.getExportHeader("STG file", "#", null, null) +
+        String gHeader = ExportUtils.getExportHeader("STG file", "#", we.getTitle()) +
                 ".model Untitled\n" +
                 ".inputs dsr dsw ldtack\n" +
                 ".outputs d dtack lds\n" +
@@ -51,7 +51,7 @@ class ExportTests {
         Assertions.assertEquals(gHeader, FileUtils.readHeaderUtf8(gFile, gHeader.length()));
 
         // .lpn
-        String lpnHeader = ExportUtils.getExportHeader("LPN file", "#", null, null) +
+        String lpnHeader = ExportUtils.getExportHeader("LPN file", "#", we.getTitle()) +
                 ".name Untitled\n" +
                 ".inputs dsr dsw ldtack\n" +
                 ".outputs d dtack lds\n" +

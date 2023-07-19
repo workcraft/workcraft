@@ -21,20 +21,20 @@ public class StgImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in, String serialisedUserData) throws DeserialisationException {
-        Stg stg = importStg(in);
+    public ModelEntry deserialise(InputStream in, String serialisedUserData) throws DeserialisationException {
+        Stg stg = deserialiseStg(in);
         PetriUtils.checkSoundness(stg, false);
         return new ModelEntry(new StgDescriptor(), stg);
     }
 
-    public Stg importStg(InputStream in) throws DeserialisationException {
+    public static Stg deserialiseStg(InputStream in) throws DeserialisationException {
+        StgParser parser = new StgParser(in);
+        if (DebugCommonSettings.getParserTracing()) {
+            parser.enable_tracing();
+        } else {
+            parser.disable_tracing();
+        }
         try {
-            StgParser parser = new StgParser(in);
-            if (DebugCommonSettings.getParserTracing()) {
-                parser.enable_tracing();
-            } else {
-                parser.disable_tracing();
-            }
             return parser.parse();
         } catch (FormatException | ParseException e) {
             throw new DeserialisationException(e);

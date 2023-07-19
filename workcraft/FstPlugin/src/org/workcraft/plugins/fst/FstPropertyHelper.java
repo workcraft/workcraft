@@ -11,10 +11,8 @@ import org.workcraft.gui.properties.TextAction;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.fsm.Event;
-import org.workcraft.plugins.fst.utils.FstUtils;
 import org.workcraft.utils.SortUtils;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -52,7 +50,6 @@ public class FstPropertyHelper {
     private static PropertyDescriptor getSignalProperty(VisualFst fst, Signal signal) {
         String signalName = fst.getMathName(signal);
         Signal.Type type = signal.getType();
-        Color color = FstUtils.getTypeColor(type);
 
         Action leftAction = new Action(PropertyHelper.BULLET_SYMBOL,
                 () -> signal.setType(type.toggle()),
@@ -85,7 +82,7 @@ public class FstPropertyHelper {
                     }
                 },
                 () -> new TextAction(signalName).setLeftAction(leftAction)
-                        .setRightAction(rightAction).setForeground(color)
+                        .setRightAction(rightAction).setForeground(type.getColor())
         ).setSpan();
     }
 

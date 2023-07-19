@@ -16,6 +16,7 @@ import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.utils.ExportUtils;
 
+import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.*;
@@ -35,14 +36,14 @@ public class SerialiserUtils {
 
     public enum Style { STG, LPN }
 
-    public static void writeModel(Model model, OutputStream out, Style style, boolean needsInitialState) {
+    public static void writeModel(Model model, OutputStream out, File file, Style style, boolean needsInitialState) {
         if (!(model instanceof PetriModel)) {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
         PetriModel petri = (PetriModel) model;
 
         PrintWriter writer = new PrintWriter(out);
-        writeIntro(writer, petri, style);
+        writeIntro(writer, petri, file, style);
         if (petri instanceof StgModel) {
             StgModel stg = (StgModel) petri;
             writeSignalDeclarations(writer, stg);
@@ -58,11 +59,11 @@ public class SerialiserUtils {
         writer.close();
     }
 
-    private static void writeIntro(PrintWriter writer, PetriModel petri, Style style) {
+    private static void writeIntro(PrintWriter writer, PetriModel petri, File file, Style style) {
         String prefix = (style == Style.LPN) ? "LPN file" : "STG file";
         String title = ExportUtils.getTitleAsIdentifier(petri.getTitle());
         Format format = style == Style.LPN ? LpnFormat.getInstance() : StgFormat.getInstance();
-        writer.write(ExportUtils.getExportHeader(prefix, "#", title, format));
+        writer.write(ExportUtils.getExportHeader(prefix, "#", title, file, format));
         String keyword = (style == Style.LPN) ? KEYWORD_NAME : KEYWORD_MODEL;
         writer.write(keyword + ' ' + title + '\n');
     }

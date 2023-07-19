@@ -90,7 +90,7 @@ public class VerilogImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in, String serialisedUserData)
+    public ModelEntry deserialise(InputStream in, String serialisedUserData)
             throws OperationCancelledException, DeserialisationException {
 
         moduleToFileNameMap = null;

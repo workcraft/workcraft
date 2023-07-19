@@ -39,7 +39,7 @@ class ExportTests {
         File directory = FileUtils.createTempDirectory(FileUtils.getTempPrefix(workName));
 
         // .sg
-        String sgHeader = ExportUtils.getExportHeader("SG file", "#", null, null) +
+        String sgHeader = ExportUtils.getExportHeader("SG file", "#", we.getTitle()) +
                 ".model VME\n" +
                 ".inputs dsr dsw ldtack\n" +
                 ".outputs d lds dtack\n" +
