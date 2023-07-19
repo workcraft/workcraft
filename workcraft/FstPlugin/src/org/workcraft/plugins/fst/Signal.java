@@ -2,7 +2,10 @@ package org.workcraft.plugins.fst;
 
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.fsm.Symbol;
+
+import java.awt.*;
 
 @IdentifierPrefix("x")
 public class Signal extends Symbol {
@@ -26,7 +29,6 @@ public class Signal extends Symbol {
             return name;
         }
 
-
         public Type toggle() {
             switch (this) {
             case INPUT: return OUTPUT;
@@ -34,6 +36,15 @@ public class Signal extends Symbol {
             case INTERNAL: return INPUT;
             case DUMMY: return DUMMY;
             default: return this;
+            }
+        }
+
+        public Color getColor() {
+            switch (this) {
+            case INPUT:    return SignalCommonSettings.getInputColor();
+            case OUTPUT:   return SignalCommonSettings.getOutputColor();
+            case INTERNAL: return SignalCommonSettings.getInternalColor();
+            default:       return SignalCommonSettings.getDummyColor();
             }
         }
     }

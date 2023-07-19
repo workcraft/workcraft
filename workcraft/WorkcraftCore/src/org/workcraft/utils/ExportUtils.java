@@ -78,7 +78,7 @@ public class ExportUtils {
                     throw new RuntimeException(text);
                 }
             }
-            exporter.exportTo(model, file);
+            exporter.exportToFile(model, file);
             success = true;
         } finally {
             if (!success) {
@@ -114,7 +114,13 @@ public class ExportUtils {
         return result;
     }
 
-    public static String getExportHeader(String text, String linePrefix, String design, Format format) {
+    public static String getExportHeader(String text, String linePrefix, String design) {
+        return getExportHeader(text, linePrefix, design, null, null);
+    }
+
+    public static String getExportHeader(String text, String linePrefix, String design,
+            File file, Format format) {
+
         EditorCommonSettings.ExportHeaderStyle headerStyle = EditorCommonSettings.getExportHeaderStyle();
         if ((headerStyle == null) || (headerStyle == EditorCommonSettings.ExportHeaderStyle.NONE)) {
             return "";
@@ -128,7 +134,8 @@ public class ExportUtils {
                 result += '\n' + linePrefix + " * Design title:       " + design;
             }
             if (format != null) {
-                String command = "framework.exportWork(workspaceEntry, 'path/to/file.v', '" + format.getName() + "')";
+                String fileName = file == null ? "<FILE_NAME>" : ("'" + file.getName() + "'");
+                String command = "framework.exportWork(workspaceEntry, " + fileName + ", '" + format.getName() + "')";
                 result += '\n' + linePrefix + " * JavaScript command: " + command;
             }
         }

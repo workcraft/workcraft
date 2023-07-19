@@ -18,8 +18,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -49,15 +48,14 @@ public class ConversionResultHandlingMonitor extends AbstractResultHandlingMonit
         Collection<WorkspaceEntry> wes = new ArrayList<>();
         Framework framework = Framework.getInstance();
         for (File file : msfsmOutput.getFiles()) {
-            try {
-                InputStream in = new FileInputStream(file);
-                Fst fst = new SgImporter().importSG(in);
+            try (FileInputStream fileInputStream = new FileInputStream(file)) {
+                Fst fst = SgImporter.deserialiseFst(fileInputStream);
                 Fsm model = convertToFsm ? convertFstToFsm(fst) : fst;
                 ModelDescriptor modelDescriptor = convertToFsm ? new FsmDescriptor() : new FstDescriptor();
                 ModelEntry me = new ModelEntry(modelDescriptor, model);
                 WorkspaceEntry we = framework.createWork(me, file.getName());
                 wes.add(we);
-            } catch (FileNotFoundException | DeserialisationException e) {
+            } catch (DeserialisationException | IOException e) {
                 throw new RuntimeException("Cannot import file " + file.getAbsolutePath());
             }
         }

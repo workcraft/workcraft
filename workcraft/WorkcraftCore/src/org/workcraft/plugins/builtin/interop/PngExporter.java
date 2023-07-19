@@ -14,19 +14,6 @@ import java.io.OutputStream;
 public class PngExporter implements Exporter {
 
     @Override
-    public void exportTo(Model model, OutputStream out) throws SerialisationException {
-        if (!(model instanceof VisualModel)) {
-            throw new SerialisationException("Non-visual model cannot be exported as PNG file.");
-        }
-
-        PNGTranscoder transcoder = new PNGTranscoder();
-        transcoder.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR,
-                EditorCommonSettings.getPngBackgroundColor());
-
-        BatikUtils.transcode((VisualModel) model, out, transcoder);
-    }
-
-    @Override
     public boolean isCompatible(Model model) {
         return model instanceof VisualModel;
     }
@@ -34,6 +21,15 @@ public class PngExporter implements Exporter {
     @Override
     public PngFormat getFormat() {
         return PngFormat.getInstance();
+    }
+
+    @Override
+    public void serialise(Model model, OutputStream out) throws SerialisationException {
+        PNGTranscoder transcoder = new PNGTranscoder();
+        transcoder.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR,
+                EditorCommonSettings.getPngBackgroundColor());
+
+        BatikUtils.transcode((VisualModel) model, out, transcoder);
     }
 
 }

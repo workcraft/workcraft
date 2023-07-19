@@ -767,7 +767,7 @@ public final class Framework {
             if (importer == null) {
                 throw new DeserialisationException("Cannot identify appropriate importer for file '" + file.getAbsolutePath() + "'");
             }
-            ModelEntry me = importer.importFrom(file, serialisedUserData);
+            ModelEntry me = importer.importFromFile(file, serialisedUserData);
             Path<String> path = getWorkspace().createWorkPath(Path.empty(), me.getDesiredName());
             WorkspaceEntry we = createWork(me, path, true, false);
             updateJavaScript(we);

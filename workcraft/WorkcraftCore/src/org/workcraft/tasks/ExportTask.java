@@ -50,7 +50,7 @@ public class ExportTask implements Task<ExportOutput> {
                     return new Result<>(nestedException);
                 }
             }
-            exporter.exportTo(exportModel, file);
+            exporter.exportToFile(exportModel, file);
             success = true;
         } catch (Throwable e) {
             return new Result<>(e);

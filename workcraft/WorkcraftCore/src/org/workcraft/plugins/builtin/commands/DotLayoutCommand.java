@@ -84,7 +84,7 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
         if (exporter == null) {
             throw new NoExporterException(model, format);
         }
-        exporter.exportTo(model, file);
+        exporter.exportToFile(model, file);
     }
 
     private void applyLayout(String text, VisualModel model) {

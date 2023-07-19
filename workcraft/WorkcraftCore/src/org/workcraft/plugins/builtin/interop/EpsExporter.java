@@ -12,14 +12,6 @@ import java.io.OutputStream;
 public class EpsExporter implements Exporter {
 
     @Override
-    public void exportTo(Model model, OutputStream out) throws SerialisationException {
-        if (!(model instanceof VisualModel)) {
-            throw new SerialisationException("Non-visual model cannot be exported as EPS file.");
-        }
-        BatikUtils.transcode((VisualModel) model, out, new EPSTranscoder());
-    }
-
-    @Override
     public boolean isCompatible(Model model) {
         return model instanceof VisualModel;
     }
@@ -27,6 +19,11 @@ public class EpsExporter implements Exporter {
     @Override
     public EpsFormat getFormat() {
         return EpsFormat.getInstance();
+    }
+
+    @Override
+    public void serialise(Model model, OutputStream out) throws SerialisationException {
+        BatikUtils.transcode((VisualModel) model, out, new EPSTranscoder());
     }
 
 }

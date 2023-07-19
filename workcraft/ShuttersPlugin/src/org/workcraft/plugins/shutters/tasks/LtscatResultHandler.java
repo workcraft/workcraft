@@ -52,7 +52,7 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatOutput>  {
 
                 try {
                     inputStream = new FileInputStream(file);
-                    model = importer.importStg(inputStream);
+                    model = importer.deserialiseStg(inputStream);
                 } catch (Exception e1) {
                     FileUtils.deleteOnExitRecursively(tmpDir);
                     e1.printStackTrace();

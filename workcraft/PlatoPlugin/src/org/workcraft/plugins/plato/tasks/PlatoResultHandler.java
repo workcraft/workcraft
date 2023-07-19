@@ -157,7 +157,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
             throws IOException, DeserialisationException, OperationCancelledException {
 
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8))) {
-            ModelEntry me = new StgImporter().importFrom(inputStream, null);
+            ModelEntry me = new StgImporter().deserialise(inputStream, null);
             MathModel mathModel = me.getMathModel();
             StgDescriptor stgModel = new StgDescriptor();
             VisualModelDescriptor vmd = stgModel.getVisualModelDescriptor();
@@ -179,7 +179,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
             throws IOException, DeserialisationException, OperationCancelledException {
 
         try (ByteArrayInputStream inputStream = new ByteArrayInputStream(output.getBytes(StandardCharsets.UTF_8))) {
-            ModelEntry me = new SgImporter().importFrom(inputStream, null);
+            ModelEntry me = new SgImporter().deserialise(inputStream, null);
             MathModel mathModel = me.getMathModel();
             FstDescriptor fstModel = new FstDescriptor();
             VisualFstDescriptor vmd = fstModel.getVisualModelDescriptor();

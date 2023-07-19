@@ -1,12 +1,14 @@
 package org.workcraft.plugins.stg.interop;
 
-import org.workcraft.interop.AbstractSerialiseExporter;
+import org.workcraft.dom.Model;
+import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
-import org.workcraft.plugins.stg.serialisation.AstgSerialiser;
+import org.workcraft.plugins.petri.PetriModel;
+import org.workcraft.plugins.stg.serialisation.SerialiserUtils;
 
-public class StgExporter extends AbstractSerialiseExporter {
+import java.io.OutputStream;
 
-    private final AstgSerialiser serialiser = new AstgSerialiser();
+public class StgExporter implements Exporter {
 
     @Override
     public Format getFormat() {
@@ -14,8 +16,13 @@ public class StgExporter extends AbstractSerialiseExporter {
     }
 
     @Override
-    public AstgSerialiser getSerialiser() {
-        return serialiser;
+    public boolean isCompatible(Model model) {
+        return model instanceof PetriModel;
+    }
+
+    @Override
+    public void serialise(Model model, OutputStream out) {
+        SerialiserUtils.writeModel(model, out, getCurrentFile(), SerialiserUtils.Style.STG, false);
     }
 
 }

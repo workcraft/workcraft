@@ -68,7 +68,7 @@ public class ExtractWindowsCommand implements Command, MenuOrdering {
         sgFile = new File(dir, sgFileName);
         // exporting the file
         try {
-            exporter.exportTo(fst, sgFile);
+            exporter.exportToFile(fst, sgFile);
         } catch (SerialisationException e) {
             e.printStackTrace();
             FileUtils.deleteOnExitRecursively(dir);

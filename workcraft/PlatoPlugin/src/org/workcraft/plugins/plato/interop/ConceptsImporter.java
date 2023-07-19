@@ -6,7 +6,6 @@ import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
 import org.workcraft.plugins.plato.tasks.PlatoTask;
 import org.workcraft.plugins.stg.StgDescriptor;
-import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
@@ -26,7 +25,7 @@ public class ConceptsImporter implements Importer {
     }
 
     @Override
-    public ModelEntry importFrom(InputStream in, String serialisedUserData) throws DeserialisationException {
+    public ModelEntry deserialise(InputStream in, String serialisedUserData) throws DeserialisationException {
         try {
             boolean system = FileUtils.containsKeyword(in, "system =");
             File file = FileUtils.createTempFile("plato-", ".hs");
@@ -37,10 +36,8 @@ public class ConceptsImporter implements Importer {
             if (result.isSuccess()) {
                 String stdout = result.getPayload().getStdoutString();
                 if (stdout.startsWith(".model")) {
-                    StgImporter importer = new StgImporter();
                     ByteArrayInputStream is = new ByteArrayInputStream(result.getPayload().getStdout());
-                    StgModel stg = importer.importStg(is);
-                    return new ModelEntry(new StgDescriptor(), stg);
+                    return new ModelEntry(new StgDescriptor(), StgImporter.deserialiseStg(is));
                 }
             }
             throw new PlatoException(result);

@@ -27,7 +27,7 @@ public final class PathbreakSerialiserUtils {
     public static void write(Circuit circuit, OutputStream out) {
         PrintWriter writer = new PrintWriter(out);
         String moduleName = ExportUtils.getTitleAsIdentifier(circuit.getTitle());
-        writer.write(ExportUtils.getExportHeader("Path break SDC file", "#", moduleName, null));
+        writer.write(ExportUtils.getExportHeader("Path break SDC file", "#", moduleName));
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
             writeInstance(writer, circuit, component);
         }
