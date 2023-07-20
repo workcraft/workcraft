@@ -46,13 +46,16 @@ subprojects {
         delete compileJavacc.outputDirectory
     }
 
+
+    apply plugin: 'java-library'
+
     configurations {
         lib
     }
 
     dependencies {
         lib fileTree(dir: gradle.libDir, include: ['**/*.jar'])
-        configurations.implementation.extendsFrom(configurations.lib)
+        configurations.api.extendsFrom(configurations.lib)
         testImplementation gradle.junit
         testRuntimeOnly gradle.junit
         javacc gradle.javacc
@@ -297,8 +300,6 @@ allprojects {
 	javadoc.group = null  // Exclude javadoc from the list of tasks
 }
 
-/*
 tasks.cleanAll.doLast {
     project.delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
 }
-*/

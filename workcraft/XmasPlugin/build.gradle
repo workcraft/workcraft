@@ -2,7 +2,8 @@ dependencies {
     implementation project(':WorkcraftCore')
     implementation project(':PetriPlugin')
     implementation project(':StgPlugin')
-    lib 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'  // for file exchange in xMAS
+    // Needed for file exchange in xMAS (https://mvnrepository.com/artifact/org.codehaus.jackson/jackson-mapper-asl)
+    lib 'org.codehaus.jackson:jackson-mapper-asl:1.9.13'
 }
 
 cpdCheck {
