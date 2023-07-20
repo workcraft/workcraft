@@ -1,10 +1,16 @@
 dependencies {
-    lib 'org.mozilla:rhino:1.7.14'  // for JavaScript execution
-    lib 'com.sun.activation:javax.activation:1.2.0'  // for JavaBeans Activation Framework (JAF)
-    lib 'log4j:log4j:1.2.17'  // for configuration of log in FOP
-    lib 'info.clearthought:table-layout:4.3.0'  // for TableLayout
-    lib 'commons-io:commons-io:2.13.0'  //  for logging in Batik PDF Transcoder
-    lib 'commons-logging:commons-logging:1.2'  //  for logging in Batik PDF Transcoder
+    // Rhino implementation of JavaScript (https://mvnrepository.com/artifact/org.mozilla/rhino)
+    lib 'org.mozilla:rhino:1.7.14'
+    // JavaBeans Activation Framework (JAF) (https://mvnrepository.com/artifact/com.sun.activation/javax.activation)
+    lib 'com.sun.activation:javax.activation:1.2.0'
+    // Log4J  v1.* for configuration of FOP logs (https://mvnrepository.com/artifact/log4j/log4j)
+    lib 'log4j:log4j:1.2.17'
+    // Needed for TableLayout (https://mvnrepository.com/artifact/info.clearthought/table-layout)
+    lib 'info.clearthought:table-layout:4.3.0'
+    // Needed for logging in Batik PDF Transcoder (https://mvnrepository.com/artifact/commons-io/commons-io)
+    lib 'commons-io:commons-io:2.13.0'
+    // Needed for logging in Batik PDF Transcoder (https://mvnrepository.com/artifact/commons-logging/commons-logging)
+    lib 'commons-logging:commons-logging:1.2'
 }
 
 ext.excludeFromCoverage = [
