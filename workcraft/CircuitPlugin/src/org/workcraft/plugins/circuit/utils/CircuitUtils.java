@@ -606,6 +606,10 @@ public final class CircuitUtils {
         }
     }
 
+    public static boolean isConstant(FunctionContact contact) {
+        return isConstant1(contact) || isConstant0(contact);
+    }
+
     public static boolean isConstant0(FunctionContact contact) {
         return !contact.getInitToOne() && cannotRise(contact);
     }
