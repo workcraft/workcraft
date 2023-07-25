@@ -11,11 +11,10 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.TextUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
@@ -24,6 +23,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class VerificationUtils {
+
+    private static final String TITLE = "Verification";
 
     private VerificationUtils() {
     }
@@ -81,14 +82,16 @@ public final class VerificationUtils {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         File envFile = circuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadOrImportStg(envFile);
-        String msg = "";
+        String longMessage = "";
+        String shortMessage = "";
         if (!skipEnvironmentCheck && (envStg == null)) {
-            if (envFile == null) {
-                msg = PropertyHelper.BULLET_PREFIX + "Environment STG is missing.";
-            } else {
-                msg = PropertyHelper.BULLET_PREFIX + "Environment STG cannot be read from the file:\n"
-                        + envFile.getAbsolutePath();
-            }
+            String itemText = (envFile == null)
+                    ? ('\n' + PropertyHelper.BULLET_PREFIX + "Environment STG is missing.")
+                    : ('\n' + PropertyHelper.BULLET_PREFIX + "Environment STG cannot be read from the file:\n"
+                    + envFile.getAbsolutePath());
+
+            longMessage += itemText;
+            shortMessage += itemText;
         }
         // Restore signal types in the environment STG
         if (envStg != null) {
@@ -99,20 +102,20 @@ public final class VerificationUtils {
         // Check the circuit for hanging contacts
         Set<String> hangingSignals = getHangingSignals(circuit);
         if (!hangingSignals.isEmpty()) {
-            if (!msg.isEmpty()) {
-                msg += "\n\n";
-            }
-            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Hanging contact",
-                    hangingSignals);
+            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
+                    "Hanging contact", SortUtils.getSortedNatural(hangingSignals));
+
+            longMessage += itemText;
+            shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
         }
         // Check the circuit for unconstrained inputs and unused outputs
         Set<String> unconstrainedInputSignals = getUnconstrainedInputSignals(envStg, circuit);
         if (!unconstrainedInputSignals.isEmpty()) {
-            if (!msg.isEmpty()) {
-                msg += "\n";
-            }
-            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Unconstrained input signal",
-                    unconstrainedInputSignals);
+            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
+                    "Unconstrained input signal", SortUtils.getSortedNatural(unconstrainedInputSignals));
+
+            longMessage += itemText;
+            shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
         }
         // Check the circuit for unconstrained inputs and unused outputs
         Set<String> unusedOutputSignals = getUnusedOutputSignals(envStg, circuit).stream()
@@ -120,25 +123,28 @@ public final class VerificationUtils {
                 .collect(Collectors.toSet());
 
         if (!unusedOutputSignals.isEmpty()) {
-            if (!msg.isEmpty()) {
-                msg += "\n";
-            }
-            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Unused output signal",
-                    unusedOutputSignals);
+            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
+                    "Unused output signal", SortUtils.getSortedNatural(unusedOutputSignals));
+
+            longMessage += itemText;
+            shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
         }
         // Check the circuit for excited components
         Set<String> excitedComponentRefs = getExcitedComponentRefs(circuit);
         if (!excitedComponentRefs.isEmpty()) {
-            if (!msg.isEmpty()) {
-                msg += "\n";
-            }
-            msg += TextUtils.wrapMessageWithItems(PropertyHelper.BULLET_PREFIX + "Excited component",
-                    excitedComponentRefs);
-        }
+            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
+                    "Excited component", SortUtils.getSortedNatural(excitedComponentRefs));
 
-        if (!msg.isEmpty()) {
-            return DialogUtils.showConfirmWarning("The circuit has the following issues:\n" + msg,
-                    "\n\nProceed anyway?");
+            longMessage += itemText;
+            shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
+        }
+        // Produce warning
+        if (!longMessage.isEmpty()) {
+            String title = circuit.getTitle();
+            String intro = "The circuit " + (title.isEmpty() ? "" : ("'" + title + "' ")) + "has the following issues:";
+            LogUtils.logWarning(intro + longMessage);
+            return DialogUtils.showConfirm(intro + shortMessage, "\n\nProceed anyway?",
+                    TITLE, true, JOptionPane.WARNING_MESSAGE, false);
         }
         return true;
     }
@@ -227,7 +233,7 @@ public final class VerificationUtils {
         if (!blackboxComponents.isEmpty()) {
             Collection<String> refs = ReferenceHelper.getReferenceList(circuit, blackboxComponents);
             String msg = TextUtils.wrapMessageWithItems("Circuit has blackbox component", refs);
-            return DialogUtils.showConfirmWarning(msg, "\n\nProceed anyway?");
+            return DialogUtils.showConfirmWarning(msg, "\n\nProceed anyway?", TITLE, true);
         }
         return true;
     }
