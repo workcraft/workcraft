@@ -109,6 +109,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyUseIndividualScan = prefix + ".useIndividualScan";
     private static final String keyUseScanInitialisation = prefix + ".useScanInitialisation";
     private static final String keyInitialisationInverterInstancePrefix = prefix + ".initialisationInverterInstancePrefix";
+    private static final String keyAuxiliaryPortRegex = prefix + ".auxiliaryPortRegex";
     // Forks
     private static final String keyForkHighFanout = prefix + ".forkHighFanout";
     private static final String keyForkBufferPattern = prefix + ".forkBufferPattern";
@@ -159,6 +160,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultUseIndividualScan = false;
     private static final boolean defaultUseScanInitialisation = false;
     private static final String defaultInitialisationInverterInstancePrefix = "test_inv_";
+    private static final String defaultAuxiliaryPortRegex = "";
     // Forks
     private static final int defaultForkHighFanout = 4;
     private static final String defaultForkBufferPattern = "fork_x" + FORK_FUNOUT_PLACEHOLDER + "_";
@@ -209,6 +211,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean useIndividualScan = defaultUseIndividualScan;
     private static boolean useScanInitialisation = defaultUseScanInitialisation;
     private static String initialisationInverterInstancePrefix = defaultInitialisationInverterInstancePrefix;
+    private static String auxiliaryPortRegex = defaultAuxiliaryPortRegex;
     // Forks
     private static Integer forkHighFanout = defaultForkHighFanout;
     private static String forkBufferPattern = defaultForkBufferPattern;
@@ -445,6 +448,11 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::setInitialisationInverterInstancePrefix,
                 CircuitSettings::getInitialisationInverterInstancePrefix));
 
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Auxiliary ports regex to exclude from verification, e.g. sig|req[0-9]*|bus__\\d+",
+                CircuitSettings::setAuxiliaryPortRegex,
+                CircuitSettings::getAuxiliaryPortRegex));
+
         properties.add(PropertyHelper.createSeparatorProperty("Buffering forks with high fanout"));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
@@ -530,6 +538,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setUseIndividualScan(config.getBoolean(keyUseIndividualScan, defaultUseIndividualScan));
         setUseScanInitialisation(config.getBoolean(keyUseScanInitialisation, defaultUseScanInitialisation));
         setInitialisationInverterInstancePrefix(config.getString(keyInitialisationInverterInstancePrefix, defaultInitialisationInverterInstancePrefix));
+        setAuxiliaryPortRegex(config.getString(keyAuxiliaryPortRegex, defaultAuxiliaryPortRegex));
         // Forks
         setForkHighFanout(config.getInt(keyForkHighFanout, defaultForkHighFanout));
         setForkBufferPattern(config.getString(keyForkBufferPattern, defaultForkBufferPattern));
@@ -580,6 +589,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyUseIndividualScan, getUseIndividualScan());
         config.setBoolean(keyUseScanInitialisation, getUseScanInitialisation());
         config.set(keyInitialisationInverterInstancePrefix, getInitialisationInverterInstancePrefix());
+        config.set(keyAuxiliaryPortRegex, getAuxiliaryPortRegex());
         // Forks
         config.setInt(keyForkHighFanout, getForkHighFanout());
         config.set(keyForkBufferPattern, getForkBufferPattern());
@@ -992,6 +1002,20 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setInitialisationInverterInstancePrefix(String value) {
         initialisationInverterInstancePrefix = value;
+    }
+
+    public static String getAuxiliaryPortRegex() {
+        return auxiliaryPortRegex;
+    }
+
+    public static boolean isAuxiliaryPortName(String name) {
+        Pattern exceptionPattern = Pattern.compile(getAuxiliaryPortRegex());
+        Matcher exceptionMatcher = exceptionPattern.matcher(name);
+        return exceptionMatcher.matches();
+    }
+
+    public static void setAuxiliaryPortRegex(String value) {
+        auxiliaryPortRegex = value;
     }
 
     public static String getForkBufferPattern() {

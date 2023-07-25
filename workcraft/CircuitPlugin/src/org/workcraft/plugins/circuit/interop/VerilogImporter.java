@@ -30,10 +30,7 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.TextUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -358,15 +355,15 @@ public class VerilogImporter implements Importer {
         String shortMessage = "";
         // Check circuit for no components
         if (circuit.getFunctionComponents().isEmpty()) {
-            String itemText = "\n" + PropertyHelper.BULLET_PREFIX + "No components";
+            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + "No components";
             longMessage += itemText;
             shortMessage += itemText;
         }
         // Check circuit for hanging contacts
         Set<String> hangingSignals = VerificationUtils.getHangingSignals(circuit);
         if (!hangingSignals.isEmpty()) {
-            String itemText = TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
-                    + "Hanging contact", hangingSignals);
+            String itemText = TextUtils.wrapMessageWithItems('\n' + PropertyHelper.BULLET_PREFIX
+                    + "Hanging contact", SortUtils.getSortedNatural(hangingSignals));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -376,8 +373,9 @@ public class VerilogImporter implements Importer {
         uninitialisedSignals.addAll(VerificationUtils.getHangingDriverSignals(circuit));
         uninitialisedSignals.removeAll(initialisedSignals);
         if (!uninitialisedSignals.isEmpty()) {
-            String itemText = TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
-                    + "Missing initial state declaration (assuming low) for signal", uninitialisedSignals);
+            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
+                    "Missing initial state declaration (assuming low) for signal",
+                    SortUtils.getSortedNatural(uninitialisedSignals));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -386,8 +384,8 @@ public class VerilogImporter implements Importer {
         Set<String> unusedSignals = new HashSet<>(initialisedSignals);
         unusedSignals.removeAll(usedSignals);
         if (!unusedSignals.isEmpty()) {
-            String itemText = TextUtils.wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX
-                    + "Initial state declaration for unused signal", unusedSignals);
+            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
+                    "Initial state declaration for unused signal", SortUtils.getSortedNatural(unusedSignals));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -395,7 +393,7 @@ public class VerilogImporter implements Importer {
         // Produce warning
         if (!longMessage.isEmpty()) {
             String title = circuit.getTitle();
-            String intro = "Issues with imported circuit" + (title.isEmpty() ? ":" : " '" + title + "':");
+            String intro = "Issues with imported circuit" + (title.isEmpty() ? ":" : (" '" + title + "':"));
             LogUtils.logWarning(intro + longMessage);
             if (isFlatNetlist) {
                 DialogUtils.showMessage(intro + shortMessage, TITLE, JOptionPane.WARNING_MESSAGE, false);
