@@ -141,6 +141,9 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getInitialisationInverterInstancePrefix()),
                 framework.getConfigVar(prefix + ".initialisationInverterInstancePrefix", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getAuxiliaryPortRegex()),
+                framework.getConfigVar(prefix + ".auxiliaryPortRegex", false));
+
         // Forks
         Assertions.assertEquals(Config.toString(CircuitSettings.getForkHighFanout()),
                 framework.getConfigVar(prefix + ".forkHighFanout", false));

@@ -572,7 +572,7 @@ public final class ScanUtils {
                 .map(CircuitSettings::getBusSignalPattern)
                 .collect(Collectors.toSet());
 
-        return isAllowedName(portName, exactNames, patterns);
+        return isMatchingName(portName, exactNames, patterns);
     }
 
     public static boolean isScanOutputPortName(String portName) {
@@ -589,18 +589,18 @@ public final class ScanUtils {
                 .map(CircuitSettings::getBusSignalPattern)
                 .collect(Collectors.toSet());
 
-        return isAllowedName(portName, exactNames, patterns);
+        return isMatchingName(portName, exactNames, patterns);
     }
 
-    private static boolean isAllowedName(String name, Set<String> exactNames, Collection<Pattern> patterns) {
+    private static boolean isMatchingName(String name, Set<String> exactNames, Collection<Pattern> patterns) {
         return ((exactNames != null) && exactNames.contains(name)) ||
                 ((patterns != null) && patterns.stream().anyMatch(pattern -> pattern.matcher(name).matches()));
     }
 
-    public static Set<String> getScanoutSignals(Circuit circuit) {
+    public static Set<String> getScanoutAndAuxiliarySignals(Circuit circuit) {
         return circuit.getOutputPorts().stream()
                 .map(Contact::getName)
-                .filter(ScanUtils::isScanOutputPortName)
+                .filter(name -> isScanOutputPortName(name) || CircuitSettings.isAuxiliaryPortName(name))
                 .collect(Collectors.toSet());
     }
 

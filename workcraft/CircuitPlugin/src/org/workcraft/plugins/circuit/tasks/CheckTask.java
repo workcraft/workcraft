@@ -23,6 +23,7 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -255,9 +256,12 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
                 // Check for persistency (if requested)
                 if (checkPersistency) {
-                    Set<String> scanoutSignals = ScanUtils.getScanoutSignals(circuit.getMathModel());
+                    Set<String> skipSignals = ScanUtils.getScanoutAndAuxiliarySignals(circuit.getMathModel());
+                    List<String> orderedSkipSignals = SortUtils.getSortedNatural(skipSignals);
 
-                    VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(exceptionPairs, scanoutSignals);
+                    VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(
+                            exceptionPairs, orderedSkipSignals);
+
                     MpsatTask persistencyMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
                     SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                     Result<? extends MpsatOutput> persistencyMpsatResult = manager.execute(
