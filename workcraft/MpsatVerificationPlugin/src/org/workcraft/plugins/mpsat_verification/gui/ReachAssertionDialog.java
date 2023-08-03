@@ -88,7 +88,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
                             + "$P\"p\" & $P\"q\"");
         }
 
-        DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
+        DataMapper<VerificationParameters> guiMapper = new DataMapper<>() {
             @Override
             public void applyDataToControls(VerificationParameters data) {
                 modeCombo.setSelectedItem(data.getMode());

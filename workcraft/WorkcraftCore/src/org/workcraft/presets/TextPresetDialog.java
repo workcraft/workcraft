@@ -28,7 +28,7 @@ public class TextPresetDialog extends PresetDialog<String> {
     }
 
     private PresetManagerPanel<String> createPresetPanel() {
-        DataMapper<String> guiMapper = new DataMapper<String>() {
+        DataMapper<String> guiMapper = new DataMapper<>() {
             @Override
             public void applyDataToControls(String data) {
                 codePanel.setText(data);
