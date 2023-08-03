@@ -24,7 +24,7 @@ public class ExhaustiveSearch {
         }
         //printSolution(allMaxCliques);
         AdvancedGraph g = null;
-        if (initG.getEdges().size() != 0) {
+        if (!initG.getEdges().isEmpty()) {
             // Max number of cliques to be used in the final ecc (i.e. the depth of the tree to be traversed)
             int k = 0;
             while (ecc.isEmpty()) {

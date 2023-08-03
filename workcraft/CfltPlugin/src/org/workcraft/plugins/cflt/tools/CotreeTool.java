@@ -9,7 +9,7 @@ import org.workcraft.plugins.cflt.Operator;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.utils.GraphUtils;
 
-public class CotreeTool {
+public final class CotreeTool {
 
     public static ArrayList<Node> nodes;
     public static String singleTransition;

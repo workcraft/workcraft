@@ -77,7 +77,7 @@ public class SequenceHeuristic {
                     localUncoveredDegree.put(j, 1 - isCovered.get(i + j));
                 }
 
-                String u = EccUtils.argmax(localUncoveredDegree, localNeighbourhoodOfi);
+                String u = EccUtils.argMax(localUncoveredDegree, localNeighbourhoodOfi);
                 while (localUncoveredDegree.get(u) > 0) {
                     boolean isOptional = true;
                     for (String j : finalCliques.get(cliqueNumber)) {
@@ -115,7 +115,7 @@ public class SequenceHeuristic {
                             localUncoveredDegree.replace(j, temp + 1);
                         }
                     }
-                    u = EccUtils.argmax(localUncoveredDegree, localNeighbourhoodOfi);
+                    u = EccUtils.argMax(localUncoveredDegree, localNeighbourhoodOfi);
                     if (localNeighbourhoodOfi.isEmpty()) { break; }
                 }
             }

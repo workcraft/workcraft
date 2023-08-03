@@ -5,6 +5,7 @@ import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.cflt.gui.ExpressionDialog;
 import org.workcraft.plugins.cflt.presets.ExpressionDataSerialiser;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters;
@@ -15,12 +16,18 @@ import org.workcraft.presets.PresetManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TranslateProFloExpressionCommand implements Command, MenuOrdering {
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+
+public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
 
     private static final String PRESET_KEY = "proflo-expressions.xml";
     private static final ExpressionDataSerialiser DATA_SERIALISER = new ExpressionDataSerialiser();
 
     private static ExpressionParameters preservedData = null;
+
+    public static Consumer<CodePanel> syntaxChecker = ExpressionUtils::checkSyntax;
+    public static BiConsumer<WorkspaceEntry, String> externalTranslator = null;
 
     @Override
     public final String getSection() {
@@ -52,29 +59,44 @@ public class TranslateProFloExpressionCommand implements Command, MenuOrdering {
     public void run(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        ExpressionUtils.we = we;
 
         PresetManager<ExpressionParameters> presetManager
                 = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
 
-        ExpressionDialog dialog = new ExpressionDialog(mainWindow, presetManager);
+        ExpressionDialog dialog = new ExpressionDialog(mainWindow, presetManager,
+                syntaxChecker, externalTranslator != null);
 
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
-            String expression = preservedData.getExpression();
-            ExpressionParameters.Mode mode = preservedData.getMode();
-            we.captureMemento();
-            if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
-                VisualPetri petri = WorkspaceUtils.getAs(we, VisualPetri.class);
-                if (!ExpressionUtils.insert(petri, expression, mode)) {
-                    we.cancelMemento();
-                }
+            process(we, preservedData);
+        }
+    }
+
+    private static void process(WorkspaceEntry we, ExpressionParameters data) {
+        ExpressionParameters.Mode mode = data.getMode();
+        String expression = data.getExpression();
+        if (mode != null) {
+            if (mode == ExpressionParameters.Mode.EXTERNAL) {
+                externalTranslator.accept(we, expression);
+            } else {
+                insert(we, expression, mode);
             }
-            if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {
-                VisualStg stg = WorkspaceUtils.getAs(we, VisualStg.class);
-                if (!ExpressionUtils.insert(stg, expression, mode)) {
-                    we.cancelMemento();
-                }
+        }
+    }
+
+    private static void insert(WorkspaceEntry we, String expression, ExpressionParameters.Mode mode) {
+        we.captureMemento();
+        ExpressionUtils.we = we;
+        if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
+            VisualPetri petri = WorkspaceUtils.getAs(we, VisualPetri.class);
+            if (!ExpressionUtils.insert(petri, expression, mode)) {
+                we.cancelMemento();
+            }
+        }
+        if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {
+            VisualStg stg = WorkspaceUtils.getAs(we, VisualStg.class);
+            if (!ExpressionUtils.insert(stg, expression, mode)) {
+                we.cancelMemento();
             }
         }
     }

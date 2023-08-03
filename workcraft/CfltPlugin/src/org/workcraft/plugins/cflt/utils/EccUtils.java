@@ -1,9 +1,5 @@
 package org.workcraft.plugins.cflt.utils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
 import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
 import org.workcraft.plugins.cflt.ecc.ExhaustiveSearch;
@@ -11,33 +7,29 @@ import org.workcraft.plugins.cflt.ecc.MaxMinHeuristic;
 import org.workcraft.plugins.cflt.ecc.SequenceHeuristic;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 
-public class EccUtils {
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 
-    public static ArrayList<ArrayList<String>> getEcc(boolean isSequence, String mode, Graph inputG, Graph outputG) {
-        ArrayList<ArrayList<String>> edgeCliqueCover = new ArrayList<>();
-        if (!isSequence) {
-            if (mode.equals(Mode.SLOW_EXACT.toString())) {
-                edgeCliqueCover = ExhaustiveSearch.getEdgeCliqueCover(inputG, null);
-            } else if (mode.equals(Mode.FAST_SEQ.toString())) {
-                edgeCliqueCover = SequenceHeuristic.getEdgeCliqueCover(inputG, new ArrayList<>());
-            } else if (mode.equals(Mode.FAST_MAX.toString())) {
-                edgeCliqueCover = MaxMinHeuristic.getEdgeCliqueCover(inputG, new ArrayList<>(), true);
-            } else if (mode.equals(Mode.FAST_MIN.toString())) {
-                edgeCliqueCover = MaxMinHeuristic.getEdgeCliqueCover(inputG, new ArrayList<>(), false);
-            }
+public final class EccUtils {
 
-        } else {
-            if (mode.equals(Mode.SLOW_EXACT.toString())) {
-                edgeCliqueCover = ExhaustiveSearch.getEdgeCliqueCover(GraphUtils.join(inputG, outputG), inputG.getEdges());
-            } else if (mode.equals(Mode.FAST_SEQ.toString())) {
-                edgeCliqueCover = SequenceHeuristic.getEdgeCliqueCover(GraphUtils.join(inputG, outputG), inputG.getEdges());
-            } else if (mode.equals(Mode.FAST_MAX.toString())) {
-                edgeCliqueCover = MaxMinHeuristic.getEdgeCliqueCover(GraphUtils.join(inputG, outputG), inputG.getEdges(), true);
-            } else if (mode.equals(Mode.FAST_MIN.toString())) {
-                edgeCliqueCover = MaxMinHeuristic.getEdgeCliqueCover(GraphUtils.join(inputG, outputG), inputG.getEdges(), false);
-            }
+    private EccUtils() {
+    }
+
+    public static ArrayList<ArrayList<String>> getEcc(boolean isSequence, Mode mode, Graph inputG, Graph outputG) {
+        Graph initGraph = isSequence ? GraphUtils.join(inputG, outputG) : inputG;
+        ArrayList<Edge> optionalEdges = isSequence ? inputG.getEdges() : new ArrayList<>();
+        switch (mode) {
+        case SLOW_EXACT:
+            return ExhaustiveSearch.getEdgeCliqueCover(initGraph, optionalEdges);
+        case FAST_SEQ:
+            return SequenceHeuristic.getEdgeCliqueCover(initGraph, optionalEdges);
+        case FAST_MAX:
+            return MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, true);
+        case FAST_MIN:
+            return MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, false);
         }
-        return edgeCliqueCover;
+        return new ArrayList<>();
     }
 
     public static HashMap<String, HashSet<String>> initialiseNeighbours(Graph g) {
@@ -68,7 +60,7 @@ public class EccUtils {
      * by checking if the clique consists only of edges contained in other cliques.
      * @param noOfCliqueAnEdgeIsContainedIn, the number of cliques an edge is contained in
      * @param cliqueAsEdges clique
-     * @return null if clique is redundant, or the clique
+     * @return clique is redundancy
      */
     public static boolean checkRedundancy(HashMap<String, Integer> noOfCliqueAnEdgeIsContainedIn,
                             ArrayList<String> cliqueAsEdges) {
@@ -82,7 +74,13 @@ public class EccUtils {
         return true;
     }
 
-    public static String argmin(HashMap<String, Integer> uncoveredDegree, HashSet<String> uncoveredVertices) {
+    /**
+     *
+     * @param uncoveredDegree uncovered degree
+     * @param uncoveredVertices uncovered vertices
+     * @return a vertex 'u' with the lowest uncovered degree in the local neighbourhood
+     */
+    public static String argMin(HashMap<String, Integer> uncoveredDegree, HashSet<String> uncoveredVertices) {
         int arg = 1000;
         String u = "";
         for (String str : uncoveredVertices) {
@@ -96,16 +94,16 @@ public class EccUtils {
 
     /**
      *
-     * @param localUncoveredDegree
-     * @param localNeighbourhood
+     * @param uncoveredDegree uncovered degree
+     * @param uncoveredVertices uncovered vertices
      * @return a vertex 'u' with the highest uncovered degree in the local neighbourhood
      */
-    public static String argmax(HashMap<String, Integer> localUncoveredDegree, HashSet<String> localNeighbourhood) {
+    public static String argMax(HashMap<String, Integer> uncoveredDegree, HashSet<String> uncoveredVertices) {
         int arg = -1;
         String u = "";
-        for (String str : localNeighbourhood) {
-            if (localUncoveredDegree.get(str) > arg) {
-                arg = localUncoveredDegree.get(str);
+        for (String str : uncoveredVertices) {
+            if (uncoveredDegree.get(str) > arg) {
+                arg = uncoveredDegree.get(str);
                 u = str;
             }
         }
