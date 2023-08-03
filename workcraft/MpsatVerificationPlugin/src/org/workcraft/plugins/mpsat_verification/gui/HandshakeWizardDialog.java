@@ -102,6 +102,8 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
     public HandshakeWizardDialog(Window owner, HandshakePresetManager presetManager) {
         super(owner, "Handshake wizard", presetManager);
+
+        // Preset panel is set here, as it is created in overloaded createPresetPanel called from super constructor
         presetPanel.selectFirst();
         addWindowListener(new WindowAdapter() {
             @Override
