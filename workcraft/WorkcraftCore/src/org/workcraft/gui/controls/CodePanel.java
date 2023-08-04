@@ -60,6 +60,15 @@ public class CodePanel extends JPanel {
         textArea.requestFocus();
     }
 
+    public void highlightWarning(int fromPos, int toPos, String detail) {
+        clearHighlight();
+        showWarningStatus(detail);
+        highlight = HighlightUtils.highlightText(textArea, fromPos, toPos, LogCommonSettings.getWarningBackground());
+        textArea.setCaretPosition(fromPos);
+        textArea.moveCaretPosition(fromPos);
+        textArea.requestFocus();
+    }
+
     public void highlightError(int fromPos, int toPos, String detail) {
         clearHighlight();
         showErrorStatus(detail);
