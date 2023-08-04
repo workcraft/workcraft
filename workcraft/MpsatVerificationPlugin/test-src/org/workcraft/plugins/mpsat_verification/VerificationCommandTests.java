@@ -45,6 +45,7 @@ class VerificationCommandTests {
                 null,  // output determinacy
                 null,  // CSC
                 null,  // USC
+                null,  // absence of self-triggering local signals
                 null,  // DI interface
                 null,  // normalcy
                 null,  // mutex implementability (late protocol)
@@ -64,6 +65,7 @@ class VerificationCommandTests {
                 null,  // output determinacy
                 null,  // CSC
                 null,  // USC
+                null,  // absence of self-triggering local signals
                 null,  // DI interface
                 null,  // normalcy
                 null,  // mutex implementability (late protocol)
@@ -83,6 +85,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 false, // CSC
                 false, // USC
+                true,  // absence of self-triggering local signals
                 true,  // DI interface
                 false, // normalcy
                 null,  // mutex implementability (late protocol)
@@ -102,6 +105,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // CSC
                 true,  // USC
+                true,  // absence of self-triggering local signals
                 false, // DI interface
                 false, // normalcy
                 true,  // mutex implementability (late protocol)
@@ -121,6 +125,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // CSC
                 false, // USC
+                true,  // absence of self-triggering local signals
                 false, // DI interface
                 false, // normalcy
                 null,  // mutex implementability (late protocol)
@@ -140,6 +145,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // CSC
                 true,  // USC
+                true,  // absence of self-triggering local signals
                 true,  // DI interface
                 true,  // normalcy
                 null,  // mutex implementability (late protocol)
@@ -159,6 +165,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // CSC
                 true,  // USC
+                true,  // absence of self-triggering local signals
                 true,  // DI interface
                 false, // normalcy
                 true,  // mutex implementability (late protocol)
@@ -178,6 +185,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 null,  // CSC
                 null,  // USC
+                null,  // absence of self-triggering local signals
                 null,  // DI interface
                 null,  // normalcy
                 null,  // mutex implementability (late protocol)
@@ -199,8 +207,29 @@ class VerificationCommandTests {
                 false, // output determinacy
                 false, // CSC
                 false, // USC
+                true,  // absence of self-triggering local signals
                 true,  // DI interface
                 false, // normalcy
+                null,  // mutex implementability (late protocol)
+                null   // mutex implementability (early protocol)
+        );
+    }
+
+    @Test
+    void testPulserVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "pulser.stg.work");
+        testVerificationCommands(workName,
+                true, // combined
+                true,  // consistency
+                true,  // deadlock freeness
+                true,  // input properness
+                true,  // output persistency
+                true,  // output determinacy
+                false,  // CSC
+                false,  // USC
+                false,  // absence of self-triggering local signals
+                true,  // DI interface
+                false,  // normalcy
                 null,  // mutex implementability (late protocol)
                 null   // mutex implementability (early protocol)
         );
@@ -210,7 +239,7 @@ class VerificationCommandTests {
             Boolean consistency, Boolean deadlockFreeness,
             Boolean inputProperness, Boolean outputPersistency, Boolean outputDeterminacy,
             Boolean csc, Boolean usc,
-            Boolean diInterface, Boolean normalcy,
+            Boolean localSelfTriggering, Boolean diInterface, Boolean normalcy,
             Boolean mutexImplementabilityLateProtocol,
             Boolean mutexImplementabilityEarlyProtocol)
             throws DeserialisationException {
@@ -246,6 +275,9 @@ class VerificationCommandTests {
 
         DiInterfaceVerificationCommand diInterfaceCommand = new DiInterfaceVerificationCommand();
         Assertions.assertEquals(diInterface, diInterfaceCommand.execute(we));
+
+        LocalSelfTriggeringVerificationCommand localSelfTriggeringCommand = new LocalSelfTriggeringVerificationCommand();
+        Assertions.assertEquals(localSelfTriggering, localSelfTriggeringCommand.execute(we));
 
         NormalcyVerificationCommand normalcyCommand = new NormalcyVerificationCommand();
         Assertions.assertEquals(normalcy, normalcyCommand.execute(we));

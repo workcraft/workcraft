@@ -1,12 +1,12 @@
-Combined check: false
+Combined check: true
 Consistency: true
 Deadlock freeness: true
-Input properness: false
+Input properness: true
 Output persistency: true
-Output determinacy: false
+Output determinacy: true
 CSC: false
 USC: false
-Absence of self-triggering local signals: true
+Absence of self-triggering local signals: false
 DI interface: true
 Normalcy: false
 Mutex implementability: null

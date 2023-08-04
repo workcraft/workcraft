@@ -159,6 +159,36 @@ public class ReachUtils {
                 DI_INTERFACE_REACH, true);
     }
 
+    private static final String NO_LOCAL_SELF_TRIGGERING_REACH =
+            "// Checks whether the STG is free of self-triggering output and internal signals\n" +
+            DUMMY_CHECK_REACH +
+            "? fail \"Absence of self-triggering can be checked only on STGs without dummies\" :\n" +
+            "exists s in LOCAL {\n" +
+            "    let s_tran=T s {\n" +
+            "        exists t1 in s_tran, t2 in s_tran s.t.\n" +
+            "            t1!=t2\n" +
+            "            &\n" +
+            "            ~ is_empty (pre t2 * (post t1 \\ pre t1))  // t1 structurally triggers t2\n" +
+            "            &\n" +
+            "            is_empty (pre t2 * (pre t1 \\ post t1))    // t2 is not disabled by t1\n" +
+            "        {\n" +
+            "            @t1 & ~@t2\n" +
+            "            &\n" +
+            "            forall p in pre t2 s.t. ~(p in post t1) {\n" +
+            "                ~(p in pre t1) & $p\n" +
+            "            }\n" +
+            "        }\n" +
+            "    }\n" +
+            "}\n";
+
+    public static VerificationParameters getNoLocalSelfTriggeringParameters() {
+        return new VerificationParameters("Absence of self-triggering local signals",
+                VerificationMode.STG_REACHABILITY, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                NO_LOCAL_SELF_TRIGGERING_REACH, true);
+    }
+
     private static final String INPUT_PROPERNESS_REACH =
             "// Checks whether the STG is input proper, i.e. no input can be triggered by an internal signal or disabled by a local signal.\n" +
             DUMMY_CHECK_REACH +

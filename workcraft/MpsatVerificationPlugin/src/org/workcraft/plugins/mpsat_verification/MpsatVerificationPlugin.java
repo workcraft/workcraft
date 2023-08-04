@@ -40,6 +40,8 @@ public class MpsatVerificationPlugin implements Plugin {
         // Auxiliary verification commands
         ScriptableCommandUtils.registerCommand(DiInterfaceVerificationCommand.class, "checkStgDiInterface",
                 "check the STG 'work' for delay-insensitive interface");
+        ScriptableCommandUtils.registerCommand(LocalSelfTriggeringVerificationCommand.class, "checkStgLocalSelfTriggering",
+                "check the STG 'work' for absence of self-triggering local signals");
         ScriptableCommandUtils.registerCommand(NormalcyVerificationCommand.class, "checkStgNormalcy",
                 "check the STG 'work' for normalcy");
 
