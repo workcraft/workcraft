@@ -4,7 +4,6 @@ import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
 import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters;
-import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.presets.DataMapper;
 import org.workcraft.presets.PresetDialog;
 import org.workcraft.presets.PresetManager;
@@ -15,6 +14,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.function.Consumer;
 
 public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
 
@@ -22,17 +22,23 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
     private JComboBox<ExpressionParameters.Mode> modeCombo;
     private CodePanel codePanel;
 
-    public ExpressionDialog(Window owner, PresetManager presetManager) {
-        super(owner, "ProFlo translator", presetManager);
-        presetPanel.selectFirst();
+    public ExpressionDialog(Window owner, PresetManager presetManager,
+            Consumer<CodePanel> syntaxChecker, boolean addExternalMode) {
 
+        super(owner, "ProFlo translator", presetManager);
+
+        // Preset panel is set here, as it is created in overloaded createPresetPanel called from super constructor
+        if (addExternalMode) {
+            modeCombo.insertItemAt(ExpressionParameters.Mode.EXTERNAL, 0);
+        }
+        presetPanel.selectFirst();
         try {
             URI uri = new URI("https://workcraft.org/help/control_flow_expressions/start");
             addHelpButton(uri);
         } catch (URISyntaxException ignored) {
         }
 
-        addCheckerButton(event -> ExpressionUtils.checkSyntax(codePanel));
+        addCheckerButton(event -> syntaxChecker.accept(codePanel));
     }
 
     @Override
@@ -77,7 +83,7 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
         addExample(presetManager, "Example with all operators",
                 "((i1|i2)#i3);((o1|o2)#(o3|o4)#(o5|o6|o7;o8));end");
 
-        DataMapper<ExpressionParameters> guiMapper = new DataMapper<ExpressionParameters>() {
+        DataMapper<ExpressionParameters> guiMapper = new DataMapper<>() {
             @Override
             public void applyDataToControls(ExpressionParameters data) {
                 modeCombo.setSelectedItem(data.getMode());
@@ -95,7 +101,7 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
 
     private void addExample(PresetManager<ExpressionParameters> presetManager, String title, String expression) {
         ExpressionParameters parameters = new ExpressionParameters(title,
-                ExpressionParameters.Mode.FAST_MIN, expression);
+                ExpressionParameters.Mode.EXTERNAL, expression);
 
         presetManager.addExamplePreset(title, parameters);
     }

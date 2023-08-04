@@ -102,6 +102,8 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
     public HandshakeWizardDialog(Window owner, HandshakePresetManager presetManager) {
         super(owner, "Handshake wizard", presetManager);
+
+        // Preset panel is set here, as it is created in overloaded createPresetPanel called from super constructor
         presetPanel.selectFirst();
         addWindowListener(new WindowAdapter() {
             @Override
@@ -250,7 +252,7 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     private PresetManagerPanel<HandshakeParameters> createPresetPanel() {
         HandshakePresetManager presetManager = getUserData();
         presetManager.addExamplePreset("Clear", new HandshakeParameters());
-        DataMapper<HandshakeParameters> guiMapper = new DataMapper<HandshakeParameters>() {
+        DataMapper<HandshakeParameters> guiMapper = new DataMapper<>() {
             @Override
             public void applyDataToControls(HandshakeParameters data) {
                 Stg stg = getUserData().getStg();

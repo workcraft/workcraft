@@ -17,13 +17,12 @@ import org.workcraft.utils.WorkspaceUtils;
 
 public class PetriDrawingTool {
 
-    HashMap<String, VisualTransition> vTransitionMap = new HashMap<>();
+    private final HashMap<String, VisualTransition> transitionMap = new HashMap<>();
 
     public void drawPetri(Graph inputG, Graph outputG, boolean isSequence, boolean isRoot, Mode mode) {
-        String eccOption = mode.toString();
-        VisualPetri vPetri = WorkspaceUtils.getAs(ExpressionUtils.we, VisualPetri.class);
+        VisualPetri petri = WorkspaceUtils.getAs(ExpressionUtils.we, VisualPetri.class);
 
-        ArrayList<ArrayList<String>> edgeCliqueCover = EccUtils.getEcc(isSequence, eccOption, inputG, outputG);
+        ArrayList<ArrayList<String>> edgeCliqueCover = EccUtils.getEcc(isSequence, mode, inputG, outputG);
         HashSet<String> inputVertices = new HashSet<>();
 
         if (!isSequence) {
@@ -35,30 +34,30 @@ public class PetriDrawingTool {
         // Dealing with isolated vertices
         if (inputG.getIsolatedVertices() != null) {
             for (String vertex : inputG.getIsolatedVertices()) {
-                if (!vTransitionMap.containsKey(vertex) && !isSequence) {
-                    VisualPlace vPlace = vPetri.createPlace(null, null);
-                    vPlace.getReferencedComponent().setTokens(1);
-                    vPlace.setNamePositioning(Positioning.LEFT);
+                if (!transitionMap.containsKey(vertex) && !isSequence) {
+                    VisualPlace place = petri.createPlace(null, null);
+                    place.getReferencedComponent().setTokens(1);
+                    place.setNamePositioning(Positioning.LEFT);
 
-                    VisualTransition newVtransition = vPetri.createTransition(null, null);
-                    vTransitionMap.put(vertex, newVtransition);
-                    newVtransition.setLabel(ExpressionUtils.labelNameMap.get(vertex));
-                    newVtransition.setLabelPositioning(Positioning.BOTTOM);
-                    newVtransition.setNamePositioning(Positioning.LEFT);
+                    VisualTransition newTransition = petri.createTransition(null, null);
+                    transitionMap.put(vertex, newTransition);
+                    newTransition.setLabel(ExpressionUtils.labelNameMap.get(vertex));
+                    newTransition.setLabelPositioning(Positioning.BOTTOM);
+                    newTransition.setNamePositioning(Positioning.LEFT);
                     try {
-                        vPetri.connect(vPlace, newVtransition);
+                        petri.connect(place, newTransition);
                     } catch (InvalidConnectionException e) {
                         e.printStackTrace();
                     }
 
                 } else if (isRoot) {
-                    VisualPlace vPlace = vPetri.createPlace(null, null);
-                    VisualTransition vTransition = vTransitionMap.get(vertex);
-                    vTransitionMap.put(vertex, vTransition);
-                    vPlace.getReferencedComponent().setTokens(1);
+                    VisualPlace place = petri.createPlace(null, null);
+                    VisualTransition transition = transitionMap.get(vertex);
+                    transitionMap.put(vertex, transition);
+                    place.getReferencedComponent().setTokens(1);
 
                     try {
-                        vPetri.connect(vPlace, vTransition);
+                        petri.connect(place, transition);
                     } catch (InvalidConnectionException ignored) {
                     }
                 }
@@ -69,8 +68,8 @@ public class PetriDrawingTool {
             // If the clique is not empty
             if ((clique != null) && !clique.isEmpty()) {
                 // Get vertices of a single clique from it's edges
-                VisualPlace vPlace = vPetri.createPlace(null, null);
-                vPlace.setNamePositioning(Positioning.LEFT);
+                VisualPlace place = petri.createPlace(null, null);
+                place.setNamePositioning(Positioning.LEFT);
                 boolean connectionsOnlyFromPlaceToTransitions = true;
 
                 for (String v : clique) {
@@ -84,54 +83,54 @@ public class PetriDrawingTool {
                         vertex = v;
                     }
 
-                    VisualTransition newVtransition;
-                    if (!vTransitionMap.containsKey(vertex)) {
-                        newVtransition = vPetri.createTransition(null, null);
-                        vTransitionMap.put(vertex, newVtransition);
+                    VisualTransition newTransition;
+                    if (!transitionMap.containsKey(vertex)) {
+                        newTransition = petri.createTransition(null, null);
+                        transitionMap.put(vertex, newTransition);
 
-                        newVtransition.setLabel(ExpressionUtils.labelNameMap.get(vertex));
-                        newVtransition.setLabelPositioning(Positioning.BOTTOM);
-                        newVtransition.setNamePositioning(Positioning.LEFT);
+                        newTransition.setLabel(ExpressionUtils.labelNameMap.get(vertex));
+                        newTransition.setLabelPositioning(Positioning.BOTTOM);
+                        newTransition.setNamePositioning(Positioning.LEFT);
 
                     } else {
-                        newVtransition = vTransitionMap.get(vertex);
+                        newTransition = transitionMap.get(vertex);
                     }
                     try {
                         if (inputVertices.contains(vertex) || isClone) {
 
-                            vPetri.connect(newVtransition, vPlace);
+                            petri.connect(newTransition, place);
                             connectionsOnlyFromPlaceToTransitions = false;
                             if (isRoot) {
-                                vPlace.getReferencedComponent().setTokens(1);
+                                place.getReferencedComponent().setTokens(1);
                             }
                         } else {
-                            vPetri.connect(vPlace, newVtransition);
+                            petri.connect(place, newTransition);
                         }
                     } catch (InvalidConnectionException ignored) {
                     }
                 }
                 if (connectionsOnlyFromPlaceToTransitions) {
-                    vPlace.getReferencedComponent().setTokens(1);
+                    place.getReferencedComponent().setTokens(1);
                 }
             }
         }
 
     }
     public void drawSingleTransition(String name) {
-        VisualPetri vPetri = WorkspaceUtils.getAs(ExpressionUtils.we, VisualPetri.class);
+        VisualPetri petri = WorkspaceUtils.getAs(ExpressionUtils.we, VisualPetri.class);
 
-        VisualPlace vPlace = vPetri.createPlace(null, null);
-        vPlace.setNamePositioning(Positioning.LEFT);
-        vPlace.getReferencedComponent().setTokens(1);
+        VisualPlace place = petri.createPlace(null, null);
+        place.setNamePositioning(Positioning.LEFT);
+        place.getReferencedComponent().setTokens(1);
 
-        VisualTransition newVtransition = vPetri.createTransition(null, null);
+        VisualTransition newTransition = petri.createTransition(null, null);
 
-        newVtransition.setLabel(name);
-        newVtransition.setLabelPositioning(Positioning.BOTTOM);
-        newVtransition.setNamePositioning(Positioning.LEFT);
+        newTransition.setLabel(name);
+        newTransition.setLabelPositioning(Positioning.BOTTOM);
+        newTransition.setNamePositioning(Positioning.LEFT);
 
         try {
-            vPetri.connect(vPlace, newVtransition);
+            petri.connect(place, newTransition);
         } catch (InvalidConnectionException ignored) {
         }
     }

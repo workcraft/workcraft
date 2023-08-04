@@ -21,15 +21,15 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
-public class ExpressionUtils {
+public final class ExpressionUtils {
 
-    public static final char CHOICE = '#';
-    public static final char CONCURRENCY = '|';
-    public static final char SEQUENCE = ';';
-    public static final char OPEN_BRACKET = '(';
-    public static final char CLOSED_BRACKET = ')';
-    public static final char OPEN_CURLY_BRACKET = '{';
-    public static final char CLOSED_CURLY_BRACKET = '}';
+    private static final char CHOICE = '#';
+    private static final char CONCURRENCY = '|';
+    private static final char SEQUENCE = ';';
+    private static final char OPEN_BRACKET = '(';
+    private static final char CLOSED_BRACKET = ')';
+    private static final char OPEN_CURLY_BRACKET = '{';
+    private static final char CLOSED_CURLY_BRACKET = '}';
 
     public static final char PLUS_DIR = '+';
     public static final char MINUS_DIR = '-';
@@ -38,6 +38,9 @@ public class ExpressionUtils {
     public static WorkspaceEntry we;
     public static HashMap<String, String> labelNameMap = new HashMap<>();
     public static HashMap<String, Character> nameDirectionMap = new HashMap<>();
+
+    private ExpressionUtils() {
+    }
 
     public static void checkSyntax(CodePanel codePanel) {
         Model model = Model.DEFAULT;
@@ -48,6 +51,17 @@ public class ExpressionUtils {
         }
 
         String data = codePanel.getText();
+        String errorText = getErrorText(data, model);
+        if (errorText == null) {
+            String message = "Property is syntactically correct";
+            codePanel.showInfoStatus(message);
+            LogUtils.logInfo(message);
+        } else {
+            JavaccSyntaxUtils.processSyntaxError(errorText, codePanel);
+        }
+    }
+
+    private static String getErrorText(String data, Model model) {
         InputStream is = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         String errorText = null;
         if (model == Model.PETRI_NET) {
@@ -65,14 +79,7 @@ public class ExpressionUtils {
                 errorText = e.getMessage();
             }
         }
-
-        if (errorText == null) {
-            String message = "Property is syntactically correct";
-            codePanel.showInfoStatus(message);
-            LogUtils.logInfo(message);
-        } else {
-            JavaccSyntaxUtils.processSyntaxError(errorText, codePanel);
-        }
+        return errorText;
     }
 
     public static boolean insert(VisualPetri petri, String expressionText, ExpressionParameters.Mode mode) {
@@ -80,10 +87,10 @@ public class ExpressionUtils {
             return false;
         }
         checkMode(mode);
-        checkIteration();
+        checkIteration(mode);
         CotreeTool ctr = new CotreeTool();
         // If the expression is merely a single transition
-        if (CotreeTool.nodes.size() == 0 && CotreeTool.singleTransition != null) {
+        if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
             ctr.drawSingleTransition(Model.PETRI_NET);
         }
         labelNameMap = new HashMap<>();
@@ -102,10 +109,10 @@ public class ExpressionUtils {
             return false;
         }
         checkMode(mode);
-        checkIteration();
+        checkIteration(mode);
         CotreeTool ctr = new CotreeTool();
         // If the expression is merely a single transition
-        if (CotreeTool.nodes.size() == 0 && CotreeTool.singleTransition != null) {
+        if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
             ctr.drawSingleTransition(Model.STG);
         }
         nameDirectionMap = new HashMap<>();
@@ -151,7 +158,8 @@ public class ExpressionUtils {
                     break;
                 }
             }
-            if (!transition.toString().contains("//") && !transition.toString().equals("\n") && !transition.toString().equals("")) {
+            String transitionName = transition.toString();
+            if (!transitionName.isEmpty() && !transitionName.contains("//") && !transitionName.equals("\n")) {
                 String uniqueT = "t" + repNo;
 
                 char lastC = expressionText.charAt(i - 1);
@@ -161,7 +169,7 @@ public class ExpressionUtils {
                     transition = new StringBuilder(transition.substring(0, transition.length() - 1));
                     wasAltered = 1;
                 }
-                labelNameMap.put(uniqueT, transition.toString());
+                labelNameMap.put(uniqueT, transitionName);
 
                 str = str.substring(0, i - transition.length() - wasAltered) + uniqueT + str.substring(i);
                 i -= transition.length();
@@ -198,8 +206,8 @@ public class ExpressionUtils {
         return false;
     }
 
-    private static void checkIteration() {
-        if (CotreeTool.containsIteration) {
+    private static void checkIteration(Mode mode) {
+        if ((mode != null) && CotreeTool.containsIteration) {
             DialogUtils.showWarning("Iteration operator is experimental and may yield incorrect result.");
         }
     }

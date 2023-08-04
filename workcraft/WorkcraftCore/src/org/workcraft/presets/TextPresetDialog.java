@@ -13,6 +13,8 @@ public class TextPresetDialog extends PresetDialog<String> {
 
     public TextPresetDialog(Window owner, String title, PresetManager<String> presetManager) {
         super(owner, title, presetManager);
+
+        // Preset panel is set here, as it is created in overloaded createPresetPanel called from super constructor
         presetPanel.selectFirst();
     }
 
@@ -28,7 +30,7 @@ public class TextPresetDialog extends PresetDialog<String> {
     }
 
     private PresetManagerPanel<String> createPresetPanel() {
-        DataMapper<String> guiMapper = new DataMapper<String>() {
+        DataMapper<String> guiMapper = new DataMapper<>() {
             @Override
             public void applyDataToControls(String data) {
                 codePanel.setText(data);

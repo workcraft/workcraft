@@ -36,6 +36,8 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
 
     public ReachAssertionDialog(Window owner, MpsatPresetManager presetManager) {
         super(owner, "REACH assertion", presetManager);
+
+        // Preset panel is set here, as it is created in overloaded createPresetPanel called from super constructor
         presetPanel.selectFirst();
         addHelpButton(new File("help/reach.html"));
         addCheckerButton(event -> MpsatUtils.checkSyntax(presetManager.getWorkspaceEntry(), codePanel, getPresetData()));
@@ -88,7 +90,7 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
                             + "$P\"p\" & $P\"q\"");
         }
 
-        DataMapper<VerificationParameters> guiMapper = new DataMapper<VerificationParameters>() {
+        DataMapper<VerificationParameters> guiMapper = new DataMapper<>() {
             @Override
             public void applyDataToControls(VerificationParameters data) {
                 modeCombo.setSelectedItem(data.getMode());

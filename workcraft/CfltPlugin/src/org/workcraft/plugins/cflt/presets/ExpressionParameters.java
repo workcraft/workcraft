@@ -3,6 +3,7 @@ package org.workcraft.plugins.cflt.presets;
 public class ExpressionParameters {
 
     public enum Mode {
+        EXTERNAL("External ProFlo translator"),
         FAST_MAX("Maximum heuristic"),
         FAST_MIN("Minimum heuristic"),
         FAST_SEQ("Sequence heuristic"),

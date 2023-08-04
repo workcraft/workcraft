@@ -64,9 +64,9 @@ public class MaxMinHeuristic {
         while (!uncoveredVertices.isEmpty()) {
             String i;
             if (max) {
-                i = EccUtils.argmax(uncoveredDegree, uncoveredVertices);
+                i = EccUtils.argMax(uncoveredDegree, uncoveredVertices);
             } else {
-                i = EccUtils.argmin(uncoveredDegree, uncoveredVertices);
+                i = EccUtils.argMin(uncoveredDegree, uncoveredVertices);
             }
 
             // While there are still uncovered edges adjacent to the vertex
@@ -87,7 +87,7 @@ public class MaxMinHeuristic {
                     localUncoveredDegree.put(j, 1 - isCovered.get(i + j));
                 }
 
-                String u = EccUtils.argmax(localUncoveredDegree, localNeighbourhoodOfi);
+                String u = EccUtils.argMax(localUncoveredDegree, localNeighbourhoodOfi);
                 while (localUncoveredDegree.get(u) > 0) {
                     boolean isOptional = true;
                     for (String j : finalCliques.get(cliqueNumber)) {
@@ -126,7 +126,7 @@ public class MaxMinHeuristic {
                             localUncoveredDegree.replace(j, temp + 1);
                         }
                     }
-                    u = EccUtils.argmax(localUncoveredDegree, localNeighbourhoodOfi);
+                    u = EccUtils.argMax(localUncoveredDegree, localNeighbourhoodOfi);
                     if (localNeighbourhoodOfi.isEmpty()) { break; }
                 }
             }

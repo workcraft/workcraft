@@ -1,4 +1,4 @@
-work = load("duplicator-hier-csc.stg.work");
+work = load("pulser.stg.work");
 write(
     "Combined check: " + checkStgCombined(work) + "\n" +
     "Consistency: " + checkStgConsistency(work) + "\n" +
@@ -12,5 +12,5 @@ write(
     "DI interface: " + checkStgDiInterface(work) + "\n" +
     "Normalcy: " + checkStgNormalcy(work) + "\n" +
     "Mutex implementability: " + checkStgMutexImplementability(work) + "\n" +
-    "", "duplicator-hier-csc.stg.result");
+    "", "pulser.stg.result");
 exit();
