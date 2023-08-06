@@ -1,5 +1,5 @@
 plugins {
-    id 'ca.coglinc.javacc'
+    id 'org.javacc.javacc'
     id 'com.github.kt3k.coveralls'
     id 'de.aaschmid.cpd'
     id 'com.github.jk1.dependency-license-report'
@@ -33,7 +33,7 @@ subprojects {
         }
     }
 
-    apply plugin: 'ca.coglinc.javacc'
+    apply plugin: 'org.javacc.javacc'
 
     compileJavacc {
         inputDirectory = file('javacc')
