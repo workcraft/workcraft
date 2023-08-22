@@ -6,7 +6,7 @@ Output persistency: false
 Output determinacy: true
 CSC: true
 USC: false
-Absence of self-triggering local signals: true
+Absence of local self-triggering: true
 DI interface: false
 Normalcy: false
 Mutex implementability: null

@@ -97,7 +97,7 @@ class VerificationCommandTests {
     void testArbitrationVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
         testVerificationCommands(workName,
-                true,  // combined
+                false,  // combined
                 true,  // consistency
                 true,  // deadlock freeness
                 true,  // input properness
@@ -219,7 +219,7 @@ class VerificationCommandTests {
     void testPulserVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "pulser.stg.work");
         testVerificationCommands(workName,
-                true, // combined
+                false, // combined
                 true,  // consistency
                 true,  // deadlock freeness
                 true,  // input properness
@@ -228,6 +228,26 @@ class VerificationCommandTests {
                 false,  // CSC
                 false,  // USC
                 false,  // absence of self-triggering local signals
+                true,  // DI interface
+                false,  // normalcy
+                null,  // mutex implementability (late protocol)
+                null   // mutex implementability (early protocol)
+        );
+    }
+
+    @Test
+    void testPulserSelfTriggerExceptionsVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "pulser-self_trigger_exceptions.stg.work");
+        testVerificationCommands(workName,
+                true, // combined
+                true,  // consistency
+                true,  // deadlock freeness
+                true,  // input properness
+                true,  // output persistency
+                true,  // output determinacy
+                false,  // CSC
+                false,  // USC
+                true,  // absence of self-triggering local signals
                 true,  // DI interface
                 false,  // normalcy
                 null,  // mutex implementability (late protocol)
