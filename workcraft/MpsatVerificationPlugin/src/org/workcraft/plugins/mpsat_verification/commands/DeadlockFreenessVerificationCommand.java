@@ -2,9 +2,7 @@ package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
-import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 public class DeadlockFreenessVerificationCommand extends AbstractVerificationCommand {
 
@@ -14,13 +12,8 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriModel.class);
-    }
-
-    @Override
     public int getPriority() {
-        return 5;
+        return 8;
     }
 
     @Override

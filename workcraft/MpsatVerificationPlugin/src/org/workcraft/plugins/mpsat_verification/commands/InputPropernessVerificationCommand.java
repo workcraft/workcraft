@@ -21,7 +21,7 @@ public class InputPropernessVerificationCommand extends AbstractVerificationComm
 
     @Override
     public int getPriority() {
-        return 5;
+        return 7;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class OutputPersistencyVerificationCommand extends AbstractVerificationCo
 
     @Override
     public int getPriority() {
-        return 3;
+        return 5;
     }
 
     @Override

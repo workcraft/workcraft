@@ -34,14 +34,14 @@ public class MpsatVerificationPlugin implements Plugin {
                 "check the STG 'work' for implementability of its mutex places");
         ScriptableCommandUtils.registerCommand(OutputPersistencyVerificationCommand.class, "checkStgOutputPersistency",
                 "check the STG 'work' for output persistency");
+        ScriptableCommandUtils.registerCommand(LocalSelfTriggeringVerificationCommand.class, "checkStgLocalSelfTriggering",
+                "check the STG 'work' for absence of local self-triggering");
+        ScriptableCommandUtils.registerCommand(DiInterfaceVerificationCommand.class, "checkStgDiInterface",
+                "check the STG 'work' for delay-insensitive interface");
         ScriptableCommandUtils.registerCommand(OutputDeterminacyVerificationCommand.class, "checkStgOutputDeterminacy",
                 "check the STG 'work' for output determinacy");
 
         // Auxiliary verification commands
-        ScriptableCommandUtils.registerCommand(DiInterfaceVerificationCommand.class, "checkStgDiInterface",
-                "check the STG 'work' for delay-insensitive interface");
-        ScriptableCommandUtils.registerCommand(LocalSelfTriggeringVerificationCommand.class, "checkStgLocalSelfTriggering",
-                "check the STG 'work' for absence of self-triggering local signals");
         ScriptableCommandUtils.registerCommand(NormalcyVerificationCommand.class, "checkStgNormalcy",
                 "check the STG 'work' for normalcy");
 

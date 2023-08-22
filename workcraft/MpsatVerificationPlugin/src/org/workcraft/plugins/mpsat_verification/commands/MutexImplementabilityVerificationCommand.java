@@ -34,7 +34,7 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
 
     @Override
     public int getPriority() {
-        return 4;
+        return 6;
     }
 
     @Override
