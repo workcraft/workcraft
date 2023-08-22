@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg1307"
+   height="48px"
+   width="48px"
+   version="1.1"
+   inkscape:version="1.0.1 (3bc2e813f5, 2020-09-07)"
+   sodipodi:docname="double-right-arrow.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1028"
+     id="namedview34"
+     showgrid="false"
+     inkscape:zoom="7.456404"
+     inkscape:cx="16.510888"
+     inkscape:cy="26.125229"
+     inkscape:window-x="-6"
+     inkscape:window-y="-6"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1307"
+     inkscape:document-rotation="0" />
+  <defs
+     id="defs1309">
+    <linearGradient
+       id="linearGradient2306"
+       y2="95"
+       gradientUnits="userSpaceOnUse"
+       x2="70.827"
+       gradientTransform="translate(-43,-71.094)"
+       y1="124.12"
+       x1="71.289">
+      <stop
+         id="stop5077"
+         stop-color="#adb0a8"
+         offset="0" />
+      <stop
+         id="stop5079"
+         stop-color="#464744"
+         offset="1" />
+    </linearGradient>
+    <radialGradient
+       id="radialGradient2314"
+       gradientUnits="userSpaceOnUse"
+       cy="83.991"
+       cx="107.59"
+       gradientTransform="matrix(0.053243,-0.83624,2.0195,0.12857,-149.92,108.08)"
+       r="12.552">
+      <stop
+         id="stop2693"
+         stop-color="#fff"
+         offset="0" />
+      <stop
+         id="stop2695"
+         stop-color="#d3d7cf"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       id="linearGradient2690"
+       y2="88.924"
+       gradientUnits="userSpaceOnUse"
+       x2="70.952"
+       gradientTransform="matrix(1.1282,0,0,1.1282,-51.993,-83.36)"
+       y1="101.74"
+       x1="70.914">
+      <stop
+         id="stop2686"
+         stop-color="#fff"
+         offset="0" />
+      <stop
+         id="stop2688"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient2306-9"
+       y2="95"
+       gradientUnits="userSpaceOnUse"
+       x2="70.827"
+       gradientTransform="translate(-58.803,-70.947)"
+       y1="124.12"
+       x1="71.289">
+      <stop
+         id="stop5077-3"
+         stop-color="#adb0a8"
+         offset="0" />
+      <stop
+         id="stop5079-8"
+         stop-color="#464744"
+         offset="1" />
+    </linearGradient>
+    <radialGradient
+       id="radialGradient2314-1"
+       gradientUnits="userSpaceOnUse"
+       cy="83.991"
+       cx="107.59"
+       gradientTransform="matrix(0.053243,-0.83624,2.0195,0.12857,-165.72,108.22)"
+       r="12.552">
+      <stop
+         id="stop2693-2"
+         stop-color="#fff"
+         offset="0" />
+      <stop
+         id="stop2695-1"
+         stop-color="#d3d7cf"
+         offset="1" />
+    </radialGradient>
+    <linearGradient
+       id="linearGradient3053"
+       y2="88.924"
+       gradientUnits="userSpaceOnUse"
+       y1="101.74"
+       gradientTransform="matrix(1.1282,0,0,1.1282,-67.796,-83.213)"
+       x2="70.952"
+       x1="70.914">
+      <stop
+         id="stop2686-0"
+         stop-color="#fff"
+         offset="0" />
+      <stop
+         id="stop2688-4"
+         offset="1" />
+    </linearGradient>
+  </defs>
+  <metadata
+     id="metadata1312">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Media Playback Start</dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Lapo Calamandrei</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>play</rdf:li>
+            <rdf:li>media</rdf:li>
+            <rdf:li>music</rdf:li>
+            <rdf:li>video</rdf:li>
+            <rdf:li>player</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:contributor>
+          <cc:Agent>
+            <dc:title>Jakub Steiner</dc:title>
+          </cc:Agent>
+        </dc:contributor>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <path
+     sodipodi:nodetypes="ccc"
+     inkscape:connector-curvature="0"
+     d="m 25.438875,9.926742 13.936048,13.9055 -13.936048,13.9055"
+     style="color:#000000;fill:none;fill-opacity:1;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+     id="path2479" />
+  <path
+     sodipodi:nodetypes="ccc"
+     inkscape:connector-curvature="0"
+     d="m 8.625077,10.262258 13.936048,13.9055 -13.936048,13.9055"
+     style="color:#000000;fill:none;fill-opacity:1;stroke:#000000;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none"
+     id="path2479-3" />
+</svg>

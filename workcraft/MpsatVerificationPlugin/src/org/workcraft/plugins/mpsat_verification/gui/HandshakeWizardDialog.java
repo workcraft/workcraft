@@ -2,6 +2,8 @@ package org.workcraft.plugins.mpsat_verification.gui;
 
 import info.clearthought.layout.TableLayout;
 import info.clearthought.layout.TableLayoutConstraints;
+import org.workcraft.gui.lists.ColorListCellRenderer;
+import org.workcraft.gui.lists.MultipleListSelectionModel;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.mpsat_verification.presets.HandshakeParameters;
 import org.workcraft.plugins.mpsat_verification.presets.HandshakePresetManager;
@@ -48,55 +50,12 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     private JCheckBox checkWithdrawEnabledCheckbox;
     private JCheckBox allowInversionCheckbox;
 
-    private static class ListMultipleSelectionModel extends DefaultListSelectionModel {
-
-        private boolean started = false;
-
-        @Override
-        public void setSelectionInterval(int index0, int index1) {
-            if (!started) {
-                if (isSelectedIndex(index0)) {
-                    super.removeSelectionInterval(index0, index1);
-                } else {
-                    super.addSelectionInterval(index0, index1);
-                }
-            }
-            started = true;
-        }
-
-        @Override
-        public void setValueIsAdjusting(boolean isAdjusting) {
-            if (!isAdjusting) {
-                started = false;
-            }
-        }
-    }
-
-    static class ListCellRenderer extends DefaultListCellRenderer {
-
-        private final Color color;
-
-        ListCellRenderer(Color color) {
-            this.color = color;
-        }
-
-        @Override
-        public Component getListCellRendererComponent(JList list,
-                Object value, int index, boolean isSelected, boolean cellHasFocus) {
-
-            super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-            setForeground(color);
-            return this;
-        }
-    }
-
     static class SignalList extends JList<String> {
-
         SignalList(Collection<String> signals, Color color) {
             super(new Vector<>(signals));
             setBorder(GuiUtils.getEmptyBorder());
-            setSelectionModel(new ListMultipleSelectionModel());
-            setCellRenderer(new ListCellRenderer(color));
+            setSelectionModel(new MultipleListSelectionModel());
+            setCellRenderer(new ColorListCellRenderer(item -> color));
         }
     }
 

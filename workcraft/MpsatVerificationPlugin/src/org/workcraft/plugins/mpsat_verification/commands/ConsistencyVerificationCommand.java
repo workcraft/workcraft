@@ -20,7 +20,7 @@ public class ConsistencyVerificationCommand extends AbstractVerificationCommand 
 
     @Override
     public int getPriority() {
-        return 6;
+        return 9;
     }
 
     @Override

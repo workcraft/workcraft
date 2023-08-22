@@ -2,7 +2,8 @@ package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.gui.properties.PropertyHelper;
+import org.workcraft.plugins.mpsat_verification.presets.*;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainTask;
 import org.workcraft.plugins.mpsat_verification.tasks.OutputDeterminacyTask;
@@ -68,8 +69,11 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
 
         boolean noDummies = stg.getDummyTransitions().isEmpty();
         if (!noDummies) {
-            String message = "Input properness and Output persistency\n" +
-                    "can currently be checked only for STGs without dummies";
+            String message = "The following properties can currently be checked only for STGs without dummies:"
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "Input properness"
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "Output persistency"
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "Absence of local self-triggering"
+                    + '\n' + PropertyHelper.BULLET_PREFIX + "Delay insensitive interface";
 
             String question = ". \n\nProceed with verification of other properties?";
             if (!DialogUtils.showConfirmWarning(message, question)) {
@@ -95,6 +99,16 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
         if (noDummies) {
             LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPersistencyExceptions(stg);
             verificationParametersList.add(ReachUtils.getOutputPersistencyParameters(exceptions));
+        }
+
+        if (noDummies) {
+            LocalSelfTriggeringParameters localSelfTriggeringParameters = new LocalSelfTriggeringDataPreserver(we).loadData();
+            verificationParametersList.add(localSelfTriggeringParameters.getVerificationParameters());
+        }
+
+        if (noDummies) {
+            DiInterfaceParameters diInterfaceParameters = new DiInterfaceDataPreserver(we).loadData();
+            verificationParametersList.add(diInterfaceParameters.getVerificationParameters());
         }
 
         OutputDeterminacyTask extraTask = new OutputDeterminacyTask(we);

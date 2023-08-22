@@ -130,65 +130,6 @@ public class ReachUtils {
                 reachOutputPersistence, true);
     }
 
-    private static final String DI_INTERFACE_REACH =
-            "// Checks whether the STG's interface is delay insensitive, i.e. an input transition cannot trigger another input transition\n" +
-            DUMMY_CHECK_REACH +
-            "? fail \"Delay insensitivity can currently be checked only for STGs without dummies\" :\n" +
-            "let\n" +
-            "    TRINP = T INPUTS * T EVENTS\n" +
-            "{\n" +
-            "    exists ti in TRINP {\n" +
-            "        let pre_ti = pre ti {\n" +
-            "            // Check if some ti_trig can trigger ti\n" +
-            "            exists ti_trig in pre pre_ti * TRINP s.t. S ti_trig != S ti & ~is_empty((post ti_trig \\ pre ti_trig) * pre_ti) {\n" +
-            "                forall p in pre_ti \\ post ti_trig { $p }\n" +
-            "                &\n" +
-            "                @ti_trig\n" +
-            "            }\n" +
-            "            &\n" +
-            "            ~@S ti\n" +
-            "        }\n" +
-            "    }\n" +
-            "}\n";
-
-    public static VerificationParameters getDiInterfaceParameters() {
-        return new VerificationParameters("Delay insensitive interface",
-                VerificationMode.STG_REACHABILITY, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                DI_INTERFACE_REACH, true);
-    }
-
-    private static final String NO_LOCAL_SELF_TRIGGERING_REACH =
-            "// Checks whether the STG is free of self-triggering output and internal signals\n" +
-            DUMMY_CHECK_REACH +
-            "? fail \"Absence of self-triggering can be checked only on STGs without dummies\" :\n" +
-            "exists s in LOCAL {\n" +
-            "    let s_tran=T s {\n" +
-            "        exists t1 in s_tran, t2 in s_tran s.t.\n" +
-            "            t1!=t2\n" +
-            "            &\n" +
-            "            ~ is_empty (pre t2 * (post t1 \\ pre t1))  // t1 structurally triggers t2\n" +
-            "            &\n" +
-            "            is_empty (pre t2 * (pre t1 \\ post t1))    // t2 is not disabled by t1\n" +
-            "        {\n" +
-            "            @t1 & ~@t2\n" +
-            "            &\n" +
-            "            forall p in pre t2 s.t. ~(p in post t1) {\n" +
-            "                ~(p in pre t1) & $p\n" +
-            "            }\n" +
-            "        }\n" +
-            "    }\n" +
-            "}\n";
-
-    public static VerificationParameters getNoLocalSelfTriggeringParameters() {
-        return new VerificationParameters("Absence of self-triggering local signals",
-                VerificationMode.STG_REACHABILITY, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                NO_LOCAL_SELF_TRIGGERING_REACH, true);
-    }
-
     private static final String INPUT_PROPERNESS_REACH =
             "// Checks whether the STG is input proper, i.e. no input can be triggered by an internal signal or disabled by a local signal.\n" +
             DUMMY_CHECK_REACH +

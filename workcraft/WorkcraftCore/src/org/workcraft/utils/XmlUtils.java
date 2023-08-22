@@ -18,10 +18,15 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class XmlUtils {
+
+    private static final String LIST_ELEMENT = "list";
+    private static final String ITEM_ELEMENT = "item";
 
     private static String getAttribute(Element element, String attributeName) {
         return (element == null) || !element.hasAttribute(attributeName) ? null : element.getAttribute(attributeName);
@@ -129,6 +134,28 @@ public class XmlUtils {
             parentDir.mkdirs();
         }
         writeDocument(doc, new FileOutputStream(file));
+    }
+
+    public static List<String> readList(Element parent) {
+        List<Element> itemElements = getChildElements(ITEM_ELEMENT, parent);
+        return itemElements.stream()
+                .map(Node::getTextContent)
+                .collect(Collectors.toList());
+    }
+
+    public static void writeList(Collection<String> items, Element parent) {
+        items.forEach(item -> createChildElement(ITEM_ELEMENT, parent).setTextContent(item));
+    }
+
+    public static List<List<String>> readListOfLists(Element parent) {
+        List<Element> listElements = getChildElements(LIST_ELEMENT, parent);
+        return listElements.stream()
+                .map(XmlUtils::readList)
+                .collect(Collectors.toList());
+    }
+
+    public static void writeListOfLists(Collection<? extends Collection<String>> listOfItems, Element parent) {
+        listOfItems.forEach(list -> writeList(list, createChildElement(LIST_ELEMENT, parent)));
     }
 
 }

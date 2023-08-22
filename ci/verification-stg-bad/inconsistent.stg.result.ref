@@ -6,7 +6,7 @@ Output persistency: null
 Output determinacy: true
 CSC: null
 USC: null
-Absence of self-triggering local signals: null
+Absence of local self-triggering: null
 DI interface: null
 Normalcy: null
 Mutex implementability: null

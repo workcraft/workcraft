@@ -4,37 +4,37 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
-import java.util.Arrays;
+import java.util.List;
 
 class TextUtilsTests {
 
     @Test
     void splitWordsTest() {
-        Assertions.assertEquals(Arrays.asList(), TextUtils.splitWords(null));
+        Assertions.assertEquals(List.of(), TextUtils.splitWords(null));
 
-        Assertions.assertEquals(Arrays.asList(), TextUtils.splitWords("    "));
+        Assertions.assertEquals(List.of(), TextUtils.splitWords("    "));
 
-        Assertions.assertEquals(Arrays.asList("abc", "def"), TextUtils.splitWords("    abc   def   "));
+        Assertions.assertEquals(List.of("abc", "def"), TextUtils.splitWords("    abc   def   "));
 
         String text = "1 22  333 \n 4444 \n\n 55555 \r\n666666 \r\n7777777\r\n \n 88888888\n \r\n999999999";
-        Assertions.assertEquals(Arrays.asList("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999"),
+        Assertions.assertEquals(List.of("1", "22", "333", "4444", "55555", "666666", "7777777", "88888888", "999999999"),
                 TextUtils.splitWords(text));
     }
 
     @Test
     void splitLinesTest() {
-        Assertions.assertEquals(Arrays.asList(), TextUtils.splitLines(null));
+        Assertions.assertEquals(List.of(), TextUtils.splitLines(null));
 
-        Assertions.assertEquals(Arrays.asList(""), TextUtils.splitLines(""));
+        Assertions.assertEquals(List.of(""), TextUtils.splitLines(""));
 
-        Assertions.assertEquals(Arrays.asList("", ""), TextUtils.splitLines("\n"));
+        Assertions.assertEquals(List.of("", ""), TextUtils.splitLines("\n"));
 
-        Assertions.assertEquals(Arrays.asList("", "", ""), TextUtils.splitLines("\n\n"));
+        Assertions.assertEquals(List.of("", "", ""), TextUtils.splitLines("\n\n"));
 
-        Assertions.assertEquals(Arrays.asList(" ", " "), TextUtils.splitLines(" \n "));
+        Assertions.assertEquals(List.of(" ", " "), TextUtils.splitLines(" \n "));
 
         String text = "1 22  333 \n 4444 \n\n 55555 \r\n666666 \r\n7777777\r\n \n 88888888\n \r\n999999999";
-        Assertions.assertEquals(Arrays.asList("1 22  333 ", " 4444 ", "", " 55555 ", "666666 ", "7777777", " ", " 88888888", " ", "999999999"),
+        Assertions.assertEquals(List.of("1 22  333 ", " 4444 ", "", " 55555 ", "666666 ", "7777777", " ", " 88888888", " ", "999999999"),
                 TextUtils.splitLines(text));
     }
 
@@ -90,28 +90,28 @@ class TextUtilsTests {
     @Test
     void wrapItemsTest() {
         Assertions.assertEquals("",
-                TextUtils.wrapItems(Arrays.asList()));
+                TextUtils.wrapItems(List.of()));
 
         Assertions.assertEquals("A, B, C,\nD, E, F",
-                TextUtils.wrapItems(Arrays.asList("A", "B", "C", "D", "E", "F"), 9));
+                TextUtils.wrapItems(List.of("A", "B", "C", "D", "E", "F"), 9));
     }
 
     @Test
     void wrapMessageWithItemsTest() {
         Assertions.assertEquals("Nothing",
-                TextUtils.wrapMessageWithItems("Nothing", Arrays.asList()));
+                TextUtils.wrapMessageWithItems("Nothing", List.of()));
 
-        Assertions.assertEquals("Vegetable 'carrot'",
-                TextUtils.wrapMessageWithItems("Vegetable", Arrays.asList("carrot")));
+        Assertions.assertEquals("Vegetable carrot",
+                TextUtils.wrapMessageWithItems("Vegetable", List.of("carrot")));
 
         Assertions.assertEquals("Toys: ball, car",
-                TextUtils.wrapMessageWithItems("Toy", Arrays.asList("ball", "car")));
+                TextUtils.wrapMessageWithItems("Toy", List.of("ball", "car")));
 
         Assertions.assertEquals("Boxes: small, large",
-                TextUtils.wrapMessageWithItems("Box", Arrays.asList("small", "large")));
+                TextUtils.wrapMessageWithItems("Box", List.of("small", "large")));
 
         Assertions.assertEquals("Bodies:\nA, B, C",
-                TextUtils.wrapMessageWithItems("Body", Arrays.asList("A", "B", "C"), 10));
+                TextUtils.wrapMessageWithItems("Body", List.of("A", "B", "C"), 10));
     }
 
     @Test
