@@ -157,7 +157,7 @@ public class TextUtils {
             return message;
         }
         if (items.size() == 1) {
-            return message + " '" + items.iterator().next() + "'";
+            return message + ' ' + items.iterator().next();
         }
         String text = makePlural(message) + ":";
         String str = String.join(", ", items);
