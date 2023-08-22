@@ -66,6 +66,10 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
             return new LocalSelfTriggeringInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();
 
+        case STG_REACHABILITY_DI_INTERFACE:
+            return new DiInterfaceInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                    getOutput(), isInteractive()).interpret();
+
         case STG_REACHABILITY_OUTPUT_DETERMINACY:
             return new OutputDeterminacyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
                     getOutput(), isInteractive()).interpret();

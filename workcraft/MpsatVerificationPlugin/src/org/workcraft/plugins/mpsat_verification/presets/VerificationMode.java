@@ -18,7 +18,7 @@ public enum VerificationMode {
     CSC_CONFLICT_DETECTION("-Cc"),
     USC_CONFLICT_DETECTION("-Cu");
 
-    private String modeArg;
+    private final String modeArg;
 
     VerificationMode(String modeArg) {
         this.modeArg = modeArg;

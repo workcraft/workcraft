@@ -10,8 +10,8 @@ write(
     "Output determinacy: " + checkStgOutputDeterminacy(work) + "\n" +
     "CSC: " + checkStgCsc(work) + "\n" +
     "USC: " + checkStgUsc(work) + "\n" +
-    "Absence of self-triggering local signals: " + checkStgLocalSelfTriggering(work) + "\n" +
-    "DI interface: " + checkStgDiInterface(work) + "\n" +
+    "Absence of local self-triggering: " + checkStgLocalSelfTriggering(work) + "\n" +
+    "DI interface (with exceptions): " + checkStgDiInterface(work) + "\n" +
     "Normalcy: " + checkStgNormalcy(work) + "\n" +
     "Mutex implementability: " + checkStgMutexImplementability(work) + "\n" +
     "", "arbitration-3.stg.result");
