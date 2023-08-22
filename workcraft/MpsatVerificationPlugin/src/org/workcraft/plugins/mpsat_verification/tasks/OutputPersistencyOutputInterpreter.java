@@ -16,9 +16,13 @@ import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
 class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
 
@@ -52,8 +56,11 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
                     HashSet<String> nonpersistentLocalSignals = getNonpersistentLocalSignals(stg, projectedContinuation);
                     if (!nonpersistentLocalSignals.isEmpty()) {
                         String enabledTransitionRef = projectedContinuation.get(projectedContinuation.size() - 1);
-                        String comment = getMessageWithList("Non-persistent signal", nonpersistentLocalSignals);
-                        String msg = getMessageWithList("Transition '" + enabledTransitionRef + "' disables signal",
+                        String comment = TextUtils.wrapMessageWithItems(
+                                "Non-persistent signal", nonpersistentLocalSignals);
+
+                        String msg = TextUtils.wrapMessageWithItems(
+                                "Transition '" + enabledTransitionRef + "' disables signal",
                                 nonpersistentLocalSignals);
 
                         LogUtils.logWarning(msg);
@@ -104,7 +111,7 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
         return result;
     }
 
-    public static HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {
+    private HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {
         HashSet<SignalTransition> result = new HashSet<>();
         for (Transition transition: stg.getTransitions()) {
             if (transition instanceof DummyTransition) {
@@ -117,16 +124,6 @@ class OutputPersistencyOutputInterpreter extends ReachabilityOutputInterpreter {
             }
         }
         return result;
-    }
-
-    private String getMessageWithList(String message, Collection<String> refs) {
-        if ((refs == null) || refs.isEmpty()) {
-            return message;
-        } else if (refs.size() == 1) {
-            return message + " '" + refs.iterator().next() + "'";
-        } else {
-            return message + "s: " + String.join(", ", refs);
-        }
     }
 
 }
