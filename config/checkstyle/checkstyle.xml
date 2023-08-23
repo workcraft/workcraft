@@ -89,8 +89,6 @@
             <property name="allowSingleLineStatement" value="true"/>
         </module>
 
-        <module name="FinalClass"/>
-
         <module name="ArrayTypeStyle"/>
         <module name="ArrayTrailingComma"/>
         <module name="UpperEll"/>
