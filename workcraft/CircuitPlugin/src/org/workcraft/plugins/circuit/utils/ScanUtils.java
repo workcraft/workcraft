@@ -122,7 +122,7 @@ public final class ScanUtils {
                 .collect(Collectors.toSet());
 
         convertPathbreakerToScan(circuit, scanComponents);
-        // Add individual scan port and connect it to corresponding scan pins - scanin/SI, scanout/SO, scanen/SE
+        // Add individual scan ports and connect them to corresponding scan pins - scanin/SI, scanout/SO, scanen/SE
         connectIndividualScan(circuit, scanComponents, scaninInversionComponents);
 
         // Add always common scan port and connect them to corresponding scan pins - scanck/CK and scantm/TM
@@ -408,6 +408,7 @@ public final class ScanUtils {
 
         CircuitUtils.disconnectContact(circuit, port);
         VisualConnection connection = connectIfPossible(circuit, pin, port);
+        port.setInitToOne(pin.getInitToOne());
         SpaceUtils.positionPort(circuit, port, true);
         return connection;
     }
@@ -529,7 +530,7 @@ public final class ScanUtils {
         bufferComponent.setRootSpacePosition(new Point2D.Double(pos.getX() + 1.0, pos.getY() + 0.5));
         connectIfPossible(circuit, contact, bufferComponent.getFirstVisualInput());
         VisualFunctionContact outputContact = bufferComponent.getGateOutput();
-        outputContact.setInitToOne(contact.getReferencedComponent().getInitToOne());
+        outputContact.setInitToOne(contact.getInitToOne());
         return outputContact;
     }
 

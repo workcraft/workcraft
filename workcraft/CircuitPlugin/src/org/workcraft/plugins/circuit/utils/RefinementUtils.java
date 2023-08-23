@@ -301,7 +301,7 @@ public final class RefinementUtils {
         return (aTitle == null) || !aTitle.equals(bTitle);
     }
 
-    public static void updateInterface(VisualCircuit circuit, Set<File> changedRefinementFiles) {
+    public static void updateInterfacesAndNewOutputInitialStates(VisualCircuit circuit, Set<File> changedRefinementFiles) {
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             File refinementCircuitFile = getRefinementCircuitFile(component.getReferencedComponent());
             if ((refinementCircuitFile != null) && changedRefinementFiles.contains(refinementCircuitFile)) {
@@ -309,7 +309,16 @@ public final class RefinementUtils {
                     ModelEntry me = WorkUtils.loadModel(refinementCircuitFile);
                     Circuit refinementCircuit = WorkspaceUtils.getAs(me, Circuit.class);
                     ComponentInterface refinementInterface = getModelInterface(refinementCircuit);
+                    Set<String> outputSignals = CircuitUtils.getOutputPinNames(component.getReferencedComponent());
+
                     updateInterface(circuit, component, refinementInterface);
+
+                    Set<String> newOutputSignals = CircuitUtils.getOutputPinNames(component.getReferencedComponent());
+                    newOutputSignals.removeAll(outputSignals);
+                    Map<String, Boolean> refinementOutputInitialState = RefinementUtils.getSignalsInitialState(
+                            refinementCircuit, newOutputSignals);
+
+                    RefinementUtils.updateInitialState(component.getReferencedComponent(), refinementOutputInitialState);
                 } catch (DeserialisationException e) {
                     throw new RuntimeException(e);
                 }
