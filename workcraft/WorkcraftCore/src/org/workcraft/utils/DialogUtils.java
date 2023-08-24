@@ -138,7 +138,9 @@ public class DialogUtils {
             setupDialogPaneButton(dialog, pane, yesButton, YES_BUTTON_LABEL);
             setupDialogPaneButton(dialog, pane, noButton, NO_BUTTON_LABEL);
 
+            dialog.pack();
             dialog.setVisible(true);
+            dialog.dispose();
             result = pane.getValue() == yesButton;
         }
         return result;
@@ -172,7 +174,9 @@ public class DialogUtils {
             setupDialogPaneButton(dialog, pane, noButton, NO_BUTTON_LABEL);
             setupDialogPaneButton(dialog, pane, cancelButton, CANCEL_BUTTON_LABEL);
 
+            dialog.pack();
             dialog.setVisible(true);
+            dialog.dispose();
             if (pane.getValue() == yesButton) {
                 result = JOptionPane.YES_OPTION;
             } else if (pane.getValue() == noButton) {
