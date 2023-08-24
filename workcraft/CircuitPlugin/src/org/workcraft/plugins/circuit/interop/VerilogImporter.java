@@ -291,7 +291,7 @@ public class VerilogImporter implements Importer {
         Circuit circuit = new Circuit();
         circuit.setTitle(verilogModule.name);
         HashMap<VerilogInstance, FunctionComponent> instanceComponentMap = new HashMap<>();
-        HashMap<String, Net> nets = createPorts(circuit, verilogModule);
+        HashMap<String, Net> nets = createPorts(circuit, verilogModule, mutexes);
         for (VerilogAssign verilogAssign : verilogModule.assigns) {
             createAssignGate(circuit, verilogAssign, nets);
         }
@@ -618,8 +618,17 @@ public class VerilogImporter implements Importer {
         return expression;
     }
 
-    private HashMap<String, Net> createPorts(Circuit circuit, VerilogModule verilogModule) {
+    private HashMap<String, Net> createPorts(Circuit circuit, VerilogModule verilogModule, Collection<Mutex> mutexes) {
         HashMap<String, Net> nets = new HashMap<>();
+        Set<String> grantSignals = new HashSet<>();
+        for (Mutex mutex : mutexes) {
+            if (mutex.g1 != null) {
+                grantSignals.add(mutex.g1.name);
+            }
+            if (mutex.g2 != null) {
+                grantSignals.add(mutex.g2.name);
+            }
+        }
         for (VerilogPort verilogPort : verilogModule.ports) {
             if (verilogPort.isInternal()) continue;
             List<String> portNetNames = getPortNetNames(verilogPort);
@@ -628,7 +637,9 @@ public class VerilogImporter implements Importer {
                         + String.join(", ", portNetNames));
             }
             for (String portNetName: portNetNames) {
-                createPort(circuit, nets, portNetName, verilogPort.isInput());
+                // Input port that is a grant of factored-out mutex should be inserted as an output port
+                boolean isInputPort = verilogPort.isInput() && !grantSignals.contains(verilogPort.name);
+                createPort(circuit, nets, portNetName, isInputPort);
             }
         }
         return nets;

@@ -8,6 +8,8 @@ import org.workcraft.plugins.stg.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.SortUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -240,11 +242,15 @@ public class MutexUtils {
     }
 
     public static void logInfoPossiblyImplementableMutex(Collection<Mutex> mutexes) {
-        if ((mutexes == null) || mutexes.isEmpty()) {
-            return;
+        if ((mutexes != null) && !mutexes.isEmpty()) {
+            List<String> mutexPlaceNames = mutexes.stream()
+                    .map(mutex -> mutex.name)
+                    .sorted(SortUtils::compareNatural)
+                    .collect(Collectors.toList());
+
+            LogUtils.logInfo(TextUtils.wrapMessageWithItems(
+                    "Possibly implementable (structurally detected) mutex place", mutexPlaceNames));
         }
-        String s = mutexes.stream().map(mutex -> mutex.name).collect(Collectors.joining(","));
-        LogUtils.logInfo("Possibly implementable (structurally detected) mutex places: " + s);
     }
 
     public static Set<String> getMutexPlaceReferences(Stg stg) {
