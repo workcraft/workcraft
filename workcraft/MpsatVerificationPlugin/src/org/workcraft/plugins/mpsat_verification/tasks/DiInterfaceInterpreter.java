@@ -48,7 +48,7 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
             Set<String> nonDiInputSignals = getNonDiInputSignals(stg);
             if (!nonDiInputSignals.isEmpty()) {
                 String comment = TextUtils.wrapMessageWithItems(
-                        "Sensitive to delay input signal set", nonDiInputSignals);
+                        "Interface is sensitive to input delays in the set", nonDiInputSignals);
 
                 result.add(new Solution(trace, null, comment));
             }

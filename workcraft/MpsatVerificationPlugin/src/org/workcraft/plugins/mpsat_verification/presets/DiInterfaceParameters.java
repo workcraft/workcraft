@@ -29,16 +29,17 @@ public class DiInterfaceParameters {
             "            SUSPECTS = gather ti_trig in pre pre_ti * TRINP \\ {ti} s.t.\n" +
             "                ~is_empty((post ti_trig \\ pre ti_trig) * pre_ti)\n" +
             "                &\n" +
-            "                ~exists set in EXCEPTIONS { S ti in set & S ti_trig in set } { ti_trig }\n" +
+            "                ~exists set in EXCEPTIONS { S ti in set & S ti_trig in set }\n" +
+            "            { ti_trig }\n" +
             "        {\n" +
             "            // Check if some ti_trig can trigger ti\n" +
             "            exists ti_trig in SUSPECTS {\n" +
-            "                forall p in pre_ti \\ post ti_trig { $p }\n" +
+            "                forall p in pre_ti \\ post ti_trig { $ p }\n" +
             "                &\n" +
-            "                @ti_trig\n" +
+            "                @ ti_trig\n" +
+            "                &\n" +
+            "                (S ti = S ti_trig ? ~@ ti : ~@S ti)\n" +
             "            }\n" +
-            "            &\n" +
-            "            ~@S ti\n" +
             "        }\n" +
             "    }\n" +
             "}\n";
