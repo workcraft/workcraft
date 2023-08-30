@@ -61,15 +61,16 @@ class LocalSelfTriggeringInterpreter extends ReachabilityOutputInterpreter {
         HashSet<String> result = new HashSet<>();
         HashSet<SignalTransition> enabledLocalSignalTransitions = getEnabledLocalSignalTransitions(stg);
         for (SignalTransition localSignalTransition : enabledLocalSignalTransitions) {
-            String signalName = localSignalTransition.getSignalName();
+            String signal = stg.getSignalReference(localSignalTransition);
             stg.fire(localSignalTransition);
             HashSet<SignalTransition> newEnabledLocalSignalTransitions = getEnabledLocalSignalTransitions(stg);
             newEnabledLocalSignalTransitions.removeAll(enabledLocalSignalTransitions);
             stg.unFire(localSignalTransition);
             // Check which newly enabled transitions are of the fired signal
             for (SignalTransition newEnabledLocalSignalTransition : newEnabledLocalSignalTransitions) {
-                if (newEnabledLocalSignalTransition.getSignalName().equals(signalName)) {
-                    result.add(signalName);
+                String otherSignal = stg.getSignalReference(newEnabledLocalSignalTransition);
+                if (otherSignal.equals(signal)) {
+                    result.add(signal);
                 }
             }
         }

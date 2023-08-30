@@ -69,7 +69,7 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
             for (SignalTransition transition : stg.getSignalTransitions()) {
                 Signal.Type type = transition.getSignalType();
                 if (stg.isEnabled(transition) && (type == Signal.Type.OUTPUT)) {
-                    String signal = transition.getSignalName();
+                    String signal = stg.getSignalReference(transition);
                     LogUtils.logWarning("Deadlock trace is spurious because it leads to non-conformant output '" + signal + "'");
                     isConformantTrace = false;
                     break;
