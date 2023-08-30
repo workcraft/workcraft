@@ -216,6 +216,26 @@ class VerificationCommandTests {
     }
 
     @Test
+    void testDlatchVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
+        testVerificationCommands(workName,
+                false, // combined
+                true,  // consistency
+                true,  // deadlock freeness
+                true,  // input properness
+                true,  // output persistency
+                true,  // output determinacy
+                true, // CSC
+                true, // USC
+                true,  // absence of self-triggering local signals
+                false, // DI interface
+                false, // normalcy
+                null,  // mutex implementability (late protocol)
+                null   // mutex implementability (early protocol)
+        );
+    }
+
+    @Test
     void testInoutPulseVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "inout_pulse.stg.work");
         testVerificationCommands(workName,
