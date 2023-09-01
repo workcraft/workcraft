@@ -211,7 +211,7 @@ List<VerilogPort> parsePorts():
 }
 {
     (
-        LOOKAHEAD("(" (<INPUT> | <OUTPUT>))
+        LOOKAHEAD("(" (<INPUT> | <OUTPUT> | <INOUT>))
         ports = parseCompactPorts()
     |
         ports = parseExtendedPorts()
@@ -331,10 +331,15 @@ VerilogPort.Type parsePortType():
             return VerilogPort.Type.OUTPUT;
         }
     |
+        <INOUT>
+        {
+            return VerilogPort.Type.INOUT;
+        }
+    |
         <WIRE>
         {
-            return VerilogPort.Type.INTERNAL;
-        }
+    return VerilogPort.Type.WIRE;
+}
 }
 
 VerilogPort.Range parseRange():
