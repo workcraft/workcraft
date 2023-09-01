@@ -11,7 +11,8 @@ public class VerilogPort {
     public enum Type {
         INPUT("input"),
         OUTPUT("output"),
-        INTERNAL("internal");
+        INOUT("inout"),
+        WIRE("wire");
 
         private final String name;
 
@@ -66,8 +67,12 @@ public class VerilogPort {
         return type == Type.OUTPUT;
     }
 
-    public boolean isInternal() {
-        return type == Type.INTERNAL;
+    public boolean isInout() {
+        return type == Type.INOUT;
+    }
+
+    public boolean isWire() {
+        return type == Type.WIRE;
     }
 
 }

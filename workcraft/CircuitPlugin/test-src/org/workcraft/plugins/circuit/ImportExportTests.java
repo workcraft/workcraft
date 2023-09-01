@@ -29,6 +29,7 @@ class ImportExportTests {
         framework.init();
         CircuitSettings.setGateLibrary(BackendUtils.getTemplateLibraryPath("workcraft.lib"));
         CircuitSettings.setDissolveSingletonBus(false);
+        CircuitSettings.setAcceptInoutPort(true);
     }
 
     @Test
@@ -107,6 +108,13 @@ class ImportExportTests {
     void testBusHierMixedImportExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "bus-hier-mixed.circuit.work");
         String verilogName = PackageUtils.getPackagePath(getClass(), "bus-hier-mixed.circuit.v");
+        testImportExport(workName, verilogName);
+    }
+
+    @Test
+    void testRedundantInoutImportExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "redundant_inout-pruned.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "redundant_inout.circuit.v");
         testImportExport(workName, verilogName);
     }
 

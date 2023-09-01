@@ -216,8 +216,8 @@ class VerificationCommandTests {
     }
 
     @Test
-    void testPulserVerification() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "pulser.stg.work");
+    void testDlatchVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
         testVerificationCommands(workName,
                 false, // combined
                 true,  // consistency
@@ -225,11 +225,31 @@ class VerificationCommandTests {
                 true,  // input properness
                 true,  // output persistency
                 true,  // output determinacy
-                false,  // CSC
-                false,  // USC
-                false,  // absence of self-triggering local signals
-                true,  // DI interface
-                false,  // normalcy
+                true, // CSC
+                true, // USC
+                true,  // absence of self-triggering local signals
+                false, // DI interface
+                false, // normalcy
+                null,  // mutex implementability (late protocol)
+                null   // mutex implementability (early protocol)
+        );
+    }
+
+    @Test
+    void testInoutPulseVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "inout_pulse.stg.work");
+        testVerificationCommands(workName,
+                false, // combined
+                true,  // consistency
+                true,  // deadlock freeness
+                true,  // input properness
+                true,  // output persistency
+                true,  // output determinacy
+                false, // CSC
+                false, // USC
+                false, // absence of self-triggering local signals
+                false, // DI interface
+                false, // normalcy
                 null,  // mutex implementability (late protocol)
                 null   // mutex implementability (early protocol)
         );
@@ -245,11 +265,11 @@ class VerificationCommandTests {
                 true,  // input properness
                 true,  // output persistency
                 true,  // output determinacy
-                false,  // CSC
-                false,  // USC
+                false, // CSC
+                false, // USC
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
-                false,  // normalcy
+                false, // normalcy
                 null,  // mutex implementability (late protocol)
                 null   // mutex implementability (early protocol)
         );

@@ -26,7 +26,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
         if (signalName == null) {
             signalName = "";
         }
-        final StringBuffer result = new StringBuffer(signalName);
+        final StringBuilder result = new StringBuilder(signalName);
         switch (getReferencedComponent().getDirection()) {
         case PLUS:
             result.append("+");

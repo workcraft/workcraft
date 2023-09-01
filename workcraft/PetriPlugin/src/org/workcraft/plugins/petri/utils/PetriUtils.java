@@ -13,6 +13,7 @@ import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -140,6 +141,15 @@ public final class PetriUtils {
                 visualModel.remove(visualPlace);
             }
         }
+    }
+
+    public static Collection<Transition> getSyntacticTriggerTransitions(PetriModel model, Transition transition) {
+        Set<Transition> result = new HashSet<>();
+        Set<Place> predPlaces = model.getPreset(transition, Place.class);
+        for (Place predPlace : predPlaces) {
+            result.addAll(model.getPreset(predPlace, Transition.class));
+        }
+        return result;
     }
 
 }

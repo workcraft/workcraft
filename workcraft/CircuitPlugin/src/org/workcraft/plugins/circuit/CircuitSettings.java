@@ -89,6 +89,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyDissolveSingletonBus = prefix + ".dissolveSingletonBus";
+    private static final String keyAcceptInoutPort = prefix + ".acceptInoutPort";
     private static final String keyModuleFilePattern = prefix + ".moduleFilePattern";
     // Reset
     private static final String keyResetActiveHighPort = prefix + ".resetActiveHighPort";
@@ -140,6 +141,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultVerilogAssignDelay = "";
     private static final String defaultBusSuffix = "__" + BUS_INDEX_PLACEHOLDER;
     private static final boolean defaultDissolveSingletonBus = true;
+    private static final boolean defaultAcceptInoutPort = true;
     private static final String defaultModuleFilePattern = MODULE_NAME_PLACEHOLDER + FileFilters.DOCUMENT_EXTENSION;
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
@@ -191,6 +193,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String verilogAssignDelay = defaultVerilogAssignDelay;
     private static String busSuffix = defaultBusSuffix;
     private static boolean dissolveSingletonBus = defaultDissolveSingletonBus;
+    private static boolean acceptInoutPort = defaultAcceptInoutPort;
     private static String moduleFilePattern = defaultModuleFilePattern;
     // Reset
     private static String resetActiveHighPort = defaultResetActiveHighPort;
@@ -351,6 +354,11 @@ public class CircuitSettings extends AbstractModelSettings {
                 PropertyHelper.BULLET_PREFIX + "Dissolve single-bit buses on Verilog export",
                 CircuitSettings::setDissolveSingletonBus,
                 CircuitSettings::getDissolveSingletonBus));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Accept inout ports and ignore their connections",
+                CircuitSettings::setAcceptInoutPort,
+                CircuitSettings::getAcceptInoutPort));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "File pattern for import of hierarchical Verilog modules ("
@@ -518,6 +526,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setVerilogAssignDelay(config.getString(keyVerilogAssignDelay, defaultVerilogAssignDelay));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setDissolveSingletonBus(config.getBoolean(keyDissolveSingletonBus, defaultDissolveSingletonBus));
+        setAcceptInoutPort(config.getBoolean(keyAcceptInoutPort, defaultAcceptInoutPort));
         setModuleFilePattern(config.getString(keyModuleFilePattern, defaultModuleFilePattern));
         // Reset
         setResetActiveHighPort(config.getString(keyResetActiveHighPort, defaultResetActiveHighPort));
@@ -569,6 +578,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyBusSuffix, getBusSuffix());
         config.setBoolean(keyDissolveSingletonBus, getDissolveSingletonBus());
+        config.setBoolean(keyAcceptInoutPort, getAcceptInoutPort());
         config.set(keyModuleFilePattern, getModuleFilePattern());
         // Reset
         config.set(keyResetActiveHighPort, getResetActiveHighPort());
@@ -781,6 +791,14 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setDissolveSingletonBus(boolean value) {
         dissolveSingletonBus = value;
+    }
+
+    public static boolean getAcceptInoutPort() {
+        return acceptInoutPort;
+    }
+
+    public static void setAcceptInoutPort(boolean value) {
+        acceptInoutPort = value;
     }
 
     public static String getModuleFilePattern() {

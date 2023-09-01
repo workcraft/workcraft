@@ -6,7 +6,10 @@ import org.workcraft.gui.lists.MultipleListSelectionModel;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringDataPreserver;
 import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringParameters;
+import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.SortUtils;
@@ -60,8 +63,8 @@ public class LocalSelfTriggeringDialog extends ModalDialog<LocalSelfTriggeringDa
     public JPanel createContentPanel() {
         Stg stg = WorkspaceUtils.getAs(getUserData().getWorkspaceEntry(), Stg.class);
         localSignalList = new LocalSignalList(
-                stg.getSignalReferences(Signal.Type.OUTPUT),
-                stg.getSignalReferences(Signal.Type.INTERNAL));
+                getSyntacticSelfTriggeringSignals(stg, stg.getSignalReferences(Signal.Type.OUTPUT)),
+                getSyntacticSelfTriggeringSignals(stg, stg.getSignalReferences(Signal.Type.INTERNAL)));
 
         LocalSelfTriggeringParameters parameters = getUserData().loadData();
         Set<String> exceptionSignals = parameters.getExceptionSignals();
@@ -77,6 +80,25 @@ public class LocalSelfTriggeringDialog extends ModalDialog<LocalSelfTriggeringDa
         result.add(new JLabel("Select signals that are allowed to self-trigger:"), BorderLayout.NORTH);
         result.add(new JScrollPane(localSignalList), BorderLayout.CENTER);
         result.add(clearButton, BorderLayout.SOUTH);
+        return result;
+    }
+
+    private Set<String> getSyntacticSelfTriggeringSignals(Stg stg, Collection<String> signals) {
+        Set<String> result = new HashSet<>();
+        for (String signal : signals) {
+            Collection<SignalTransition> signalTransitions = stg.getSignalTransitions(signal);
+            for (Transition signalTransition : signalTransitions) {
+                Collection<Transition> syntacticTriggerTransitions =
+                        PetriUtils.getSyntacticTriggerTransitions(stg, signalTransition);
+
+                syntacticTriggerTransitions.remove(signalTransition);
+                syntacticTriggerTransitions.retainAll(signalTransitions);
+                if (!syntacticTriggerTransitions.isEmpty()) {
+                    result.add(signal);
+                    break;
+                }
+            }
+        }
         return result;
     }
 

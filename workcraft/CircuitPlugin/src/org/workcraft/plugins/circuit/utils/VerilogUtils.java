@@ -174,17 +174,22 @@ public final class VerilogUtils {
     }
 
     public static void printModule(VerilogModule verilogModule) {
-        String portNames = verilogModule.ports.stream()
-                .filter(port -> port.isInput() || port.isOutput())
+        String interfacePortNames = verilogModule.ports.stream()
+                .filter(port -> port.isInput() || port.isOutput() || port.isInout())
                 .map(verilogPort -> verilogPort.name)
                 .collect(Collectors.joining(", "));
 
-        LogUtils.logMessage("module " + verilogModule.name + " (" + portNames + ");");
+        LogUtils.logMessage("module " + verilogModule.name + " (" + interfacePortNames + ");");
         for (VerilogPort verilogPort : verilogModule.ports) {
-            LogUtils.logMessage("    " + verilogPort.type + ' '
-                    + ((verilogPort.range == null) ? "" : verilogPort.range.toString() + ' ')
-                    + verilogPort.name + ';');
+            if (verilogPort.isInput() || verilogPort.isOutput() || verilogPort.isInout()
+                    || (verilogPort.isWire() && (verilogPort.range != null))) {
+
+                LogUtils.logMessage("    " + verilogPort.type + ' '
+                        + ((verilogPort.range == null) ? "" : verilogPort.range.toString() + ' ')
+                        + verilogPort.name + ';');
+            }
         }
+
         for (VerilogAssign verilogAssign : verilogModule.assigns) {
             String wireName = getNetBusIndexName(verilogAssign.net);
             if (wireName != null) {

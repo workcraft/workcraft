@@ -48,7 +48,7 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
             Set<String> nonDiInputSignals = getNonDiInputSignals(stg);
             if (!nonDiInputSignals.isEmpty()) {
                 String comment = TextUtils.wrapMessageWithItems(
-                        "Sensitive to delay input signal set", nonDiInputSignals);
+                        "Interface is sensitive to input delays in the set", nonDiInputSignals);
 
                 result.add(new Solution(trace, null, comment));
             }
@@ -61,7 +61,7 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
         HashSet<String> result = new HashSet<>();
         HashSet<SignalTransition> enabledInputSignalTransitions = getEnabledInputSignalTransitions(stg);
         for (SignalTransition inputSignalTransition : enabledInputSignalTransitions) {
-            String signalName = inputSignalTransition.getSignalName();
+            String signal = stg.getSignalReference(inputSignalTransition);
             stg.fire(inputSignalTransition);
             HashSet<SignalTransition> newEnabledInputSignalTransitions = getEnabledInputSignalTransitions(stg);
             newEnabledInputSignalTransitions.removeAll(enabledInputSignalTransitions);
@@ -69,10 +69,10 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
             // Check which newly enabled transitions are of input signal
             for (SignalTransition newEnabledLocalSignalTransition : newEnabledInputSignalTransitions) {
                 if (newEnabledLocalSignalTransition.getSignalType() == Signal.Type.INPUT) {
-                    Set<String> signalNames = new HashSet<>();
-                    signalNames.add(signalName);
-                    signalNames.add(newEnabledLocalSignalTransition.getSignalName());
-                    result.add("{" + String.join(", ", signalNames) + "}");
+                    Set<String> signals = new HashSet<>();
+                    signals.add(signal);
+                    signals.add(stg.getSignalReference(newEnabledLocalSignalTransition));
+                    result.add("{" + String.join(", ", signals) + "}");
                 }
             }
         }
