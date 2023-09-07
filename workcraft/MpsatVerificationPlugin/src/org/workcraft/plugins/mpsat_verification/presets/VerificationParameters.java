@@ -151,7 +151,7 @@ public class VerificationParameters {
     }
 
     public String getDescriptiveSuffix() {
-        return description == null ? "" : "-" + description.replaceAll("\\s", "_");
+        return description == null ? "" : ("-" + description.replaceAll("\\s", "_"));
     }
 
 }

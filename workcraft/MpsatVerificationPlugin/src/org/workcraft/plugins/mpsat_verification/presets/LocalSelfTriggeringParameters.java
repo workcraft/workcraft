@@ -68,11 +68,18 @@ public class LocalSelfTriggeringParameters {
                 .collect(Collectors.joining());
 
         String reach = REACH_EXPRESSION.replace(EXCEPTION_NAMES, replacement);
+
         return new VerificationParameters(description,
                 VerificationMode.STG_REACHABILITY_LOCAL_SELF_TRIGGERING, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reach, true);
+                reach, true) {
+
+            @Override
+            public String getDescriptiveSuffix() {
+                return "Absence_of_local_self_triggering" + (exceptionSignals.isEmpty() ? "" : "_with_exceptions");
+            }
+        };
     }
 
 }

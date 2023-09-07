@@ -14,9 +14,6 @@ public class NameInplaceEditor extends AbstractInplaceEditor {
     private final VisualModel model;
     private final boolean validate;
 
-    public NameInplaceEditor(GraphEditor editor, VisualComponent component) {
-        this(editor, component, false);
-    }
     public NameInplaceEditor(GraphEditor editor, VisualComponent component, boolean validate) {
         super(editor, component);
         this.component = component;

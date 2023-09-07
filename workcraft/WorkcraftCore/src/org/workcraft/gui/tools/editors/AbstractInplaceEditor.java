@@ -1,10 +1,7 @@
 package org.workcraft.gui.tools.editors;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.visual.Alignment;
-import org.workcraft.dom.visual.BoundingBoxHelper;
-import org.workcraft.dom.visual.TransformHelper;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.*;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.editor.Viewport;
 import org.workcraft.gui.tools.GraphEditor;
@@ -12,6 +9,8 @@ import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.TextUtils;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
@@ -92,7 +91,7 @@ public abstract class AbstractInplaceEditor {
         return component;
     }
 
-    public void edit(final String text, final Font font, final Point2D offset, final Alignment alignment, boolean multiline) {
+    public void edit(String text, Font font, Point2D offset, Alignment alignment, boolean multiline) {
         // Create a text pane without wrapping
         final JTextPane textPane = new JTextPane() {
             @Override
@@ -148,24 +147,76 @@ public abstract class AbstractInplaceEditor {
         // Use FRAME decoration for multi-line editor or NONE for single-line editor
         dialog.getRootPane().setWindowDecorationStyle(multiline ? JRootPane.FRAME : JRootPane.NONE);
         dialog.add(panel);
-        String processedText = text.replace(NEWLINE_SEPARATOR, "\n");
-        // Set dialog size, so the text fits well: add 8 spaces for single-line editor, as it cannot be resized
-        textPane.setText(processedText + (multiline ? "" : TextUtils.repeat(" ", 8)));
-        dialog.pack();
-        textPane.setText(processedText);
-        // Position and display dialog
-        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(getComponent());
-        Rectangle2D rootBox = TransformHelper.transform(getComponent(), localToRootTransform).getBoundingBox();
-        Rectangle screenBox = viewport.userToScreen(BoundingBoxHelper.move(rootBox, offset));
-        GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
-        if (editor instanceof GraphEditorPanel) {
-            Point editorScreenPosition = ((GraphEditorPanel) editor).getLocationOnScreen();
-            int xPosition = editorScreenPosition.x + screenBox.x + (screenBox.width - dialog.getWidth()) / 2;
-            int yPosition = editorScreenPosition.y + screenBox.y + (screenBox.height - dialog.getHeight()) / 2;
-            dialog.setLocation(xPosition, yPosition);
-        }
+        configureSizeAndLocation(dialog, textPane, text, offset, multiline);
         dialog.setVisible(true);
         textPane.requestFocusInWindow();
+    }
+
+    private void configureSizeAndLocation(JDialog dialog, JTextPane textPane, String text,
+            Point2D offset, boolean multiline) {
+
+        Point editorScreenLocation = (editor instanceof GraphEditorPanel)
+                ? ((GraphEditorPanel) editor).getLocationOnScreen()
+                : new Point(0, 0);
+
+        Rectangle editorBounds = new Rectangle(editorScreenLocation.x, editorScreenLocation.y,
+                editor.getWidth(), editor.getHeight());
+
+        String processedText = text.replace(NEWLINE_SEPARATOR, "\n");
+        if (multiline) {
+            textPane.setText(processedText);
+            dialog.pack();
+        } else {
+            // Set dialog size, so the text fits well: add 8 spaces for single-line editor, as it cannot be resized
+            textPane.setText(processedText + TextUtils.repeat(" ", 8));
+            Dimension size = textPane.getPreferredSize();
+            Insets insets = SizeHelper.getTextMargin();
+            Dimension sizeWithMargin = new Dimension(size.width + insets.left + insets.right,
+                    size.height + insets.top + insets.bottom);
+
+            textPane.setText(processedText);
+            size = textPane.getPreferredSize();
+            Dimension margin = new Dimension(sizeWithMargin.width - size.width,
+                    sizeWithMargin.height - size.height);
+
+            dialog.setSize(sizeWithMargin);
+
+            textPane.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void removeUpdate(DocumentEvent event) {
+                    updateSizeAndPosition(dialog, textPane, margin, editorBounds);
+                }
+
+                @Override
+                public void insertUpdate(DocumentEvent event) {
+                    updateSizeAndPosition(dialog, textPane, margin, editorBounds);
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent event) {
+                    updateSizeAndPosition(dialog, textPane, margin, editorBounds);
+                }
+            });
+        }
+
+        Rectangle dialogBounds = dialog.getBounds();
+        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(getComponent());
+        Rectangle2D rootBox = TransformHelper.transform(getComponent(), localToRootTransform).getBoundingBox();
+        Viewport viewport = editor.getViewport();
+        Rectangle screenBox = viewport.userToScreen(BoundingBoxHelper.move(rootBox, offset));
+        dialogBounds.x = editorScreenLocation.x + screenBox.x + (screenBox.width - dialog.getWidth()) / 2;
+        dialogBounds.y = editorScreenLocation.y + screenBox.y + (screenBox.height - dialog.getHeight()) / 2;
+        GuiUtils.boundWindow(dialog, dialogBounds, editorBounds);
+    }
+
+    private void updateSizeAndPosition(JDialog dialog, JTextPane textPane, Dimension margin, Rectangle editorBounds) {
+        Dimension preferredSize = textPane.getPreferredSize();
+        int width = preferredSize.width + margin.width;
+        int height = preferredSize.height + margin.height;
+        int x = dialog.getX() + (dialog.getWidth() - width) / 2;
+        int y = dialog.getY() + (dialog.getHeight() - height) / 2;
+        Rectangle bounds = new Rectangle(x, y, width, height);
+        GuiUtils.boundWindow(dialog, bounds, editorBounds);
     }
 
     public void beforeEdit() {

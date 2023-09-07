@@ -84,7 +84,13 @@ public class DiInterfaceParameters {
                 VerificationMode.STG_REACHABILITY_DI_INTERFACE, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reach, true);
+                reach, true) {
+
+            @Override
+            public String getDescriptiveSuffix() {
+                return "Delay_insensitive_interface" + (exceptionSignalSets.isEmpty() ? "" : "_with_exceptions");
+            }
+        };
     }
 
 }

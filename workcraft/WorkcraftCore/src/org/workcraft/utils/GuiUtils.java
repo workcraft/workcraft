@@ -360,4 +360,14 @@ public class GuiUtils {
         table.tableChanged(new TableModelEvent(table.getModel()));
     }
 
+    public static void boundWindow(Window window, Rectangle preferredBounds, Rectangle restrictionBounds) {
+        int width = Math.min(preferredBounds.width, restrictionBounds.width);
+        int height = Math.min(preferredBounds.height, restrictionBounds.height);
+        int x = Math.max(preferredBounds.x, restrictionBounds.x);
+        int y = Math.max(preferredBounds.y, restrictionBounds.y);
+        x = Math.min(x, restrictionBounds.x + restrictionBounds.width - width);
+        y = Math.min(y, restrictionBounds.y + restrictionBounds.height - height);
+        window.setBounds(x, y, width, height);
+    }
+
 }
