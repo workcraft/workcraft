@@ -5,6 +5,7 @@ import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class LabelInplaceEditor extends AbstractInplaceEditor {
+
     private final VisualComponent component;
 
     public LabelInplaceEditor(GraphEditor editor, VisualComponent component) {
