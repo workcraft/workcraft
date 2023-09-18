@@ -4,14 +4,10 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
-import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.*;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
@@ -21,12 +17,8 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.Importer;
-import org.workcraft.observation.ModelModifiedEvent;
-import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.PluginManager;
-import org.workcraft.plugins.builtin.commands.DotLayoutCommand;
-import org.workcraft.plugins.builtin.commands.RandomLayoutCommand;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.tasks.ExtendedTaskManager;
 import org.workcraft.tasks.TaskManager;
@@ -576,7 +568,7 @@ public final class Framework {
         getWorkspace().addWork(path, we);
         if (open && isInGuiMode()) {
             // Attempt automatic layout only if the model entry changed (because of creating visual layer)
-            if ((me == we.getModelEntry()) || attemptLayout(we.getModelEntry().getVisualModel())) {
+            if ((me == we.getModelEntry()) || LayoutUtils.attemptLayout(we)) {
                 getMainWindow().getOrCreateEditor(we);
             }
         }
@@ -609,41 +601,6 @@ public final class Framework {
             }
         }
         return result;
-    }
-
-    private boolean attemptLayout(VisualModel model) {
-        int answer = 0;
-        Container root = model.getRoot();
-        int nodeCount = Hierarchy.getDescendantsOfType(root, VisualNode.class).size();
-        if (nodeCount > EditorCommonSettings.getLargeModelSize()) {
-            String message = "The model may be too large for automatic"
-                    + "\nlayout (" + nodeCount + " elements)."
-                    + "\nPerform layout anyway before opening in editor?";
-
-            answer = DialogUtils.showYesNoCancel(message, "Graph layout",
-                    JOptionPane.QUESTION_MESSAGE, JOptionPane.NO_OPTION);
-        }
-
-        if (answer > 1) {
-            return false;
-        }
-        // FIXME: Send notification to components, so their dimensions are updated before layout.
-        for (VisualComponent component : Hierarchy.getDescendantsOfType(root, VisualComponent.class)) {
-            if (component instanceof StateObserver) {
-                ((StateObserver) component).notify(new ModelModifiedEvent(model));
-            }
-        }
-        AbstractLayoutCommand layoutCommand = answer == 0 ? model.getBestLayouter() : model.getFallbackLayouter();
-        if (layoutCommand == null) {
-            layoutCommand = new DotLayoutCommand();
-        }
-        try {
-            layoutCommand.layout(model);
-        } catch (LayoutException e) {
-            layoutCommand = new RandomLayoutCommand();
-            layoutCommand.layout(model);
-        }
-        return true;
     }
 
     /**

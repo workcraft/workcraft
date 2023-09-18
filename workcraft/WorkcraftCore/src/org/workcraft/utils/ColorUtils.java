@@ -103,7 +103,7 @@ public class ColorUtils {
                 }
             }
         }
-        return palette.toArray(new Color[palette.size()]);
+        return palette.toArray(new Color[0]);
     }
 
     public static Boolean isOpaque(Color color) {

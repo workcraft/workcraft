@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cflt.utils;
 
-import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
 import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
@@ -82,7 +81,7 @@ public final class ExpressionUtils {
         return errorText;
     }
 
-    public static boolean insert(VisualPetri petri, String expressionText, ExpressionParameters.Mode mode) {
+    public static boolean insertPetri(String expressionText, ExpressionParameters.Mode mode) {
         if (!validateExpression(expressionText, Model.PETRI_NET)) {
             return false;
         }
@@ -99,12 +98,10 @@ public final class ExpressionUtils {
             return false;
         }
         ctr.drawInterpretedGraph(mode, Model.PETRI_NET);
-        AbstractLayoutCommand alc = petri.getBestLayouter();
-        alc.layout(petri);
         return true;
     }
 
-    public static boolean insert(VisualStg stg, String expressionText, ExpressionParameters.Mode mode) {
+    public static boolean insertStg(String expressionText, ExpressionParameters.Mode mode) {
         if (!validateExpression(expressionText, Model.STG)) {
             return false;
         }
@@ -123,8 +120,6 @@ public final class ExpressionUtils {
         }
 
         ctr.drawInterpretedGraph(mode, Model.STG);
-        AbstractLayoutCommand alc = stg.getBestLayouter();
-        alc.layout(stg);
         return true;
     }
 
@@ -139,7 +134,7 @@ public final class ExpressionUtils {
         int repNo = 0;
         while (i < expressionText.length()) {
 
-            StringBuilder transition = new StringBuilder();
+            StringBuilder transitionNameBuilder = new StringBuilder();
             while ((expressionText.charAt(i) != CONCURRENCY)
                     && (expressionText.charAt(i) != SEQUENCE)
                     && (expressionText.charAt(i) != CHOICE)
@@ -152,27 +147,27 @@ public final class ExpressionUtils {
                     && (expressionText.charAt(i) != ' ')
                     && (expressionText.charAt(i) != '/')) {
 
-                transition.append(expressionText.charAt(i));
+                transitionNameBuilder.append(expressionText.charAt(i));
                 i++;
                 if (i == expressionText.length()) {
                     break;
                 }
             }
-            String transitionName = transition.toString();
-            if (!transitionName.isEmpty() && !transitionName.contains("//") && !transitionName.equals("\n")) {
+            final String s = transitionNameBuilder.toString();
+            if (!s.isEmpty() && !s.contains("//") && !s.equals("\n")) {
                 String uniqueT = "t" + repNo;
 
                 char lastC = expressionText.charAt(i - 1);
                 int wasAltered = 0;
                 nameDirectionMap.put(uniqueT, lastC);
                 if (lastC == PLUS_DIR || lastC == MINUS_DIR || lastC == TOGGLE_DIR) {
-                    transition = new StringBuilder(transition.substring(0, transition.length() - 1));
+                    transitionNameBuilder = new StringBuilder(transitionNameBuilder.substring(0, transitionNameBuilder.length() - 1));
                     wasAltered = 1;
                 }
-                labelNameMap.put(uniqueT, transitionName);
+                labelNameMap.put(uniqueT, transitionNameBuilder.toString());
 
-                str = str.substring(0, i - transition.length() - wasAltered) + uniqueT + str.substring(i);
-                i -= transition.length();
+                str = str.substring(0, i - transitionNameBuilder.length() - wasAltered) + uniqueT + str.substring(i);
+                i -= transitionNameBuilder.length();
                 i += uniqueT.length() - 1;
                 repNo++;
                 expressionText = str;
