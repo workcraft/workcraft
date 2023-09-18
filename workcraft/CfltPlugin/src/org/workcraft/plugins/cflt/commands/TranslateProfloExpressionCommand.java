@@ -13,6 +13,7 @@ import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.presets.PresetManager;
+import org.workcraft.utils.LayoutUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -88,14 +89,16 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
         we.captureMemento();
         ExpressionUtils.we = we;
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
-            VisualPetri petri = WorkspaceUtils.getAs(we, VisualPetri.class);
-            if (!ExpressionUtils.insert(petri, expression, mode)) {
+            if (ExpressionUtils.insertPetri(expression, mode)) {
+                LayoutUtils.attemptLayout(we);
+            } else {
                 we.cancelMemento();
             }
         }
         if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {
-            VisualStg stg = WorkspaceUtils.getAs(we, VisualStg.class);
-            if (!ExpressionUtils.insert(stg, expression, mode)) {
+            if (ExpressionUtils.insertStg(expression, mode)) {
+                LayoutUtils.attemptLayout(we);
+            } else {
                 we.cancelMemento();
             }
         }
