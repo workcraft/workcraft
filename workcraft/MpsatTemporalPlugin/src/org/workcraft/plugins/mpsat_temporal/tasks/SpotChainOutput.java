@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat_verification.tasks;
+package org.workcraft.plugins.mpsat_temporal.tasks;
 
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.tasks.ExportOutput;

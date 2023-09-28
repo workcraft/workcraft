@@ -1,10 +1,10 @@
-package org.workcraft.plugins.mpsat_verification.utils;
+package org.workcraft.plugins.mpsat_temporal.utils;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.controls.CodePanel;
-import org.workcraft.plugins.mpsat_verification.tasks.Ltl2tgbaOutput;
-import org.workcraft.plugins.mpsat_verification.tasks.Ltl2tgbaOutputInterpreter;
-import org.workcraft.plugins.mpsat_verification.tasks.Ltl2tgbaTask;
+import org.workcraft.plugins.mpsat_temporal.tasks.Ltl2tgbaOutput;
+import org.workcraft.plugins.mpsat_temporal.tasks.Ltl2tgbaOutputInterpreter;
+import org.workcraft.plugins.mpsat_temporal.tasks.Ltl2tgbaTask;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.types.Pair;
@@ -28,7 +28,7 @@ public class SpotUtils {
     private static final int REJECT_WORD_GROUP = 2;
 
     private static final Pattern SYNTAX_ERROR_PATTERN = Pattern.compile(
-            "parse error:\\R>>> (.+)\\R    (.*)(\\^+)\\Rsyntax error, (.+)\\R",
+            "parse error:\\R>>> (.+)\\R {4}(.*)(\\^+)\\Rsyntax error, (.+)\\R",
             Pattern.UNIX_LINES);
 
     private static final int POSITION_GROUP = 2;

@@ -68,8 +68,6 @@ public class MpsatVerificationPlugin implements Plugin {
                 "check the STG 'work' for REACH assertion 'data'");
         ScriptableCommandUtils.registerDataCommand(SignalAssertionVerificationCommand.class, "checkStgSignalAssertion",
                 "check the STG 'work' for signal assertion 'data'");
-        ScriptableCommandUtils.registerDataCommand(SpotAssertionVerificationCommand.class, "checkStgSpotAssertion",
-                "check the STG 'work' for SPOT assertion 'data'");
     }
 
 }

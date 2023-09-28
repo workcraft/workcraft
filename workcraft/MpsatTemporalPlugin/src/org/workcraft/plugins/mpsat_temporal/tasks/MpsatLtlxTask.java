@@ -1,6 +1,6 @@
-package org.workcraft.plugins.mpsat_verification.tasks;
+package org.workcraft.plugins.mpsat_temporal.tasks;
 
-import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat_temporal.MpsatTemporalSettings;
 import org.workcraft.tasks.*;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
@@ -36,7 +36,7 @@ public class MpsatLtlxTask implements Task<MpsatOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatVerificationSettings.getCommand());
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatTemporalSettings.getCommand());
         command.add(toolName);
 
         // MPSat mode (must be the first argument)
@@ -44,19 +44,19 @@ public class MpsatLtlxTask implements Task<MpsatOutput> {
 
         // Global arguments
         command.add("-c");
-        int threadCount = MpsatVerificationSettings.getThreadCount();
+        int threadCount = MpsatTemporalSettings.getThreadCount();
         if (threadCount > 0) {
             command.add("-j" + threadCount);
         }
 
         // Extra arguments (should go before the file parameters)
-        command.addAll(TextUtils.splitWords(MpsatVerificationSettings.getArgs()));
+        command.addAll(TextUtils.splitWords(MpsatTemporalSettings.getArgs()));
 
         // STG file
         command.add(netFile.getAbsolutePath());
 
-        boolean printStdout = MpsatVerificationSettings.getPrintStdout();
-        boolean printStderr = MpsatVerificationSettings.getPrintStderr();
+        boolean printStdout = MpsatTemporalSettings.getPrintStdout();
+        boolean printStderr = MpsatTemporalSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
@@ -64,7 +64,7 @@ public class MpsatLtlxTask implements Task<MpsatOutput> {
         ExternalProcessOutput output = result.getPayload();
         if (result.isSuccess() && (output != null)) {
             List<Solution> solutions = getSolutions(output.getStdoutString());
-            MpsatOutput mpsatOutput = new MpsatOutput(output, null, netFile, null, solutions);
+            MpsatOutput mpsatOutput = new MpsatOutput(output, netFile, solutions);
             int returnCode = output.getReturnCode();
             if ((returnCode == 0) || (returnCode == 1)) {
                 return Result.success(mpsatOutput);
