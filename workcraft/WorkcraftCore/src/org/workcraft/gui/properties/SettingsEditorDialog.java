@@ -119,7 +119,10 @@ public class SettingsEditorDialog extends JDialog {
         // Add settings to the tree
         PluginManager pm = Framework.getInstance().getPluginManager();
         for (Settings settings : pm.getSortedSettings()) {
-            addItem(settings.getSection(), settings);
+            String section = settings.getSection();
+            if (section != null) {
+                addItem(section, settings);
+            }
         }
 
         sectionTree.setModel(new DefaultTreeModel(sectionRoot));
