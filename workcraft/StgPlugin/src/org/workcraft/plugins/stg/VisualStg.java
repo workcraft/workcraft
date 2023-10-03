@@ -14,7 +14,6 @@ import org.workcraft.gui.properties.ModelProperties;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.plugins.petri.*;
-import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.stg.tools.*;
 import org.workcraft.plugins.stg.utils.ConnectionUtils;
@@ -60,7 +59,7 @@ public class VisualStg extends AbstractVisualModel {
         addGraphEditorTool(new StgSelectionTool());
         addGraphEditorTool(new CommentGeneratorTool());
         addGraphEditorTool(new StgConnectionTool());
-        addGraphEditorTool(new ReadArcConnectionTool());
+        addGraphEditorTool(new StgReadArcConnectionTool());
         addGraphEditorTool(new PlaceGeneratorTool());
         addGraphEditorTool(new SignalTransitionGeneratorTool());
         addGraphEditorTool(new DummyTransitionGeneratorTool());
@@ -158,9 +157,9 @@ public class VisualStg extends AbstractVisualModel {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
-        if (((first instanceof VisualStgPlace) || (first instanceof VisualReplicaPlace))
-                && ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace))) {
-            throw new InvalidConnectionException("Read-arcs between places are not allowed.");
+        if (((first instanceof VisualStgPlace) || (first instanceof VisualReplicaPlace) || (first instanceof VisualImplicitPlaceArc))
+                && ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace) || (second instanceof VisualImplicitPlaceArc))) {
+            throw new InvalidConnectionException("Arcs between places are not allowed.");
         }
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
             throw new InvalidConnectionException("Read-arcs between transitions are not allowed.");
@@ -178,19 +177,22 @@ public class VisualStg extends AbstractVisualModel {
     @Override
     public VisualConnection connectUndirected(VisualNode first, VisualNode second) throws InvalidConnectionException {
         validateUndirectedConnection(first, second);
+
         VisualNode placeOrReplica = null;
-        VisualNode transition = null;
+        VisualTransition transition = null;
         if (first instanceof VisualTransition) {
-            placeOrReplica = second;
-            transition = first;
+            transition = (VisualTransition) first;
+            placeOrReplica = (second instanceof VisualImplicitPlaceArc)
+                    ? makeExplicit((VisualImplicitPlaceArc) second) : second;
         } else if (second instanceof VisualTransition) {
-            placeOrReplica = first;
-            transition = second;
+            transition = (VisualTransition) second;
+            placeOrReplica = (first instanceof VisualImplicitPlaceArc)
+                    ? makeExplicit((VisualImplicitPlaceArc) first) : first;
         }
-        return placeOrReplica == null ? null : createReadArcConnection(placeOrReplica, transition);
+        return createReadArcConnection(placeOrReplica, transition);
     }
 
-    private VisualReadArc createReadArcConnection(VisualNode placeOrReplica, VisualNode transition)
+    private VisualReadArc createReadArcConnection(VisualNode placeOrReplica, VisualTransition transition)
             throws InvalidConnectionException {
 
         Place mPlace = null;
@@ -199,10 +201,7 @@ public class VisualStg extends AbstractVisualModel {
         } else if (placeOrReplica instanceof VisualReplicaPlace) {
             mPlace = ((VisualReplicaPlace) placeOrReplica).getReferencedPlace();
         }
-        Transition mTransition = null;
-        if (transition instanceof VisualTransition) {
-            mTransition = ((VisualTransition) transition).getReferencedComponent();
-        }
+        Transition mTransition = transition == null ? null : transition.getReferencedComponent();
 
         VisualReadArc connection = null;
         if ((mPlace != null) && (mTransition != null)) {

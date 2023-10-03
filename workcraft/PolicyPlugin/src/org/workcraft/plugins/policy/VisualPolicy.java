@@ -13,7 +13,7 @@ import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.tools.PetriConnectionTool;
 import org.workcraft.plugins.petri.tools.PlaceGeneratorTool;
-import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
+import org.workcraft.plugins.petri.tools.PetriReadArcConnectionTool;
 import org.workcraft.plugins.policy.observers.SpanningTreeInvalidator;
 import org.workcraft.plugins.policy.tools.BundledTransitionGeneratorTool;
 import org.workcraft.plugins.policy.tools.PolicySelectionTool;
@@ -49,7 +49,7 @@ public class VisualPolicy extends VisualPetri {
         addGraphEditorTool(new PolicySelectionTool());
         addGraphEditorTool(new CommentGeneratorTool());
         addGraphEditorTool(new PetriConnectionTool());
-        addGraphEditorTool(new ReadArcConnectionTool());
+        addGraphEditorTool(new PetriReadArcConnectionTool());
         addGraphEditorTool(new PlaceGeneratorTool());
         addGraphEditorTool(new BundledTransitionGeneratorTool());
         addGraphEditorTool(new PolicySimulationTool());
