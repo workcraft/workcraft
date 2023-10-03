@@ -14,6 +14,7 @@ import java.util.List;
 
 public class MpsatVerificationSettings extends AbstractToolSettings {
 
+    private static final PropertyDeclaration<String> commandProperty;
     private static final String COMMAND_DIRECTORY = "UnfoldingTools";
     private static final String COMMAND_64BIT_DIRECTORY = "UnfoldingTools64";
     private static final String COMMAND_REGEX = "^(?<prefix>.*[\\\\/])" + COMMAND_DIRECTORY + "(?<suffix>[\\\\/].+)$";
@@ -59,11 +60,12 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static ConformationReportStyle conformationReportStyle = defaultConformationReportStyle;
 
     static {
-        properties.add(new PropertyDeclaration<>(String.class,
+        commandProperty = new PropertyDeclaration<>(String.class,
                 "MPSat command for verification",
                 MpsatVerificationSettings::setCommand,
-                MpsatVerificationSettings::getProcessedCommand)
-                .setReadonly());
+                MpsatVerificationSettings::getProcessedCommand);
+
+        properties.add(commandProperty);
 
         properties.add(new PropertyDeclaration<>(Integer.class,
                 "Number of threads (8 by default, 0 for automatic)",
@@ -165,9 +167,16 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     }
 
     public static String getProcessedCommand() {
-        String processedCommand = command.replaceAll(COMMAND_REGEX, COMMAND_64BIT_REPLACEMENT);
-        File file = new File(processedCommand);
-        return file.exists() && file.isFile() && file.canExecute() ? processedCommand : command;
+        if (defaultCommand.equals(command)) {
+            String processedCommand = command.replaceAll(COMMAND_REGEX, COMMAND_64BIT_REPLACEMENT);
+            File file = new File(processedCommand);
+            if (file.exists() && file.isFile() && file.canExecute()) {
+                commandProperty.setEditable(false);
+                return processedCommand;
+            }
+        }
+        commandProperty.setEditable(true);
+        return command;
     }
 
     public static int getThreadCount() {

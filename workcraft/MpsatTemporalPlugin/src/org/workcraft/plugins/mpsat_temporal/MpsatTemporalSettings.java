@@ -42,11 +42,12 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
     private static Boolean showSpotInMenu = defaultShowSpotInMenu;
 
     static {
-        properties.add(new PropertyDeclaration<>(String.class,
+        PropertyDeclaration<String> commandProperty = new PropertyDeclaration<>(String.class,
                 "MPSat command for temporal verification",
                 MpsatTemporalSettings::setCommand,
-                MpsatTemporalSettings::getCommand)
-                .setReadonly());
+                MpsatTemporalSettings::getCommand);
+
+        properties.add(commandProperty);
 
         properties.add(new PropertyDeclaration<>(Integer.class,
                 "Number of threads (8 by default, 0 for automatic)",
@@ -76,8 +77,7 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 "Building B\u00FCchi automaton command",
                 MpsatTemporalSettings::setLtl2tgbaCommand,
-                MpsatTemporalSettings::getLtl2tgbaCommand)
-                .setReadonly());
+                MpsatTemporalSettings::getLtl2tgbaCommand));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 "Enable SPOT input (experimental)",

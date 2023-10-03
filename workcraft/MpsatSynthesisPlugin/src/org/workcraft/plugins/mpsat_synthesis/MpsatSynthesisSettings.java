@@ -68,8 +68,7 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 "MPSat command for synthesis",
                 MpsatSynthesisSettings::setCommand,
-                MpsatSynthesisSettings::getCommand)
-                .setReadonly());
+                MpsatSynthesisSettings::getCommand));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
                 "Number of threads (" + defaultThreadCount + " by default, 0 for automatic)",
