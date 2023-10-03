@@ -1,6 +1,6 @@
-package org.workcraft.plugins.mpsat_verification.tasks;
+package org.workcraft.plugins.mpsat_temporal.tasks;
 
-import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
+import org.workcraft.plugins.mpsat_temporal.MpsatTemporalSettings;
 import org.workcraft.tasks.*;
 import org.workcraft.utils.ExecutableUtils;
 
@@ -24,7 +24,7 @@ public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatVerificationSettings.getLtl2tgbaCommand());
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatTemporalSettings.getLtl2tgbaCommand());
         command.add(toolName);
 
         // Built-in arguments
@@ -40,8 +40,8 @@ public class Ltl2tgbaTask implements Task<Ltl2tgbaOutput> {
         command.add(hoaFile.getAbsolutePath());
         hoaFile.deleteOnExit();
 
-        boolean printStdout = MpsatVerificationSettings.getPrintStdout();
-        boolean printStderr = MpsatVerificationSettings.getPrintStderr();
+        boolean printStdout = MpsatTemporalSettings.getPrintStdout();
+        boolean printStderr = MpsatTemporalSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);

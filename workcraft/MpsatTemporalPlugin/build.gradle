@@ -3,10 +3,8 @@ dependencies {
     implementation project(':PetriPlugin')
     implementation project(':StgPlugin')
     implementation project(':PcompPlugin')
-    implementation project(':MpsatVerificationPlugin')
-    implementation project(':MpsatTemporalPlugin')
 }
 
 ext.excludeFromCoverage = [
-    'org/workcraft/plugins/circuit/tools/',
+    'org/workcraft/plugins/mpsat_verification/gui/',
 ]

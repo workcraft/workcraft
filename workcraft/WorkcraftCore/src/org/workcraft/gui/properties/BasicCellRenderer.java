@@ -35,6 +35,7 @@ public class BasicCellRenderer implements TableCellRenderer {
 
         setText(value == null ? "" : value.toString());
         component.setFont(table.getFont());
+        component.setEnabled(table.isCellEditable(row, column));
         return component;
     }
 

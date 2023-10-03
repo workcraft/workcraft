@@ -57,7 +57,11 @@ public class PropertyDeclaration<V> implements PropertyDescriptor<V> {
     }
 
     public PropertyDeclaration<V> setReadonly() {
-        this.editable = false;
+        return setEditable(false);
+    }
+
+    public PropertyDeclaration<V> setEditable(boolean value) {
+        this.editable = value;
         return this;
     }
 

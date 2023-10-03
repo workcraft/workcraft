@@ -13,7 +13,7 @@ import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.tools.PetriConnectionTool;
 import org.workcraft.plugins.petri.tools.PlaceGeneratorTool;
-import org.workcraft.plugins.petri.tools.ReadArcConnectionTool;
+import org.workcraft.plugins.petri.tools.PetriReadArcConnectionTool;
 import org.workcraft.plugins.policy.observers.SpanningTreeInvalidator;
 import org.workcraft.plugins.policy.tools.BundledTransitionGeneratorTool;
 import org.workcraft.plugins.policy.tools.PolicySelectionTool;
@@ -49,7 +49,7 @@ public class VisualPolicy extends VisualPetri {
         addGraphEditorTool(new PolicySelectionTool());
         addGraphEditorTool(new CommentGeneratorTool());
         addGraphEditorTool(new PetriConnectionTool());
-        addGraphEditorTool(new ReadArcConnectionTool());
+        addGraphEditorTool(new PetriReadArcConnectionTool());
         addGraphEditorTool(new PlaceGeneratorTool());
         addGraphEditorTool(new BundledTransitionGeneratorTool());
         addGraphEditorTool(new PolicySimulationTool());
@@ -107,9 +107,7 @@ public class VisualPolicy extends VisualPetri {
             for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
                 if (node instanceof VisualLocality) {
                     VisualLocality locality = (VisualLocality) node;
-                    for (VisualNode subNode : locality.unGroup()) {
-                        toSelect.add(subNode);
-                    }
+                    toSelect.addAll(locality.unGroup());
                     for (Node child : locality.getLocality().getChildren()) {
                         mathNodes.add((MathNode) child);
                     }
@@ -171,14 +169,14 @@ public class VisualPolicy extends VisualPetri {
     }
 
     public String getBundlesOfTransitionAsString(VisualBundledTransition t) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (VisualBundle b: getBundlesOfTransition(t)) {
-            if (!result.isEmpty()) {
-                result += ", ";
+            if (result.length() > 0) {
+                result.append(", ");
             }
-            result += getMathModel().getName(b.getReferencedBundle());
+            result.append(getMathModel().getName(b.getReferencedBundle()));
         }
-        return result;
+        return result.toString();
     }
 
     public void setBundlesOfTransitionAsString(VisualBundledTransition t, String s) {
@@ -202,14 +200,14 @@ public class VisualPolicy extends VisualPetri {
     }
 
     public String getTransitionsOfBundleAsString(VisualBundle b) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (VisualBundledTransition t: getTransitionsOfBundle(b)) {
-            if (!result.isEmpty()) {
-                result += ", ";
+            if (result.length() > 0) {
+                result.append(", ");
             }
-            result += getMathModel().getName(t.getReferencedComponent());
+            result.append(getMathModel().getName(t.getReferencedComponent()));
         }
-        return result;
+        return result.toString();
     }
 
     public void setTransitionsOfBundleAsString(VisualBundle vb, String s) {

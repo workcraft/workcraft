@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public class StgSettings extends AbstractModelSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final List<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "StgSettings";
 
     private static final String keyDensityMapLevelLimit = prefix + ".densityMapLevelLimit";
@@ -131,7 +131,7 @@ public class StgSettings extends AbstractModelSettings {
     }
 
     public static void setLowLevelSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             lowLevelSuffix = value;
         }
     }
@@ -141,7 +141,7 @@ public class StgSettings extends AbstractModelSettings {
     }
 
     public static void setHighLevelSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             highLevelSuffix = value;
         }
     }

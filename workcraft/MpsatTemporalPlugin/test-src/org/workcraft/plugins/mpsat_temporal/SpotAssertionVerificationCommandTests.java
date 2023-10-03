@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat_verification;
+package org.workcraft.plugins.mpsat_temporal;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.mpsat_verification.commands.SpotAssertionVerificationCommand;
+import org.workcraft.plugins.mpsat_temporal.commands.SpotAssertionVerificationCommand;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
@@ -25,8 +25,8 @@ class SpotAssertionVerificationCommandTests {
     static void init() {
         final Framework framework = Framework.getInstance();
         framework.init();
-        MpsatVerificationSettings.setLtl2tgbaCommand(BackendUtils.getTemplateToolPath("Spot", "ltl2tgba"));
-        MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
+        MpsatTemporalSettings.setLtl2tgbaCommand(BackendUtils.getTemplateToolPath("Spot", "ltl2tgba"));
+        MpsatTemporalSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
     }
 
     @Test

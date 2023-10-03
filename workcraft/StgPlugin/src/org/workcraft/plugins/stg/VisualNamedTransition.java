@@ -7,8 +7,9 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.stg.tools.CoreDecoration;
+import org.workcraft.plugins.stg.tools.EncodingConflictDecoration;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.ColorUtils;
 
@@ -58,21 +59,34 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
-        if (d instanceof CoreDecoration) {
+        if (d instanceof EncodingConflictDecoration) {
             Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
-            Color[] palette = ((CoreDecoration) d).getColorisationPalette();
-            if (palette == null) {
-                Color color = d.getBackground();
-                if (color != null) {
-                    g.setColor(color);
-                    g.fill(expandedShape);
-                }
-            } else {
+            Color coreDencityColor = ((EncodingConflictDecoration) d).getCoreDencityColor();
+            if (coreDencityColor != null) {
+                g.setColor(coreDencityColor);
+                g.fill(expandedShape);
+            }
+            Color singleConflictCoreColor = ((EncodingConflictDecoration) d).getSingleConflictCoreColor();
+            if (singleConflictCoreColor != null) {
+                g.setColor(singleConflictCoreColor);
+                g.fill(expandedShape);
+            }
+            Color singleConflictOverlapColor = ((EncodingConflictDecoration) d).getSingleConflictOverlapColor();
+            if (singleConflictOverlapColor != null) {
+                float strokeWidth = (float) VisualCommonSettings.getStrokeWidth();
+                g.setStroke(new BasicStroke(strokeWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER,
+                        1.0f, new float[]{0.05f, 0.1f}, 0.0f));
+
+                g.setColor(singleConflictOverlapColor);
+                g.draw(expandedShape);
+            }
+            Color[] palette = ((EncodingConflictDecoration) d).getMultipleConflictColors();
+            if (palette != null) {
                 double x = expandedShape.getX();
                 double y = expandedShape.getY();
                 double w = expandedShape.getWidth() / palette.length;
                 double h = expandedShape.getHeight();
-                for (Color color: palette) {
+                for (Color color : palette) {
                     g.setColor(color);
                     Rectangle2D shape = new Rectangle2D.Double(x, y, w, h);
                     g.fill(shape);

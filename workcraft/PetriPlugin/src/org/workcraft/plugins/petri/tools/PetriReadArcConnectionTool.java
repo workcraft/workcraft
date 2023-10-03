@@ -15,9 +15,9 @@ import org.workcraft.utils.GuiUtils;
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 
-public class ReadArcConnectionTool extends ConnectionTool {
+public class PetriReadArcConnectionTool extends ConnectionTool {
 
-    public ReadArcConnectionTool() {
+    public PetriReadArcConnectionTool() {
         super(true, false, true);
     }
 

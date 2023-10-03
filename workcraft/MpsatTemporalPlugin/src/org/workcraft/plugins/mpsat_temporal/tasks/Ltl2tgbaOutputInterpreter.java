@@ -1,7 +1,7 @@
-package org.workcraft.plugins.mpsat_verification.tasks;
+package org.workcraft.plugins.mpsat_temporal.tasks;
 
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.plugins.mpsat_verification.utils.SpotUtils;
+import org.workcraft.plugins.mpsat_temporal.utils.SpotUtils;
 import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
@@ -46,7 +46,7 @@ public class Ltl2tgbaOutputInterpreter extends AbstractOutputInterpreter<Ltl2tgb
             Pair<String, String> example = SpotUtils.extractStutterExample(getOutput());
             showOutcome(example);
             return example == null;
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         return null;
     }

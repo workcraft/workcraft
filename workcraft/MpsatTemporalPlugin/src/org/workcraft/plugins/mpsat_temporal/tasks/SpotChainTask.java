@@ -1,7 +1,7 @@
-package org.workcraft.plugins.mpsat_verification.tasks;
+package org.workcraft.plugins.mpsat_temporal.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.mpsat_verification.utils.SpotUtils;
+import org.workcraft.plugins.mpsat_temporal.utils.SpotUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.serialisation.SerialiserUtils;

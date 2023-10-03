@@ -8,10 +8,17 @@ import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.S
 import org.workcraft.plugins.mpsat_verification.tasks.CompositionOutputInterpreter.ConformationReportStyle;
 import org.workcraft.utils.BackendUtils;
 
+import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
 public class MpsatVerificationSettings extends AbstractToolSettings {
+
+    private static final PropertyDeclaration<String> commandProperty;
+    private static final String COMMAND_DIRECTORY = "UnfoldingTools";
+    private static final String COMMAND_64BIT_DIRECTORY = "UnfoldingTools64";
+    private static final String COMMAND_REGEX = "^(?<prefix>.*[\\\\/])" + COMMAND_DIRECTORY + "(?<suffix>[\\\\/].+)$";
+    private static final String COMMAND_64BIT_REPLACEMENT = "${prefix}" + COMMAND_64BIT_DIRECTORY + "${suffix}";
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.mpsatVerification";
@@ -27,10 +34,8 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final String keyDebugReach = prefix + ".debugReach";
     private static final String keyDebugCores = prefix + ".debugCores";
     private static final String keyConformationReportStyle = prefix + ".conformationReportStyle";
-    private static final String keyLtl2tgbaCommand = prefix + ".ltl2tgbaCommand";
-    private static final String keyShowSpotInMenu = prefix + ".showSpotInMenu";
 
-    private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "mpsat");
+    private static final String defaultCommand = BackendUtils.getToolPath(COMMAND_DIRECTORY, "mpsat");
     private static final int defaultThreadCount = 8;
     private static final boolean defaultReplicateSelfloopPlaces = true;
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
@@ -41,8 +46,6 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final Boolean defaultDebugReach = false;
     private static final Boolean defaultDebugCores = false;
     private static final ConformationReportStyle defaultConformationReportStyle = ConformationReportStyle.TABLE;
-    private static final String defaultLtl2tgbaCommand = BackendUtils.getToolPath("Spot", "ltl2tgba");
-    private static final Boolean defaultShowSpotInMenu = false;
 
     private static String command = defaultCommand;
     private static int threadCount = defaultThreadCount;
@@ -55,14 +58,14 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static Boolean debugReach = defaultDebugReach;
     private static Boolean debugCores = defaultDebugCores;
     private static ConformationReportStyle conformationReportStyle = defaultConformationReportStyle;
-    private static String ltl2tgbaCommand = defaultLtl2tgbaCommand;
-    private static Boolean showSpotInMenu = defaultShowSpotInMenu;
 
     static {
-        properties.add(new PropertyDeclaration<>(String.class,
+        commandProperty = new PropertyDeclaration<>(String.class,
                 "MPSat command for verification",
                 MpsatVerificationSettings::setCommand,
-                MpsatVerificationSettings::getCommand));
+                MpsatVerificationSettings::getProcessedCommand);
+
+        properties.add(commandProperty);
 
         properties.add(new PropertyDeclaration<>(Integer.class,
                 "Number of threads (8 by default, 0 for automatic)",
@@ -113,16 +116,6 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
                 "Report style for conformation violation",
                 MpsatVerificationSettings::setConformationReportStyle,
                 MpsatVerificationSettings::getConformationReportStyle));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                "Building B\u00FCchi automaton command",
-                MpsatVerificationSettings::setLtl2tgbaCommand,
-                MpsatVerificationSettings::getLtl2tgbaCommand));
-
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Enable SPOT input (experimental)",
-                MpsatVerificationSettings::setShowSpotInMenu,
-                MpsatVerificationSettings::getShowSpotInMenu));
     }
 
     @Override
@@ -143,8 +136,6 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
         setDebugCores(config.getBoolean(keyDebugCores, defaultDebugCores));
         setConformationReportStyle(config.getEnum(keyConformationReportStyle, ConformationReportStyle.class, defaultConformationReportStyle));
-        setLtl2tgbaCommand(config.getString(keyLtl2tgbaCommand, defaultLtl2tgbaCommand));
-        setShowSpotInMenu(config.getBoolean(keyShowSpotInMenu, defaultShowSpotInMenu));
     }
 
     @Override
@@ -160,8 +151,6 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         config.setBoolean(keyDebugReach, getDebugReach());
         config.setBoolean(keyDebugCores, getDebugCores());
         config.setEnum(keyConformationReportStyle, getConformationReportStyle());
-        config.set(keyLtl2tgbaCommand, getLtl2tgbaCommand());
-        config.setBoolean(keyShowSpotInMenu, getShowSpotInMenu());
     }
 
     @Override
@@ -175,6 +164,19 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
 
     public static void setCommand(String value) {
         command = value;
+    }
+
+    public static String getProcessedCommand() {
+        if (defaultCommand.equals(command)) {
+            String processedCommand = command.replaceAll(COMMAND_REGEX, COMMAND_64BIT_REPLACEMENT);
+            File file = new File(processedCommand);
+            if (file.exists() && file.isFile() && file.canExecute()) {
+                commandProperty.setEditable(false);
+                return processedCommand;
+            }
+        }
+        commandProperty.setEditable(true);
+        return command;
     }
 
     public static int getThreadCount() {
@@ -261,22 +263,6 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
 
     public static ConformationReportStyle getConformationReportStyle() {
         return conformationReportStyle;
-    }
-
-    public static String getLtl2tgbaCommand() {
-        return ltl2tgbaCommand;
-    }
-
-    public static void setLtl2tgbaCommand(String value) {
-        ltl2tgbaCommand = value;
-    }
-
-    public static boolean getShowSpotInMenu() {
-        return showSpotInMenu;
-    }
-
-    public static void setShowSpotInMenu(boolean value) {
-        showSpotInMenu = value;
     }
 
 }

@@ -255,6 +255,10 @@ public class TextUtils {
         return replaceLinebreaks(text, "");
     }
 
+    public static String useHtmlLinebreaks(String text) {
+        return replaceLinebreaks(text, "<br>");
+    }
+
     public static String replaceLinebreaks(String text, String replacement) {
         if (text == null) {
             return null;

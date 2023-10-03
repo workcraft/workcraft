@@ -32,7 +32,7 @@ public class VisualPetri extends AbstractVisualModel {
         addGraphEditorTool(new PetriSelectionTool());
         addGraphEditorTool(new CommentGeneratorTool());
         addGraphEditorTool(new PetriConnectionTool());
-        addGraphEditorTool(new ReadArcConnectionTool());
+        addGraphEditorTool(new PetriReadArcConnectionTool());
         addGraphEditorTool(new PlaceGeneratorTool());
         addGraphEditorTool(new TransitionGeneratorTool());
         addGraphEditorTool(new PetriSimulationTool());
