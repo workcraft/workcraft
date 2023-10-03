@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
-import org.workcraft.plugins.stg.tools.Core;
+import org.workcraft.plugins.stg.tools.EncodingConflict;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
 import org.workcraft.shared.ColorGenerator;
 import org.workcraft.tasks.AbstractOutputInterpreter;
@@ -15,8 +15,9 @@ import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -48,48 +49,45 @@ final class EncodingConflictOutputHandler extends AbstractOutputInterpreter<Mpsa
             }
         } else {
             List<Solution> solutions = getOutput().getSolutions();
-            ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));
+            ArrayList<EncodingConflict> encodingConflicts = getOrderedUniqueConflicts(solutions);
+            if (MpsatVerificationSettings.getDebugCores()) {
+                for (EncodingConflict encodingConflict : encodingConflicts) {
+                    LogUtils.logMessage(encodingConflict.getDescription());
+                }
+            }
             if (isInteractive()) {
-                cores.sort((c1, c2) -> {
-                    if (c1.size() > c2.size()) return 1;
-                    if (c1.size() < c2.size()) return -1;
-                    return Integer.compare(c1.toString().length(), c2.toString().length());
-                });
                 final MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 final Toolbox toolbox = mainWindow.getToolbox(getWorkspaceEntry());
                 final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);
                 toolbox.selectTool(tool);
-                tool.setCores(cores);
+                tool.setEncodingConflicts(encodingConflicts);
             }
         }
         return propertyHolds;
     }
 
-    private LinkedHashSet<Core> convertSolutionsToCores(List<Solution> solutions) {
-        LinkedHashSet<Core> cores = new LinkedHashSet<>();
+    private ArrayList<EncodingConflict> getOrderedUniqueConflicts(List<Solution> solutions) {
+        ArrayList<EncodingConflict> result = new ArrayList<>();
+        Set<Set<String>> uniqueCores = new HashSet<>();
         for (Solution solution: solutions) {
             String comment = solution.getComment();
             Matcher matcher = SIGNAL_PATTERN.matcher(comment);
-            String signalName = matcher.find() ? matcher.group(1) : null;
-            Core core = new Core(solution.getMainTrace(), solution.getBranchTrace(), signalName);
-            boolean isDuplicateCore = cores.contains(core);
-            if (!isDuplicateCore) {
-                core.setColor(colorGenerator.updateColor());
-                cores.add(core);
-            }
-            if (MpsatVerificationSettings.getDebugCores()) {
-                if (signalName == null) {
-                    LogUtils.logMessage("Encoding conflict:");
-                } else {
-                    LogUtils.logMessage("Encoding conflict for signal '" + signalName + "':");
-                }
-                LogUtils.logMessage("    Configuration 1: " + solution.getMainTrace());
-                LogUtils.logMessage("    Configuration 2: " + solution.getBranchTrace());
-                LogUtils.logMessage("    Conflict core" + (isDuplicateCore ? " (duplicate)" : "") + ": " + core);
-                LogUtils.logMessage("");
+            EncodingConflict encodingConflict = new EncodingConflict(solution.getMainTrace(), solution.getBranchTrace(),
+                    matcher.find() ? matcher.group(1) : null);
+
+            Set<String> conflictCore = encodingConflict.getCore();
+            if (!uniqueCores.contains(conflictCore)) {
+                encodingConflict.setColor(colorGenerator.updateColor());
+                result.add(encodingConflict);
+                uniqueCores.add(conflictCore);
             }
         }
-        return cores;
+        result.sort((c1, c2) -> {
+            if (c1.getCore().size() > c2.getCore().size()) return 1;
+            if (c1.getCore().size() < c2.getCore().size()) return -1;
+            return Integer.compare(c1.getCoreAsString().length(), c2.getCoreAsString().length());
+        });
+        return result;
     }
 
 }

@@ -1,36 +1,31 @@
 package org.workcraft.plugins.stg.tools;
 
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.tools.AbstractGraphEditorTool;
-import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
     private static final int COLUMN_COLOR = 0;
     private static final int COLUMN_CORE = 1;
 
-    private ArrayList<Core> cores;
-    private ArrayList<Core> selectedCores;
+    private ArrayList<EncodingConflict> encodingConflicts;
+    private ArrayList<EncodingConflict> selectedEncodingConflicts;
     private CoreDensityMap density;
 
     private JRadioButton coresRadio;
@@ -45,22 +40,10 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             return panel;
         }
 
-        coresRadio = new JRadioButton("Show selected cores");
-        coresRadio.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED) {
-                    coresTable.selectAll();
-                    coresTable.setEnabled(true);
-                } else if (e.getStateChange() == ItemEvent.DESELECTED) {
-                    coresTable.clearSelection();
-                    coresTable.setEnabled(false);
-                    selectedCores = null;
-                }
-                editor.repaint();
-                editor.requestFocus();
-            }
-        });
+        coresRadio = new JRadioButton("<html>Show cores for selected conflicts (filled)" +
+                "<br>and traces overlap for 1 conflict (unfilled)</html>");
+
+        coresRadio.addItemListener(e -> updateCoreVisualisationMode(editor, e));
         coresTable = new JTable(new CoreTableModel());
         coresTable.getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
         coresTable.getTableHeader().setReorderingAllowed(false);
@@ -69,45 +52,34 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         coresTable.setRowHeight(SizeHelper.getComponentHeightFromFont(coresTable.getFont()));
         coresTable.setDefaultRenderer(Object.class, new CoreTableCellRenderer());
         coresTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
-        coresTable.addMouseListener(new MouseListener() {
+        coresTable.addMouseListener(new MouseAdapter() {
+            final ToolTipManager toolTipManager = ToolTipManager.sharedInstance();
+            final int defaultInitialDelay = toolTipManager.getInitialDelay();
+            final int defaultDismissDelay = toolTipManager.getDismissDelay();
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                toolTipManager.setInitialDelay(0);
+                toolTipManager.setDismissDelay(Integer.MAX_VALUE);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                toolTipManager.setInitialDelay(defaultInitialDelay);
+                toolTipManager.setDismissDelay(defaultDismissDelay);
+            }
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!coresRadio.isSelected()) {
                     coresRadio.setSelected(true);
                 }
             }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
         });
 
         ListSelectionModel coreSelectionModel = coresTable.getSelectionModel();
         coreSelectionModel.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        coreSelectionModel.addListSelectionListener(new ListSelectionListener() {
-            @Override
-            public void valueChanged(ListSelectionEvent e) {
-                selectedCores = new ArrayList<>();
-                for (int rowIdx: coresTable.getSelectedRows()) {
-                    Core core = cores.get(rowIdx);
-                    selectedCores.add(core);
-                }
-                editor.repaint();
-                editor.requestFocus();
-            }
-        });
+        coreSelectionModel.addListSelectionListener(e -> updateSelectedCores(editor));
         JScrollPane coresScroll = new JScrollPane();
         coresScroll.setViewportView(coresTable);
 
@@ -122,28 +94,12 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         densityTable.setDefaultRenderer(Object.class, new HeightmapTableCellRenderer());
         densityTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         densityTable.setToolTipText("Core density colors");
-        densityTable.addMouseListener(new MouseListener() {
+        densityTable.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!densityRadio.isSelected()) {
                     densityRadio.setSelected(true);
                 }
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
             }
         });
 
@@ -164,6 +120,29 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         panel.add(densityPanel, BorderLayout.SOUTH);
         panel.setPreferredSize(new Dimension(0, 0));
         return panel;
+    }
+
+    private void updateCoreVisualisationMode(GraphEditor editor, ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+            coresTable.selectAll();
+            coresTable.setEnabled(true);
+        } else if (e.getStateChange() == ItemEvent.DESELECTED) {
+            coresTable.clearSelection();
+            coresTable.setEnabled(false);
+            selectedEncodingConflicts = null;
+        }
+        editor.repaint();
+        editor.requestFocus();
+    }
+
+    private void updateSelectedCores(GraphEditor editor) {
+        selectedEncodingConflicts = new ArrayList<>();
+        for (int row : coresTable.getSelectedRows()) {
+            EncodingConflict encodingConflict = encodingConflicts.get(row);
+            selectedEncodingConflicts.add(encodingConflict);
+        }
+        editor.repaint();
+        editor.requestFocus();
     }
 
     @Override
@@ -192,54 +171,73 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if (node instanceof VisualNamedTransition) {
-                    String name = editor.getModel().getMathReference(node);
-                    boolean noColor = (selectedCores == null) && (density == null);
-                    final Color color = noColor ? null : density.getColor(name);
+        return node -> {
+            if (node instanceof VisualNamedTransition) {
+                String name = editor.getModel().getMathReference(node);
 
-                    ArrayList<Color> colors = null;
-                    if (selectedCores != null) {
-                        colors = new ArrayList<>();
-                        for (Core core: selectedCores) {
-                            if (core.contains(name)) {
-                                colors.add(core.getColor());
+                Color coreDensityColor = null;
+                Color singleConflictCoreColor = null;
+                Color singleConflictOverlapColor = null;
+                ArrayList<Color> multiCoreColors = null;
+                if (selectedEncodingConflicts == null) {
+                    if (density != null) {
+                        coreDensityColor = density.getColor(name);
+                    }
+                } else {
+                    if (selectedEncodingConflicts.size() == 1) {
+                        EncodingConflict encodingConflict = selectedEncodingConflicts.iterator().next();
+                        if (encodingConflict.getCore().contains(name)) {
+                            singleConflictCoreColor = encodingConflict.getColor();
+                        }
+                        if (encodingConflict.getOverlay().contains(name)) {
+                            singleConflictOverlapColor = encodingConflict.getColor();
+                        }
+                    } else {
+                        multiCoreColors = new ArrayList<>();
+                        for (EncodingConflict encodingConflict : selectedEncodingConflicts) {
+                            if (encodingConflict.getCore().contains(name)) {
+                                multiCoreColors.add(encodingConflict.getColor());
                             }
                         }
                     }
-                    final Color[] palette = (colors == null) ? null : colors.toArray(new Color[colors.size()]);
-
-                    return new CoreDecoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            return color;
-                        }
-                        @Override
-                        public Color[] getColorisationPalette() {
-                            return palette;
-                        }
-                    };
                 }
-                return null;
+                final Color finalCoreDencityColor = coreDensityColor;
+                final Color finalSingleConflictOverlapColor = singleConflictOverlapColor;
+                final Color finalSingleConflictCoreColor = singleConflictCoreColor;
+                final Color[] finalMultiCoreColors = (multiCoreColors == null)
+                        ? null : multiCoreColors.toArray(new Color[0]);
+
+                return new EncodingConflictDecoration() {
+                    @Override
+                    public Color getCoreDencityColor() {
+                        return finalCoreDencityColor;
+                    }
+                    @Override
+                    public Color getSingleConflictOverlapColor() {
+                        return finalSingleConflictOverlapColor;
+                    }
+                    @Override
+                    public Color getSingleConflictCoreColor() {
+                        return finalSingleConflictCoreColor;
+                    }
+                    @Override
+                    public Color[] getMultipleConflictColors() {
+                        return finalMultiCoreColors;
+                    }
+                };
             }
+            return null;
         };
     }
 
-    public void setCores(ArrayList<Core> cores) {
-        this.cores = cores;
-        selectedCores = null;
-        density = new CoreDensityMap(cores);
+    public void setEncodingConflicts(ArrayList<EncodingConflict> encodingConflicts) {
+        this.encodingConflicts = encodingConflicts;
+        selectedEncodingConflicts = null;
+        density = new CoreDensityMap(encodingConflicts);
         densityTable.setModel(new HeightmapTableModel());
         densityRadio.setSelected(true);
     }
 
-    @SuppressWarnings("serial")
     private final class CoreTableCellRenderer implements TableCellRenderer {
         private final JLabel label = new JLabel() {
             @Override
@@ -256,22 +254,14 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
             JLabel result = null;
             label.setBorder(GuiUtils.getTableCellBorder());
-            if ((cores != null) && (row >= 0) && (row < cores.size())) {
-                Core core = cores.get(row);
+            if ((encodingConflicts != null) && (row >= 0) && (row < encodingConflicts.size())) {
+                EncodingConflict encodingConflict = encodingConflicts.get(row);
                 label.setText((String) value);
                 if (col == COLUMN_COLOR) {
-                    label.setBackground(core.getColor());
+                    label.setBackground(encodingConflict.getColor());
                 } else {
-                    String signalName = core.getComment();
-                    if (signalName != null) {
-                        String text = "<html>"
-                                + "Conflict core for signal '" + signalName + "'"
-                                + "<br>  Configuration 1: " + core.getFirstConfiguration()
-                                + "<br>  Configuration 2: " + core.getSecondConfiguration()
-                                + "</html>";
-
-                        label.setToolTipText(text);
-                    }
+                    String description = encodingConflict.getDescription();
+                    label.setToolTipText("<html>" + TextUtils.useHtmlLinebreaks(description) + "</html>");
                     if (isSelected) {
                         label.setForeground(table.getSelectionForeground());
                         label.setBackground(table.getSelectionBackground());
@@ -286,7 +276,6 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    @SuppressWarnings("serial")
     private final class CoreTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
@@ -307,8 +296,8 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
         @Override
         public int getRowCount() {
-            if (cores != null) {
-                return cores.size();
+            if (encodingConflicts != null) {
+                return encodingConflicts.size();
             }
             return 0;
         }
@@ -316,17 +305,16 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         @Override
         public Object getValueAt(int row, int col) {
             Object result = null;
-            HashSet<String> core = cores.get(row);
-            if (core != null) {
+            EncodingConflict encodingConflict = encodingConflicts.get(row);
+            if (encodingConflict != null) {
                 switch (col) {
                 case COLUMN_CORE:
-                    result = core.toString();
+                    result = encodingConflict.getCoreAsString();
                     break;
                 case COLUMN_COLOR:
                     result = "";
                     break;
                 default:
-                    result = null;
                     break;
                 }
             }
@@ -334,7 +322,6 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    @SuppressWarnings("serial")
     private final class HeightmapTableCellRenderer implements TableCellRenderer {
         private final JLabel label = new JLabel() {
             @Override
@@ -362,7 +349,6 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    @SuppressWarnings("serial")
     private final class HeightmapTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
@@ -376,13 +362,9 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
         @Override
         public Object getValueAt(int row, int col) {
-            String result;
-            if ((col == 0) && density.isReduced()) {
-                result = "<" + Integer.toString(density.getLevelDensity(col) + 1);
-            } else {
-                result = Integer.toString(density.getLevelDensity(col));
-            }
-            return result;
+            return (col == 0) && density.isReduced()
+                    ? "<" + (density.getLevelDensity(col) + 1)
+                    : Integer.toString(density.getLevelDensity(col));
         }
     }
 

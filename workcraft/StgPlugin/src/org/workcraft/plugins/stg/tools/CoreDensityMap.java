@@ -1,15 +1,10 @@
 package org.workcraft.plugins.stg.tools;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.utils.ColorUtils;
+
+import java.awt.*;
+import java.util.*;
 
 public class CoreDensityMap {
     private static final float DENSITY_MAP_BRIGHTNESS_TOP = 0.5f;
@@ -20,20 +15,20 @@ public class CoreDensityMap {
     private final ArrayList<Integer> densityPalette;
     private final boolean reduced;
 
-    public CoreDensityMap(Collection<Core> cores) {
-        nameToDensity = buildNameToDensityMap(cores);
+    public CoreDensityMap(Collection<EncodingConflict> encodingConflicts) {
+        nameToDensity = buildNameToDensityMap(encodingConflicts);
         densityToColor = buildDensityToColorMap(nameToDensity);
         densityPalette = buidDensityPalette(densityToColor.keySet());
         reduced = getPaletteSize() < densityToColor.size();
     }
 
-    private HashMap<String, Integer> buildNameToDensityMap(Collection<Core> cores) {
+    private HashMap<String, Integer> buildNameToDensityMap(Collection<EncodingConflict> encodingConflicts) {
         HashMap<String, Integer> result = new HashMap<>();
-        for (Core core: cores) {
-            for (String name: core) {
-                int density = result.containsKey(name) ? result.get(name) : 0;
-                density++;
-                result.put(name, density);
+        for (EncodingConflict encodingConflict : encodingConflicts) {
+            Set<String> core = encodingConflict.getCore();
+            for (String transitionName : core) {
+                int density = result.getOrDefault(transitionName, 0) + 1;
+                result.put(transitionName, density);
             }
         }
         return result;
@@ -48,8 +43,7 @@ public class CoreDensityMap {
             int density = densityPalette.get(level);
             densityToLevel.put(density, level);
         }
-        int levelLimit = StgSettings.getDensityMapLevelLimit();
-        int levelCount = (densitySet.size() < levelLimit) ? densitySet.size() : levelLimit;
+        int levelCount = Math.min(densitySet.size(), StgSettings.getDensityMapLevelLimit());
         float[] bs = getBrightnessLevels(levelCount);
         Color[] palette = ColorUtils.getHsbPalette(new float[]{0.05f}, new float[]{0.4f}, bs);
         for (String name: densityMap.keySet()) {
