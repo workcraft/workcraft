@@ -266,7 +266,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
-            labelRenderedText.draw(g, getLabelAlignment());
+            labelRenderedText.draw(g);
         }
     }
 

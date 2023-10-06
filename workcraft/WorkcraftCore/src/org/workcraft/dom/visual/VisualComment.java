@@ -5,6 +5,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.gui.properties.PropertyDeclaration;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
 import org.workcraft.utils.ColorUtils;
@@ -23,6 +24,7 @@ public class VisualComment extends VisualComponent {
     protected double size = VisualCommonSettings.getCommentBaseSize();
     protected double strokeWidth = VisualCommonSettings.getCommentStrokeWidth();
     protected Alignment textAlignment = VisualCommonSettings.getCommentTextAlignment();
+    private RenderedParagraph labelRenderedParagraph = new RenderedParagraph("", getLabelFont(), getLabelPositioning(), getLabelOffset());
 
     public VisualComment(CommentNode note) {
         super(note);
@@ -83,6 +85,32 @@ public class VisualComment extends VisualComponent {
     }
 
     @Override
+    protected void cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+        if (labelRenderedParagraph.isDifferent(text, font, positioning, offset)) {
+            labelRenderedParagraph = new RenderedParagraph(text, font, positioning, offset);
+        }
+    }
+
+    @Override
+    protected void drawLabelInLocalSpace(DrawRequest r) {
+        if (getLabelVisibility() && (labelRenderedParagraph != null) && !labelRenderedParagraph.isEmpty()) {
+            cacheLabelRenderedText(r);
+            Graphics2D g = r.getGraphics();
+            Decoration d = r.getDecoration();
+            g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
+            labelRenderedParagraph.draw(g, getLabelAlignment());
+        }
+    }
+    @Override
+    public Rectangle2D getLabelBoundingBox() {
+        if ((labelRenderedParagraph != null) && !labelRenderedParagraph.isEmpty()) {
+            return labelRenderedParagraph.getBoundingBox();
+        } else {
+            return new Rectangle2D.Double();
+        }
+    }
+
+    @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         cacheRenderedText(r); // needed to better estimate the bounding box
@@ -102,11 +130,6 @@ public class VisualComment extends VisualComponent {
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
         return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
-    }
-
-    @Override
-    public Rectangle2D getBoundingBoxInLocalSpace() {
-        return BoundingBoxHelper.expand(super.getBoundingBoxInLocalSpace(), 0.2, 0.0);
     }
 
 }

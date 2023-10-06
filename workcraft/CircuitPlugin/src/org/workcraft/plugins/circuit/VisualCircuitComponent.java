@@ -17,6 +17,7 @@ import org.workcraft.utils.Hierarchy;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
+import java.awt.font.LineMetrics;
 import java.awt.geom.*;
 import java.io.File;
 import java.util.List;
@@ -24,7 +25,11 @@ import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
+public class VisualCircuitComponent extends VisualComponent
+        implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
+
+    private static final AffineTransform TRANSFORM = AffineTransform.getScaleInstance(1000.0, 1000.0);
+    private static final FontRenderContext CONTEXT = new FontRenderContext(TRANSFORM, true, true);
 
     public static final String PROPERTY_RENDER_TYPE = "Render type";
 
@@ -186,7 +191,8 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         double southPosition = contactMinOffset;
         for (VisualContact contact : contacts) {
             GlyphVector gv = getContactNameGlyphs(contact, contact::getName);
-            double contactBestPosition = gv.getVisualBounds().getWidth() + contactMargin + contactLength;
+            double textWidth = gv.getVisualBounds().getWidth();
+            double contactBestPosition = textWidth + contactMargin + contactLength;
             switch (contact.getDirection()) {
             case WEST:
                 westPosition = Math.min(westPosition, -contactBestPosition);
@@ -521,9 +527,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         }
         GlyphVector gv = contactNameGlyphs.get(vc);
         if (gv == null) {
-            AffineTransform tx = AffineTransform.getScaleInstance(1000.0, 1000.0);
-            FontRenderContext context = new FontRenderContext(tx, true, true);
-            gv = getContactFont().createGlyphVector(context, getName.get());
+            gv = getContactFont().createGlyphVector(CONTEXT, getName.get());
             contactNameGlyphs.put(vc, gv);
         }
         return gv;
@@ -538,26 +542,28 @@ public class VisualCircuitComponent extends VisualComponent implements Container
 
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
         GlyphVector gv = getContactNameGlyphs(vc, () -> r.getModel().getMathName(vc));
-        Rectangle2D labelBB = gv.getVisualBounds();
+        LineMetrics lineMetrics = getNameFont().getLineMetrics(vc.getName(), CONTEXT);
+        double textWidth = gv.getVisualBounds().getWidth();
+        double yCenterOffset = 0.2 * lineMetrics.getHeight();
 
         float x = 0.0f;
         float y = 0.0f;
         switch (vc.getDirection()) {
         case NORTH:
-            x = (float) (-bb.getMinY() - labelMargin - labelBB.getWidth());
-            y = (float) (vc.getX() + labelBB.getHeight() / 2);
+            x = (float) (-bb.getMinY() - labelMargin - textWidth);
+            y = (float) (vc.getX() + yCenterOffset);
             break;
         case EAST:
-            x = (float) (bb.getMaxX() - labelMargin - labelBB.getWidth());
-            y = (float) (vc.getY() + labelBB.getHeight() / 2);
+            x = (float) (bb.getMaxX() - labelMargin - textWidth);
+            y = (float) (vc.getY() + yCenterOffset);
             break;
         case SOUTH:
             x = (float) (-bb.getMaxY() + labelMargin);
-            y = (float) (vc.getX() + labelBB.getHeight() / 2);
+            y = (float) (vc.getX() + yCenterOffset);
             break;
         case WEST:
             x = (float) (bb.getMinX() + labelMargin);
-            y = (float) (vc.getY() + labelBB.getHeight() / 2);
+            y = (float) (vc.getY() + yCenterOffset);
             break;
         }
         g.drawGlyphVector(gv, x, y);
