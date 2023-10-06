@@ -23,8 +23,8 @@ public enum Positioning {
         this.name = name;
         this.xOffset = xOffset;
         this.yOffset = yOffset;
-        this.xSign = (xOffset == 0.0) ? 0 : (xOffset > 0.0) ? 1 : -1;
-        this.ySign = (yOffset == 0.0) ? 0 : (yOffset > 0.0) ? 1 : -1;
+        this.xSign = Double.compare(xOffset, 0.0);
+        this.ySign = Double.compare(yOffset, 0.0);
     }
 
     @Override

@@ -17,9 +17,7 @@ public class FormulaRenderingResult {
     public List<Line2D> inversionLines = null;
 
     public void add(FormulaRenderingResult summand) {
-        for (GlyphVector glyph : summand.glyphs) {
-            glyphs.add(glyph);
-        }
+        glyphs.addAll(summand.glyphs);
         for (Point2D p : summand.glyphCoordinates) {
             glyphCoordinates.add(new Point2D.Double(p.getX() + boundingBox.getWidth(), p.getY()));
         }
