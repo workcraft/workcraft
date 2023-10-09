@@ -180,7 +180,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         if ((nameRenderedText != null) && !nameRenderedText.isEmpty()) {
             return nameRenderedText.getBoundingBox();
         } else {
-            return null;
+            return new Rectangle2D.Double();
         }
     }
 

@@ -7,6 +7,7 @@ import org.workcraft.gui.tools.Decoration;
 import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 @DisplayName("Proxy place")
@@ -44,6 +45,10 @@ public class VisualReplicaPlace extends VisualReplica {
     public Positioning getNamePositioning() {
         return Positioning.CENTER;
     }
+    @Override
+    public Point2D getNameOffset() {
+        return new Point2D.Double(0.0, 0.0);
+    }
 
     public Place getReferencedPlace() {
         if (getMaster() instanceof VisualPlace) {
@@ -55,11 +60,7 @@ public class VisualReplicaPlace extends VisualReplica {
 
     @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        Rectangle2D nameBoundingBox = getNameBoundingBox();
-        if (nameBoundingBox == null) {
-            nameBoundingBox = new Rectangle2D.Double(0.0, 0.0, 0.0, 0.0);
-        }
-        return BoundingBoxHelper.expand(nameBoundingBox, 0.2, 0.2);
+        return BoundingBoxHelper.expand(getNameBoundingBox(), 0.2, 0.2);
     }
 
 }
