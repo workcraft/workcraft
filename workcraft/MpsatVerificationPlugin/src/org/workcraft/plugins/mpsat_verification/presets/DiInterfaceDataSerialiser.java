@@ -13,7 +13,7 @@ public class DiInterfaceDataSerialiser implements DataSerialiser<DiInterfacePara
 
     @Override
     public void toXML(DiInterfaceParameters parameters, Element parent) {
-        XmlUtils.writeListOfLists(parameters.getExceptionSignalSets(), parent);
+        XmlUtils.writeListOfLists(parameters.getOrderedExceptionSignalSets(), parent);
     }
 
 }

@@ -41,9 +41,13 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
         }
     }
 
-    static class ItemSet extends HashSet<String> {
+    static class ItemSet extends TreeSet<String> {
         ItemSet(Collection<String> items) {
             super(items);
+        }
+
+        public String toComparisonString() {
+            return String.join(" ", this);
         }
 
         @Override
@@ -56,10 +60,11 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
 
         private final DefaultListModel<ItemSet> model = new DefaultListModel<>();
 
-        ExceptionSetList(Collection<ItemSet> exceptionSets) {
+        ExceptionSetList(Set<ItemSet> exceptionSets) {
             super();
             setModel(model);
-            model.addAll(exceptionSets);
+            List<ItemSet> orderedExceptionSets = SortUtils.getSortedNatural(exceptionSets, ItemSet::toComparisonString);
+            model.addAll(orderedExceptionSets);
             setBorder(GuiUtils.getEmptyBorder());
             setSelectionModel(new MultipleListSelectionModel());
             setCellRenderer(new ColorListCellRenderer(signal -> null));
@@ -69,9 +74,19 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
             model.clear();
         }
 
-        public void addItemAndSelect(Collection<String> item) {
-            model.add(model.size(), new ItemSet(item));
-            setSelectedIndex(model.size());
+        public void addItemInOrderAndSelect(Collection<String> item) {
+            ItemSet itemSet = new ItemSet(item);
+            int index = 0;
+            Comparator<ItemSet> itemSetComparator = Comparator.comparing(ItemSet::toComparisonString);
+            int count = model.size();
+            while ((index < count) && (itemSetComparator.compare(model.get(index), itemSet) < 0)) {
+                index++;
+            }
+            if ((index >= count) || (itemSetComparator.compare(model.get(index), itemSet) > 0)) {
+                model.insertElementAt(itemSet, index);
+            }
+            ensureIndexIsVisible(index);
+            setSelectedIndices(new int[]{index});
         }
 
         public Collection<ItemSet> getItems() {
@@ -106,9 +121,9 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
         inputSignalList = new InputSignalList(stg.getSignalReferences(Signal.Type.INPUT));
 
         DiInterfaceParameters parameters = getUserData().loadData();
-        List<ItemSet> exceptionSets = parameters.getExceptionSignalSets().stream()
+        Set<ItemSet> exceptionSets = parameters.getOrderedExceptionSignalSets().stream()
                 .map(ItemSet::new)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
 
         exceptionSetList = new ExceptionSetList(exceptionSets);
 
@@ -134,13 +149,13 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
         exceptionSetsPanel.add(new JScrollPane(exceptionSetList), BorderLayout.CENTER);
         exceptionSetsPanel.add(removeSelectedExceptionSetsButton, BorderLayout.SOUTH);
 
-        JButton addExceptionSetButton = GuiUtils.createIconButton(GuiUtils.createIconFromSVG("images/double-right-arrow.svg"),
+        JButton addExceptionSetButton = GuiUtils.createIconButton(
+                GuiUtils.createIconFromSVG("images/double-right-arrow.svg"),
                 "Add selected inputs as an exception set");
 
         addExceptionSetButton.addActionListener(event -> {
-            exceptionSetList.addItemAndSelect(inputSignalList.getSelectedValuesList());
+            exceptionSetList.addItemInOrderAndSelect(inputSignalList.getSelectedValuesList());
             inputSignalList.clearSelection();
-            exceptionSetList.clearSelection();
         });
         addExceptionSetButton.setEnabled(false);
         inputSignalList.addListSelectionListener(event ->
