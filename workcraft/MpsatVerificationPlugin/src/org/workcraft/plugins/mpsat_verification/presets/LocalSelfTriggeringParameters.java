@@ -55,6 +55,10 @@ public class LocalSelfTriggeringParameters {
         return false;
     }
 
+    public boolean isException(String signal) {
+        return exceptionSignals.contains(signal);
+    }
+
     public List<String> getOrderedExceptionSignals() {
         return SortUtils.getSortedNatural(exceptionSignals);
     }
