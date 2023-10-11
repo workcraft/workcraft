@@ -14,7 +14,6 @@ import java.io.File;
 
 public class DialogUtils {
 
-    private static final int TRUNCATE_LENGTH = 120;
     private static final String MESSAGE_TITLE = "Message";
     private static final String INFO_TITLE = "Information";
     private static final String ERROR_TITLE = "Error";
@@ -53,7 +52,7 @@ public class DialogUtils {
         Framework framework = Framework.getInstance();
         if (framework.isInGuiMode()) {
             MainWindow mainWindow = framework.getMainWindow();
-            String text = TextUtils.truncateLines(message, TRUNCATE_LENGTH);
+            String text = TextUtils.truncateLines(message);
             JOptionPane.showMessageDialog(mainWindow, text, title, messageType);
         }
     }
@@ -130,7 +129,7 @@ public class DialogUtils {
             JButton yesButton = new JButton();
             JButton noButton = new JButton();
             JButton[] options = {yesButton, noButton};
-            JOptionPane pane = new JOptionPane(TextUtils.truncateLines(message, TRUNCATE_LENGTH) + question,
+            JOptionPane pane = new JOptionPane(TextUtils.truncateLines(message) + question,
                     messageType, JOptionPane.YES_NO_OPTION, null, options, defaultChoice ? yesButton : noButton);
 
             JDialog dialog = pane.createDialog(framework.getMainWindow(), title);

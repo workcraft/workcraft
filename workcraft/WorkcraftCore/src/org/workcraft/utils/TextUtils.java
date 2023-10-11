@@ -18,12 +18,18 @@ import java.util.stream.Stream;
 
 public class TextUtils {
 
-    public static final int DEFAULT_WRAP_LENGTH = 100;
+    public static final int DEFAULT_WRAP_LENGTH = 120;
+    public static final int DEFAULT_TRUNCATE_LENGTH = 120;
+
     private static final String ELLIPSIS_SYMBOL = Character.toString((char) 0x2026);
     private static final String NEWLINE_REGEX = "\\r?\\n";
     private static final Pattern LEADING_SPACES_PATTERN = Pattern.compile("^\\s+");
     private static final Pattern XML_ELEMENT_PATTERN = Pattern.compile(
             "^\\s*<([\\w-.]+).*(</\\1\\s*|/)>\\s*$", Pattern.DOTALL);
+
+    public static String truncateLines(String text) {
+        return truncateLines(text, DEFAULT_TRUNCATE_LENGTH);
+    }
 
     public static String truncateLines(String text, int length) {
         StringBuilder result = new StringBuilder();
@@ -39,7 +45,14 @@ public class TextUtils {
         return result.toString();
     }
 
+    public static String truncateLine(String line) {
+        return truncateLine(line, DEFAULT_TRUNCATE_LENGTH);
+    }
+
     public static String truncateLine(String line, int length) {
+        if (line == null) {
+            return "";
+        }
         if (line.length() <= length) {
             return line;
         }
