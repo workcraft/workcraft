@@ -15,7 +15,7 @@ public class LocalSelfTriggeringDataSerialiser implements DataSerialiser<LocalSe
 
     @Override
     public void toXML(LocalSelfTriggeringParameters parameters, Element parent) {
-        XmlUtils.writeList(parameters.getExceptionSignals(), parent);
+        XmlUtils.writeList(parameters.getOrderedExceptionSignals(), parent);
     }
 
 }

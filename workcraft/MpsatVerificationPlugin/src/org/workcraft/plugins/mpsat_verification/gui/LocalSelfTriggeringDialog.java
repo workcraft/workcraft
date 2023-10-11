@@ -67,7 +67,7 @@ public class LocalSelfTriggeringDialog extends ModalDialog<LocalSelfTriggeringDa
                 getSyntacticSelfTriggeringSignals(stg, stg.getSignalReferences(Signal.Type.INTERNAL)));
 
         LocalSelfTriggeringParameters parameters = getUserData().loadData();
-        Set<String> exceptionSignals = parameters.getExceptionSignals();
+        List<String> exceptionSignals = parameters.getOrderedExceptionSignals();
         selectSignals(localSignalList, exceptionSignals);
 
         JButton clearButton = new JButton("Clear selection");
@@ -102,7 +102,7 @@ public class LocalSelfTriggeringDialog extends ModalDialog<LocalSelfTriggeringDa
         return result;
     }
 
-    private void selectSignals(LocalSignalList localSignalList, Set<String> signals) {
+    private void selectSignals(LocalSignalList localSignalList, List<String> signals) {
         ListModel<String> signalListModel = localSignalList.getModel();
         List<Integer> indices = new ArrayList<>();
         for (int index = 0; index < signalListModel.getSize(); index++) {
