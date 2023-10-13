@@ -37,6 +37,10 @@ public class Identifier {
         return value.startsWith(INTERNAL_PREFIX) ? value : INTERNAL_PREFIX + value;
     }
 
+    public static String getTemporaryName() {
+        return INTERNAL_PREFIX;
+    }
+
     public static String appendNamespaceSeparator(String value) {
         return value.endsWith(NAMESPACE_SUFFIX) ? value : value + NAMESPACE_SUFFIX;
     }

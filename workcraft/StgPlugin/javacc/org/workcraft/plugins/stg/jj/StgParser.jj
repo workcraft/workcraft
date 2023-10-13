@@ -166,15 +166,14 @@ public class StgParser {
         if (node == null) {
             // Create place with all the hierarchy and a temporary (internal) name
             String parentRef = NamespaceHelper.getParentReference(ref);
-            String name = NamespaceHelper.getReferenceName(ref);
-            String tmpName = Identifier.makeInternal(name);
-            String tmpRef = NamespaceHelper.getReference(parentRef, tmpName);
+            String tmpRef = NamespaceHelper.getReference(parentRef, Identifier.getTemporaryName());
             node = stg.createPlace(tmpRef, null);
             places.put(fullRef, node);
             // Rename the place to a derived name in order to avoid clashes
             HierarchyReferenceManager refManager = stg.getReferenceManager();
             NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(node);
             NameManager nameManager = refManager.getNameManager(namespaceProvider);
+            String name = NamespaceHelper.getReferenceName(ref);
             String newName = nameManager.getDerivedName(node, name);
             stg.setName(node, newName);
         }
@@ -269,42 +268,40 @@ void header() :
     List<String> list;
 }
 {
-    (
-        <MODEL_NAME> t = <NAME>
-        {
-            stg.setTitle(t.image);
-        }
-    |
-        <INPUT_HEADER> list = stringList()
-        {
-            addSignals(list, Signal.Type.INPUT);
-        }
-    |
-        <OUTPUT_HEADER> list = stringList()
-        {
-            addSignals(list, Signal.Type.OUTPUT);
-        }
-    |
-        <INTERNAL_HEADER> list = stringList()
-        {
-            addSignals(list, Signal.Type.INTERNAL);
-        }
-    |
-        <DUMMY_HEADER> list = stringList()
-        {
-            addDummies(list);
-        }
-    |
-        <SILENT_HEADER> list = stringList()
-        {
-            addDummies(list);
-        }
-    |
-        t = <UNSUPPORTED_HEADER> <REST>
-        {
-            LogUtils.logWarning("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
-        }
-    )
+    <MODEL_NAME> t = <NAME>
+    {
+        stg.setTitle(t.image);
+    }
+|
+    <INPUT_HEADER> list = stringList()
+    {
+        addSignals(list, Signal.Type.INPUT);
+    }
+|
+    <OUTPUT_HEADER> list = stringList()
+    {
+        addSignals(list, Signal.Type.OUTPUT);
+    }
+|
+    <INTERNAL_HEADER> list = stringList()
+    {
+        addSignals(list, Signal.Type.INTERNAL);
+    }
+|
+    <DUMMY_HEADER> list = stringList()
+    {
+        addDummies(list);
+    }
+|
+    <SILENT_HEADER> list = stringList()
+    {
+        addDummies(list);
+    }
+|
+    t = <UNSUPPORTED_HEADER> <REST>
+    {
+        LogUtils.logWarning("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
+    }
 }
 
 List<String> stringList() :
