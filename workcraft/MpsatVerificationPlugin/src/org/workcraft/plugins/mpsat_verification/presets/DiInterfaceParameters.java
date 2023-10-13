@@ -1,11 +1,9 @@
 package org.workcraft.plugins.mpsat_verification.presets;
 
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
+import org.workcraft.utils.SortUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DiInterfaceParameters {
@@ -44,12 +42,12 @@ public class DiInterfaceParameters {
             "    }\n" +
             "}\n";
 
-    private final Set<Set<String>> exceptionSignalSets;
+    private final Set<TreeSet<String>> exceptionSignalSets;
 
     public DiInterfaceParameters(Collection<? extends Collection<String>> exceptionSignalSets) {
         this.exceptionSignalSets = exceptionSignalSets == null
                 ? Collections.emptySet()
-                : exceptionSignalSets.stream().map(HashSet::new).collect(Collectors.toSet());
+                : exceptionSignalSets.stream().map(TreeSet::new).collect(Collectors.toSet());
     }
 
     @Override
@@ -60,19 +58,25 @@ public class DiInterfaceParameters {
         return false;
     }
 
-    public Set<Set<String>> getExceptionSignalSets() {
-        return Collections.unmodifiableSet(exceptionSignalSets);
+    public List<TreeSet<String>> getOrderedExceptionSignalSets() {
+        return SortUtils.getSortedNatural(exceptionSignalSets, s -> String.join(" ", s));
+    }
+
+    public boolean isException(Set<String> signals) {
+        return exceptionSignalSets.stream()
+                .anyMatch(signalSet -> signalSet.containsAll(signals));
     }
 
     public VerificationParameters getVerificationParameters() {
         String description = "Delay insensitive interface";
-        if (!exceptionSignalSets.isEmpty()) {
-            description += " with exceptions (" + exceptionSignalSets.stream()
+        List<TreeSet<String>> orderedExceptionSignalSets = getOrderedExceptionSignalSets();
+        if (!orderedExceptionSignalSets.isEmpty()) {
+            description += " with exceptions (" + orderedExceptionSignalSets.stream()
                     .map(signals -> "{" + String.join(", ", signals) + "}")
                     .collect(Collectors.joining(", ")) + ")";
         }
 
-        String replacement = exceptionSignalSets.stream()
+        String replacement = orderedExceptionSignalSets.stream()
                 .map(signals -> "{" + signals.stream()
                         .map(signal -> "\"" + signal + "\"")
                         .collect(Collectors.joining(", ")) + "}, ")

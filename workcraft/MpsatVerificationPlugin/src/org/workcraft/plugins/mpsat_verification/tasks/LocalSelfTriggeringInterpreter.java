@@ -1,5 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringDataPreserver;
+import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringParameters;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -32,6 +34,10 @@ class LocalSelfTriggeringInterpreter extends ReachabilityOutputInterpreter {
         List<Solution> result = new LinkedList<>();
         ComponentData data = getComponentData();
         StgModel stg = getStg();
+        LocalSelfTriggeringDataPreserver localSelfTriggeringDataPreserver =
+                new LocalSelfTriggeringDataPreserver(getWorkspaceEntry());
+
+        LocalSelfTriggeringParameters localSelfTriggeringParameters = localSelfTriggeringDataPreserver.loadData();
         HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
         for (Solution solution : solutions) {
             Trace trace = solution.getMainTrace();
@@ -45,7 +51,7 @@ class LocalSelfTriggeringInterpreter extends ReachabilityOutputInterpreter {
                 throw new RuntimeException("Cannot execute trace: " + trace);
             }
             // Check if any local signal is self-triggers by firing continuations
-            Set<String> selfTriggeringLocalSignals = getSelfTriggeringLocalSignals(stg);
+            Set<String> selfTriggeringLocalSignals = getSelfTriggeringLocalSignals(stg, localSelfTriggeringParameters);
             if (!selfTriggeringLocalSignals.isEmpty()) {
                 String comment = TextUtils.wrapMessageWithItems(
                         "Self-triggering signal", selfTriggeringLocalSignals);
@@ -57,20 +63,24 @@ class LocalSelfTriggeringInterpreter extends ReachabilityOutputInterpreter {
         return result;
     }
 
-    private HashSet<String> getSelfTriggeringLocalSignals(StgModel stg) {
+    private HashSet<String> getSelfTriggeringLocalSignals(StgModel stg,
+            LocalSelfTriggeringParameters localSelfTriggeringParameters) {
+
         HashSet<String> result = new HashSet<>();
         HashSet<SignalTransition> enabledLocalSignalTransitions = getEnabledLocalSignalTransitions(stg);
         for (SignalTransition localSignalTransition : enabledLocalSignalTransitions) {
-            String signal = stg.getSignalReference(localSignalTransition);
-            stg.fire(localSignalTransition);
-            HashSet<SignalTransition> newEnabledLocalSignalTransitions = getEnabledLocalSignalTransitions(stg);
-            newEnabledLocalSignalTransitions.removeAll(enabledLocalSignalTransitions);
-            stg.unFire(localSignalTransition);
-            // Check which newly enabled transitions are of the fired signal
-            for (SignalTransition newEnabledLocalSignalTransition : newEnabledLocalSignalTransitions) {
-                String otherSignal = stg.getSignalReference(newEnabledLocalSignalTransition);
-                if (otherSignal.equals(signal)) {
-                    result.add(signal);
+            String enabledLocalSignal = stg.getSignalReference(localSignalTransition);
+            if (!localSelfTriggeringParameters.isException(enabledLocalSignal)) {
+                stg.fire(localSignalTransition);
+                HashSet<SignalTransition> nextEnabledLocalSignalTransitions = getEnabledLocalSignalTransitions(stg);
+                nextEnabledLocalSignalTransitions.removeAll(enabledLocalSignalTransitions);
+                stg.unFire(localSignalTransition);
+                // Check which newly enabled transitions are of the fired signal
+                for (SignalTransition nextEnabledLocalSignalTransition : nextEnabledLocalSignalTransitions) {
+                    String nextEnabledLocalSignal = stg.getSignalReference(nextEnabledLocalSignalTransition);
+                    if (nextEnabledLocalSignal.equals(enabledLocalSignal)) {
+                        result.add(enabledLocalSignal);
+                    }
                 }
             }
         }

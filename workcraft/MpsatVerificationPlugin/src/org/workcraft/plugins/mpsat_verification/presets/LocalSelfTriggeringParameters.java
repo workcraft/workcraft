@@ -1,10 +1,12 @@
 package org.workcraft.plugins.mpsat_verification.presets;
 
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
+import org.workcraft.utils.SortUtils;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -53,17 +55,22 @@ public class LocalSelfTriggeringParameters {
         return false;
     }
 
-    public Set<String> getExceptionSignals() {
-        return Collections.unmodifiableSet(exceptionSignals);
+    public boolean isException(String signal) {
+        return exceptionSignals.contains(signal);
+    }
+
+    public List<String> getOrderedExceptionSignals() {
+        return SortUtils.getSortedNatural(exceptionSignals);
     }
 
     public VerificationParameters getVerificationParameters() {
         String description = "Absence of local self-triggering";
-        if (!exceptionSignals.isEmpty()) {
-            description += " with exceptions (" + String.join(", ", exceptionSignals) + ")";
+        List<String> orderedExceptionSignals = getOrderedExceptionSignals();
+        if (!orderedExceptionSignals.isEmpty()) {
+            description += " with exceptions (" + String.join(", ", orderedExceptionSignals) + ")";
         }
 
-        String replacement = exceptionSignals.stream()
+        String replacement = orderedExceptionSignals.stream()
                 .map(signal -> "\"" + signal + "\", ")
                 .collect(Collectors.joining());
 

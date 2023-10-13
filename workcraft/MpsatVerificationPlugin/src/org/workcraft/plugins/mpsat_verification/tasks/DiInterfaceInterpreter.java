@@ -1,5 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
+import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceDataPreserver;
+import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceParameters;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -32,6 +34,8 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
         List<Solution> result = new LinkedList<>();
         ComponentData data = getComponentData();
         StgModel stg = getStg();
+        DiInterfaceDataPreserver diInterfaceDataPreserver = new DiInterfaceDataPreserver(getWorkspaceEntry());
+        DiInterfaceParameters diInterfaceParameters = diInterfaceDataPreserver.loadData();
         HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
         for (Solution solution : solutions) {
             Trace trace = solution.getMainTrace();
@@ -45,7 +49,7 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
                 throw new RuntimeException("Cannot execute trace: " + trace);
             }
             // Check if any input signal triggers any input signal
-            Set<String> nonDiInputSignals = getNonDiInputSignals(stg);
+            Set<String> nonDiInputSignals = getNonDiInputSignals(stg, diInterfaceParameters);
             if (!nonDiInputSignals.isEmpty()) {
                 String comment = TextUtils.wrapMessageWithItems(
                         "Interface is sensitive to input delays in the set", nonDiInputSignals);
@@ -57,23 +61,23 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
         return result;
     }
 
-    private HashSet<String> getNonDiInputSignals(StgModel stg) {
+    private HashSet<String> getNonDiInputSignals(StgModel stg, DiInterfaceParameters diInterfaceParameters) {
         HashSet<String> result = new HashSet<>();
         HashSet<SignalTransition> enabledInputSignalTransitions = getEnabledInputSignalTransitions(stg);
-        for (SignalTransition inputSignalTransition : enabledInputSignalTransitions) {
-            String signal = stg.getSignalReference(inputSignalTransition);
-            stg.fire(inputSignalTransition);
-            HashSet<SignalTransition> newEnabledInputSignalTransitions = getEnabledInputSignalTransitions(stg);
-            newEnabledInputSignalTransitions.removeAll(enabledInputSignalTransitions);
-            stg.unFire(inputSignalTransition);
+        for (SignalTransition enabledInputSignalTransition : enabledInputSignalTransitions) {
+            String enabledInputSignal = stg.getSignalReference(enabledInputSignalTransition);
+            stg.fire(enabledInputSignalTransition);
+            HashSet<SignalTransition> nextEnabledInputSignalTransitions = getEnabledInputSignalTransitions(stg);
+            nextEnabledInputSignalTransitions.removeAll(enabledInputSignalTransitions);
+            stg.unFire(enabledInputSignalTransition);
             // Check which newly enabled transitions are of input signal
-            for (SignalTransition newEnabledLocalSignalTransition : newEnabledInputSignalTransitions) {
-                if (newEnabledLocalSignalTransition.getSignalType() == Signal.Type.INPUT) {
-                    Set<String> signals = new HashSet<>();
-                    signals.add(signal);
-                    signals.add(stg.getSignalReference(newEnabledLocalSignalTransition));
-                    result.add("{" + String.join(", ", signals) + "}");
-                }
+            Set<String> nonDiInputSignals = new TreeSet<>();
+            nonDiInputSignals.add(enabledInputSignal);
+            for (SignalTransition nextEnabledLocalSignalTransition : nextEnabledInputSignalTransitions) {
+                nonDiInputSignals.add(stg.getSignalReference(nextEnabledLocalSignalTransition));
+            }
+            if (!diInterfaceParameters.isException(nonDiInputSignals)) {
+                result.add("{" + String.join(", ", nonDiInputSignals) + "}");
             }
         }
         return result;

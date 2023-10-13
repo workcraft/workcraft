@@ -3,6 +3,7 @@ package org.workcraft.plugins.mpsat_verification.presets;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +38,7 @@ public class VerificationParameters {
     private final SolutionMode solutionMode;
     private final int solutionNumberLimit;
     private final String expression;
+
     // Relation between the predicate and the property:
     //   true - property holds when predicate is unsatisfiable
     //   false - property holds when predicate is satisfiable
@@ -65,8 +67,8 @@ public class VerificationParameters {
     }
 
     public String getPropertyCheckMessage(boolean propertyHolds) {
-        String propertyName = getDescription();
-        if ((propertyName == null) || propertyName.isEmpty()) {
+        String propertyName = TextUtils.truncateLine(getDescription());
+        if (propertyName.isEmpty()) {
             propertyName = "Property";
         }
 
