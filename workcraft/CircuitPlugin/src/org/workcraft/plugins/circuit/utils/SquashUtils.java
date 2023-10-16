@@ -47,7 +47,7 @@ public final class SquashUtils {
 
     public static void squashComponent(VisualCircuit circuit, VisualFunctionComponent component, VisualCircuit componentModel) {
         String pageName = circuit.getMathName(component);
-        circuit.setMathName(component, Identifier.makeInternal(pageName));
+        circuit.setMathName(component, Identifier.getTemporaryName());
         Container container = (Container) component.getParent();
         VisualPage page = circuit.createVisualPage(container);
         circuit.setMathName(page, pageName);

@@ -67,7 +67,7 @@ public final class ScanUtils {
         // Temporary rename gate output, so there is no name clash on renaming gate input
         String inputName = testableGateInterface.getInputs().get(0);
         String outputName = testableGateInterface.getOutput();
-        circuit.setMathName(outputContact, Identifier.makeInternal(outputName));
+        circuit.setMathName(outputContact, Identifier.getTemporaryName());
         circuit.setMathName(inputContact, inputName);
         circuit.setMathName(outputContact, outputName);
         if (CircuitSettings.getUseTestPathBreaker()) {

@@ -253,7 +253,7 @@ public final class ResetUtils {
 
         VisualFunctionContact inputContact = component.getFirstVisualInput();
         // Temporary rename gate output, so there is no name clash on renaming gate input
-        circuit.setMathName(outputContact, Identifier.makeInternal(outName));
+        circuit.setMathName(outputContact, Identifier.getTemporaryName());
         circuit.setMathName(inputContact, in1Name);
         circuit.setMathName(outputContact, outName);
         VisualFunctionContact resetContact = circuit.getOrCreateContact(component, in2Name, Contact.IOType.INPUT);
@@ -315,7 +315,7 @@ public final class ResetUtils {
 
         VisualFunctionContact inputContact = component.getFirstVisualInput();
         // Temporary rename gate output, so there is no name clash on renaming gate input
-        circuit.setMathName(outputContact, Identifier.makeInternal(outName));
+        circuit.setMathName(outputContact, Identifier.getTemporaryName());
         circuit.setMathName(inputContact, in2Name);
         circuit.setMathName(outputContact, outName);
         VisualFunctionContact resetContact = circuit.getOrCreateContact(component, in1Name, Contact.IOType.INPUT);
