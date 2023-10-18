@@ -28,7 +28,7 @@ public class UscVerificationCommand extends AbstractVerificationCommand {
         return new VerificationParameters("Unique state coding",
                 VerificationMode.USC_CONFLICT_DETECTION, 0,
                 VerificationParameters.SolutionMode.ALL,
-                -1 /* unlimited */,
+                100 /* limit to 100 cores */,
                 null, true);
     }
 

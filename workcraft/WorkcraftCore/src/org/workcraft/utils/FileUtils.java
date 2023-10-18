@@ -391,4 +391,14 @@ public class FileUtils {
         return ((file == null) || file.isDirectory()) ? file : file.getParentFile();
     }
 
+    public static long getModtimeOrZero(String path) {
+        if (path != null) {
+            File file = new File(path);
+            if (isReadableFile(file)) {
+                return file.lastModified();
+            }
+        }
+        return 0;
+    }
+
 }

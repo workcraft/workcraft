@@ -48,6 +48,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     private final InstancePanel instancePanel = new InstancePanel();
 
     private JPanel panel = null;
+    private Library library = null;
     private List<LibraryItem> libraryItems = null;
     private LibraryItem libraryItem = null;
 
@@ -104,7 +105,6 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         if (panel != null) {
             return panel;
         }
-
         JPanel filterPanel = new JPanel();
         filterPanel.setLayout(new BoxLayout(filterPanel, BoxLayout.Y_AXIS));
         filterPanel.add(createTypeFilterPanel(editor));
@@ -252,12 +252,13 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     private List<LibraryItem> getLibraryItems() {
-        if (libraryItems != null) {
+        Library currentlibrary = LibraryManager.getLibrary();
+        if ((currentlibrary == library) && (libraryItems != null)) {
             return libraryItems;
         }
 
+        library = currentlibrary;
         libraryItems = new ArrayList<>();
-        Library library = LibraryManager.getLibrary();
         if (library != null) {
             for (String gateName : library.getNames()) {
                 Gate gate = library.get(gateName);
@@ -372,6 +373,12 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     @Override
     public String getHintText(final GraphEditor editor) {
         return "Click to create a component, then right-click on the component to add contacts.";
+    }
+
+    @Override
+    public void activated(GraphEditor editor) {
+        super.activated(editor);
+        updateLibraryList(editor);
     }
 
 }
