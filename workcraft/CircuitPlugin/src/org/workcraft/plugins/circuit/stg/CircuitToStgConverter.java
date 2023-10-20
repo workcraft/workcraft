@@ -8,10 +8,7 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.Literal;
-import org.workcraft.formula.Not;
+import org.workcraft.formula.*;
 import org.workcraft.formula.dnf.Dnf;
 import org.workcraft.formula.dnf.DnfClause;
 import org.workcraft.formula.dnf.DnfGenerator;
@@ -238,9 +235,9 @@ public class CircuitToStgConverter {
             }
             // Create complementary set/reset if only one of them is defined
             if ((setFunc != null) && (resetFunc == null)) {
-                resetFunc = new Not(setFunc);
+                resetFunc = FormulaUtils.invert(setFunc);
             } else if ((setFunc == null) && (resetFunc != null)) {
-                setFunc = new Not(resetFunc);
+                setFunc = FormulaUtils.invert(resetFunc);
             }
             Dnf setDnf = DnfGenerator.generate(setFunc);
             createSignalStgTransitions(driver, setDnf, SignalTransition.Direction.PLUS);

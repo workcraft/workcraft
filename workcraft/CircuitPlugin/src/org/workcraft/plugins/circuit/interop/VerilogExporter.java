@@ -5,7 +5,7 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.Not;
+import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.interop.Exporter;
@@ -252,11 +252,9 @@ public class VerilogExporter implements Exporter {
             String signalName = circuitInfo.getContactSignal(signalInfo.contact);
             BooleanFormula setFormula = signalInfo.setFormula;
             String setExpr = StringGenerator.toString(setFormula, StringGenerator.Style.VERILOG);
-            BooleanFormula resetFormula = signalInfo.resetFormula;
-            if (resetFormula != null) {
-                resetFormula = new Not(resetFormula);
-            }
-            String resetExpr = StringGenerator.toString(resetFormula, StringGenerator.Style.VERILOG);
+            String resetExpr = StringGenerator.toString(FormulaUtils.invert(signalInfo.resetFormula),
+                    StringGenerator.Style.VERILOG);
+
             String expr = null;
             if (!setExpr.isEmpty() && !resetExpr.isEmpty()) {
                 expr = setExpr + " | " + signalName + " & (" + resetExpr + ")";

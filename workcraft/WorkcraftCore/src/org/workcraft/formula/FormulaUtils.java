@@ -80,7 +80,7 @@ public class FormulaUtils {
     }
 
     public static BooleanFormula invert(BooleanFormula formula) {
-        return formula.accept(Inverter.getInstance());
+        return formula == null ? null : formula.accept(Inverter.getInstance());
     }
 
     public static BooleanFormula derive(BooleanFormula formula, BooleanVariable variable) {
