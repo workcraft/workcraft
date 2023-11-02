@@ -25,7 +25,6 @@ public class CircuitSignalInfo {
     private final Map<Contact, Contact> contactDriverMap = new HashMap<>();
     private final Map<Contact, String> driverFlatNameMap = new HashMap<>();
     private final Set<String> takenFlatNames = new HashSet<>();
-    private final Map<String, BooleanFormula> signalLiteralMap;
     private final Map<String, Set<Integer>> busIndexesMap;
 
     public static class SignalInfo {
@@ -41,29 +40,12 @@ public class CircuitSignalInfo {
     }
 
     public CircuitSignalInfo(Circuit circuit) {
-        this(circuit, Literal::new);
-    }
-
-    public CircuitSignalInfo(Circuit circuit, Function<String, Literal> literalBuilder) {
         this.circuit = circuit;
-        this.signalLiteralMap = buildSignalLiteralMap(literalBuilder);
         this.busIndexesMap = buildBusIndexesMap();
     }
 
     public Circuit getCircuit() {
         return circuit;
-    }
-
-    private HashMap<String, BooleanFormula> buildSignalLiteralMap(Function<String, Literal> literalCreator) {
-        HashMap<String, BooleanFormula> result = new HashMap<>();
-        for (FunctionContact contact : circuit.getFunctionContacts()) {
-            if (contact.isDriver()) {
-                String signalName = getContactSignal(contact);
-                BooleanFormula literal = literalCreator.apply(signalName);
-                result.put(signalName, literal);
-            }
-        }
-        return result;
     }
 
     public final String getContactSignal(Contact contact) {
@@ -131,14 +113,18 @@ public class CircuitSignalInfo {
         return result;
     }
 
-    public Collection<SignalInfo> getComponentSignalInfos(FunctionComponent component) {
+    public Collection<SignalInfo> getComponentSignalInfos(FunctionComponent component,
+            Function<String, String> signalToLiteralName) {
+
         Collection<SignalInfo> result = new ArrayList<>();
         LinkedList<BooleanVariable> variables = new LinkedList<>();
         LinkedList<BooleanFormula> values = new LinkedList<>();
+        Map<String, Literal> signalToLiteralMap = new HashMap<>();
         for (FunctionContact contact : component.getFunctionContacts()) {
             String signalName = getContactSignal(contact);
-            BooleanFormula literal = signalLiteralMap.get(signalName);
-            if (literal != null) {
+            String literalName = signalToLiteralName.apply(signalName);
+            if (literalName != null) {
+                Literal literal = signalToLiteralMap.computeIfAbsent(literalName, Literal::new);
                 variables.add(contact);
                 values.add(literal);
             }
