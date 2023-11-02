@@ -43,6 +43,7 @@ public final class VerilogUtils {
         PRIMITIVE_OPERATOR_MAP.put("nand", Pair.of(false, "*"));
         PRIMITIVE_OPERATOR_MAP.put("or", Pair.of(true, "+"));
         PRIMITIVE_OPERATOR_MAP.put("nor", Pair.of(false, "+"));
+        PRIMITIVE_OPERATOR_MAP.put("xor", Pair.of(true, "^"));
         PRIMITIVE_OPERATOR_MAP.put("xnor", Pair.of(false, "^"));
     }
 
