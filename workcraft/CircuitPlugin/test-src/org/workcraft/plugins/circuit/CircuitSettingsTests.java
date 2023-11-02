@@ -76,6 +76,9 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getInvertImportSubstitutionRules()),
                 framework.getConfigVar(prefix + ".invertImportSubstitutionRules", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getExportMappedGatesAsAssign()),
+                framework.getConfigVar(prefix + ".exportMappedGatesAsAssign", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getVerilogAssignDelay()),
                 framework.getConfigVar(prefix + ".verilogAssignDelay", false));
 

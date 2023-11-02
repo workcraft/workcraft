@@ -22,14 +22,19 @@ import org.workcraft.workspace.FileFilters;
 
 import java.awt.*;
 import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CircuitSettings extends AbstractModelSettings {
+    public static final Map<String, String> PREDEFINED_DELAY_PARAMETERS = new LinkedHashMap<>();
+
+    static {
+        PREDEFINED_DELAY_PARAMETERS.put("", "No delay");
+        PREDEFINED_DELAY_PARAMETERS.put("1", "One unit delay (should be defined using `timescale)");
+        PREDEFINED_DELAY_PARAMETERS.put("(1ps * $urandom_range(40, 90))", "Random delay between 40ps and 90ps");
+    }
 
     public static final String GATE_LIBRARY_TITLE = "Gate library for technology mapping";
 
@@ -86,6 +91,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyInvertExportSubstitutionRules = prefix + ".invertExportSubstitutionRules";
     private static final String keyImportSubstitutionLibrary = prefix + ".importSubstitutionLibrary";
     private static final String keyInvertImportSubstitutionRules = prefix + ".invertImportSubstitutionRules";
+    private static final String keyExportMappedGatesAsAssign = prefix + ".exportMappedGatesAsAssign";
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyDissolveSingletonBus = prefix + ".dissolveSingletonBus";
@@ -138,7 +144,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultInvertExportSubstitutionRules = false;
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
-    private static final String defaultVerilogAssignDelay = "";
+    private static final boolean defaultExportMappedGatesAsAssign = false;
+    private static final String defaultVerilogAssignDelay = "1";
     private static final String defaultBusSuffix = "__" + BUS_INDEX_PLACEHOLDER;
     private static final boolean defaultDissolveSingletonBus = true;
     private static final boolean defaultAcceptInoutPort = true;
@@ -190,6 +197,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
     private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
+    private static boolean exportMappedGatesAsAssign = defaultExportMappedGatesAsAssign;
     private static String verilogAssignDelay = defaultVerilogAssignDelay;
     private static String busSuffix = defaultBusSuffix;
     private static boolean dissolveSingletonBus = defaultDissolveSingletonBus;
@@ -339,10 +347,20 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::setInvertImportSubstitutionRules,
                 CircuitSettings::getInvertImportSubstitutionRules));
 
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Export mapped gates as assign statements",
+                CircuitSettings::setExportMappedGatesAsAssign,
+                CircuitSettings::getExportMappedGatesAsAssign));
+
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Delay for assign statements in Verilog export (empty to suppress)",
                 CircuitSettings::setVerilogAssignDelay,
-                CircuitSettings::getVerilogAssignDelay));
+                CircuitSettings::getVerilogAssignDelay) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_DELAY_PARAMETERS;
+            }
+        });
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Bus split/merge suffix on Verilog import/export ("
@@ -523,6 +541,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
         setImportSubstitutionLibrary(config.getString(keyImportSubstitutionLibrary, defaultImportSubstitutionLibrary));
         setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
+        setExportMappedGatesAsAssign(config.getBoolean(keyExportMappedGatesAsAssign, defaultExportMappedGatesAsAssign));
         setVerilogAssignDelay(config.getString(keyVerilogAssignDelay, defaultVerilogAssignDelay));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setDissolveSingletonBus(config.getBoolean(keyDissolveSingletonBus, defaultDissolveSingletonBus));
@@ -575,6 +594,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
         config.set(keyImportSubstitutionLibrary, getImportSubstitutionLibrary());
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
+        config.setBoolean(keyExportMappedGatesAsAssign, getExportMappedGatesAsAssign());
         config.set(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyBusSuffix, getBusSuffix());
         config.setBoolean(keyDissolveSingletonBus, getDissolveSingletonBus());
@@ -755,6 +775,14 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setInvertImportSubstitutionRules(boolean value) {
         invertImportSubstitutionRules = value;
+    }
+
+    public static boolean getExportMappedGatesAsAssign() {
+        return exportMappedGatesAsAssign;
+    }
+
+    public static void setExportMappedGatesAsAssign(boolean value) {
+        exportMappedGatesAsAssign = value;
     }
 
     public static String getVerilogAssignDelay() {

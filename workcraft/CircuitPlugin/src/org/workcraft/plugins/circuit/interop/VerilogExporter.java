@@ -216,10 +216,16 @@ public class VerilogExporter implements Exporter {
     }
 
     private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo) {
-        // Write writer assign statements
+        boolean useAssignments = CircuitSettings.getExportMappedGatesAsAssign();
+        // Write assign statements
         boolean hasAssignments = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
-            if (!component.isMapped() && (component.getRefinementFile() == null)) {
+            if ((useAssignments || !component.isMapped()) && (component.getRefinementFile() == null)) {
+                if (!useAssignments) {
+                    String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
+                    LogUtils.logWarning("Component '" + instanceFlatName
+                            + "' is not associated to a module and is exported as assign statement.");
+                }
                 if (writeAssigns(writer, circuitInfo, component)) {
                     hasAssignments = true;
                 } else {
@@ -231,10 +237,10 @@ public class VerilogExporter implements Exporter {
         if (hasAssignments) {
             writer.write('\n');
         }
-        // Write writer mapped components
+        // Write mapped components
         boolean hasMappedComponents = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
-            if (component.isMapped() || (component.getRefinementFile() != null)) {
+            if ((!useAssignments && component.isMapped()) || (component.getRefinementFile() != null)) {
                 writeInstance(writer, circuitInfo, component);
                 hasMappedComponents = true;
             }
@@ -246,26 +252,31 @@ public class VerilogExporter implements Exporter {
 
     private boolean writeAssigns(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         boolean result = false;
-        String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
-        LogUtils.logWarning("Component '" + instanceFlatName + "' is not associated to a module and is exported as assign statement.");
-        for (CircuitSignalInfo.SignalInfo signalInfo : circuitInfo.getComponentSignalInfos(component)) {
-            String signalName = circuitInfo.getContactSignal(signalInfo.contact);
-            BooleanFormula setFormula = signalInfo.setFormula;
-            String setExpr = StringGenerator.toString(setFormula, StringGenerator.Style.VERILOG);
-            String resetExpr = StringGenerator.toString(FormulaUtils.invert(signalInfo.resetFormula),
-                    StringGenerator.Style.VERILOG);
+        Collection<CircuitSignalInfo.SignalInfo> signalInfos = circuitInfo.getComponentSignalInfos(component,
+                signal -> getNetName(signal, circuitInfo));
 
-            String expr = null;
-            if (!setExpr.isEmpty() && !resetExpr.isEmpty()) {
-                expr = setExpr + " | " + signalName + " & (" + resetExpr + ")";
-            } else if (!setExpr.isEmpty()) {
-                expr = setExpr;
-            } else if (!resetExpr.isEmpty()) {
-                expr = resetExpr;
-            }
-            if (expr != null) {
-                writer.write("    " + KEYWORD_ASSIGN + getDelayParameter() + ' ' + signalName + " = " + expr + ";\n");
-                result = true;
+        for (CircuitSignalInfo.SignalInfo signalInfo : signalInfos) {
+            String signalName = circuitInfo.getContactSignal(signalInfo.contact);
+            String netName = getNetName(signalName, circuitInfo);
+            if (netName != null) {
+                BooleanFormula setFormula = signalInfo.setFormula;
+                String setExpr = StringGenerator.toString(setFormula, StringGenerator.Style.VERILOG);
+                String resetExpr = StringGenerator.toString(FormulaUtils.invert(signalInfo.resetFormula),
+                        StringGenerator.Style.VERILOG);
+
+                String expr = null;
+                if (!setExpr.isEmpty() && !resetExpr.isEmpty()) {
+                    expr = setExpr + " | " + netName + " & (" + resetExpr + ")";
+                } else if (!setExpr.isEmpty()) {
+                    expr = setExpr;
+                } else if (!resetExpr.isEmpty()) {
+                    expr = resetExpr;
+                }
+                if (expr != null) {
+                    String delay = component.getIsZeroDelay() ? "" : getDelayParameter();
+                    writer.write("    " + KEYWORD_ASSIGN + delay + ' ' + netName + " = " + expr + ";\n");
+                    result = true;
+                }
             }
         }
         return result;
@@ -337,7 +348,9 @@ public class VerilogExporter implements Exporter {
             }
             String signalName = contactToSignalMap.getOrDefault(contactName, "");
             String netName = getNetName(signalName, circuitInfo);
-            writer.write("." + contactName + "(" + netName + ")");
+            if (netName != null) {
+                writer.write("." + contactName + "(" + netName + ")");
+            }
         }
         for (String contactBusName : contactBusToIndexedSignalMap.keySet()) {
             if (first) {
@@ -352,7 +365,10 @@ public class VerilogExporter implements Exporter {
             List<String> netNames = new ArrayList<>();
             for (int index = maxIndex; index >= minIndex; --index) {
                 String signalName = indexedSignals.getOrDefault(index, "");
-                netNames.add(getNetName(signalName, circuitInfo));
+                String netName = getNetName(signalName, circuitInfo);
+                if (netName != null) {
+                    netNames.add(netName);
+                }
             }
             String joinedNetNames = String.join(", ", netNames);
             if (CircuitSettings.getDissolveSingletonBus() && (netNames.size() < 2)) {
@@ -383,7 +399,9 @@ public class VerilogExporter implements Exporter {
                 Boolean state = entry.getValue();
                 String signal = entry.getKey();
                 String netName = getNetName(signal, circuitInfo);
-                writer.write((state ? " " : " !") + netName);
+                if ((state != null) && (netName != null)) {
+                    writer.write((state ? " " : " !") + netName);
+                }
             }
             writer.write('\n');
         }
@@ -439,19 +457,21 @@ public class VerilogExporter implements Exporter {
     }
 
     private String getNetName(String signal, CircuitSignalInfo circuitInfo) {
-        Pattern pattern = CircuitSettings.getBusSignalPattern();
-        Matcher matcher = pattern.matcher(signal);
-        if (matcher.matches()) {
-            String busName = matcher.group(1);
-            Set<Integer> busIndexes = circuitInfo.getBusIndexes(busName);
-            if (busIndexes == null) {
-                return signal;
+        if (signal != null) {
+            Pattern pattern = CircuitSettings.getBusSignalPattern();
+            Matcher matcher = pattern.matcher(signal);
+            if (matcher.matches()) {
+                String busName = matcher.group(1);
+                Set<Integer> busIndexes = circuitInfo.getBusIndexes(busName);
+                if (busIndexes == null) {
+                    return signal;
+                }
+                if ((busIndexes.size() == 1) && CircuitSettings.getDissolveSingletonBus()) {
+                    return busName;
+                }
+                int netIndex = Integer.parseInt(matcher.group(2));
+                return busName + "[" + netIndex + "]";
             }
-            if ((busIndexes.size() == 1) && CircuitSettings.getDissolveSingletonBus()) {
-                return busName;
-            }
-            int netIndex = Integer.parseInt(matcher.group(2));
-            return busName + "[" + netIndex + "]";
         }
         return signal;
     }
