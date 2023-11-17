@@ -293,8 +293,19 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     public Collection<VisualNode> getNodeWithAdjacentConnections(VisualModel model, VisualNode node) {
         Set<VisualNode> result = new HashSet<>();
-        result.add(node);
-        result.addAll(model.getConnections(node));
+        VisualNode masterNode = (node instanceof Replica) ? ((Replica) node).getMaster() : node;
+        result.add(masterNode);
+        result.addAll(model.getConnections(masterNode));
+        if (masterNode instanceof Replicable) {
+            Replicable replicable = (Replicable) masterNode;
+            replicable.getReplicas().forEach(replica -> {
+                if (replica instanceof VisualNode) {
+                    VisualNode visualNode = (VisualNode) replica;
+                    result.add(visualNode);
+                    result.addAll(model.getConnections(visualNode));
+                }
+            });
+        }
         return result;
     }
 
@@ -590,7 +601,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
         return "Hold Shift for adding to selection or " +
                 DesktopApi.getMenuKeyName() + " for removing from selection. " +
-                "Hold Alt/AltGr for extending selection to adjacent connections.";
+                "Hold Alt/AltGr for extending selection to proxies and adjacent connections.";
     }
 
     @Override
