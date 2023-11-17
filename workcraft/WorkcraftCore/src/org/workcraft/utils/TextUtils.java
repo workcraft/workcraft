@@ -208,6 +208,10 @@ public class TextUtils {
         return String.join("", Collections.nCopies(count, str));
     }
 
+    public static String removeHtmlSimpleTags(String str) {
+        return str.replaceAll("</?[A-Za-z][A-Za-z0-9]*>", "");
+    }
+
     public static String escapeHtml(String str) {
         StringBuilder sb = new StringBuilder();
         char c;

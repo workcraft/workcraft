@@ -122,6 +122,16 @@ class TextUtilsTests {
     }
 
     @Test
+    void removeHtmlSimpleTagsTest() {
+        Assertions.assertEquals("abc 123",
+                TextUtils.removeHtmlSimpleTags("<HTML><i>abc</i><br> <b>123</b><br></HTML>"));
+
+        String nonHtmlText = "Place '<a+,b-/>' is redundant";
+        Assertions.assertEquals(nonHtmlText,
+                TextUtils.removeHtmlSimpleTags(nonHtmlText));
+    }
+
+    @Test
     void escapeHtmlTest() {
         String text = "(a < b) & (c > d) = \"true\"";
         Assertions.assertEquals("(a &lt; b) &amp; (c &gt; d) = &quot;true&quot;",

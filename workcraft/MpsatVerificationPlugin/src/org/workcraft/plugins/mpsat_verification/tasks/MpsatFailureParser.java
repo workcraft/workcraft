@@ -65,17 +65,23 @@ public class MpsatFailureParser {
         Matcher emptyPresetMatcher = EMPTY_PRESET_PATTERN.matcher(stderr);
         if (inconsistentAlternateMatcher.find()) {
             Solution solution = new Solution(getTrace(inconsistentAlternateMatcher.group(2)));
-            solution.setComment("Rising and falling edges of signal '" + inconsistentAlternateMatcher.group(1) + "' do not alternate in trace");
+            solution.setComment("Rising and falling edges of signal '" + inconsistentAlternateMatcher.group(1)
+                    + "' do not alternate in trace");
+
             outcome = Pair.of(solution, Cause.INCONSISTENT);
         } else if (inconsistentConflictMatcher.find()) {
             Trace mainTrace = getTrace(inconsistentConflictMatcher.group(2));
             Trace branchTrace = getTrace(inconsistentConflictMatcher.group(3));
             Solution solution = new Solution(mainTrace, branchTrace);
-            solution.setComment("Initial value of signal '" + inconsistentConflictMatcher.group(1) + "' cannot be assigned due to conflicting traces");
+            solution.setComment("Initial value of signal '" + inconsistentConflictMatcher.group(1)
+                    + "' cannot be assigned due to conflicting traces");
+
             outcome = Pair.of(solution, Cause.INCONSISTENT);
         } else if (inconsistentInitialMatcher.find()) {
             Solution solution = new Solution(getTrace(inconsistentInitialMatcher.group(3)));
-            solution.setComment("Initial value of signal '" + inconsistentInitialMatcher.group(1) + "' conflicts with trace");
+            solution.setComment("Initial value of signal '" + inconsistentInitialMatcher.group(1)
+                    + "' conflicts with trace");
+
             outcome = Pair.of(solution, Cause.INCONSISTENT);
         } else if (notSafeMatcher.find()) {
             Solution solution = new Solution(getTrace(notSafeMatcher.group(2)));
