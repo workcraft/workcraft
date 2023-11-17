@@ -31,6 +31,7 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.shared.ColorGenerator;
 import org.workcraft.traces.Trace;
 import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -352,12 +353,14 @@ public class StgSimulationTool extends PetriSimulationTool {
             JLabel result = null;
             label.setBorder(GuiUtils.getTableCellBorder());
             if (isActivated() && (value instanceof String)) {
-                String text = value.toString();
+                String text = (String) value;
                 Pair<String, String> pair = TraceUtils.splitLoopDecoration(text);
                 String prefix = pair.getFirst();
                 String ref = pair.getSecond();
-                MathNode node = getUnderlyingNode(ref);
-                String colorCode = ColorUtils.getHexRGB(getNodeColor(node));
+                Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
+                String signalName = r == null ? null : r.getFirst();
+                Signal.Type signalType = getUnderlyingModel().getSignalType(signalName);
+                String colorCode = ColorUtils.getHexRGB(getTypeColor(signalType));
                 label.setText("<html><span style='color: " + GRAY_CODE + "'>" + prefix + "</span>" +
                         "<span style='color: " + colorCode + "'>" + ref + "</span></html>");
 
@@ -540,15 +543,10 @@ public class StgSimulationTool extends PetriSimulationTool {
         updateSignalState();
     }
 
-    private Color getNodeColor(MathNode node) {
-        if (node instanceof SignalTransition) {
-            SignalTransition transition = (SignalTransition) node;
-            return getTypeColor(transition.getSignalType());
-        }
-        return Color.BLACK;
-    }
-
     private Color getTypeColor(Signal.Type type) {
+        if (type == null) {
+            return SignalCommonSettings.getDummyColor();
+        }
         switch (type) {
         case INPUT:    return SignalCommonSettings.getInputColor();
         case OUTPUT:   return SignalCommonSettings.getOutputColor();
@@ -616,11 +614,6 @@ public class StgSimulationTool extends PetriSimulationTool {
             public Color getColorisation() {
                 return underlyingPlace.isImplicit() & (underlyingPlace.getTokens() > 0)
                         ? SimulationDecorationSettings.getExcitedComponentColor() : null;
-            }
-
-            @Override
-            public Color getBackground() {
-                return null;
             }
 
             @Override

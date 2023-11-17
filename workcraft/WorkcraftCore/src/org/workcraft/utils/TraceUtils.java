@@ -132,8 +132,7 @@ public class TraceUtils {
                 if (branchTrace != null) {
                     traceText += "\n" + branchTrace;
                 }
-                // Remove HTML tags before printing the message
-                String message = comment.replaceAll("<.*?>", "") + suffix + ": " + traceText;
+                String message = TextUtils.removeHtmlSimpleTags(comment) + suffix + ": " + traceText;
                 LogUtils.logWarning(message);
             }
         }
