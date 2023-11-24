@@ -91,7 +91,8 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
         verificationParametersList.add(ReachUtils.getConsistencyParameters());
         verificationParametersList.add(ReachUtils.getDeadlockParameters());
         if (noDummies) {
-            verificationParametersList.add(ReachUtils.getInputPropernessParameters());
+            InputPropernessParameters inputPropernessParameters = new InputPropernessDataPreserver(we).loadData();
+            verificationParametersList.add(inputPropernessParameters.getVerificationParameters());
         }
 
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);

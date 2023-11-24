@@ -130,53 +130,6 @@ public class ReachUtils {
                 reachOutputPersistence, true);
     }
 
-    private static final String INPUT_PROPERNESS_REACH =
-            "// Checks whether the STG is input proper, i.e. no input can be triggered by an internal signal or disabled by a local signal.\n" +
-            DUMMY_CHECK_REACH +
-            "? fail \"Input properness can currently be checked only for STGs without dummies\" :\n" +
-            "let\n" +
-            "    TR = T EVENTS,\n" +
-            "    TRINP = T INPUTS * TR,\n" +
-            "    TRI = T INTERNAL * TR,\n" +
-            "    TRL = T LOCAL * TR,\n" +
-            "    TRPT = gather t in TRINP s.t. ~is_minus t { t },\n" +
-            "    TRMT = gather t in TRINP s.t. ~is_plus t { t }\n" +
-            "{\n" +
-            "    exists t_inp in TRINP {\n" +
-            "        let\n" +
-            "            pre_t_inp = pre t_inp,\n" +
-            "            OTHER_INP = (T S t_inp \\ {t_inp}) * (is_plus t_inp ? TRPT : is_minus t_inp ? TRMT : TR) {\n" +
-            "            // Check if some t_int can trigger t_inp.\n" +
-            "            exists t_int in pre pre_t_inp * TRI s.t. ~is_empty((post t_int \\ pre t_int) * pre_t_inp) {\n" +
-            "                forall p in pre_t_inp \\ post t_int { $p }\n" +
-            "                &\n" +
-            "                @t_int\n" +
-            "            }\n" +
-            "            &\n" +
-            "            ~@S t_inp\n" +
-            "            |\n" +
-            "            // Check if some t_loc can disable t_inp without enabling any other transition labelled by S t_inp.\n" +
-            "            exists t_loc in post pre_t_inp * TRL s.t. ~is_empty((pre t_loc \\ post t_loc) * pre_t_inp) {\n" +
-            "                forall t_inp1 in OTHER_INP s.t. is_empty(pre t_inp1 * (pre t_loc \\ post t_loc)) {\n" +
-            "                    exists p in pre t_inp1 \\ post t_loc { ~$p }\n" +
-            "                }\n" +
-            "                &\n" +
-            "                @t_loc\n" +
-            "            }\n" +
-            "            &\n" +
-            "            @t_inp\n" +
-            "        }\n" +
-            "    }\n" +
-            "}\n";
-
-    public static VerificationParameters getInputPropernessParameters() {
-        return new VerificationParameters("Input properness",
-                VerificationMode.STG_REACHABILITY, 0,
-                MpsatVerificationSettings.getSolutionMode(),
-                MpsatVerificationSettings.getSolutionCount(),
-                INPUT_PROPERNESS_REACH, true);
-    }
-
     private static final String SHADOW_TRANSITIONS_REPLACEMENT =
             "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
 
