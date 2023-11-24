@@ -25,8 +25,13 @@ public class DiInterfaceParameters {
             "        let\n" +
             "            pre_ti = pre ti,\n" +
             "            SUSPECTS = gather ti_trig in pre pre_ti * TRINP \\ {ti} s.t.\n" +
+            "                // Trigger does not steal tokens from input transition preset\n" +
+            "                is_empty ((pre ti_trig \\ post ti_trig) * pre_ti)\n" +
+            "                &\n" +
+            "                // Trigger puts new tokens into input transition preset\n" +
             "                ~is_empty((post ti_trig \\ pre ti_trig) * pre_ti)\n" +
             "                &\n" +
+            "                // Signals of trigger and input transition are not in exception sets\n" +
             "                ~exists set in EXCEPTIONS { S ti in set & S ti_trig in set }\n" +
             "            { ti_trig }\n" +
             "        {\n" +
