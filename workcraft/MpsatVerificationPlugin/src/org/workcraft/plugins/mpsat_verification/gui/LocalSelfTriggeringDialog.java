@@ -77,7 +77,7 @@ public class LocalSelfTriggeringDialog extends ModalDialog<LocalSelfTriggeringDa
         result.setLayout(GuiUtils.createBorderLayout());
         result.setBorder(GuiUtils.getEmptyBorder());
 
-        result.add(new JLabel("Select signals that are allowed to self-trigger:"), BorderLayout.NORTH);
+        result.add(new JLabel("Select exceptions:"), BorderLayout.NORTH);
         result.add(new JScrollPane(localSignalList), BorderLayout.CENTER);
         result.add(clearButton, BorderLayout.SOUTH);
         return result;

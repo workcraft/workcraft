@@ -1,17 +1,21 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.mpsat_verification.gui.InputPropernessDialog;
+import org.workcraft.plugins.mpsat_verification.presets.InputPropernessDataPreserver;
+import org.workcraft.plugins.mpsat_verification.presets.InputPropernessParameters;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class InputPropernessVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Input properness (without dummies) [MPSat]";
+        return "Input properness (without dummies) [MPSat]...";
     }
 
     @Override
@@ -43,8 +47,23 @@ public class InputPropernessVerificationCommand extends AbstractVerificationComm
     }
 
     @Override
+    public void run(WorkspaceEntry we) {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        if (mainWindow == null) {
+            super.run(we);
+        } else {
+            InputPropernessDataPreserver dataPreserver = new InputPropernessDataPreserver(we);
+            InputPropernessDialog dialog = new InputPropernessDialog(mainWindow, dataPreserver);
+            if (dialog.reveal()) {
+                super.run(we);
+            }
+        }
+    }
+
+    @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        return ReachUtils.getInputPropernessParameters();
+        InputPropernessParameters data = new InputPropernessDataPreserver(we).loadData();
+        return data.getVerificationParameters();
     }
 
 }

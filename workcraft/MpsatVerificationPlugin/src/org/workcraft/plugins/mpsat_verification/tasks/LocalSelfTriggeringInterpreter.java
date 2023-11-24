@@ -50,7 +50,7 @@ class LocalSelfTriggeringInterpreter extends ReachabilityOutputInterpreter {
                 PetriUtils.setMarking(stg, initialMarking);
                 throw new RuntimeException("Cannot execute trace: " + trace);
             }
-            // Check if any local signal is self-triggers by firing continuations
+            // Check if any local signal is self-trigger by firing continuations
             Set<String> selfTriggeringLocalSignals = getSelfTriggeringLocalSignals(stg, localSelfTriggeringParameters);
             if (!selfTriggeringLocalSignals.isEmpty()) {
                 String comment = TextUtils.wrapMessageWithItems(
