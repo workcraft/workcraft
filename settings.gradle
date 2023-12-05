@@ -22,11 +22,11 @@ gradle.ext.javaTargetVersion = JavaVersion.VERSION_11
 gradle.ext.javaReleaseVersion = 11  /* Must be integer, e.g. 11 for JDK11*/
 
 // Checkstyle code linter (https://checkstyle.sourceforge.io/)
-gradle.ext.checkstyleVersion = '10.12.4'
+gradle.ext.checkstyleVersion = '10.12.5'
 // PMD code analyser (https://pmd.github.io/)
 gradle.ext.pmdVersion = '6.55.0'
 // Jacoco code coverage (https://www.eclemma.org/jacoco/)
-gradle.ext.jacocoVersion = '0.8.10'
+gradle.ext.jacocoVersion = '0.8.11'
 
 
 /*
@@ -34,10 +34,10 @@ gradle.ext.jacocoVersion = '0.8.10'
  */
 
 // Unit testing (https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine)
-gradle.ext.junit = 'org.junit.jupiter:junit-jupiter-engine:5.10.0'
+gradle.ext.junit = 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
 
 // JavaCC parser generator (https://mvnrepository.com/artifact/net.java.dev.javacc/javacc)
-gradle.ext.javacc = 'net.java.dev.javacc:javacc:7.0.12'
+gradle.ext.javacc = 'net.java.dev.javacc:javacc:7.0.13'
 gradle.ext.javaccExclude = '**/jj/**'
 
 
