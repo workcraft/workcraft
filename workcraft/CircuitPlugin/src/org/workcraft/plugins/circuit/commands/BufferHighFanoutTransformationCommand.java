@@ -4,10 +4,7 @@ import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.GateUtils;
 import org.workcraft.utils.LogUtils;
@@ -65,13 +62,13 @@ public class BufferHighFanoutTransformationCommand extends AbstractTransformatio
             VisualContact contact = (VisualContact) node;
             VisualFunctionComponent buffer = GateUtils.insertOrReuseBuffer(circuit, contact);
             // Name gate according to its fanout and report buffering of the high fanout fork
-            Set<VisualContact> driven = CircuitUtils.findDriven(circuit, contact, false);
+            VisualFunctionContact bufferOutput = buffer.getGateOutput();
+            Set<VisualContact> driven = CircuitUtils.findDriven(circuit, bufferOutput, false);
             int fanout = driven.size();
             circuit.setMathName(buffer, CircuitSettings.getForkBufferName(fanout));
             String contactRef = circuit.getMathReference(contact);
-            boolean isReused = buffer.getGateOutput() == contact;
             LogUtils.logMessage(PropertyHelper.BULLET_PREFIX + fanout + "-way fork at " + contactRef + ": "
-                    + (isReused ? "reusing buffer" : "inserting new buffer"));
+                    + (bufferOutput == contact ? "reusing buffer" : "inserting new buffer"));
         }
     }
 
