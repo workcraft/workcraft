@@ -28,7 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-public class VerilogExporter implements Exporter {
+public abstract class AbstractVerilogExporter implements Exporter {
 
     private static final String KEYWORD_INPUT = "input";
     private static final String KEYWORD_OUTPUT = "output";
@@ -41,9 +41,7 @@ public class VerilogExporter implements Exporter {
     private final Queue<Pair<File, Circuit>> refinementCircuits = new LinkedList<>();
 
     @Override
-    public VerilogFormat getFormat() {
-        return VerilogFormat.getInstance();
-    }
+    public abstract VerilogFormat getFormat();
 
     @Override
     public boolean isCompatible(Model model) {
@@ -57,8 +55,7 @@ public class VerilogExporter implements Exporter {
             Circuit circuit = (Circuit) model;
             String moduleName = ExportUtils.getTitleAsIdentifier(circuit.getTitle());
             File file = getCurrentFile();
-            VerilogFormat format = VerilogFormat.getInstance();
-            writer.write(ExportUtils.getExportHeader("Verilog netlist", "//", moduleName, file, format));
+            writer.write(ExportUtils.getExportHeader("Verilog netlist", "//", moduleName, file, getFormat()));
             refinementCircuits.clear();
             writeCircuit(writer, circuit, moduleName);
             writeRefinementCircuits(writer);
@@ -77,7 +74,7 @@ public class VerilogExporter implements Exporter {
         }
         CircuitSignalInfo circuitInfo = new CircuitSignalInfo(circuit);
         writeHeader(writer, circuitInfo, moduleName);
-        writeInstances(writer, circuitInfo);
+        writeInstances(writer, circuitInfo, getFormat());
         writeInitialState(writer, circuitInfo);
         writer.write(KEYWORD_ENDMODULE);
         writer.write('\n');
@@ -215,8 +212,8 @@ public class VerilogExporter implements Exporter {
         }
     }
 
-    private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo) {
-        boolean useAssignments = CircuitSettings.getExportMappedGatesAsAssign();
+    private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo, VerilogFormat format) {
+        boolean useAssignments = format.useAssignOnly();
         // Write assign statements
         boolean hasAssignments = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {

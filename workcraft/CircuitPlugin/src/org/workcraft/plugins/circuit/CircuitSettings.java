@@ -91,7 +91,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyInvertExportSubstitutionRules = prefix + ".invertExportSubstitutionRules";
     private static final String keyImportSubstitutionLibrary = prefix + ".importSubstitutionLibrary";
     private static final String keyInvertImportSubstitutionRules = prefix + ".invertImportSubstitutionRules";
-    private static final String keyExportMappedGatesAsAssign = prefix + ".exportMappedGatesAsAssign";
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyDissolveSingletonBus = prefix + ".dissolveSingletonBus";
@@ -144,7 +143,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultInvertExportSubstitutionRules = false;
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
-    private static final boolean defaultExportMappedGatesAsAssign = false;
     private static final String defaultVerilogAssignDelay = "1";
     private static final String defaultBusSuffix = "__" + BUS_INDEX_PLACEHOLDER;
     private static final boolean defaultDissolveSingletonBus = true;
@@ -197,7 +195,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
     private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
-    private static boolean exportMappedGatesAsAssign = defaultExportMappedGatesAsAssign;
     private static String verilogAssignDelay = defaultVerilogAssignDelay;
     private static String busSuffix = defaultBusSuffix;
     private static boolean dissolveSingletonBus = defaultDissolveSingletonBus;
@@ -346,11 +343,6 @@ public class CircuitSettings extends AbstractModelSettings {
                 PropertyHelper.BULLET_PREFIX + "Invert substitution rules for import",
                 CircuitSettings::setInvertImportSubstitutionRules,
                 CircuitSettings::getInvertImportSubstitutionRules));
-
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Export mapped gates as assign statements",
-                CircuitSettings::setExportMappedGatesAsAssign,
-                CircuitSettings::getExportMappedGatesAsAssign));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Delay for assign statements in Verilog export (empty to suppress)",
@@ -541,7 +533,6 @@ public class CircuitSettings extends AbstractModelSettings {
         setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
         setImportSubstitutionLibrary(config.getString(keyImportSubstitutionLibrary, defaultImportSubstitutionLibrary));
         setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
-        setExportMappedGatesAsAssign(config.getBoolean(keyExportMappedGatesAsAssign, defaultExportMappedGatesAsAssign));
         setVerilogAssignDelay(config.getString(keyVerilogAssignDelay, defaultVerilogAssignDelay));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setDissolveSingletonBus(config.getBoolean(keyDissolveSingletonBus, defaultDissolveSingletonBus));
@@ -594,7 +585,6 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
         config.set(keyImportSubstitutionLibrary, getImportSubstitutionLibrary());
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
-        config.setBoolean(keyExportMappedGatesAsAssign, getExportMappedGatesAsAssign());
         config.set(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyBusSuffix, getBusSuffix());
         config.setBoolean(keyDissolveSingletonBus, getDissolveSingletonBus());
@@ -775,14 +765,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setInvertImportSubstitutionRules(boolean value) {
         invertImportSubstitutionRules = value;
-    }
-
-    public static boolean getExportMappedGatesAsAssign() {
-        return exportMappedGatesAsAssign;
-    }
-
-    public static void setExportMappedGatesAsAssign(boolean value) {
-        exportMappedGatesAsAssign = value;
     }
 
     public static String getVerilogAssignDelay() {

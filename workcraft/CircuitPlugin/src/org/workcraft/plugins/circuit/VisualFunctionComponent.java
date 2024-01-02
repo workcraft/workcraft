@@ -268,8 +268,17 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                 Direction direction = mainOutput.getDirection();
                 at = direction != null ? direction.getTransform() : new AffineTransform();
             }
-            double inputPositionX = TransformHelper.snapP5(res.getBoundingBox().getMinX() - GateRenderer.contactMargin);
-            double outputPositionX = TransformHelper.snapP5(res.getBoundingBox().getMaxX() + GateRenderer.contactMargin);
+
+            double boxMinX = res.getBoundingBox().getMinX();
+            double boxMaxX = res.getBoundingBox().getMaxX();
+            boolean isSmallSimpleGate = (getVisualInputs().size() < 3) && (boxMinX > -1.0) && (boxMaxX < 1.0);
+            boolean isLageSimpleGate = (getVisualInputs().size() < 5) && (boxMinX > -1.5) && (boxMaxX < 1.5);
+
+            double inputPositionX = isSmallSimpleGate ? -1.0 : isLageSimpleGate ? -1.5
+                    : TransformHelper.snapP5(boxMinX - GateRenderer.contactMargin);
+
+            double outputPositionX = isSmallSimpleGate ? 1.0 : isLageSimpleGate ? 1.5
+                    : TransformHelper.snapP5(boxMaxX + GateRenderer.contactMargin);
 
             for (Node node: this.getChildren()) {
                 if (node instanceof VisualFunctionContact) {

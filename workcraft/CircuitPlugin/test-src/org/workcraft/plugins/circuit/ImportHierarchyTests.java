@@ -57,7 +57,7 @@ class ImportHierarchyTests {
         Assertions.assertEquals(expectedFileNames, actualFileNames);
 
         File vOutFile = new File(tmpDirectory, fileName);
-        framework.exportWork(we, vOutFile, VerilogFormat.getInstance());
+        framework.exportWork(we, vOutFile, VerilogFormat.DEFAULT);
 
         String expectedVerilog = FileUtils.readAllText(vFile);
         String actualVerilog = FileUtils.readAllText(vOutFile);

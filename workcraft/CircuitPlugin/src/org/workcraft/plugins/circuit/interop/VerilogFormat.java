@@ -1,31 +1,41 @@
 package org.workcraft.plugins.circuit.interop;
 
-import java.util.UUID;
-
 import org.workcraft.interop.Format;
 
-public final class VerilogFormat implements Format {
+import java.util.UUID;
 
-    private static VerilogFormat instance = null;
+public enum VerilogFormat implements Format {
 
-    private VerilogFormat() {
-    }
+    DEFAULT("fdd4414e-fd02-4702-b143-09b24430fdd1",
+            "Verilog",
+            "Verilog netlist",
+            false),
 
-    public static VerilogFormat getInstance() {
-        if (instance == null) {
-            instance = new VerilogFormat();
-        }
-        return instance;
+    ASSIGN_STATEMENTS("f88c58f1-5be6-4d78-96d5-1f6581cac4ec",
+            "Verilog assigns",
+            "Verilog netlist using assign statements",
+            true);
+
+    private final UUID uuid;
+    private final String name;
+    private final String description;
+    private final boolean assignOnly;
+
+    VerilogFormat(String uuidString, String name, String description, boolean assignOnly) {
+        uuid = UUID.fromString(uuidString);
+        this.name = name;
+        this.description = description;
+        this.assignOnly = assignOnly;
     }
 
     @Override
     public UUID getUuid() {
-        return UUID.fromString("fdd4414e-fd02-4702-b143-09b24430fdd1");
+        return uuid;
     }
 
     @Override
     public String getName() {
-        return "Verilog";
+        return name;
     }
 
     @Override
@@ -35,7 +45,11 @@ public final class VerilogFormat implements Format {
 
     @Override
     public String getDescription() {
-        return "Verilog netlist";
+        return description;
+    }
+
+    public boolean useAssignOnly() {
+        return assignOnly;
     }
 
 }
