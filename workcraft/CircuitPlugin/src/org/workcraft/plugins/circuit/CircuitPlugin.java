@@ -7,8 +7,9 @@ import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.circuit.interop.GenlibImporter;
-import org.workcraft.plugins.circuit.interop.VerilogExporter;
+import org.workcraft.plugins.circuit.interop.VerilogAssignExporter;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
+import org.workcraft.plugins.circuit.interop.VerilogNetlistExporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.utils.ScriptableCommandUtils;
@@ -35,7 +36,8 @@ public class CircuitPlugin implements Plugin {
         pm.registerXmlDeserialiser(FunctionDeserialiser.class);
         pm.registerSettings(CircuitSettings.class);
 
-        pm.registerExporter(VerilogExporter.class);
+        pm.registerExporter(VerilogNetlistExporter.class);
+        pm.registerExporter(VerilogAssignExporter.class);
         pm.registerImporter(VerilogImporter.class);
         pm.registerImporter(GenlibImporter.class);
 

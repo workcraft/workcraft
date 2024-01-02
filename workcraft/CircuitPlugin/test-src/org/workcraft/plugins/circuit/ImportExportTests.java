@@ -137,7 +137,7 @@ class ImportExportTests {
         try {
             File vFile = File.createTempFile("workcraft-", ".v");
             vFile.deleteOnExit();
-            framework.exportWork(wWe, vFile, VerilogFormat.getInstance());
+            framework.exportWork(wWe, vFile, VerilogFormat.DEFAULT);
             vWe = framework.importWork(vFile);
             collectNodes(vWe, vInputs, vOutputs, vGates);
         } catch (IOException | SerialisationException e) {

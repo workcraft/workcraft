@@ -92,31 +92,31 @@ class VerilogAssignTests {
 
         CircuitSettings.setVerilogAssignDelay(null);
         File vNullFile = new File(directory, "export-null.v");
-        framework.exportWork(we, vNullFile, VerilogFormat.getInstance());
+        framework.exportWork(we, vNullFile, VerilogFormat.DEFAULT);
         Assertions.assertEquals(INTRO + BASIC_ASSIGN + OUTRO, FileUtils.readAllText(vNullFile));
         Assertions.assertNotNull(framework.importWork(vNullFile));
 
         CircuitSettings.setVerilogAssignDelay("");
         File vEmptyFile = new File(directory, "export-empty.v");
-        framework.exportWork(we, vEmptyFile, VerilogFormat.getInstance());
+        framework.exportWork(we, vEmptyFile, VerilogFormat.DEFAULT);
         Assertions.assertEquals(INTRO + BASIC_ASSIGN + OUTRO, FileUtils.readAllText(vEmptyFile));
         Assertions.assertNotNull(framework.importWork(vEmptyFile));
 
         CircuitSettings.setVerilogAssignDelay("0");
         File vZeroFile = new File(directory, "export-zero.v");
-        framework.exportWork(we, vZeroFile, VerilogFormat.getInstance());
+        framework.exportWork(we, vZeroFile, VerilogFormat.DEFAULT);
         Assertions.assertEquals(INTRO + BASIC_ASSIGN + OUTRO, FileUtils.readAllText(vZeroFile));
         Assertions.assertNotNull(framework.importWork(vZeroFile));
 
         CircuitSettings.setVerilogAssignDelay("01.234");
         File vNumberFile = new File(directory, "export-number.v");
-        framework.exportWork(we, vNumberFile, VerilogFormat.getInstance());
+        framework.exportWork(we, vNumberFile, VerilogFormat.DEFAULT);
         Assertions.assertEquals(INTRO + NUMBER_ASSIGN + OUTRO, FileUtils.readAllText(vNumberFile));
         Assertions.assertNotNull(framework.importWork(vNumberFile));
 
         CircuitSettings.setVerilogAssignDelay("(DELAY1, DELAY2)");
         File vStringFile = new File(directory, "export-string.v");
-        framework.exportWork(we, vStringFile, VerilogFormat.getInstance());
+        framework.exportWork(we, vStringFile, VerilogFormat.DEFAULT);
         Assertions.assertEquals(INTRO + STRING_ASSIGN + OUTRO, FileUtils.readAllText(vStringFile));
         Assertions.assertNotNull(framework.importWork(vStringFile));
     }

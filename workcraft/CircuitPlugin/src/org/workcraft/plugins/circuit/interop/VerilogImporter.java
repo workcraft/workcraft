@@ -84,7 +84,7 @@ public class VerilogImporter implements Importer {
 
     @Override
     public VerilogFormat getFormat() {
-        return VerilogFormat.getInstance();
+        return VerilogFormat.DEFAULT;
     }
 
     @Override
