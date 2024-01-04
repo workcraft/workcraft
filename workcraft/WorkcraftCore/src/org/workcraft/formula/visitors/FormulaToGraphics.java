@@ -21,7 +21,8 @@ public class FormulaToGraphics {
 
     static {
         try {
-            defaultFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
+            defaultFont = Font.createFont(Font.TYPE1_FONT,
+                    ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
 
             Map<TextAttribute, Integer> attributes = new HashMap<>();
             attributes.put(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB);
@@ -32,7 +33,9 @@ public class FormulaToGraphics {
     }
 
     public static FormulaRenderingResult print(String text, Font font, FontRenderContext fontRenderContext) {
-        if (text.length() < 1) text = " ";
+        if (text.isEmpty()) {
+            text = " ";
+        }
 
         Map<TextAttribute, Integer> attributes = new HashMap<>();
         attributes.put(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB);
@@ -114,7 +117,9 @@ public class FormulaToGraphics {
             init(paren, iff, fontRenderContext, font, unicodeAllowed);
         }
 
-        public void init(DelegatingPrinter printer, DelegatingPrinter next, FontRenderContext fontRenderContext, Font font, boolean unicodeAllowed) {
+        public void init(DelegatingPrinter printer, DelegatingPrinter next, FontRenderContext fontRenderContext,
+                Font font, boolean unicodeAllowed) {
+
             printer.setNext(next);
             printer.setFontRenderContext(fontRenderContext);
             printer.setFont(font);
@@ -154,7 +159,9 @@ public class FormulaToGraphics {
             return FormulaToGraphics.print(text, font, fontRenderContext);
         }
 
-        protected FormulaRenderingResult visitBinary(DelegatingPrinter printer, String opSymbol, BinaryBooleanFormula node) {
+        protected FormulaRenderingResult visitBinary(DelegatingPrinter printer, String opSymbol,
+                BinaryBooleanFormula node) {
+
             FormulaRenderingResult res = node.getX().accept(printer);
             res.add(print(opSymbol));
             res.add(node.getY().accept(printer));
@@ -341,11 +348,15 @@ public class FormulaToGraphics {
         }
     }
 
-    public static FormulaRenderingResult render(BooleanFormula formula, FontRenderContext fontRenderContext, Font font) {
+    public static FormulaRenderingResult render(BooleanFormula formula, FontRenderContext fontRenderContext,
+            Font font) {
+
         return render(formula, fontRenderContext, font, true);
     }
 
-    public static FormulaRenderingResult render(BooleanFormula formula, FontRenderContext fontRenderContext, Font font, boolean unicodeAllowed) {
+    public static FormulaRenderingResult render(BooleanFormula formula, FontRenderContext fontRenderContext,
+            Font font, boolean unicodeAllowed) {
+
         PrinterSuite ps = new PrinterSuite();
         ps.init(fontRenderContext, font, unicodeAllowed);
         return formula.accept(ps.iff);

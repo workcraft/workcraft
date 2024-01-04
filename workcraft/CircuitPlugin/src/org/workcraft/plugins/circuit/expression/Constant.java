@@ -1,9 +1,6 @@
 package org.workcraft.plugins.circuit.expression;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class Constant implements Expression {
 
@@ -25,7 +22,7 @@ public class Constant implements Expression {
 
     @Override
     public Collection<Literal> getLiterals() {
-        return Arrays.asList();
+        return List.of();
     }
 
     @Override

@@ -22,16 +22,16 @@ public class Term implements Expression {
 
     @Override
     public String toString() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         boolean first = true;
         for (Expression expression: expressions) {
             if (!first) {
-                result += "*";
+                result.append("*");
             }
-            result += expression.toString();
+            result.append(expression.toString());
             first = false;
         }
-        return result;
+        return result.toString();
     }
 
     @Override

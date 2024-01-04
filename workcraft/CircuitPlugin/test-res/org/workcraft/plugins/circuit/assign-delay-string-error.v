@@ -3,7 +3,7 @@ module buffer (out, in);
     input in;
     output out;
 
-    assign #(ERROR out = in;\n";
+    assign #(ERROR() out = in;
 
     // signal values at the initial state:
     // !out !in

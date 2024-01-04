@@ -19,7 +19,7 @@ class ExpressionUtilsTests {
         extractSetResetTest("a", null, "a", "!a");
         extractSetResetTest("a", "", "a", "!a");
         extractSetResetTest("a", "x", "a", "!a");
-        extractSetResetTest("!a", "x", "!a", "!!a");
+        extractSetResetTest("!a", "x", "!a", "a");
         extractSetResetTest("a + b", null, "a + b", "!(a + b)");
         extractSetResetTest("!a * (b + c)", null, "!a * (b + c)", "!(!a * (b + c))");
     }

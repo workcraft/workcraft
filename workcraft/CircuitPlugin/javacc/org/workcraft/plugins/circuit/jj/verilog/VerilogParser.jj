@@ -38,6 +38,11 @@ public class VerilogParser {
 }
 PARSER_END(VerilogParser)
 
+TOKEN_MGR_DECLS:
+{
+    int delayNestingDepth;
+}
+
 SKIP:
 {
     " "
@@ -53,28 +58,29 @@ SKIP:
     "/*" : WITHIN_COMMENT
 |
     <"`" (~["\r", "\n"])*>
+|
+    <"#" ([ "0"-"9" ])* (["."])? ([ "0"-"9" ])+>  // Simple delay
+|
+    "#(" { delayNestingDepth = 1 ; } : WITHIN_DELAY  // Complex delay
 }
 
-<WITHIN_COMMENT> SKIP:
-{
-    "*/" : DEFAULT
-|
-    <~[]>
-}
+<WITHIN_COMMENT> SKIP: { "*/" : DEFAULT }
 
-<WITHIN_SPECIFY> SKIP:
-{
-    "endspecify" : DEFAULT
-|
-     <~[]>
-}
+<WITHIN_COMMENT> SKIP: { <~[]> }
 
-<WITHIN_PRIMITIVE> SKIP:
-{
-    "endprimitive" : DEFAULT
-|
-     <~[]>
-}
+<WITHIN_DELAY> SKIP: { "(" { delayNestingDepth++; } }
+
+<WITHIN_DELAY> SKIP: { ")" { delayNestingDepth--; SwitchTo(delayNestingDepth == 0 ? DEFAULT : WITHIN_DELAY); } }
+
+<WITHIN_DELAY> SKIP: { <~[]> }
+
+<WITHIN_SPECIFY> SKIP: {"endspecify" : DEFAULT}
+
+<WITHIN_SPECIFY> SKIP: { <~[]> }
+
+<WITHIN_PRIMITIVE> SKIP: { "endprimitive" : DEFAULT }
+
+<WITHIN_PRIMITIVE> SKIP: { <~[]> }
 
 TOKEN:
 {
@@ -109,8 +115,6 @@ TOKEN:
     <LOGIC1 : "1'b1">
 |
     <INTEGER : ([ "0"-"9" ])+>
-|
-    <DELAY: ("#" ([ "0"-"9" ])* (["."])? ([ "0"-"9" ])+) | ("#(" (~["(", ")"])* ")")>
 |
     <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <NEW_LINE_WITH_OPTIONAL_SPACES>>
 |
@@ -408,7 +412,7 @@ VerilogAssign parseAssign():
     Token formulaToken;
 }
 {
-    <ASSIGN> [<DELAY>] net = parseNet() formulaToken = <FORMULA>
+    <ASSIGN> net = parseNet() formulaToken = <FORMULA>
     {
         String formula = formulaToken.image
                 .replaceAll("^=", "")  // start of assign expression
