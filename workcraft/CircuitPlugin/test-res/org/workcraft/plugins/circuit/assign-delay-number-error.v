@@ -3,7 +3,7 @@ module buffer (out, in);
     input in;
     output out;
 
-    assign #1.a out = in;\n";
+    assign #1.a out = in;
 
     // signal values at the initial state:
     // !out !in

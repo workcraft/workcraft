@@ -9,7 +9,6 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
-import org.workcraft.plugins.circuit.jj.verilog.TokenMgrError;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -131,7 +130,7 @@ class VerilogAssignTests {
                 () -> framework.importWork(classLoader.getResource(numberErrorName).getFile()));
 
         String stringErrorName = PackageUtils.getPackagePath(getClass(), "assign-delay-string-error.v");
-        Assertions.assertThrows(TokenMgrError.class,
+        Assertions.assertThrows(org.workcraft.exceptions.DeserialisationException.class,
                 () -> framework.importWork(classLoader.getResource(stringErrorName).getFile()));
     }
 
