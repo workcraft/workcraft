@@ -61,21 +61,19 @@ TOKEN :
 Expression parseExpression():
 {
     Expression term;
-    List<Expression> terms = new LinkedList<Expression>();
+    List<Expression> terms = new LinkedList<>();
 }
 {
+    term = parseTerm()
+    {
+        terms.add(term);
+    }
     (
-        term = parseTerm()
+        ("+" | "|" | "||")  term = parseTerm()
         {
             terms.add(term);
         }
-        (
-            ("+" | "|" | "||")  term = parseTerm()
-            {
-                terms.add(term);
-            }
-        )*
-    )
+    )*
     {
         if (terms.size() > 1) {
             return new Formula(terms);
@@ -88,21 +86,19 @@ Expression parseExpression():
 Expression parseTerm():
 {
     Expression factor;
-    List<Expression> factors = new LinkedList<Expression>();
+    List<Expression> factors = new LinkedList<>();
 }
 {
+    factor = parseFactor()
+    {
+        factors.add(factor);
+    }
     (
-        factor = parseFactor()
+        ["*" | "&" | "&&"] factor = parseFactor()
         {
             factors.add(factor);
         }
-        (
-            ["*" | "&" | "&&"] factor = parseFactor()
-            {
-                factors.add(factor);
-            }
-        )*
-    )
+    )*
     {
         if (factors.size() > 1) {
             return new Term(factors);
@@ -153,15 +149,13 @@ Expression parseConstant():
 {
 }
 {
-    (
-        <CONST0>
-        {
-            return new Constant(false);
-        }
-    |
-        <CONST1>
-        {
-            return new Constant(true);
-        }
-    )
+    <CONST0>
+    {
+        return new Constant(false);
+    }
+|
+    <CONST1>
+    {
+        return new Constant(true);
+    }
 }
