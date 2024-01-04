@@ -488,7 +488,7 @@ public class VerilogImporter implements Importer {
     }
 
     private FunctionComponent createAssignGate(Circuit circuit, VerilogAssign verilogAssign,
-            HashMap<String, Net> signalToNetMap) {
+            HashMap<String, Net> signalToNetMap) throws DeserialisationException {
 
         final FunctionComponent component = new FunctionComponent();
         circuit.add(component);
@@ -539,7 +539,9 @@ public class VerilogImporter implements Importer {
         return component;
     }
 
-    private boolean isSequentialAssign(VerilogAssign verilogAssign) {
+    private boolean isSequentialAssign(VerilogAssign verilogAssign)
+            throws DeserialisationException {
+
         String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
         String formula = VerilogUtils.getFormulaWithBusSuffixNames(verilogAssign.formula);
         Expression expression = convertFormulaToExpression(formula);
@@ -567,7 +569,9 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private AssignGate createCombinationalAssignGate(VerilogAssign verilogAssign) {
+    private AssignGate createCombinationalAssignGate(VerilogAssign verilogAssign)
+            throws DeserialisationException {
+
         String formula = VerilogUtils.getFormulaWithBusSuffixNames(verilogAssign.formula);
         Expression expression = convertFormulaToExpression(formula);
         int index = 0;
@@ -586,7 +590,9 @@ public class VerilogImporter implements Importer {
         return new AssignGate(outputName, expression.toString(), null, connections);
     }
 
-    private AssignGate createSequentialAssignGate(VerilogAssign verilogAssign) {
+    private AssignGate createSequentialAssignGate(VerilogAssign verilogAssign)
+            throws DeserialisationException {
+
         String formula = VerilogUtils.getFormulaWithBusSuffixNames(verilogAssign.formula);
         Expression expression = convertFormulaToExpression(formula);
         String function = expression.toString();
@@ -625,7 +631,9 @@ public class VerilogImporter implements Importer {
         return new AssignGate(outputName, setExpression.toString(), resetExpression.toString(), connections);
     }
 
-    private Expression convertFormulaToExpression(String formula) {
+    private Expression convertFormulaToExpression(String formula)
+            throws DeserialisationException {
+
         InputStream expressionStream = new ByteArrayInputStream(formula.getBytes(StandardCharsets.UTF_8));
         ExpressionParser expressionParser = new ExpressionParser(expressionStream);
         if (DebugCommonSettings.getParserTracing()) {
@@ -636,8 +644,12 @@ public class VerilogImporter implements Importer {
         Expression expression = null;
         try {
             expression = expressionParser.parseExpression();
-        } catch (org.workcraft.plugins.circuit.jj.expression.ParseException e) {
-            LogUtils.logError("Could not parse assign expression '" + formula + "'.");
+        } catch (org.workcraft.plugins.circuit.jj.expression.ParseException |
+                 org.workcraft.plugins.circuit.jj.expression.TokenMgrError e) {
+
+            throw new DeserialisationException(e.getMessage()
+                    + "\nCould not parse assign expression '" + formula + "'."
+                    + "\nOnly '~', '&', and '|' operators are currently supported.");
         }
         return expression;
     }

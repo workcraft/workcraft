@@ -140,6 +140,11 @@ public class StringGenerator implements BooleanVisitor<String> {
             case UNICODE:
                 visitBinary(next, " \u21d2 ", node);
                 break;
+            case VERILOG:
+                new Not(node.getX()).accept(this);
+                append(" | ");
+                node.getY().accept(this);
+                break;
             case C:
                 new Not(node.getX()).accept(this);
                 append(" || ");
@@ -160,7 +165,14 @@ public class StringGenerator implements BooleanVisitor<String> {
             case REACH:
                 visitBinary(this, " <-> ", node);
                 break;
+            case VERILOG:
+                new Or(
+                        new And(node.getX(), node.getY()),
+                        new And(new Not(node.getX()), new Not(node.getY()))
+                ).accept(this);
+                break;
             case C:
+                // Negation of both operands is intentional to convert them into Booleans
                 new Not(node.getX()).accept(this);
                 append(" == ");
                 new Not(node.getY()).accept(this);
@@ -199,7 +211,14 @@ public class StringGenerator implements BooleanVisitor<String> {
             case UNICODE:
                 visitBinary(this, " \u2295 ", node);
                 break;
+            case VERILOG:
+                new Not(new Or(
+                        new And(node.getX(), node.getY()),
+                        new And(new Not(node.getX()), new Not(node.getY()))
+                )).accept(this);
+                break;
             case C:
+                // Negation of both operands is intentional to convert them into Booleans
                 new Not(node.getX()).accept(this);
                 append(" != ");
                 new Not(node.getY()).accept(this);
@@ -237,44 +256,33 @@ public class StringGenerator implements BooleanVisitor<String> {
     public static class NotPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Not node) {
-            switch (style) {
-            case UNICODE:
-                append("\u00ac");
-                visitOperand(node.getX(), false);
-                break;
-            case VERILOG:
-                append("~");
-                visitOperand(node.getX(), true);
-                break;
-            case REACH:
-                append("~");
-                visitOperand(node.getX(), false);
-                break;
-            case GENLIB:
-                append("!");
-                visitOperand(node.getX(), false);
-                break;
-            case C:
-                append("!");
-                visitOperand(node.getX(), true);
-                break;
-            default:
-                visitOperand(node.getX(), false);
-                append("'");
-                break;
+            BooleanFormula x = node.getX();
+            if (x instanceof Not) {
+                // Simplify double inversion
+                ((Not) x).getX().accept(this);
+            } else {
+                switch (style) {
+                case UNICODE:
+                    append("\u00ac");
+                    x.accept(this);
+                    break;
+                case VERILOG:
+                case REACH:
+                    append("~");
+                    x.accept(this);
+                    break;
+                case GENLIB:
+                case C:
+                    append("!");
+                    x.accept(this);
+                    break;
+                default:
+                    x.accept(this);
+                    append("'");
+                    break;
+                }
             }
             return null;
-        }
-
-        private void visitOperand(BooleanFormula node, boolean forbidDoubleNegation) {
-            boolean needParenthesis = forbidDoubleNegation && (node instanceof Not);
-            if (needParenthesis) {
-                append("(");
-            }
-            node.accept(this);
-            if (needParenthesis) {
-                append(")");
-            }
         }
     }
 
