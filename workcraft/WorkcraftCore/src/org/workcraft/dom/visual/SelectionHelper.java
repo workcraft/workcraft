@@ -39,25 +39,36 @@ public class SelectionHelper {
     public static Collection<VisualNode> getGroupableCurrentLevelSelection(VisualModel model) {
         HashSet<VisualNode> result = new HashSet<>();
         Collection<VisualNode> currentLevelSelection = getOrderedCurrentLevelSelection(model);
+        Collection<VisualNode> recursivelyIncludedNodes = getRecursivelyIncludedNodes(currentLevelSelection);
+        // Collect groupable nodes, no connections yet (replicas are only added if their masters are selected)
         for (VisualNode node : currentLevelSelection) {
-            if (model.isGroupable(node) && !(node instanceof VisualConnection)) {
+            if (node instanceof VisualConnection) continue;
+            boolean b = true;
+            if (node instanceof VisualReplica) {
+                // Only add proxies whose master is also (transitively) selected
+                VisualReplica replica = (VisualReplica) node;
+                VisualComponent master = replica.getMaster();
+                b = recursivelyIncludedNodes.contains(master);
+            }
+            if (b && model.isGroupable(node)) {
                 result.add(node);
             }
         }
         Collection<VisualConnection> currentLevelConnections = getCurrentLevelConnections(model);
-        Collection<VisualConnection> includedConnections = getIncludedConnections(model.getSelection(), currentLevelConnections);
+        Collection<VisualConnection> includedConnections = getIncludedConnections(result, currentLevelConnections);
         result.addAll(includedConnections);
         return result;
     }
 
     public static Collection<VisualConnection> getIncludedConnections(Collection<? extends VisualNode> nodes,
             Collection<? extends VisualConnection> connections) {
+
         Collection<VisualConnection> result = new HashSet<>();
-        Collection<VisualNode> recursiveNodes = getRecursivelyIncludedNodes(nodes);
+        Collection<VisualNode> recursivelyIncludedNodes = getRecursivelyIncludedNodes(nodes);
         for (VisualConnection connection : connections) {
             VisualNode first = connection.getFirst();
             VisualNode second = connection.getSecond();
-            if (recursiveNodes.contains(first) && recursiveNodes.contains(second)) {
+            if (recursivelyIncludedNodes.contains(first) && recursivelyIncludedNodes.contains(second)) {
                 result.add(connection);
             }
         }

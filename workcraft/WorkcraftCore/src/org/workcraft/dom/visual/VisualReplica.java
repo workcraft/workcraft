@@ -127,7 +127,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     private void cacheNameRenderedText(DrawRequest r) {
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
-        if (getMaster() instanceof VisualComponent) {
+        if (master != null) {
             MathNode mathNode = master.getReferencedComponent();
             name = mathModel.getNodeReference(mathNode);
         }
