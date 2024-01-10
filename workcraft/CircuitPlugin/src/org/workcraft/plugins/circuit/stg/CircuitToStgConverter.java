@@ -23,6 +23,7 @@ import org.workcraft.types.Pair;
 import org.workcraft.types.TwoWayMap;
 import org.workcraft.utils.Geometry;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.LogUtils;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -41,13 +42,19 @@ public class CircuitToStgConverter {
 
     private final VisualCircuit circuit;
     private final VisualStg stg;
+    private final boolean expectFunctionForDriverPin;
 
     private final Map<VisualNode, Pair<VisualContact, Boolean>> nodeToDriverMap;
     private final TwoWayMap<VisualContact, SignalStg> driverToStgMap;
 
     public CircuitToStgConverter(VisualCircuit circuit) {
+        this(circuit, true);
+    }
+
+    public CircuitToStgConverter(VisualCircuit circuit, boolean expectFunctionForDriverPin) {
         this.circuit = circuit;
         this.stg = new VisualStg(new Stg());
+        this.expectFunctionForDriverPin = expectFunctionForDriverPin;
         convertTitle();
         convertPages();
         HashSet<VisualContact> drivers = identifyDrivers();
@@ -68,6 +75,7 @@ public class CircuitToStgConverter {
     public CircuitToStgConverter(VisualCircuit circuit, VisualStg stg) {
         this.circuit = circuit;
         this.stg = stg;
+        this.expectFunctionForDriverPin = true;
         HashSet<VisualContact> drivers = identifyDrivers();
         this.nodeToDriverMap = associateNodesToDrivers(drivers);
         // STGs already exist, just associate them with the drivers
@@ -233,12 +241,21 @@ public class CircuitToStgConverter {
                 setFunc = ((VisualFunctionContact) driver).getSetFunction();
                 resetFunc = ((VisualFunctionContact) driver).getResetFunction();
             }
+
+            // Warn about undefined set/reset functions, if they are expected
+            if ((setFunc == null) && (resetFunc == null) && driver.isPin() && expectFunctionForDriverPin) {
+                String driverRef = circuit.getMathReference(driver);
+                LogUtils.logWarning("Driver pin '" + driverRef + "' does not have set/reset function " +
+                        "and is considered free running.");
+            }
+
             // Create complementary set/reset if only one of them is defined
             if ((setFunc != null) && (resetFunc == null)) {
                 resetFunc = FormulaUtils.invert(setFunc);
             } else if ((setFunc == null) && (resetFunc != null)) {
                 setFunc = FormulaUtils.invert(resetFunc);
             }
+
             Dnf setDnf = DnfGenerator.generate(setFunc);
             createSignalStgTransitions(driver, setDnf, SignalTransition.Direction.PLUS);
 
