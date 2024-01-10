@@ -101,7 +101,7 @@ public class ProjectionBuilder {
     private Pair<String, Trace> calcCompositionViolation() {
         String compositionViolationEvent = null;
         for (WorkspaceEntry we : wes) {
-            Set<String> componentViolationEvents = getUnexpectedlyEnabledOutputEvents(we);
+            Set<String> componentViolationEvents = getUnexpectedlyEnabledLocalEvents(we);
             if (!componentViolationEvents.isEmpty()) {
                 String componentViolationEvent = componentViolationEvents.iterator().next();
                 compositionViolationEvent = getCompositionEvent(we, componentViolationEvent);
@@ -127,24 +127,25 @@ public class ProjectionBuilder {
         return null;
     }
 
-    public Set<String> getUnexpectedlyEnabledOutputEvents(WorkspaceEntry we) {
+    public Set<String> getUnexpectedlyEnabledLocalEvents(WorkspaceEntry we) {
         StgModel componentStg = getComponentStg(we);
-        Set<String> outputSignals = componentStg.getSignalReferences(Signal.Type.OUTPUT);
-        Set<String> result = new HashSet<>(StgUtils.getAllEvents(outputSignals));
+        Set<String> localSignals = componentStg.getSignalReferences(Signal.Type.OUTPUT);
+        localSignals.addAll(componentStg.getSignalReferences(Signal.Type.INTERNAL));
+        Set<String> result = new HashSet<>(StgUtils.getAllEvents(localSignals));
 
         Enabledness enabledness = getComponentEnabledness(we);
         result.retainAll(enabledness.keySet());
 
-        Set<String> enabledOutputCompositionEvents = new HashSet<>();
+        Set<String> enabledLocalCompositionEvents = new HashSet<>();
         Map<String, String> compositionToComponentEventMap = new HashMap<>();
         for (String componentEvent : result) {
             String compositionEvent = getCompositionEvent(we, componentEvent);
             if (compositionEvent != null) {
-                enabledOutputCompositionEvents.add(compositionEvent);
+                enabledLocalCompositionEvents.add(compositionEvent);
                 compositionToComponentEventMap.put(compositionEvent, componentEvent);
             }
         }
-        Set<String> disabledInputCompositionEvents = getDisabledInputCompositionEvents(enabledOutputCompositionEvents);
+        Set<String> disabledInputCompositionEvents = getDisabledInputCompositionEvents(enabledLocalCompositionEvents);
         Set<String> disabledComponentEvents = disabledInputCompositionEvents.stream()
                 .map(compositionToComponentEventMap::get).collect(Collectors.toSet());
 
@@ -249,9 +250,10 @@ public class ProjectionBuilder {
                 Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(projectionViolationEventRef);
                 if (r != null) {
                     String signal = r.getFirst();
-                    Set<String> outputs = stg.getSignalReferences(Signal.Type.OUTPUT);
-                    if (outputs.contains(signal)) {
+                    if (stg.getSignalReferences(Signal.Type.OUTPUT).contains(signal)) {
                         projectionEvent = new ProjectionEvent(ProjectionEvent.Tag.OUTPUT, projectionViolationEventRef);
+                    } else if (stg.getSignalReferences(Signal.Type.INTERNAL).contains(signal)) {
+                        projectionEvent = new ProjectionEvent(ProjectionEvent.Tag.INTERNAL, projectionViolationEventRef);
                     } else if (stg.getSignalReferences(Signal.Type.INPUT).contains(signal)) {
                         SignalTransition.Direction direction = r.getSecond();
                         ProjectionEvent.Tag tag = getInputEventTag(we, trace, signal, direction);

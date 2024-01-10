@@ -113,7 +113,7 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
                 }
 
                 ProjectionBuilder projectionBuilder = new ProjectionBuilder(solution, getCompositionData(), wes);
-                Set<String> unexpectedlyEnabledOutputEvents = projectionBuilder.getUnexpectedlyEnabledOutputEvents(we);
+                Set<String> unexpectedlyEnabledOutputEvents = projectionBuilder.getUnexpectedlyEnabledLocalEvents(we);
                 Enabledness componentEnabledness = projectionBuilder.getComponentEnabledness(we);
                 result.addAll(CompositionUtils.getEnabledViolatorSolutions(componentTrace,
                         unexpectedlyEnabledOutputEvents, componentEnabledness));
@@ -147,7 +147,8 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
     private void writeTableBody(Solution solution, String indent) {
         ProjectionBuilder projectionBuilder = new ProjectionBuilder(solution, getCompositionData(), wes);
         Trace compositionViolationTrace = projectionBuilder.getCompositionTraceWithViolationEvent();
-        Map<WorkspaceEntry, ProjectionTrace> componentProjectionTraceMap = projectionBuilder.calcComponentProjectionTraces();
+        Map<WorkspaceEntry, ProjectionTrace> componentProjectionTraceMap =
+                projectionBuilder.calcComponentProjectionTraces();
 
         for (int i = 0; i < compositionViolationTrace.size(); i++) {
             StringBuilder line = new StringBuilder(indent);
