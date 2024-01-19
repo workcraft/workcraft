@@ -10,6 +10,7 @@ import org.workcraft.exceptions.*;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FormulaUtils;
+import org.workcraft.formula.Not;
 import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
@@ -556,14 +557,32 @@ public class VerilogImporter implements Importer {
             if (variables.size() != 3) {
                 return false;
             }
-            String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
-            if (variables.stream().noneMatch(var -> (netName != null) && netName.equals(var.getLabel()))) {
+            String seqName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
+            BooleanVariable aVar = null;
+            BooleanVariable bVar = null;
+            BooleanVariable seqVar = null;
+            if (seqName != null) {
+                for (BooleanVariable variable : variables) {
+                    if (seqName.equals(variable.getLabel())) {
+                        seqVar = variable;
+                    } else {
+                        if (aVar == null) {
+                            aVar = variable;
+                        } else {
+                            bVar = variable;
+                        }
+                    }
+                }
+            }
+            if ((aVar == null) || (bVar == null) || (seqVar == null)) {
                 return false;
             }
-            BooleanVariable aVar = variables.get(0);
-            BooleanVariable bVar = variables.get(1);
-            BooleanVariable cVar = variables.get(2);
-            return new BddManager().equal(FormulaUtils.createMaj(aVar, bVar, cVar), formula);
+            BddManager bddManager = new BddManager();
+            return bddManager.equal(FormulaUtils.createMaj(aVar, bVar, seqVar), formula)
+                    || bddManager.equal(FormulaUtils.createMaj(new Not(aVar), bVar, seqVar), formula)
+                    || bddManager.equal(FormulaUtils.createMaj(aVar, new Not(bVar), seqVar), formula)
+                    || bddManager.equal(FormulaUtils.createMaj(new Not(aVar), new Not(bVar), seqVar), formula);
+
         } catch (ParseException e) {
             return false;
         }
