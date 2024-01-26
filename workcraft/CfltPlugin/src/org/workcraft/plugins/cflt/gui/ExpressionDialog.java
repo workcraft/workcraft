@@ -12,8 +12,7 @@ import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.File;
 import java.util.function.Consumer;
 
 public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
@@ -32,12 +31,7 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
             modeCombo.insertItemAt(ExpressionParameters.Mode.EXTERNAL, 0);
         }
         presetPanel.selectFirst();
-        try {
-            URI uri = new URI("https://workcraft.org/help/control_flow_expressions/start");
-            addHelpButton(uri);
-        } catch (URISyntaxException ignored) {
-        }
-
+        addHelpButton(new File("help/control_flow_expressions/start.html"));
         addCheckerButton(event -> syntaxChecker.accept(codePanel));
     }
 
