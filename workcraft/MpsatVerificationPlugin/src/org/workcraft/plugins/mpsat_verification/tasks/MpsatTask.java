@@ -57,14 +57,18 @@ public class MpsatTask implements Task<MpsatOutput> {
         // Built-in arguments
         command.addAll(verificationParameters.getMpsatArguments(directory));
 
-        // Global arguments
-        int threadCount = MpsatVerificationSettings.getThreadCount();
-        if (threadCount > 0) {
-            command.add("-j" + threadCount);
-        }
+        // If unfolding prefix needs to be built...
+        if (unfoldingFile == null) {
+            // Limit number of threads for unfolding
+            int threadCount = MpsatVerificationSettings.getThreadCount();
+            if (threadCount > 0) {
+                command.add("-j" + threadCount);
+            }
 
-        if (MpsatVerificationSettings.getReplicateSelfloopPlaces()) {
-            command.add("-l");
+            // Replicate places with multiple self-loops for unfolding
+            if (MpsatVerificationSettings.getReplicateSelfloopPlaces()) {
+                command.add("-l");
+            }
         }
 
         // Extra arguments (should go before the file parameters)

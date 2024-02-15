@@ -33,7 +33,13 @@ public class MpsatUnfoldingTask implements Task<MpsatOutput> {
         // Unfolding prefix mode
         command.add("-Up");
 
-        // Replicate places with multiple self-loops
+        // Limit number of threads for unfolding
+        int threadCount = MpsatVerificationSettings.getThreadCount();
+        if (threadCount > 0) {
+            command.add("-j" + threadCount);
+        }
+
+        // Replicate places with multiple self-loops for unfolding
         if (MpsatVerificationSettings.getReplicateSelfloopPlaces()) {
             command.add("-l");
         }

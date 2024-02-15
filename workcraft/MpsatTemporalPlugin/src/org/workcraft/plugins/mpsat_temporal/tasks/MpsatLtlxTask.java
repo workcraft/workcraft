@@ -42,8 +42,10 @@ public class MpsatLtlxTask implements Task<MpsatOutput> {
         // MPSat mode (must be the first argument)
         command.add("-B=" + hoaFile.getAbsolutePath());
 
-        // Global arguments
+        // Do not store cut-off events
         command.add("-c");
+
+        // Limit number of threads
         int threadCount = MpsatTemporalSettings.getThreadCount();
         if (threadCount > 0) {
             command.add("-j" + threadCount);
