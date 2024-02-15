@@ -11,15 +11,10 @@ import java.util.ArrayList;
 public class MpsatUnfoldingTask implements Task<MpsatOutput> {
 
     public static final String PNML_FILE_EXTENSION = ".pnml";
-    public static final String UNFOLDING_FILE_NAME = "unfolding" + PNML_FILE_EXTENSION;
 
     private final File netFile;
     private final File unfoldingFile;
     private final File directory;
-
-    public MpsatUnfoldingTask(File netFile, File directory) {
-        this(netFile, new File(directory, UNFOLDING_FILE_NAME), directory);
-    }
 
     public MpsatUnfoldingTask(File netFile, File unfoldingFile, File directory) {
         this.netFile = netFile;
@@ -35,8 +30,13 @@ public class MpsatUnfoldingTask implements Task<MpsatOutput> {
         String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatVerificationSettings.getProcessedCommand());
         command.add(toolName);
 
-        // Unfolding prefix mode and output file
+        // Unfolding prefix mode
         command.add("-Up");
+
+        // Replicate places with multiple self-loops
+        if (MpsatVerificationSettings.getReplicateSelfloopPlaces()) {
+            command.add("-l");
+        }
 
         // Extra arguments (should go before the file parameters)
         command.addAll(TextUtils.splitWords(MpsatVerificationSettings.getArgs()));
