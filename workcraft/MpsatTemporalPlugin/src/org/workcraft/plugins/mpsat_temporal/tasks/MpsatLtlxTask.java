@@ -45,10 +45,15 @@ public class MpsatLtlxTask implements Task<MpsatOutput> {
         // Do not store cut-off events
         command.add("-c");
 
-        // Limit number of threads
+        // Limit number of threads for unfolding
         int threadCount = MpsatTemporalSettings.getThreadCount();
         if (threadCount > 0) {
             command.add("-j" + threadCount);
+        }
+
+        // Replicate places with multiple self-loops for unfolding
+        if (MpsatTemporalSettings.getReplicateSelfloopPlaces()) {
+            command.add("-l");
         }
 
         // Extra arguments (should go before the file parameters)
