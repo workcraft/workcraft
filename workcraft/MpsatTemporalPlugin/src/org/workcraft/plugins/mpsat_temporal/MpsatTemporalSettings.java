@@ -16,6 +16,7 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
 
     private static final String keyCommand = prefix + ".command";
     private static final String keyThreadCount = prefix + ".threadCount";
+    private static final String keyReplicateSelfloopPlaces = prefix + ".replicateSelfloopPlaces";
     private static final String keyArgs = prefix + ".args";
     private static final String keyAdvancedMode = prefix + ".advancedMode";
     private static final String keyPrintStdout = prefix + ".printStdout";
@@ -25,6 +26,7 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
 
     private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "mpsat");
     private static final int defaultThreadCount = 8;
+    private static final boolean defaultReplicateSelfloopPlaces = false;
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;
     private static final Boolean defaultPrintStdout = true;
@@ -34,6 +36,7 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
 
     private static String command = defaultCommand;
     private static int threadCount = defaultThreadCount;
+    private static boolean replicateSelfloopPlaces = defaultReplicateSelfloopPlaces;
     private static String args = defaultArgs;
     private static Boolean advancedMode = defaultAdvancedMode;
     private static Boolean printStdout = defaultPrintStdout;
@@ -50,9 +53,15 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
         properties.add(commandProperty);
 
         properties.add(new PropertyDeclaration<>(Integer.class,
-                "Number of threads (8 by default, 0 for automatic)",
+                "Number of threads for unfolding (8 by default, 0 for automatic)",
                 MpsatTemporalSettings::setThreadCount,
                 MpsatTemporalSettings::getThreadCount));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Replicate places with multiple self-loops for unfolding (-l parameter)",
+                MpsatTemporalSettings::setReplicateSelfloopPlaces,
+                MpsatTemporalSettings::getReplicateSelfloopPlaces));
+
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "Additional parameters",
@@ -94,6 +103,7 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
     public void load(Config config) {
         setCommand(config.getString(keyCommand, defaultCommand));
         setThreadCount(config.getInt(keyThreadCount, defaultThreadCount));
+        setReplicateSelfloopPlaces(config.getBoolean(keyReplicateSelfloopPlaces, defaultReplicateSelfloopPlaces));
         setArgs(config.getString(keyArgs, defaultArgs));
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
@@ -106,6 +116,7 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
     public void save(Config config) {
         config.set(keyCommand, getCommand());
         config.setInt(keyThreadCount, getThreadCount());
+        config.setBoolean(keyReplicateSelfloopPlaces, getReplicateSelfloopPlaces());
         config.set(keyArgs, getArgs());
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
         config.setBoolean(keyPrintStdout, getPrintStdout());
@@ -135,6 +146,14 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
         if (value >= 0) {
             threadCount = value;
         }
+    }
+
+    public static boolean getReplicateSelfloopPlaces() {
+        return replicateSelfloopPlaces;
+    }
+
+    public static void setReplicateSelfloopPlaces(boolean value) {
+        replicateSelfloopPlaces = value;
     }
 
     public static String getArgs() {

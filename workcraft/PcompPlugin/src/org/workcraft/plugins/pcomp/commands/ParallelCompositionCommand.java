@@ -94,7 +94,7 @@ public class ParallelCompositionCommand
 
     @Override
     public Pair<Collection<WorkspaceEntry>, PcompParameters> deserialiseData(String data) {
-        Collection<WorkspaceEntry> wes = PcompUtils.deserealiseData(data);
+        Collection<WorkspaceEntry> wes = PcompUtils.deserialiseData(data);
         PcompParameters parameters = new PcompParameters(PcompSettings.getSharedSignalMode(), false, false);
         return Pair.of(wes, parameters);
     }

@@ -108,7 +108,7 @@ public class CombinedCheckTask implements Task<CombinedChainOutput> {
             monitor.progressUpdate(0.20);
 
             // Generate unfolding (only if needed)
-            File unfoldingFile = new File(directory, MpsatUnfoldingTask.UNFOLDING_FILE_NAME);
+            File unfoldingFile = new File(directory, "unfolding" + MpsatUnfoldingTask.PNML_FILE_EXTENSION);
             MpsatUnfoldingTask unfoldingTask = new MpsatUnfoldingTask(sysStgFile, unfoldingFile, directory);
             SubtaskMonitor<Object> unfoldingMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends MpsatOutput> unfoldingResult = manager.execute(unfoldingTask, "Unfolding .g", unfoldingMonitor);

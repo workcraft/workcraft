@@ -61,7 +61,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             }
             monitor.progressUpdate(0.20);
 
-            File unfoldingFile = new File(directory, MpsatUnfoldingTask.UNFOLDING_FILE_NAME);
+            File unfoldingFile = new File(directory, "unfolding" + MpsatUnfoldingTask.PNML_FILE_EXTENSION);
             MpsatUnfoldingTask unfoldingTask = new MpsatUnfoldingTask(netFile, unfoldingFile, directory);
             Result<? extends MpsatOutput> unfoldingResult = taskManager.execute(
                     unfoldingTask, "Unfolding .g", mon);

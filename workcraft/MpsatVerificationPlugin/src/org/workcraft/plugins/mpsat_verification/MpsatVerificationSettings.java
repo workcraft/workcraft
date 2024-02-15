@@ -68,12 +68,12 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         properties.add(commandProperty);
 
         properties.add(new PropertyDeclaration<>(Integer.class,
-                "Number of threads (8 by default, 0 for automatic)",
+                "Number of threads for unfolding (8 by default, 0 for automatic)",
                 MpsatVerificationSettings::setThreadCount,
                 MpsatVerificationSettings::getThreadCount));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Replicate places with multiple self-loops (-l parameter)",
+                "Replicate places with multiple self-loops for unfolding (-l parameter)",
                 MpsatVerificationSettings::setReplicateSelfloopPlaces,
                 MpsatVerificationSettings::getReplicateSelfloopPlaces));
 

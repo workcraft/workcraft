@@ -81,7 +81,8 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
             ProgressMonitor<? super CombinedChainOutput> monitor, File directory) {
 
         File netFile = new File(directory, NET_FILE_NAME);
-        MpsatUnfoldingTask mpsatUnfoldingTask = new MpsatUnfoldingTask(netFile, directory);
+        File unfoldingFile = new File(directory, "unfolding" + MpsatUnfoldingTask.PNML_FILE_EXTENSION);
+        MpsatUnfoldingTask mpsatUnfoldingTask = new MpsatUnfoldingTask(netFile, unfoldingFile, directory);
         Result<? extends MpsatOutput> mpsatUnfoldingResult = Framework.getInstance().getTaskManager().execute(
                 mpsatUnfoldingTask, "Unfolding .g", new SubtaskMonitor<>(monitor));
 

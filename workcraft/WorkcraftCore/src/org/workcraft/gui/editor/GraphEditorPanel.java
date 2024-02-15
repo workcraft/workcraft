@@ -261,20 +261,20 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return result;
     }
 
-    private Set<Point2D> getComponentSnaps(VisualComponent component) {
+    private Set<Point2D> getTransformableNodeSnaps(VisualTransformableNode transformableNode) {
         Set<Point2D> result = new HashSet<>();
-        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
-        Point2D pos = TransformHelper.transform(component, localToRootTransform).getCenter();
+        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transformableNode);
+        Point2D pos = TransformHelper.transform(transformableNode, localToRootTransform).getCenter();
         result.add(pos);
-        for (VisualConnection connection : getModel().getConnections(component)) {
+        for (VisualConnection connection : getModel().getConnections(transformableNode)) {
             if (connection.getConnectionType() == ConnectionType.POLYLINE) {
                 Polyline polyline = (Polyline) connection.getGraphic();
                 ControlPoint firstControlPoint = polyline.getFirstControlPoint();
-                if ((component == connection.getFirst()) && (firstControlPoint != null)) {
+                if ((transformableNode == connection.getFirst()) && (firstControlPoint != null)) {
                     result.add(firstControlPoint.getPosition());
                 }
                 ControlPoint lastControlPoint = polyline.getLastControlPoint();
-                if ((component == connection.getSecond()) && (lastControlPoint != null)) {
+                if ((transformableNode == connection.getSecond()) && (lastControlPoint != null)) {
                     result.add(lastControlPoint.getPosition());
                 }
             }
@@ -303,12 +303,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     @Override
     public Set<Point2D> getSnaps(VisualNode node) {
         Set<Point2D> result = new HashSet<>();
-        if (node instanceof VisualComponent) {
-            VisualComponent component = (VisualComponent) node;
-            result.addAll(getComponentSnaps(component));
-        } else if (node instanceof ControlPoint) {
-            ControlPoint cp = (ControlPoint) node;
-            result.addAll(getControlPointSnaps(cp));
+        if (node instanceof ControlPoint) {
+            result.addAll(getControlPointSnaps((ControlPoint) node));
+        } else if (node instanceof VisualTransformableNode) {
+            result.addAll(getTransformableNodeSnaps((VisualTransformableNode) node));
         }
         return result;
     }

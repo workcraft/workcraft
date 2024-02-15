@@ -47,7 +47,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         this.file = file;
         this.mode = mode;
         if (directory == null) {
-            // Prefix must be at least 3 symbols long.
+            // Prefix must be at least 3 symbols long
             directory = FileUtils.createTempDirectory("mpsat-");
         }
         this.directory = directory;
@@ -80,12 +80,13 @@ public class MpsatTask implements Task<MpsatOutput> {
         // Built-in arguments
         command.addAll(mode.getMpsatArguments(modeParameter));
 
-        // Global arguments
+        // Limit number of threads for unfolding
         int threadCount = MpsatSynthesisSettings.getThreadCount();
         if (threadCount > 0) {
             command.add("-j" + threadCount);
         }
 
+        // Replicate places with multiple self-loops for unfolding
         if (MpsatSynthesisSettings.getReplicateSelfloopPlaces()) {
             command.add("-l");
         }

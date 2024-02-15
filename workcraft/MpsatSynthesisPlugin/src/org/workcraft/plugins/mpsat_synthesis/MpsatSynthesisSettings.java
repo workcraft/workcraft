@@ -71,12 +71,12 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
                 MpsatSynthesisSettings::getCommand));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
-                "Number of threads (" + defaultThreadCount + " by default, 0 for automatic)",
+                "Number of threads for unfolding (" + defaultThreadCount + " by default, 0 for automatic)",
                 MpsatSynthesisSettings::setThreadCount,
                 MpsatSynthesisSettings::getThreadCount));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                "Replicate places with multiple self-loops (-l parameter)",
+                "Replicate places with multiple self-loops for unfolding (-l parameter)",
                 MpsatSynthesisSettings::setReplicateSelfloopPlaces,
                 MpsatSynthesisSettings::getReplicateSelfloopPlaces));
 

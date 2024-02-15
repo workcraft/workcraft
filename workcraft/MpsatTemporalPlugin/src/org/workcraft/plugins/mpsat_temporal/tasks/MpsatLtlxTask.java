@@ -42,11 +42,18 @@ public class MpsatLtlxTask implements Task<MpsatOutput> {
         // MPSat mode (must be the first argument)
         command.add("-B=" + hoaFile.getAbsolutePath());
 
-        // Global arguments
+        // Do not store cut-off events
         command.add("-c");
+
+        // Limit number of threads for unfolding
         int threadCount = MpsatTemporalSettings.getThreadCount();
         if (threadCount > 0) {
             command.add("-j" + threadCount);
+        }
+
+        // Replicate places with multiple self-loops for unfolding
+        if (MpsatTemporalSettings.getReplicateSelfloopPlaces()) {
+            command.add("-l");
         }
 
         // Extra arguments (should go before the file parameters)
