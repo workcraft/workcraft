@@ -63,7 +63,9 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         return instance;
     }
 
-    public static Model createModel(Class<?> cls, Node root, Object underlyingModel, References rr) throws DeserialisationException {
+    public static Model createModel(Class<?> cls, Node root, Object underlyingModel, References rr)
+            throws DeserialisationException {
+
         Model result;
         try {
             Constructor<?> ctor;
@@ -75,7 +77,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
                 result = (Model) ctor.newInstance(underlyingModel, root);
             }
         } catch (NoSuchMethodException e) {
-            throw new DeserialisationException("Missing appropriate constructor for model deserealisation.", e);
+            throw new DeserialisationException("Missing appropriate constructor for model deserialisation.", e);
         } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             throw new DeserialisationException(e);
         }

@@ -74,7 +74,7 @@ public class NwayConformationVerificationCommand extends org.workcraft.commands.
 
     @Override
     public List<WorkspaceEntry> deserialiseData(String data) {
-        return PcompUtils.deserealiseData(data);
+        return PcompUtils.deserialiseData(data);
     }
 
     @Override

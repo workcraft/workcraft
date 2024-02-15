@@ -22,7 +22,7 @@ import java.util.List;
 
 public class PcompUtils {
 
-    public static List<WorkspaceEntry> deserealiseData(String data) {
+    public static List<WorkspaceEntry> deserialiseData(String data) {
         List<WorkspaceEntry> wes = new ArrayList<>();
         Framework framework = Framework.getInstance();
         StringBuilder msg = new StringBuilder();
