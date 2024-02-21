@@ -18,6 +18,7 @@ public class ExpressionUtils {
     private static final char TERM_DELIMITER = '+';
     private static final char FACTOR_DELIMITER = '*';
     private static final char NEGATION_DELIMITER = '!';
+    private static final String ESCAPED_FACTOR_DELIMITER = "\\" + FACTOR_DELIMITER;
 
     public static String extractSetFunction(String expression, String seqLiteral) {
         return extractFunction(expression, seqLiteral, false, ExpressionUtils::extractHeuristicSetFunction);
@@ -101,23 +102,16 @@ public class ExpressionUtils {
     }
 
     private static String removeTermLiteral(String term, String literal) {
-        String result = term;
-        if (result.startsWith(literal + FACTOR_DELIMITER)) {
-            String pattern = Pattern.quote(literal + FACTOR_DELIMITER);
-            result = result.replaceAll(pattern, "");
-        }
-        if (result.endsWith(FACTOR_DELIMITER + literal)) {
-            String pattern = Pattern.quote(FACTOR_DELIMITER + literal);
-            result = result.replaceAll(pattern, "");
-        }
-        if (result.contains(FACTOR_DELIMITER + literal + FACTOR_DELIMITER)) {
-            String pattern = Pattern.quote(FACTOR_DELIMITER + literal + FACTOR_DELIMITER);
-            result = result.replaceAll(pattern, "" + FACTOR_DELIMITER);
-        }
-        if (result.equals(literal)) {
-            result = "";
-        }
-        return result;
+
+        Pattern boundaryPattern = Pattern.compile('^' + literal + '$'
+                + '|' + '^' + literal + ESCAPED_FACTOR_DELIMITER
+                + '|' + ESCAPED_FACTOR_DELIMITER + literal + '$');
+
+        Pattern middlePattern = Pattern.compile(ESCAPED_FACTOR_DELIMITER + literal + ESCAPED_FACTOR_DELIMITER);
+
+        return middlePattern.matcher(
+                boundaryPattern.matcher(term).replaceAll("")
+        ).replaceAll("" + FACTOR_DELIMITER);
     }
 
     private static String extractFunction(String expression, String seqLiteral,
