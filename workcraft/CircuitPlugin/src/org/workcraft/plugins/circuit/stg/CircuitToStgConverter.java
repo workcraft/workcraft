@@ -8,7 +8,10 @@ import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.formula.*;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.FormulaUtils;
+import org.workcraft.formula.Literal;
 import org.workcraft.formula.dnf.Dnf;
 import org.workcraft.formula.dnf.DnfClause;
 import org.workcraft.formula.dnf.DnfGenerator;
@@ -20,6 +23,7 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 import org.workcraft.types.TwoWayMap;
 import org.workcraft.utils.Geometry;
 import org.workcraft.utils.Hierarchy;
@@ -145,7 +149,7 @@ public class CircuitToStgConverter {
 
     private HashSet<VisualContact> identifyDrivers() {
         HashSet<VisualContact> result = new HashSet<>();
-        for (VisualContact contact: circuit.getVisualFunctionContacts()) {
+        for (VisualContact contact : circuit.getVisualFunctionContacts()) {
             VisualContact driver = CircuitUtils.findDriver(circuit, contact, true);
             if (driver == null) {
                 driver = contact;
@@ -155,49 +159,62 @@ public class CircuitToStgConverter {
         return result;
     }
 
-    private HashMap<VisualNode, Pair<VisualContact, Boolean>> associateNodesToDrivers(HashSet<VisualContact> driverSet) {
+    private HashMap<VisualNode, Pair<VisualContact, Boolean>> associateNodesToDrivers(
+            HashSet<VisualContact> driverContacts) {
+
         HashMap<VisualNode, Pair<VisualContact, Boolean>> result = new HashMap<>();
-        for (VisualContact driver: driverSet) {
-            if (!result.containsKey(driver)) {
-                result.putAll(propagateDriverInversion(driver, new Pair<>(driver, false)));
+        Queue<Triple<VisualNode, VisualContact, Boolean>> queue = new LinkedList<>();
+        for (VisualContact driverContact : driverContacts) {
+            queue.add(Triple.of(driverContact, driverContact, false));
+        }
+        while (!queue.isEmpty()) {
+            Triple<VisualNode, VisualContact, Boolean> item = queue.remove();
+            VisualNode currentNode = item.getFirst();
+            VisualContact driverContact = item.getSecond();
+            Boolean isInverted = item.getThird();
+            if (!result.containsKey(currentNode)) {
+                result.put(currentNode, Pair.of(driverContact, isInverted));
+                queue.addAll(propagateDriver(currentNode, driverContact, isInverted));
             }
         }
         return result;
     }
 
-    private HashMap<VisualNode, Pair<VisualContact, Boolean>> propagateDriverInversion(
-            VisualNode node, Pair<VisualContact, Boolean> driverAndInversion) {
+    private Collection<Triple<VisualNode, VisualContact, Boolean>> propagateDriver(
+            VisualNode currentNode, VisualContact driverContact, Boolean isInverted) {
 
-        HashMap<VisualNode, Pair<VisualContact, Boolean>> result = new HashMap<>();
-        result.put(node, driverAndInversion);
-        // Support for zero delay buffers and inverters.
-        if (node instanceof VisualContact) {
-            VisualContact contact = (VisualContact) node;
-            Node parent = node.getParent();
+        Collection<Triple<VisualNode, VisualContact, Boolean>> result = new ArrayList<>();
+        if (currentNode instanceof VisualContact) {
+            VisualContact contact = (VisualContact) currentNode;
+            Node parent = contact.getParent();
+            // Support for zero delay buffers and inverters
             if (contact.isInput() && (parent instanceof VisualCircuitComponent)) {
                 VisualFunctionComponent component = (VisualFunctionComponent) parent;
                 if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
-                    VisualContact driver = driverAndInversion.getFirst();
-                    boolean isInverting = component.isInverter();
-                    driverAndInversion = new Pair<>(driver, isInverting);
-                    for (VisualContact c: component.getVisualContacts()) {
-                        if (c.isOutput()) {
-                            node = c;
-                            result.put(node, driverAndInversion);
-                        }
-                    }
+                    VisualContact outputContact = component.getGateOutput();
+                    result.add(Triple.of(outputContact, driverContact, component.isInverter() != isInverted));
+                }
+            }
+            // Support for replicas
+            for (Replica replica : contact.getReplicas()) {
+                if (replica instanceof VisualReplicaContact) {
+                    VisualReplicaContact replicaContact = (VisualReplicaContact) replica;
+                    result.add(Triple.of(replicaContact, driverContact, isInverted));
                 }
             }
         }
-        for (VisualConnection connection: circuit.getConnections(node)) {
-            if ((connection.getFirst() == node) && (connection instanceof VisualCircuitConnection)) {
-                result.put(connection, driverAndInversion);
-                VisualNode succNode = connection.getSecond();
-                if (!result.containsKey(succNode)) {
-                    result.putAll(propagateDriverInversion(succNode, driverAndInversion));
+        // Propagate through connections
+        if (currentNode instanceof VisualConnection) {
+            VisualConnection connection = (VisualConnection) currentNode;
+            result.add(Triple.of(connection.getSecond(), driverContact, isInverted));
+        } else {
+            for (VisualConnection connection : circuit.getConnections(currentNode)) {
+                if (connection.getFirst() == currentNode) {
+                    result.add(Triple.of(connection, driverContact, isInverted));
                 }
             }
         }
+
         return result;
     }
 

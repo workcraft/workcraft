@@ -1,16 +1,11 @@
 package org.workcraft.plugins.circuit.routing.impl;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
+import org.workcraft.plugins.circuit.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.basic.Coordinate;
 import org.workcraft.plugins.circuit.routing.basic.CoordinateOrientation;
 import org.workcraft.plugins.circuit.routing.basic.IndexedInterval;
+
+import java.util.*;
 
 /**
  * This class maps coordinates to integer indexes.
@@ -73,7 +68,7 @@ public class IndexedCoordinates {
     /**
      * Add a single value to the mapping.
      *
-     * @param value
+     * @param coordinate
      *            a single value to be added to the mapping
      */
     private boolean add(Coordinate coordinate) {
@@ -122,7 +117,7 @@ public class IndexedCoordinates {
     /**
      * Add given coordinate to the mapping.
      *
-     * @param values
+     * @param coordinate
      *            a values to be added to the mapping
      * @param times
      *            the number of times to add this coordinate
@@ -199,11 +194,7 @@ public class IndexedCoordinates {
             return false;
         }
 
-        if (minBorder > maxBorder) {
-            return false;
-        }
-
-        return true;
+        return minBorder <= maxBorder;
     }
 
     /**

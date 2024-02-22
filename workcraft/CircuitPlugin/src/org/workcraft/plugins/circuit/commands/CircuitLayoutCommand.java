@@ -56,6 +56,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                 alignPorts(circuit);
                 distributeOverlappingInputPorts(circuit);
                 distributeOverlappingOutputPorts(circuit);
+                alignReplicas(circuit);
             }
             prepareConnections(circuit);
             if (!skipLayoutRouting()) {
@@ -228,9 +229,9 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     private void prepareConnections(VisualCircuit circuit) {
         circuit.selectNone();
         // Dissolve joints
-        DissolveJointTransformationCommand splitJointsCommand = new DissolveJointTransformationCommand();
-        Collection<VisualNode> joints = splitJointsCommand.collectNodes(circuit);
-        splitJointsCommand.transformNodes(circuit, joints);
+        DissolveJointTransformationCommand dissolveJointsCommand = new DissolveJointTransformationCommand();
+        Collection<VisualNode> joints = dissolveJointsCommand.collectNodes(circuit);
+        dissolveJointsCommand.transformNodes(circuit, joints);
         // Straighten connections
         StraightenConnectionTransformationCommand straightenConnectionsCommand = new StraightenConnectionTransformationCommand();
         Collection<VisualNode> connections = straightenConnectionsCommand.collectNodes(circuit);
@@ -293,6 +294,27 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
 //                    }
                     component.setRootSpacePosition(new Point2D.Double(x - xOffset, y));
                 }
+            }
+        }
+    }
+
+    private void alignReplicas(VisualCircuit circuit) {
+        for (VisualReplicaContact replicaContact : circuit.getVisualReplicaContacts()) {
+            double x = 0.0;
+            double y = 0.0;
+            int count = 0;
+            for (VisualNode drivenNode : circuit.getPostset(replicaContact)) {
+                if (drivenNode instanceof VisualTransformableNode) {
+                    VisualTransformableNode drivenTransformableNode = (VisualTransformableNode) drivenNode;
+                    double drivenX = drivenTransformableNode.getRootSpaceX();
+                    x = count > 0 ? Math.min(x, drivenX) : drivenX;
+                    y += drivenTransformableNode.getRootSpaceY();
+                    count++;
+                }
+            }
+            if (count > 0) {
+                double xOffset =  0.5 + 0.5 * replicaContact.getBoundingBoxInLocalSpace().getWidth();
+                replicaContact.setRootSpacePosition(new Point2D.Double(x - xOffset, y / (double) count));
             }
         }
     }

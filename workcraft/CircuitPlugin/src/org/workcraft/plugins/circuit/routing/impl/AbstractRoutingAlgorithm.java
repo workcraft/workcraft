@@ -3,7 +3,7 @@ package org.workcraft.plugins.circuit.routing.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
+import org.workcraft.plugins.circuit.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.basic.CellState;
 import org.workcraft.plugins.circuit.routing.basic.IndexedInterval;
 import org.workcraft.plugins.circuit.routing.basic.IndexedPoint;

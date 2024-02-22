@@ -76,6 +76,10 @@ public class CircuitPlugin implements Plugin {
                 "transform the Circuit 'work' by replacing selected (or all) components with their implementations");
         ScriptableCommandUtils.registerCommand(UpdateComponentInterfaceTransformationCommand.class, "transformCircuitUpdateComponentInterface",
                 "transform the Circuit 'work' by updating selected (or all) components from their refinement models");
+        ScriptableCommandUtils.registerCommand(ProxyContactTransformationCommand.class, "transformCircuitProxyDriverContact",
+                "transform the Circuit 'work' by creating proxies for selected driver contacts");
+        ScriptableCommandUtils.registerCommand(CollapseProxyTransformationCommand.class, "transformCircuitCollapseProxy",
+                "transform the Circuit 'work' by collapsing selected (or all) proxy contacts");
 
         // Statistics commands
         ScriptableCommandUtils.registerCommand(StatisticsCommand.class, "statCircuit",

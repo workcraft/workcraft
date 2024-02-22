@@ -1,6 +1,6 @@
 package org.workcraft.plugins.circuit.routing.impl;
 
-import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
+import org.workcraft.plugins.circuit.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.basic.Coordinate;
 import org.workcraft.plugins.circuit.routing.basic.CoordinateOrientation;
 import org.workcraft.plugins.circuit.routing.basic.Rectangle;
