@@ -1,7 +1,5 @@
 package org.workcraft.plugins.petri;
 
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.*;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.utils.ColorUtils;
@@ -10,8 +8,6 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-@DisplayName("Proxy place")
-@SVGIcon("images/petri-node-proxy.svg")
 public class VisualReplicaPlace extends VisualReplica {
 
     public VisualReplicaPlace() {

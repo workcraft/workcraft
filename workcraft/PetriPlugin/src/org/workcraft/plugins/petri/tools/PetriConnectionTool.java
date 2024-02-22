@@ -21,7 +21,7 @@ public class PetriConnectionTool extends ConnectionTool {
 
     @Override
     public String getSecondHintMessage() {
-        return super.getSecondHintMessage() + " Hold Alt/AltGr to create a place proxy.";
+        return super.getSecondHintMessage() + " Hold Alt/AltGr to create place proxy.";
     }
 
     @Override
