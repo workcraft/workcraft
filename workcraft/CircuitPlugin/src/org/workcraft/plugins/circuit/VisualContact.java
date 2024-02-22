@@ -9,6 +9,7 @@ import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.ColorUtils;
 
@@ -122,7 +123,11 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     private static final double size = 0.3;
+    public static final Font FANOUT_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
+    private static final Point2D FANOUT_OFFSET = new Point2D.Double(0.0, -0.5 * size);
+
     private Direction direction = Direction.WEST;
+    private RenderedText fanoutRenderedText = new RenderedText("", getFanoutFont(), Positioning.CENTER, FANOUT_OFFSET);
 
     public VisualContact(Contact contact) {
         super(contact, true, false, false);
@@ -132,7 +137,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<Direction>(Direction.class, PROPERTY_DIRECTION,
+        addPropertyDeclaration(new PropertyDeclaration<>(Direction.class, PROPERTY_DIRECTION,
                 this::setDirection, this::getDirection) {
             @Override
             public boolean isVisible() {
@@ -145,7 +150,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 () -> getReferencedComponent().getIOType())
                 .setCombinable());
 
-        addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_INIT_TO_ONE,
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Contact.PROPERTY_INIT_TO_ONE,
                 value -> getReferencedComponent().setInitToOne(value),
                 () -> getReferencedComponent().getInitToOne()) {
             @Override
@@ -154,7 +159,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             }
         }.setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_FORCED_INIT,
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Contact.PROPERTY_FORCED_INIT,
                 value -> getReferencedComponent().setForcedInit(value),
                 () -> getReferencedComponent().getForcedInit()) {
             @Override
@@ -163,7 +168,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             }
         }.setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<Boolean>(Boolean.class, Contact.PROPERTY_PATH_BREAKER,
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Contact.PROPERTY_PATH_BREAKER,
                 value -> getReferencedComponent().setPathBreaker(value),
                 () -> getReferencedComponent().getPathBreaker()) {
             @Override
@@ -258,7 +263,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }
         g.transform(rotateTransform);
 
-        boolean showContact = r.getModel().getConnections(this).isEmpty()
+        boolean showContact = r.getModel().getMathModel().getConnections(this.getReferencedComponent()).isEmpty()
                 || (d instanceof StateDecoration) || (d.getColorisation() != null) || (d.getBackground() != null);
 
         if (showContact || isPort()) {
@@ -283,18 +288,49 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             g.fill(VisualJoint.shape);
         }
 
+        if (CircuitSettings.getShowContactFanout() && isDriver()) {
+            g.setTransform(savedTransform);
+            if ((getDirection() == Direction.NORTH) || (getDirection() == Direction.SOUTH)) {
+                rotateTransform.setToIdentity();
+                rotateTransform.quadrantRotate(-1);
+                g.transform(rotateTransform);
+            }
+            g.translate(0.0, -size / 2);
+            drawFanoutInLocalSpace(r);
+        }
+
         if (!(getParent() instanceof VisualCircuitComponent)) {
             g.setTransform(savedTransform);
-            rotateTransform.setToIdentity();
-            if (getDirection() == Direction.NORTH || getDirection() == Direction.SOUTH) {
+            if ((getDirection() == Direction.NORTH) || (getDirection() == Direction.SOUTH)) {
+                rotateTransform.setToIdentity();
                 rotateTransform.quadrantRotate(-1);
+                g.transform(rotateTransform);
             }
-            g.transform(rotateTransform);
             drawNameInLocalSpace(r);
         }
 
         g.setTransform(savedTransform);
         d.decorate(g);
+    }
+
+    public Font getFanoutFont() {
+        return FANOUT_FONT.deriveFont((float) CircuitSettings.getContactFontSize());
+    }
+
+    protected void cacheFanoutRenderedText(DrawRequest r) {
+        int fanout = CircuitUtils.calcFanout((VisualCircuit) r.getModel(), this);
+        cacheFanoutRenderedText(Integer.toString(fanout), getFanoutFont());
+    }
+
+    protected void cacheFanoutRenderedText(String text, Font font) {
+        if (fanoutRenderedText.isDifferent(text, font, Positioning.CENTER, FANOUT_OFFSET)) {
+            fanoutRenderedText = new RenderedText(text, font, Positioning.CENTER, FANOUT_OFFSET);
+        }
+    }
+
+    protected void drawFanoutInLocalSpace(DrawRequest r) {
+        cacheFanoutRenderedText(r);
+        fanoutRenderedText.draw(r.getGraphics());
     }
 
     @Override
