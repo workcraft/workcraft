@@ -3,7 +3,10 @@ package org.workcraft.utils;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Drawable;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.Decorator;
 
 import java.awt.*;
@@ -62,4 +65,22 @@ public class ModelUtils {
         model.draw(g2d, Decorator.Empty.INSTANCE);
     }
 
+    public static void refreshBoundingBox(VisualModel model, Drawable drawable) {
+        BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
+
+        drawable.draw(new DrawRequest() {
+            @Override
+            public Decoration getDecoration() {
+                return Decoration.Empty.INSTANCE;
+            }
+            @Override
+            public Graphics2D getGraphics() {
+                return image.createGraphics();
+            }
+            @Override
+            public VisualModel getModel() {
+                return model;
+            }
+        });
+    }
 }
