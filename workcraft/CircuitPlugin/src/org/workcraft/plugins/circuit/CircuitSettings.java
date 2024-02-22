@@ -74,6 +74,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyContactFontSize = prefix + ".contactFontSize";
     private static final String keyShowZeroDelayNames = prefix + ".showZeroDelayNames";
     private static final String keyShowContactFunctions = prefix + ".showContactFunctions";
+    private static final String keyShowContactFanout = prefix + ".showContactFanout";
     private static final String keyBorderWidth = prefix + ".borderWidth";
     private static final String keyWireWidth = prefix + ".wireWidth";
     private static final String keyActiveWireColor = prefix + ".activeWireColor";
@@ -126,6 +127,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final double defaultContactFontSize = 0.4f;
     private static final boolean defaultShowZeroDelayNames = false;
     private static final boolean defaultShowContactFunctions = true;
+    private static final boolean defaultShowContactFanout = true;
     private static final Double defaultBorderWidth = 0.06;
     private static final Double defaultWireWidth = 0.04;
     private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
@@ -178,6 +180,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static double contactFontSize = defaultContactFontSize;
     private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
     private static boolean showContactFunctions = defaultShowContactFunctions;
+    private static boolean showContactFanout = defaultShowContactFanout;
     private static Double borderWidth = defaultBorderWidth;
     private static Double wireWidth = defaultWireWidth;
     private static Color activeWireColor = defaultActiveWireColor;
@@ -238,9 +241,14 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getShowZeroDelayNames));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Show set/reset functions of contacts",
+                PropertyHelper.BULLET_PREFIX + "Show set/reset functions of driver contacts",
                 CircuitSettings::setShowContactFunctions,
                 CircuitSettings::getShowContactFunctions));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                PropertyHelper.BULLET_PREFIX + "Show fanout of driver contacts",
+                CircuitSettings::setShowContactFanout,
+                CircuitSettings::getShowContactFanout));
 
         properties.add(new PropertyDeclaration<>(Double.class,
                 PropertyHelper.BULLET_PREFIX + "Border width",
@@ -516,6 +524,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setContactFontSize(config.getDouble(keyContactFontSize, defaultContactFontSize));
         setShowZeroDelayNames(config.getBoolean(keyShowZeroDelayNames, defaultShowZeroDelayNames));
         setShowContactFunctions(config.getBoolean(keyShowContactFunctions, defaultShowContactFunctions));
+        setShowContactFanout(config.getBoolean(keyShowContactFanout, defaultShowContactFanout));
         setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
         setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
         setActiveWireColor(config.getColor(keyActiveWireColor, defaultActiveWireColor));
@@ -568,6 +577,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setDouble(keyContactFontSize, getContactFontSize());
         config.setBoolean(keyShowZeroDelayNames, getShowZeroDelayNames());
         config.setBoolean(keyShowContactFunctions, getShowContactFunctions());
+        config.setBoolean(keyShowContactFanout, getShowContactFanout());
         config.setDouble(keyBorderWidth, getBorderWidth());
         config.setDouble(keyWireWidth, getWireWidth());
         config.setColor(keyActiveWireColor, getActiveWireColor());
@@ -637,6 +647,14 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setShowContactFunctions(boolean value) {
         showContactFunctions = value;
+    }
+
+    public static boolean getShowContactFanout() {
+        return showContactFanout;
+    }
+
+    public static void setShowContactFanout(boolean value) {
+        showContactFanout = value;
     }
 
     public static double getBorderWidth() {

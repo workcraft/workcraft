@@ -8,7 +8,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
+import org.workcraft.plugins.circuit.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.basic.CellState;
 import org.workcraft.plugins.circuit.routing.basic.Coordinate;
 import org.workcraft.plugins.circuit.routing.basic.Line;
@@ -112,7 +112,7 @@ public class RouterVisualiser {
         shape.moveTo(dx.getValue() + 0.1, dy.getValue() - 0.1);
         shape.lineTo(dx.getValue() - 0.1, dy.getValue() + 0.1);
         g.setColor(Color.RED);
-        g.setStroke(new BasicStroke(1.0f * (float) CircuitSettings.getWireWidth()));
+        g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
         g.draw(shape);
     }
 

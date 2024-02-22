@@ -1,6 +1,9 @@
-package org.workcraft.plugins.petri;
+package org.workcraft.plugins.circuit;
 
-import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.utils.ColorUtils;
 
@@ -8,18 +11,20 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-public class VisualReplicaPlace extends VisualReplica {
+public class VisualReplicaContact extends VisualReplica {
 
-    public VisualReplicaPlace() {
+    @SuppressWarnings("unused") // Required for deserialisation and is called via reflection
+    public VisualReplicaContact() {
         super();
         removePropertyDeclarationByName(PROPERTY_COLOR);
         removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
     }
 
-    public VisualReplicaPlace(VisualComponent master) {
+    @SuppressWarnings("unused") // Required for deserialisation and is called via reflection
+    public VisualReplicaContact(VisualContact contact) {
         super();
-        setMaster(master);
+        setMaster(contact);
     }
 
     @Override
@@ -41,15 +46,16 @@ public class VisualReplicaPlace extends VisualReplica {
     public Positioning getNamePositioning() {
         return Positioning.CENTER;
     }
+
     @Override
     public Point2D getNameOffset() {
         return new Point2D.Double(0.0, 0.0);
     }
 
-    public Place getReferencedPlace() {
-        if (getMaster() instanceof VisualPlace) {
-            VisualPlace visualPlace = (VisualPlace) getMaster();
-            return visualPlace.getReferencedComponent();
+    public Contact getReferencedContact() {
+        if (getMaster() instanceof VisualContact) {
+            VisualContact contact = (VisualContact) getMaster();
+            return contact.getReferencedComponent();
         }
         return null;
     }

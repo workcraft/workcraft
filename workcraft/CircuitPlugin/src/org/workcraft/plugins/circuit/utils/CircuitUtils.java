@@ -190,6 +190,35 @@ public final class CircuitUtils {
         return result;
     }
 
+    public static int calcFanout(VisualCircuit circuit, VisualContact contact) {
+        return calcFanout(circuit.getMathModel(), contact.getReferencedComponent());
+    }
+
+    public static int calcFanout(Circuit circuit, MathNode curNode) {
+        int result = 0;
+        Queue<MathNode> queue = new LinkedList<>();
+        if (curNode instanceof MathConnection) {
+            queue.add(((MathConnection) curNode).getSecond());
+        } else if (curNode != null) {
+            queue.addAll(circuit.getPostset(curNode));
+        }
+        while (!queue.isEmpty()) {
+            MathNode node = queue.remove();
+            if (node instanceof Joint) {
+                queue.addAll(circuit.getPostset(node));
+            } else if (node instanceof Contact) {
+                Contact contact = (Contact) node;
+                if (contact.isDriven()) {
+                    result++;
+                }
+            } else {
+                throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)
+                        + "' in the driven trace for node '" + circuit.getNodeReference(curNode) + "'!");
+            }
+        }
+        return result;
+    }
+
     private static Contact findZeroDelayOutput(Contact contact) {
         Contact zeroDelayOutput = null;
         Node parent = contact.getParent();

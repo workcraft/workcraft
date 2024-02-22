@@ -30,7 +30,11 @@ import java.util.HashSet;
 @SVGIcon("images/circuit-node-port.svg")
 public class VisualFunctionContact extends VisualContact implements StateObserver {
 
+    private enum ArrowType { UP, DOWN }
+
     private static final double size = 0.3;
+    private static final double X_FUNC_OFFSET = 1.25 * size;
+    private static final double Y_FUNC_OFFSET = 0.5 * size;
     private static final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
     private static Font functionFont;
 
@@ -109,8 +113,8 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private Point2D getSetFormulaOffset() {
-        double xOffset = size;
-        double yOffset = -size / 2;
+        double xOffset = X_FUNC_OFFSET;
+        double yOffset = -1.25 * Y_FUNC_OFFSET;
         FormulaRenderingResult renderingResult = getRenderedSetFunction();
         if (renderingResult != null) {
             Direction dir = getDirection();
@@ -118,7 +122,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
                 dir = dir.flip();
             }
             if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
-                xOffset = -(size + renderingResult.boundingBox.getWidth());
+                xOffset = -(X_FUNC_OFFSET + renderingResult.boundingBox.getWidth());
             }
         }
         return new Point2D.Double(xOffset, yOffset);
@@ -157,8 +161,8 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private Point2D getResetFormulaOffset() {
-        double xOffset = size;
-        double yOffset = size / 2;
+        double xOffset = X_FUNC_OFFSET;
+        double yOffset = Y_FUNC_OFFSET;
         FormulaRenderingResult renderingResult = getRenderedResetFunction();
         if (renderingResult != null) {
             Direction dir = getDirection();
@@ -166,9 +170,9 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
                 dir = dir.flip();
             }
             if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
-                xOffset = -(size + renderingResult.boundingBox.getWidth());
+                xOffset = -(X_FUNC_OFFSET + renderingResult.boundingBox.getWidth());
             }
-            yOffset = size / 2 + renderingResult.boundingBox.getHeight();
+            yOffset = Y_FUNC_OFFSET + renderingResult.boundingBox.getHeight();
         }
         return new Point2D.Double(xOffset, yOffset);
     }
@@ -191,36 +195,37 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         return bb;
     }
 
-    private void drawArrow(Graphics2D g, int arrowType, double arrX, double arrY) {
+    private void drawArrow(Graphics2D g, ArrowType arrowType, double arrX, double arrY) {
         double s = CircuitSettings.getContactFontSize();
         g.setStroke(new BasicStroke((float) s / 25));
         double s1 = 0.75 * s;
         double s2 = 0.45 * s;
         double s3 = 0.30 * s;
-        if (arrowType == 1) {
-            // arrow down
-            Line2D line = new Line2D.Double(arrX, arrY - s1, arrX, arrY - s3);
-            Path2D path = new Path2D.Double();
-            path.moveTo(arrX - 0.05, arrY - s3);
-            path.lineTo(arrX + 0.05, arrY - s3);
-            path.lineTo(arrX, arrY);
-            path.closePath();
-            g.fill(path);
-            g.draw(line);
-        } else if (arrowType == 2) {
-            // arrow up
-            Line2D line = new Line2D.Double(arrX, arrY, arrX, arrY - s2);
-            Path2D path = new Path2D.Double();
-            path.moveTo(arrX - 0.05, arrY - s2);
-            path.lineTo(arrX + 0.05, arrY - s2);
-            path.lineTo(arrX, arrY - s1);
-            path.closePath();
-            g.fill(path);
-            g.draw(line);
+        switch (arrowType) {
+        case DOWN:
+            Line2D upLine = new Line2D.Double(arrX, arrY - s1, arrX, arrY - s3);
+            Path2D upPath = new Path2D.Double();
+            upPath.moveTo(arrX - 0.05, arrY - s3);
+            upPath.lineTo(arrX + 0.05, arrY - s3);
+            upPath.lineTo(arrX, arrY);
+            upPath.closePath();
+            g.fill(upPath);
+            g.draw(upLine);
+            break;
+        case UP:
+            Line2D downLine = new Line2D.Double(arrX, arrY, arrX, arrY - s2);
+            Path2D downPath = new Path2D.Double();
+            downPath.moveTo(arrX - 0.05, arrY - s2);
+            downPath.lineTo(arrX + 0.05, arrY - s2);
+            downPath.lineTo(arrX, arrY - s1);
+            downPath.closePath();
+            g.fill(downPath);
+            g.draw(downLine);
+            break;
         }
     }
 
-    private void drawFormula(Graphics2D g, int arrowType, Point2D offset, FormulaRenderingResult renderingResult) {
+    private void drawFormula(Graphics2D g, ArrowType arrowType, Point2D offset, FormulaRenderingResult renderingResult) {
         if (renderingResult != null) {
             Direction dir = getDirection();
             if (!(getParent() instanceof VisualFunctionComponent)) {
@@ -234,9 +239,9 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
                 g.transform(rotateTransform);
             }
 
-            double dXArrow = -0.15;
+            double dXArrow = -0.1;
             if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
-                dXArrow = renderingResult.boundingBox.getWidth() + 0.15;
+                dXArrow = 0.1 + renderingResult.boundingBox.getWidth();
             }
 
             drawArrow(g, arrowType, offset.getX() + dXArrow, offset.getY());
@@ -256,13 +261,11 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             FormulaRenderingResult renderingResult;
             renderingResult = getRenderedSetFunction();
             if (renderingResult != null) {
-                Point2D offset = getSetFormulaOffset();
-                drawFormula(g, 2, offset, renderingResult);
+                drawFormula(g, ArrowType.UP, getSetFormulaOffset(), renderingResult);
             }
             renderingResult = getRenderedResetFunction();
             if (renderingResult != null) {
-                Point2D offset = getResetFormulaOffset();
-                drawFormula(g, 1, offset, renderingResult);
+                drawFormula(g, ArrowType.DOWN, getResetFormulaOffset(), renderingResult);
             }
         }
         super.draw(r);

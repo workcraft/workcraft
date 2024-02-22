@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
@@ -22,7 +22,7 @@ public class VisualCircuitConnection extends VisualConnection {
         this(refConnection, null, null);
     }
 
-    public VisualCircuitConnection(MathConnection refConnection, VisualComponent c1, VisualComponent c2) {
+    public VisualCircuitConnection(MathConnection refConnection, VisualNode c1, VisualNode c2) {
         super(refConnection, c1, c2);
         removePropertyDeclarationByName(PROPERTY_LINE_WIDTH);
     }

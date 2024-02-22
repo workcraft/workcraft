@@ -29,6 +29,9 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getShowContactFunctions()),
                 framework.getConfigVar(prefix + ".showContactFunctions", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getShowContactFanout()),
+                framework.getConfigVar(prefix + ".showContactFanout", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getBorderWidth()),
                 framework.getConfigVar(prefix + ".borderWidth", false));
 

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.circuit.commands;
+package org.workcraft.plugins.circuit;
 
 import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;

@@ -1,7 +1,7 @@
 package org.workcraft.plugins.circuit.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -12,9 +12,9 @@ import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
@@ -97,14 +97,14 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
                     if (!(connection instanceof VisualCircuitConnection)) continue;
                     if (connection.getFirst() == node) {
                         VisualCircuitConnection succConnection = (VisualCircuitConnection) connection;
+                        LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(
+                                joint, predConnection, succConnection);
 
-                        LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(joint, predConnection, succConnection);
                         circuit.remove(succConnection);
-
-                        VisualNode fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
-                        VisualNode toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
                         try {
-                            VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
+                            VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(
+                                    predConnection.getFirst(), succConnection.getSecond());
+
                             newConnection.mixStyle(predConnection, succConnection);
                             ConnectionHelper.addControlPoints(newConnection, locations);
                         } catch (InvalidConnectionException e) {

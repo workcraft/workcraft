@@ -10,11 +10,9 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.ConnectionTool;
 import org.workcraft.gui.tools.GraphEditor;
-import org.workcraft.plugins.circuit.VisualCircuitComponent;
-import org.workcraft.plugins.circuit.VisualCircuitConnection;
-import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.ConnectionUtils;
+import org.workcraft.plugins.circuit.utils.ConversionUtils;
 
 import java.awt.geom.Point2D;
 import java.util.Collections;
@@ -28,9 +26,16 @@ public class CircuitConnectionTool extends ConnectionTool {
             VisualContact contact = (VisualContact) node;
             return (firstNode == null) == contact.isDriver();
         }
-        return (node instanceof VisualJoint)
-                || (node instanceof VisualCircuitComponent)
-                || (node instanceof VisualCircuitConnection);
+        if (node instanceof VisualConnection) {
+            VisualConnection connection = (VisualConnection) node;
+            return !(connection.getFirst() instanceof VisualReplicaContact);
+        }
+        return (node instanceof VisualJoint) || (node instanceof VisualCircuitComponent);
+    }
+
+    @Override
+    public String getSecondHintMessage() {
+        return super.getSecondHintMessage() + " Hold Alt/AltGr to create contact proxy.";
     }
 
     @Override
@@ -62,6 +67,10 @@ public class CircuitConnectionTool extends ConnectionTool {
                     Point2D snapPos = editor.snap(jointPosition, Collections.singleton(adjacentNodePosition));
                     ((VisualJoint) fromNode).setRootSpacePosition(snapPos);
                 }
+            }
+            if (e.isExtendKeyDown()) {
+                VisualCircuit circuit = (VisualCircuit) e.getEditor().getModel();
+                connection = ConversionUtils.replicateDriverContact(circuit, connection);
             }
         }
         return connection;

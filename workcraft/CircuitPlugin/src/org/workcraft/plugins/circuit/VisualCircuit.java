@@ -16,7 +16,6 @@ import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.gui.tools.Decorator;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
-import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.RouterVisualiser;
 import org.workcraft.plugins.circuit.routing.impl.Router;
@@ -192,28 +191,20 @@ public class VisualCircuit extends AbstractVisualModel {
             second = ((VisualCircuitComponent) second).createContact(Contact.IOType.INPUT);
         }
 
-        VisualCircuitConnection vConnection = null;
-        if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
-            VisualComponent vComponent1 = (VisualComponent) first;
-            VisualComponent vComponent2 = (VisualComponent) second;
-
-            if (mConnection == null) {
-                MathNode mComponent1 = vComponent1.getReferencedComponent();
-                MathNode mComponent2 = vComponent2.getReferencedComponent();
-                mConnection = getMathModel().connect(mComponent1, mComponent2);
-            }
-            vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
-            vConnection.setArrowLength(0.0);
-
-            Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
-            Container vContainer = (Container) Hierarchy.getNearestAncestor(vParent,
-                    node -> (node instanceof VisualGroup) || (node instanceof VisualPage));
-
-            if (vContainer != null) {
-                vContainer.add(vConnection);
-            }
+        if (mConnection == null) {
+            mConnection = getMathModel().connect(getReferencedComponent(first), getReferencedComponent(second));
         }
-        return vConnection;
+        VisualCircuitConnection result = new VisualCircuitConnection(mConnection, first, second);
+        result.setArrowLength(0.0);
+
+        Node vParent = Hierarchy.getCommonParent(first, second);
+        Container vContainer = (Container) Hierarchy.getNearestAncestor(vParent,
+                node -> (node instanceof VisualGroup) || (node instanceof VisualPage));
+
+        if (vContainer != null) {
+            vContainer.add(result);
+        }
+        return result;
     }
 
     public Collection<VisualFunctionContact> getVisualFunctionContacts() {
@@ -312,6 +303,10 @@ public class VisualCircuit extends AbstractVisualModel {
 
     public Collection<VisualContact> getVisualDrivers() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, VisualContact::isDriver);
+    }
+
+    public Collection<VisualReplicaContact> getVisualReplicaContacts() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualReplicaContact.class);
     }
 
     @Override

@@ -77,7 +77,8 @@ public class VisualPetri extends AbstractVisualModel {
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
             throw new InvalidConnectionException("Arcs between transitions are not allowed.");
         }
-        if (ConnectionUtils.hasReadArcConnection(this, first, second) || ConnectionUtils.hasReadArcConnection(this, second, first)) {
+        if (ConnectionUtils.hasReadArcConnection(this, first, second)
+                || ConnectionUtils.hasReadArcConnection(this, second, first)) {
             throw new InvalidConnectionException("Nodes are already connected by a read-arc.");
         }
         if (ConnectionUtils.hasProducingArcConnection(this, first, second)) {

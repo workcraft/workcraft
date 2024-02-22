@@ -196,9 +196,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
         validateConnection(first, second);
         if (mConnection == null) {
-            MathNode mFirst = getReferencedComponent(first);
-            MathNode mSecond = getReferencedComponent(second);
-            mConnection = getMathModel().connect(mFirst, mSecond);
+            mConnection = getMathModel().connect(getReferencedComponent(first), getReferencedComponent(second));
         }
         VisualConnection vConnection = new VisualConnection(mConnection, first, second);
         Container container = Hierarchy.getNearestContainer(first, second);
@@ -222,7 +220,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         return connect(first, second, null);
     }
 
-    public MathNode getReferencedComponent(Node node) {
+    public MathNode getReferencedComponent(VisualNode node) {
         VisualComponent component = null;
         if (node instanceof VisualComponent) {
             component = (VisualComponent) node;
