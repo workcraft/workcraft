@@ -136,31 +136,43 @@ public class CircuitSelectionTool extends SelectionTool {
     @Override
     public Collection<VisualNode> getNodeWithAdjacentConnections(VisualModel model, VisualNode node) {
         HashSet<VisualNode> result = new HashSet<>();
-        Queue<VisualNode> queue = new LinkedList<>();
-        queue.add(node);
-        while (!queue.isEmpty()) {
-            node = queue.remove();
-            if (result.contains(node)) {
-                continue;
+        if (node instanceof VisualCircuitComponent) {
+            VisualCircuitComponent component = (VisualCircuitComponent) node;
+            result.add(component);
+            for (VisualContact inputContact : component.getVisualInputs()) {
+                for (VisualConnection connection : model.getConnections(inputContact)) {
+                    VisualNode firstNode = connection.getFirst();
+                    if (firstNode instanceof VisualReplica) {
+                        result.add(connection);
+                        result.add(firstNode);
+                    }
+                }
             }
-            result.add(node);
-            if (node instanceof VisualConnection) {
-                VisualConnection connection = (VisualConnection) node;
-                VisualNode first = connection.getFirst();
-                if (first instanceof VisualJoint) {
-                    queue.add(first);
-                } else {
-                    queue.addAll(model.getConnections(first));
+        } else {
+            Queue<VisualNode> queue = new LinkedList<>(super.getNodeWithAdjacentConnections(model, node));
+            while (!queue.isEmpty()) {
+                node = queue.remove();
+                if (result.contains(node)) {
+                    continue;
                 }
-                VisualNode second = connection.getSecond();
-                if (second instanceof VisualJoint) {
-                    queue.add(second);
+                result.add(node);
+                if (node instanceof VisualConnection) {
+                    VisualConnection connection = (VisualConnection) node;
+                    VisualNode firstNode = connection.getFirst();
+                    if (firstNode instanceof VisualJoint) {
+                        result.add(firstNode);
+                        queue.addAll(model.getConnections(firstNode));
+                    } else {
+                        for (VisualNode masterOrReplicaNode : super.getNodeWithAdjacentConnections(model, firstNode)) {
+                            queue.addAll(model.getConnections(masterOrReplicaNode));
+                        }
+                    }
+                    VisualNode secondNode = connection.getSecond();
+                    if (secondNode instanceof VisualJoint) {
+                        result.add(secondNode);
+                        queue.addAll(model.getConnections(secondNode));
+                    }
                 }
-            } else if (node instanceof VisualCircuitComponent) {
-                VisualCircuitComponent component = (VisualCircuitComponent) node;
-                queue.addAll(component.getVisualContacts());
-            } else {
-                queue.addAll(model.getConnections(node));
             }
         }
         return result;
