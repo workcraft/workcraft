@@ -70,7 +70,11 @@ public class CircuitConnectionTool extends ConnectionTool {
             }
             if (e.isExtendKeyDown()) {
                 VisualCircuit circuit = (VisualCircuit) e.getEditor().getModel();
-                connection = ConversionUtils.replicateDriverContact(circuit, connection);
+                VisualNode toNode = connection.getSecond();
+                if (toNode instanceof VisualContact) {
+                    VisualContact drivenContact = (VisualContact) toNode;
+                    connection = ConversionUtils.replicateDriverContact(circuit, drivenContact);
+                }
             }
         }
         return connection;

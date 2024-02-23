@@ -50,7 +50,51 @@ public class ConversionUtils {
         return result;
     }
 
-    public static VisualConnection replicateDriverContact(VisualCircuit circuit, VisualConnection connection) {
+    public static VisualConnection replicateDriverContact(VisualCircuit circuit, VisualContact drivenContact) {
+        Set<VisualConnection> connections = circuit.getConnections(drivenContact);
+        if (connections.size() == 1) {
+            VisualConnection connection = connections.iterator().next();
+            if (connection.getSecond() == drivenContact) {
+                VisualContact driverContact = CircuitUtils.findDriver(circuit, drivenContact, false);
+
+                Container container = drivenContact.isPort()
+                        ? (Container) drivenContact.getParent()
+                        : (Container) drivenContact.getParent().getParent();
+
+                VisualReplicaContact replicaDriverContact
+                        = circuit.createVisualReplica(driverContact, VisualReplicaContact.class, container);
+
+                Point2D pos = drivenContact.getRootSpacePosition();
+                VisualContact.Direction direction = drivenContact.getDirection();
+                int sign = drivenContact.isPort() ? -1 : 1;
+                ModelUtils.refreshBoundingBox(circuit, replicaDriverContact);
+                Rectangle2D replicaBox = replicaDriverContact.getBoundingBoxInLocalSpace();
+                double xOffset = sign * direction.getGradientX() * (0.5 + 0.5 * replicaBox.getWidth());
+                double yOffset = sign * direction.getGradientY() * (0.5 + 0.5 * replicaBox.getHeight());
+                replicaDriverContact.setRootSpacePosition(new Point2D.Double(pos.getX() + xOffset, pos.getY() + yOffset));
+
+                VisualNode firstNode = connection.getFirst();
+                circuit.remove(connection);
+                if (firstNode instanceof VisualJoint) {
+                    int size = circuit.getConnections(firstNode).size();
+                    if (size < 2) {
+                        circuit.remove(firstNode);
+                    } else if (size == 2) {
+                        new DissolveJointTransformationCommand().transformNodes(circuit, Collections.singleton(firstNode));
+                    }
+                }
+
+                try {
+                    return circuit.connect(replicaDriverContact, drivenContact);
+                } catch (InvalidConnectionException ignored) {
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public static VisualConnection replicateDriverContact1(VisualCircuit circuit, VisualConnection connection) {
         if (!(connection.getSecond() instanceof VisualContact)) {
             return connection;
         }

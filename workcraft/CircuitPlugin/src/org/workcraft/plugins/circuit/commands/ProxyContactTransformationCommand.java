@@ -6,10 +6,10 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualReplicaContact;
 import org.workcraft.plugins.circuit.utils.ConversionUtils;
-import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -40,7 +40,11 @@ public class ProxyContactTransformationCommand extends AbstractTransformationCom
             VisualConnection connection = (VisualConnection) node;
             return connection.getSecond() instanceof VisualContact;
         }
-        return false;
+        if (node instanceof VisualContact) {
+            VisualContact contact = (VisualContact) node;
+            return contact.isDriven();
+        }
+        return (node instanceof VisualCircuitComponent);
     }
 
     @Override
@@ -55,18 +59,34 @@ public class ProxyContactTransformationCommand extends AbstractTransformationCom
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> connections = new HashSet<>(Hierarchy.getDescendantsOfType(
-                model.getRoot(), VisualConnection.class));
-
-        connections.retainAll(model.getSelection());
-        return connections;
+        Collection<VisualNode> result = new HashSet<>();
+        for (VisualNode node : model.getSelection()) {
+            if (node instanceof VisualContact) {
+                VisualContact contact = (VisualContact) node;
+                if (contact.isDriven()) {
+                    result.add(node);
+                }
+            }
+            if (node instanceof VisualConnection) {
+                VisualConnection connection = (VisualConnection) node;
+                VisualNode secondNode = connection.getSecond();
+                if (secondNode instanceof VisualContact) {
+                    result.add(secondNode);
+                }
+            }
+            if (node instanceof VisualCircuitComponent) {
+                VisualCircuitComponent component = (VisualCircuitComponent) node;
+                result.addAll(component.getVisualInputs());
+            }
+        }
+        return result;
     }
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualConnection)) {
+        if ((model instanceof VisualCircuit) && (node instanceof VisualContact)) {
             VisualConnection connection = ConversionUtils.replicateDriverContact(
-                    (VisualCircuit) model, (VisualConnection) node);
+                    (VisualCircuit) model, (VisualContact) node);
 
             if ((connection != null) && (connection.getFirst() instanceof VisualReplicaContact)) {
                 model.addToSelection(connection.getFirst());
