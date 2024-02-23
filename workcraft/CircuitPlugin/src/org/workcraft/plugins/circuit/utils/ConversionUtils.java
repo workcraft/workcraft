@@ -93,47 +93,4 @@ public class ConversionUtils {
         return null;
     }
 
-
-    public static VisualConnection replicateDriverContact1(VisualCircuit circuit, VisualConnection connection) {
-        if (!(connection.getSecond() instanceof VisualContact)) {
-            return connection;
-        }
-        VisualConnection result = null;
-        VisualContact drivenContact = (VisualContact) connection.getSecond();
-        VisualContact driverContact = CircuitUtils.findDriver(circuit, drivenContact, false);
-
-        Container container = drivenContact.isPort()
-                ? (Container) drivenContact.getParent()
-                : (Container) drivenContact.getParent().getParent();
-
-        VisualReplicaContact replicaDriverContact
-                = circuit.createVisualReplica(driverContact, VisualReplicaContact.class, container);
-
-        Point2D pos = drivenContact.getRootSpacePosition();
-        VisualContact.Direction direction = drivenContact.getDirection();
-        int sign = drivenContact.isPort() ? -1 : 1;
-        ModelUtils.refreshBoundingBox(circuit, replicaDriverContact);
-        Rectangle2D replicaBox = replicaDriverContact.getBoundingBoxInLocalSpace();
-        double xOffset = sign * direction.getGradientX() * (0.5 + 0.5 * replicaBox.getWidth());
-        double yOffset = sign * direction.getGradientY() * (0.5 + 0.5 * replicaBox.getHeight());
-        replicaDriverContact.setRootSpacePosition(new Point2D.Double(pos.getX() + xOffset, pos.getY() + yOffset));
-
-        VisualNode first = connection.getFirst();
-        circuit.remove(connection);
-        if (first instanceof VisualJoint) {
-            int size = circuit.getConnections(first).size();
-            if (size < 2) {
-                circuit.remove(first);
-            } else if (size == 2) {
-                new DissolveJointTransformationCommand().transformNodes(circuit, Collections.singleton(first));
-            }
-        }
-
-        try {
-            result = circuit.connect(replicaDriverContact, drivenContact);
-        } catch (InvalidConnectionException ignored) {
-        }
-        return result;
-    }
-
 }
