@@ -6,10 +6,7 @@ import org.workcraft.plugins.CompatibilityManager;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.circuit.commands.*;
-import org.workcraft.plugins.circuit.interop.GenlibImporter;
-import org.workcraft.plugins.circuit.interop.VerilogAssignExporter;
-import org.workcraft.plugins.circuit.interop.VerilogImporter;
-import org.workcraft.plugins.circuit.interop.VerilogNetlistExporter;
+import org.workcraft.plugins.circuit.interop.*;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.utils.ScriptableCommandUtils;
@@ -37,8 +34,9 @@ public class CircuitPlugin implements Plugin {
         pm.registerSettings(CircuitSettings.class);
 
         pm.registerExporter(VerilogNetlistExporter.class);
-        pm.registerExporter(VerilogAssignExporter.class);
+        pm.registerExporter(SystemVerilogAssignExporter.class);
         pm.registerImporter(VerilogImporter.class);
+        pm.registerImporter(SystemVerilogImporter.class);
         pm.registerImporter(GenlibImporter.class);
 
         // Circuit layout settings and commands

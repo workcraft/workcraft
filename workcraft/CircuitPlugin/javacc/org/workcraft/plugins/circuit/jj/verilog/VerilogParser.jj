@@ -57,11 +57,15 @@ SKIP:
 |
     "/*" : WITHIN_COMMENT
 |
-    <"`" (~["\r", "\n"])*>
+    <"`" (~["\r", "\n"])*>  // Simulator directives, e.g. `timescale
 |
     <"#" ([ "0"-"9" ])* (["."])? ([ "0"-"9" ])+>  // Simple delay
 |
     "#(" { delayNestingDepth = 1 ; } : WITHIN_DELAY  // Complex delay
+|
+    <"timeunit" (~[";"])* ";"> // System Verilog timeunit
+|
+    <"timeprecision" (~[";"])* ";"> // System Verilog timeprecision
 }
 
 <WITHIN_COMMENT> SKIP: { "*/" : DEFAULT }
