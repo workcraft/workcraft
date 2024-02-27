@@ -22,7 +22,7 @@ public class CircuitDescriptor implements ModelDescriptor {
 
     @Override
     public Version getCompatibilityVersion() {
-        return new Version(3, 2, 0, Version.Status.RELEASE);
+        return new Version(3, 5, 0, Version.Status.RELEASE);
     }
 
 }
