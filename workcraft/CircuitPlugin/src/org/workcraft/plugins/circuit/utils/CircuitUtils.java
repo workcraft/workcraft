@@ -190,12 +190,13 @@ public final class CircuitUtils {
         return result;
     }
 
-    public static int calcFanout(VisualCircuit circuit, VisualContact contact) {
+    public static Pair<Integer, Boolean> calcFanout(VisualCircuit circuit, VisualContact contact) {
         return calcFanout(circuit.getMathModel(), contact.getReferencedComponent());
     }
 
-    public static int calcFanout(Circuit circuit, MathNode curNode) {
-        int result = 0;
+    public static Pair<Integer, Boolean> calcFanout(Circuit circuit, MathNode curNode) {
+        int fanoutCount = 0;
+        boolean isPortDriver = false;
         Queue<MathNode> queue = new LinkedList<>();
         if (curNode instanceof MathConnection) {
             queue.add(((MathConnection) curNode).getSecond());
@@ -209,14 +210,17 @@ public final class CircuitUtils {
             } else if (node instanceof Contact) {
                 Contact contact = (Contact) node;
                 if (contact.isDriven()) {
-                    result++;
+                    fanoutCount++;
+                }
+                if (contact.isPort()) {
+                    isPortDriver = true;
                 }
             } else {
                 throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)
                         + "' in the driven trace for node '" + circuit.getNodeReference(curNode) + "'!");
             }
         }
-        return result;
+        return Pair.of(fanoutCount, isPortDriver);
     }
 
     private static Contact findZeroDelayOutput(Contact contact) {
