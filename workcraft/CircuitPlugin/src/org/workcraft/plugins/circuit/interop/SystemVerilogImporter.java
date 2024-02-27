@@ -1,19 +1,19 @@
 package org.workcraft.plugins.circuit.interop;
 
-public class VerilogImporter extends AbstractVerilogImporter {
+public class SystemVerilogImporter extends AbstractVerilogImporter {
 
     @SuppressWarnings("unused")  // Default constructor is required for PluginManager -- it is called via reflection.
-    public VerilogImporter() {
+    public SystemVerilogImporter() {
         this(true, false);
     }
 
-    public VerilogImporter(boolean celementAssign, boolean sequentialAssign) {
+    public SystemVerilogImporter(boolean celementAssign, boolean sequentialAssign) {
         super(celementAssign, sequentialAssign);
     }
 
     @Override
     public VerilogFormat getFormat() {
-        return VerilogFormat.DEFAULT;
+        return VerilogFormat.SYSTEM_VERILOG_ASSIGN_STATEMENTS;
     }
 
 }

@@ -82,6 +82,9 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getVerilogAssignDelay()),
                 framework.getConfigVar(prefix + ".verilogAssignDelay", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getVerilogTimescale()),
+                framework.getConfigVar(prefix + ".verilogTimescale", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));
 

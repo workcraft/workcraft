@@ -28,12 +28,20 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class CircuitSettings extends AbstractModelSettings {
+
     public static final Map<String, String> PREDEFINED_DELAY_PARAMETERS = new LinkedHashMap<>();
 
     static {
         PREDEFINED_DELAY_PARAMETERS.put("", "No delay");
-        PREDEFINED_DELAY_PARAMETERS.put("1", "One unit delay (should be defined using `timescale)");
+        PREDEFINED_DELAY_PARAMETERS.put("1", "One unit delay (time unit and precision should be defined)");
         PREDEFINED_DELAY_PARAMETERS.put("(1ps * $urandom_range(40, 90))", "Random delay between 40ps and 90ps");
+    }
+
+    public static final Map<String, String> PREDEFINED_TIMESCALE_PARAMETERS = new LinkedHashMap<>();
+
+    static {
+        PREDEFINED_TIMESCALE_PARAMETERS.put("", "No delay");
+        PREDEFINED_TIMESCALE_PARAMETERS.put("1ns / 1ps", "1ns per unit with 1ps precision");
     }
 
     public static final String GATE_LIBRARY_TITLE = "Gate library for technology mapping";
@@ -93,6 +101,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyImportSubstitutionLibrary = prefix + ".importSubstitutionLibrary";
     private static final String keyInvertImportSubstitutionRules = prefix + ".invertImportSubstitutionRules";
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
+    private static final String keyVerilogTimescale = prefix + ".verilogTimescale";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyDissolveSingletonBus = prefix + ".dissolveSingletonBus";
     private static final String keyAcceptInoutPort = prefix + ".acceptInoutPort";
@@ -146,6 +155,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
     private static final String defaultVerilogAssignDelay = "1";
+    private static final String defaultVerilogTimescale = "";
     private static final String defaultBusSuffix = "__" + BUS_INDEX_PLACEHOLDER;
     private static final boolean defaultDissolveSingletonBus = true;
     private static final boolean defaultAcceptInoutPort = true;
@@ -199,6 +209,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
     private static String verilogAssignDelay = defaultVerilogAssignDelay;
+    private static String verilogTimescale = defaultVerilogTimescale;
     private static String busSuffix = defaultBusSuffix;
     private static boolean dissolveSingletonBus = defaultDissolveSingletonBus;
     private static boolean acceptInoutPort = defaultAcceptInoutPort;
@@ -359,6 +370,16 @@ public class CircuitSettings extends AbstractModelSettings {
             @Override
             public Map<String, String> getChoice() {
                 return PREDEFINED_DELAY_PARAMETERS;
+            }
+        });
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Verilog time unit / precision (empty to suppress)",
+                CircuitSettings::setVerilogTimescale,
+                CircuitSettings::getVerilogTimescale) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_TIMESCALE_PARAMETERS;
             }
         });
 
@@ -543,6 +564,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setImportSubstitutionLibrary(config.getString(keyImportSubstitutionLibrary, defaultImportSubstitutionLibrary));
         setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
         setVerilogAssignDelay(config.getString(keyVerilogAssignDelay, defaultVerilogAssignDelay));
+        setVerilogTimescale(config.getString(keyVerilogTimescale, defaultVerilogTimescale));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setDissolveSingletonBus(config.getBoolean(keyDissolveSingletonBus, defaultDissolveSingletonBus));
         setAcceptInoutPort(config.getBoolean(keyAcceptInoutPort, defaultAcceptInoutPort));
@@ -596,6 +618,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyImportSubstitutionLibrary, getImportSubstitutionLibrary());
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
         config.set(keyVerilogAssignDelay, getVerilogAssignDelay());
+        config.set(keyVerilogTimescale, getVerilogTimescale());
         config.set(keyBusSuffix, getBusSuffix());
         config.setBoolean(keyDissolveSingletonBus, getDissolveSingletonBus());
         config.setBoolean(keyAcceptInoutPort, getAcceptInoutPort());
@@ -799,6 +822,17 @@ public class CircuitSettings extends AbstractModelSettings {
         } else {
             DialogUtils.showError(VerilogUtils.getAssignDelayHelp());
         }
+    }
+
+    public static String getVerilogTimescale() {
+        return verilogTimescale;
+    }
+
+    public static void setVerilogTimescale(String value) {
+        if (value == null) {
+            value = "";
+        }
+        verilogTimescale = value.trim();
     }
 
     public static String getBusSuffix() {

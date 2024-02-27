@@ -37,6 +37,8 @@ public abstract class AbstractVerilogExporter implements Exporter {
     private static final String KEYWORD_ENDMODULE = "endmodule";
     private static final String KEYWORD_ASSIGN = "assign";
     private static final String KEYWORD_ASSIGN_DELAY = "#";
+    private static final String KEYWORD_TIMESCALE = "`timescale";
+    private static final String KEYWORD_TIMEUNIT = "timeunit";
 
     private final Queue<Pair<File, Circuit>> refinementCircuits = new LinkedList<>();
 
@@ -57,6 +59,12 @@ public abstract class AbstractVerilogExporter implements Exporter {
             File file = getCurrentFile();
             writer.write(ExportUtils.getExportHeader("Verilog netlist", "//", moduleName, file, getFormat()));
             refinementCircuits.clear();
+            if (!getFormat().useSystemVerilogSyntax()) {
+                String timescale = CircuitSettings.getVerilogTimescale();
+                if ((timescale != null) && !timescale.isEmpty()) {
+                    writer.write(KEYWORD_TIMESCALE + ' ' + timescale + "\n\n");
+                }
+            }
             writeCircuit(writer, circuit, moduleName);
             writeRefinementCircuits(writer);
             writer.close();
@@ -74,7 +82,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         }
         CircuitSignalInfo circuitInfo = new CircuitSignalInfo(circuit);
         writeHeader(writer, circuitInfo, moduleName);
-        writeInstances(writer, circuitInfo, getFormat());
+        writeInstances(writer, circuitInfo);
         writeInitialState(writer, circuitInfo);
         writer.write(KEYWORD_ENDMODULE);
         writer.write('\n');
@@ -142,6 +150,12 @@ public abstract class AbstractVerilogExporter implements Exporter {
         Set<VerilogBus> wireBuses = extractSignalBuses(wires, circuitInfo);
         writeSignalDefinitions(writer, KEYWORD_WIRE, wires, wireBuses);
         writer.write('\n');
+        if (getFormat().useSystemVerilogSyntax()) {
+            String timescale = CircuitSettings.getVerilogTimescale();
+            if ((timescale != null) && !timescale.isEmpty()) {
+                writer.write("    " + KEYWORD_TIMEUNIT + ' ' + timescale + ";\n\n");
+            }
+        }
     }
 
     private void adjustBuses(Set<String> inputs, Set<String> outputs, Set<String> wires,
@@ -212,8 +226,8 @@ public abstract class AbstractVerilogExporter implements Exporter {
         }
     }
 
-    private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo, VerilogFormat format) {
-        boolean useAssignments = format.useAssignOnly();
+    private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo) {
+        boolean useAssignments = getFormat().useAssignOnly();
         // Write assign statements
         boolean hasAssignments = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {

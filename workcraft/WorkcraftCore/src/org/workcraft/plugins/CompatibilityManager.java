@@ -172,7 +172,10 @@ public class CompatibilityManager {
             ZipFile zipFile = new ZipFile(file, StandardCharsets.UTF_8);
             Version compatibilityVersion = WorkUtils.extractCompatibilityVersion(zipFile);
             Version currentVersion = Info.getVersion();
-            if ((compatibilityVersion != null) && (currentVersion != null) && (currentVersion.compareTo(compatibilityVersion) < 0)) {
+            Version currentReleaseVersion = new Version(currentVersion.major, currentVersion.minor,
+                    currentVersion.revision, Version.Status.RELEASE);
+
+            if ((compatibilityVersion != null) && (currentReleaseVersion.compareTo(compatibilityVersion) < 0)) {
                 String message = "Workcraft v" + currentVersion + " may incorrectly read a file " +
                         "that is declared to be backward-compatible to v" + compatibilityVersion;
 

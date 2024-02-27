@@ -1,3 +1,4 @@
+exportCircuitSystemVerilogAssigns(work, svFileName) - export the Circuit 'work' as a System Verilog (*.sv) file 'svFileName' with assign statements
 exportCircuitVerilog(work, vFileName) - export the Circuit 'work' as a Verilog netlist (*.v) file 'vFileName'
 exportDfsVerilog(work, vFileName) - export the DFS 'work' as a Verilog netlist (*.v) file 'vFileName'
 exportDot(work, fileName) - export the model 'work' as a GraphViz (*.dot) file 'fileName'

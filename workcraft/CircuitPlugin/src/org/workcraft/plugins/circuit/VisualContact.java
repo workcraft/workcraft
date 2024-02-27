@@ -11,6 +11,7 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderTy
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.ColorUtils;
 
 import java.awt.*;
@@ -318,8 +319,9 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     protected void cacheFanoutRenderedText(DrawRequest r) {
-        int fanout = CircuitUtils.calcFanout((VisualCircuit) r.getModel(), this);
-        cacheFanoutRenderedText(Integer.toString(fanout), getFanoutFont());
+        Pair<Integer, Boolean> fanout = CircuitUtils.calcFanout((VisualCircuit) r.getModel(), this);
+        String fanoutText = fanout.getFirst() + (fanout.getSecond() ? "+" : "");
+        cacheFanoutRenderedText(fanoutText, getFanoutFont());
     }
 
     protected void cacheFanoutRenderedText(String text, Font font) {
