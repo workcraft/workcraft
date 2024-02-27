@@ -1,3 +1,4 @@
+importCircuitSystemVerilogAssigns(svFileName, topModuleName) - import a Circuit 'topModuleName' (can be skipped for auto detection) with its dependencies from the given System Verilog (*.sv) file 'svFileName' and return its work
 importCircuitVerilog(vFileName, topModuleName) - import a Circuit 'topModuleName' (can be skipped for auto detection) with its dependencies from the given Verilog netlist (*.v) file 'vFileName' and return its work
 importFstSg(sgFileName) - import an FST from the State Graph (*.sg) file 'sgFileName' and return its work
 importStgG(gFileName) - import an STG from the Signal Transition Graph (*.g) file 'gFileName' and return its work
