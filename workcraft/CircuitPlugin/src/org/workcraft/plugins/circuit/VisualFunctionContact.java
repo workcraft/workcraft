@@ -118,7 +118,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         FormulaRenderingResult renderingResult = getRenderedSetFunction();
         if (renderingResult != null) {
             Direction dir = getDirection();
-            if (!(getParent() instanceof VisualFunctionComponent)) {
+            if (isPort()) {
                 dir = dir.flip();
             }
             if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
@@ -134,7 +134,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         if (setRenderingResult != null) {
             bb = BoundingBoxHelper.move(setRenderingResult.boundingBox, getSetFormulaOffset());
             Direction dir = getDirection();
-            if (!(getParent() instanceof VisualFunctionComponent)) {
+            if (isPort()) {
                 dir = dir.flip();
             }
             if ((dir == Direction.NORTH) || (dir == Direction.SOUTH)) {
