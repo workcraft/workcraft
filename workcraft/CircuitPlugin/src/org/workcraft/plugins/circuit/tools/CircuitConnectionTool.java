@@ -26,11 +26,10 @@ public class CircuitConnectionTool extends ConnectionTool {
             VisualContact contact = (VisualContact) node;
             return (firstNode == null) == contact.isDriver();
         }
-        if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) node;
-            return !(connection.getFirst() instanceof VisualReplicaContact);
-        }
-        return (node instanceof VisualJoint) || (node instanceof VisualCircuitComponent);
+        return ((node instanceof VisualReplicaContact) && (firstNode == null))
+                || (node instanceof VisualJoint)
+                || (node instanceof VisualConnection)
+                || (node instanceof VisualCircuitComponent);
     }
 
     @Override
