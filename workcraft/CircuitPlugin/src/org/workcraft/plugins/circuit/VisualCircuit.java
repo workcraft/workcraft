@@ -99,31 +99,18 @@ public class VisualCircuit extends AbstractVisualModel {
         // Handle driver-driven relationship of input and output ports
         HashSet<Contact> drivenSet = new HashSet<>();
         Circuit circuit = getMathModel();
+        MathNode firstNode = CircuitUtils.getReferencedMathNode(first);
         Contact driver = null;
-        if (first instanceof VisualConnection) {
-            MathConnection firstConnection = ((VisualConnection) first).getReferencedConnection();
-            driver = CircuitUtils.findDriver(circuit, firstConnection, true);
-            if (driver != null) {
-                drivenSet.addAll(CircuitUtils.findDriven(circuit, driver, true));
-            } else {
-                drivenSet.addAll(CircuitUtils.findDriven(circuit, firstConnection, true));
-            }
-        } else if ((first instanceof VisualContact) || (first instanceof VisualJoint)) {
-            MathNode firstComponent = ((VisualComponent) first).getReferencedComponent();
-            driver = CircuitUtils.findDriver(circuit, firstComponent, true);
-            if (driver != null) {
-                drivenSet.addAll(CircuitUtils.findDriven(circuit, driver, true));
-            } else {
-                drivenSet.addAll(CircuitUtils.findDriven(circuit, firstComponent, true));
-            }
+        if (firstNode != null) {
+            driver = CircuitUtils.findDriver(circuit, firstNode, true);
+            drivenSet.addAll(CircuitUtils.findDriven(circuit, Objects.requireNonNullElse(driver, firstNode), true));
         }
-
-        if ((second instanceof VisualContact) || (second instanceof VisualJoint)) {
-            MathNode secondComponent = ((VisualComponent) second).getReferencedComponent();
-            drivenSet.addAll(CircuitUtils.findDriven(circuit, secondComponent, true));
+        MathNode secondNode = CircuitUtils.getReferencedMathNode(second);
+        if (secondNode != null) {
+            drivenSet.addAll(CircuitUtils.findDriven(circuit, secondNode, true));
         }
         int outputPortCount = 0;
-        for (Contact driven: drivenSet) {
+        for (Contact driven : drivenSet) {
             if (driven.isOutput() && driven.isPort()) {
                 outputPortCount++;
                 if (outputPortCount > 1) {
@@ -170,11 +157,15 @@ public class VisualCircuit extends AbstractVisualModel {
             Container container = (Container) connection.getParent();
             VisualJoint joint = createJoint(container);
             joint.setPosition(splitPoint);
-            remove(connection);
 
             VisualConnection predConnection = connect(connection.getFirst(), joint);
             predConnection.copyStyle(connection);
             ConnectionHelper.addControlPoints(predConnection, prefixLocationsInRootSpace);
+
+            // Original connection must be removed at this point:
+            // * AFTER creating a new connection from its first node (so it is not automatically cleared out)
+            // * BEFORE creating a connection to the second node (as only one driver is allowed)
+            remove(connection);
 
             VisualConnection succConnection = connect(joint, connection.getSecond());
             ConnectionHelper.addControlPoints(succConnection, suffixLocationsInRootSpace);
