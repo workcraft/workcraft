@@ -61,9 +61,10 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if (node instanceof VisualReplicaContact) {
+        if ((model instanceof VisualCircuit) && (node instanceof VisualReplicaContact)) {
+            VisualCircuit circuit = (VisualCircuit) model;
             VisualReplicaContact replicaContact = (VisualReplicaContact) node;
-            ConversionUtils.collapseReplicaContact(model, replicaContact);
+            ConversionUtils.collapseReplicaContact(circuit, replicaContact);
         }
     }
 

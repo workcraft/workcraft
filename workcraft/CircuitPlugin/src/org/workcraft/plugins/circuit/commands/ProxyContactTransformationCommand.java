@@ -21,12 +21,12 @@ public class ProxyContactTransformationCommand extends AbstractTransformationCom
 
     @Override
     public String getDisplayName() {
-        return "Create proxies for selected contacts";
+        return "Create proxy drivers for selected driven contacts";
     }
 
     @Override
     public String getPopupName() {
-        return "Create proxy contact";
+        return "Create proxy driver";
     }
 
     @Override

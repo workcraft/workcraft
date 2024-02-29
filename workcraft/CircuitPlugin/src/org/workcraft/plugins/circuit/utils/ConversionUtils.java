@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -16,38 +16,44 @@ import org.workcraft.utils.ModelUtils;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ConversionUtils {
 
-    public static VisualConnection collapseReplicaContact(VisualModel circuit, VisualReplicaContact replica) {
-        VisualConnection result = null;
-        Set<VisualConnection> connections = new HashSet<>(circuit.getConnections(replica));
-        for (VisualConnection connection : connections) {
-            VisualNode first = connection.getFirst();
-            VisualNode second = connection.getSecond();
-            if (replica == first) {
-                first = replica.getMaster();
-            }
-            if (replica == second) {
-                second = replica.getMaster();
-            }
-            Point2D replicaPositionInRootSpace = replica.getRootSpacePosition();
-            LinkedList<Point2D> locationsInRootSpace
-                    = ConnectionHelper.getSuffixControlPoints(connection, replicaPositionInRootSpace);
+    public static void collapseReplicaContact(VisualCircuit circuit, VisualReplicaContact replica) {
+        VisualComponent firstNode = replica.getMaster();
+        Point2D replicaPositionInRootSpace = replica.getRootSpacePosition();
+        Container container = (Container) replica.getParent();
+        Set<VisualConnection> outgoingConnections = circuit.getConnections(replica).stream()
+                .filter(c -> c.getFirst() == replica).collect(Collectors.toSet());
 
-            locationsInRootSpace.addFirst(replicaPositionInRootSpace);
-            circuit.remove(connection);
+        if (outgoingConnections.size() > 1) {
+            VisualJoint joint = circuit.createJoint(container);
+            joint.setRootSpacePosition(replicaPositionInRootSpace);
             try {
-                result = circuit.connect(first, second);
-                ConnectionHelper.addControlPoints(result, locationsInRootSpace);
+                circuit.connect(firstNode, joint);
+            } catch (InvalidConnectionException ignored) {
+            }
+            firstNode = joint;
+        }
+
+        for (VisualConnection outgoingConnection : outgoingConnections) {
+            VisualNode secondNode = outgoingConnection.getSecond();
+            LinkedList<Point2D> locationsInRootSpace
+                    = ConnectionHelper.getSuffixControlPoints(outgoingConnection, replicaPositionInRootSpace);
+
+            if (!(firstNode instanceof VisualJoint)) {
+                locationsInRootSpace.addFirst(replicaPositionInRootSpace);
+            }
+            circuit.remove(outgoingConnection);
+            try {
+                VisualConnection newConnection = circuit.connect(firstNode, secondNode);
+                ConnectionHelper.addControlPoints(newConnection, locationsInRootSpace);
             } catch (InvalidConnectionException ignored) {
             }
         }
-
-        return result;
     }
 
     public static VisualConnection replicateDriverContact(VisualCircuit circuit, VisualContact drivenContact) {
