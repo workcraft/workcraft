@@ -21,12 +21,12 @@ public class ProxyContactTransformationCommand extends AbstractTransformationCom
 
     @Override
     public String getDisplayName() {
-        return "Create proxies for selected contacts";
+        return "Create proxy drivers for selected driven contacts";
     }
 
     @Override
     public String getPopupName() {
-        return "Create proxy contact";
+        return "Create proxy driver";
     }
 
     @Override
@@ -38,7 +38,8 @@ public class ProxyContactTransformationCommand extends AbstractTransformationCom
     public boolean isApplicableTo(VisualNode node) {
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
-            return connection.getSecond() instanceof VisualContact;
+            return !(connection.getFirst() instanceof VisualReplicaContact)
+                    && connection.getSecond() instanceof VisualContact;
         }
         if (node instanceof VisualContact) {
             VisualContact contact = (VisualContact) node;

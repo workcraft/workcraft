@@ -3,6 +3,7 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
+import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.utils.Hierarchy;
@@ -47,21 +48,25 @@ public final class SpaceUtils {
         double xSpace = dx * (space - minSpace);
         double ySpace = dy * (space - minSpace);
 
-        Collection<VisualComponent> components = Hierarchy.getDescendantsOfType(circuit.getRoot(),
-                VisualComponent.class, node -> !(node instanceof VisualPage)
+        Collection<VisualTransformableNode> transformableNodes = Hierarchy.getDescendantsOfType(circuit.getRoot(),
+                VisualTransformableNode.class, node -> !(node instanceof VisualPage)
+                        && !(node instanceof ControlPoint)
                         && !((node instanceof VisualContact) && ((VisualContact) node).isPin()));
 
-        for (VisualComponent component : components) {
-            Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
-            double x = component.getRootSpaceX();
+        for (VisualTransformableNode transformableNode : transformableNodes) {
+            Rectangle2D bb = (transformableNode instanceof VisualComponent)
+                    ? ((VisualComponent) transformableNode).getInternalBoundingBoxInLocalSpace()
+                    : transformableNode.getBoundingBoxInLocalSpace();
+
+            double x = transformableNode.getRootSpaceX();
             double xBorder = x + bb.getX() + ((dx < 0) ? bb.getWidth() : 0.0);
             if ((xBorder - x0) * dx > 0) {
-                component.setRootSpaceX(x + xSpace);
+                transformableNode.setRootSpaceX(x + xSpace);
             }
-            double y = component.getRootSpaceY();
+            double y = transformableNode.getRootSpaceY();
             double yBorder = y + bb.getY() + ((dy < 0) ? bb.getHeight() : 0.0);
             if ((yBorder - y0) * dy > 0) {
-                component.setRootSpaceY(y + ySpace);
+                transformableNode.setRootSpaceY(y + ySpace);
             }
         }
     }

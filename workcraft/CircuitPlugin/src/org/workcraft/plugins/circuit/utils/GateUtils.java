@@ -2,10 +2,7 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.MixUtils;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
@@ -69,7 +66,7 @@ public final class GateUtils {
         } catch (InvalidConnectionException e) {
             LogUtils.logWarning(e.getMessage());
         }
-        for (VisualComponent succComponent: succComponents) {
+        for (VisualComponent succComponent : succComponents) {
             VisualConnection connection = circuit.getConnection(predContact, succComponent);
             LinkedList<Point2D> suffixControlPoints = ConnectionHelper.getSuffixControlPoints(connection, pos);
             circuit.remove(connection);
@@ -81,6 +78,7 @@ public final class GateUtils {
                 LogUtils.logWarning(e.getMessage());
             }
         }
+        ConversionUtils.updateReplicas(circuit, predContact, outputContact);
     }
 
     public static void insertGateWithin(VisualCircuit circuit, VisualCircuitComponent component,
@@ -107,15 +105,22 @@ public final class GateUtils {
         outputContact.setDirection(direction);
 
         LinkedList<Point2D> prefixControlPoints = ConnectionHelper.getPrefixControlPoints(connection, pos);
-        LinkedList<Point2D> suffixControlPoints = ConnectionHelper.getSuffixControlPoints(connection, pos);
-        circuit.remove(connection);
         try {
             VisualConnection inputConnection = circuit.connect(fromNode, inputContact);
             ConnectionHelper.addControlPoints(inputConnection, prefixControlPoints);
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e.getMessage());
+        }
+        LinkedList<Point2D> suffixControlPoints = ConnectionHelper.getSuffixControlPoints(connection, pos);
+        // Original connection must be removed at this point:
+        // * AFTER creating a new connection from its first node (so first node is not automatically cleared out)
+        // * BEFORE creating a connection to the second node (as only one driver is allowed)
+        circuit.remove(connection);
+        try {
             VisualConnection outputConnection = circuit.connect(outputContact, toNode);
             ConnectionHelper.addControlPoints(outputConnection, suffixControlPoints);
         } catch (InvalidConnectionException e) {
-            LogUtils.logWarning(e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 

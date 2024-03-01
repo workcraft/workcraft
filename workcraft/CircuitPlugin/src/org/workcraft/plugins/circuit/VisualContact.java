@@ -125,10 +125,11 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     private static final double size = 0.3;
     public static final Font FANOUT_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
-    private static final Point2D FANOUT_OFFSET = new Point2D.Double(0.0, -0.5 * size);
+    private static final double X_FANOUT_OFFSET = -0.25 * size;
+    private static final double Y_FANOUT_OFFSET = -0.5 * size;
 
     private Direction direction = Direction.WEST;
-    private RenderedText fanoutRenderedText = new RenderedText("", getFanoutFont(), Positioning.CENTER, FANOUT_OFFSET);
+    private RenderedText fanoutRenderedText = new RenderedText("", getFanoutFont(), Positioning.CENTER, getFanoutOffset());
 
     public VisualContact(Contact contact) {
         super(contact, true, false, false);
@@ -318,6 +319,18 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         return FANOUT_FONT.deriveFont((float) CircuitSettings.getContactFontSize());
     }
 
+    private Point2D getFanoutOffset() {
+        double xOffset = X_FANOUT_OFFSET;
+        Direction dir = getDirection();
+        if (isPort()) {
+            dir = dir.flip();
+        }
+        if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
+            xOffset = -X_FANOUT_OFFSET;
+        }
+        return new Point2D.Double(xOffset, Y_FANOUT_OFFSET);
+    }
+
     protected void cacheFanoutRenderedText(DrawRequest r) {
         Pair<Integer, Boolean> fanout = CircuitUtils.calcFanout((VisualCircuit) r.getModel(), this);
         String fanoutText = fanout.getFirst() + (fanout.getSecond() ? "+" : "");
@@ -325,8 +338,8 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     protected void cacheFanoutRenderedText(String text, Font font) {
-        if (fanoutRenderedText.isDifferent(text, font, Positioning.CENTER, FANOUT_OFFSET)) {
-            fanoutRenderedText = new RenderedText(text, font, Positioning.CENTER, FANOUT_OFFSET);
+        if (fanoutRenderedText.isDifferent(text, font, Positioning.CENTER, getFanoutOffset())) {
+            fanoutRenderedText = new RenderedText(text, font, Positioning.CENTER, getFanoutOffset());
         }
     }
 

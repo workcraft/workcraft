@@ -223,6 +223,22 @@ public final class CircuitUtils {
         return Pair.of(fanoutCount, isPortDriver);
     }
 
+    public static MathNode getReferencedMathNode(VisualNode visualNode) {
+        if (visualNode instanceof VisualContact) {
+            return ((VisualContact) visualNode).getReferencedComponent();
+        }
+        if (visualNode instanceof VisualReplicaContact) {
+            return  ((VisualReplicaContact) visualNode).getReferencedContact();
+        }
+        if (visualNode instanceof VisualJoint) {
+            return  ((VisualJoint) visualNode).getReferencedComponent();
+        }
+        if (visualNode instanceof VisualConnection) {
+            return  ((VisualConnection) visualNode).getReferencedConnection();
+        }
+        return null;
+    }
+
     private static Contact findZeroDelayOutput(Contact contact) {
         Contact zeroDelayOutput = null;
         Node parent = contact.getParent();
