@@ -16,6 +16,7 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.naryformula.SplitForm;
 import org.workcraft.plugins.circuit.naryformula.SplitFormGenerator;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.ConversionUtils;
 import org.workcraft.plugins.circuit.utils.GateUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
@@ -78,7 +79,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         Set<NodeConnectionPair> toNodeConnections = getComponentNonLoopDrivenNodes(circuit, complexGate);
         Container container = (Container) complexGate.getParent();
         VisualFunctionContact complexOutputContact = complexGate.getGateOutput();
-        circuit.remove(complexGate);
+        ConversionUtils.removeComponentConnections(circuit, complexGate);
 
         Stack<Set<NodeConnectionPair>> toNodeConnectionsStack = new Stack<>();
         toNodeConnectionsStack.push(toNodeConnections);
@@ -104,13 +105,16 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
                     // Update fromNodes for self-loops
                     fromNodeConnections.replaceAll(pair -> (pair.getFirst() == complexOutputContact)
                             ? new NodeConnectionPair(simpleOutputContact, pair.getSecond()) : pair);
+
                     simpleOutputContact.copyStyle(complexOutputContact);
+                    ConversionUtils.updateReplicas(circuit, complexOutputContact, simpleOutputContact);
                     isRootGate = false;
                 }
                 circuit.addToSelection(simpleGate);
             }
         }
         propagateInitValues(circuit, nonRootGates);
+        circuit.remove(complexGate);
     }
 
     private static void connectTerminal(VisualCircuit circuit, Iterator<NodeConnectionPair> fromNodeConnectionIterator,

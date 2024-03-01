@@ -163,7 +163,7 @@ public class VisualCircuit extends AbstractVisualModel {
             ConnectionHelper.addControlPoints(predConnection, prefixLocationsInRootSpace);
 
             // Original connection must be removed at this point:
-            // * AFTER creating a new connection from its first node (so it is not automatically cleared out)
+            // * AFTER creating a new connection from its first node (so first node is not automatically cleared out)
             // * BEFORE creating a connection to the second node (as only one driver is allowed)
             remove(connection);
 

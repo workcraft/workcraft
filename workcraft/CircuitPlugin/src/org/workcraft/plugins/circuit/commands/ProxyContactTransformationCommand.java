@@ -38,7 +38,8 @@ public class ProxyContactTransformationCommand extends AbstractTransformationCom
     public boolean isApplicableTo(VisualNode node) {
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
-            return connection.getSecond() instanceof VisualContact;
+            return !(connection.getFirst() instanceof VisualReplicaContact)
+                    && connection.getSecond() instanceof VisualContact;
         }
         if (node instanceof VisualContact) {
             VisualContact contact = (VisualContact) node;

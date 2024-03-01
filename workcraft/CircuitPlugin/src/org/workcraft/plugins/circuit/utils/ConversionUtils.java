@@ -2,22 +2,18 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.ConnectionHelper;
+import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualJoint;
-import org.workcraft.plugins.circuit.VisualReplicaContact;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.commands.DissolveJointTransformationCommand;
 import org.workcraft.utils.ModelUtils;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ConversionUtils {
@@ -27,7 +23,7 @@ public class ConversionUtils {
         Point2D replicaPositionInRootSpace = replica.getRootSpacePosition();
         Container container = (Container) replica.getParent();
         Set<VisualConnection> outgoingConnections = circuit.getConnections(replica).stream()
-                .filter(c -> c.getFirst() == replica).collect(Collectors.toSet());
+                .filter(connection -> connection.getFirst() == replica).collect(Collectors.toSet());
 
         if (outgoingConnections.size() > 1) {
             VisualJoint joint = circuit.createJoint(container);
@@ -97,6 +93,44 @@ public class ConversionUtils {
             }
         }
         return null;
+    }
+
+    public static void updateReplicas(VisualCircuit circuit, VisualContact oldContact, VisualContact newContact) {
+        ArrayList<Replica> oldReplicas = new ArrayList<>(oldContact.getReplicas());
+        for (Replica oldReplica : oldReplicas) {
+            if (oldReplica instanceof VisualReplicaContact) {
+                VisualReplicaContact oldReplicaContact = (VisualReplicaContact) oldReplica;
+                Container container = (Container) oldReplicaContact.getParent();
+                VisualReplicaContact newReplicaContact
+                        = circuit.createVisualReplica(newContact, VisualReplicaContact.class, container);
+
+                newReplicaContact.copyStyle(oldReplicaContact);
+                newReplicaContact.copyPosition(oldReplicaContact);
+
+                Set<VisualConnection> oldReplicaConnections = circuit.getConnections(oldReplicaContact).stream()
+                        .filter(connection -> connection.getFirst() == oldReplicaContact).collect(Collectors.toSet());
+
+                for (VisualConnection oldReplicaConnection : oldReplicaConnections) {
+                    VisualNode secondNode = oldReplicaConnection.getSecond();
+                    circuit.remove(oldReplicaConnection);
+                    try {
+                        VisualConnection newReplicaConnection = circuit.connect(newReplicaContact, secondNode);
+                        newReplicaConnection.copyStyle(oldReplicaConnection);
+                        newReplicaConnection.copyShape(oldReplicaConnection);
+                    } catch (InvalidConnectionException e) {
+                        throw new RuntimeException(e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+
+    public static void removeComponentConnections(VisualCircuit circuit, VisualFunctionComponent component) {
+        Set<VisualConnection> unneededConnections = new HashSet<>();
+        for (VisualContact contact : component.getVisualContacts()) {
+            unneededConnections.addAll(circuit.getConnections(contact));
+        }
+        circuit.remove(unneededConnections);
     }
 
 }
