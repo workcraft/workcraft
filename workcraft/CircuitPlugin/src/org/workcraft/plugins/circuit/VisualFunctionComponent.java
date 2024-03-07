@@ -109,6 +109,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         return (getReferencedComponent() != null) && getReferencedComponent().isInverter();
     }
 
+    public boolean isBlackbox() {
+        return (getReferencedComponent() != null) && getReferencedComponent().isBlackbox();
+    }
+
     public VisualFunctionContact getGateOutput() {
         if (getReferencedComponent() != null) {
             FunctionContact contact = getReferencedComponent().getGateOutput();
