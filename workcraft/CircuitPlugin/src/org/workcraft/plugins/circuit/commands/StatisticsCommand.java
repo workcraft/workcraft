@@ -41,7 +41,7 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
         int isolatedPinCount = 0;
         MultiSet<Integer> fanin = new MultiSet<>();
         MultiSet<Integer> fanout = new MultiSet<>();
-        for (FunctionComponent component: components) {
+        for (FunctionComponent component : components) {
             boolean isIsolatedComponent = true;
             Collection<Contact> inputs = component.getInputs();
             Collection<Contact> outputs = component.getOutputs();
@@ -88,7 +88,7 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
         int mappedCount = 0;
         Library library = LibraryManager.getLibrary();
         MultiSet<String> namedComponents = new MultiSet<>();
-        for (FunctionComponent component: components) {
+        for (FunctionComponent component : components) {
             if (component.isMapped()) {
                 mappedCount++;
                 String moduleName = component.getModule();
@@ -182,36 +182,36 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
 
     private int getMaxValue(MultiSet<Integer> multiset) {
         int result = 0;
-        for (Integer i: multiset.toSet()) {
-            if (i > result) {
-                result = i;
+        for (Integer item : multiset.toSet()) {
+            if (item > result) {
+                result = item;
             }
         }
         return result;
     }
 
     private String getDistribution(MultiSet<Integer> multiset) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         int max = getMaxValue(multiset);
         for (int i = 0; i <= Math.min(max, MAX_DISTRIBUTION); ++i) {
-            if (!result.isEmpty()) {
-                result += " / ";
+            if (result.length() > 0) {
+                result.append(" / ");
             }
-            result += multiset.count(i);
+            result.append(multiset.count(i));
         }
         if (max > MAX_DISTRIBUTION) {
-            result += " ...";
+            result.append(" ...");
         }
-        return result;
+        return result.toString();
     }
 
     private String getNamedComponentArea(MultiSet<String> multiset) {
-        String result = "";
-        for (String s: multiset.toSet()) {
-            int count = multiset.count(s);
-            result += " + " + (count > 1 ? count + "*" : "") + s;
+        StringBuilder result = new StringBuilder();
+        for (String item : multiset.toSet()) {
+            int count = multiset.count(item);
+            result.append(" + ").append(count > 1 ? count + "*" : "").append(item);
         }
-        return result;
+        return result.toString();
     }
 
 }
