@@ -100,7 +100,7 @@ public class FunctionComponent extends CircuitComponent {
     }
 
     public boolean isBlackbox() {
-        return getFunctionOutputs().stream().anyMatch(contact -> !contact.hasFunction());
+        return getFunctionOutputs().stream().noneMatch(FunctionContact::hasFunction);
     }
 
     public boolean isGate() {

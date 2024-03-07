@@ -60,6 +60,23 @@ public class VisualCircuit extends AbstractVisualModel {
 
     @Override
     public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
+        // Automatic addition of pins to blackbox components
+        if ((first instanceof VisualFunctionComponent) || (second instanceof VisualFunctionComponent)) {
+            if (first instanceof VisualFunctionComponent) {
+                VisualFunctionComponent firstComponent = (VisualFunctionComponent) first;
+                if (!firstComponent.isBlackbox()) {
+                    throw new InvalidConnectionException("Cannot add output pin to component with set/reset functions.");
+                }
+            }
+            if (second instanceof VisualFunctionComponent) {
+                VisualFunctionComponent secondComponent = (VisualFunctionComponent) second;
+                if (!secondComponent.isBlackbox()) {
+                    throw new InvalidConnectionException("Cannot add input pin to component with set/reset functions.");
+                }
+            }
+            return;
+        }
+
         if (first == second) {
             throw new InvalidConnectionException("Connections are only valid between different objects.");
         }
@@ -96,48 +113,46 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
 
-        // Handle driver-driven relationship of input and output ports
-        HashSet<Contact> drivenSet = new HashSet<>();
-        Circuit circuit = getMathModel();
+        // Analysis of driver/driven relation on the math model
         MathNode firstNode = CircuitUtils.getReferencedMathNode(first);
-        Contact driver = null;
-        if (firstNode != null) {
-            driver = CircuitUtils.findDriver(circuit, firstNode, true);
-            drivenSet.addAll(CircuitUtils.findDriven(circuit, Objects.requireNonNullElse(driver, firstNode), true));
+        if (firstNode == null) {
+            throw new InvalidConnectionException("Cannot detect connection source.");
         }
         MathNode secondNode = CircuitUtils.getReferencedMathNode(second);
-        if (secondNode != null) {
-            drivenSet.addAll(CircuitUtils.findDriven(circuit, secondNode, true));
+        if (secondNode == null) {
+            throw new InvalidConnectionException("Cannot detect connection destination.");
         }
+        Circuit circuit = getMathModel();
+        Contact driver = CircuitUtils.findDriver(circuit, firstNode, false);
+        Set<Contact> drivenSet = new HashSet<>(CircuitUtils.findDriven(circuit, secondNode, false));
+        // Forbid zero-delay component to drive another zero-delay component or output port
+        if ((driver != null) && (driver.isZeroDelayPin())) {
+            for (Contact driven : drivenSet) {
+                if (driven.isZeroDelayPin()) {
+                    throw new InvalidConnectionException("Zero delay components cannot drive each other.");
+                }
+                if (driven.isOutput() && driven.isPort()) {
+                    throw new InvalidConnectionException("Zero delay component cannot drive output port.");
+                }
+            }
+        }
+        // Forbid input port to drive output port (zero delay components are forbidden to drive output ports)
+        if ((driver != null) && driver.isInput() && driver.isPort()) {
+            for (Contact driven : drivenSet) {
+                if (driven.isOutput() && driven.isPort()) {
+                    throw new InvalidConnectionException("Input port cannot drive output port.");
+                }
+            }
+        }
+        // Forbid fork to several output ports (zero delay components are forbidden to drive output ports)
+        drivenSet.addAll(CircuitUtils.findDriven(circuit, firstNode, false));
         int outputPortCount = 0;
         for (Contact driven : drivenSet) {
             if (driven.isOutput() && driven.isPort()) {
+                if (outputPortCount > 0) {
+                    throw new InvalidConnectionException("Fork several output ports is not allowed.");
+                }
                 outputPortCount++;
-                if (outputPortCount > 1) {
-                    throw new InvalidConnectionException("Fork on output ports is not allowed.");
-                }
-                if ((driver != null) && driver.isInput() && driver.isPort()) {
-                    throw new InvalidConnectionException("Direct connection from input port to output port is not allowed.");
-                }
-            }
-        }
-
-        // Handle zero delay components
-        Node firstParent = first.getParent();
-        if (firstParent instanceof VisualFunctionComponent) {
-            VisualFunctionComponent firstComponent = (VisualFunctionComponent) firstParent;
-            Node secondParent = second.getParent();
-            if (secondParent instanceof VisualFunctionComponent) {
-                VisualFunctionComponent secondComponent = (VisualFunctionComponent) secondParent;
-                if (firstComponent.getIsZeroDelay() && secondComponent.getIsZeroDelay()) {
-                    throw new InvalidConnectionException("Zero delay components cannot be connected to each other.");
-                }
-            }
-            if (second instanceof VisualContact) {
-                VisualContact secondContact = (VisualContact) second;
-                if (firstComponent.getIsZeroDelay() && secondContact.isPort() && secondContact.isOutput()) {
-                    throw new InvalidConnectionException("Zero delay components cannot be connected to output ports.");
-                }
             }
         }
     }

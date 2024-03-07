@@ -20,6 +20,10 @@ import java.util.List;
 
 public class CircuitConnectionTool extends ConnectionTool {
 
+    public CircuitConnectionTool() {
+        super(false, true, true);
+    }
+
     @Override
     public boolean isConnectable(Node node) {
         if (node instanceof VisualContact) {
@@ -29,7 +33,7 @@ public class CircuitConnectionTool extends ConnectionTool {
         return ((node instanceof VisualReplicaContact) && (firstNode == null))
                 || (node instanceof VisualJoint)
                 || (node instanceof VisualConnection)
-                || (node instanceof VisualCircuitComponent);
+                || ((node instanceof VisualFunctionComponent) && ((VisualFunctionComponent) node).isBlackbox());
     }
 
     @Override

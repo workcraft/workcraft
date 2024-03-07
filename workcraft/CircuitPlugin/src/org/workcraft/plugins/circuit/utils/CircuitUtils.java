@@ -236,6 +236,9 @@ public final class CircuitUtils {
         if (visualNode instanceof VisualConnection) {
             return  ((VisualConnection) visualNode).getReferencedConnection();
         }
+        if (visualNode instanceof VisualCircuitComponent) {
+            return ((VisualCircuitComponent) visualNode).getReferencedComponent();
+        }
         return null;
     }
 
