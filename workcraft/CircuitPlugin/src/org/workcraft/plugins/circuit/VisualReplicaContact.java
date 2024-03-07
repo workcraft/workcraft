@@ -19,6 +19,7 @@ public class VisualReplicaContact extends VisualReplica {
         removePropertyDeclarationByName(PROPERTY_COLOR);
         removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
+        renamePropertyDeclarationByName(PROPERTY_NAME_COLOR, PROPERTY_COLOR);
     }
 
     @SuppressWarnings("unused") // Required for deserialisation and is called via reflection
