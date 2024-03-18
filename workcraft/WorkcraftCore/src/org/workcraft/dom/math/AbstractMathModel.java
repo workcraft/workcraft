@@ -6,6 +6,7 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.serialisation.References;
@@ -64,9 +65,25 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
         } catch (NodeCreationException e) {
             String containerRef = getNodeReference(container);
             throw new RuntimeException("Cannot create math node '" + name + "'"
-                    + " of class '" + type + "' in container '" + containerRef + "'.");
+                    + " of type " + type.getSimpleName() + " in container '" + containerRef + "'.");
         }
         return node;
+    }
+
+    @Override
+    public <T extends MathNode> T getOrCreateNode(String name, Container container, Class<T> type) {
+        if (container == null) {
+            container = getRoot();
+        }
+        String ref = (container == getRoot()) ? name : (getNodeReference(container) + name);
+        MathNode node = getNodeByReference(ref);
+        if (node == null) {
+            return createNode(name, container, type);
+        }
+        if (type.isInstance(node)) {
+            return type.cast(node);
+        }
+        throw new ArgumentException("Node '" + name + "' already exists and is not of type " + type.getSimpleName());
     }
 
     @Override
