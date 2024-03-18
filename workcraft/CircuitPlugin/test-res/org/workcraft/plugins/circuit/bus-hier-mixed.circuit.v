@@ -1,4 +1,6 @@
-module top (input [2:0] in, output [1:0] out);
+module top (in, out, mixed__0, override, override__0, override__1, singleton_in, override_singleton__123, mixed__1, override_singleton);
+  input [2:0] in;
+  output [1:0] out;
   input mixed__0, override, override__0, override__1;
   input [0:0] singleton_in;
   output override_singleton__123, mixed__1, override_singleton;

@@ -15,9 +15,11 @@ package org.workcraft.plugins.circuit.jj.verilog;
 
 import org.workcraft.plugins.circuit.verilog.*;
 
-import java.util.*;
+import java.util.*;import java.util.stream.Collectors;
 
 public class VerilogParser {
+
+    private static String currentModuleName;
 
     private List<VerilogNet> createListOfNets(String name, VerilogPort.Range range) {
         List<VerilogNet> nets = new ArrayList<>();
@@ -34,6 +36,10 @@ public class VerilogParser {
             nets.add(new VerilogNet(name, index));
         }
         return nets;
+    }
+
+    private static String getLocationIfKnown() {
+        return (currentModuleName == null) || currentModuleName.isEmpty() ? "" : (" in module " + currentModuleName);
     }
 }
 PARSER_END(VerilogParser)
@@ -174,6 +180,9 @@ VerilogModule parseModule():
 }
 {
     <MODULE> name = parseModuleName()
+    {
+        currentModuleName = name;
+    }
     ports = parsePorts()
     {
         for (VerilogPort port : ports) {
@@ -198,6 +207,7 @@ VerilogModule parseModule():
     ]
     <ENDMODULE>
     {
+        currentModuleName = null;
         return new VerilogModule(name, ports, assigns, instances, netStates);
     }
 }
@@ -234,19 +244,34 @@ List<VerilogPort> parseCompactPorts():
     VerilogPort port;
     List<VerilogPort> internalPorts;
     List<VerilogPort> ports = new LinkedList<>();
+    Set<String> interfacePortNames = new HashSet<>();
 }
 {
     "("
         (
             port = parseCompactPort() [","]
             {
+                if (interfacePortNames.contains(port.name)) {
+                    throw new ParseException("Compact interface definition has multiple declarations of port "
+                             + port.name + getLocationIfKnown());
+                }
+                interfacePortNames.add(port.name);
                 ports.add(port);
             }
         )*
     ")" ";"
     internalPorts = parseTypedPorts()
     {
-        ports.addAll(internalPorts);
+        for (VerilogPort internalPort : internalPorts) {
+            if (!internalPort.isWire()) {
+                throw new ParseException("Module with compact interface definition has unexpected declaration of port "
+                         + internalPort.name + " of type " + internalPort.type + getLocationIfKnown());
+            }
+            // Skip wire declarations for previously declared interface ports
+            if (!interfacePortNames.contains(internalPort.name)) {
+                ports.add(internalPort);
+            }
+        }
         return ports;
     }
 }
@@ -260,31 +285,41 @@ VerilogPort parseCompactPort():
 {
     type = parsePortType() [range = parseRange()] nameToken = <NAME>
     {
-        return new VerilogPort(nameToken.image, type, range);
+    if ((type != VerilogPort.Type.INPUT) && (type != VerilogPort.Type.OUTPUT) && (type != VerilogPort.Type.INOUT)) {
+        throw new ParseException("Compact declaration of interface signals has incorrect type "
+                 + type + " for port " + nameToken.image + getLocationIfKnown());
     }
+    return new VerilogPort(nameToken.image, type, range);
+}
 }
 
 List<VerilogPort> parseExtendedPorts():
 {
-    List<String> interfacePortNames;
+    LinkedHashSet<String> orderedInterfacePortNames;
     List<VerilogPort> typedPorts;
 }
 {
-    "(" interfacePortNames = parseNames() ")" ";"
+    "(" orderedInterfacePortNames = parseUniqueNames() ")" ";"
     typedPorts = parseTypedPorts()
     {
-        HashMap<String, VerilogPort> nameToPort = new HashMap<>();
+        Map<String, VerilogPort> nameToPort = new HashMap<>();
         for (VerilogPort port : typedPorts) {
             nameToPort.put(port.name, port);
         }
         List<VerilogPort> ports = new LinkedList<>();
-        for (String interfacePortName : interfacePortNames) {
+        for (String interfacePortName : orderedInterfacePortNames) {
             VerilogPort port = nameToPort.get(interfacePortName);
-            if (port != null) {
-                ports.add(port);
+            if (port == null) {
+                throw new ParseException("Undefined type of port " + interfacePortName + getLocationIfKnown());
             }
+            ports.add(port);
         }
         typedPorts.removeAll(ports);
+        for (VerilogPort port : typedPorts) {
+            if (port.isInput() || port.isOutput() || port.isInout()) {
+                throw new ParseException("Interface declaration is missing port " + port.name + getLocationIfKnown());
+            }
+        }
         ports.addAll(typedPorts);
         return ports;
     }
@@ -293,13 +328,32 @@ List<VerilogPort> parseExtendedPorts():
 List<VerilogPort> parseTypedPorts():
 {
     List<VerilogPort> typedPorts;
+    Map<String, VerilogPort> nameToPort = new HashMap<>();
     List<VerilogPort> ports = new LinkedList<>();
 }
 {
     (
         typedPorts = parseTypedPortsOfOneType()
         {
-            ports.addAll(typedPorts);
+            for (VerilogPort port : typedPorts) {
+                VerilogPort oldPort = nameToPort.get(port.name);
+                if (oldPort != null) {
+                    if (((port.range == null) && (oldPort.range != null))
+                        || ((port.range != null) && !port.range.equals(oldPort.range))) {
+
+                        throw new ParseException("Inconsistent range for split declaration of port "
+                                + port.name + getLocationIfKnown());
+                    }
+                    if (!oldPort.isWire() && !port.isWire()) {
+                        throw new ParseException("Multiple declarations of port " + port.name + getLocationIfKnown());
+                    }
+                }
+                if ((oldPort == null) || oldPort.isWire()) {
+                    ports.remove(oldPort);
+                    ports.add(port);
+                    nameToPort.put(port.name, port);
+                }
+            }
         }
     )*
     {
@@ -311,10 +365,10 @@ List<VerilogPort> parseTypedPortsOfOneType():
 {
     VerilogPort.Type type;
     VerilogPort.Range range = null;
-    List<String> names;
+    LinkedHashSet<String> names;
 }
 {
-    type = parsePortType() [range = parseRange()] names = parseNames() ";"
+    type = parsePortType() [range = parseRange()] names = parseUniqueNames() ";"
     {
         List<VerilogPort> ports = new ArrayList<>();
         for (String name : names) {
@@ -364,21 +418,24 @@ VerilogPort.Range parseRange():
     }
 }
 
-List<String> parseNames():
+LinkedHashSet<String> parseUniqueNames():
 {
     Token nameToken;
-    List<String> names = new LinkedList<>();
+    LinkedHashSet<String> uniqueNames = new LinkedHashSet<>();
 }
 {
     (
         nameToken = <NAME> [","]
         {
             String name = nameToken.image;
-            names.add(name);
+            if (uniqueNames.contains(name)) {
+                throw new ParseException("Multiple declarations of net " + name + getLocationIfKnown());
+            }
+            uniqueNames.add(name);
         }
     )*
     {
-        return names;
+        return uniqueNames;
     }
 }
 
