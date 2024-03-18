@@ -71,6 +71,14 @@ public class FormulaUtils {
         return result;
     }
 
+    public static Set<BooleanVariable> extractVariables(BooleanFormula formula) {
+        Set<BooleanVariable> result = new HashSet<>();
+        if (formula != null) {
+            result.addAll(formula.accept(new VariableExtractor()));
+        }
+        return result;
+    }
+
     public static List<BooleanVariable> extractOrderedVariables(BooleanFormula formula) {
         List<BooleanVariable> result = new ArrayList<>();
         if (formula != null) {

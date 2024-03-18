@@ -8,6 +8,7 @@ import java.util.Collection;
 
 public interface MathModel extends Model<MathNode, MathConnection> {
     <T extends MathNode> T createNode(String name, Container container, Class<T> type);
+    <T extends MathNode> T getOrCreateNode(String name, Container container, Class<T> type);
     <T extends MathNode> T createNodeWithHierarchy(String ref, Container container, Class<T> type);
     <T extends MathNode> T createMergedNode(Collection<MathNode> srcNodes, Container container, Class<T> type);
 

@@ -43,7 +43,7 @@ public final class DumbBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
-        return not(new Iff(x, y));
+        return new Xor(x, y);
     }
 
     @Override
