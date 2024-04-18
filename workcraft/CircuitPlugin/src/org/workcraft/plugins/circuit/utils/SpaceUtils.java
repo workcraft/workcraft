@@ -145,6 +145,30 @@ public final class SpaceUtils {
         port.setRootSpacePosition(new Point2D.Double(x, y));
     }
 
+    public static void alignPortWithPin(VisualContact port, VisualContact pin, double dx) {
+        if ((port != null) && (pin != null)) {
+            Point2D pinPosition = pin.getRootSpacePosition();
+            port.setRootSpacePosition(new Point2D.Double(pinPosition.getX() + dx, pinPosition.getY()));
+        }
+    }
+
+    public static void alignPortWithPin(VisualCircuit circuit, VisualContact port, double dx) {
+        if (port != null) {
+            VisualContact pin = null;
+            if (port.isOutput()) {
+                pin = CircuitUtils.findDriver(circuit, port, false);
+            } else {
+                Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, port, false);
+                if (!drivenContacts.isEmpty()) {
+                    pin = drivenContacts.iterator().next();
+                }
+            }
+            if (pin != null) {
+                port.setRootSpacePosition(new Point2D.Double(pin.getRootSpaceX() + dx, pin.getRootSpaceY()));
+            }
+        }
+    }
+
     public static void detachAndPositionJoint(VisualCircuit circuit, VisualContact port) {
         VisualJoint joint = CircuitUtils.detachJoint(circuit, port);
         if (joint != null) {
