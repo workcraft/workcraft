@@ -17,9 +17,9 @@ pluginManagement {
  */
 
 // Java version for source code and target bytecode compatibility
-gradle.ext.javaSourceVersion = JavaVersion.VERSION_11
-gradle.ext.javaTargetVersion = JavaVersion.VERSION_11
-gradle.ext.javaReleaseVersion = 11  /* Must be integer, e.g. 11 for JDK11*/
+gradle.ext.javaSourceVersion = JavaVersion.VERSION_17
+gradle.ext.javaTargetVersion = JavaVersion.VERSION_17
+gradle.ext.javaReleaseVersion = 17  /* Must be integer, e.g. 11 for JDK11*/
 
 // Checkstyle code linter (https://checkstyle.sourceforge.io/) 
 // Note: Checkstyle v10.12.6+ hit Gradle long-term issue with guava dependencies
