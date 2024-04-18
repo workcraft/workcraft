@@ -40,8 +40,12 @@ public abstract class BooleanFunctionDeserialiser<T> implements CustomXMLDeseria
             ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException {
 
         String string = element.getAttribute("formula");
-        BooleanFormula formula = parseFormula(string, internalReferenceResolver);
-        setFormula(instance, formula);
+        try {
+            // FIXME: On copy-paste formula may miss the variables defined outside of the copied part
+            BooleanFormula formula = parseFormula(string, internalReferenceResolver);
+            setFormula(instance, formula);
+        } catch (DeserialisationException ignored) {
+        }
     }
 
     public static BooleanFormula parseFormula(String string, final ReferenceResolver internalReferenceResolver)

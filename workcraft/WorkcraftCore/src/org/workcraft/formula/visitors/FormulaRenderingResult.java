@@ -1,5 +1,7 @@
 package org.workcraft.formula.visitors;
 
+import org.workcraft.dom.visual.RenderingResult;
+
 import java.awt.*;
 import java.awt.font.GlyphVector;
 import java.awt.geom.Line2D;
@@ -7,7 +9,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.List;
 
-public class FormulaRenderingResult {
+public class FormulaRenderingResult implements RenderingResult {
     public Rectangle2D boundingBox = null;
 
     public double visualTop = 0.0;
@@ -34,6 +36,7 @@ public class FormulaRenderingResult {
         visualTop = Math.min(visualTop, summand.visualTop);
     }
 
+    @Override
     public void draw(Graphics2D g) {
         int k = 0;
         for (GlyphVector glyph : glyphs) {
@@ -45,6 +48,11 @@ public class FormulaRenderingResult {
         for (Line2D line : inversionLines) {
             g.draw(line);
         }
+    }
+
+    @Override
+    public Rectangle2D getBoundingBox() {
+        return boundingBox;
     }
 
 }

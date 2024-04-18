@@ -1,12 +1,12 @@
 package org.workcraft.plugins.circuit.renderers;
 
-import java.awt.Graphics2D;
+import org.workcraft.dom.visual.RenderingResult;
+
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.util.List;
 import java.util.Map;
 
-public interface ComponentRenderingResult {
+public interface ComponentRenderingResult extends RenderingResult {
 
     enum RenderType {
         BOX("Box"),
@@ -24,7 +24,6 @@ public interface ComponentRenderingResult {
         }
     }
 
-    Rectangle2D getBoundingBox();
     Map<String, List<Point2D>> getContactPositions();
-    void draw(Graphics2D graphics);
+
 }
