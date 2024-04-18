@@ -3,6 +3,7 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -123,6 +124,32 @@ public final class ConnectionUtils {
                     component.setPositionByDirection(contact, direction, dy < 0);
                 }
             }
+        }
+    }
+
+    public static void shapeConnectionAsStep(VisualConnection connection, double dx) {
+        if (connection != null) {
+            Polyline polyline = (Polyline) connection.getGraphic();
+            VisualTransformableNode firstNode = (VisualTransformableNode) connection.getFirst();
+            VisualTransformableNode secondNode = (VisualTransformableNode) connection.getSecond();
+            Point2D p1 = firstNode.getRootSpacePosition();
+            Point2D p2 = secondNode.getRootSpacePosition();
+            double x = p1.getX() + dx;
+            polyline.addControlPoint(new Point2D.Double(x, p1.getY()));
+            polyline.addControlPoint(new Point2D.Double(x, p2.getY()));
+        }
+    }
+
+    public static void shapeConnectionAsBridge(VisualConnection connection, double dx, double dy) {
+        if (connection != null) {
+            Polyline polyline = (Polyline) connection.getGraphic();
+            VisualTransformableNode firstNode = (VisualTransformableNode) connection.getFirst();
+            VisualTransformableNode secondNode = (VisualTransformableNode) connection.getSecond();
+            Point2D p1 = firstNode.getRootSpacePosition();
+            Point2D p2 = secondNode.getRootSpacePosition();
+            double y = dy + (dy > 0 ? Math.max(p1.getY(), p2.getY()) : Math.min(p1.getY(), p2.getY()));
+            polyline.addControlPoint(new Point2D.Double(p1.getX() + dx, y));
+            polyline.addControlPoint(new Point2D.Double(p2.getX(), y));
         }
     }
 
