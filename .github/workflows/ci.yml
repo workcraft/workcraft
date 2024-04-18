@@ -9,7 +9,7 @@ jobs:
       matrix:
         os: [ubuntu-20.04, ubuntu-22.04]
         java-distribution: [temurin, zulu]
-        java-version: [11, 17]
+        java-version: [17, 21]
 
     runs-on: ${{ matrix.os }}
 
@@ -47,7 +47,7 @@ jobs:
       matrix:
         os: [macos-11, macos-12]
         java-distribution: [temurin]
-        java-version: [11, 17]
+        java-version: [17, 21]
 
     runs-on: ${{ matrix.os }}
 
@@ -83,7 +83,7 @@ jobs:
       matrix:
         os: [windows-2019, windows-2022]
         java-distribution: [temurin]
-        java-version: [11, 17]
+        java-version: [17, 21]
 
     runs-on: ${{ matrix.os }}
 
@@ -123,7 +123,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Run Checkstyle
         run: ./gradlew checkstyle
