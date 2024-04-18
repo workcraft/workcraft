@@ -7,7 +7,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-public class RenderedText {
+public class RenderedText implements RenderingResult {
 
     private static final FontRenderContext CONTEXT = new FontRenderContext(
             AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
@@ -48,15 +48,13 @@ public class RenderedText {
                 || (offset.getX() != this.xOffset) || (offset.getY() != this.yOffset);
     }
 
+    @Override
     public void draw(Graphics2D g) {
         g.setFont(font);
         g.drawGlyphVector(glyphVector, (float) drawPosition.getX(), (float) drawPosition.getY());
     }
 
-    public boolean hitTest(Point2D point) {
-        return boundingBox.contains(point);
-    }
-
+    @Override
     public Rectangle2D getBoundingBox() {
         return boundingBox;
     }

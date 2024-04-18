@@ -29,6 +29,7 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -700,4 +701,34 @@ public final class CircuitUtils {
         return One.getInstance().equals(formula);
     }
 
+    public static VisualContact getPinByTypeAndName(VisualFunctionComponent component, IOType type, String name) {
+        if (name != null) {
+            for (VisualContact contact : component.getVisualContacts()) {
+                if ((contact.getReferencedComponent().getIOType() == type) && name.equals(contact.getName())) {
+                    return contact;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static VisualContact createPort(VisualCircuit circuit, String name,
+            Contact.IOType type, VisualContact.Direction direction, double x, double y) {
+
+        VisualContact result = circuit.getOrCreatePort(name, type);
+        result.setDirection(direction);
+        circuit.setMathName(result, name);
+        result.setRootSpacePosition(new Point2D.Double(x, y));
+        return result;
+    }
+
+    public static VisualContact createPin(VisualCircuit circuit, VisualCircuitComponent component, String name,
+            Contact.IOType type, VisualContact.Direction direction, double x, double y) {
+
+        VisualContact result = component.createContact(type);
+        result.setDirection(direction);
+        circuit.setMathName(result, name);
+        result.setRootSpacePosition(new Point2D.Double(x, y));
+        return result;
+    }
 }

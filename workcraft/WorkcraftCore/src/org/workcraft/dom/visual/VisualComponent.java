@@ -255,18 +255,20 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     protected void cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
-        if (labelRenderedText.isDifferent(text, font, positioning, offset)) {
+        if ((labelRenderedText == null) || labelRenderedText.isDifferent(text, font, positioning, offset)) {
             labelRenderedText = new RenderedText(text, font, positioning, offset);
         }
     }
 
     protected void drawLabelInLocalSpace(DrawRequest r) {
-        if (getLabelVisibility() && (labelRenderedText != null) && !labelRenderedText.isEmpty()) {
+        if (getLabelVisibility()) {
             cacheLabelRenderedText(r);
-            Graphics2D g = r.getGraphics();
-            Decoration d = r.getDecoration();
-            g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
-            labelRenderedText.draw(g);
+            if (!labelRenderedText.isEmpty()) {
+                Graphics2D g = r.getGraphics();
+                Decoration d = r.getDecoration();
+                g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
+                labelRenderedText.draw(g);
+            }
         }
     }
 
@@ -321,18 +323,20 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
 
     protected void cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         text = Identifier.truncateNamespaceSeparator(text);
-        if (nameRenderedText.isDifferent(text, font, positioning, offset)) {
+        if ((nameRenderedText  == null) || nameRenderedText.isDifferent(text, font, positioning, offset)) {
             nameRenderedText = new RenderedText(text, font, positioning, offset);
         }
     }
 
     protected void drawNameInLocalSpace(DrawRequest r) {
-        if (getNameVisibility() && (nameRenderedText != null) && !nameRenderedText.isEmpty()) {
+        if (getNameVisibility()) {
             cacheNameRenderedText(r);
-            Graphics2D g = r.getGraphics();
-            Decoration d = r.getDecoration();
-            g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
-            nameRenderedText.draw(g);
+            if (!nameRenderedText.isEmpty()) {
+                Graphics2D g = r.getGraphics();
+                Decoration d = r.getDecoration();
+                g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
+                nameRenderedText.draw(g);
+            }
         }
     }
 

@@ -2,7 +2,10 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.ConnectionHelper;
+import org.workcraft.dom.visual.MixUtils;
+import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
@@ -19,6 +22,7 @@ import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.SortUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -138,6 +142,18 @@ public final class GateUtils {
         }
     }
 
+    public static VisualFunctionComponent createConst1Gate(VisualCircuit circuit) {
+        return createGate(circuit,
+                new GateInterface(Collections.emptyList(), "O"),
+                vars -> One.getInstance());
+    }
+
+    public static VisualFunctionComponent createConst0Gate(VisualCircuit circuit) {
+        return createGate(circuit,
+                new GateInterface(Collections.emptyList(), "O"),
+                vars -> Zero.getInstance());
+    }
+
     public static VisualFunctionComponent createBufferGate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Collections.singletonList("I"), "O"),
@@ -211,7 +227,7 @@ public final class GateUtils {
     }
 
     public static VisualFunctionComponent createAOI222Gate(VisualCircuit circuit) {
-        return GateUtils.createGate(circuit,
+        return createGate(circuit,
                 new GateInterface(Arrays.asList("A1", "A2", "B1", "B2", "C1", "C2"), "ON"),
                 vars -> new Not(new Or(new Or(new And(vars.get(0), vars.get(1)), new And(vars.get(2), vars.get(3))),
                         new And(vars.get(4), vars.get(5)))));
@@ -415,6 +431,31 @@ public final class GateUtils {
             gateOutput.setInitToOne(contact.getInitToOne());
         }
         return result;
+    }
+
+    public static VisualFunctionComponent createComplexGateComponent(VisualCircuit circuit,
+            String outputName, BooleanFormula function) {
+
+        VisualFunctionComponent component = circuit.createVisualComponent(
+                new FunctionComponent(), VisualFunctionComponent.class);
+
+        List<BooleanVariable> functionVars = SortUtils.getSortedNatural(
+                FormulaUtils.extractVariables(function), BooleanVariable::getLabel);
+
+        List<BooleanVariable> gateVars = new ArrayList<>();
+        double y = -0.5 * (functionVars.size() - 1);
+        for (BooleanVariable variable : functionVars) {
+            VisualContact inputPin = circuit.getOrCreateContact(component, variable.getLabel(), Contact.IOType.INPUT);
+            inputPin.setPosition(new Point2D.Double(-2.0, y));
+            gateVars.add(inputPin.getReferencedComponent());
+            y += 1.0;
+        }
+        BooleanFormula gateFunction = FormulaUtils.replace(function, functionVars, gateVars);
+
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, outputName, Contact.IOType.OUTPUT);
+        outputContact.setPosition(new Point2D.Double(2.0, 0.0));
+        outputContact.setSetFunction(gateFunction);
+        return component;
     }
 
 }

@@ -139,18 +139,20 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     }
 
     protected void cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
-        if (nameRenderedText.isDifferent(text, font, positioning, offset)) {
+        if ((nameRenderedText == null) || nameRenderedText.isDifferent(text, font, positioning, offset)) {
             nameRenderedText = new RenderedText(text, font, positioning, offset);
         }
     }
 
     protected void drawNameInLocalSpace(DrawRequest r) {
-        if (getNameVisibility() && (nameRenderedText != null) && !nameRenderedText.isEmpty()) {
+        if (getNameVisibility()) {
             cacheNameRenderedText(r);
-            Graphics2D g = r.getGraphics();
-            Decoration d = r.getDecoration();
-            g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
-            nameRenderedText.draw(g);
+            if (!nameRenderedText.isEmpty()) {
+                Graphics2D g = r.getGraphics();
+                Decoration d = r.getDecoration();
+                g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
+                nameRenderedText.draw(g);
+            }
         }
     }
 
