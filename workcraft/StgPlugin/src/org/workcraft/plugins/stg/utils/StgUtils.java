@@ -6,6 +6,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
@@ -32,6 +33,7 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -470,6 +472,22 @@ public class StgUtils {
                 result.add(signalRef);
             }
         }
+        return result;
+    }
+
+    public static VisualStgPlace createPlace(VisualStg stg, String name, int tokens, double x, double y) {
+        VisualStgPlace result = stg.createVisualPlace(name);
+        result.setRootSpacePosition(new Point2D.Double(x, y));
+        result.getReferencedComponent().setTokens(tokens);
+        result.setNamePositioning(Positioning.BOTTOM);
+        return result;
+    }
+
+    public static VisualSignalTransition createTransition(VisualStg stg, String name, Signal.Type type,
+            SignalTransition.Direction direction, double x, double y) {
+
+        VisualSignalTransition result = stg.createVisualSignalTransition(name, type, direction);
+        result.setRootSpacePosition(new Point2D.Double(x, y));
         return result;
     }
 
