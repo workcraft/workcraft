@@ -23,12 +23,12 @@ import java.util.LinkedList;
 
 public class ConversionUtils {
 
-    public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedOrAllDualArcs(final VisualModel visualModel) {
+    public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedOrAllDualArcs(VisualModel visualModel) {
         HashSet<Pair<VisualConnection /* consuming arc */, VisualConnection /* producing arc */>> dualArcs = new HashSet<>();
         HashSet<VisualConnection> consumingArcs = ConnectionUtils.getVisualConsumingArcs(visualModel);
         HashSet<VisualConnection> producingArcs = ConnectionUtils.getVisualProducingArcs(visualModel);
-        for (VisualConnection consumingArc: consumingArcs) {
-            for (VisualConnection producingArc: producingArcs) {
+        for (VisualConnection consumingArc : consumingArcs) {
+            for (VisualConnection producingArc : producingArcs) {
                 boolean isDualArcs = (consumingArc.getFirst() == producingArc.getSecond())
                         && (consumingArc.getSecond() == producingArc.getFirst());
 
@@ -44,11 +44,11 @@ public class ConversionUtils {
         return dualArcs;
     }
 
-    public static HashSet<VisualReadArc> convertDualArcsToReadArcs(final VisualModel visualModel,
+    public static HashSet<VisualReadArc> convertDualArcsToReadArcs(VisualModel visualModel,
             HashSet<Pair<VisualConnection, VisualConnection>> dualArcs) {
 
         HashSet<VisualReadArc> readArcs = new HashSet<>(dualArcs.size());
-        for (Pair<VisualConnection, VisualConnection> dualArc: dualArcs) {
+        for (Pair<VisualConnection, VisualConnection> dualArc : dualArcs) {
             VisualConnection consumingArc = dualArc.getFirst();
             VisualConnection producingArc = dualArc.getSecond();
             VisualReadArc readArc = ConversionUtils.convertDualArcToReadArc(visualModel, consumingArc, producingArc);
@@ -59,7 +59,9 @@ public class ConversionUtils {
         return readArcs;
     }
 
-    public static VisualReadArc convertDualArcToReadArc(VisualModel visualModel, VisualConnection consumingArc, VisualConnection producingArc) {
+    public static VisualReadArc convertDualArcToReadArc(VisualModel visualModel, VisualConnection consumingArc,
+            VisualConnection producingArc) {
+
         VisualReadArc readArc = null;
         if (areVisualDualArcs(consumingArc, producingArc)) {
             VisualConnection connection = consumingArc;
@@ -117,13 +119,16 @@ public class ConversionUtils {
             }
             // Remove producing and dual consuming arcs (including replicas)
             visualModel.remove(connection);
-            VisualPlace place = (VisualPlace) ((placeOrReplica instanceof VisualPlace) ? placeOrReplica : ((VisualReplicaPlace) placeOrReplica).getMaster());
+            VisualPlace place = (VisualPlace) ((placeOrReplica instanceof VisualPlace) ? placeOrReplica
+                    : ((VisualReplicaPlace) placeOrReplica).getMaster());
+
             VisualConnection dualConsumingArc = visualModel.getConnection(place, transition);
             if (dualConsumingArc != null) {
                 visualModel.remove(dualConsumingArc);
             }
-            for (Replica replica: place.getReplicas()) {
-                VisualConnection dualReplicaConsumingArc = visualModel.getConnection((VisualReplicaPlace) replica, transition);
+            for (Replica replica : place.getReplicas()) {
+                VisualConnection dualReplicaConsumingArc = visualModel.getConnection((VisualReplicaPlace) replica,
+                        transition);
                 if (dualReplicaConsumingArc != null) {
                     visualModel.remove(dualReplicaConsumingArc);
                 }
@@ -155,13 +160,17 @@ public class ConversionUtils {
             transition = connection.getSecond();
             // Remove consuming and dual producing arcs (including replicas)
             visualModel.remove(connection);
-            VisualPlace place = (VisualPlace) ((placeOrReplica instanceof VisualPlace) ? placeOrReplica : ((VisualReplicaPlace) placeOrReplica).getMaster());
+            VisualPlace place = (VisualPlace) ((placeOrReplica instanceof VisualPlace) ? placeOrReplica
+                    : ((VisualReplicaPlace) placeOrReplica).getMaster());
+
             VisualConnection dualProducingArc = visualModel.getConnection(transition, place);
             if (dualProducingArc != null) {
                 visualModel.remove(dualProducingArc);
             }
-            for (Replica replica: place.getReplicas()) {
-                VisualConnection dualReplicaProducingArc = visualModel.getConnection(transition, (VisualReplicaPlace) replica);
+            for (Replica replica : place.getReplicas()) {
+                VisualConnection dualReplicaProducingArc = visualModel.getConnection(transition,
+                        (VisualReplicaPlace) replica);
+
                 if (dualReplicaProducingArc != null) {
                     visualModel.remove(dualReplicaProducingArc);
                 }
@@ -180,12 +189,16 @@ public class ConversionUtils {
         return readArc;
     }
 
-    public static Pair<VisualConnection, VisualConnection> convertReadArcTotDualArc(VisualModel visualModel, VisualReadArc readArc) {
+    public static Pair<VisualConnection, VisualConnection> convertReadArcTotDualArc(VisualModel visualModel,
+            VisualReadArc readArc) {
+
         VisualNode first = readArc.getFirst();
         VisualNode second = readArc.getSecond();
         VisualConnection consumingArc = null;
         VisualConnection producingArc = null;
-        if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace)) && (second instanceof VisualTransition)) {
+        if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
+                && (second instanceof VisualTransition)) {
+
             try {
                 if (first instanceof VisualReplicaPlace) {
                     first = copyReplicaPlace(visualModel, (VisualReplicaPlace) first);
@@ -220,7 +233,7 @@ public class ConversionUtils {
     public static VisualConnection collapseReplicaPlace(VisualModel visualModel, VisualReplicaPlace replica) {
         VisualConnection result = null;
         HashSet<Connection> connections = new HashSet<>(visualModel.getConnections(replica));
-        for (Connection c: connections) {
+        for (Connection c : connections) {
             if (c instanceof VisualConnection) {
                 VisualConnection vc = (VisualConnection) c;
                 VisualNode first = vc.getFirst();
@@ -232,7 +245,9 @@ public class ConversionUtils {
                     second = replica.getMaster();
                 }
                 Point2D replicaPositionInRootSpace = replica.getRootSpacePosition();
-                LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(vc, replicaPositionInRootSpace);
+                LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(vc,
+                        replicaPositionInRootSpace);
+
                 locationsInRootSpace.addFirst(replicaPositionInRootSpace);
                 visualModel.remove(vc);
                 try {
@@ -247,6 +262,34 @@ public class ConversionUtils {
             }
         }
         return result;
+    }
+
+    public static VisualReplicaPlace replicateConnectedPlace(VisualModel visualModel, VisualConnection connection,
+            Point2D offsetFromTransition) {
+
+        VisualReplicaPlace replicaPlace = null;
+        VisualTransition transition = null;
+        VisualConnection replicaConnection = replicateConnectedPlace(visualModel, connection);
+        if (replicaConnection != null) {
+            if ((replicaConnection.getFirst() instanceof VisualReplicaPlace)
+                    && ((replicaConnection.getSecond() instanceof VisualTransition))) {
+
+                replicaPlace = (VisualReplicaPlace) replicaConnection.getFirst();
+                transition = (VisualTransition) replicaConnection.getSecond();
+            } else if ((replicaConnection.getSecond() instanceof VisualReplicaPlace)
+                    && ((replicaConnection.getFirst() instanceof VisualTransition))) {
+
+                replicaPlace = (VisualReplicaPlace) replicaConnection.getSecond();
+                transition = (VisualTransition) replicaConnection.getFirst();
+            }
+            if ((replicaPlace != null) && (transition != null)) {
+                replicaConnection.getGraphic().setDefaultControlPoints();
+                replicaPlace.setRootSpacePosition(new Point2D.Double(
+                        transition.getRootSpaceX() + offsetFromTransition.getX(),
+                        transition.getRootSpaceY() + offsetFromTransition.getY()));
+            }
+        }
+        return replicaPlace;
     }
 
     public static VisualConnection replicateConnectedPlace(VisualModel visualModel, VisualConnection connection) {
