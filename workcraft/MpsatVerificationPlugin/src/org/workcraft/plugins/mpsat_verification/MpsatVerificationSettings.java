@@ -8,17 +8,10 @@ import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.S
 import org.workcraft.plugins.mpsat_verification.tasks.CompositionOutputInterpreter.ConformationReportStyle;
 import org.workcraft.utils.BackendUtils;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
 public class MpsatVerificationSettings extends AbstractToolSettings {
-
-    private static final PropertyDeclaration<String> commandProperty;
-    private static final String COMMAND_DIRECTORY = "UnfoldingTools";
-    private static final String COMMAND_64BIT_DIRECTORY = "UnfoldingTools64";
-    private static final String COMMAND_REGEX = "^(?<prefix>.*[\\\\/])" + COMMAND_DIRECTORY + "(?<suffix>[\\\\/].+)$";
-    private static final String COMMAND_64BIT_REPLACEMENT = "${prefix}" + COMMAND_64BIT_DIRECTORY + "${suffix}";
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.mpsatVerification";
@@ -35,7 +28,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final String keyDebugCores = prefix + ".debugCores";
     private static final String keyConformationReportStyle = prefix + ".conformationReportStyle";
 
-    private static final String defaultCommand = BackendUtils.getToolPath(COMMAND_DIRECTORY, "mpsat");
+    private static final String defaultCommand = BackendUtils.getToolPath("UnfoldingTools", "mpsat");
     private static final int defaultThreadCount = 8;
     private static final boolean defaultReplicateSelfloopPlaces = true;
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
@@ -60,12 +53,10 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static ConformationReportStyle conformationReportStyle = defaultConformationReportStyle;
 
     static {
-        commandProperty = new PropertyDeclaration<>(String.class,
+        properties.add(new PropertyDeclaration<>(String.class,
                 "MPSat command for verification",
                 MpsatVerificationSettings::setCommand,
-                MpsatVerificationSettings::getProcessedCommand);
-
-        properties.add(commandProperty);
+                MpsatVerificationSettings::getCommand));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
                 "Number of threads for unfolding (8 by default, 0 for automatic)",
@@ -164,19 +155,6 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
 
     public static void setCommand(String value) {
         command = value;
-    }
-
-    public static String getProcessedCommand() {
-        if (defaultCommand.equals(command)) {
-            String processedCommand = command.replaceAll(COMMAND_REGEX, COMMAND_64BIT_REPLACEMENT);
-            File file = new File(processedCommand);
-            if (file.exists() && file.isFile() && file.canExecute()) {
-                commandProperty.setEditable(false);
-                return processedCommand;
-            }
-        }
-        commandProperty.setEditable(true);
-        return command;
     }
 
     public static int getThreadCount() {
