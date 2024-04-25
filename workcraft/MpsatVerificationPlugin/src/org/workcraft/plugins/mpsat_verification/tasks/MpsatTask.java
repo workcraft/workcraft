@@ -51,7 +51,7 @@ public class MpsatTask implements Task<MpsatOutput> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatVerificationSettings.getProcessedCommand());
+        String toolName = ExecutableUtils.getAbsoluteCommandPath(MpsatVerificationSettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments
