@@ -60,7 +60,7 @@ public class WtgPropertyHelper {
                             signal.setType(signalType.toggle());
                         }
                     }
-                }, "Toggle type of signal '" + signalName + "'");
+                }, "<html>Toggle type of signal " + signalName + "</i></html>");
 
         Action rightAction = new Action(PropertyHelper.CLEAR_SYMBOL,
                 () -> {
@@ -71,11 +71,14 @@ public class WtgPropertyHelper {
                             }
                         }
                     }
-                }, "Toggle type of signal '" + signalName + "'");
+                }, "<html>Remove signal <i>" + signalName + "</i></html>");
 
         return new PropertyDeclaration<>(TextAction.class, null,
                 value -> WtgUtils.renameSignal(wtg, signalName, value.getText()),
-                () -> new TextAction(signalName).setLeftAction(leftAction).setRightAction(rightAction).setForeground(color)
+                () -> new TextAction(signalName)
+                        .setLeftAction(leftAction, false)
+                        .setRightAction(rightAction, true)
+                        .setForeground(color)
         ).setSpan();
     }
 

@@ -213,6 +213,17 @@ public class SerialiserUtils {
     private static void writeMarking(PrintWriter out, PetriModel petri, Collection<? extends Place> places,
             boolean needInstanceNumbers) {
 
+        StringBuilder capacity = new StringBuilder();
+        for (Place p : places) {
+            if (p.getCapacity() != 1) {
+                String placeRef = getReference(petri, p, needInstanceNumbers);
+                capacity.append(' ').append(placeRef).append('=').append(p.getCapacity());
+            }
+        }
+        if (!capacity.isEmpty()) {
+            out.write(KEYWORD_CAPACITY + capacity + '\n');
+        }
+
         ArrayList<String> markingEntries = new ArrayList<>();
         for (Place place : places) {
             final String reference;
@@ -249,16 +260,6 @@ public class SerialiserUtils {
             out.write(m);
         }
         out.write("}\n");
-        StringBuilder capacity = new StringBuilder();
-        for (Place p : places) {
-            if (p.getCapacity() != 1) {
-                String placeRef = getReference(petri, p, needInstanceNumbers);
-                capacity.append(' ').append(placeRef).append('=').append(p.getCapacity());
-            }
-        }
-        if (capacity.length() > 0) {
-            out.write(KEYWORD_CAPACITY + capacity + '\n');
-        }
     }
 
     private static void writePetri(PrintWriter out, PetriModel petri) {

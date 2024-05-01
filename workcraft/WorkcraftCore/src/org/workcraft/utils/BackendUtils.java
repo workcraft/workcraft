@@ -10,7 +10,16 @@ public class BackendUtils {
 
     private static final String TOOLS_DIR_NAME = "tools";
     private static final String LIBRARIES_DIR_NAME = "libraries";
+    private static final String COMPONENTS_DIR_NAME = "components";
     private static final String EXE_EXTENSION = ".exe";
+
+    public static String getBaseRelativePath(File file) {
+        return file == null ? "" : FileUtils.stripBase(file.getPath(), System.getProperty("user.dir"));
+    }
+
+    public static File getBaseRelativeFile(String path) {
+        return (path == null) || path.isEmpty() ? null : new File(path);
+    }
 
     public static String getLibraryPath(String fileName) {
         return LIBRARIES_DIR_NAME + File.separator + fileName;
@@ -46,6 +55,10 @@ public class BackendUtils {
             return WINDOWS_TEMPLATE_PATH + getToolPath(dirName, fileName);
         }
         return getToolPath(dirName, fileName);
+    }
+
+    public static String getComponentPath(String dirName, String fileName) {
+        return COMPONENTS_DIR_NAME + File.separator + dirName + File.separator + fileName;
     }
 
 }

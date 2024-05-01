@@ -9,6 +9,17 @@ public class FileReference {
     private String base = null;
     private String path = null;
 
+    public FileReference() {
+    }
+
+    public FileReference(File file) {
+        this(file == null ? null : file.getPath());
+    }
+
+    public FileReference(String path) {
+        setPath(path);
+    }
+
     public String getBase() {
         return base;
     }

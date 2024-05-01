@@ -17,7 +17,6 @@ import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.FileFilters;
 
 import java.awt.*;
@@ -290,8 +289,8 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(File.class,
                 PropertyHelper.BULLET_PREFIX + GATE_LIBRARY_TITLE,
-                value -> setGateLibrary(getBaseRelativePath(value)),
-                () -> getBaseRelativeFile(getGateLibrary())));
+                value -> setGateLibrary(BackendUtils.getBaseRelativePath(value)),
+                () -> BackendUtils.getBaseRelativeFile(getGateLibrary())));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "WAIT name, dirty input and clean handshake",
@@ -345,8 +344,8 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(File.class,
                 PropertyHelper.BULLET_PREFIX + "Substitution rules for export",
-                value -> setExportSubstitutionLibrary(getBaseRelativePath(value)),
-                () -> getBaseRelativeFile(getExportSubstitutionLibrary())));
+                value -> setExportSubstitutionLibrary(BackendUtils.getBaseRelativePath(value)),
+                () -> BackendUtils.getBaseRelativeFile(getExportSubstitutionLibrary())));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 PropertyHelper.BULLET_PREFIX + "Invert substitution rules for export",
@@ -355,8 +354,8 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(new PropertyDeclaration<>(File.class,
                 PropertyHelper.BULLET_PREFIX + "Substitution rules for import",
-                value -> setImportSubstitutionLibrary(getBaseRelativePath(value)),
-                () -> getBaseRelativeFile(getImportSubstitutionLibrary())));
+                value -> setImportSubstitutionLibrary(BackendUtils.getBaseRelativePath(value)),
+                () -> BackendUtils.getBaseRelativeFile(getImportSubstitutionLibrary())));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 PropertyHelper.BULLET_PREFIX + "Invert substitution rules for import",
@@ -512,14 +511,6 @@ public class CircuitSettings extends AbstractModelSettings {
                         + FORK_FUNOUT_PLACEHOLDER + " denotes fanout)",
                 CircuitSettings::setForkBufferPattern,
                 CircuitSettings::getForkBufferPattern));
-    }
-
-    private static String getBaseRelativePath(File file) {
-        return file == null ? "" : FileUtils.stripBase(file.getPath(), System.getProperty("user.dir"));
-    }
-
-    private static File getBaseRelativeFile(String path) {
-        return (path == null) || path.isEmpty() ? null : new File(path);
     }
 
     private static void errorDescriptionFormat(String prefix, String suffix) {

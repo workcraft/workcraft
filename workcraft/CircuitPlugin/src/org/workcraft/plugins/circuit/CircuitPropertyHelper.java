@@ -62,7 +62,7 @@ public class CircuitPropertyHelper {
 
         Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
                 () -> circuit.select(component),
-                "Select component '" + name + "'");
+                "<html>Select component <i>" + name + "</i></html>");
 
         Color backgroundColor = getComponentPropertyBackgroundColor(component);
 
@@ -74,7 +74,9 @@ public class CircuitPropertyHelper {
                         component.sendNotification(new PropertyChangedEvent(component, Model.PROPERTY_NAME));
                     }
                 },
-                () -> new TextAction(name).setRightAction(rightAction).setBackground(backgroundColor)
+                () -> new TextAction(name)
+                        .setRightAction(rightAction, false)
+                        .setBackground(backgroundColor)
             ).setSpan();
     }
 

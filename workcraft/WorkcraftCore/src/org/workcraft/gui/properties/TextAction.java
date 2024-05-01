@@ -8,7 +8,9 @@ public class TextAction {
 
     private final String text;
     private Action leftAction;
+    private boolean modelModifyingLeftAction;
     private Action rightAction;
+    private boolean modelModifyingRightAction;
     private Color foreground;
     private Color background;
 
@@ -21,7 +23,11 @@ public class TextAction {
     }
 
     public TextAction setLeftAction(Action value) {
+        return setLeftAction(value, true);
+    }
+    public TextAction setLeftAction(Action value, boolean modifyModel) {
         leftAction = value;
+        modelModifyingLeftAction = modifyModel;
         return this;
     }
 
@@ -29,13 +35,26 @@ public class TextAction {
         return leftAction;
     }
 
+    public boolean isModelModifyingLeftAction() {
+        return modelModifyingLeftAction;
+    }
+
     public TextAction setRightAction(Action value) {
+        return setRightAction(value, true);
+    }
+
+    public TextAction setRightAction(Action value, boolean modifyModel) {
         rightAction = value;
+        modelModifyingRightAction = modifyModel;
         return this;
     }
 
     public Action getRightAction() {
         return rightAction;
+    }
+
+    public boolean isModelModifyingRightAction() {
+        return modelModifyingRightAction;
     }
 
     public TextAction setForeground(Color value) {
@@ -55,5 +74,6 @@ public class TextAction {
     public Color getBackground() {
         return background;
     }
+
 
 }

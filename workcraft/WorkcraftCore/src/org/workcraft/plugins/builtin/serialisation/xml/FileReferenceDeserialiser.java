@@ -15,8 +15,7 @@ public class FileReferenceDeserialiser implements BasicXMLDeserialiser<FileRefer
     public FileReference deserialise(Element element) {
         FileReference result = null;
         if (element.hasAttribute("path")) {
-            result = new FileReference();
-            result.setPath(element.getAttribute("path"));
+            result = new FileReference(element.getAttribute("path"));
         }
         return result;
     }

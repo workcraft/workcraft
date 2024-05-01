@@ -31,6 +31,7 @@
 
 # Platform-specific execution environment, e.g. tools and docs
 # (usually symlinks to ./dist/template/*/ and ./dist/doc/)
+/components
 /help
 /libraries
 /overview
