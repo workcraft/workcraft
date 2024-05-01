@@ -53,13 +53,13 @@ public class FstPropertyHelper {
 
         Action leftAction = new Action(PropertyHelper.BULLET_SYMBOL,
                 () -> signal.setType(type.toggle()),
-                "Toggle type of signal '" + signalName + "'");
+                "<html>Toggle type of signal <i>" + signalName + "</i></html>");
 
         Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
                 () -> {
                     fst.selectNone();
                     fst.addToSelection(fst.getVisualEvents(signal));
-                }, "Select all events of signal '" + signalName + "'");
+                }, "<html>Select all events of signal <i>" + signalName + "</i></html>");
 
         return new PropertyDeclaration<>(TextAction.class, "Signal " + signalName,
                 value -> {
@@ -81,8 +81,10 @@ public class FstPropertyHelper {
                         event.sendNotification(new PropertyChangedEvent(event, Event.PROPERTY_SYMBOL));
                     }
                 },
-                () -> new TextAction(signalName).setLeftAction(leftAction)
-                        .setRightAction(rightAction).setForeground(type.getColor())
+                () -> new TextAction(signalName)
+                        .setLeftAction(leftAction, true)
+                        .setRightAction(rightAction, false)
+                        .setForeground(type.getColor())
         ).setSpan();
     }
 

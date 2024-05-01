@@ -33,7 +33,7 @@ public class FsmPropertyHelper {
                 () -> {
                     fsm.selectNone();
                     fsm.addToSelection(fsm.getVisualEvents(symbol));
-                }, "Select all events for symbol '" + symbolName + "'");
+                }, "<html>Select all events for symbol <i>" + symbolName + "</i></html>");
 
         return new PropertyDeclaration<>(TextAction.class, "Symbol " + symbolName,
                 value -> {
@@ -55,8 +55,7 @@ public class FsmPropertyHelper {
                         event.sendNotification(new PropertyChangedEvent(event, Event.PROPERTY_SYMBOL));
                     }
                 },
-                () -> new TextAction(symbolName)
-                        .setRightAction(rightAction)
+                () -> new TextAction(symbolName).setRightAction(rightAction, false)
         ).setSpan();
     }
 

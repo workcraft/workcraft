@@ -81,7 +81,7 @@ public class StgPropertyHelper {
 
         Action leftAction = new Action(PropertyHelper.BULLET_SYMBOL,
                 () -> mathStg.setSignalType(signal, signalType.toggle(), container),
-                "Toggle type of signal '" + signal + "'");
+                "<html>Toggle type of signal <i>" + signal + "</i></html>");
 
         Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
                 () -> {
@@ -89,7 +89,7 @@ public class StgPropertyHelper {
                     for (SignalTransition transition : mathStg.getSignalTransitions(signal, container)) {
                         visualStg.addToSelection(visualStg.getVisualComponent(transition, VisualSignalTransition.class));
                     }
-                }, "Select all events of signal '" + signal + "'");
+                }, "<html>Select all events of signal <i>" + signal + "</i></html>");
 
         return new PropertyDeclaration<>(TextAction.class, null,
                 value -> {
@@ -100,7 +100,10 @@ public class StgPropertyHelper {
                         }
                     }
                 },
-                () -> new TextAction(signal).setLeftAction(leftAction).setRightAction(rightAction).setForeground(color)
+                () -> new TextAction(signal)
+                        .setLeftAction(leftAction, true)
+                        .setRightAction(rightAction, false)
+                        .setForeground(color)
             ).setSpan();
     }
 

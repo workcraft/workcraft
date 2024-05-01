@@ -58,8 +58,10 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
                 leftButton.setText(leftAction.getTitle());
                 leftButton.setToolTipText(ActionUtils.getActionTooltip(leftAction));
                 leftButton.addActionListener(e -> {
-                    // Call fireEditingStopped before the action so memento can be saved
-                    fireEditingStopped();
+                    // Call fireEditingStopped() before model modifying action to save memento
+                    if (textAction.isModelModifyingLeftAction()) {
+                        fireEditingStopped();
+                    }
                     leftAction.run();
                 });
             }
@@ -83,8 +85,10 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
                 rightButton.setText(rightAction.getTitle());
                 rightButton.setToolTipText(ActionUtils.getActionTooltip(rightAction));
                 rightButton.addActionListener(e -> {
-                    // Call fireEditingStopped before the action so memento can be saved
-                    fireEditingStopped();
+                    // Call fireEditingStopped() before model modifying action to save memento
+                    if (textAction.isModelModifyingRightAction()) {
+                        fireEditingStopped();
+                    }
                     rightAction.run();
                 });
             }
