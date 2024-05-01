@@ -24,13 +24,21 @@ public class RefinementDependencyGraph {
     private final Map<File, ModelEntry> fileToModelMap = new HashMap<>();
 
     public RefinementDependencyGraph(WorkspaceEntry we) {
-        Stack<File> stack = new Stack<>();
-        File topFile = Framework.getInstance().getWorkspace().getFile(we);
-        fileToModelMap.put(topFile, we.getModelEntry());
-        Map<String, File> topDependencyMap = extractInstanceDependencyMap(we.getModelEntry());
-        stack.addAll(topDependencyMap.values());
-        detailedDependencyGraph.put(topFile, topDependencyMap);
+        this(Framework.getInstance().getWorkspace().getFile(we));
+    }
 
+    public RefinementDependencyGraph(File topFile) {
+        Stack<File> stack = new Stack<>();
+        try {
+            ModelEntry topMe = WorkUtils.loadModel(topFile);
+            fileToModelMap.put(topFile, topMe);
+            Map<String, File> topDependencyMap = extractInstanceDependencyMap(topMe);
+            stack.addAll(topDependencyMap.values());
+            detailedDependencyGraph.put(topFile, topDependencyMap);
+        } catch (DeserialisationException e) {
+            String filePath = FileUtils.getFullPath(topFile);
+            LogUtils.logError("Cannot read top-level file '" + filePath + "':\n" + e.getMessage());
+        }
         Set<File> visited = new HashSet<>();
         while (!stack.empty()) {
             File file = stack.pop();
