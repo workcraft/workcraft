@@ -103,9 +103,7 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
 
         if (DialogUtils.showFileOpener(fc)) {
             file = fc.getSelectedFile();
-            fileReference = new FileReference();
-            String path = FileUtils.getFullPath(file);
-            fileReference.setPath(path);
+            fileReference = new FileReference(FileUtils.getFullPath(file));
             update();
             fireEditingStopped();
         }

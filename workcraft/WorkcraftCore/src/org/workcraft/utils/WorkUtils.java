@@ -511,8 +511,7 @@ public final class WorkUtils {
             Matcher matcher = pattern.matcher(line);
             if (matcher.find()) {
                 String path = matcher.group(1);
-                FileReference fileReference = new FileReference();
-                fileReference.setPath(path);
+                FileReference fileReference = new FileReference(path);
                 fileReference.setBase(base);
                 if (absolute) {
                     fileReference.setBase(null);
@@ -594,6 +593,17 @@ public final class WorkUtils {
         } catch (IOException e) {
             throw new DeserialisationException(e);
         }
+    }
+
+    public static String extractModelTitle(File file) {
+        WorkspaceEntry we = Framework.getInstance().getWorkspace().getWork(file);
+        ModelEntry me;
+        try {
+            me = we == null ? loadModel(file) : we.getModelEntry();
+        } catch (DeserialisationException e) {
+            throw new RuntimeException(e);
+        }
+        return me == null ? null : me.getVisualModel().getTitle();
     }
 
 }

@@ -845,9 +845,7 @@ public abstract class AbstractVerilogImporter implements Importer {
             component.setIsEnvironment(true);
         } else if (moduleToFileNameMap != null) {
             String path = moduleToFileNameMap.get(verilogModule);
-            FileReference refinement = new FileReference();
-            refinement.setPath(path);
-            component.setRefinement(refinement);
+            component.setRefinement(new FileReference(path));
         }
         component.setModule(verilogInstance.moduleName);
         circuit.add(component);
