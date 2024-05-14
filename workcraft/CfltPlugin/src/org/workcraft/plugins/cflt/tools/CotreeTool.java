@@ -17,8 +17,8 @@ public final class CotreeTool {
 
     HashMap<String, Graph> entryGraph = new HashMap<>();
     HashMap<String, Graph> exitGraph = new HashMap<>();
-    PetriDrawingTool pdt = new PetriDrawingTool();
-    StgDrawingTool sdt = new StgDrawingTool();
+    PetriDrawingTool petriDrawingTool = new PetriDrawingTool();
+    StgDrawingTool stgDrawingTool = new StgDrawingTool();
 
     public void reset() {
         CotreeTool.nodes = new ArrayList<>();
@@ -31,72 +31,97 @@ public final class CotreeTool {
     }
 
     public void drawSingleTransition(Model model) {
-        if (model == Model.PETRI_NET) {
-            pdt.drawSingleTransition(singleTransition);
-        } else if (model == Model.STG) {
-            sdt.drawSingleTransition(singleTransition);
+        switch (model) {
+        case PETRI_NET:
+            petriDrawingTool.drawSingleTransition(singleTransition);
+            break;
+        case STG:
+            stgDrawingTool.drawSingleTransition(singleTransition);
+            break;
         }
     }
 
     public void drawInterpretedGraph(Mode mode, Model model) {
-        int counter = 0;
+        int nodeCounter = 0;
+
         for (Node node : nodes) {
-            String a = node.getLeft();
-            String b = node.getRight();
-            Operator o = node.getOperator();
+            String leftChildName = node.getLeftChildName();
+            String rightChildName = node.getRightChildName();
+            Operator operator = node.getOperator();
 
-            if (!entryGraph.containsKey(a)) {
-                entryGraph.put(a, new Graph());
-                entryGraph.get(a).addVertex(a);
+            if (!entryGraph.containsKey(leftChildName)) {
+                entryGraph.put(leftChildName, new Graph());
+                entryGraph.get(leftChildName).addVertex(leftChildName);
             }
-            if (!entryGraph.containsKey(b)) {
-                entryGraph.put(b, new Graph());
-                entryGraph.get(b).addVertex(b);
-            }
-            if (!exitGraph.containsKey(a)) {
-                exitGraph.put(a, new Graph());
-                exitGraph.get(a).addVertex(a);
-            }
-            if (!exitGraph.containsKey(b)) {
-                exitGraph.put(b, new Graph());
-                exitGraph.get(b).addVertex(b);
+            if (!entryGraph.containsKey(rightChildName)) {
+                entryGraph.put(rightChildName, new Graph());
+                entryGraph.get(rightChildName).addVertex(rightChildName);
             }
 
-            if (o == Operator.CONCURRENCY) {
-                Graph eG =  GraphUtils.disjointUnion(entryGraph.get(a), entryGraph.get(b));
-                entryGraph.replace(a, eG);
-                Graph xG =  GraphUtils.disjointUnion(exitGraph.get(a), exitGraph.get(b));
-                exitGraph.replace(a, xG);
-
-            } else if (o == Operator.CHOICE) {
-                Graph eG =  GraphUtils.join(entryGraph.get(a), entryGraph.get(b));
-                entryGraph.replace(a, eG);
-                Graph xG =  GraphUtils.join(exitGraph.get(a), exitGraph.get(b));
-                exitGraph.replace(a, xG);
-
-            } else if (o == Operator.SEQUENCE) {
-                if (model == Model.PETRI_NET) {
-                    pdt.drawPetri(exitGraph.get(a), entryGraph.get(b), true, false,  mode);
-                } else if (model == Model.STG) {
-                    sdt.drawStg(exitGraph.get(a), entryGraph.get(b), true, false, mode);
-                }
-                exitGraph.replace(a, exitGraph.get(b));
-
-            } else if (o == Operator.ITERATION) {
-                Graph clone = exitGraph.get(a).cloneGraph(counter);
-                Graph eG =  GraphUtils.join(entryGraph.get(a), clone);
-                entryGraph.replace(a, eG);
+            if (!exitGraph.containsKey(leftChildName)) {
+                exitGraph.put(leftChildName, new Graph());
+                exitGraph.get(leftChildName).addVertex(leftChildName);
             }
-            // If the node is the root node
-            if (counter == nodes.size() - 1) {
-                if (model == Model.PETRI_NET) {
-                    pdt.drawPetri(entryGraph.get(a), new Graph(), false, true, mode);
-                } else if (model == Model.STG) {
-                    sdt.drawStg(entryGraph.get(a), new Graph(), false, true, mode);
+            if (!exitGraph.containsKey(rightChildName)) {
+                exitGraph.put(rightChildName, new Graph());
+                exitGraph.get(rightChildName).addVertex(rightChildName);
+            }
+
+            switch (operator) {
+            case CONCURRENCY:
+                this.handleConcurrency(leftChildName, rightChildName);
+                break;
+            case CHOICE:
+                this.handleChoice(leftChildName, rightChildName);
+                break;
+            case SEQUENCE:
+                this.handleSequence(leftChildName, rightChildName, model, mode);
+                break;
+            case ITERATION:
+                this.handleIteration(leftChildName, nodeCounter);
+                break;
+            }
+
+            if (nodeCounter == nodes.size() - 1) {
+                switch (model) {
+                case PETRI_NET:
+                    petriDrawingTool.drawPetri(entryGraph.get(leftChildName), new Graph(), false, true, mode);
+                    break;
+                case STG:
+                    stgDrawingTool.drawStg(entryGraph.get(leftChildName), new Graph(), false, true, mode);
+                    break;
                 }
             }
-            counter++;
+            nodeCounter++;
         }
     }
 
+    private void handleConcurrency(String leftChildName, String rightChildName) {
+        Graph eG =  GraphUtils.disjointUnion(entryGraph.get(leftChildName), entryGraph.get(rightChildName));
+        entryGraph.replace(leftChildName, eG);
+        Graph xG =  GraphUtils.disjointUnion(exitGraph.get(leftChildName), exitGraph.get(rightChildName));
+        exitGraph.replace(leftChildName, xG);
+    }
+    private void handleChoice(String leftChildName, String rightChildName) {
+        Graph eG =  GraphUtils.join(entryGraph.get(leftChildName), entryGraph.get(rightChildName));
+        entryGraph.replace(leftChildName, eG);
+        Graph xG =  GraphUtils.join(exitGraph.get(leftChildName), exitGraph.get(rightChildName));
+        exitGraph.replace(leftChildName, xG);
+    }
+    private void handleSequence(String leftChildName, String rightChildName, Model model, Mode mode) {
+        switch (model) {
+        case PETRI_NET:
+            petriDrawingTool.drawPetri(exitGraph.get(leftChildName), entryGraph.get(rightChildName), true, false,  mode);
+            break;
+        case STG:
+            stgDrawingTool.drawStg(exitGraph.get(leftChildName), entryGraph.get(rightChildName), true, false, mode);
+            break;
+        }
+        exitGraph.replace(leftChildName, exitGraph.get(rightChildName));
+    }
+    private void handleIteration(String leftChildName, int nodeCounter) {
+        Graph clone = exitGraph.get(leftChildName).cloneGraph(nodeCounter);
+        Graph eG =  GraphUtils.join(entryGraph.get(leftChildName), clone);
+        entryGraph.replace(leftChildName, eG);
+    }
 }

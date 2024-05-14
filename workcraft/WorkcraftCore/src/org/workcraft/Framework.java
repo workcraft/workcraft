@@ -656,7 +656,13 @@ public final class Framework {
      */
     @SuppressWarnings("unused")
     public void closeWork(WorkspaceEntry we) {
-        getWorkspace().removeWork(we);
+        if ((we != null) && (mainWindow != null)) {
+            we.setChanged(false);
+            mainWindow.closeEditor(we);
+        }
+        if (we != null) {
+            workspace.removeWork(we);
+        }
     }
 
     /**
@@ -664,7 +670,7 @@ public final class Framework {
      */
     @SuppressWarnings("unused")
     public void closeAllWorks() {
-        for (WorkspaceEntry we : getWorkspace().getWorks()) {
+        for (WorkspaceEntry we : workspace.getWorks()) {
             closeWork(we);
         }
     }

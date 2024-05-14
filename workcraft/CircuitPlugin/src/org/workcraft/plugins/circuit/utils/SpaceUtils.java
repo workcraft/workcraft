@@ -159,8 +159,10 @@ public final class SpaceUtils {
                 pin = CircuitUtils.findDriver(circuit, port, false);
             } else {
                 Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, port, false);
-                if (!drivenContacts.isEmpty()) {
-                    pin = drivenContacts.iterator().next();
+                for (VisualContact drivenContact : drivenContacts) {
+                    if ((pin == null) || (drivenContact.getRootSpaceY() < pin.getRootSpaceY())) {
+                        pin = drivenContact;
+                    }
                 }
             }
             if (pin != null) {

@@ -10,6 +10,10 @@ public class BasicProgressMonitor<T> implements ProgressMonitor<T> {
     }
 
     @Override
+    public void setDetails(String details) {
+    }
+
+    @Override
     public void progressUpdate(double completion) {
     }
 

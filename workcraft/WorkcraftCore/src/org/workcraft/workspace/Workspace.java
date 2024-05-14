@@ -117,6 +117,12 @@ public class Workspace {
         fireWorkspaceChanged();
     }
 
+    public void removeMount(Path<String> path) {
+        mounts.remove(path);
+        permanentMounts.remove(path);
+
+    }
+
     public void fireWorkspaceChanged() {
         // TODO : categorise and route events
         for (WorkspaceListener listener : workspaceListeners) {

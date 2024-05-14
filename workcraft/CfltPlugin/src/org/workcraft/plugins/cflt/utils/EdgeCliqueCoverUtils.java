@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-public final class EccUtils {
+public final class EdgeCliqueCoverUtils {
 
-    private EccUtils() {
+    private EdgeCliqueCoverUtils() {
     }
 
-    public static ArrayList<ArrayList<String>> getEcc(boolean isSequence, Mode mode, Graph inputG, Graph outputG) {
+    public static ArrayList<ArrayList<String>> getEdgeCliqueCover(boolean isSequence, Mode mode, Graph inputG, Graph outputG) {
         Graph initGraph = isSequence ? GraphUtils.join(inputG, outputG) : inputG;
         ArrayList<Edge> optionalEdges = isSequence ? inputG.getEdges() : new ArrayList<>();
         switch (mode) {
@@ -32,25 +32,17 @@ public final class EccUtils {
         return new ArrayList<>();
     }
 
-    public static HashMap<String, HashSet<String>> initialiseNeighbours(Graph g) {
+    public static HashMap<String, HashSet<String>> initialiseNeighbours(Graph graph) {
         HashMap<String, HashSet<String>> allNeighbours = new HashMap<>();
-        // Initialising neighbours
-        for (Edge e : g.getEdges()) {
-            if (allNeighbours.containsKey(e.getFirstVertex())) {
-                allNeighbours.get(e.getFirstVertex()).add(e.getSecondVertex());
-
-            } else {
-                allNeighbours.put(e.getFirstVertex(), new HashSet<>());
-                allNeighbours.get(e.getFirstVertex()).add(e.getSecondVertex());
-
+        for (Edge edge : graph.getEdges()) {
+            if (!allNeighbours.containsKey(edge.getFirstVertex())) {
+                allNeighbours.put(edge.getFirstVertex(), new HashSet<>());
             }
-            if (allNeighbours.containsKey(e.getSecondVertex())) {
-                allNeighbours.get(e.getSecondVertex()).add(e.getFirstVertex());
-
-            } else {
-                allNeighbours.put(e.getSecondVertex(), new HashSet<>());
-                allNeighbours.get(e.getSecondVertex()).add(e.getFirstVertex());
+            if (!allNeighbours.containsKey(edge.getSecondVertex())) {
+                allNeighbours.put(edge.getSecondVertex(), new HashSet<>());
             }
+            allNeighbours.get(edge.getFirstVertex()).add(edge.getSecondVertex());
+            allNeighbours.get(edge.getSecondVertex()).add(edge.getFirstVertex());
         }
         return allNeighbours;
     }
@@ -58,16 +50,11 @@ public final class EccUtils {
     /**
      * This function eliminates redundant cliques in an edge clique cover
      * by checking if the clique consists only of edges contained in other cliques.
-     * @param noOfCliqueAnEdgeIsContainedIn, the number of cliques an edge is contained in
-     * @param cliqueAsEdges clique
-     * @return clique is redundancy
      */
-    public static boolean checkRedundancy(HashMap<String, Integer> noOfCliqueAnEdgeIsContainedIn,
+    public static boolean checkRedundancy(HashMap<String, Integer> edgeToNoOfCliquesItsContainedIn,
                             ArrayList<String> cliqueAsEdges) {
-
         for (String edge : cliqueAsEdges) {
-            //if the edge is only contained in this clique
-            if (noOfCliqueAnEdgeIsContainedIn.get(edge) == 1) {
+            if (edgeToNoOfCliquesItsContainedIn.get(edge) == 1) {
                 return false;
             }
         }
@@ -75,13 +62,10 @@ public final class EccUtils {
     }
 
     /**
-     *
-     * @param uncoveredDegree uncovered degree
-     * @param uncoveredVertices uncovered vertices
      * @return a vertex 'u' with the lowest uncovered degree in the local neighbourhood
      */
     public static String argMin(HashMap<String, Integer> uncoveredDegree, HashSet<String> uncoveredVertices) {
-        int arg = 1000;
+        int arg = 2147483646;
         String u = "";
         for (String str : uncoveredVertices) {
             if (uncoveredDegree.get(str) < arg) {
@@ -93,9 +77,6 @@ public final class EccUtils {
     }
 
     /**
-     *
-     * @param uncoveredDegree uncovered degree
-     * @param uncoveredVertices uncovered vertices
      * @return a vertex 'u' with the highest uncovered degree in the local neighbourhood
      */
     public static String argMax(HashMap<String, Integer> uncoveredDegree, HashSet<String> uncoveredVertices) {
