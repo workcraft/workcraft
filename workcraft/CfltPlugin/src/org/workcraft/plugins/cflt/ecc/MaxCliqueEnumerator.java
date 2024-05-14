@@ -7,17 +7,16 @@ import org.workcraft.plugins.cflt.Graph;
 
 public class MaxCliqueEnumerator {
 
-    int nodesCount;
+    int nodeCount;
     ArrayList<Vertex> graph = new ArrayList<>();
     ArrayList<ArrayList<String>> allMaxCliques = new ArrayList<>();
-    HashMap<String, Integer> vertexNameIndex = new HashMap<>();
-    HashMap<Integer, String> vertexIndexName = new HashMap<>();
+    HashMap<String, Integer> vertexNameToIndex = new HashMap<>();
+    HashMap<Integer, String> vertexIndexToName = new HashMap<>();
 
     static class Vertex implements Comparable<Vertex> {
         int x;
-
         int degree;
-        ArrayList<Vertex> nbrs = new ArrayList<>();
+        ArrayList<Vertex> neighbours = new ArrayList<>();
 
         public int getX() {
             return x;
@@ -35,29 +34,29 @@ public class MaxCliqueEnumerator {
             this.degree = degree;
         }
 
-        public ArrayList<Vertex> getNbrs() {
-            return nbrs;
+        public ArrayList<Vertex> getNeighbours() {
+            return neighbours;
         }
 
-        public void setNbrs(ArrayList<Vertex> nbrs) {
-            this.nbrs = nbrs;
+        public void setNeighbours(ArrayList<Vertex> neighbours) {
+            this.neighbours = neighbours;
         }
 
-        public void addNbr(Vertex y) {
-            this.nbrs.add(y);
-            if (!y.getNbrs().contains(y)) {
-                y.getNbrs().add(this);
-                y.degree++;
+        public void addNeighbour(Vertex vertex) {
+            this.neighbours.add(vertex);
+            if (!vertex.getNeighbours().contains(vertex)) {
+                vertex.getNeighbours().add(this);
+                vertex.degree++;
             }
             this.degree++;
 
         }
 
-        public void removeNbr(Vertex y) {
-            this.nbrs.remove(y);
-            if (y.getNbrs().contains(y)) {
-                y.getNbrs().remove(this);
-                y.degree--;
+        public void removeNeighbour(Vertex vertex) {
+            this.neighbours.remove(vertex);
+            if (vertex.getNeighbours().contains(vertex)) {
+                vertex.getNeighbours().remove(this);
+                vertex.degree--;
             }
             this.degree--;
 
@@ -68,18 +67,26 @@ public class MaxCliqueEnumerator {
             return Integer.compare(this.degree, o.degree);
         }
     }
+    public static ArrayList<ArrayList<String>> getAllMaxCliques(Graph g) {
+        MaxCliqueEnumerator enumerator = new MaxCliqueEnumerator();
 
-    void initGraph() {
+        enumerator.initialiseMap(g);
+        enumerator.readNextGraph(g);
+        enumerator.bronKerboschPivotExecute();
+        return enumerator.allMaxCliques;
+    }
+
+    private void initGraph() {
         graph.clear();
-        for (int i = 0; i < nodesCount; i++) {
+        for (int i = 0; i < nodeCount; i++) {
             Vertex v = new Vertex();
             v.setX(i);
             graph.add(v);
         }
     }
 
-    void readNextGraph(Graph g) {
-        nodesCount = g.getVertices().size();
+    private void readNextGraph(Graph g) {
+        nodeCount = g.getVertices().size();
         int edgesCount = g.getEdges().size();
         initGraph();
 
@@ -87,45 +94,36 @@ public class MaxCliqueEnumerator {
             String[] strArr = new String[2];
             strArr[0] = g.getEdges().get(k).getFirstVertex();
             strArr[1] = g.getEdges().get(k).getSecondVertex();
-            int u = vertexNameIndex.get(strArr[0]);
-            int v = vertexNameIndex.get(strArr[1]);
-            Vertex vertU = graph.get(u);
-            Vertex vertv = graph.get(v);
-            vertU.addNbr(vertv);
+            int u = vertexNameToIndex.get(strArr[0]);
+            int v = vertexNameToIndex.get(strArr[1]);
+            Vertex vertexU = graph.get(u);
+            Vertex vertexV = graph.get(v);
+            vertexU.addNeighbour(vertexV);
         }
     }
-
-    // Finds nbr of vertex i
-    ArrayList<Vertex> getNbrs(Vertex v) {
+    private ArrayList<Vertex> getNeighbours(Vertex v) {
         int i = v.getX();
-        return graph.get(i).nbrs;
+        return graph.get(i).neighbours;
     }
-
-    // Intersection of two sets
-    ArrayList<Vertex> intersect(ArrayList<Vertex> arlFirst,
+    private ArrayList<Vertex> intersect(ArrayList<Vertex> arlFirst,
             ArrayList<Vertex> arlSecond) {
         ArrayList<Vertex> arlHold = new ArrayList<>(arlFirst);
         arlHold.retainAll(arlSecond);
         return arlHold;
     }
-
-    // Union of two sets
-    ArrayList<Vertex> union(ArrayList<Vertex> arlFirst,
+    private ArrayList<Vertex> union(ArrayList<Vertex> arlFirst,
             ArrayList<Vertex> arlSecond) {
         ArrayList<Vertex> arlHold = new ArrayList<>(arlFirst);
         arlHold.addAll(arlSecond);
         return arlHold;
     }
-
-    // removes the neighbours
-    ArrayList<Vertex> removeNbrs(ArrayList<Vertex> arlFirst, Vertex v) {
+    private ArrayList<Vertex> removeNeighbours(ArrayList<Vertex> arlFirst, Vertex v) {
         ArrayList<Vertex> arlHold = new ArrayList<>(arlFirst);
-        arlHold.removeAll(v.getNbrs());
+        arlHold.removeAll(v.getNeighbours());
         return arlHold;
     }
 
-    // Version without a pivot
-    void bronKerboschWithoutPivot(ArrayList<Vertex> r, ArrayList<Vertex> p, ArrayList<Vertex> x, String pre) {
+    private void bronKerboschWithoutPivot(ArrayList<Vertex> r, ArrayList<Vertex> p, ArrayList<Vertex> x, String pre) {
         if ((p.isEmpty()) && (x.isEmpty())) {
             saveClique(r);
             return;
@@ -134,44 +132,30 @@ public class MaxCliqueEnumerator {
         ArrayList<Vertex> p1 = new ArrayList<>(p);
         for (Vertex v : p) {
             r.add(v);
-            bronKerboschWithoutPivot(r, intersect(p1, getNbrs(v)),
-                    intersect(x, getNbrs(v)), pre + "\t");
+            bronKerboschWithoutPivot(r, intersect(p1, getNeighbours(v)),
+                    intersect(x, getNeighbours(v)), pre + "\t");
             r.remove(v);
             p1.remove(v);
             x.add(v);
         }
     }
-
-    void bronKerboschPivotExecute() {
+    private void bronKerboschPivotExecute() {
         ArrayList<Vertex> x = new ArrayList<>();
         ArrayList<Vertex> r = new ArrayList<>();
         ArrayList<Vertex> p = new ArrayList<>(graph);
         bronKerboschWithoutPivot(r, p, x, "");
     }
-
-    void saveClique(ArrayList<Vertex> r) {
+    private void saveClique(ArrayList<Vertex> r) {
         ArrayList<String> maxClique = new ArrayList<>();
         for (Vertex v : r) {
-            maxClique.add(vertexIndexName.get(v.getX()));
+            maxClique.add(vertexIndexToName.get(v.getX()));
         }
         allMaxCliques.add(maxClique);
     }
-
-    private void initialiseMap(Graph g) {
-        for (int x = 0; x < g.getVertices().size(); x++) {
-            vertexNameIndex.put(g.getVertices().get(x), x);
-            vertexIndexName.put(x, g.getVertices().get(x));
+    private void initialiseMap(Graph graph) {
+        for (int x = 0; x < graph.getVertices().size(); x++) {
+            vertexNameToIndex.put(graph.getVertices().get(x), x);
+            vertexIndexToName.put(x, graph.getVertices().get(x));
         }
     }
-
-    public static ArrayList<ArrayList<String>> getAllMaxCliques(Graph g) {
-
-        MaxCliqueEnumerator ff = new MaxCliqueEnumerator();
-
-        ff.initialiseMap(g);
-        ff.readNextGraph(g);
-        ff.bronKerboschPivotExecute();
-        return ff.allMaxCliques;
-    }
-
 }

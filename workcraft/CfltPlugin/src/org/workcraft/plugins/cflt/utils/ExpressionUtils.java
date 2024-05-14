@@ -35,8 +35,8 @@ public final class ExpressionUtils {
     public static final char TOGGLE_DIR = '~';
 
     public static WorkspaceEntry we;
-    public static HashMap<String, String> labelNameMap = new HashMap<>();
-    public static HashMap<String, Character> nameDirectionMap = new HashMap<>();
+    public static HashMap<String, String> labelToName = new HashMap<>();
+    public static HashMap<String, Character> nameToDirection = new HashMap<>();
 
     private ExpressionUtils() {
     }
@@ -92,7 +92,7 @@ public final class ExpressionUtils {
         if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
             ctr.drawSingleTransition(Model.PETRI_NET);
         }
-        labelNameMap = new HashMap<>();
+        labelToName = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
         if (!validateExpression(expressionText, Model.PETRI_NET)) {
             return false;
@@ -112,8 +112,8 @@ public final class ExpressionUtils {
         if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
             ctr.drawSingleTransition(Model.STG);
         }
-        nameDirectionMap = new HashMap<>();
-        labelNameMap = new HashMap<>();
+        nameToDirection = new HashMap<>();
+        labelToName = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
         if (!validateExpression(expressionText, Model.STG)) {
             return false;
@@ -159,12 +159,12 @@ public final class ExpressionUtils {
 
                 char lastC = expressionText.charAt(i - 1);
                 int wasAltered = 0;
-                nameDirectionMap.put(uniqueT, lastC);
+                nameToDirection.put(uniqueT, lastC);
                 if (lastC == PLUS_DIR || lastC == MINUS_DIR || lastC == TOGGLE_DIR) {
                     transitionNameBuilder = new StringBuilder(transitionNameBuilder.substring(0, transitionNameBuilder.length() - 1));
                     wasAltered = 1;
                 }
-                labelNameMap.put(uniqueT, transitionNameBuilder.toString());
+                labelToName.put(uniqueT, transitionNameBuilder.toString());
 
                 str = str.substring(0, i - transitionNameBuilder.length() - wasAltered) + uniqueT + str.substring(i);
                 i -= transitionNameBuilder.length();

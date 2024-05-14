@@ -12,54 +12,51 @@ import org.workcraft.plugins.cflt.Graph;
  */
 public class ExhaustiveSearch {
 
-    public static ArrayList<ArrayList<String>> getEdgeCliqueCover(Graph initG, ArrayList<Edge> optionalEdges) {
-        // The solution, i.e. a list of the vertices contained in each final clique
-        ArrayList<ArrayList<String>> ecc = new ArrayList<>();
+    public static ArrayList<ArrayList<String>> getEdgeCliqueCover(Graph initialGraph, ArrayList<Edge> optionalEdges) {
+        ArrayList<ArrayList<String>> edgeCliqueCover = new ArrayList<>();
         ArrayList<ArrayList<String>> allMaxCliques = null;
 
         try {
-            allMaxCliques = MaxCliqueEnumerator.getAllMaxCliques(initG);
+            allMaxCliques = MaxCliqueEnumerator.getAllMaxCliques(initialGraph);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        //printSolution(allMaxCliques);
-        AdvancedGraph g = null;
-        if (!initG.getEdges().isEmpty()) {
-            // Max number of cliques to be used in the final ecc (i.e. the depth of the tree to be traversed)
+
+        AdvancedGraph graph = null;
+        if (!initialGraph.getEdges().isEmpty()) {
+            // Max number of cliques to be used in the final edge clique cover (i.e. the depth of the tree to be traversed)
             int k = 0;
-            while (ecc.isEmpty()) {
-                g = new AdvancedGraph(initG, allMaxCliques);
-                ecc = branch(g, k, new ArrayList<>(), optionalEdges);
+            while (edgeCliqueCover.isEmpty()) {
+                graph = new AdvancedGraph(initialGraph, allMaxCliques);
+                edgeCliqueCover = branch(graph, k, new ArrayList<>(), optionalEdges);
                 k++;
             }
         }
-        return ecc;
+        return edgeCliqueCover;
     }
 
     @SuppressWarnings("unchecked")
-    private static ArrayList<ArrayList<String>> branch(AdvancedGraph g, int k,
-            ArrayList<ArrayList<String>> ecc, ArrayList<Edge> optionalEdges) {
+    private static ArrayList<ArrayList<String>> branch(AdvancedGraph graph, int k,
+            ArrayList<ArrayList<String>> edgeCliqueCover, ArrayList<Edge> optionalEdges) {
 
-        if (g.isCovered(ecc, optionalEdges)) {
-            return ecc;
+        if (graph.isCovered(edgeCliqueCover, optionalEdges)) {
+            return edgeCliqueCover;
         }
-
         if (k < 0) {
             return new ArrayList<>();
         }
-
-        Edge e = g.selectEdge();
-        if (e == null) {
-            return ecc;
+        Edge selectedEdge = graph.selectEdge();
+        if (selectedEdge == null) {
+            return edgeCliqueCover;
         }
 
-        for (ArrayList<String> maxClique : g.getMaximalCliques(e)) {
-            ArrayList<ArrayList<String>> newEcc = (ArrayList<ArrayList<String>>) ecc.clone();
+        for (ArrayList<String> maxClique : graph.getMaximalCliques(selectedEdge)) {
+            ArrayList<ArrayList<String>> newEcc = (ArrayList<ArrayList<String>>) edgeCliqueCover.clone();
             newEcc.add(maxClique);
 
-            ArrayList<ArrayList<String>> eccPrime = branch(g, k - 1, newEcc, optionalEdges);
-            if (!eccPrime.isEmpty()) {
-                return eccPrime;
+            ArrayList<ArrayList<String>> edgeCliqueCoverPrime = branch(graph, k - 1, newEcc, optionalEdges);
+            if (!edgeCliqueCoverPrime.isEmpty()) {
+                return edgeCliqueCoverPrime;
             }
         }
         return new ArrayList<>();

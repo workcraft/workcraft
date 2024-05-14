@@ -2,18 +2,20 @@ package org.workcraft.plugins.cflt;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
- * An undirected and unweighed graph as a set of edges
+ * An undirected and unweighted graph as a set of edges
  */
 public class Graph {
 
+    public static final String SPECIAL_CLONE_CHARACTER = "$";
     private ArrayList<Edge> edges = new ArrayList<>();
     private ArrayList<String> vertices = new ArrayList<>();
     boolean[][] connections;
 
     public Graph(ArrayList<Edge> edgeList, ArrayList<String> vertices, boolean[][] connections) {
-        this.setEdges(edgeList);
+        this.edges = edgeList;
         this.connections = connections;
         this.vertices = vertices;
     }
@@ -31,15 +33,6 @@ public class Graph {
         for (Edge e : getEdges()) {
             this.connections[getVertices().indexOf(e.getFirstVertex())][getVertices().indexOf(e.getSecondVertex())] = true;
             this.connections[getVertices().indexOf(e.getSecondVertex())][getVertices().indexOf(e.getFirstVertex())] = true;
-        }
-    }
-
-    public void printGraph() {
-        for (Edge edge : getEdges()) {
-            System.out.println("Edge: " + edge.getFirstVertex() + ' ' + edge.getSecondVertex());
-        }
-        for (String s : getVertices()) {
-            System.out.println("Vertex: " + s);
         }
     }
 
@@ -110,16 +103,16 @@ public class Graph {
     }
 
     public Graph cloneGraph(int counter) {
-        String addition = "$" + counter;
-        ArrayList<String> vClone = new ArrayList<>();
-        ArrayList<Edge> eClone = new ArrayList<>();
-        for (String v : this.getVertices()) {
-            vClone.add(v + addition);
-        }
-        for (Edge e : this.getEdges()) {
-            eClone.add(new Edge(e.getFirstVertex() + addition, e.getSecondVertex() + addition));
-        }
-        return new Graph(eClone, vClone, null);
-    }
+        String addition = SPECIAL_CLONE_CHARACTER + counter;
 
+        ArrayList<String> vertices = this.vertices.stream().map(vertexName -> {
+            return vertexName + addition;
+        }).collect(Collectors.toCollection(ArrayList::new));
+
+        ArrayList<Edge> edges = this.getEdges().stream().map(edgeName -> {
+            return new Edge(edgeName.getFirstVertex() + addition, edgeName.getSecondVertex() + addition);
+        }).collect(Collectors.toCollection(ArrayList::new));
+
+        return new Graph(edges, vertices, null);
+    }
 }
