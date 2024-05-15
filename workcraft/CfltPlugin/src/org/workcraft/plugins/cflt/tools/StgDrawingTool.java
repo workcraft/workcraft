@@ -38,7 +38,7 @@ public class StgDrawingTool {
                 VisualStgPlace visualStgPlace = visualStg.createVisualPlace(null);
                 VisualSignalTransition visualSignalTransition = !transitionNameToVisualSignalTransition.containsKey(vertex) && !isSequence ?
                         visualStg.createVisualSignalTransition(
-                                ExpressionUtils.labelToName.get(vertex), Type.INTERNAL, getDirection(vertex)):
+                                ExpressionUtils.labelToName.get(vertex), Type.INTERNAL, getDirection(vertex)) :
                         isRoot ? transitionNameToVisualSignalTransition.get(vertex) : null;
 
                 if (!transitionNameToVisualSignalTransition.containsKey(vertex) && !isSequence) {
