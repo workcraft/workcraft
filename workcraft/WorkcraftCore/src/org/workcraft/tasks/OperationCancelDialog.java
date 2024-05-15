@@ -33,9 +33,15 @@ final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<
         doLayout();
     }
 
+
+    @Override
+    public void setDetails(String details) {
+        taskControl.setDetails(details);
+    }
+
     @Override
     public void progressUpdate(double completion) {
-        taskControl.progressUpdate(completion);
+        taskControl.setProgress(completion);
     }
 
     @Override

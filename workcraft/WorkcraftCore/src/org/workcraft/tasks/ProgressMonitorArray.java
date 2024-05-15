@@ -25,6 +25,13 @@ public class ProgressMonitorArray<T> extends ArrayList<ProgressMonitor<? super T
     }
 
     @Override
+    public void setDetails(String details) {
+        for (ProgressMonitor<? super T> o : this) {
+            o.setDetails(details);
+        }
+    }
+
+    @Override
     public void progressUpdate(double completion) {
         for (ProgressMonitor<? super T> o : this) {
             o.progressUpdate(completion);

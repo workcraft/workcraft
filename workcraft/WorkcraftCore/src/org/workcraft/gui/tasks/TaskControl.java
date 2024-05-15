@@ -8,9 +8,9 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 
-@SuppressWarnings("serial")
 public class TaskControl extends JPanel {
 
+    private final JLabel detailsLabel;
     private final JProgressBar progressBar;
     private final JButton cancelButton;
 
@@ -24,15 +24,17 @@ public class TaskControl extends JPanel {
         Border lineBorder = new CompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 
-        JLabel label = new JLabel(taskDescription);
-        label.setMinimumSize(new Dimension(100, 20));
-        label.setPreferredSize(new Dimension(300, 20));
+        JLabel descriptionLabel = new JLabel(taskDescription);
+        detailsLabel = new JLabel();
+
+        JPanel labelPanel = new JPanel(GuiUtils.createFlowLayout());
+        labelPanel.add(descriptionLabel);
+        labelPanel.add(detailsLabel);
 
         progressBar = new JProgressBar();
         progressBar.setIndeterminate(true);
         progressBar.setMinimum(0);
         progressBar.setMaximum(1000);
-
         progressBar.setMinimumSize(new Dimension(100, 20));
         progressBar.setPreferredSize(new Dimension(300, 20));
 
@@ -42,14 +44,18 @@ public class TaskControl extends JPanel {
         JPanel buttonsPanel = GuiUtils.createDialogButtonsPanel();
         buttonsPanel.add(cancelButton);
 
-        add(label, BorderLayout.NORTH);
+        add(labelPanel, BorderLayout.NORTH);
         add(progressBar, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
     }
 
-    public void progressUpdate(final double completion) {
+    public void setProgress(final double completion) {
         progressBar.setIndeterminate(false);
         progressBar.setValue((int) (completion * 1000));
+    }
+
+    public void setDetails(String details) {
+        detailsLabel.setText(details);
     }
 
     public boolean isCancelRequested() {
