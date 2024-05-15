@@ -65,29 +65,27 @@ public final class CotreeTool {
             }
 
             switch (operator) {
-                case CONCURRENCY:
-                    this.handleConcurrency(leftChildName, rightChildName);
-                    break;
-                case CHOICE:
-                    this.handleChoice(leftChildName, rightChildName);
-                    break;
-                case SEQUENCE:
-                    this.handleSequence(leftChildName, rightChildName, model, mode);
-                    break;
-                case ITERATION:
-                    this.handleIteration(leftChildName, nodeCounter);
-
+            case CONCURRENCY:
+                this.handleConcurrency(leftChildName, rightChildName);
+                break;
+            case CHOICE:
+                this.handleChoice(leftChildName, rightChildName);
+                break;
+            case SEQUENCE:
+                this.handleSequence(leftChildName, rightChildName, model, mode);
+                break;
+            case ITERATION:
+                 this.handleIteration(leftChildName, nodeCounter);
             }
 
-            // If the node is the root node
             if (isRoot(nodeCounter, nodes)) {
                 switch (model) {
-                    case PETRI_NET:
-                        petriDrawingTool.drawPetri(entryGraph.get(leftChildName), new Graph(), false, true, mode);
-                        break;
-                    case STG:
-                        stgDrawingTool.drawStg(entryGraph.get(leftChildName), new Graph(), false, true, mode);
-                        break;
+                case PETRI_NET:
+                    petriDrawingTool.drawPetri(entryGraph.get(leftChildName), new Graph(), false, true, mode);
+                    break;
+                case STG:
+                    stgDrawingTool.drawStg(entryGraph.get(leftChildName), new Graph(), false, true, mode);
+                    break;
                 }
             }
             nodeCounter++;
@@ -112,12 +110,12 @@ public final class CotreeTool {
     }
     private void handleSequence(String leftChildName, String rightChildName, Model model, Mode mode) {
         switch (model) {
-            case PETRI_NET:
-                petriDrawingTool.drawPetri(exitGraph.get(leftChildName), entryGraph.get(rightChildName), true, false,  mode);
-                break;
-            case STG:
-                stgDrawingTool.drawStg(exitGraph.get(leftChildName), entryGraph.get(rightChildName), true, false, mode);
-                break;
+        case PETRI_NET:
+            petriDrawingTool.drawPetri(exitGraph.get(leftChildName), entryGraph.get(rightChildName), true, false,  mode);
+            break;
+        case STG:
+            stgDrawingTool.drawStg(exitGraph.get(leftChildName), entryGraph.get(rightChildName), true, false, mode);
+            break;
         }
         exitGraph.replace(leftChildName, exitGraph.get(rightChildName));
     }

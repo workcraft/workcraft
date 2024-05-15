@@ -121,12 +121,12 @@ public class StgDrawingTool {
         char lastChar = transitionName.charAt(transitionName.length() - 1);
         transitionName = transitionName.substring(0, transitionName.length() - 1);
         switch (lastChar) {
-            case PLUS_DIR:
-                ExpressionUtils.nameToDirection.put(transitionName, PLUS_DIR);
-            case MINUS_DIR:
-                ExpressionUtils.nameToDirection.put(transitionName, ExpressionUtils.MINUS_DIR);
-            default:
-                ExpressionUtils.nameToDirection.put(transitionName, ExpressionUtils.TOGGLE_DIR);
+        case PLUS_DIR:
+            ExpressionUtils.nameToDirection.put(transitionName, PLUS_DIR);
+        case MINUS_DIR:
+            ExpressionUtils.nameToDirection.put(transitionName, ExpressionUtils.MINUS_DIR);
+        default:
+            ExpressionUtils.nameToDirection.put(transitionName, ExpressionUtils.TOGGLE_DIR);
         }
 
         VisualSignalTransition visualSignalTransition =
@@ -138,14 +138,14 @@ public class StgDrawingTool {
     private Direction getDirection(String name) {
         char dir = ExpressionUtils.nameToDirection.get(name);
         switch (dir) {
-            case PLUS_DIR:
-                return Direction.PLUS;
-            case MINUS_DIR:
-                return Direction.MINUS;
-            case TOGGLE_DIR:
-                return Direction.TOGGLE;
-            default:
-                return null;
+        case PLUS_DIR:
+            return Direction.PLUS;
+        case MINUS_DIR:
+            return Direction.MINUS;
+        case TOGGLE_DIR:
+            return Direction.TOGGLE;
+        default:
+            return null;
         }
     }
     private void connectVisualPlaceAndVisualSignalTransition(
@@ -155,10 +155,10 @@ public class StgDrawingTool {
             ConnectionDirection connectionDirection) {
         try {
             switch (connectionDirection) {
-                case PLACE_TO_TRANSITION:
-                    visualStg.connect(visualStgPlace, visualSignalTransition);
-                case TRANSITION_TO_PLACE:
-                    visualStg.connect(visualSignalTransition, visualStgPlace);
+            case PLACE_TO_TRANSITION:
+                visualStg.connect(visualStgPlace, visualSignalTransition);
+            case TRANSITION_TO_PLACE:
+                visualStg.connect(visualSignalTransition, visualStgPlace);
             }
         } catch (InvalidConnectionException ignored) {
         }

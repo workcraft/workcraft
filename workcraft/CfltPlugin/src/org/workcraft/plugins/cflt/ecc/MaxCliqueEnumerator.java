@@ -59,7 +59,6 @@ public class MaxCliqueEnumerator {
                 vertex.degree--;
             }
             this.degree--;
-
         }
 
         @Override
@@ -67,11 +66,12 @@ public class MaxCliqueEnumerator {
             return Integer.compare(this.degree, o.degree);
         }
     }
-    public static ArrayList<ArrayList<String>> getAllMaxCliques(Graph g) {
+
+    public static ArrayList<ArrayList<String>> getAllMaxCliques(Graph graph) {
         MaxCliqueEnumerator enumerator = new MaxCliqueEnumerator();
 
-        enumerator.initialiseMap(g);
-        enumerator.readNextGraph(g);
+        enumerator.initialiseMap(graph);
+        enumerator.readNextGraph(graph);
         enumerator.bronKerboschPivotExecute();
         return enumerator.allMaxCliques;
     }
