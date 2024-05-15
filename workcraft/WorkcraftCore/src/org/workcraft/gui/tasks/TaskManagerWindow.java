@@ -39,7 +39,12 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
         @Override
         public void progressUpdate(final double completion) {
-            SwingUtilities.invokeLater(() -> taskControl.progressUpdate(completion));
+            SwingUtilities.invokeLater(() -> taskControl.setProgress(completion));
+        }
+
+        @Override
+        public void setDetails(String details) {
+            SwingUtilities.invokeLater(() -> taskControl.setDetails(details));
         }
     }
 
