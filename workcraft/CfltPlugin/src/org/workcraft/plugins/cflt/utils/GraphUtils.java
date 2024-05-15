@@ -10,6 +10,8 @@ public final class GraphUtils {
     private GraphUtils() {
     }
 
+    public static final String SPECIAL_CLONE_CHARACTER = "$";
+
     public static Graph disjointUnion(Graph g1, Graph g2) {
         ArrayList<Edge> newEdges = new ArrayList<>();
         newEdges.addAll(g1.getEdges());

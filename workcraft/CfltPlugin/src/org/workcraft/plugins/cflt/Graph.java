@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
+
 /**
  * An undirected and unweighted graph as a set of edges
  */
 public class Graph {
-
-    public static final String SPECIAL_CLONE_CHARACTER = "$";
     private ArrayList<Edge> edges = new ArrayList<>();
     private ArrayList<String> vertices = new ArrayList<>();
     boolean[][] connections;

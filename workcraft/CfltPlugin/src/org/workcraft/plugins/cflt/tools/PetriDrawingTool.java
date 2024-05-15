@@ -15,6 +15,8 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.WorkspaceUtils;
 
+import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
+
 public class PetriDrawingTool {
     private final HashMap<String, VisualTransition> transitionNameToVisualTransition = new HashMap<>();
 
@@ -55,8 +57,8 @@ public class PetriDrawingTool {
                     boolean isClone = false;
                     String cleanVertexName;
 
-                    if (vertexName.contains(Graph.SPECIAL_CLONE_CHARACTER)) {
-                        int charIndex = vertexName.indexOf(Graph.SPECIAL_CLONE_CHARACTER);
+                    if (vertexName.contains(SPECIAL_CLONE_CHARACTER)) {
+                        int charIndex = vertexName.indexOf(SPECIAL_CLONE_CHARACTER);
                         cleanVertexName = vertexName.substring(0, charIndex);
                         isClone = true;
                     } else {
