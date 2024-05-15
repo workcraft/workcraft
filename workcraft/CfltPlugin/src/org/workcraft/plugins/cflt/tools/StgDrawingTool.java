@@ -124,10 +124,13 @@ public class StgDrawingTool {
         switch (lastChar) {
         case PLUS_DIR:
             ExpressionUtils.nameToDirection.put(transitionName, PLUS_DIR);
+            break;
         case MINUS_DIR:
             ExpressionUtils.nameToDirection.put(transitionName, ExpressionUtils.MINUS_DIR);
+            break;
         default:
             ExpressionUtils.nameToDirection.put(transitionName, ExpressionUtils.TOGGLE_DIR);
+            break;
         }
 
         VisualSignalTransition visualSignalTransition =
@@ -158,8 +161,10 @@ public class StgDrawingTool {
             switch (connectionDirection) {
             case PLACE_TO_TRANSITION:
                 visualStg.connect(visualStgPlace, visualSignalTransition);
+                break;
             case TRANSITION_TO_PLACE:
                 visualStg.connect(visualSignalTransition, visualStgPlace);
+                break;
             }
         } catch (InvalidConnectionException ignored) {
         }

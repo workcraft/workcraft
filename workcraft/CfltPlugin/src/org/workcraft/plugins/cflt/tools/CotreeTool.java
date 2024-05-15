@@ -76,6 +76,7 @@ public final class CotreeTool {
                 break;
             case ITERATION:
                 this.handleIteration(leftChildName, nodeCounter);
+                break;
             }
 
             if (isRoot(nodeCounter, nodes)) {

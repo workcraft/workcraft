@@ -129,8 +129,10 @@ public class PetriDrawingTool {
             switch (connectionDirection) {
             case PLACE_TO_TRANSITION:
                 visualPetri.connect(visualPlace, visualTransition);
+                break;
             case TRANSITION_TO_PLACE:
                 visualPetri.connect(visualTransition, visualPlace);
+                break;
             }
         } catch (InvalidConnectionException ignored) {
         }

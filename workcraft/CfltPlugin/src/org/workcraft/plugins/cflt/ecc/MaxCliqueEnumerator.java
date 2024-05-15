@@ -111,18 +111,6 @@ public class MaxCliqueEnumerator {
         arlHold.retainAll(arlSecond);
         return arlHold;
     }
-    private ArrayList<Vertex> union(ArrayList<Vertex> arlFirst,
-            ArrayList<Vertex> arlSecond) {
-        ArrayList<Vertex> arlHold = new ArrayList<>(arlFirst);
-        arlHold.addAll(arlSecond);
-        return arlHold;
-    }
-    private ArrayList<Vertex> removeNeighbours(ArrayList<Vertex> arlFirst, Vertex v) {
-        ArrayList<Vertex> arlHold = new ArrayList<>(arlFirst);
-        arlHold.removeAll(v.getNeighbours());
-        return arlHold;
-    }
-
     private void bronKerboschWithoutPivot(ArrayList<Vertex> r, ArrayList<Vertex> p, ArrayList<Vertex> x, String pre) {
         if ((p.isEmpty()) && (x.isEmpty())) {
             saveClique(r);
