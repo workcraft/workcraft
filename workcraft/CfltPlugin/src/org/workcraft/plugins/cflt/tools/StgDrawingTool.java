@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import static org.workcraft.plugins.cflt.utils.ExpressionUtils.*;
+import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
 
 public class StgDrawingTool {
 
@@ -71,8 +72,8 @@ public class StgDrawingTool {
                     boolean isClone = false;
                     String cleanVertexName;
 
-                    if (vertexName.contains(Graph.SPECIAL_CLONE_CHARACTER)) {
-                        int charIndex = vertexName.indexOf(Graph.SPECIAL_CLONE_CHARACTER);
+                    if (vertexName.contains(SPECIAL_CLONE_CHARACTER)) {
+                        int charIndex = vertexName.indexOf(SPECIAL_CLONE_CHARACTER);
                         cleanVertexName = vertexName.substring(0, charIndex);
                         isClone = true;
                     } else {
