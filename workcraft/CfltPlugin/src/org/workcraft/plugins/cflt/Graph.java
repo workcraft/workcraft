@@ -103,14 +103,14 @@ public class Graph {
     }
 
     public Graph cloneGraph(int counter) {
-        String addition = SPECIAL_CLONE_CHARACTER + counter;
+        String suffix = SPECIAL_CLONE_CHARACTER + counter;
 
         ArrayList<String> vertices = this.vertices.stream().map(vertexName -> {
-            return vertexName + addition;
+            return vertexName + suffix;
         }).collect(Collectors.toCollection(ArrayList::new));
 
         ArrayList<Edge> edges = this.getEdges().stream().map(edgeName -> {
-            return new Edge(edgeName.getFirstVertex() + addition, edgeName.getSecondVertex() + addition);
+            return new Edge(edgeName.getFirstVertex() + suffix, edgeName.getSecondVertex() + suffix);
         }).collect(Collectors.toCollection(ArrayList::new));
 
         return new Graph(edges, vertices, null);
