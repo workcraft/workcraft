@@ -92,7 +92,6 @@ public class MaxMinHeuristic {
                         finalCliquesAsEdges.get(cliqueNumber).add(u + j);
                         finalCliquesAsEdges.get(cliqueNumber).add(j + u);
 
-                        // Updating the number of cliques the edge is contained in
                         int oldVal = edgeNameToNoOfCliquesItsContainedIn.get(u + j);
                         edgeNameToNoOfCliquesItsContainedIn.replace(u + j, oldVal + 1);
                         edgeNameToNoOfCliquesItsContainedIn.replace(j + u, oldVal + 1);
