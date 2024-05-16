@@ -1,31 +1,30 @@
 package org.workcraft.plugins.cflt;
 
 public class Node {
-
-    private String left;
-    private String right;
+    private String leftChildName;
+    private String rightChildName;
     private Operator operator;
 
-    public Node(String left, String right, Operator operator) {
-        this.left = left;
-        this.right = right;
+    public Node(String leftChildName, String rightChildName, Operator operator) {
+        this.leftChildName = leftChildName;
+        this.rightChildName = rightChildName;
         this.operator = operator;
     }
 
-    public String getLeft() {
-        return left;
+    public String getLeftChildName() {
+        return this.leftChildName;
     }
 
-    public void setLEft(String left) {
-        this.left = left;
+    public void setLeftChildName(String leftChild) {
+        this.leftChildName = leftChild;
     }
 
-    public String getRight() {
-        return right;
+    public String getRightChildName() {
+        return this.rightChildName;
     }
 
-    public void setB(String right) {
-        this.right = right;
+    public void setRightChildName(String rightChild) {
+        this.rightChildName = rightChild;
     }
 
     public Operator getOperator() {

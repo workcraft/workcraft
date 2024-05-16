@@ -4,7 +4,7 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.cflt.Graph;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
-import org.workcraft.plugins.cflt.utils.EccUtils;
+import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
 import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.plugins.stg.Signal.Type;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -17,147 +17,156 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+import static org.workcraft.plugins.cflt.utils.ExpressionUtils.*;
+import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
+
 public class StgDrawingTool {
 
-    private final HashMap<String, VisualSignalTransition> transitionMap = new HashMap<>();
+    private final HashMap<String, VisualSignalTransition> transitionNameToVisualSignalTransition = new HashMap<>();
 
-    public void drawStg(Graph inputG, Graph outputG, boolean isSequence, boolean isRoot, Mode mode) {
-        VisualStg stg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
+    public void drawStg(Graph inputGraph, Graph outputGraph, boolean isSequence, boolean isRoot, Mode mode) {
+        VisualStg visualStg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
+        ArrayList<ArrayList<String>> edgeCliqueCover = EdgeCliqueCoverUtils.getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
+        HashSet<String> inputVertices = new HashSet<>(isSequence ? inputGraph.getVertices() : new ArrayList<>());
+        this.drawIsolatedVisualObjects(inputGraph, visualStg, isSequence, isRoot);
+        this.drawRemainingVisualObjects(edgeCliqueCover, visualStg, inputVertices, isRoot);
+        makePlacesImplicit(visualStg);
+    }
 
-        ArrayList<ArrayList<String>> edgeCliqueCover = EccUtils.getEcc(isSequence, mode, inputG, outputG);
-        HashSet<String> inputVertices = new HashSet<>();
+    private void drawIsolatedVisualObjects(Graph inputGraph, VisualStg visualStg, boolean isSequence, boolean isRoot) {
+        if (inputGraph.getIsolatedVertices() != null) {
+            for (String vertex : inputGraph.getIsolatedVertices()) {
+                VisualStgPlace visualStgPlace = visualStg.createVisualPlace(null);
+                VisualSignalTransition visualSignalTransition = !transitionNameToVisualSignalTransition.containsKey(vertex) && !isSequence ?
+                        visualStg.createVisualSignalTransition(
+                                ExpressionUtils.labelToName.get(vertex), Type.INTERNAL, getDirection(vertex)) :
+                        isRoot ? transitionNameToVisualSignalTransition.get(vertex) : null;
 
-        if (!isSequence) {
-            inputVertices.addAll(new ArrayList<>());
-        } else {
-            inputVertices.addAll(inputG.getVertices());
-        }
-
-        // Dealing with isolated vertices
-        if (inputG.getIsolatedVertices() != null) {
-            for (String vertex : inputG.getIsolatedVertices()) {
-                if (!transitionMap.containsKey(vertex) && !isSequence) {
-                    VisualStgPlace place = stg.createVisualPlace(null);
-                    place.getReferencedComponent().setTokens(1);
-                    place.setNamePositioning(Positioning.LEFT);
-
-                    VisualSignalTransition newTransition = stg.createVisualSignalTransition(
-                            ExpressionUtils.labelNameMap.get(vertex), Type.INTERNAL, getDirection(vertex));
-
-                    transitionMap.put(vertex, newTransition);
-
-                    newTransition.setLabelPositioning(Positioning.BOTTOM);
-                    newTransition.setNamePositioning(Positioning.LEFT);
-                    try {
-                        stg.connect(place, newTransition);
-                    } catch (InvalidConnectionException e) {
-                        e.printStackTrace();
-                    }
-                } else if (isRoot) {
-                    VisualStgPlace place = stg.createVisualPlace(null);
-                    VisualSignalTransition transition = transitionMap.get(vertex);
-                    transitionMap.put(vertex, transition);
-                    place.getReferencedComponent().setTokens(1);
-
-                    try {
-                        stg.connect(place, transition);
-                    } catch (InvalidConnectionException ignored) {
-                    }
+                if (!transitionNameToVisualSignalTransition.containsKey(vertex) && !isSequence) {
+                    visualStgPlace.setNamePositioning(Positioning.LEFT);
+                    visualSignalTransition.setLabelPositioning(Positioning.BOTTOM);
+                    visualSignalTransition.setNamePositioning(Positioning.LEFT);
                 }
+
+                transitionNameToVisualSignalTransition.put(vertex, visualSignalTransition);
+                visualStgPlace.getReferencedComponent().setTokens(1);
+                connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
+
             }
         }
+    }
+
+    private void drawRemainingVisualObjects(
+            ArrayList<ArrayList<String>> edgeCliqueCover,
+            VisualStg visualStg,
+            HashSet<String> inputVertices,
+            boolean isRoot) {
+
         for (ArrayList<String> clique : edgeCliqueCover) {
-            // If the clique is not empty
-            if (!clique.isEmpty()) {
-                // Get vertices of a single clique from it's edges
-                VisualStgPlace place = stg.createVisualPlace(null);
-                place.setNamePositioning(Positioning.LEFT);
+            if (!clique.isEmpty() && clique != null) {
+                VisualStgPlace visualStgPlace = visualStg.createVisualPlace(null);
+                visualStgPlace.setNamePositioning(Positioning.LEFT);
                 boolean connectionsOnlyFromPlaceToTransitions = true;
 
-                for (String v : clique) {
+                for (String vertexName : clique) {
                     boolean isClone = false;
-                    String vertex;
-                    if (v.contains("$")) {
-                        int firstOc = v.indexOf("$");
-                        vertex = v.substring(0, firstOc);
+                    String cleanVertexName;
+
+                    if (vertexName.contains(SPECIAL_CLONE_CHARACTER)) {
+                        int charIndex = vertexName.indexOf(SPECIAL_CLONE_CHARACTER);
+                        cleanVertexName = vertexName.substring(0, charIndex);
                         isClone = true;
                     } else {
-                        vertex = v;
+                        cleanVertexName = vertexName;
                     }
-                    VisualSignalTransition newTransition;
-                    if (!transitionMap.containsKey(vertex)) {
-                        newTransition = stg.createVisualSignalTransition(ExpressionUtils.labelNameMap.get(vertex),
-                                Type.INTERNAL, getDirection(vertex));
 
-                        transitionMap.put(vertex, newTransition);
-                        newTransition.setLabelPositioning(Positioning.BOTTOM);
-                        newTransition.setNamePositioning(Positioning.LEFT);
+                    VisualSignalTransition visualSignalTransition;
+                    if (!transitionNameToVisualSignalTransition.containsKey(cleanVertexName)) {
+                        visualSignalTransition = visualStg.createVisualSignalTransition(ExpressionUtils.labelToName.get(cleanVertexName),
+                                Type.INTERNAL, getDirection(cleanVertexName));
 
+                        transitionNameToVisualSignalTransition.put(cleanVertexName, visualSignalTransition);
+                        visualSignalTransition.setLabelPositioning(Positioning.BOTTOM);
+                        visualSignalTransition.setNamePositioning(Positioning.LEFT);
                     } else {
-                        newTransition = transitionMap.get(vertex);
+                        visualSignalTransition = transitionNameToVisualSignalTransition.get(cleanVertexName);
                     }
 
-                    try {
-                        if (inputVertices.contains(vertex) || isClone) {
-                            stg.connect(newTransition, place);
-                            connectionsOnlyFromPlaceToTransitions = false;
-                            if (isRoot) {
-                                place.getReferencedComponent().setTokens(1);
-                            }
-                        } else {
-                            stg.connect(place, newTransition);
-                        }
-                    } catch (InvalidConnectionException ignored) {
-
+                    if (inputVertices.contains(cleanVertexName) || isClone) {
+                        connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace,
+                                visualSignalTransition, ConnectionDirection.TRANSITION_TO_PLACE);
+                        connectionsOnlyFromPlaceToTransitions = false;
+                        visualStgPlace.getReferencedComponent().setTokens(isRoot ? 1 : 0);
+                    } else {
+                        connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace,
+                                visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
                     }
                 }
-                if (connectionsOnlyFromPlaceToTransitions) {
-                    place.getReferencedComponent().setTokens(1);
-                }
+                visualStgPlace.getReferencedComponent().setTokens(connectionsOnlyFromPlaceToTransitions ? 1 : 0);
             }
         }
-        makePlacesImplicit(stg);
     }
 
-    private void makePlacesImplicit(VisualStg stg) {
-        for (VisualStgPlace place : stg.getVisualPlaces()) {
-            stg.makeImplicitIfPossible(place, true);
+    private void makePlacesImplicit(VisualStg visualStg) {
+        for (VisualStgPlace visualStgPlace : visualStg.getVisualPlaces()) {
+            visualStg.makeImplicitIfPossible(visualStgPlace, true);
         }
     }
 
-    public void drawSingleTransition(String name) {
-        VisualStg stg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
+    public void drawSingleTransition(String transitionName) {
+        VisualStg visualStg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
+        VisualStgPlace visualStgPlace = visualStg.createVisualPlace(null);
+        visualStgPlace.setNamePositioning(Positioning.LEFT);
+        visualStgPlace.getReferencedComponent().setTokens(1);
 
-        VisualStgPlace place = stg.createVisualPlace(null);
-        place.setNamePositioning(Positioning.LEFT);
-        place.getReferencedComponent().setTokens(1);
-
-        if (name.charAt(name.length() - 1) == '+') {
-            name = name.substring(0, name.length() - 1);
-            ExpressionUtils.nameDirectionMap.put(name, ExpressionUtils.PLUS_DIR);
-        } else if (name.charAt(name.length() - 1) == '-') {
-            name = name.substring(0, name.length() - 1);
-            ExpressionUtils.nameDirectionMap.put(name, ExpressionUtils.MINUS_DIR);
-        } else {
-            ExpressionUtils.nameDirectionMap.put(name, ExpressionUtils.TOGGLE_DIR);
+        char lastChar = transitionName.charAt(transitionName.length() - 1);
+        transitionName = transitionName.substring(0, transitionName.length() - 1);
+        switch (lastChar) {
+        case PLUS_DIR:
+            ExpressionUtils.nameToDirection.put(transitionName, PLUS_DIR);
+            break;
+        case MINUS_DIR:
+            ExpressionUtils.nameToDirection.put(transitionName, ExpressionUtils.MINUS_DIR);
+            break;
+        default:
+            ExpressionUtils.nameToDirection.put(transitionName, ExpressionUtils.TOGGLE_DIR);
+            break;
         }
-        VisualSignalTransition newTransition =
-                stg.createVisualSignalTransition(name, Type.INTERNAL, getDirection(name));
-        try {
-            stg.connect(place, newTransition);
-        } catch (InvalidConnectionException ignored) {
 
-        }
+        VisualSignalTransition visualSignalTransition =
+                visualStg.createVisualSignalTransition(transitionName, Type.INTERNAL, getDirection(transitionName));
+
+        connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
     }
 
     private Direction getDirection(String name) {
-        char dir = ExpressionUtils.nameDirectionMap.get(name);
-        if (dir == '-') {
-            return Direction.MINUS;
-        } else if (dir == '+') {
+        char dir = ExpressionUtils.nameToDirection.get(name);
+        switch (dir) {
+        case PLUS_DIR:
             return Direction.PLUS;
-        } else {
+        case MINUS_DIR:
+            return Direction.MINUS;
+        case TOGGLE_DIR:
             return Direction.TOGGLE;
+        default:
+            return null;
+        }
+    }
+    private void connectVisualPlaceAndVisualSignalTransition(
+            VisualStg visualStg,
+            VisualStgPlace visualStgPlace,
+            VisualSignalTransition visualSignalTransition,
+            ConnectionDirection connectionDirection) {
+        try {
+            switch (connectionDirection) {
+            case PLACE_TO_TRANSITION:
+                visualStg.connect(visualStgPlace, visualSignalTransition);
+                break;
+            case TRANSITION_TO_PLACE:
+                visualStg.connect(visualSignalTransition, visualStgPlace);
+                break;
+            }
+        } catch (InvalidConnectionException ignored) {
         }
     }
 

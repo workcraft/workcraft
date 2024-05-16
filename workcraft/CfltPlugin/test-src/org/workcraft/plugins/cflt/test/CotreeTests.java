@@ -30,24 +30,24 @@ class CotreeTests {
             DialogUtils.showError(e.getMessage(), "Error");
             e.printStackTrace();
         }
-        Assertions.assertEquals(CotreeTool.nodes.get(0).getLeft(), "E");
-        Assertions.assertEquals(CotreeTool.nodes.get(0).getRight(), "E");
+        Assertions.assertEquals(CotreeTool.nodes.get(0).getLeftChildName(), "E");
+        Assertions.assertEquals(CotreeTool.nodes.get(0).getRightChildName(), "E");
         Assertions.assertEquals(CotreeTool.nodes.get(0).getOperator(), Operator.ITERATION);
 
-        Assertions.assertEquals(CotreeTool.nodes.get(1).getLeft(), "D");
-        Assertions.assertEquals(CotreeTool.nodes.get(1).getRight(), "E");
+        Assertions.assertEquals(CotreeTool.nodes.get(1).getLeftChildName(), "D");
+        Assertions.assertEquals(CotreeTool.nodes.get(1).getRightChildName(), "E");
         Assertions.assertEquals(CotreeTool.nodes.get(1).getOperator(), Operator.CONCURRENCY);
 
-        Assertions.assertEquals(CotreeTool.nodes.get(2).getLeft(), "C");
-        Assertions.assertEquals(CotreeTool.nodes.get(2).getRight(), "D");
+        Assertions.assertEquals(CotreeTool.nodes.get(2).getLeftChildName(), "C");
+        Assertions.assertEquals(CotreeTool.nodes.get(2).getRightChildName(), "D");
         Assertions.assertEquals(CotreeTool.nodes.get(2).getOperator(), Operator.SEQUENCE);
 
-        Assertions.assertEquals(CotreeTool.nodes.get(3).getLeft(), "B");
-        Assertions.assertEquals(CotreeTool.nodes.get(3).getRight(), "C");
+        Assertions.assertEquals(CotreeTool.nodes.get(3).getLeftChildName(), "B");
+        Assertions.assertEquals(CotreeTool.nodes.get(3).getRightChildName(), "C");
         Assertions.assertEquals(CotreeTool.nodes.get(3).getOperator(), Operator.CHOICE);
 
-        Assertions.assertEquals(CotreeTool.nodes.get(4).getLeft(), "A");
-        Assertions.assertEquals(CotreeTool.nodes.get(4).getRight(), "B");
+        Assertions.assertEquals(CotreeTool.nodes.get(4).getLeftChildName(), "A");
+        Assertions.assertEquals(CotreeTool.nodes.get(4).getRightChildName(), "B");
         Assertions.assertEquals(CotreeTool.nodes.get(4).getOperator(), Operator.CONCURRENCY);
     }
 

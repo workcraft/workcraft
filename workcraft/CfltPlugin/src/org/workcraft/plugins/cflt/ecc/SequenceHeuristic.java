@@ -6,184 +6,173 @@ import java.util.HashSet;
 
 import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
-import org.workcraft.plugins.cflt.utils.EccUtils;
+import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
 
 public class SequenceHeuristic {
 
-    public static ArrayList<ArrayList<String>> getEdgeCliqueCover(Graph g, ArrayList<Edge> optionalEdges) {
-
-        // Number of cliques
+    public static ArrayList<ArrayList<String>> getEdgeCliqueCover(Graph graph, ArrayList<Edge> optionalEdges) {
         int cliqueNumber = -1;
-        // Is the edge covered, yes 1, no 0
-        HashMap<String, Integer> isCovered = new HashMap<>();
-        // The uncovered degree of each vertex
-        HashMap<String, Integer> uncoveredDegree = new HashMap<>();
-        // All neighbours of a vertex
-        HashMap<String, HashSet<String>> allNeighbours = EccUtils.initialiseNeighbours(g);
 
-        // Final cliques as a list of vertices
-        ArrayList<ArrayList<String>> finalCliques = new ArrayList<>();
-        // Final cliques as a list of edges (ie. v1 + v2)
-        ArrayList<ArrayList<String>> finalCliquesEdges = new ArrayList<>();
+        HashMap<String, Boolean> edgeNameToIsCovered = new HashMap<>();
+        HashMap<String, Integer> vertexToUncoveredDegree = new HashMap<>();
+        HashMap<String, HashSet<String>> allNeighboursToVertex = EdgeCliqueCoverUtils.initialiseNeighbours(graph);
+        HashMap<String, Integer> edgeNameToNoOfCliquesItsContainedIn = new HashMap<>();
+        HashMap<String, Integer> vertexToLocalUncoveredDegree = new HashMap<>();
 
-        // How many cliques an edge is contained in
-        HashMap<String, Integer> edgeToNoOfCliquesItsContainedIn = new HashMap<>();
-        // Local uncovered degree of each vertex
-        HashMap<String, Integer> localUncoveredDegree = new HashMap<>();
+        ArrayList<ArrayList<String>> finalCliquesAsVertices = new ArrayList<>();
+        ArrayList<ArrayList<String>> finalCliquesAsEdges = new ArrayList<>();
+
         HashSet<String> optionalEdgeSet = new HashSet<>();
 
-        for (Edge e : optionalEdges) {
-            optionalEdgeSet.add(e.getFirstVertex() + e.getSecondVertex());
-            optionalEdgeSet.add(e.getSecondVertex() + e.getFirstVertex());
+        for (Edge edge : optionalEdges) {
+            optionalEdgeSet.add(edge.getFirstVertex() + edge.getSecondVertex());
+            optionalEdgeSet.add(edge.getSecondVertex() + edge.getFirstVertex());
         }
 
-        // All edges are initialised to uncovered
-        for (Edge e : g.getEdges()) {
-            isCovered.put(e.getFirstVertex() + e.getSecondVertex(), 0);
-            isCovered.put(e.getSecondVertex() + e.getFirstVertex(), 0);
+        for (Edge edge : graph.getEdges()) {
+            edgeNameToIsCovered.put(edge.getFirstVertex() + edge.getSecondVertex(), false);
+            edgeNameToIsCovered.put(edge.getSecondVertex() + edge.getFirstVertex(), false);
 
-            edgeToNoOfCliquesItsContainedIn.put(e.getFirstVertex() + e.getSecondVertex(), 0);
-            edgeToNoOfCliquesItsContainedIn.put(e.getSecondVertex() + e.getFirstVertex(), 0);
+            edgeNameToNoOfCliquesItsContainedIn.put(edge.getFirstVertex() + edge.getSecondVertex(), 0);
+            edgeNameToNoOfCliquesItsContainedIn.put(edge.getSecondVertex() + edge.getFirstVertex(), 0);
         }
 
-        // Initially, the uncovered degree of each vertex is set to it's degree
-        for (String vertex : g.getVertices()) {
-            if (allNeighbours.get(vertex) != null) {
-                uncoveredDegree.put(vertex, allNeighbours.get(vertex).size());
+        for (String vertex : graph.getVertices()) {
+            if (allNeighboursToVertex.get(vertex) != null && !allNeighboursToVertex.get(vertex).isEmpty()) {
+                vertexToUncoveredDegree.put(vertex, allNeighboursToVertex.get(vertex).size());
             } else {
-                // If the vertex is not contained in the allNeighbours map, it has no neighbours
-                uncoveredDegree.put(vertex, 0);
+                vertexToUncoveredDegree.put(vertex, 0);
             }
         }
 
         int maxCliqueSize = 0;
         int currentCliqueSize = 0;
-        for (String i : g.getVertices()) {
-            // While there are still uncovered edges adjacent to the vertex
-            while (uncoveredDegree.get(i) > 0) {
+
+        for (String i : graph.getVertices()) {
+            while (vertexToUncoveredDegree.get(i) > 0) {
                 if (currentCliqueSize > maxCliqueSize) {
                     maxCliqueSize = currentCliqueSize;
                 }
                 currentCliqueSize = 1;
                 cliqueNumber += 1;
 
-                finalCliques.add(cliqueNumber, new ArrayList<>());
-                finalCliques.get(cliqueNumber).add(i);
-                finalCliquesEdges.add(new ArrayList<>());
+                finalCliquesAsVertices.add(cliqueNumber, new ArrayList<>());
+                finalCliquesAsVertices.get(cliqueNumber).add(i);
+                finalCliquesAsEdges.add(new ArrayList<>());
 
                 @SuppressWarnings("unchecked")
-                HashSet<String> localNeighbourhoodOfi = (HashSet<String>) allNeighbours.get(i).clone();
+                HashSet<String> localNeighbourhoodOfi = (HashSet<String>) allNeighboursToVertex.get(i).clone();
                 for (String j : localNeighbourhoodOfi) {
-                    localUncoveredDegree.put(j, 1 - isCovered.get(i + j));
+                    vertexToLocalUncoveredDegree.put(j, 1 - (edgeNameToIsCovered.get(i + j) ? 1 : 0));
                 }
 
-                String u = EccUtils.argMax(localUncoveredDegree, localNeighbourhoodOfi);
-                while (localUncoveredDegree.get(u) > 0) {
+                String u = EdgeCliqueCoverUtils.argMax(vertexToLocalUncoveredDegree, localNeighbourhoodOfi);
+                while (vertexToLocalUncoveredDegree.get(u) > 0) {
                     boolean isOptional = true;
-                    for (String j : finalCliques.get(cliqueNumber)) {
-                        if (isCovered.get(u + j) == 0 && isCovered.get(j + u) == 0) {
-                            isCovered.replace(u + j, 1);
-                            isCovered.replace(j + u, 1);
+                    for (String j : finalCliquesAsVertices.get(cliqueNumber)) {
+                        if (!edgeNameToIsCovered.get(u + j) && !edgeNameToIsCovered.get(j + u)) {
+                            edgeNameToIsCovered.replace(u + j, true);
+                            edgeNameToIsCovered.replace(j + u, true);
 
-                            int temp = uncoveredDegree.get(u);
-                            uncoveredDegree.replace(u, temp - 1);
-                            temp = uncoveredDegree.get(j);
-                            uncoveredDegree.replace(j, temp - 1);
+                            int temp = vertexToUncoveredDegree.get(u);
+                            vertexToUncoveredDegree.replace(u, temp - 1);
+                            temp = vertexToUncoveredDegree.get(j);
+                            vertexToUncoveredDegree.replace(j, temp - 1);
                         }
+
                         // Adding the key edges of the clique
-                        finalCliquesEdges.get(cliqueNumber).add(u + j);
-                        finalCliquesEdges.get(cliqueNumber).add(j + u);
+                        finalCliquesAsEdges.get(cliqueNumber).add(u + j);
+                        finalCliquesAsEdges.get(cliqueNumber).add(j + u);
 
                         // Updating the number of cliques the edge is contained in
-                        int oldVal = edgeToNoOfCliquesItsContainedIn.get(u + j);
-                        edgeToNoOfCliquesItsContainedIn.replace(u + j, oldVal + 1);
-                        edgeToNoOfCliquesItsContainedIn.replace(j + u, oldVal + 1);
+                        int oldVal = edgeNameToNoOfCliquesItsContainedIn.get(u + j);
+                        edgeNameToNoOfCliquesItsContainedIn.replace(u + j, oldVal + 1);
+                        edgeNameToNoOfCliquesItsContainedIn.replace(j + u, oldVal + 1);
 
                         if (!optionalEdgeSet.contains(u + j) || !optionalEdgeSet.contains(j + u)) {
                             isOptional = false;
                         }
                     }
                     if (!isOptional) {
-                        finalCliques.get(cliqueNumber).add(u);
+                        finalCliquesAsVertices.get(cliqueNumber).add(u);
                     }
                     currentCliqueSize += 1;
-                    localNeighbourhoodOfi.retainAll(allNeighbours.get(u));
+                    localNeighbourhoodOfi.retainAll(allNeighboursToVertex.get(u));
 
                     for (String j : localNeighbourhoodOfi) {
-                        if (isCovered.get(u + j) == 0) {
-                            int temp = localUncoveredDegree.get(j);
-                            localUncoveredDegree.replace(j, temp + 1);
+                        if (!edgeNameToIsCovered.get(u + j)) {
+                            int temp = vertexToLocalUncoveredDegree.get(j);
+                            vertexToLocalUncoveredDegree.replace(j, temp + 1);
                         }
                     }
-                    u = EccUtils.argMax(localUncoveredDegree, localNeighbourhoodOfi);
+                    u = EdgeCliqueCoverUtils.argMax(vertexToLocalUncoveredDegree, localNeighbourhoodOfi);
                     if (localNeighbourhoodOfi.isEmpty()) { break; }
                 }
             }
-
         }
 
         // If a clique only contains edges from the optional edge list it needs to be removed
-        for (int x = 0; x < finalCliquesEdges.size(); x++) {
+        for (int x = 0; x < finalCliquesAsEdges.size(); x++) {
             boolean containsOnlyOptionalEdges = true;
-            for (String edge : finalCliquesEdges.get(x)) {
+            for (String edge : finalCliquesAsEdges.get(x)) {
                 if (!optionalEdgeSet.contains(edge)) {
                     containsOnlyOptionalEdges = false;
                     break;
                 }
             }
             if (containsOnlyOptionalEdges) {
-                finalCliques.remove(x);
-                finalCliques.add(x, new ArrayList<>());
+                finalCliquesAsVertices.remove(x);
+                finalCliquesAsVertices.add(x, new ArrayList<>());
             }
         }
 
         // Dealing with cliques which are not maximal
         int currentCliqueIndex = 0;
-        for (ArrayList<String> finalClique : finalCliques) {
+        for (ArrayList<String> finalClique : finalCliquesAsVertices) {
             //if the clique is not maximal
             if (finalClique.size() < maxCliqueSize && !finalClique.isEmpty()) {
 
                 @SuppressWarnings("unchecked")
-                HashSet<String> neighboursOfFirstVertex = (HashSet<String>) allNeighbours.get(finalClique.get(0)).clone();
+                HashSet<String> neighboursOfFirstVertex = (HashSet<String>) allNeighboursToVertex.get(finalClique.get(0)).clone();
                 ArrayList<String> verticesToBeAdded = new ArrayList<>(neighboursOfFirstVertex);
                 for (int x = 1; x < finalClique.size(); x++) {
-                    verticesToBeAdded.retainAll(allNeighbours.get(finalClique.get(x)));
+                    verticesToBeAdded.retainAll(allNeighboursToVertex.get(finalClique.get(x)));
                 }
 
                 while (!verticesToBeAdded.isEmpty()) {
                     String i = verticesToBeAdded.get(0);
                     finalClique.add(i);
-                    verticesToBeAdded.retainAll(allNeighbours.get(i));
+                    verticesToBeAdded.retainAll(allNeighboursToVertex.get(i));
 
                     for (String s : finalClique) {
                         if (!i.equals(s)) {
-                            finalCliquesEdges.get(currentCliqueIndex).add(i + s);
-                            finalCliquesEdges.get(currentCliqueIndex).add(s + i);
+                            finalCliquesAsEdges.get(currentCliqueIndex).add(i + s);
+                            finalCliquesAsEdges.get(currentCliqueIndex).add(s + i);
 
                             // Updating the number of cliques the edge is contained in
-                            int oldVal = edgeToNoOfCliquesItsContainedIn.get(i + s);
-                            edgeToNoOfCliquesItsContainedIn.replace(i + s, oldVal + 1);
-                            edgeToNoOfCliquesItsContainedIn.replace(s + i, oldVal + 1);
+                            int oldVal = edgeNameToNoOfCliquesItsContainedIn.get(i + s);
+                            edgeNameToNoOfCliquesItsContainedIn.replace(i + s, oldVal + 1);
+                            edgeNameToNoOfCliquesItsContainedIn.replace(s + i, oldVal + 1);
                         }
                     }
                 }
             }
             currentCliqueIndex++;
         }
-        // Remove redundant cliques
-        for (int x = 0; x < finalCliques.size(); x++) {
-            // If the clique is redundant
-            if (EccUtils.checkRedundancy(edgeToNoOfCliquesItsContainedIn, finalCliquesEdges.get(x))) {
-                // Update number of cliques an edge is contained in
-                for (String edge : finalCliquesEdges.get(x)) {
-                    int temp = edgeToNoOfCliquesItsContainedIn.get(edge);
-                    edgeToNoOfCliquesItsContainedIn.replace(edge, temp - 1);
+        // Removing redundant cliques
+        for (int x = 0; x < finalCliquesAsVertices.size(); x++) {
+            if (EdgeCliqueCoverUtils.checkRedundancy(edgeNameToNoOfCliquesItsContainedIn, finalCliquesAsEdges.get(x))) {
+
+                for (String edge : finalCliquesAsEdges.get(x)) {
+                    int temp = edgeNameToNoOfCliquesItsContainedIn.get(edge);
+                    edgeNameToNoOfCliquesItsContainedIn.replace(edge, temp - 1);
                 }
-                finalCliquesEdges.remove(x);
-                finalCliques.remove(x);
+
+                finalCliquesAsEdges.remove(x);
+                finalCliquesAsVertices.remove(x);
             }
         }
-        return finalCliques;
+        return finalCliquesAsVertices;
     }
 
 }
