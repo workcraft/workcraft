@@ -2,9 +2,9 @@ package org.workcraft.plugins.cflt.utils;
 
 import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
-import org.workcraft.plugins.cflt.ecc.ExhaustiveSearch;
-import org.workcraft.plugins.cflt.ecc.MaxMinHeuristic;
-import org.workcraft.plugins.cflt.ecc.SequenceHeuristic;
+import org.workcraft.plugins.cflt.algorithms.ExhaustiveSearch;
+import org.workcraft.plugins.cflt.algorithms.MaxMinHeuristic;
+import org.workcraft.plugins.cflt.algorithms.SequenceHeuristic;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 
 import java.util.ArrayList;

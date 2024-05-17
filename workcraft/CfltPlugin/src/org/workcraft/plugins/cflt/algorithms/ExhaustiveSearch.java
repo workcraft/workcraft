@@ -1,4 +1,4 @@
-package org.workcraft.plugins.cflt.ecc;
+package org.workcraft.plugins.cflt.algorithms;
 
 import java.util.ArrayList;
 
