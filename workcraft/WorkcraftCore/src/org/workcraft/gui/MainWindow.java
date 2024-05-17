@@ -317,7 +317,7 @@ public class MainWindow extends JFrame {
                 toggleDockableWindowMaximized(window);
             }
             DockableWindow dockableWindow = weWindowMap.remove(we);
-            // Close the work it has no associated windows, or clear listeners otherwise
+            // Close the work if it has no associated windows, or clear listeners otherwise
             if (dockableWindow == null) {
                 Framework.getInstance().closeWork(we);
             } else {
