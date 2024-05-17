@@ -19,7 +19,7 @@ public final class GraphUtils {
         ArrayList<String> newVertices = new ArrayList<>();
         newVertices.addAll(g1.getVertices());
         newVertices.addAll(g2.getVertices());
-        return new Graph(newEdges, newVertices, null);
+        return new Graph(newEdges, newVertices);
     }
 
     public static Graph join(Graph g1, Graph g2) {
