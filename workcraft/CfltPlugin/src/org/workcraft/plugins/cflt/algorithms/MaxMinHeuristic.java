@@ -1,7 +1,6 @@
 package org.workcraft.plugins.cflt.algorithms;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.stream.Collectors;
