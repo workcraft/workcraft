@@ -140,6 +140,7 @@ public class StgDrawingTool {
                 break;
             }
         } catch (InvalidConnectionException invalidConnectionException) {
+            invalidConnectionException.printStackTrace();
         }
     }
 }

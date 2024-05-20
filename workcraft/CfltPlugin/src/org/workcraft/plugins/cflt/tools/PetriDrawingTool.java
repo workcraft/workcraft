@@ -113,6 +113,7 @@ public class PetriDrawingTool {
                 break;
             }
         } catch (InvalidConnectionException invalidConnectionException) {
+            invalidConnectionException.printStackTrace();
         }
     }
 }
