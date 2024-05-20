@@ -8,6 +8,7 @@ import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.tools.CotreeTool;
 import org.workcraft.plugins.cflt.tools.CotreeTool.Model;
 import org.workcraft.plugins.petri.VisualPetri;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.JavaccSyntaxUtils;
@@ -36,7 +37,7 @@ public final class ExpressionUtils {
 
     public static WorkspaceEntry we;
     public static HashMap<String, String> labelToName = new HashMap<>();
-    public static HashMap<String, Character> nameToDirection = new HashMap<>();
+    public static HashMap<String, SignalTransition.Direction> nameToDirection = new HashMap<>();
 
     private ExpressionUtils() {
     }
@@ -159,7 +160,7 @@ public final class ExpressionUtils {
 
                 char lastC = expressionText.charAt(i - 1);
                 int wasAltered = 0;
-                nameToDirection.put(uniqueT, lastC);
+                nameToDirection.put(uniqueT, getDirection(lastC));
                 if (lastC == PLUS_DIR || lastC == MINUS_DIR || lastC == TOGGLE_DIR) {
                     transitionNameBuilder = new StringBuilder(transitionNameBuilder.substring(0, transitionNameBuilder.length() - 1));
                     wasAltered = 1;
@@ -201,6 +202,16 @@ public final class ExpressionUtils {
         return false;
     }
 
+    private static SignalTransition.Direction getDirection(char dir) {
+        switch (dir) {
+        case PLUS_DIR:
+            return SignalTransition.Direction.PLUS;
+        case MINUS_DIR:
+            return SignalTransition.Direction.MINUS;
+        default:
+            return SignalTransition.Direction.TOGGLE;
+        }
+    }
     private static void checkIteration(Mode mode) {
         if ((mode != null) && CotreeTool.containsIteration) {
             DialogUtils.showWarning("Iteration operator is experimental and may yield incorrect result.");

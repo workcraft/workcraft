@@ -7,9 +7,9 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
-import org.workcraft.plugins.cflt.ecc.ExhaustiveSearch;
-import org.workcraft.plugins.cflt.ecc.MaxMinHeuristic;
-import org.workcraft.plugins.cflt.ecc.SequenceHeuristic;
+import org.workcraft.plugins.cflt.algorithms.ExhaustiveSearch;
+import org.workcraft.plugins.cflt.algorithms.MaxMinHeuristic;
+import org.workcraft.plugins.cflt.algorithms.SequenceHeuristic;
 import org.workcraft.plugins.cflt.utils.GraphUtils;
 
 class EccTests {

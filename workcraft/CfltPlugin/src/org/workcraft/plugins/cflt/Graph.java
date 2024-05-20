@@ -1,7 +1,6 @@
 package org.workcraft.plugins.cflt;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
@@ -12,28 +11,12 @@ import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTE
 public class Graph {
     private ArrayList<Edge> edges = new ArrayList<>();
     private ArrayList<String> vertices = new ArrayList<>();
-    boolean[][] connections;
 
-    public Graph(ArrayList<Edge> edgeList, ArrayList<String> vertices, boolean[][] connections) {
-        this.edges = edgeList;
-        this.connections = connections;
+    public Graph(ArrayList<Edge> edges, ArrayList<String> vertices) {
+        this.edges = edges;
         this.vertices = vertices;
     }
-
     public Graph() {
-    }
-
-    public void initialiseConnections() {
-        this.connections = new boolean[getVertices().size()][getVertices().size()];
-        for (int x = 0; x < connections.length; x++) {
-            for (int y = 0; y < connections.length; y++) {
-                this.connections[x][y] = false;
-            }
-        }
-        for (Edge e : getEdges()) {
-            this.connections[getVertices().indexOf(e.getFirstVertex())][getVertices().indexOf(e.getSecondVertex())] = true;
-            this.connections[getVertices().indexOf(e.getSecondVertex())][getVertices().indexOf(e.getFirstVertex())] = true;
-        }
     }
 
     public void addVertex(String v) {
@@ -53,39 +36,19 @@ public class Graph {
     }
 
     public ArrayList<String> getIsolatedVertices() {
-        if (getEdges().isEmpty()) {
-            return getVertices();
-        }
-        @SuppressWarnings("unchecked")
-        ArrayList<String> vertexList = (ArrayList<String>) vertices.clone();
-        for (Edge e : getEdges()) {
-            String v1 = e.getFirstVertex();
-            String v2 = e.getSecondVertex();
-            if (vertexList.contains(v1)) {
-                vertexList.remove(v1);
+        if (getEdges().isEmpty()) return this.vertices;
+        ArrayList<String> vertexList = this.vertices.stream().collect(Collectors.toCollection(ArrayList::new));
+        for (Edge e : this.edges) {
+            if (vertexList.contains(e.getFirstVertex())) {
+                vertexList.remove(e.getFirstVertex());
             }
-            if (vertexList.contains(v2)) {
-                vertexList.remove(v2);
+            if (vertexList.contains(e.getSecondVertex())) {
+                vertexList.remove(e.getSecondVertex());
             }
         }
         return vertexList;
 
     }
-
-    public void removeEdges(Graph sequenceInputGraph) {
-        for (Edge edge : sequenceInputGraph.getEdges()) {
-            this.edges.remove(edge);
-        }
-    }
-
-    public void setEdges(List<Edge> edges) {
-        this.edges = (ArrayList<Edge>) edges;
-    }
-
-    public void setConnections(boolean[][] cons) {
-        this.connections = cons;
-    }
-
     public ArrayList<String> getVertices() {
         return vertices;
     }
@@ -113,6 +76,6 @@ public class Graph {
             return new Edge(edgeName.getFirstVertex() + suffix, edgeName.getSecondVertex() + suffix);
         }).collect(Collectors.toCollection(ArrayList::new));
 
-        return new Graph(edges, vertices, null);
+        return new Graph(edges, vertices);
     }
 }

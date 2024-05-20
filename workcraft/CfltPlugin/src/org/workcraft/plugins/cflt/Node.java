@@ -15,16 +15,16 @@ public class Node {
         return this.leftChildName;
     }
 
-    public void setLeftChildName(String leftChild) {
-        this.leftChildName = leftChild;
+    public void setLeftChildName(String leftChildName) {
+        this.leftChildName = leftChildName;
     }
 
     public String getRightChildName() {
         return this.rightChildName;
     }
 
-    public void setRightChildName(String rightChild) {
-        this.rightChildName = rightChild;
+    public void setRightChildName(String rightChildName) {
+        this.rightChildName = rightChildName;
     }
 
     public Operator getOperator() {

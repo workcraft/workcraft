@@ -31,10 +31,13 @@ public final class CotreeTool {
     }
 
     public void drawSingleTransition(Model model) {
-        if (model == Model.PETRI_NET) {
+        switch (model) {
+        case PETRI_NET:
             petriDrawingTool.drawSingleTransition(singleTransition);
-        } else if (model == Model.STG) {
+            break;
+        case STG:
             stgDrawingTool.drawSingleTransition(singleTransition);
+            break;
         }
     }
 
@@ -79,7 +82,7 @@ public final class CotreeTool {
                 break;
             }
 
-            if (isRoot(nodeCounter, nodes)) {
+            if (nodeCounter == nodes.size() - 1) {
                 switch (model) {
                 case PETRI_NET:
                     petriDrawingTool.drawPetri(entryGraph.get(leftChildName), new Graph(), false, true, mode);
@@ -91,10 +94,6 @@ public final class CotreeTool {
             }
             nodeCounter++;
         }
-    }
-
-    private boolean isRoot(int nodeCounter, ArrayList<Node> nodes) {
-        return nodeCounter == nodes.size() - 1;
     }
 
     private void handleConcurrency(String leftChildName, String rightChildName) {
