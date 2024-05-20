@@ -1,8 +1,10 @@
 package org.workcraft.plugins.cflt.algorithms;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
@@ -66,8 +68,9 @@ public class MaxMinHeuristic {
                 finalCliquesAsVertices.get(cliqueNumber).add(i);
                 finalCliquesAsEdges.add(new ArrayList<>());
 
-                @SuppressWarnings("unchecked")
-                HashSet<String> localNeighbourhoodOfi = (HashSet<String>) vertexToAllNeighbours.get(i).clone();
+                HashSet<String> localNeighbourhoodOfi = vertexToAllNeighbours.get(i)
+                        .stream()
+                        .collect(Collectors.toCollection(HashSet::new));
                 for (String j : localNeighbourhoodOfi) {
                     vertexToLocalUncoveredDegree.put(j, 1 - (edgeNameToIsCovered.get(i + j) ? 1 : 0));
                 }
@@ -130,9 +133,9 @@ public class MaxMinHeuristic {
         for (ArrayList<String> finalClique : finalCliquesAsVertices) {
             // If the clique is not maximal
             if (finalClique.size() < maxCliqueSize && !finalClique.isEmpty()) {
-
-                @SuppressWarnings("unchecked")
-                HashSet<String> neighboursOfFirstVertex = (HashSet<String>) vertexToAllNeighbours.get(finalClique.get(0)).clone();
+                HashSet<String> neighboursOfFirstVertex = vertexToAllNeighbours.get(finalClique.get(0))
+                        .stream()
+                        .collect(Collectors.toCollection(HashSet::new));
                 ArrayList<String> verticesToBeAdded = new ArrayList<>(neighboursOfFirstVertex);
 
                 for (int x = 1; x < finalClique.size(); x++) {

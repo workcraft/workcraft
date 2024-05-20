@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cflt.algorithms;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 import org.workcraft.plugins.cflt.AdvancedGraph;
 import org.workcraft.plugins.cflt.Edge;
@@ -35,7 +36,6 @@ public class ExhaustiveSearch {
         return edgeCliqueCover;
     }
 
-    @SuppressWarnings("unchecked")
     private static ArrayList<ArrayList<String>> branch(AdvancedGraph graph, int k,
             ArrayList<ArrayList<String>> edgeCliqueCover, ArrayList<Edge> optionalEdges) {
 
@@ -51,7 +51,9 @@ public class ExhaustiveSearch {
         }
 
         for (ArrayList<String> maxClique : graph.getMaximalCliques(selectedEdge)) {
-            ArrayList<ArrayList<String>> newEcc = (ArrayList<ArrayList<String>>) edgeCliqueCover.clone();
+            ArrayList<ArrayList<String>> newEcc = edgeCliqueCover
+                    .stream()
+                    .collect(Collectors.toCollection(ArrayList<ArrayList<String>>::new));
             newEcc.add(maxClique);
 
             ArrayList<ArrayList<String>> edgeCliqueCoverPrime = branch(graph, k - 1, newEcc, optionalEdges);
