@@ -105,7 +105,8 @@ public class GenlibUtils {
                 BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
                 Map<BooleanVariable, BooleanVariable> mapping = findMapping(formula, gateFormula);
                 if (mapping != null) {
-                    return mapping.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getLabel()));
+                    return mapping.entrySet().stream()
+                            .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getLabel()));
                 }
             } catch (ParseException ignored) {
             }
@@ -120,7 +121,7 @@ public class GenlibUtils {
             BddManager bdd = new BddManager();
             for (List<BooleanVariable> vars : generatePermutations(firstVars)) {
                 BooleanFormula mappedFormula = FormulaUtils.replace(firstFormula, vars, secondVars);
-                if (bdd.equal(mappedFormula, secondFormula)) {
+                if (bdd.isEquivalent(mappedFormula, secondFormula)) {
                     Map<BooleanVariable, BooleanVariable> result = new HashMap<>();
                     for (int i = 0; i < vars.size(); i++) {
                         result.put(vars.get(i), secondVars.get(i));

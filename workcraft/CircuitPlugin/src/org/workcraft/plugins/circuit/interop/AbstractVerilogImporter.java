@@ -568,10 +568,10 @@ public abstract class AbstractVerilogImporter implements Importer {
                 return false;
             }
             BddManager bddManager = new BddManager();
-            return bddManager.equal(FormulaUtils.createMaj(aVar, bVar, seqVar), formula)
-                    || bddManager.equal(FormulaUtils.createMaj(new Not(aVar), bVar, seqVar), formula)
-                    || bddManager.equal(FormulaUtils.createMaj(aVar, new Not(bVar), seqVar), formula)
-                    || bddManager.equal(FormulaUtils.createMaj(new Not(aVar), new Not(bVar), seqVar), formula);
+            return bddManager.isEquivalent(FormulaUtils.createMaj(aVar, bVar, seqVar), formula)
+                    || bddManager.isEquivalent(FormulaUtils.createMaj(new Not(aVar), bVar, seqVar), formula)
+                    || bddManager.isEquivalent(FormulaUtils.createMaj(aVar, new Not(bVar), seqVar), formula)
+                    || bddManager.isEquivalent(FormulaUtils.createMaj(new Not(aVar), new Not(bVar), seqVar), formula);
 
         } catch (ParseException e) {
             return false;
@@ -650,9 +650,8 @@ public abstract class AbstractVerilogImporter implements Importer {
         } else {
             expressionParser.disable_tracing();
         }
-        Expression expression = null;
         try {
-            expression = expressionParser.parseExpression();
+            return expressionParser.parseExpression();
         } catch (org.workcraft.plugins.circuit.jj.expression.ParseException |
                  org.workcraft.plugins.circuit.jj.expression.TokenMgrError e) {
 
@@ -660,7 +659,6 @@ public abstract class AbstractVerilogImporter implements Importer {
                     + "\nCould not parse assign expression '" + formula + "'."
                     + "\nOnly '~', '&', and '|' operators are currently supported.");
         }
-        return expression;
     }
 
     private HashMap<String, Net> createPorts(Circuit circuit, VerilogModule verilogModule, Collection<Mutex> mutexes)
@@ -769,7 +767,7 @@ public abstract class AbstractVerilogImporter implements Importer {
         for (index = 0; index < verilogInstance.connections.size(); index++) {
             if (index > 0) {
                 String pinName = VerilogUtils.getPrimitiveGatePinName(index);
-                if (expression.length() > 0) {
+                if (!expression.isEmpty()) {
                     expression.append(operator);
                 }
                 expression.append(pinName);
