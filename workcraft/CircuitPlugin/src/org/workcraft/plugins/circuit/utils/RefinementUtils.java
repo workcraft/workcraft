@@ -5,18 +5,18 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.FormulaUtils;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.refinement.ComponentInterface;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgDescriptor;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.StgUtils;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.WorkUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -167,6 +167,51 @@ public final class RefinementUtils {
             return ((Stg) model).getSignalReferences(Signal.Type.OUTPUT);
         }
         return null;
+    }
+
+    public static ComponentInterface getModuleInterface(Gate gate) {
+        return gate == null ? null : new ComponentInterface(getInputSignals(gate), getOutputSignals(gate));
+    }
+
+    public static Set<String> getInputSignals(Gate gate) {
+        if ((gate != null) && (gate.function != null) && (gate.function.formula != null)) {
+            try {
+                BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
+                Set<BooleanVariable> variables = FormulaUtils.extractVariables(gateFormula);
+                return variables.stream()
+                        .map(BooleanVariable::getLabel)
+                        .collect(Collectors.toSet());
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
+    public static Set<String> getOutputSignals(Gate gate) {
+        return (gate != null) && (gate.function != null) && (gate.function.name != null)
+                ? Collections.singleton(gate.function.name) : null;
+    }
+
+    public static ComponentInterface getModuleInterface(Wait wait) {
+        return wait == null ? null
+                : new ComponentInterface(Set.of(wait.sig.name, wait.ctrl.name), Set.of(wait.san.name));
+    }
+
+    public static ComponentInterface getModuleInterface(Mutex mutex) {
+        return mutex == null ? null
+                : new ComponentInterface(Set.of(mutex.r1.name, mutex.r2.name), Set.of(mutex.g1.name, mutex.g2.name));
+    }
+
+    public static String createMismatchMessage(String messageIntro,
+            Set<String> missingInputSignals, Set<String> extraInputSignals,
+            Set<String> missingOutputSignals, Set<String> extraOutputSignals) {
+
+        return messageIntro
+                + TextUtils.getBulletpointPair("missing input signal", missingInputSignals)
+                + TextUtils.getBulletpointPair("unexpected input signal", extraInputSignals)
+                + TextUtils.getBulletpointPair("missing output signal", missingOutputSignals)
+                + TextUtils.getBulletpointPair("unexpected output signal", extraOutputSignals);
     }
 
     public static boolean hasInconsistentSignalNames(CircuitComponent component, Circuit refinementCircuit) {

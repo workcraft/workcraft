@@ -23,4 +23,12 @@ public class Wait {
         return type.toString() + ' ' + name + " (.sig(" + sig.name + "), .ctrl(" + ctrl.name + "), .san(" + san.name + "))";
     }
 
+    public String getSanSetFormula() {
+        return ctrl.name + " * " + sig.name + (type == Wait.Type.WAIT0 ? "'" : "");
+    }
+
+    public String getSanResetFormula() {
+        return ctrl.name + "'";
+    }
+
 }

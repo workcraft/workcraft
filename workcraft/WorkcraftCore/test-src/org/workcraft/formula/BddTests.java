@@ -41,22 +41,22 @@ class BddTests {
         BooleanVariable cVar = new FreeVariable("c");
         BooleanVariable dVar = new FreeVariable("d");
 
-        Assertions.assertTrue(BDD_MANAGER.equal(aVar,
+        Assertions.assertTrue(BDD_MANAGER.isEquivalent(aVar,
                 new Not(new Not(aVar))));
 
-        Assertions.assertTrue(BDD_MANAGER.equal(new And(aVar, bVar),
+        Assertions.assertTrue(BDD_MANAGER.isEquivalent(new And(aVar, bVar),
                 new Not(new Or(new Not(aVar), new Not(bVar)))));
 
-        Assertions.assertTrue(BDD_MANAGER.equal(new And(aVar, new Not(bVar)),
+        Assertions.assertTrue(BDD_MANAGER.isEquivalent(new And(aVar, new Not(bVar)),
                 new Not(new Or(new Not(aVar), bVar))));
 
-        Assertions.assertTrue(BDD_MANAGER.equal(new Or(new And(aVar, bVar), new And(cVar, dVar)),
+        Assertions.assertTrue(BDD_MANAGER.isEquivalent(new Or(new And(aVar, bVar), new And(cVar, dVar)),
                 new Not(new And(new Or(new Not(dVar), new Not(cVar)), new Or(new Not(bVar), new Not(aVar))))));
 
-        Assertions.assertTrue(BDD_MANAGER.equal(new Xor(aVar, bVar),
+        Assertions.assertTrue(BDD_MANAGER.isEquivalent(new Xor(aVar, bVar),
                 new Or(new And(aVar, new Not(bVar)), new And(new Not(aVar), bVar))));
 
-        Assertions.assertFalse(BDD_MANAGER.equal(new Xor(aVar, bVar),
+        Assertions.assertFalse(BDD_MANAGER.isEquivalent(new Xor(aVar, bVar),
                 new And(new Or(aVar, new Not(bVar)), new Or(new Not(aVar), bVar))));
     }
 

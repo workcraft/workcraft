@@ -33,7 +33,7 @@ public class ExpressionUtils {
         StringBuilder result = new StringBuilder();
         for (String term: getTerms(expression)) {
             if (!isResetTerm(term, seqLiteral)) {
-                if (result.length() > 0) {
+                if (!result.isEmpty()) {
                     result.append(TERM_DELIMITER);
                 }
                 result.append(term);
@@ -47,7 +47,7 @@ public class ExpressionUtils {
         StringBuilder result = new StringBuilder();
         for (String term: getTerms(expression)) {
             if (isResetTerm(term, seqLiteral)) {
-                if (result.length() > 0) {
+                if (!result.isEmpty()) {
                     result.append(TERM_DELIMITER);
                 }
                 result.append(removeTermLiteral(term, seqLiteral));
@@ -139,8 +139,8 @@ public class ExpressionUtils {
                     if (heuristicFormula == null) {
                         resultFormula = exactFormula;
                     } else {
-                        BddManager bdd = new BddManager();
-                        resultFormula = bdd.equal(heuristicFormula, exactFormula) ? heuristicFormula : exactFormula;
+                        BddManager bddManager = new BddManager();
+                        resultFormula = bddManager.isEquivalent(heuristicFormula, exactFormula) ? heuristicFormula : exactFormula;
                     }
                 }
             }

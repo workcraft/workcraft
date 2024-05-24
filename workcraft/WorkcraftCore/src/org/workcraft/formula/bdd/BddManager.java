@@ -11,7 +11,8 @@ public class BddManager {
 
 //    private final BDD bdd = new DebugBDD(1000, 100);
     private final BDD bdd = new BDD(1000, 100);
-    private final Map<BooleanVariable, Integer> varMap = new HashMap<>();
+    private final Map<BooleanVariable, Integer> varToBddMap = new HashMap<>();
+    private final Map<Integer, BooleanFormula> bddToDistinctFormulaMap = new HashMap<>();
 
     private class BddGenerator implements BooleanVisitor<Integer> {
 
@@ -27,14 +28,14 @@ public class BddManager {
 
         @Override
         public Integer visit(BooleanVariable node) {
-            return addVariable(node);
+            return refDistinctVariable(node);
         }
 
         @Override
         public Integer visit(Not node) {
-            int x = node.getX().accept(this);
-            int result = bdd.ref(bdd.not(x));
-            bdd.deref(x);
+            int xBdd = node.getX().accept(this);
+            int result = bdd.ref(bdd.not(xBdd));
+            bdd.deref(xBdd);
             return result;
         }
 
@@ -64,21 +65,25 @@ public class BddManager {
         }
 
         public Integer visitBinaryOperator(BinaryBooleanFormula node, Func2<Integer, Integer, Integer> func) {
-            int x = node.getX().accept(this);
-            int y = node.getY().accept(this);
-            int result = bdd.ref(func.eval(x, y));
-            bdd.deref(x);
-            bdd.deref(y);
+            int firstBdd = node.getX().accept(this);
+            int secondBdd = node.getY().accept(this);
+            int result = bdd.ref(func.eval(firstBdd, secondBdd));
+            bdd.deref(firstBdd);
+            bdd.deref(secondBdd);
             return result;
         }
     }
 
-    private int addVariable(BooleanVariable var) {
-        return varMap.computeIfAbsent(var, key -> bdd.createVar());
+    private int refDistinctVariable(BooleanVariable var) {
+        return varToBddMap.computeIfAbsent(var, key -> bdd.createVar());
     }
 
-    private int addFormula(BooleanFormula formula) {
+    private int refFormula(BooleanFormula formula) {
         return formula.accept(new BddGenerator());
+    }
+
+    public BooleanFormula getDistinctFormula(BooleanFormula formula) {
+        return bddToDistinctFormulaMap.computeIfAbsent(refFormula(formula), bdd -> formula);
     }
 
     public boolean isBinate(BooleanFormula formula, BooleanVariable var) {
@@ -98,37 +103,44 @@ public class BddManager {
     }
 
     public boolean implies(BooleanFormula leftFormula, BooleanFormula rightFormula) {
-        int leftBdd = addFormula(leftFormula);
-        int rightBdd = addFormula(rightFormula);
+        int leftBdd = refFormula(leftFormula);
+        int rightBdd = refFormula(rightFormula);
         int notRightBdd = bdd.ref(bdd.not(rightBdd));
 
         Set<BooleanVariable> vars = new HashSet<>();
         vars.addAll(FormulaUtils.extractOrderedVariables(leftFormula));
         vars.addAll(FormulaUtils.extractOrderedVariables(rightFormula));
-        int cube = buildCube(vars);
+        int cubeBdd = buildCube(vars);
 
-        boolean result = bdd.relProd(leftBdd, notRightBdd, cube) == bdd.getZero();
+        boolean result = bdd.relProd(leftBdd, notRightBdd, cubeBdd) == bdd.getZero();
         bdd.deref(notRightBdd);
         bdd.deref(rightBdd);
         bdd.deref(leftBdd);
-        bdd.deref(cube);
+        bdd.deref(cubeBdd);
         return result;
     }
 
     private int buildCube(Collection<BooleanVariable> vars) {
-        int cube = bdd.getOne();
+        int cubeBdd = bdd.getOne();
         for (BooleanVariable var : vars) {
-            int oldCube = cube;
-            cube = bdd.ref(bdd.and(oldCube, addVariable(var)));
-            bdd.deref(oldCube);
+            int oldCubeBdd = cubeBdd;
+            int varBdd = refDistinctVariable(var);
+            cubeBdd = bdd.ref(bdd.and(oldCubeBdd, varBdd));
+            bdd.deref(oldCubeBdd);
         }
-        return cube;
+        return cubeBdd;
     }
 
-    public boolean equal(BooleanFormula firstFormula, BooleanFormula secondFormula) {
-        int firstBdd = addFormula(firstFormula);
-        int secondBdd = addFormula(secondFormula);
-        boolean result = firstBdd == secondBdd;
+    public boolean isEquivalent(BooleanFormula leftFormula, BooleanFormula rightFormula) {
+        if (leftFormula == rightFormula) {
+            return true;
+        }
+        if ((leftFormula == null) || (rightFormula == null)) {
+            return false;
+        }
+        int firstBdd = refFormula(leftFormula);
+        int secondBdd = refFormula(rightFormula);
+        boolean result = (firstBdd == secondBdd);
         bdd.deref(firstBdd);
         bdd.deref(secondBdd);
         return result;
