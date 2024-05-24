@@ -27,22 +27,26 @@ public class ComponentInterface {
     }
 
     public Set<String> getMissingSignals(ComponentInterface that) {
-        Set<String> result = that.createInputOutputSet();
+        Set<String> result = that == null ? new HashSet<>() : that.createInputOutputSet();
         result.removeAll(this.createInputOutputSet());
         return result;
     }
 
     public Set<String> getExtraSignals(ComponentInterface that) {
         Set<String> result = this.createInputOutputSet();
-        result.removeAll(that.createInputOutputSet());
+        if (that != null) {
+            result.removeAll(that.createInputOutputSet());
+        }
         return result;
     }
 
     public Set<String> getMismatchSignals(ComponentInterface that) {
         Set<String> mismatchInputs = this.createInputSet();
-        mismatchInputs.retainAll(that.createOutputSet());
         Set<String> mismatchOutputs = this.createOutputSet();
-        mismatchOutputs.retainAll(that.createInputSet());
+        if (that != null) {
+            mismatchInputs.retainAll(that.createOutputSet());
+            mismatchOutputs.retainAll(that.createInputSet());
+        }
         Set<String> result = new HashSet<>();
         result.addAll(mismatchInputs);
         result.addAll(mismatchOutputs);
@@ -50,32 +54,38 @@ public class ComponentInterface {
     }
 
     public Set<String> getMissingInputSignals(ComponentInterface that) {
-        Set<String> result = that.createInputSet();
+        Set<String> result = that == null ? new HashSet<>() : that.createInputSet();
         result.removeAll(this.createInputSet());
         return result;
     }
 
     public Set<String> getExtraInputSignals(ComponentInterface that) {
         Set<String> result = this.createInputSet();
-        result.removeAll(that.createInputSet());
+        if (that != null) {
+            result.removeAll(that.createInputSet());
+        }
         return result;
     }
 
     public Set<String> getMissingOutputSignals(ComponentInterface that) {
-        Set<String> result = that.createOutputSet();
+        Set<String> result = that == null ? new HashSet<>() : that.createOutputSet();
         result.removeAll(this.createOutputSet());
         return result;
     }
 
     public Set<String> getExtraOutputSignals(ComponentInterface that) {
         Set<String> result = this.createOutputSet();
-        result.removeAll(that.createOutputSet());
+        if (that != null) {
+            result.removeAll(that.createOutputSet());
+        }
         return result;
     }
 
     public Set<String> getMatchingOutputSignals(ComponentInterface that) {
         Set<String> result = this.createOutputSet();
-        result.retainAll(that.createOutputSet());
+        if (that != null) {
+            result.retainAll(that.createOutputSet());
+        }
         return result;
     }
 
