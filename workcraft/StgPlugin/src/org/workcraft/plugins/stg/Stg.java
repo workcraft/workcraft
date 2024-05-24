@@ -19,11 +19,13 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.observers.SignalTypeConsistencySupervisor;
 import org.workcraft.plugins.stg.references.StgReferenceManager;
 import org.workcraft.plugins.stg.utils.LabelParser;
+import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.serialisation.References;
 import org.workcraft.types.MultiSet;
 import org.workcraft.types.Pair;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.SetUtils;
 
@@ -512,8 +514,22 @@ public class Stg extends AbstractMathModel implements StgModel {
         refinement = value;
     }
 
+    @NoAutoSerialisation
     public File getRefinementFile() {
         return (refinement == null) ? null : refinement.getFile();
+    }
+
+    @NoAutoSerialisation
+    public void setRefinementFile(File file) {
+        setRefinementFile(FileUtils.getFullPath(file));
+    }
+
+    @NoAutoSerialisation
+    public void setRefinementFile(String path) {
+        if (refinement == null) {
+            refinement = new FileReference();
+        }
+        refinement.setPath(path);
     }
 
 }

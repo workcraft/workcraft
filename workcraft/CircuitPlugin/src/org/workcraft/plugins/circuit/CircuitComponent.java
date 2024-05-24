@@ -4,6 +4,8 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.serialisation.NoAutoSerialisation;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.io.File;
@@ -55,8 +57,22 @@ public class CircuitComponent extends MathGroup {
         }
     }
 
+    @NoAutoSerialisation
     public File getRefinementFile() {
         return (refinement == null) ? null : refinement.getFile();
+    }
+
+    @NoAutoSerialisation
+    public void setRefinementFile(File file) {
+        setRefinementFile(FileUtils.getFullPath(file));
+    }
+
+    @NoAutoSerialisation
+    public void setRefinementFile(String path) {
+        if (refinement == null) {
+            refinement = new FileReference();
+        }
+        refinement.setPath(path);
     }
 
     public boolean getIsEnvironment() {
