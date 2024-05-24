@@ -42,6 +42,26 @@ public class Mutex {
         this.protocol = protocol;
     }
 
+    public String getG1SetFormula() {
+        return protocol == Mutex.Protocol.EARLY
+                ? r1.name + " * !(" + g2.name + " * " + r2.name + ")"
+                : r1.name + " * !" + g2.name;
+    }
+
+    public String getG1ResetFormula() {
+        return '!' + r1.name;
+    }
+
+    public String getG2SetFormula() {
+        return protocol == Mutex.Protocol.EARLY
+                ? r2.name + " * !(" + g1.name + " * " + r1.name + ")"
+                : r2.name + " * !" + g1.name;
+    }
+
+    public String getG2ResetFormula() {
+        return '!' + r2.name;
+    }
+
     @Override
     public String toString() {
         String r1Name = (r1 == null) || (r1.name == null) ? "" : r1.name;
