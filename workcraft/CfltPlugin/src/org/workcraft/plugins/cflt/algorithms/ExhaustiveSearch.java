@@ -1,11 +1,10 @@
 package org.workcraft.plugins.cflt.algorithms;
 
-import java.util.ArrayList;
-import java.util.stream.Collectors;
-
 import org.workcraft.plugins.cflt.AdvancedGraph;
 import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
+
+import java.util.ArrayList;
 
 /**
  * This algorithm is not as efficient as it should be, it is merely a temporary placeholder until a SAT solver
@@ -51,9 +50,7 @@ public class ExhaustiveSearch {
         }
 
         for (ArrayList<String> maxClique : graph.getMaximalCliques(selectedEdge)) {
-            ArrayList<ArrayList<String>> newEcc = edgeCliqueCover
-                    .stream()
-                    .collect(Collectors.toCollection(ArrayList<ArrayList<String>>::new));
+            ArrayList<ArrayList<String>> newEcc = new ArrayList<>(edgeCliqueCover);
             newEcc.add(maxClique);
 
             ArrayList<ArrayList<String>> edgeCliqueCoverPrime = branch(graph, k - 1, newEcc, optionalEdges);
