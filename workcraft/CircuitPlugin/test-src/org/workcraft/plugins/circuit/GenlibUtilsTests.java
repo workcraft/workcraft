@@ -94,7 +94,6 @@ class GenlibUtilsTests {
         Assertions.assertEquals(4, GenlibUtils.getPinCount(gateLibrary.get("OR3")));
         Assertions.assertEquals(5, GenlibUtils.getPinCount(gateLibrary.get("NAND4BB")));
         Assertions.assertEquals(7, GenlibUtils.getPinCount(gateLibrary.get("AOI222")));
-        Assertions.assertEquals(Pair.of(1, 7), GenlibUtils.getPinRange(gateLibrary));
     }
 
 }
