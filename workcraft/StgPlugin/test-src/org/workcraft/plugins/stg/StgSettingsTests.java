@@ -35,9 +35,6 @@ class StgSettingsTests {
         Assertions.assertEquals(Config.toString(StgSettings.getShowTransitionInstance()),
                 framework.getConfigVar(prefix + ".showTransitionInstance", false));
 
-        Assertions.assertEquals(Config.toString(StgSettings.getMutexProtocol()),
-                framework.getConfigVar(prefix + ".mutexProtocol", false));
-
         Assertions.assertEquals(Config.toString(StgSettings.getTransitionFontSize()),
                 framework.getConfigVar(prefix + ".transitionFontSize", false));
     }

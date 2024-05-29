@@ -20,7 +20,6 @@ public class StgSettings extends AbstractModelSettings {
     private static final String keyHighLevelSuffix = prefix + ".highLevelSuffix";
     private static final String keyGroupSignalConversion = prefix + ".groupSignalConversion";
     private static final String keyShowTransitionInstance = prefix + ".showTransitionInstance";
-    private static final String keyMutexProtocol = prefix + ".mutexProtocol";
     private static final String keyTransitionFontSize = prefix + ".transitionFontSize";
 
     private static final int defaultDensityMapLevelLimit = 5;
@@ -28,7 +27,6 @@ public class StgSettings extends AbstractModelSettings {
     private static final String defaultHighLevelSuffix = "_HIGH";
     private static final boolean defaultGroupSignalConversion = false;
     private static final boolean defaultShowTransitionInstance = false;
-    private static final Mutex.Protocol defaultMutexProtocol = Mutex.Protocol.LATE;
     private static final double defaultTransitionFontSize = 0.75f;
 
     private static int densityMapLevelLimit = defaultDensityMapLevelLimit;
@@ -36,7 +34,6 @@ public class StgSettings extends AbstractModelSettings {
     private static String highLevelSuffix = defaultHighLevelSuffix;
     private static boolean groupSignalConversion = defaultGroupSignalConversion;
     private static boolean showTransitionInstance = defaultShowTransitionInstance;
-    private static Mutex.Protocol mutexProtocol = defaultMutexProtocol;
     private static double transitionFontSize = defaultTransitionFontSize;
 
     static {
@@ -98,7 +95,6 @@ public class StgSettings extends AbstractModelSettings {
         setHighLevelSuffix(config.getString(keyHighLevelSuffix, defaultHighLevelSuffix));
         setGroupSignalConversion(config.getBoolean(keyGroupSignalConversion, defaultGroupSignalConversion));
         setShowTransitionInstance(config.getBoolean(keyShowTransitionInstance, defaultShowTransitionInstance));
-        setMutexProtocol(config.getEnum(keyMutexProtocol, Mutex.Protocol.class, defaultMutexProtocol));
         setTransitionFontSize(config.getDouble(keyTransitionFontSize, defaultTransitionFontSize));
     }
 
@@ -109,7 +105,6 @@ public class StgSettings extends AbstractModelSettings {
         config.set(keyHighLevelSuffix, getHighLevelSuffix());
         config.setBoolean(keyGroupSignalConversion, getGroupSignalConversion());
         config.setBoolean(keyShowTransitionInstance, getShowTransitionInstance());
-        config.setEnum(keyMutexProtocol, StgSettings.getMutexProtocol());
         config.setDouble(keyTransitionFontSize, getTransitionFontSize());
     }
 
@@ -160,14 +155,6 @@ public class StgSettings extends AbstractModelSettings {
 
     public static void setShowTransitionInstance(boolean value) {
         showTransitionInstance = value;
-    }
-
-    public static Mutex.Protocol getMutexProtocol() {
-        return mutexProtocol;
-    }
-
-    public static void setMutexProtocol(Mutex.Protocol value) {
-        mutexProtocol = value;
     }
 
     public static double getTransitionFontSize() {

@@ -4,7 +4,6 @@ import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.types.Pair;
 
@@ -179,56 +178,15 @@ public class ReachUtils {
     private static final String MUTEX_G1_REPLACEMENT = "/* insert g1 name here */";
     private static final String MUTEX_R2_REPLACEMENT = "/* insert r2 name here */";
     private static final String MUTEX_G2_REPLACEMENT = "/* insert g2 name here */";
-    private static final String MUTEX_IMPLEMENTABILITY_STRICT_REACH =
-            "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
-            "// by a STRICT mutex with requests r1/r2 and grants g1/g2.\n" +
-            "// The properties to check are:\n" +
-            "//   r1&~g2 => nxt(g1)\n" +
-            "//   ~r1 => ~nxt(g1)\n" +
-            "//   r2&g2 => ~nxt(g1)\n" +
-            "// (and the symmetric constraints for nxt(g2)).\n" +
-            "// Furthermore, the mutual exclusion of the critical sections is checked:\n" +
-            "// ~( (r1&g1) & (r2&g2) )\n" +
-            "// Note that the latter property does not follow from the above constraints\n" +
-            "// for the next state functions of the grants (e.g. in the initial state).\n" +
-            "let\n" +
-            "    r1s = S\"" + MUTEX_R1_REPLACEMENT + "\",\n" +
-            "    g1s = S\"" + MUTEX_G1_REPLACEMENT + "\",\n" +
-            "    r2s = S\"" + MUTEX_R2_REPLACEMENT + "\",\n" +
-            "    g2s = S\"" + MUTEX_G2_REPLACEMENT + "\",\n" +
-            "    r1 = $r1s,\n" +
-            "    g1 = $g1s,\n" +
-            "    r2 = $r2s,\n" +
-            "    g2 = $g2s,\n" +
-            "    g1nxt = 'g1s,\n" +
-            "    g2nxt = 'g2s\n" +
-            "{\n" +
-            "    // constraints on nxt(g1)\n" +
-            "    r1 & ~g2 & ~g1nxt  // negation of r1&~g2 => nxt(g1)\n" +
-            "    |\n" +
-            "    ~r1 & g1nxt        // negation of ~r1 => ~nxt(g1)\n" +
-            "    |\n" +
-            "    r2 & g2 & g1nxt    // negation of r2&g2 => ~nxt(g1)\n" +
-            "    |\n" +
-            "    // constraints on nxt(g2)\n" +
-            "    r2 & ~g1 & ~g2nxt  // negation of r2&~g1 => nxt(g2)\n" +
-            "    |\n" +
-            "    ~r2 & g2nxt        // negation of ~r2 => ~nxt(g2)\n" +
-            "    |\n" +
-            "    r1 & g1 & g2nxt    // negation of r1&g1 => ~nxt(g2)\n" +
-            "    |\n" +
-            "    // mutual exclusion of critical sections\n" +
-            "    r1 & g1 & r2 & g2\n" +
-            "}\n";
 
-    private static final String MUTEX_IMPLEMENTABILITY_RELAXED_REACH =
+    private static final String MUTEX_EARLY_PROTOCOL_IMPLEMENTABILITY_REACH =
             "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
-            "// by a RELAXED mutex with requests r1/r2 and grants g1/g2.\n" +
+            "// by an early protocol mutex with requests r1/r2 and grants g1/g2.\n" +
             "// The properties to check are:\n" +
             "//   nxt(g1) = r1 & (~r2 | ~g2)\n" +
             "//   nxt(g2) = r2 & (~r1 | ~g1)\n" +
             "// Furthermore, the mutual exclusion of the critical sections is checked:\n" +
-            "// ~( (r1&g1) & (r2&g2) )\n" +
+            "//   ~((r1 & g1) & (r2 & g2))\n" +
             "// Note that the latter property does not follow from the above constraints\n" +
             "// for the next state functions of the grants (e.g. in the initial state).\n" +
             "let\n" +
@@ -250,19 +208,61 @@ public class ReachUtils {
             "    r1 & g1 & r2 & g2  // mutual exclusion of critical sections\n" +
             "}\n";
 
+    private static final String MUTEX_LATE_PROTOCOL_IMPLEMENTABILITY_REACH =
+            "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
+                    "// by a late protocol mutex with requests r1/r2 and grants g1/g2.\n" +
+                    "// The properties to check are:\n" +
+                    "//   r1 & ~g2 => nxt(g1)\n" +
+                    "//   ~r1 => ~nxt(g1)\n" +
+                    "//   r2 & g2 => ~nxt(g1)\n" +
+                    "// (and the symmetric constraints for nxt(g2)).\n" +
+                    "// Furthermore, the mutual exclusion of the critical sections is checked:\n" +
+                    "//   ~((r1 & g1) & (r2 & g2))\n" +
+                    "// Note that the latter property does not follow from the above constraints\n" +
+                    "// for the next state functions of the grants (e.g. in the initial state).\n" +
+                    "let\n" +
+                    "    r1s = S\"" + MUTEX_R1_REPLACEMENT + "\",\n" +
+                    "    g1s = S\"" + MUTEX_G1_REPLACEMENT + "\",\n" +
+                    "    r2s = S\"" + MUTEX_R2_REPLACEMENT + "\",\n" +
+                    "    g2s = S\"" + MUTEX_G2_REPLACEMENT + "\",\n" +
+                    "    r1 = $r1s,\n" +
+                    "    g1 = $g1s,\n" +
+                    "    r2 = $r2s,\n" +
+                    "    g2 = $g2s,\n" +
+                    "    g1nxt = 'g1s,\n" +
+                    "    g2nxt = 'g2s\n" +
+                    "{\n" +
+                    "    // constraints on nxt(g1)\n" +
+                    "    r1 & ~g2 & ~g1nxt  // negation of r1&~g2 => nxt(g1)\n" +
+                    "    |\n" +
+                    "    ~r1 & g1nxt        // negation of ~r1 => ~nxt(g1)\n" +
+                    "    |\n" +
+                    "    r2 & g2 & g1nxt    // negation of r2&g2 => ~nxt(g1)\n" +
+                    "    |\n" +
+                    "    // constraints on nxt(g2)\n" +
+                    "    r2 & ~g1 & ~g2nxt  // negation of r2&~g1 => nxt(g2)\n" +
+                    "    |\n" +
+                    "    ~r2 & g2nxt        // negation of ~r2 => ~nxt(g2)\n" +
+                    "    |\n" +
+                    "    r1 & g1 & g2nxt    // negation of r1&g1 => ~nxt(g2)\n" +
+                    "    |\n" +
+                    "    // mutual exclusion of critical sections\n" +
+                    "    r1 & g1 & r2 & g2\n" +
+                    "}\n";
+
     public static List<VerificationParameters> getMutexImplementabilityParameters(Collection<Mutex> mutexes) {
         return mutexes.stream().map(ReachUtils::getMutexImplementabilityParameters).collect(Collectors.toList());
     }
 
     private static VerificationParameters getMutexImplementabilityParameters(Mutex mutex) {
-        String reach = getMutexImplementabilityReach(mutex.getProtocol())
+        String reach = getMutexImplementabilityReach(mutex.protocol)
                 .replace(MUTEX_R1_REPLACEMENT, mutex.r1.name)
                 .replace(MUTEX_G1_REPLACEMENT, mutex.g1.name)
                 .replace(MUTEX_R2_REPLACEMENT, mutex.r2.name)
                 .replace(MUTEX_G2_REPLACEMENT, mutex.g2.name);
 
         String description = "Mutex implementability "
-                + (mutex.getProtocol() == Mutex.Protocol.LATE ? "(late protocol) " : "(early protocol) ")
+                + (mutex.protocol == Mutex.Protocol.LATE ? "(late protocol) " : "(early protocol) ")
                 + "for place " + MutexUtils.getMutexPlaceExtendedTitle(mutex);
 
         return new VerificationParameters(description,
@@ -279,12 +279,9 @@ public class ReachUtils {
     }
 
     private static String getMutexImplementabilityReach(Mutex.Protocol mutexProtocol) {
-        if (mutexProtocol == null) {
-            mutexProtocol = StgSettings.getMutexProtocol();
-        }
-        return mutexProtocol == Mutex.Protocol.EARLY
-                ? MUTEX_IMPLEMENTABILITY_RELAXED_REACH
-                : MUTEX_IMPLEMENTABILITY_STRICT_REACH;
+        return mutexProtocol == Mutex.Protocol.LATE
+                ? MUTEX_LATE_PROTOCOL_IMPLEMENTABILITY_REACH
+                : MUTEX_EARLY_PROTOCOL_IMPLEMENTABILITY_REACH;
     }
 
     public static String getBooleanAsString(boolean value) {

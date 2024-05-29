@@ -349,7 +349,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     private LibraryItem createMutexItem(Mutex.Protocol protocol) {
-        Mutex module = CircuitSettings.parseMutexData();
+        Mutex module = CircuitSettings.parseMutexData(protocol);
         if (module == null) {
             return null;
         }
@@ -375,8 +375,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
             ArbitrationUtils.assignMutexFunctions(protocol, r1Contact, g1Contact, r2Contact, g2Contact);
         };
-        String moduleName = ArbitrationUtils.appendMutexProtocolSuffix(module.name, protocol);
-        return new LibraryItem(moduleName, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
+        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
     }
 
     @Override

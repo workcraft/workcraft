@@ -12,7 +12,6 @@ import org.workcraft.plugins.circuit.utils.InitMappingRules;
 import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.BackendUtils;
@@ -92,8 +91,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyWaitData = prefix + ".waitData";
     private static final String keyWait0Data = prefix + ".wait0Data";
     private static final String keyMutexData = prefix + ".mutexData";
-    private static final String keyMutexLateSuffix = prefix + ".mutexLateSuffix";
-    private static final String keyMutexEarlySuffix = prefix + ".mutexEarlySuffix";
+    private static final String keyMutexLateData = prefix + ".mutexLateData";
     // Import/export
     private static final String keyExportSubstitutionLibrary = prefix + ".exportSubstitutionLibrary";
     private static final String keyInvertExportSubstitutionRules = prefix + ".invertExportSubstitutionRules";
@@ -146,8 +144,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultWaitData = "WAIT (sig, (ctrl, san))";
     private static final String defaultWait0Data = "WAIT0 (sig, (ctrl, san))";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
-    private static final String defaultMutexLateSuffix = "";
-    private static final String defaultMutexEarlySuffix = "_early";
+    private static final String defaultMutexLateData = "MUTEX_late ((r1, g1), (r2, g2))";
     // Import/export
     private static final String defaultExportSubstitutionLibrary = "";
     private static final boolean defaultInvertExportSubstitutionRules = false;
@@ -200,8 +197,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String waitData = defaultWaitData;
     private static String wait0Data = defaultWait0Data;
     private static String mutexData = defaultMutexData;
-    private static String mutexLateSuffix = defaultMutexLateSuffix;
-    private static String mutexEarlySuffix = defaultMutexEarlySuffix;
+    private static String mutexLateData = defaultMutexLateData;
     // Import/export
     private static String exportSubstitutionLibrary = defaultExportSubstitutionLibrary;
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
@@ -295,7 +291,7 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "WAIT name, dirty input and clean handshake",
                 value -> {
-                    if (parseWaitData(value, Wait.Type.WAIT1) != null) {
+                    if (parseWaitDataOrNull(value, Wait.Type.WAIT1) != null) {
                         setWaitData(value);
                     } else {
                         errorDescriptionFormat("WAIT", defaultWaitData);
@@ -306,7 +302,7 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "WAIT0 name, dirty input and clean handshake",
                 value -> {
-                    if (parseWaitData(value, Wait.Type.WAIT0) != null) {
+                    if (parseWaitDataOrNull(value, Wait.Type.WAIT0) != null) {
                         setWait0Data(value);
                     } else {
                         errorDescriptionFormat("WAIT0", defaultWait0Data);
@@ -315,9 +311,9 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getWait0Data));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "MUTEX name and request-grant pairs",
+                PropertyHelper.BULLET_PREFIX + "MUTEX name and request-grant pairs (early protocol)",
                 value -> {
-                    if (parseMutexDataOrNull(value) != null) {
+                    if (parseMutexDataOrNull(value, Mutex.Protocol.EARLY) != null) {
                         setMutexData(value);
                     } else {
                         errorDescriptionFormat("MUTEX", defaultMutexData);
@@ -326,19 +322,15 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getMutexData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Late protocol MUTEX module suffix",
-                CircuitSettings::setMutexLateSuffix,
-                CircuitSettings::getMutexLateSuffix));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Early protocol MUTEX module suffix",
-                CircuitSettings::setMutexEarlySuffix,
-                CircuitSettings::getMutexEarlySuffix));
-
-        properties.add(new PropertyDeclaration<>(Mutex.Protocol.class,
-                PropertyHelper.BULLET_PREFIX + "MUTEX protocol",
-                StgSettings::setMutexProtocol,
-                StgSettings::getMutexProtocol));
+                PropertyHelper.BULLET_PREFIX + "MUTEX name and request-grant pairs (late protocol)",
+                value -> {
+                    if (parseMutexDataOrNull(value, Mutex.Protocol.LATE) != null) {
+                        setMutexLateData(value);
+                    } else {
+                        errorDescriptionFormat("MUTEX", defaultMutexData);
+                    }
+                },
+                CircuitSettings::getMutexLateData));
 
         properties.add(PropertyHelper.createSeparatorProperty("Verilog import and export"));
 
@@ -547,8 +539,7 @@ public class CircuitSettings extends AbstractModelSettings {
         setWaitData(config.getString(keyWaitData, defaultWaitData));
         setWait0Data(config.getString(keyWait0Data, defaultWait0Data));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
-        setMutexLateSuffix(config.getString(keyMutexLateSuffix, defaultMutexLateSuffix));
-        setMutexEarlySuffix(config.getString(keyMutexEarlySuffix, defaultMutexEarlySuffix));
+        setMutexLateData(config.getString(keyMutexLateData, defaultMutexLateData));
         // Import/export
         setExportSubstitutionLibrary(config.getString(keyExportSubstitutionLibrary, defaultExportSubstitutionLibrary));
         setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
@@ -601,8 +592,7 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyWaitData, getWaitData());
         config.set(keyWait0Data, getWait0Data());
         config.set(keyMutexData, getMutexData());
-        config.set(keyMutexLateSuffix, getMutexLateSuffix());
-        config.set(keyMutexEarlySuffix, getMutexEarlySuffix());
+        config.set(keyMutexLateData, getMutexLateData());
         // Import/export
         config.set(keyExportSubstitutionLibrary, getExportSubstitutionLibrary());
         config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
@@ -736,7 +726,7 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     public static Wait parseWaitData(Wait.Type type) {
-        return parseWaitData(type == Wait.Type.WAIT0 ? getWait0Data() : getWaitData(), type);
+        return parseWaitDataOrNull(type == Wait.Type.WAIT0 ? getWait0Data() : getWaitData(), type);
     }
 
     public static String getMutexData() {
@@ -747,24 +737,16 @@ public class CircuitSettings extends AbstractModelSettings {
         mutexData = value;
     }
 
-    public static Mutex parseMutexData() {
-        return parseMutexDataOrNull(getMutexData());
+    public static String getMutexLateData() {
+        return mutexLateData;
     }
 
-    public static String getMutexLateSuffix() {
-        return mutexLateSuffix;
+    public static void setMutexLateData(String value) {
+        mutexLateData = value;
     }
 
-    public static void setMutexLateSuffix(String value) {
-        mutexLateSuffix = value;
-    }
-
-    public static String getMutexEarlySuffix() {
-        return mutexEarlySuffix;
-    }
-
-    public static void setMutexEarlySuffix(String value) {
-        mutexEarlySuffix = value;
+    public static Mutex parseMutexData(Mutex.Protocol protocol) {
+        return parseMutexDataOrNull(protocol == Mutex.Protocol.LATE ? getMutexLateData() : getMutexData(), protocol);
     }
 
     public static String getExportSubstitutionLibrary() {
@@ -1148,7 +1130,7 @@ public class CircuitSettings extends AbstractModelSettings {
         return null;
     }
 
-    private static Mutex parseMutexDataOrNull(String str) {
+    private static Mutex parseMutexDataOrNull(String str, Mutex.Protocol protocol) {
         Mutex result = null;
         Matcher matcher = MUTEX_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
         if (matcher.find()) {
@@ -1157,12 +1139,12 @@ public class CircuitSettings extends AbstractModelSettings {
             Signal g1 = new Signal(matcher.group(MUTEX_G1_GROUP), Signal.Type.OUTPUT);
             Signal r2 = new Signal(matcher.group(MUTEX_R2_GROUP), Signal.Type.INPUT);
             Signal g2 = new Signal(matcher.group(MUTEX_G2_GROUP), Signal.Type.OUTPUT);
-            result = new Mutex(name, r1, g1, r2, g2);
+            result = new Mutex(name, r1, g1, r2, g2, protocol);
         }
         return result;
     }
 
-    private static Wait parseWaitData(String str, Wait.Type type) {
+    private static Wait parseWaitDataOrNull(String str, Wait.Type type) {
         Wait result = null;
         Matcher matcher = WAIT_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
         if (matcher.find()) {

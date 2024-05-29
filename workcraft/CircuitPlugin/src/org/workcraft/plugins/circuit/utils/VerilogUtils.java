@@ -301,11 +301,11 @@ public final class VerilogUtils {
     }
 
     public static boolean isWaitModule(String moduleName) {
-        return ArbitrationUtils.getWaitModuleNames().contains(moduleName);
+        return ArbitrationUtils.getWaitModule(moduleName) != null;
     }
 
     public static boolean isMutexModule(String moduleName) {
-        return ArbitrationUtils.getMutexModuleNames().contains(moduleName);
+        return ArbitrationUtils.getMutexModule(moduleName) != null;
     }
 
     public static boolean isLibraryGate(String moduleName) {

@@ -32,7 +32,7 @@ public class VisualStgPlace extends VisualPlace {
                 .setCombinable());
 
 
-        addPropertyDeclaration(new PropertyDeclaration<Mutex.Protocol>(
+        addPropertyDeclaration(new PropertyDeclaration<>(
                 Mutex.Protocol.class, StgPlace.PROPERTY_MUTEX_PROTOCOL,
                 value -> getReferencedComponent().setMutexProtocol(value),
                 () -> getReferencedComponent().getMutexProtocol()) {
