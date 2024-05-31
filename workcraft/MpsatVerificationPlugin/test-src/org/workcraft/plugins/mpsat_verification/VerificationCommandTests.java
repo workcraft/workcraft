@@ -8,12 +8,9 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.*;
 import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.PackageUtils;
-import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.net.URL;
@@ -48,8 +45,7 @@ class VerificationCommandTests {
                 null,  // absence of self-triggering local signals
                 null,  // DI interface
                 null,  // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
@@ -68,8 +64,7 @@ class VerificationCommandTests {
                 null,  // absence of self-triggering local signals
                 null,  // DI interface
                 null,  // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
@@ -88,8 +83,7 @@ class VerificationCommandTests {
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
                 false, // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
@@ -108,8 +102,7 @@ class VerificationCommandTests {
                 true,  // absence of self-triggering local signals
                 false, // DI interface
                 false, // normalcy
-                true,  // mutex implementability (late protocol)
-                false  // mutex implementability (early protocol)
+                true  // mutex implementability
         );
     }
 
@@ -128,8 +121,7 @@ class VerificationCommandTests {
                 true,  // absence of self-triggering local signals
                 false, // DI interface
                 false, // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
@@ -148,14 +140,32 @@ class VerificationCommandTests {
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
                 true,  // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
     @Test
-    void testCycleMutexVerification() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex.stg.work");
+    void testCycleMutexEarlyVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex-early.stg.work");
+        testVerificationCommands(workName,
+                false, // combined
+                true,  // consistency
+                true,  // deadlock freeness
+                true,  // input properness
+                true,  // output persistency
+                true,  // output determinacy
+                true,  // CSC
+                true,  // USC
+                true,  // absence of self-triggering local signals
+                true,  // DI interface
+                false, // normalcy
+                false  // mutex implementability
+        );
+    }
+
+    @Test
+    void testCycleMutexLateVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "cycle-mutex-late.stg.work");
         testVerificationCommands(workName,
                 true, // combined
                 true,  // consistency
@@ -168,8 +178,7 @@ class VerificationCommandTests {
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
                 false, // normalcy
-                true,  // mutex implementability (late protocol)
-                false  // mutex implementability (early protocol)
+                true  // mutex implementability
         );
     }
 
@@ -188,8 +197,7 @@ class VerificationCommandTests {
                 null,  // absence of self-triggering local signals
                 null,  // DI interface
                 null,  // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
@@ -210,8 +218,7 @@ class VerificationCommandTests {
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
                 false, // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
@@ -230,8 +237,7 @@ class VerificationCommandTests {
                 true,  // absence of self-triggering local signals
                 false, // DI interface
                 false, // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
@@ -250,8 +256,7 @@ class VerificationCommandTests {
                 false, // absence of self-triggering local signals
                 false, // DI interface
                 false, // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
@@ -270,8 +275,7 @@ class VerificationCommandTests {
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
                 false, // normalcy
-                null,  // mutex implementability (late protocol)
-                null   // mutex implementability (early protocol)
+                null   // mutex implementability
         );
     }
 
@@ -280,8 +284,7 @@ class VerificationCommandTests {
             Boolean inputProperness, Boolean outputPersistency, Boolean outputDeterminacy,
             Boolean csc, Boolean usc,
             Boolean localSelfTriggering, Boolean diInterface, Boolean normalcy,
-            Boolean mutexImplementabilityLateProtocol,
-            Boolean mutexImplementabilityEarlyProtocol)
+            Boolean mutexImplementability)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
@@ -323,18 +326,7 @@ class VerificationCommandTests {
         Assertions.assertEquals(normalcy, normalcyCommand.execute(we));
 
         MutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MutexImplementabilityVerificationCommand();
-        setMutexProtocolIfApplicable(we, Mutex.Protocol.LATE);
-        Assertions.assertEquals(mutexImplementabilityLateProtocol, mutexImplementabilityCommand.execute(we));
-
-        setMutexProtocolIfApplicable(we, Mutex.Protocol.EARLY);
-        Assertions.assertEquals(mutexImplementabilityEarlyProtocol, mutexImplementabilityCommand.execute(we));
-    }
-
-    private void setMutexProtocolIfApplicable(WorkspaceEntry we, Mutex.Protocol mutexProtocol) {
-        if (WorkspaceUtils.isApplicable(we, Stg.class)) {
-            Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-            stg.getMutexPlaces().forEach(mutexPlace -> mutexPlace.setMutexProtocol(mutexProtocol));
-        }
+        Assertions.assertEquals(mutexImplementability, mutexImplementabilityCommand.execute(we));
     }
 
 }

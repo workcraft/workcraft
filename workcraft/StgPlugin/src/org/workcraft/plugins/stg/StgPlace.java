@@ -16,7 +16,7 @@ public class StgPlace extends Place {
 
     private boolean implicit = false;
     private boolean mutex = false;
-    private Mutex.Protocol mutexProtocol = StgSettings.getMutexProtocol();
+    private Mutex.Protocol mutexProtocol = Mutex.Protocol.EARLY;
 
     public boolean isImplicit() {
         return implicit;

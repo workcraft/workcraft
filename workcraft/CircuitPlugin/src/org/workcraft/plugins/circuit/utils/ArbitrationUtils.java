@@ -10,11 +10,10 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class ArbitrationUtils {
 
@@ -35,25 +34,23 @@ public class ArbitrationUtils {
         sanContact.setResetFunctionQuiet(resetFormula);
     }
 
-    public static Set<String> getWaitModuleNames() {
-        Set<String> result = new HashSet<>();
+    private static Map<String, Wait> getModuleNameToWaitMap() {
+        Map<String, Wait> result = new HashMap<>();
         for (Wait.Type type : Wait.Type.values()) {
             Wait module = CircuitSettings.parseWaitData(type);
             if ((module != null) && (module.name != null)) {
-                result.add(module.name);
+                result.put(module.name, module);
             }
         }
         return result;
     }
 
+    public static Set<String> getWaitModuleNames() {
+        return getModuleNameToWaitMap().keySet();
+    }
+
     public static Wait getWaitModule(String moduleName) {
-        for (Wait.Type type : Wait.Type.values()) {
-            Wait module = CircuitSettings.parseWaitData(type);
-            if ((module != null) && (module.name != null) && module.name.equals(moduleName)) {
-                return module;
-            }
-        }
-        return null;
+        return getModuleNameToWaitMap().get(moduleName);
     }
 
     public static void assignMutexFunctions(Mutex.Protocol protocol,
@@ -94,32 +91,32 @@ public class ArbitrationUtils {
         return new Not(reqContact);
     }
 
-    public static String appendMutexProtocolSuffix(String name, Mutex.Protocol protocol) {
-        String result = name == null ? "" : name;
-        if (protocol == Mutex.Protocol.LATE) {
-            result += CircuitSettings.getMutexLateSuffix();
-        }
-        if (protocol == Mutex.Protocol.EARLY) {
-            result += CircuitSettings.getMutexEarlySuffix();
+    private static Map<String, Mutex> getModuleNameToMutexMap() {
+        Map<String, Mutex> result = new HashMap<>();
+        for (Mutex.Protocol protocol : Mutex.Protocol.values()) {
+            Mutex module = CircuitSettings.parseMutexData(protocol);
+            if ((module != null) && (module.name != null)) {
+                result.put(module.name, module);
+            }
         }
         return result;
     }
 
     public static Set<String> getMutexModuleNames() {
-        Mutex mutex = CircuitSettings.parseMutexData();
-        return Arrays.stream(Mutex.Protocol.values())
-                .map(protocol -> appendMutexProtocolSuffix(mutex.name, protocol))
-                .collect(Collectors.toSet());
+        return getModuleNameToMutexMap().keySet();
+    }
+
+    public static Mutex getMutexModule(String moduleName) {
+        return getModuleNameToMutexMap().get(moduleName);
     }
 
     public static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Circuit circuit) {
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
-        Set<String> mutexModuleNames = ArbitrationUtils.getMutexModuleNames();
-        Mutex mutexModule = CircuitSettings.parseMutexData();
+        Map<String, Mutex> moduleNameToMutexMap = getModuleNameToMutexMap();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             if (component.getIsArbitrationPrimitive()) {
-                String moduleName = component.getModule();
-                if (mutexModuleNames.contains(moduleName)) {
+                Mutex mutexModule = moduleNameToMutexMap.get(component.getModule());
+                if (mutexModule != null) {
                     String g1Signal = getPinSignal(circuit, component, mutexModule.g1.name);
                     String g2Signal = getPinSignal(circuit, component, mutexModule.g2.name);
                     if ((g1Signal != null) && (g2Signal != null)) {

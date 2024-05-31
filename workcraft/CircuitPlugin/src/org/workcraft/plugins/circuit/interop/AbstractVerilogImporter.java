@@ -28,7 +28,6 @@ import org.workcraft.plugins.circuit.utils.*;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
@@ -427,33 +426,25 @@ public abstract class AbstractVerilogImporter implements Importer {
     }
 
     private Mutex instanceToMutexWithProtocol(VerilogInstance verilogInstance, Collection<Mutex> mutexes) {
-        Mutex module = CircuitSettings.parseMutexData();
+        String name = verilogInstance.name;
+
+        Mutex.Protocol protocol = mutexes.stream()
+                .filter(mutex -> (mutex.name != null) && mutex.name.equals(name))
+                .findFirst()
+                .map(mutex -> mutex.protocol)
+                .orElse(Mutex.Protocol.EARLY);
+
+        Mutex module = CircuitSettings.parseMutexData(protocol);
         if ((module == null) || (module.name == null)) {
             return null;
         }
-        String name = verilogInstance.name;
+
         Signal r1 = getPinConnectedSignal(verilogInstance, module.r1.name, 0);
         Signal g1 = getPinConnectedSignal(verilogInstance, module.g1.name, 1);
         Signal r2 = getPinConnectedSignal(verilogInstance, module.r2.name, 2);
         Signal g2 = getPinConnectedSignal(verilogInstance, module.g2.name, 3);
 
-        // Get fall-back protocol from default preferences and module name
-        Mutex.Protocol defaultProtocol = StgSettings.getMutexProtocol();
-        if (ArbitrationUtils.appendMutexProtocolSuffix(module.name, Mutex.Protocol.LATE).equals(verilogInstance.moduleName)) {
-            defaultProtocol = Mutex.Protocol.LATE;
-        } else if (ArbitrationUtils.appendMutexProtocolSuffix(module.name, Mutex.Protocol.EARLY).equals(verilogInstance.moduleName)) {
-            defaultProtocol = Mutex.Protocol.EARLY;
-        }
-
-        Mutex.Protocol protocol = mutexes.stream()
-                .filter(mutex -> (mutex.name != null) && mutex.name.equals(name))
-                .findFirst()
-                .map(Mutex::getProtocol)
-                .orElse(defaultProtocol);
-
-        Mutex result = new Mutex(name, r1, g1, r2, g2);
-        result.setProtocol(protocol);
-        return result;
+        return new Mutex(name, r1, g1, r2, g2, protocol);
     }
 
     private Signal getPinConnectedSignal(VerilogInstance verilogInstance, String portName, int portIndexIfNoPortName) {
@@ -1046,15 +1037,13 @@ public abstract class AbstractVerilogImporter implements Importer {
         if (instance == null) {
             return null;
         }
-        Mutex module = CircuitSettings.parseMutexData();
+        Mutex module = CircuitSettings.parseMutexData(instance.protocol);
         if ((module == null) || (module.name == null)) {
             return null;
         }
-        Mutex.Protocol protocol = instance.getProtocol();
-        String moduleName = ArbitrationUtils.appendMutexProtocolSuffix(module.name, protocol);
         FunctionComponent component = new FunctionComponent();
         circuit.add(component);
-        component.setModule(moduleName);
+        component.setModule(module.name);
         component.setIsArbitrationPrimitive(true);
 
         reparentAndRenameComponent(circuit, component, instance.name);
@@ -1063,7 +1052,7 @@ public abstract class AbstractVerilogImporter implements Importer {
         FunctionContact r2Contact = addComponentPin(circuit, component, module.r2, instance.r2, signalToNetMap);
         FunctionContact g2Contact = addComponentPin(circuit, component, module.g2, instance.g2, signalToNetMap);
 
-        ArbitrationUtils.assignMutexFunctions(protocol, r1Contact, g1Contact, r2Contact, g2Contact);
+        ArbitrationUtils.assignMutexFunctions(instance.protocol, r1Contact, g1Contact, r2Contact, g2Contact);
 
         setMutexGrant(circuit, instance.g1, signalToNetMap);
         setMutexGrant(circuit, instance.g2, signalToNetMap);

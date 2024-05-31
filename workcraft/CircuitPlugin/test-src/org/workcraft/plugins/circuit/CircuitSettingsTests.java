@@ -60,11 +60,8 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getMutexData()),
                 framework.getConfigVar(prefix + ".mutexData", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getMutexLateSuffix()),
-                framework.getConfigVar(prefix + ".mutexLateSuffix", false));
-
-        Assertions.assertEquals(Config.toString(CircuitSettings.getMutexEarlySuffix()),
-                framework.getConfigVar(prefix + ".mutexEarlySuffix", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getMutexLateData()),
+                framework.getConfigVar(prefix + ".mutexLateData", false));
 
         // Import/export
         Assertions.assertEquals(Config.toString(CircuitSettings.getExportSubstitutionLibrary()),

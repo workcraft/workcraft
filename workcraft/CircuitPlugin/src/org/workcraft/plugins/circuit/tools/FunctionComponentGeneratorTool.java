@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.stream.Collectors;
 
 public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
@@ -160,11 +159,26 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     private JPanel createPinsFilterPanel(final GraphEditor editor) {
-        Pair<Integer, Integer> pinRange = GenlibUtils.getPinRange(LibraryManager.getLibrary());
+        Pair<Integer, Integer> pinRange = calcPinRange();
         pinsFilter.setMinimum(pinRange.getFirst());
         pinsFilter.setMaximum(pinRange.getSecond());
         pinsFilter.addChangeListener(event -> updateLibraryList(editor));
         return GuiUtils.createLabeledComponent(pinsFilter, "Pins:  ");
+    }
+
+    private Pair<Integer, Integer> calcPinRange() {
+        List<LibraryItem> libraryItems = getLibraryItems();
+        int min = 0;
+        int max = 0;
+        for (LibraryItem libraryItem : libraryItems) {
+            if ((min == 0) || (libraryItem.pinCount < min)) {
+                min = libraryItem.pinCount;
+            }
+            if ((min == 0) || (libraryItem.pinCount > max)) {
+                max = libraryItem.pinCount;
+            }
+        }
+        return Pair.of(min, max);
     }
 
     private JPanel createNameFilterPanel(final GraphEditor editor) {
@@ -209,7 +223,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         components.add(createCustomItem());
         components.addAll(getLibraryItems().stream()
                 .filter(o -> filterByType(o) && filterByPins(o) && filterByName(o))
-                .collect(Collectors.toList()));
+                .toList());
 
         LibraryList libraryList = new LibraryList(components);
         libraryScroll.setViewportView(libraryList);
@@ -335,7 +349,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     private LibraryItem createMutexItem(Mutex.Protocol protocol) {
-        Mutex module = CircuitSettings.parseMutexData();
+        Mutex module = CircuitSettings.parseMutexData(protocol);
         if (module == null) {
             return null;
         }
@@ -361,8 +375,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
             ArbitrationUtils.assignMutexFunctions(protocol, r1Contact, g1Contact, r2Contact, g2Contact);
         };
-        String moduleName = ArbitrationUtils.appendMutexProtocolSuffix(module.name, protocol);
-        return new LibraryItem(moduleName, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
+        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
     }
 
     @Override

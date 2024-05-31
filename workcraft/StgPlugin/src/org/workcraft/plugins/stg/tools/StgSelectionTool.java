@@ -184,25 +184,21 @@ public class StgSelectionTool extends SelectionTool {
         if ((getDragState() == DragState.MOVE) && e.isMenuKeyDown() &&
                 (relocationTransition != null) && (relocationConnection != null)) {
 
-            GraphEditor editor = e.getEditor();
-            VisualStg stg = (VisualStg) editor.getModel();
-            String transitionName = relocationTransition.getName();
+            VisualStg stg = (VisualStg) e.getEditor().getModel();
+
+            // Firstly, insert a new transition into the mouse position of destination connection
+            relocationConnection.setSplitPoint(ConnectionHelper.getNearestLocationOnConnection(
+                    relocationConnection, e.getPosition()));
+
+            VisualNamedTransition insertedTransition = getInsertionCommand(relocationTransition)
+                    .insertTransitionIntoConnection(stg, relocationConnection);
+
+            // Then, rename newly inserted transition and restore position of the original transition
+            stg.setMathName(insertedTransition, relocationTransition.getName());
             relocationTransition.setRootSpacePosition(e.getStartPosition());
 
-            ContractTransitionTransformationCommand contractionCommand
-                    = new ContractNamedTransitionTransformationCommand();
-
-            contractionCommand.removeOrContractTransition(stg, relocationTransition);
-
-            Point2D locationOnConnection = ConnectionHelper.getNearestLocationOnConnection(
-                    relocationConnection, e.getPosition());
-
-            relocationConnection.setSplitPoint(locationOnConnection);
-            AbstractInsertTransformationCommand insertionCommand = getInsertionCommand(relocationTransition);
-            VisualNamedTransition insertedTransition
-                    = insertionCommand.insertTransitionIntoConnection(stg, relocationConnection);
-
-            stg.setMathName(insertedTransition, transitionName);
+            // Finally, contract original transition (transition contraction could change the destination connection)
+            new ContractNamedTransitionTransformationCommand().removeOrContractTransition(stg, relocationTransition);
         }
         clearRelocationMode();
         super.finishDrag(e);
