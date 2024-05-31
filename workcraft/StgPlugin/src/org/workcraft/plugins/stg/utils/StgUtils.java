@@ -69,7 +69,9 @@ public class StgUtils {
         return dummyTransition;
     }
 
-    private static void replaceNamedTransition(VisualStg stg, VisualNamedTransition oldTransition, VisualNamedTransition newTransition) {
+    private static void replaceNamedTransition(VisualStg stg,
+            VisualNamedTransition oldTransition, VisualNamedTransition newTransition) {
+
         newTransition.copyPosition(oldTransition);
         newTransition.copyStyle(oldTransition);
 
@@ -111,16 +113,22 @@ public class StgUtils {
         stg.remove(oldTransition);
     }
 
-    public static VisualDummyTransition convertSignalToDummyTransition(VisualStg stg, VisualSignalTransition signalTransition) {
+    public static VisualDummyTransition convertSignalToDummyTransition(VisualStg stg,
+            VisualSignalTransition signalTransition) {
+
         Container container = (Container) signalTransition.getParent();
         VisualDummyTransition dummyTransition = stg.createVisualDummyTransition(null, container);
         replaceNamedTransition(stg, signalTransition, dummyTransition);
         return dummyTransition;
     }
 
-    public static VisualSignalTransition convertDummyToSignalTransition(VisualStg stg, VisualNamedTransition dummyTransition) {
+    public static VisualSignalTransition convertDummyToSignalTransition(VisualStg stg,
+            VisualNamedTransition dummyTransition) {
+
         Container container = (Container) dummyTransition.getParent();
-        VisualSignalTransition signalTransition = stg.createVisualSignalTransition(null, Signal.Type.INTERNAL, SignalTransition.Direction.TOGGLE, container);
+        VisualSignalTransition signalTransition = stg.createVisualSignalTransition(
+                null, Signal.Type.INTERNAL, SignalTransition.Direction.TOGGLE, container);
+
         replaceNamedTransition(stg, dummyTransition, signalTransition);
         return signalTransition;
     }
@@ -161,7 +169,9 @@ public class StgUtils {
         return result;
     }
 
-    public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignals, Collection<String> outputSignals) {
+    public static void restoreInterfaceSignals(Stg stg,
+            Collection<String> inputSignals, Collection<String> outputSignals) {
+
         for (String signal : stg.getSignalReferences()) {
             stg.setSignalType(signal, Signal.Type.INTERNAL);
         }

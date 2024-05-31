@@ -3,17 +3,17 @@ package org.workcraft.plugins.builtin.commands;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.Bezier;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -80,8 +80,7 @@ public class StraightenConnectionTransformationCommand extends AbstractTransform
     public void transformNode(VisualModel model, VisualNode node) {
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
-            connection.setConnectionType(ConnectionType.BEZIER);
-            connection.setConnectionType(ConnectionType.POLYLINE);
+            ConnectionHelper.straightenConnection(connection);
         }
     }
 

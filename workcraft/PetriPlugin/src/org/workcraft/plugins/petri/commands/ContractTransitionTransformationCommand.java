@@ -5,11 +5,8 @@ import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.HierarchyReferenceManager;
-import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -32,7 +29,9 @@ import java.util.*;
 
 public class ContractTransitionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
-    private final HashSet<VisualConnection> convertedReplicaConnections = new HashSet<>();
+    public enum ProductPlacePositioning { PRED_PLACE, TRANSITION, SUCC_PLACE, AVERAGE }
+
+    private final Set<VisualConnection> convertedReplicaConnections = new HashSet<>();
 
     @Override
     public String getDisplayName() {
@@ -277,46 +276,33 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         beforeContraction(model, transition);
         LinkedList<VisualNode> predNodes = new LinkedList<>(model.getPreset(transition));
         LinkedList<VisualNode> succNodes = new LinkedList<>(model.getPostset(transition));
-        boolean isTrivial = (predNodes.size() == 1) && (succNodes.size() == 1);
+        ProductPlacePositioning productPlacePositioning = getProductPlacePositioning(model, predNodes, succNodes);
         HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap = new HashMap<>();
         for (VisualNode predNode : predNodes) {
             VisualPlace predPlace = (VisualPlace) predNode;
             for (VisualNode succNode : succNodes) {
                 VisualPlace succPlace = (VisualPlace) succNode;
                 VisualPlace productPlace = createProductPlace(model, predPlace, succPlace);
-                initialiseProductPlace(predPlace, succPlace, productPlace);
                 HashSet<VisualConnection> connections = new HashSet<>();
                 connections.addAll(model.getConnections(predPlace));
                 connections.addAll(model.getConnections(succPlace));
-                Map<VisualConnection, VisualConnection> productConnectionMap = connectProductPlace(model, connections, productPlace);
                 productPlaceMap.put(productPlace, new Pair<>(predPlace, succPlace));
-                if (isTrivial) {
-                    productPlace.copyPosition(transition);
-                    VisualConnection predConnection = model.getConnection(predPlace, transition);
-                    LinkedList<Point2D> predLocations = ConnectionHelper.getMergedControlPoints(predPlace, null, predConnection);
-                    VisualConnection succConnection = model.getConnection(transition, succPlace);
-                    LinkedList<Point2D> succLocations = ConnectionHelper.getMergedControlPoints(succPlace, succConnection, null);
-                    if (model.getPostset(succPlace).size() < 2) {
-                        for (VisualConnection newConnection : productConnectionMap.keySet()) {
-                            if (newConnection.getFirst() == productPlace) {
-                                ConnectionHelper.prependControlPoints(newConnection, succLocations);
-                            }
-                            filterControlPoints(newConnection);
-                        }
-                    }
-                    if (model.getPreset(predPlace).size() < 2) {
-                        for (VisualConnection newConnection : productConnectionMap.keySet()) {
-                            if (newConnection.getSecond() == productPlace) {
-                                ConnectionHelper.addControlPoints(newConnection, predLocations);
-                            }
-                            filterControlPoints(newConnection);
-                        }
-                    }
-                }
+                Map<VisualConnection, VisualConnection> productToOriginalConnectionMap
+                        = connectProductPlace(model, connections, productPlace);
+
+                nameProductPlace(model, productPlace, productPlacePositioning, predPlace, succPlace);
+                styleProductPlace(productPlace, productPlacePositioning, predPlace, succPlace);
+                positionProductPlace(model, productPlace, productPlacePositioning, predPlace, transition, succPlace);
+
+                shapeProductPredConnections(model, productToOriginalConnectionMap,
+                        productPlace, productPlacePositioning, predPlace, transition);
+
+                shapeProductSuccConnections(model, productToOriginalConnectionMap,
+                        productPlace, productPlacePositioning, transition, succPlace);
             }
         }
         model.remove(transition);
-        afterContraction(model, transition, productPlaceMap);
+        afterContraction(model, productPlaceMap);
         for (VisualNode predNode : predNodes) {
             model.remove(predNode);
         }
@@ -325,37 +311,34 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         }
     }
 
-    public VisualPlace createProductPlace(VisualModel visualModel, VisualPlace predPlace, VisualPlace succPlace) {
-        Container visualContainer = (Container) Hierarchy.getCommonParent(predPlace, succPlace);
-        Container mathContainer = NamespaceHelper.getMathContainer(visualModel, visualContainer);
-        MathModel mathModel = visualModel.getMathModel();
-        HierarchyReferenceManager refManager = (HierarchyReferenceManager) mathModel.getReferenceManager();
-        NameManager nameManager = refManager.getNameManager((NamespaceProvider) mathContainer);
-        String predName = visualModel.getMathName(predPlace);
-        String succName = visualModel.getMathName(succPlace);
-        String productName = nameManager.getDerivedName(null, predName + succName);
-        Place mathPlace = mathModel.createNode(productName, mathContainer, Place.class);
-        return visualModel.createVisualComponent(mathPlace, VisualPlace.class, visualContainer);
+    private static ProductPlacePositioning getProductPlacePositioning(VisualModel model,
+            LinkedList<VisualNode> predNodes, LinkedList<VisualNode> succNodes) {
+
+        ProductPlacePositioning productPlacePositioning = ProductPlacePositioning.TRANSITION;
+        if ((predNodes.size() > 1) && (succNodes.size() > 1)) {
+            productPlacePositioning = ProductPlacePositioning.AVERAGE;
+        } else if (predNodes.size() > 1) {
+            productPlacePositioning = ProductPlacePositioning.PRED_PLACE;
+        } else if (succNodes.size() > 1) {
+            productPlacePositioning = ProductPlacePositioning.SUCC_PLACE;
+        } else if (!predNodes.isEmpty() && !succNodes.isEmpty()) {
+            Set<VisualNode> succPredNodes = model.getPostset(predNodes.iterator().next());
+            Set<VisualNode> predSuccNodes = model.getPreset(succNodes.iterator().next());
+            if ((succPredNodes.size() > 1) && (predSuccNodes.size() == 1)) {
+                productPlacePositioning = ProductPlacePositioning.PRED_PLACE;
+            } else if ((succPredNodes.size() == 1) && (predSuccNodes.size() > 1)) {
+                productPlacePositioning = ProductPlacePositioning.SUCC_PLACE;
+            }
+        }
+        return productPlacePositioning;
     }
 
-    private void initialiseProductPlace(VisualPlace predPlace, VisualPlace succPlace, VisualPlace productPlace) {
-        Point2D pos = Geometry.middle(predPlace.getRootSpacePosition(), succPlace.getRootSpacePosition());
-        productPlace.setRootSpacePosition(pos);
-        productPlace.mixStyle(predPlace, succPlace);
-        // Correct the token count and capacity of the new place
-        Place mathPredPlace = predPlace.getReferencedComponent();
-        Place mathSuccPlace = succPlace.getReferencedComponent();
-        Place mathProductPlace = productPlace.getReferencedComponent();
-        int tokens = mathPredPlace.getTokens() + mathSuccPlace.getTokens();
-        mathProductPlace.setTokens(tokens);
-        int capacity = tokens;
-        if (capacity < mathPredPlace.getCapacity()) {
-            capacity = mathPredPlace.getCapacity();
-        }
-        if (capacity < mathSuccPlace.getCapacity()) {
-            capacity = mathSuccPlace.getCapacity();
-        }
-        mathProductPlace.setCapacity(capacity);
+    public VisualPlace createProductPlace(VisualModel model, VisualPlace predPlace, VisualPlace succPlace) {
+        Container visualContainer = (Container) Hierarchy.getCommonParent(predPlace, succPlace);
+        Container mathContainer = NamespaceHelper.getMathContainer(model, visualContainer);
+        MathModel mathModel = model.getMathModel();
+        Place mathPlace = mathModel.createNode(null, mathContainer, Place.class);
+        return model.createVisualComponent(mathPlace, VisualPlace.class, visualContainer);
     }
 
     private Map<VisualConnection, VisualConnection> connectProductPlace(VisualModel visualModel,
@@ -390,9 +373,125 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
                 newConnection.copyStyle(originalConnection);
                 newConnection.copyShape(originalConnection);
                 filterControlPoints(newConnection);
+                if (convertedReplicaConnections.contains(originalConnection)) {
+                    convertedReplicaConnections.add(newConnection);
+                }
             }
         }
         return productConnectionMap;
+    }
+
+    public void nameProductPlace(VisualModel model, VisualPlace productPlace,
+            ProductPlacePositioning productPlacePositioning, VisualPlace predPlace, VisualPlace succPlace) {
+
+        switch (productPlacePositioning) {
+        case PRED_PLACE:
+            ModelUtils.renameNode(model, productPlace, model.getMathName(predPlace));
+            break;
+        case SUCC_PLACE:
+            ModelUtils.renameNode(model, productPlace, model.getMathName(succPlace));
+            break;
+        default:
+            String mixName = model.getMathName(predPlace) + model.getMathName(succPlace);
+            ModelUtils.renameNode(model, productPlace, mixName);
+            break;
+        }
+    }
+
+    public void styleProductPlace(VisualPlace productPlace, ProductPlacePositioning productPlacePositioning,
+            VisualPlace predPlace, VisualPlace succPlace) {
+
+        switch (productPlacePositioning) {
+        case PRED_PLACE:
+            productPlace.copyStyle(predPlace);
+            break;
+        case TRANSITION:
+            productPlace.mixStyle(predPlace, succPlace);
+            break;
+        case SUCC_PLACE:
+            productPlace.copyStyle(succPlace);
+            break;
+        default:
+            productPlace.mixStyle(predPlace, succPlace);
+            break;
+        }
+        // Correct the token count and capacity of the new place
+        Place mathPredPlace = predPlace.getReferencedComponent();
+        Place mathSuccPlace = succPlace.getReferencedComponent();
+        Place mathProductPlace = productPlace.getReferencedComponent();
+        int tokens = mathPredPlace.getTokens() + mathSuccPlace.getTokens();
+        mathProductPlace.setTokens(tokens);
+        int capacity = tokens;
+        if (capacity < mathPredPlace.getCapacity()) {
+            capacity = mathPredPlace.getCapacity();
+        }
+        if (capacity < mathSuccPlace.getCapacity()) {
+            capacity = mathSuccPlace.getCapacity();
+        }
+        mathProductPlace.setCapacity(capacity);
+    }
+
+    public void positionProductPlace(VisualModel model,
+            VisualPlace productPlace, ProductPlacePositioning productPlacePositioning,
+            VisualPlace predPlace, VisualTransition transition, VisualPlace succPlace) {
+
+        switch (productPlacePositioning) {
+        case PRED_PLACE:
+            productPlace.copyPosition(predPlace);
+            break;
+        case TRANSITION:
+            productPlace.copyPosition(transition);
+            break;
+        case SUCC_PLACE:
+            productPlace.copyPosition(succPlace);
+            break;
+        default:
+            Point2D mixPosition = Geometry.middle(predPlace.getRootSpacePosition(), succPlace.getRootSpacePosition());
+            productPlace.setRootSpacePosition(mixPosition);
+            break;
+        }
+    }
+
+    public void shapeProductPredConnections(VisualModel model,
+            Map<VisualConnection, VisualConnection> productToOriginalConnectionMap,
+            VisualPlace productPlace, ProductPlacePositioning productPlacePositioning,
+            VisualPlace predPlace, VisualTransition transition) {
+
+        if ((productPlacePositioning == ProductPlacePositioning.TRANSITION)
+                && (model.getPreset(predPlace).size() < 2)) {
+
+            VisualConnection predConnection = model.getConnection(predPlace, transition);
+            LinkedList<Point2D> predLocations = ConnectionHelper.getMergedControlPoints(
+                    predPlace, null, predConnection);
+
+            for (VisualConnection newConnection : productToOriginalConnectionMap.keySet()) {
+                if (newConnection.getSecond() == productPlace) {
+                    ConnectionHelper.addControlPoints(newConnection, predLocations);
+                }
+                filterControlPoints(newConnection);
+            }
+        }
+    }
+
+    public void shapeProductSuccConnections(VisualModel model,
+            Map<VisualConnection, VisualConnection> productToOriginalConnectionMap,
+            VisualPlace productPlace, ProductPlacePositioning productPlacePositioning,
+            VisualTransition transition, VisualPlace succPlace) {
+
+        if ((productPlacePositioning == ProductPlacePositioning.TRANSITION)
+                && (model.getPostset(succPlace).size() < 2)) {
+
+            VisualConnection succConnection = model.getConnection(transition, succPlace);
+            LinkedList<Point2D> succLocations = ConnectionHelper.getMergedControlPoints(
+                    succPlace, succConnection, null);
+
+            for (VisualConnection newConnection : productToOriginalConnectionMap.keySet()) {
+                if (newConnection.getFirst() == productPlace) {
+                    ConnectionHelper.prependControlPoints(newConnection, succLocations);
+                }
+                filterControlPoints(newConnection);
+            }
+        }
     }
 
     public void beforeContraction(VisualModel visualModel, VisualTransition visualTransition) {
@@ -416,36 +515,36 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         }
     }
 
-    public void afterContraction(VisualModel visualModel, VisualTransition visualTransition,
+    public void afterContraction(VisualModel model,
             HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap) {
 
         Set<VisualConnection> replicaPlaceConnections = new HashSet<>();
         for (VisualPlace productPlace : productPlaceMap.keySet()) {
-            for (VisualConnection productConnection : visualModel.getConnections(productPlace)) {
-                Pair<VisualPlace, VisualPlace> originalPlaces = productPlaceMap.get(productPlace);
-                VisualPlace predPlace = originalPlaces.getFirst();
-                VisualPlace succPlace = originalPlaces.getSecond();
-
+            Pair<VisualPlace, VisualPlace> originalPlaces = productPlaceMap.get(productPlace);
+            VisualPlace predPlace = originalPlaces.getFirst();
+            VisualPlace succPlace = originalPlaces.getSecond();
+            for (VisualConnection productConnection : model.getConnections(productPlace)) {
                 Connection predPlaceConnection = null;
                 Connection succPlaceConnection = null;
                 if (productConnection.getFirst() instanceof VisualTransition) {
-                    VisualTransition transition = (VisualTransition) productConnection.getFirst();
-                    predPlaceConnection = visualModel.getConnection(transition, predPlace);
-                    succPlaceConnection = visualModel.getConnection(transition, succPlace);
+                    VisualTransition productPredTransition = (VisualTransition) productConnection.getFirst();
+                    predPlaceConnection = model.getConnection(productPredTransition, predPlace);
+                    succPlaceConnection = model.getConnection(productPredTransition, succPlace);
                 }
                 if (productConnection.getSecond() instanceof VisualTransition) {
-                    VisualTransition transition = (VisualTransition) productConnection.getSecond();
-                    predPlaceConnection = visualModel.getConnection(predPlace, transition);
-                    succPlaceConnection = visualModel.getConnection(succPlace, transition);
+                    VisualTransition productSuccTransition = (VisualTransition) productConnection.getSecond();
+                    predPlaceConnection = model.getConnection(predPlace, productSuccTransition);
+                    succPlaceConnection = model.getConnection(succPlace, productSuccTransition);
                 }
                 if (((predPlaceConnection == null) || convertedReplicaConnections.contains(predPlaceConnection))
                         && ((succPlaceConnection == null) || convertedReplicaConnections.contains(succPlaceConnection))) {
+
                     replicaPlaceConnections.add(productConnection);
                 }
             }
         }
         for (VisualConnection replicaPlaceConnection : replicaPlaceConnections) {
-            ConversionUtils.replicateConnectedPlace(visualModel, replicaPlaceConnection);
+            ConversionUtils.replicateConnectedPlace(model, replicaPlaceConnection);
         }
     }
 
