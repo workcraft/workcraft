@@ -53,7 +53,7 @@ public final class LibraryManager {
             return new Library();
         }
         File file = new File(path);
-        if (FileUtils.checkFileReadability(file, false, "Gate library access error")) {
+        if (FileUtils.checkFileReadability(file, "Gate library access error")) {
             try {
                 InputStream genlibInputStream = new FileInputStream(file);
                 GenlibParser genlibParser = new GenlibParser(genlibInputStream);
@@ -107,9 +107,7 @@ public final class LibraryManager {
         HashMap<String, SubstitutionRule> result = new HashMap<>();
         if ((path != null) && !path.isEmpty()) {
             File libraryFile = new File(path);
-            if (FileUtils.checkFileReadability(libraryFile, false,
-                    "Access error for the file of substitutions")) {
-
+            if (FileUtils.checkFileReadability(libraryFile, "Access error for the file of substitutions")) {
                 try {
                     InputStream substitutionInputStream = new FileInputStream(path);
                     SubstitutionParser substitutionParser = new SubstitutionParser(substitutionInputStream, invert);

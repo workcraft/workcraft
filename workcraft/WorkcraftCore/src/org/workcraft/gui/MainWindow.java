@@ -701,7 +701,7 @@ public class MainWindow extends JFrame {
     public WorkspaceEntry openWork(File file) {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry we = null;
-        if (FileUtils.checkFileReadability(file, true)) {
+        if (FileUtils.checkFileReadability(file, "File access error")) {
             try {
                 we = framework.loadWork(file);
                 requestFocus(we);
@@ -734,7 +734,7 @@ public class MainWindow extends JFrame {
     public void mergeWork(File file) {
         if (currentEditor == null) {
             openWork(file);
-        } else if (FileUtils.checkFileReadability(file, true)) {
+        } else if (FileUtils.checkFileReadability(file, "File access error")) {
             try {
                 final Framework framework = Framework.getInstance();
                 WorkspaceEntry we = currentEditor.getWorkspaceEntry();
@@ -804,7 +804,7 @@ public class MainWindow extends JFrame {
                     "Cannot save workspace entry - it does not have an associated Workcraft model.");
         }
         Framework framework = Framework.getInstance();
-        if (FileUtils.checkFileWritability(file, true)) {
+        if (FileUtils.checkFileWritability(file, "File write access error")) {
             try {
                 framework.saveWork(we, file);
                 framework.setLastDirectory(file);
@@ -828,7 +828,7 @@ public class MainWindow extends JFrame {
     }
 
     private void importFrom(Importer importer, File file) {
-        if (FileUtils.checkFileReadability(file, true)
+        if (FileUtils.checkFileReadability(file, "File access error")
                 && FormatFileFilter.checkFileFormat(file, importer.getFormat())) {
 
             Framework framework = Framework.getInstance();

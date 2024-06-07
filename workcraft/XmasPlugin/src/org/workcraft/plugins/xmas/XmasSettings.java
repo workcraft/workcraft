@@ -132,7 +132,7 @@ public class XmasSettings extends AbstractModelSettings {
         if (vxmTempDirectory == null) {
             vxmTempDirectory = FileUtils.createTempDirectory("vxm-");
             File vxmFile = new File(getVxmCommand());
-            if (FileUtils.checkFileReadability(vxmFile, false, "VXM access error")) {
+            if (FileUtils.checkFileReadability(vxmFile, "VXM access error")) {
                 File vxmDirectory = vxmFile.getParentFile();
                 File vsettingsFile = new File(vxmDirectory, VSETTINGS_FILE_NAME);
                 try {

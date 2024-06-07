@@ -27,7 +27,7 @@ public interface Exporter {
             throw new SerialisationException("Cannot export " + model.getDisplayName()
                     + " as  " + getFormat().getDescription());
         }
-        if (FileUtils.checkFileWritability(file, false)) {
+        if (FileUtils.checkFileWritability(file)) {
             files.push(file);
             try (FileOutputStream out = new FileOutputStream(file)) {
                 serialise(model, out);

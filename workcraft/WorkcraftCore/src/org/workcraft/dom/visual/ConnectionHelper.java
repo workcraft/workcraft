@@ -23,6 +23,11 @@ public class ConnectionHelper {
         return areDifferentAnchorPoints(locationInRootSpace, first) && areDifferentAnchorPoints(locationInRootSpace, second);
     }
 
+    public static void straightenConnection(VisualConnection connection) {
+        connection.setConnectionType(VisualConnection.ConnectionType.BEZIER);
+        connection.setConnectionType(VisualConnection.ConnectionType.POLYLINE);
+    }
+
     public static void addControlPoints(VisualConnection connection, List<Point2D> locationsInRootSpace) {
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (locationsInRootSpace != null)) {
             Polyline polyline = (Polyline) connection.getGraphic();
