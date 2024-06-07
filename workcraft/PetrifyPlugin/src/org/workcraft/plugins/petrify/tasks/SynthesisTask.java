@@ -66,7 +66,7 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
                         "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
             }
             File gateLibraryFile = new File(gateLibrary);
-            if (!FileUtils.checkFileReadability(gateLibraryFile, false, "Gate library access error")) {
+            if (!FileUtils.checkFileReadability(gateLibraryFile)) {
                 return Result.exception(new IOException("Cannot find gate library file '" + gateLibrary + "'.\n" +
                         "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
             }

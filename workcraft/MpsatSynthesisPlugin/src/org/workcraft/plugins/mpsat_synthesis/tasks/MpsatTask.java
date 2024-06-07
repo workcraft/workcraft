@@ -70,7 +70,7 @@ public class MpsatTask implements Task<MpsatOutput> {
                         CHECK_GATE_LIBRARY_MESSAGE));
             }
             File gateLibraryFile = new File(gateLibrary);
-            if (!FileUtils.checkFileReadability(gateLibraryFile, false, "Gate library access error")) {
+            if (!FileUtils.checkFileReadability(gateLibraryFile)) {
                 return Result.exception(new IOException("Cannot find gate library file '" + gateLibrary + "'.\n" +
                         CHECK_GATE_LIBRARY_MESSAGE));
             }
