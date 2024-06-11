@@ -135,7 +135,7 @@ public class VisualPetri extends AbstractVisualModel {
         if (placeOrReplica instanceof VisualPlace) {
             mPlace = ((VisualPlace) placeOrReplica).getReferencedComponent();
         } else if (placeOrReplica instanceof VisualReplicaPlace) {
-            mPlace = ((VisualReplicaPlace) placeOrReplica).getReferencedPlace();
+            mPlace = ((VisualReplicaPlace) placeOrReplica).getReferencedComponent();
         }
         Transition mTransition = null;
         if (transition instanceof VisualTransition) {

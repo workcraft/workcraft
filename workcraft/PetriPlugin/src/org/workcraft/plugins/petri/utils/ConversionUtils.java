@@ -3,9 +3,6 @@ package org.workcraft.plugins.petri.utils;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.*;
-import org.workcraft.dom.visual.connections.ConnectionGraphic;
-import org.workcraft.dom.visual.connections.ControlPoint;
-import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -15,11 +12,11 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 public class ConversionUtils {
 
@@ -91,7 +88,7 @@ public class ConversionUtils {
                         readArc.inverseShape();
                     }
                 }
-            } catch (InvalidConnectionException e) {
+            } catch (InvalidConnectionException ignored) {
             }
         }
         return readArc;
@@ -142,7 +139,7 @@ public class ConversionUtils {
                     readArc.copyShape(connection);
                     readArc.inverseShape();
                 }
-            } catch (InvalidConnectionException e) {
+            } catch (InvalidConnectionException ignored) {
             }
         }
         return readArc;
@@ -183,7 +180,7 @@ public class ConversionUtils {
                     readArc.copyStyle(connection);
                     readArc.copyShape(connection);
                 }
-            } catch (InvalidConnectionException e) {
+            } catch (InvalidConnectionException ignored) {
             }
         }
         return readArc;
@@ -215,7 +212,7 @@ public class ConversionUtils {
                 ConnectionUtils.setDefaultStyle(producingArc);
                 producingArc.copyShape(readArc);
                 producingArc.inverseShape();
-            } catch (InvalidConnectionException e) {
+            } catch (InvalidConnectionException ignored) {
             }
         }
         return new Pair<>(consumingArc, producingArc);
@@ -230,34 +227,32 @@ public class ConversionUtils {
         return result;
     }
 
-    public static VisualConnection collapseReplicaPlace(VisualModel visualModel, VisualReplicaPlace replica) {
-        VisualConnection result = null;
-        HashSet<Connection> connections = new HashSet<>(visualModel.getConnections(replica));
-        for (Connection c : connections) {
-            if (c instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection) c;
-                VisualNode first = vc.getFirst();
-                VisualNode second = vc.getSecond();
+    public static Set<VisualConnection> collapseReplicaPlace(VisualModel visualModel, VisualReplicaPlace replica) {
+        Set<VisualConnection> result = new HashSet<>();
+        for (Connection connection : new HashSet<Connection>(visualModel.getConnections(replica))) {
+            if (connection instanceof VisualConnection) {
+                VisualConnection oldConnection = (VisualConnection) connection;
+                VisualNode first = oldConnection.getFirst();
+                VisualNode second = oldConnection.getSecond();
+                LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getControlPoints(oldConnection);
                 if (replica == first) {
                     first = replica.getMaster();
+                    locationsInRootSpace.addFirst(replica.getRootSpacePosition());
                 }
                 if (replica == second) {
                     second = replica.getMaster();
+                    locationsInRootSpace.addLast(replica.getRootSpacePosition());
                 }
-                Point2D replicaPositionInRootSpace = replica.getRootSpacePosition();
-                LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(vc,
-                        replicaPositionInRootSpace);
-
-                locationsInRootSpace.addFirst(replicaPositionInRootSpace);
-                visualModel.remove(vc);
+                visualModel.remove(oldConnection);
                 try {
-                    if (vc instanceof VisualReadArc) {
-                        result = visualModel.connectUndirected(first, second);
-                    } else {
-                        result = visualModel.connect(first, second);
-                    }
-                    ConnectionHelper.addControlPoints(result, locationsInRootSpace);
-                } catch (InvalidConnectionException e) {
+                    VisualConnection newConnection = (oldConnection instanceof VisualReadArc)
+                            ? visualModel.connectUndirected(first, second)
+                            : visualModel.connect(first, second);
+
+                    newConnection.copyStyle(oldConnection);
+                    ConnectionHelper.addControlPoints(newConnection, locationsInRootSpace);
+                    result.add(newConnection);
+                } catch (InvalidConnectionException ignored) {
                 }
             }
         }
@@ -311,7 +306,13 @@ public class ConversionUtils {
         if ((place != null) && (transition != null)) {
             Container container = Hierarchy.getNearestContainer(transition);
             VisualReplicaPlace replica = visualModel.createVisualReplica(place, VisualReplicaPlace.class, container);
-            Point2D splitPointInRootSpace = getReplicaPositionInRootSpace(connection);
+            Boolean closerToSourceNode = null;
+            if (connection.getFirst() instanceof VisualPlace) {
+                closerToSourceNode = true;
+            } else if (connection.getSecond() instanceof VisualPlace) {
+                closerToSourceNode = false;
+            }
+            Point2D splitPointInRootSpace = ConnectionHelper.getReplicaPositionInRootSpace(connection, closerToSourceNode);
             replica.setRootSpacePosition(splitPointInRootSpace);
             LinkedList<Point2D> locationsInRootSpace;
             if (reverse) {
@@ -331,36 +332,10 @@ public class ConversionUtils {
                     }
                 }
                 ConnectionHelper.addControlPoints(result, locationsInRootSpace);
-            } catch (InvalidConnectionException e) {
+            } catch (InvalidConnectionException ignored) {
             }
         }
         return result;
-    }
-
-    private static Point2D getReplicaPositionInRootSpace(VisualConnection connection) {
-        Point2D positionInRootSpace = null;
-        Point2D positionInLocalSpace = null;
-        ConnectionGraphic graphic = connection.getGraphic();
-        if (graphic instanceof Polyline) {
-            Polyline polyline = (Polyline) graphic;
-            ControlPoint cp = null;
-            if (connection.getFirst() instanceof VisualPlace) {
-                cp = polyline.getFirstControlPoint();
-            } else if (connection.getSecond() instanceof VisualPlace) {
-                cp = polyline.getLastControlPoint();
-            }
-            if (cp != null) {
-                positionInLocalSpace = cp.getPosition();
-            }
-        }
-        if (positionInLocalSpace == null) {
-            positionInLocalSpace = connection.getSplitPoint();
-        }
-        if (positionInLocalSpace != null) {
-            AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
-            positionInRootSpace = localToRootTransform.transform(positionInLocalSpace, null);
-        }
-        return positionInRootSpace;
     }
 
     private static boolean areVisualDualArcs(VisualConnection connection1, VisualConnection connection2) {

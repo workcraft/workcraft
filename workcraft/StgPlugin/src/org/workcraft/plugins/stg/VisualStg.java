@@ -199,7 +199,7 @@ public class VisualStg extends AbstractVisualModel {
         if (placeOrReplica instanceof VisualStgPlace) {
             mPlace = ((VisualStgPlace) placeOrReplica).getReferencedComponent();
         } else if (placeOrReplica instanceof VisualReplicaPlace) {
-            mPlace = ((VisualReplicaPlace) placeOrReplica).getReferencedPlace();
+            mPlace = ((VisualReplicaPlace) placeOrReplica).getReferencedComponent();
         }
         Transition mTransition = transition == null ? null : transition.getReferencedComponent();
 
