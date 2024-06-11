@@ -26,7 +26,7 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Create proxy place";
     }
 

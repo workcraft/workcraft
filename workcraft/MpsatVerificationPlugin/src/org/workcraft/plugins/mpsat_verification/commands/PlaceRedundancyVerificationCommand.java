@@ -52,7 +52,7 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Check place redundancy";
     }
 

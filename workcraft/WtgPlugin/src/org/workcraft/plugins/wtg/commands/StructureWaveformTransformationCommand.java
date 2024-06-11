@@ -23,7 +23,7 @@ public class StructureWaveformTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Structure waveform";
     }
 

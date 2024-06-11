@@ -1,10 +1,12 @@
 package org.workcraft.plugins.stg.commands;
 
 import org.workcraft.dom.Container;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.workspace.ModelEntry;
 
 public final class InsertInputTransformationCommand extends AbstractInsertTransformationCommand {
 
@@ -14,7 +16,7 @@ public final class InsertInputTransformationCommand extends AbstractInsertTransf
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Insert input transition";
     }
 

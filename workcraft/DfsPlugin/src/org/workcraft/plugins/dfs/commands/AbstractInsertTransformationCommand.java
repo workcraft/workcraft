@@ -32,7 +32,7 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Insert " + getTypeName();
     }
 

@@ -23,7 +23,7 @@ public class SelectAllSignalTransitionsTransformationCommand extends AbstractTra
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Select all transitions of signal";
     }
 

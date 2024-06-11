@@ -24,7 +24,7 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Convert to read-arc";
     }
 

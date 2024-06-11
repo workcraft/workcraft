@@ -24,7 +24,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Detach joint";
     }
 

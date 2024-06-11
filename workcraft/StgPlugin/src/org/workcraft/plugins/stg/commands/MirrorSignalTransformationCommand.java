@@ -20,7 +20,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Mirror signal";
     }
 

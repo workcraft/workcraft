@@ -25,7 +25,7 @@ public class ToggleZeroDelayTransformationCommand extends AbstractTransformation
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Toggle zero delay";
     }
 

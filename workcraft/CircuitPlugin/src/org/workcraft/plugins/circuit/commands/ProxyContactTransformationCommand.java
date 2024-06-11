@@ -25,7 +25,7 @@ public class ProxyContactTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Create proxy driver";
     }
 

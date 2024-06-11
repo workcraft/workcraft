@@ -22,7 +22,7 @@ public class ExplicitPlaceTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Make place explicit";
     }
 

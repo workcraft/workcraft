@@ -23,7 +23,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Mirror transition sign";
     }
 

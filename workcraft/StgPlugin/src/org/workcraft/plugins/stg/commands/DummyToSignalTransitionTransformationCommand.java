@@ -24,7 +24,7 @@ public class DummyToSignalTransitionTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Convert to signal transition";
     }
 

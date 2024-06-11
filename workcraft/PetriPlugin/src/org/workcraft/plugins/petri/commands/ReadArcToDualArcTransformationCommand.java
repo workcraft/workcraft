@@ -25,7 +25,7 @@ public class ReadArcToDualArcTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Convert dual producing/consuming arc";
     }
 
