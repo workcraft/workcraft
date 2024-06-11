@@ -20,6 +20,7 @@ import org.workcraft.plugins.circuit.utils.ConversionUtils;
 import org.workcraft.plugins.circuit.utils.GateUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.workspace.ModelEntry;
 
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -38,7 +39,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Split multi-level gate";
     }
 

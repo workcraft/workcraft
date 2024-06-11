@@ -16,7 +16,7 @@ public class UpdateComponentInterfaceTransformationCommand extends AbstractCompo
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Update interface from refinement model";
     }
 

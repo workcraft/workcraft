@@ -24,7 +24,7 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Collapse proxy place";
     }
 

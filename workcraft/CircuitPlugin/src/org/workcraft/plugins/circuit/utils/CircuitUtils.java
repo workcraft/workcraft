@@ -229,7 +229,7 @@ public final class CircuitUtils {
             return ((VisualContact) visualNode).getReferencedComponent();
         }
         if (visualNode instanceof VisualReplicaContact) {
-            return  ((VisualReplicaContact) visualNode).getReferencedContact();
+            return  ((VisualReplicaContact) visualNode).getReferencedComponent();
         }
         if (visualNode instanceof VisualJoint) {
             return  ((VisualJoint) visualNode).getReferencedComponent();

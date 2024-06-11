@@ -333,10 +333,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return we;
     }
 
-    private Properties wrapProperties(final ModelProperties mix) {
+    private Properties wrapProperties(final ModelProperties properties) {
         return () -> {
             ArrayList<PropertyDescriptor> list = new ArrayList<>();
-            for (final PropertyDescriptor descriptor : mix.getDescriptors()) {
+            for (final PropertyDescriptor descriptor : properties.getDescriptors()) {
                 if (descriptor.isVisible()) {
                     list.add(wrapProperty(descriptor));
                 }

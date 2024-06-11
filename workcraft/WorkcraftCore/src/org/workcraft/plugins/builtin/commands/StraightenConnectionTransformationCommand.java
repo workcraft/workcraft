@@ -26,7 +26,7 @@ public class StraightenConnectionTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Straighten connection";
     }
 

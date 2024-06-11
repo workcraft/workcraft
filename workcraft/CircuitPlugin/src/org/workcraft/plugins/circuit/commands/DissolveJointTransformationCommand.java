@@ -30,7 +30,7 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Dissolve joint";
     }
 

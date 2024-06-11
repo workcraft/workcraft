@@ -24,7 +24,7 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Make place implicit";
     }
 

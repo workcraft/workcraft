@@ -20,7 +20,7 @@ public class SquashComponentTransformationCommand extends AbstractComponentTrans
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Replace by implementation";
     }
 

@@ -284,4 +284,28 @@ public class ConnectionHelper {
         return locationInRootSpace;
     }
 
+    public static Point2D getReplicaPositionInRootSpace(VisualConnection connection, Boolean closerToSourceNode) {
+        Point2D positionInRootSpace = null;
+        Point2D positionInLocalSpace = null;
+        ConnectionGraphic graphic = connection.getGraphic();
+        if (graphic instanceof Polyline) {
+            Polyline polyline = (Polyline) graphic;
+            ControlPoint cp = null;
+            if (closerToSourceNode != null) {
+                cp = closerToSourceNode ? polyline.getFirstControlPoint() : polyline.getLastControlPoint();
+            }
+            if (cp != null) {
+                positionInLocalSpace = cp.getPosition();
+            }
+        }
+        if (positionInLocalSpace == null) {
+            positionInLocalSpace = connection.getSplitPoint();
+        }
+        if (positionInLocalSpace != null) {
+            AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+            positionInRootSpace = localToRootTransform.transform(positionInLocalSpace, null);
+        }
+        return positionInRootSpace;
+    }
+
 }

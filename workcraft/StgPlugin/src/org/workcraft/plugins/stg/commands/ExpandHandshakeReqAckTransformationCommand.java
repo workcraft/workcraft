@@ -1,6 +1,8 @@
 package org.workcraft.plugins.stg.commands;
 
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.types.Pair;
+import org.workcraft.workspace.ModelEntry;
 
 public class ExpandHandshakeReqAckTransformationCommand extends ExpandHandshakeTransformationCommand {
 
@@ -13,7 +15,7 @@ public class ExpandHandshakeReqAckTransformationCommand extends ExpandHandshakeT
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Expand handshake transition (" + SUFFIX_REQ + ' ' + SUFFIX_ACK + ')';
     }
 

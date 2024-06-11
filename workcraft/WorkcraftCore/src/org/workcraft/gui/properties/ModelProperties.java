@@ -1,36 +1,12 @@
 package org.workcraft.gui.properties;
 
-import org.workcraft.types.Pair;
-
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedList;
 
 public class ModelProperties implements Properties {
 
     private final LinkedList<PropertyDescriptor> propertyDescriptors = new LinkedList<>();
-
-    public ModelProperties() {
-    }
-
-    // Combine descriptors, so several object refer to one property descriptor
-    public ModelProperties(Collection<PropertyDescriptor> descriptors) {
-        LinkedHashMap<Pair<String, Class<?>>, Set<PropertyDescriptor>> categories = new LinkedHashMap<>();
-
-        for (PropertyDescriptor descriptor: descriptors) {
-            if (descriptor.isCombinable()) {
-                Pair<String, Class<?>> key = new Pair<>(descriptor.getName(), descriptor.getType());
-                Set<PropertyDescriptor> value = categories.computeIfAbsent(key, k -> new HashSet<>());
-                value.add(descriptor);
-            }
-        }
-
-        for (Pair<String, Class<?>> key: categories.keySet()) {
-            final String name = key.getFirst();
-            final Class<?> type = key.getSecond();
-            final Set<PropertyDescriptor> values = categories.get(key);
-            PropertyDescriptor comboDescriptor = new PropertyCombiner(name, type, values);
-            propertyDescriptors.add(comboDescriptor);
-        }
-    }
 
     public void add(final PropertyDescriptor descriptor) {
         if (descriptor != null) {

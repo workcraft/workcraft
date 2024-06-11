@@ -31,7 +31,7 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Propagate inversion through gate";
     }
 

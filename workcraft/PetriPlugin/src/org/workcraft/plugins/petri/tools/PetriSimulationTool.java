@@ -65,7 +65,7 @@ public class PetriSimulationTool extends SimulationTool {
             ref = model.getMathReference(place.getReferencedComponent());
         } else if (first instanceof VisualReplicaPlace) {
             VisualReplicaPlace replicaPlace = (VisualReplicaPlace) first;
-            ref = model.getMathReference(replicaPlace.getReferencedPlace());
+            ref = model.getMathReference(replicaPlace.getReferencedComponent());
         }
         MathNode underlyingNode = getUnderlyingNode(ref);
         return (underlyingNode instanceof Place) && (((Place) underlyingNode).getTokens() > 0);
@@ -239,16 +239,6 @@ public class PetriSimulationTool extends SimulationTool {
             return super.getComponentDecoration(model, component);
         }
         return new PlaceDecoration() {
-            @Override
-            public Color getColorisation() {
-                return null;
-            }
-
-            @Override
-            public Color getBackground() {
-                return null;
-            }
-
             @Override
             public int getTokens() {
                 return underlyingVisualPlace.getReferencedComponent().getTokens();

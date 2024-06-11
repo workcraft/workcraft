@@ -1,8 +1,10 @@
 package org.workcraft.plugins.stg.commands;
 
 import org.workcraft.dom.Container;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.workspace.ModelEntry;
 
 public final class InsertDummyTransformationCommand extends AbstractInsertTransformationCommand {
 
@@ -12,7 +14,7 @@ public final class InsertDummyTransformationCommand extends AbstractInsertTransf
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Insert dummy";
     }
 

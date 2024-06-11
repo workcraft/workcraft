@@ -39,7 +39,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public String getPopupName() {
+    public String getPopupName(ModelEntry me, VisualNode node) {
         return "Contract transition";
     }
 
@@ -500,7 +500,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             VisualNode otherNode = connection.getFirst() == visualTransition ? connection.getSecond() : connection.getFirst();
             if (otherNode instanceof VisualReplicaPlace) {
                 VisualReplicaPlace visualReplicaPlace = (VisualReplicaPlace) otherNode;
-                affectedPlaces.add(visualReplicaPlace.getReferencedPlace());
+                affectedPlaces.add(visualReplicaPlace.getReferencedComponent());
             } else if (otherNode instanceof VisualPlace) {
                 VisualPlace visualPlace = (VisualPlace) otherNode;
                 affectedPlaces.add(visualPlace.getReferencedComponent());
@@ -508,9 +508,9 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         }
         convertedReplicaConnections.clear();
         for (VisualReplicaPlace visualReplicaPlace : ConnectionUtils.getVisualReplicaPlaces(visualModel)) {
-            if (affectedPlaces.contains(visualReplicaPlace.getReferencedPlace())) {
-                VisualConnection newConnection = ConversionUtils.collapseReplicaPlace(visualModel, visualReplicaPlace);
-                convertedReplicaConnections.add(newConnection);
+            if (affectedPlaces.contains(visualReplicaPlace.getReferencedComponent())) {
+                Set<VisualConnection> newConnections = ConversionUtils.collapseReplicaPlace(visualModel, visualReplicaPlace);
+                convertedReplicaConnections.addAll(newConnections);
             }
         }
     }

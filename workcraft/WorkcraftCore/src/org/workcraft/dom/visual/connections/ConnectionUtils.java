@@ -53,7 +53,7 @@ public class ConnectionUtils {
             Polyline polyline = (Polyline) dstGraphic;
             polyline.resetControlPoints();
             for (ControlPoint srcControlPoint: srcGraphic.getControlPoints()) {
-                Point2D dstPosition = getPosition(srcControlPoint, scale);
+                Point2D dstPosition = getScaledPosition(srcControlPoint, scale);
                 polyline.addControlPoint(dstPosition);
             }
         } else if (dstGraphic instanceof Bezier) {
@@ -62,15 +62,15 @@ public class ConnectionUtils {
             BezierControlPoint[] srcControlPoints = srcBezier.getBezierControlPoints();
             BezierControlPoint[] dstControlPoints = dstBezier.getBezierControlPoints();
 
-            Point2D dst0Position = getPosition(srcControlPoints[0], scale);
+            Point2D dst0Position = getScaledPosition(srcControlPoints[0], scale);
             dstControlPoints[0].setPosition(dst0Position);
 
-            Point2D dst1Position = getPosition(srcControlPoints[1], scale);
+            Point2D dst1Position = getScaledPosition(srcControlPoints[1], scale);
             dstControlPoints[1].setPosition(dst1Position);
         }
     }
 
-    private static Point2D getPosition(ControlPoint cp, Point2D scale) {
+    private static Point2D getScaledPosition(ControlPoint cp, Point2D scale) {
         return new Point2D.Double(cp.getX() * scale.getX(), cp.getY() * scale.getY());
     }
 
