@@ -19,7 +19,6 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-@SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable {
 
     private final PropertyEditorTableModel model;
@@ -56,13 +55,21 @@ public class PropertyEditorTable extends JTable {
 
     public PropertyEditorTable(String propertyHeader, String valueHeader) {
         super();
-
         model = new PropertyEditorTableModel(propertyHeader, valueHeader);
         setModel(model);
+
+        // setUI is overridden to forbid changing it externally, therefore call super.setUI
         super.setUI(new PropertyEditorTableUI(model));
 
+        // Make header flat and fixed order
         getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
+        getTableHeader().setReorderingAllowed(false);
+
+        // Disable drag and selection
+        setDragEnabled(false);
         setFocusable(false);
+
+        // Adjust row height to fit the current font size
         setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
     }
 
