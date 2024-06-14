@@ -14,13 +14,12 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.ExpressionUtils;
 import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.ListUtils;
 import org.workcraft.utils.LogUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class GenlibUtils {
 
@@ -89,19 +88,20 @@ public class GenlibUtils {
     }
 
     public static Pair<Gate, Map<BooleanVariable, String>> findMapping(BooleanFormula formula, Library library) {
-        if (library != null) {
-            for (Gate gate : library.getGatesOrderedBySize()) {
-                try {
-                    BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
+        if (library == null) {
+            return null;
+        }
+        for (Gate gate : library.getGatesOrderedBySize()) {
+            try {
+                BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
 
-                    Map<BooleanVariable, String> variableMapping
-                            = getVariableMappingIfEquivalentOrNull(formula, gateFormula);
+                Map<BooleanVariable, String> variableMapping
+                        = getVariableMappingIfEquivalentOrNull(formula, gateFormula);
 
-                    if (variableMapping != null) {
-                        return Pair.of(gate, variableMapping);
-                    }
-                } catch (ParseException ignored) {
+                if (variableMapping != null) {
+                    return Pair.of(gate, variableMapping);
                 }
+            } catch (ParseException ignored) {
             }
         }
         return null;
@@ -128,30 +128,69 @@ public class GenlibUtils {
         return null;
     }
 
-    public static Pair<Gate, Map<BooleanVariable, Pair<String, Boolean>>> findExtendedMapping(
+    public static Triple<Gate, Map<BooleanVariable, String>, Set<String>> findExtendedMapping(
             BooleanFormula formula, Library library) {
 
+        if (library == null) {
+            return null;
+        }
+        // First, try direct implementation
         Pair<Gate, Map<BooleanVariable, String>> mapping = findMapping(formula, library);
         if (mapping != null) {
-            Map<BooleanVariable, Pair<String, Boolean>> extendedVariableMapping = new HashMap<>();
-            for (Map.Entry<BooleanVariable, String> entry : mapping.getSecond().entrySet()) {
-                extendedVariableMapping.put(entry.getKey(), Pair.of(entry.getValue(), false));
-            }
-            return Pair.of(mapping.getFirst(), extendedVariableMapping);
+            return Triple.of(mapping.getFirst(), mapping.getSecond(), Set.of());
         }
-        if (library != null) {
-            for (Gate gate : library.getGatesOrderedBySize()) {
-                try {
-                    BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
+        // Then try inverted gates
+        Pair<Gate, Map<BooleanVariable, String>> invMapping = findMapping(new Not(formula), library);
+        if (invMapping != null) {
+            Gate gate = invMapping.getFirst();
+            return Triple.of(gate, invMapping.getSecond(), Set.of(gate.function.name));
+        }
+        // Then try direct implementation with input bubbles
+        Triple<Gate, Map<BooleanVariable, String>, Set<String>> bubbleMapping
+                = findMappingWithInputInversions(formula, library);
 
-                    Map<BooleanVariable, Pair<String, Boolean>> extendedVariableMapping
-                            = getVariableExtendedMappingIfEquivalentOrNull(formula, gateFormula);
+        if (bubbleMapping != null) {
+            return bubbleMapping;
+        }
+        // Finally try inverted gates with input bubbles
+        Triple<Gate, Map<BooleanVariable, String>, Set<String>> invBubbleMapping
+                = findMappingWithInputInversions(new Not(formula), library);
 
-                    if (extendedVariableMapping != null) {
-                        return Pair.of(gate, extendedVariableMapping);
-                    }
-                } catch (ParseException ignored) {
+        if (invBubbleMapping != null) {
+            Gate gate = invBubbleMapping.getFirst();
+            Map<BooleanVariable, String> varAssignments = invBubbleMapping.getSecond();
+            Set<String> invertedPins = invBubbleMapping.getThird();
+            invertedPins.add(gate.function.name);
+            return Triple.of(gate, varAssignments, invertedPins);
+        }
+        return null;
+    }
+
+    private static Triple<Gate, Map<BooleanVariable, String>, Set<String>> findMappingWithInputInversions(
+            BooleanFormula formula, Library library) {
+
+        if (library == null) {
+            return null;
+        }
+        for (Gate gate : library.getGatesOrderedBySize()) {
+            try {
+                BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
+
+                Map<BooleanVariable, Pair<String, Boolean>> extendedVariableMapping
+                        = getVariableExtendedMappingIfEquivalentOrNull(formula, gateFormula);
+
+                if (extendedVariableMapping != null) {
+                    Map<BooleanVariable, String> variableMapping = extendedVariableMapping.entrySet().stream()
+                            .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getFirst()));
+
+                    Set<String> invertedPins = extendedVariableMapping.values().stream()
+                            .filter(Pair::getSecond)
+                            .map(Pair::getFirst)
+                            .collect(Collectors.toSet());
+
+                    return Triple.of(gate, variableMapping, invertedPins);
                 }
+            } catch (ParseException ignored) {
             }
         }
         return null;
@@ -162,28 +201,29 @@ public class GenlibUtils {
 
         List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(formula);
         List<BooleanVariable> candidateVars = FormulaUtils.extractOrderedVariables(candidateFormula);
-        if (vars.size() == candidateVars.size()) {
-            BddManager bdd = new BddManager();
-            for (List<BooleanVariable> permutatedVars : ListUtils.permutate(vars)) {
-                int varCount = permutatedVars.size();
-                List<List<Boolean>> inversionCombinations = ListUtils.combine(List.of(false, true), varCount);
-                for (List<Boolean> inversionCombination : inversionCombinations) {
-                    List<BooleanFormula> invCandidateVars = new ArrayList<>(varCount);
+        if (vars.size() != candidateVars.size()) {
+            return null;
+        }
+        BddManager bdd = new BddManager();
+        for (List<BooleanVariable> permutatedVars : ListUtils.permutate(vars)) {
+            int varCount = permutatedVars.size();
+            List<List<Boolean>> inversionCombinations = ListUtils.combine(List.of(false, true), varCount);
+            for (List<Boolean> inversionCombination : inversionCombinations) {
+                List<BooleanFormula> invCandidateVars = new ArrayList<>(varCount);
+                for (int varIndex = 0; varIndex < varCount; varIndex++) {
+                    BooleanVariable candidateVar = candidateVars.get(varIndex);
+                    Boolean varInversion = inversionCombination.get(varIndex);
+                    invCandidateVars.add(varIndex, varInversion ? new Not(candidateVar) : candidateVar);
+                }
+                BooleanFormula mappedFormula = FormulaUtils.replace(formula, permutatedVars, invCandidateVars);
+                if (bdd.isEquivalent(mappedFormula, candidateFormula)) {
+                    Map<BooleanVariable, Pair<String, Boolean>> result = new HashMap<>();
                     for (int varIndex = 0; varIndex < varCount; varIndex++) {
-                        BooleanVariable candidateVar = candidateVars.get(varIndex);
+                        String varLabel = candidateVars.get(varIndex).getLabel();
                         Boolean varInversion = inversionCombination.get(varIndex);
-                        invCandidateVars.add(varIndex, varInversion ? new Not(candidateVar) : candidateVar);
+                        result.put(permutatedVars.get(varIndex), Pair.of(varLabel, varInversion));
                     }
-                    BooleanFormula mappedFormula = FormulaUtils.replace(formula, permutatedVars, invCandidateVars);
-                    if (bdd.isEquivalent(mappedFormula, candidateFormula)) {
-                        Map<BooleanVariable, Pair<String, Boolean>> result = new HashMap<>();
-                        for (int varIndex = 0; varIndex < varCount; varIndex++) {
-                            String varLabel = candidateVars.get(varIndex).getLabel();
-                            Boolean varInversion = inversionCombination.get(varIndex);
-                            result.put(permutatedVars.get(varIndex), Pair.of(varLabel, varInversion));
-                        }
-                        return result;
-                    }
+                    return result;
                 }
             }
         }

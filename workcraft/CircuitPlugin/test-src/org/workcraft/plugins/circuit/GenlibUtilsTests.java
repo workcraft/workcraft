@@ -15,6 +15,7 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.BackendUtils;
 
 import java.util.*;
@@ -103,39 +104,43 @@ class GenlibUtilsTests {
         checkExtendedMapping(BooleanFormulaParser.parse("(a+b)*(c+d)"), gateLibrary, gateLibrary.get("OA22"), Set.of());
         checkExtendedMapping(BooleanFormulaParser.parse("!(a*b+!c*!d)"), gateLibrary, gateLibrary.get("AOI2BB2"), Set.of());
         checkExtendedMapping(BooleanFormulaParser.parse("!(!a*!b+!c*!d)"), gateLibrary, gateLibrary.get("OA22"), Set.of());
+
+        checkExtendedMapping(BooleanFormulaParser.parse("!(!a*!b*c)"), gateLibrary, gateLibrary.get("NOR3B"), Set.of("ON"));
+        checkExtendedMapping(BooleanFormulaParser.parse("!a*b+!c"), gateLibrary, gateLibrary.get("OAI21"), Set.of("A2"));
         checkExtendedMapping(BooleanFormulaParser.parse("!(!a*b+!c*!d)"), gateLibrary, gateLibrary.get("AOI22"), Set.of("A1", "B1", "B2"));
     }
 
-    private void checkExtendedMapping(BooleanFormula func, Library gateLibrary, Gate expGate, Set<String> expInvertedPins) {
-        Pair<Gate, Map<BooleanVariable, Pair<String, Boolean>>> mapping = GenlibUtils.findExtendedMapping(func, gateLibrary);
+    private void checkExtendedMapping(BooleanFormula func, Library gateLibrary, Gate expGate,
+            Set<String> expInvertedPins) {
+
+        Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping
+                = GenlibUtils.findExtendedMapping(func, gateLibrary);
+
         String funcText = StringGenerator.toString(func);
         if (expGate == null) {
-            Assertions.assertNull(mapping, "Unexpected mapping found " + funcText);
+            Assertions.assertNull(extendedMapping, "Unexpected mapping found " + funcText);
         } else {
-            Assertions.assertNotNull(mapping, "No mapping found for " + funcText);
+            Assertions.assertNotNull(extendedMapping, "No mapping found for " + funcText);
         }
-        if (mapping == null) {
+        if (extendedMapping == null) {
             System.out.println(funcText + " == ?");
         } else {
-            Gate gate = mapping.getFirst();
+            Gate gate = extendedMapping.getFirst();
+            Map<BooleanVariable, String> assignments = extendedMapping.getSecond();
+            Set<String> invertedPins = extendedMapping.getThird();
             Assertions.assertEquals(expGate, gate, expGate.name + "!=" + gate.name);
+            Assertions.assertEquals(expInvertedPins, invertedPins);
+
             System.out.print(funcText + " == " + gate.function.formula + " [");
-            Map<BooleanVariable, Pair<String, Boolean>> assignments = mapping.getSecond();
-            Set<String> invertedPins = new HashSet<>();
             List<BooleanVariable> orderedVars = FormulaUtils.extractOrderedVariables(func);
             for (BooleanVariable var : orderedVars) {
-                Pair<String, Boolean> extendedAssignment = assignments.get(var);
+                String gatePinName = assignments.get(var);
                 String varLabel = var.getLabel();
-                Assertions.assertNotNull(extendedAssignment, "Assignment is missing for variable" + varLabel);
-                String gatePinName = extendedAssignment.getFirst();
-                Boolean gatePinInversion = extendedAssignment.getSecond();
+                Assertions.assertNotNull(gatePinName, "Assignment is missing for variable" + varLabel);
+                boolean gatePinInversion = invertedPins.contains(gatePinName);
                 System.out.print(' ' + varLabel + " -> " + gatePinName + (gatePinInversion ? "' " : ' '));
-                if (gatePinInversion) {
-                    invertedPins.add(gatePinName);
-                }
             }
             System.out.println(']');
-            Assertions.assertEquals(expInvertedPins, invertedPins);
         }
     }
 
