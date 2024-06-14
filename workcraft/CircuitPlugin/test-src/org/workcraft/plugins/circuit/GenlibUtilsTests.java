@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
@@ -16,10 +17,7 @@ import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.BackendUtils;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 class GenlibUtilsTests {
 
@@ -60,6 +58,7 @@ class GenlibUtilsTests {
         checkMapping(BooleanFormulaParser.parse("a*c+b*!c"), gateLibrary, null);
         checkMapping(BooleanFormulaParser.parse("a=b"), gateLibrary, null);
         checkMapping(BooleanFormulaParser.parse("(a+b)*(c+d)"), gateLibrary, gateLibrary.get("OA22"));
+        checkMapping(BooleanFormulaParser.parse("!(!a*!b+!c*!d)"), gateLibrary, gateLibrary.get("OA22"));
         checkMapping(BooleanFormulaParser.parse("!(a*b+!c*!d)"), gateLibrary, gateLibrary.get("AOI2BB2"));
     }
 
@@ -78,9 +77,65 @@ class GenlibUtilsTests {
             System.out.print(StringGenerator.toString(func) + " == " + gate.function.formula + " [");
             Map<BooleanVariable, String> assignments = mapping.getSecond();
             for (Map.Entry<BooleanVariable, String> entry : assignments.entrySet()) {
-                System.out.print(' ' + entry.getKey().getLabel() + " -> " + entry.getValue() + ' ');
+                String varLabel = entry.getKey().getLabel();
+                String gatePinName = entry.getValue();
+                System.out.print(' ' + varLabel + " -> " + gatePinName + ' ');
             }
             System.out.println(']');
+        }
+    }
+
+    @Test
+    void testExtendedMapping() throws ParseException {
+        Library gateLibrary = LibraryManager.getLibrary();
+        checkExtendedMapping(BooleanFormulaParser.parse("1"), gateLibrary, gateLibrary.get("LOGIC1"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("0"), gateLibrary, gateLibrary.get("LOGIC0"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("!a"), gateLibrary, gateLibrary.get("INV"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("a"), gateLibrary, gateLibrary.get("BUF"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("a*b"), gateLibrary, gateLibrary.get("AND2"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("a+b"), gateLibrary, gateLibrary.get("OR2"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("a^b"), gateLibrary, gateLibrary.get("XOR2"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("!(a*b)"), gateLibrary, gateLibrary.get("NAND2"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("!(a+b)"), gateLibrary, gateLibrary.get("NOR2"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("a=>b"), gateLibrary, gateLibrary.get("NAND2B"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("a*c+b*!c"), gateLibrary, null, Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("a=b"), gateLibrary, null, Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("(a+b)*(c+d)"), gateLibrary, gateLibrary.get("OA22"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("!(a*b+!c*!d)"), gateLibrary, gateLibrary.get("AOI2BB2"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("!(!a*!b+!c*!d)"), gateLibrary, gateLibrary.get("OA22"), Set.of());
+        checkExtendedMapping(BooleanFormulaParser.parse("!(!a*b+!c*!d)"), gateLibrary, gateLibrary.get("AOI22"), Set.of("A1", "B1", "B2"));
+    }
+
+    private void checkExtendedMapping(BooleanFormula func, Library gateLibrary, Gate expGate, Set<String> expInvertedPins) {
+        Pair<Gate, Map<BooleanVariable, Pair<String, Boolean>>> mapping = GenlibUtils.findExtendedMapping(func, gateLibrary);
+        String funcText = StringGenerator.toString(func);
+        if (expGate == null) {
+            Assertions.assertNull(mapping, "Unexpected mapping found " + funcText);
+        } else {
+            Assertions.assertNotNull(mapping, "No mapping found for " + funcText);
+        }
+        if (mapping == null) {
+            System.out.println(funcText + " == ?");
+        } else {
+            Gate gate = mapping.getFirst();
+            Assertions.assertEquals(expGate, gate, expGate.name + "!=" + gate.name);
+            System.out.print(funcText + " == " + gate.function.formula + " [");
+            Map<BooleanVariable, Pair<String, Boolean>> assignments = mapping.getSecond();
+            Set<String> invertedPins = new HashSet<>();
+            List<BooleanVariable> orderedVars = FormulaUtils.extractOrderedVariables(func);
+            for (BooleanVariable var : orderedVars) {
+                Pair<String, Boolean> extendedAssignment = assignments.get(var);
+                String varLabel = var.getLabel();
+                Assertions.assertNotNull(extendedAssignment, "Assignment is missing for variable" + varLabel);
+                String gatePinName = extendedAssignment.getFirst();
+                Boolean gatePinInversion = extendedAssignment.getSecond();
+                System.out.print(' ' + varLabel + " -> " + gatePinName + (gatePinInversion ? "' " : ' '));
+                if (gatePinInversion) {
+                    invertedPins.add(gatePinName);
+                }
+            }
+            System.out.println(']');
+            Assertions.assertEquals(expInvertedPins, invertedPins);
         }
     }
 
