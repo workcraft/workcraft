@@ -17,7 +17,6 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
-import org.workcraft.types.Pair;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.utils.SortUtils;
 
@@ -159,26 +158,9 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     private JPanel createPinsFilterPanel(final GraphEditor editor) {
-        Pair<Integer, Integer> pinRange = calcPinRange();
-        pinsFilter.setMinimum(pinRange.getFirst());
-        pinsFilter.setMaximum(pinRange.getSecond());
+        updatePinsFilter();
         pinsFilter.addChangeListener(event -> updateLibraryList(editor));
         return GuiUtils.createLabeledComponent(pinsFilter, "Pins:  ");
-    }
-
-    private Pair<Integer, Integer> calcPinRange() {
-        List<LibraryItem> libraryItems = getLibraryItems();
-        int min = 0;
-        int max = 0;
-        for (LibraryItem libraryItem : libraryItems) {
-            if ((min == 0) || (libraryItem.pinCount < min)) {
-                min = libraryItem.pinCount;
-            }
-            if ((min == 0) || (libraryItem.pinCount > max)) {
-                max = libraryItem.pinCount;
-            }
-        }
-        return Pair.of(min, max);
     }
 
     private JPanel createNameFilterPanel(final GraphEditor editor) {
@@ -219,6 +201,9 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     private void updateLibraryList(final GraphEditor editor) {
+        if (LibraryManager.getLibrary() != library) {
+            updatePinsFilter();
+        }
         ArrayList<LibraryItem> components = new ArrayList<>();
         components.add(createCustomItem());
         components.addAll(getLibraryItems().stream()
@@ -239,6 +224,24 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         if (editor != null) {
             editor.requestFocus();
         }
+    }
+
+    private void updatePinsFilter() {
+        List<LibraryItem> libraryItems = getLibraryItems();
+        int min = 0;
+        int max = 0;
+        for (LibraryItem libraryItem : libraryItems) {
+            if ((min == 0) || (libraryItem.pinCount < min)) {
+                min = libraryItem.pinCount;
+            }
+            if ((min == 0) || (libraryItem.pinCount > max)) {
+                max = libraryItem.pinCount;
+            }
+        }
+        pinsFilter.setMinimum(min);
+        pinsFilter.setMaximum(max);
+        pinsFilter.setValue(min);
+        pinsFilter.setSecondValue(max);
     }
 
     private boolean filterByType(LibraryItem libraryItem) {
