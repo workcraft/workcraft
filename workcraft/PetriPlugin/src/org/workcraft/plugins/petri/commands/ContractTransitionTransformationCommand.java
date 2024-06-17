@@ -283,10 +283,8 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             for (VisualNode succNode : succNodes) {
                 VisualPlace succPlace = (VisualPlace) succNode;
                 VisualPlace productPlace = createProductPlace(model, predPlace, succPlace);
-                HashSet<VisualConnection> connections = new HashSet<>();
-                connections.addAll(model.getConnections(predPlace));
-                connections.addAll(model.getConnections(succPlace));
                 productPlaceMap.put(productPlace, new Pair<>(predPlace, succPlace));
+                Set<VisualConnection> connections = calcAffectedConnections(model, predPlace, transition, succPlace);
                 Map<VisualConnection, VisualConnection> productToOriginalConnectionMap
                         = connectProductPlace(model, connections, productPlace);
 
@@ -309,6 +307,16 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         for (VisualNode succNode : succNodes) {
             model.remove(succNode);
         }
+    }
+
+    private static HashSet<VisualConnection> calcAffectedConnections(VisualModel model,
+            VisualPlace predPlace, VisualTransition transition, VisualPlace succPlace) {
+
+        HashSet<VisualConnection> connections = new HashSet<>();
+        connections.addAll(model.getConnections(predPlace));
+        connections.addAll(model.getConnections(succPlace));
+        connections.removeAll(model.getConnections(transition));
+        return connections;
     }
 
     private static ProductPlacePositioning getProductPlacePositioning(VisualModel model,
