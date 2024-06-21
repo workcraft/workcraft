@@ -8,6 +8,7 @@ import org.workcraft.formula.Not;
 import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -23,6 +24,8 @@ import java.util.stream.Collectors;
 
 public class GenlibUtils {
 
+    private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
+
     public static FunctionComponent instantiateGate(Gate gate, String instanceName, Circuit circuit) {
         final FunctionComponent component = new FunctionComponent();
         component.setModule(gate.name);
@@ -31,7 +34,8 @@ public class GenlibUtils {
             try {
                 circuit.setName(component, instanceName);
             } catch (ArgumentException e) {
-                LogUtils.logWarning("Cannot set name '" + instanceName + "' for component '" + circuit.getName(component) + "'.");
+                String componentName = circuit.getName(component);
+                LogUtils.logWarning("Cannot set name '" + instanceName + "' for component '" + componentName + "'");
             }
         }
 
@@ -107,7 +111,7 @@ public class GenlibUtils {
         return null;
     }
 
-    private static Map<BooleanVariable, String> getVariableMappingIfEquivalentOrNull(
+    public static Map<BooleanVariable, String> getVariableMappingIfEquivalentOrNull(
             BooleanFormula formula, BooleanFormula candidateFormula) {
 
         List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(formula);
@@ -129,7 +133,7 @@ public class GenlibUtils {
     }
 
     public static Triple<Gate, Map<BooleanVariable, String>, Set<String>> findExtendedMapping(
-            BooleanFormula formula, Library library) {
+            BooleanFormula formula, Library library, boolean allowOutputInversion, boolean allowInputInversion) {
 
         if (library == null) {
             return null;
@@ -140,28 +144,34 @@ public class GenlibUtils {
             return Triple.of(mapping.getFirst(), mapping.getSecond(), Set.of());
         }
         // Then try inverted gates
-        Pair<Gate, Map<BooleanVariable, String>> invMapping = findMapping(new Not(formula), library);
-        if (invMapping != null) {
-            Gate gate = invMapping.getFirst();
-            return Triple.of(gate, invMapping.getSecond(), Set.of(gate.function.name));
+        if (allowOutputInversion) {
+            Pair<Gate, Map<BooleanVariable, String>> invMapping = findMapping(new Not(formula), library);
+            if (invMapping != null) {
+                Gate gate = invMapping.getFirst();
+                return Triple.of(gate, invMapping.getSecond(), Set.of(gate.function.name));
+            }
         }
         // Then try direct implementation with input bubbles
-        Triple<Gate, Map<BooleanVariable, String>, Set<String>> bubbleMapping
-                = findMappingWithInputInversions(formula, library);
+        if (allowInputInversion) {
+            Triple<Gate, Map<BooleanVariable, String>, Set<String>> bubbleMapping
+                    = findMappingWithInputInversions(formula, library);
 
-        if (bubbleMapping != null) {
-            return bubbleMapping;
+            if (bubbleMapping != null) {
+                return bubbleMapping;
+            }
         }
         // Finally try inverted gates with input bubbles
-        Triple<Gate, Map<BooleanVariable, String>, Set<String>> invBubbleMapping
-                = findMappingWithInputInversions(new Not(formula), library);
+        if (allowOutputInversion && allowInputInversion) {
+            Triple<Gate, Map<BooleanVariable, String>, Set<String>> invBubbleMapping
+                    = findMappingWithInputInversions(new Not(formula), library);
 
-        if (invBubbleMapping != null) {
-            Gate gate = invBubbleMapping.getFirst();
-            Map<BooleanVariable, String> varAssignments = invBubbleMapping.getSecond();
-            Set<String> invertedPins = invBubbleMapping.getThird();
-            invertedPins.add(gate.function.name);
-            return Triple.of(gate, varAssignments, invertedPins);
+            if (invBubbleMapping != null) {
+                Gate gate = invBubbleMapping.getFirst();
+                Map<BooleanVariable, String> varAssignments = invBubbleMapping.getSecond();
+                Set<String> invertedPins = invBubbleMapping.getThird();
+                invertedPins.add(gate.function.name);
+                return Triple.of(gate, varAssignments, invertedPins);
+            }
         }
         return null;
     }
@@ -228,6 +238,45 @@ public class GenlibUtils {
             }
         }
         return null;
+    }
+
+    public static String gateToString(Gate gate) {
+        String details = "";
+        try {
+            BooleanFormula formula = BooleanFormulaParser.parse(gate.function.formula);
+            details =  " [" + gate.function.name + " = " + StringGenerator.toString(formula) + "]";
+        } catch (ParseException ignored) {
+        }
+        return gate.name + details;
+    }
+
+    public static String getExtendedMappingInfo(Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping,
+            List<BooleanVariable> inputVars, BooleanVariable outputVar) {
+
+        Gate gate = extendedMapping.getFirst();
+        Map<BooleanVariable, String> assignments = extendedMapping.getSecond();
+        Set<String> invertedPins = extendedMapping.getThird();
+        StringBuilder s = new StringBuilder(gateToString(gate));
+        boolean isFirstAssignment = true;
+        if (outputVar != null) {
+            s.append(" : ");
+            s.append(getExtendedAssignmentInfo(outputVar, gate.function.name, invertedPins));
+            isFirstAssignment = false;
+        }
+        for (BooleanVariable inputVar : inputVars) {
+            s.append(isFirstAssignment ? " : " : ", ");
+            s.append(getExtendedAssignmentInfo(inputVar, assignments.get(inputVar), invertedPins));
+            isFirstAssignment = false;
+        }
+        return s.toString();
+    }
+
+    public static String getAssignmentInfo(BooleanVariable var, String pin) {
+        return var.getLabel() + RIGHT_ARROW_SYMBOL + pin;
+    }
+
+    public static String getExtendedAssignmentInfo(BooleanVariable var, String pin, Set<String> invertedPins) {
+        return var.getLabel() + RIGHT_ARROW_SYMBOL + pin + (invertedPins.contains(pin) ? "'" : "");
     }
 
     public static int getPinCount(Gate gate) {

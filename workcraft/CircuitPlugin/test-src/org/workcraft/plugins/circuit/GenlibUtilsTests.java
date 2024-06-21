@@ -114,16 +114,16 @@ class GenlibUtilsTests {
             Set<String> expInvertedPins) {
 
         Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping
-                = GenlibUtils.findExtendedMapping(func, gateLibrary);
+                = GenlibUtils.findExtendedMapping(func, gateLibrary, true, true);
 
-        String funcText = StringGenerator.toString(func);
+        String funcInfo = StringGenerator.toString(func);
         if (expGate == null) {
-            Assertions.assertNull(extendedMapping, "Unexpected mapping found " + funcText);
+            Assertions.assertNull(extendedMapping, "Unexpected mapping found " + funcInfo);
         } else {
-            Assertions.assertNotNull(extendedMapping, "No mapping found for " + funcText);
+            Assertions.assertNotNull(extendedMapping, "No mapping found for " + funcInfo);
         }
         if (extendedMapping == null) {
-            System.out.println(funcText + " == ?");
+            System.out.println(funcInfo + " == ?");
         } else {
             Gate gate = extendedMapping.getFirst();
             Map<BooleanVariable, String> assignments = extendedMapping.getSecond();
@@ -131,16 +131,13 @@ class GenlibUtilsTests {
             Assertions.assertEquals(expGate, gate, expGate.name + "!=" + gate.name);
             Assertions.assertEquals(expInvertedPins, invertedPins);
 
-            System.out.print(funcText + " == " + gate.function.formula + " [");
             List<BooleanVariable> orderedVars = FormulaUtils.extractOrderedVariables(func);
             for (BooleanVariable var : orderedVars) {
-                String gatePinName = assignments.get(var);
-                String varLabel = var.getLabel();
-                Assertions.assertNotNull(gatePinName, "Assignment is missing for variable" + varLabel);
-                boolean gatePinInversion = invertedPins.contains(gatePinName);
-                System.out.print(' ' + varLabel + " -> " + gatePinName + (gatePinInversion ? "' " : ' '));
+                Assertions.assertNotNull(assignments.get(var),
+                        "Assignment is missing for variable" + var.getLabel());
             }
-            System.out.println(']');
+            List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(func);
+            System.out.print(funcInfo + " == " + GenlibUtils.getExtendedMappingInfo(extendedMapping, vars, null));
         }
     }
 
