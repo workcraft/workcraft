@@ -3,17 +3,13 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
-import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class SpaceUtils {
@@ -21,11 +17,11 @@ public final class SpaceUtils {
     private SpaceUtils() {
     }
 
-    public static void makeSpaceAfterContact(VisualCircuit circuit, VisualContact contact, double space) {
+    public static void makeSpaceAroundContact(VisualCircuit circuit, VisualContact contact, double space) {
         // Change connection scale mode to LOCK_RELATIVELY for cleaner relocation of components
         Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class);
         HashMap<VisualConnection, VisualConnection.ScaleMode> connectionToScaleModeMap
-                = ConnectionUtils.replaceConnectionScaleMode(connections, VisualConnection.ScaleMode.LOCK_RELATIVELY);
+                = ConnectionUtils.replaceConnectionScaleMode(connections, VisualConnection.ScaleMode.NONE);
 
         SpaceUtils.offsetComponentsFromContact(circuit, contact, space + 1.0);
         VisualJoint joint = CircuitUtils.detachJoint(circuit, contact);
@@ -36,8 +32,8 @@ public final class SpaceUtils {
         ConnectionUtils.restoreConnectionScaleMode(connectionToScaleModeMap);
     }
 
-    public static void offsetComponentsFromContact(VisualCircuit circuit, VisualContact contact, double space) {
-        double minSpace = getMinSpace(circuit, contact);
+    private static void offsetComponentsFromContact(VisualCircuit circuit, VisualContact contact, double space) {
+        double minSpace = getMinSpaceAroundContact(circuit, contact);
         if (minSpace > space) {
             return;
         }
@@ -50,7 +46,6 @@ public final class SpaceUtils {
 
         Collection<VisualTransformableNode> transformableNodes = Hierarchy.getDescendantsOfType(circuit.getRoot(),
                 VisualTransformableNode.class, node -> !(node instanceof VisualPage)
-                        && !(node instanceof ControlPoint)
                         && !((node instanceof VisualContact) && ((VisualContact) node).isPin()));
 
         for (VisualTransformableNode transformableNode : transformableNodes) {
@@ -71,15 +66,18 @@ public final class SpaceUtils {
         }
     }
 
-    private static double getMinSpace(VisualCircuit circuit, VisualContact contact) {
+    private static double getMinSpaceAroundContact(VisualCircuit circuit, VisualContact contact) {
         double result = Double.MAX_VALUE;
         int dx = contact.getDirection().getGradientX();
         int dy = contact.getDirection().getGradientY();
         double x0 = contact.getRootSpaceX();
         double y0 = contact.getRootSpaceY();
-        for (Node node : circuit.getPostset(contact)) {
-            if (node instanceof VisualComponent) {
-                VisualComponent component = (VisualComponent) node;
+        Set<VisualNode> connectedNodes = new HashSet<>();
+        connectedNodes.addAll(circuit.getPreset(contact));
+        connectedNodes.addAll(circuit.getPostset(contact));
+        for (Node connectedNode : connectedNodes) {
+            if (connectedNode instanceof VisualComponent) {
+                VisualComponent component = (VisualComponent) connectedNode;
                 Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
                 double x = component.getRootSpaceX();
                 double xBorder = x + bb.getX() + ((dx < 0) ? bb.getWidth() : 0.0);

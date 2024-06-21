@@ -167,7 +167,7 @@ public final class ResetUtils {
         List<VisualFunctionComponent> resetComponents = circuit.getVisualFunctionComponents().stream()
                 .filter(component -> hasForcedInitOutput(component.getReferencedComponent())
                         || (CircuitUtils.getFunctionContact(circuit, component, portName) != null))
-                .collect(Collectors.toList());
+                .toList();
 
         if (resetComponents.isEmpty()) {
             return circuit.getVisualComponentByMathReference(portName, VisualContact.class) != null;
@@ -503,9 +503,9 @@ public final class ResetUtils {
     private static VisualFunctionComponent insertResetGate(VisualCircuit circuit, VisualContact resetPort,
             VisualFunctionContact contact, boolean activeLow) {
 
-        SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
+        SpaceUtils.makeSpaceAroundContact(circuit, contact, 3.0);
         VisualFunctionComponent resetGate = createResetGate(circuit, contact.getInitToOne(), activeLow);
-        GateUtils.insertGateAfter(circuit, resetGate, contact);
+        GateUtils.insertGateAfter(circuit, resetGate, contact, 2.0);
         connectHangingInputs(circuit, resetPort, resetGate);
         GateUtils.propagateInitialState(circuit, resetGate);
         return resetGate;
