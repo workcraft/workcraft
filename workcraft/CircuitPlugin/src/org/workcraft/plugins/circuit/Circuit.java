@@ -55,6 +55,16 @@ public class Circuit extends AbstractMathModel {
         return getNodeByReference(component, ref) instanceof Contact;
     }
 
+    public FunctionContact getPin(FunctionComponent component, String name) {
+        for (FunctionContact contact : component.getFunctionContacts()) {
+            String contactName = getName(contact);
+            if (name.equals(contactName)) {
+                return contact;
+            }
+        }
+        return null;
+    }
+
     public Collection<FunctionContact> getFunctionContacts() {
         return Hierarchy.getDescendantsOfType(getRoot(), FunctionContact.class);
     }
