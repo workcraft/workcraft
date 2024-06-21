@@ -41,7 +41,9 @@ public abstract class AbstractComponentTransformationCommand extends AbstractTra
         Collection<VisualNode> components = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
-            components.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualFunctionComponent.class));
+            components.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(),
+                    VisualFunctionComponent.class, this::isApplicableTo));
+
             Collection<VisualNode> selection = circuit.getSelection();
             if (!selection.isEmpty()) {
                 components.retainAll(selection);
