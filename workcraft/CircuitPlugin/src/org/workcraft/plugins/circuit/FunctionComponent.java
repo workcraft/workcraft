@@ -103,6 +103,10 @@ public class FunctionComponent extends CircuitComponent {
         return getFunctionOutputs().stream().noneMatch(FunctionContact::hasFunction);
     }
 
+    public boolean isCell() {
+        return getFunctionOutputs().stream().allMatch(FunctionContact::hasFunction);
+    }
+
     public boolean isGate() {
         Collection<Contact> outputs = getOutputs();
         return (outputs != null) && (outputs.size() == 1);
@@ -152,8 +156,8 @@ public class FunctionComponent extends CircuitComponent {
         Collection<FunctionContact> contacts = getFunctionContacts();
         FunctionContact contact = contacts.size() != 1 ? null : contacts.iterator().next();
         if ((contact != null) && contact.isOutput()) {
-            BooleanFormula resetFunction = contact.getResetFunction();
-            return contact.getInitToOne() && Zero.getInstance().equals(resetFunction);
+            BooleanFormula setFunction = contact.getSetFunction();
+            return contact.getInitToOne() && One.getInstance().equals(setFunction);
         }
         return false;
     }

@@ -53,7 +53,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         VisualFunctionContact outputContact = gate.getGateOutput();
 
         BooleanFormula setFunction = outputContact.getSetFunction();
-        String str = CircuitUtils.gateToString(circuit, gate);
+        String str = CircuitUtils.cellToString(circuit, gate);
         if (setFunction == null) {
             LogUtils.logWarning("Gate " + str + " cannot be split as it does not have set function defined");
             return;
@@ -137,7 +137,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
 
         VisualFunctionComponent gate = circuit.createVisualComponent(mathGate, VisualFunctionComponent.class, container);
         VisualFunctionContact outputContact = createGateOutput(circuit, gate, function);
-        LogUtils.logInfo("  - " + CircuitUtils.gateToString(circuit, gate));
+        LogUtils.logInfo("  - " + CircuitUtils.cellToString(circuit, gate));
 
         outputContact.setDirection(direction);
         if (!toNodeConnectionsStack.isEmpty()) {

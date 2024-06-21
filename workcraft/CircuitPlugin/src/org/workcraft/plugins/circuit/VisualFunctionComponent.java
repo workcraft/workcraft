@@ -97,6 +97,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         getReferencedComponent().setModule("");
     }
 
+    public boolean isCell() {
+        return (getReferencedComponent() != null) && getReferencedComponent().isCell();
+    }
+
     public boolean isGate() {
         return (getReferencedComponent() != null) && getReferencedComponent().isGate();
     }
@@ -107,6 +111,14 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     public boolean isInverter() {
         return (getReferencedComponent() != null) && getReferencedComponent().isInverter();
+    }
+
+    public boolean isTie1() {
+        return (getReferencedComponent() != null) && getReferencedComponent().isTie1();
+    }
+
+    public boolean isTie0() {
+        return (getReferencedComponent() != null) && getReferencedComponent().isTie0();
     }
 
     public boolean isBlackbox() {

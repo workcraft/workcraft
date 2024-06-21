@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -38,7 +37,7 @@ public final class GateUtils {
     }
 
     public static void insertGateAfter(VisualCircuit circuit, VisualCircuitComponent component,
-            VisualContact predContact) {
+            VisualContact predContact, double offset) {
 
         Container container = (Container) predContact.getParent();
         // Step up in the hierarchy for a self-loop
@@ -53,17 +52,15 @@ public final class GateUtils {
                 succComponents.add((VisualComponent) succNode);
             }
         }
-        Point2D predPoint = predContact.getRootSpacePosition();
-        Point2D succPoint = MixUtils.middleRootspacePosition(succComponents);
-        Point2D pos = MixUtils.middlePoint(Arrays.asList(predPoint, succPoint));
-        if (pos != null) {
-            component.setRootSpacePosition(pos);
-        }
 
+        Point2D.Double pos = new Point2D.Double(
+                predContact.getRootSpaceX() + predContact.getDirection().getGradientX() * offset,
+                predContact.getRootSpaceY() + predContact.getDirection().getGradientY() * offset);
+
+        component.setRootSpacePosition(pos);
         VisualContact inputContact = component.getFirstVisualInput();
         VisualContact outputContact = component.getFirstVisualOutput();
-        VisualContact.Direction direction = getDirection(predPoint, succPoint);
-        outputContact.setDirection(direction);
+        outputContact.setDirection(predContact.getDirection());
 
         try {
             circuit.connect(predContact, inputContact);
@@ -83,6 +80,51 @@ public final class GateUtils {
             }
         }
         ConversionUtils.updateReplicas(circuit, predContact, outputContact);
+    }
+
+    public static void insertGateBefore(VisualCircuit circuit, VisualCircuitComponent component,
+            VisualContact succContact, double offset) {
+
+
+        Container container = (Container) succContact.getParent();
+        // Step up in the hierarchy for a self-loop
+        if (container instanceof VisualCircuitComponent) {
+            container = (Container) container.getParent();
+        }
+        circuit.reparent(container, circuit, circuit.getRoot(), Collections.singletonList(component));
+
+        LinkedList<VisualComponent> predComponents = new LinkedList<>();
+        for (VisualNode predNode : circuit.getPreset(succContact)) {
+            if (predNode instanceof VisualComponent) {
+                predComponents.add((VisualComponent) predNode);
+            }
+        }
+        Point2D.Double pos = new Point2D.Double(
+                succContact.getRootSpaceX() + succContact.getDirection().getGradientX() * offset,
+                succContact.getRootSpaceY() + succContact.getDirection().getGradientY() * offset);
+
+        component.setRootSpacePosition(pos);
+        VisualContact inputContact = component.getFirstVisualInput();
+        VisualContact outputContact = component.getFirstVisualOutput();
+        outputContact.setDirection(succContact.getDirection().flip());
+
+        for (VisualComponent predComponent : predComponents) {
+            VisualConnection connection = circuit.getConnection(predComponent, succContact);
+            LinkedList<Point2D> prefixControlPoints = ConnectionHelper.getPrefixControlPoints(connection, pos);
+            circuit.remove(connection);
+            try {
+                VisualConnection inputConnection = circuit.connect(predComponent, inputContact);
+                inputConnection.copyStyle(connection);
+                ConnectionHelper.addControlPoints(inputConnection, prefixControlPoints);
+            } catch (InvalidConnectionException e) {
+                LogUtils.logWarning(e.getMessage());
+            }
+        }
+        try {
+            circuit.connect(outputContact, succContact);
+        } catch (InvalidConnectionException e) {
+            LogUtils.logWarning(e.getMessage());
+        }
     }
 
     public static void insertGateWithin(VisualCircuit circuit, VisualCircuitComponent component,
@@ -424,9 +466,9 @@ public final class GateUtils {
 
         // Insert fork buffer if reuse did not work out
         if (result == null) {
-            SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
+            SpaceUtils.makeSpaceAroundContact(circuit, contact, 3.0);
             result = GateUtils.createBufferGate(circuit);
-            GateUtils.insertGateAfter(circuit, result, contact);
+            GateUtils.insertGateAfter(circuit, result, contact, 2.0);
             VisualFunctionContact gateOutput = result.getGateOutput();
             gateOutput.setInitToOne(contact.getInitToOne());
         }
@@ -456,6 +498,71 @@ public final class GateUtils {
         outputContact.setPosition(new Point2D.Double(2.0, 0.0));
         outputContact.setSetFunction(gateFunction);
         return component;
+    }
+
+    public static void convertBufferToInverter(VisualCircuit circuit, VisualFunctionComponent component) {
+        if (!component.isBuffer()) {
+            throw new RuntimeException("Buffer is expected");
+        }
+
+        BooleanVariable inputVar = new FreeVariable("I");
+        BooleanFormula formula = new Not(inputVar);
+        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        if (mapping == null) {
+            throw new RuntimeException("Cannot find inverter gate mapping");
+        }
+
+        Gate gate = mapping.getFirst();
+        component.getReferencedComponent().setModule(gate.name);
+        VisualFunctionContact outputPin = component.getFirstVisualOutput();
+        circuit.setMathName(outputPin, gate.function.name);
+
+        Map<BooleanVariable, String> inputRenames = mapping.getSecond();
+        String inputName = inputRenames.get(inputVar);
+        if (inputName != null) {
+            circuit.setMathName(component.getFirstVisualInput(), inputName);
+        }
+        outputPin.setSetFunction(FormulaUtils.invert(outputPin.getSetFunction()));
+    }
+
+    public static void convertTie1ToTie0(VisualCircuit circuit, VisualFunctionComponent component) {
+        if (!component.isTie1()) {
+            throw new RuntimeException("Tie1 is expected");
+        }
+
+        BooleanFormula formula = Zero.getInstance();
+        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        if (mapping == null) {
+            throw new RuntimeException("Cannot find tie0 gate mapping");
+        }
+
+        Gate gate = mapping.getFirst();
+        component.getReferencedComponent().setModule(gate.name);
+        VisualFunctionContact outputPin = component.getFirstVisualOutput();
+        circuit.setMathName(outputPin, gate.function.name);
+
+        outputPin.setSetFunction(Zero.getInstance());
+        outputPin.setInitToOne(false);
+    }
+
+    public static void convertTie0ToTie1(VisualCircuit circuit, VisualFunctionComponent component) {
+        if (!component.isTie0()) {
+            throw new RuntimeException("Tie0 is expected");
+        }
+
+        BooleanFormula formula = One.getInstance();
+        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        if (mapping == null) {
+            throw new RuntimeException("Cannot find tie0 gate mapping");
+        }
+
+        Gate gate = mapping.getFirst();
+        component.getReferencedComponent().setModule(gate.name);
+        VisualFunctionContact outputPin = component.getFirstVisualOutput();
+        circuit.setMathName(outputPin, gate.function.name);
+
+        outputPin.setSetFunction(One.getInstance());
+        outputPin.setInitToOne(true);
     }
 
 }

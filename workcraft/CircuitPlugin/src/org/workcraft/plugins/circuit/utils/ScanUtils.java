@@ -53,9 +53,9 @@ public final class ScanUtils {
     private static VisualFunctionComponent insertTestableGate(VisualCircuit circuit, VisualContact contact) {
         VisualFunctionComponent result = getAdjacentBufferOrInverter(circuit, contact);
         if (result == null) {
-            SpaceUtils.makeSpaceAfterContact(circuit, contact, 3.0);
+            SpaceUtils.makeSpaceAroundContact(circuit, contact, 3.0);
             result = GateUtils.createBufferGate(circuit);
-            GateUtils.insertGateAfter(circuit, result, contact);
+            GateUtils.insertGateAfter(circuit, result, contact, 2.0);
             GateUtils.propagateInitialState(circuit, result);
             result.getGateOutput().getReferencedComponent().setPathBreaker(true);
         }

@@ -91,6 +91,11 @@ public class FormulaUtils {
         return formula == null ? null : formula.accept(Inverter.getInstance());
     }
 
+    public static BooleanFormula propagateInversion(BooleanFormula formula) {
+        return formula == null ? null : FormulaUtils.invert(formula.accept(
+                new BooleanComplementTransformer(CleverBooleanWorker.getInstance())));
+    }
+
     public static BooleanFormula derive(BooleanFormula formula, BooleanVariable variable) {
         BooleanFormula zeroSubFormula = FormulaUtils.replaceZero(formula, variable);
         BooleanFormula oneSubFormula = FormulaUtils.replaceOne(formula, variable);

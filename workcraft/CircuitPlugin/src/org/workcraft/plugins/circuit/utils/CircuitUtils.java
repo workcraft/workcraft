@@ -7,6 +7,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -35,6 +36,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class CircuitUtils {
+
+    private static final String ARROW_DOWN_SYMBOL = Character.toString((char) 0x2193);
+    private static final String ARROW_UP_SYMBOL = Character.toString((char) 0x2191);
+    private static final String RESET_FUNCTION_PREFIX = ARROW_DOWN_SYMBOL + " = ";
+    private static final String SET_FUNCTION_PREFIX = ARROW_UP_SYMBOL + " = ";
 
     private CircuitUtils() {
     }
@@ -449,24 +455,42 @@ public final class CircuitUtils {
                 && (firstParent == secondParent);
     }
 
-    public static String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
-        String result = circuit.getMathModel().getComponentReference(gate.getReferencedComponent());
+    public static String cellToString(VisualCircuit circuit, VisualFunctionComponent cell) {
+        return cellToString(circuit.getMathModel(), cell.getReferencedComponent());
+    }
 
-        VisualFunctionContact outputContact = gate.getGateOutput();
-        String outputName = outputContact.getName();
+    public static String cellToString(Circuit circuit, FunctionComponent cell) {
+        StringBuilder outputDetails = new StringBuilder();
+        boolean isFirstOutputPin = true;
+        for (FunctionContact outputPin : cell.getFunctionOutputs()) {
+            String outputName = outputPin.getName();
 
-        BooleanFormula setFunction = outputContact.getSetFunction();
-        String setString = StringGenerator.toString(setFunction);
+            BooleanFormula setFunction = outputPin.getSetFunction();
+            String setString = StringGenerator.toString(setFunction);
 
-        BooleanFormula resetFunction = outputContact.getResetFunction();
-        String resetString = StringGenerator.toString(resetFunction);
+            BooleanFormula resetFunction = outputPin.getResetFunction();
+            String resetString = StringGenerator.toString(resetFunction);
 
-        if (!setString.isEmpty() && resetString.isEmpty()) {
-            result += " [" + outputName + " = " + setString + "]";
-        } else if (setString.isEmpty() && !resetString.isEmpty()) {
-            result += " [" + outputName + "\u2193 = " + resetString + "]";
-        } else if (!setString.isEmpty()) {
-            result += " [" + outputName + "\u2191 = " + setString + "; " + outputName + "\u2193 = " + resetString + "]";
+            String outputDetail = null;
+            if (!setString.isEmpty() && resetString.isEmpty()) {
+                outputDetail = outputName + " = " + setString;
+            } else if (setString.isEmpty() && !resetString.isEmpty()) {
+                outputDetail = outputName + RESET_FUNCTION_PREFIX + resetString;
+            } else if (!setString.isEmpty()) {
+                outputDetail = outputName + SET_FUNCTION_PREFIX + setString
+                        + ", " + outputName + RESET_FUNCTION_PREFIX + resetString;
+            }
+            if (outputDetail != null) {
+                if (!isFirstOutputPin) {
+                    outputDetails.append("; ");
+                }
+                outputDetails.append(outputDetail);
+                isFirstOutputPin = false;
+            }
+        }
+        String result = circuit.getComponentReference(cell);
+        if (!outputDetails.isEmpty()) {
+            result += " [" + outputDetails + "]";
         }
         return result;
     }
@@ -731,4 +755,25 @@ public final class CircuitUtils {
         result.setRootSpacePosition(new Point2D.Double(x, y));
         return result;
     }
+
+    public static void fuseContacts(VisualCircuit circuit, VisualContact inputContact, VisualContact outputContact) {
+        for (VisualConnection inputConnection: circuit.getConnections(inputContact)) {
+            VisualNode fromNode = inputConnection.getFirst();
+            for (VisualConnection outputConnection: new ArrayList<>(circuit.getConnections(outputContact))) {
+                VisualNode toNode = outputConnection.getSecond();
+                LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(outputContact,
+                        inputConnection, outputConnection);
+
+                circuit.remove(outputConnection);
+                try {
+                    VisualConnection newConnection = circuit.connect(fromNode, toNode);
+                    newConnection.mixStyle(inputConnection, outputConnection);
+                    ConnectionHelper.addControlPoints(newConnection, locations);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarning(e.getMessage());
+                }
+            }
+        }
+    }
+
 }
