@@ -6,9 +6,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.FormulaUtils;
-import org.workcraft.formula.visitors.BooleanComplementTransformer;
 import org.workcraft.formula.visitors.StringGenerator;
-import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.utils.Hierarchy;
@@ -82,34 +80,26 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
 
     private void transformGate(VisualCircuit circuit, VisualFunctionComponent gate) {
         VisualFunctionContact outputContact = gate.getGateOutput();
-        String gateStr = CircuitUtils.gateToString(circuit, gate);
+        String gateStr = CircuitUtils.cellToString(circuit, gate);
 
         BooleanFormula setFunction = outputContact.getSetFunction();
         if (setFunction == null) {
             LogUtils.logWarning("Gate " + gateStr + " cannot be transformed as it does not have set function defined");
             return;
         }
-        BooleanFormula newSetFunction = propagateInversion(setFunction);
+        BooleanFormula newSetFunction = FormulaUtils.propagateInversion(setFunction);
 
         BooleanFormula resetFunction = outputContact.getResetFunction();
-        BooleanFormula newResetFunction = propagateInversion(resetFunction);
+        BooleanFormula newResetFunction = FormulaUtils.propagateInversion(resetFunction);
 
         if (!compareFunctions(setFunction, newSetFunction) || !compareFunctions(resetFunction, newResetFunction)) {
             outputContact.setSetFunction(newSetFunction);
             gate.clearMapping();
             renameContacts(circuit.getMathModel(), gate.getReferencedComponent());
-            String newGateStr = CircuitUtils.gateToString(circuit, gate);
+            String newGateStr = CircuitUtils.cellToString(circuit, gate);
             LogUtils.logInfo("Transforming gate " + gateStr + " into " + newGateStr);
             circuit.addToSelection(gate);
         }
-    }
-
-    private BooleanFormula propagateInversion(BooleanFormula formula) {
-        BooleanFormula result = null;
-        if (formula != null) {
-            result = FormulaUtils.invert(formula.accept(new BooleanComplementTransformer(CleverBooleanWorker.getInstance())));
-        }
-        return result;
     }
 
     private boolean compareFunctions(BooleanFormula func1, BooleanFormula func2) {

@@ -1,26 +1,20 @@
 package org.workcraft.plugins.circuit.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 
 public class ContractComponentTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -75,7 +69,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
             if (isValidContraction(circuit, component)) {
                 VisualContact inputContact = component.getFirstVisualInput();
                 for (VisualContact outputContact: component.getVisualOutputs()) {
-                    connectContacts(circuit, inputContact, outputContact);
+                    CircuitUtils.fuseContacts(circuit, inputContact, outputContact);
                 }
                 circuit.remove(component);
             }
@@ -142,25 +136,6 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
             }
         }
         return true;
-    }
-
-    private void connectContacts(VisualCircuit circuit, VisualContact inputContact, VisualContact outputContact) {
-        for (VisualConnection inputConnection: circuit.getConnections(inputContact)) {
-            VisualNode fromNode = inputConnection.getFirst();
-            for (VisualConnection outputConnection: new ArrayList<>(circuit.getConnections(outputContact))) {
-                VisualNode toNode = outputConnection.getSecond();
-                LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(outputContact,
-                        inputConnection, outputConnection);
-                circuit.remove(outputConnection);
-                try {
-                    VisualConnection newConnection = circuit.connect(fromNode, toNode);
-                    newConnection.mixStyle(inputConnection, outputConnection);
-                    ConnectionHelper.addControlPoints(newConnection, locations);
-                } catch (InvalidConnectionException e) {
-                    LogUtils.logWarning(e.getMessage());
-                }
-            }
-        }
     }
 
 }

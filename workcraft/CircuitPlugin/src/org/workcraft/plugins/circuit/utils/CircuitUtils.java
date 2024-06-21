@@ -455,24 +455,42 @@ public final class CircuitUtils {
                 && (firstParent == secondParent);
     }
 
-    public static String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
-        String result = circuit.getMathModel().getComponentReference(gate.getReferencedComponent());
+    public static String cellToString(VisualCircuit circuit, VisualFunctionComponent cell) {
+        return cellToString(circuit.getMathModel(), cell.getReferencedComponent());
+    }
 
-        VisualFunctionContact outputContact = gate.getGateOutput();
-        String outputName = outputContact.getName();
+    public static String cellToString(Circuit circuit, FunctionComponent cell) {
+        StringBuilder outputDetails = new StringBuilder();
+        boolean isFirstOutputPin = true;
+        for (FunctionContact outputPin : cell.getFunctionOutputs()) {
+            String outputName = outputPin.getName();
 
-        BooleanFormula setFunction = outputContact.getSetFunction();
-        String setString = StringGenerator.toString(setFunction);
+            BooleanFormula setFunction = outputPin.getSetFunction();
+            String setString = StringGenerator.toString(setFunction);
 
-        BooleanFormula resetFunction = outputContact.getResetFunction();
-        String resetString = StringGenerator.toString(resetFunction);
+            BooleanFormula resetFunction = outputPin.getResetFunction();
+            String resetString = StringGenerator.toString(resetFunction);
 
-        if (!setString.isEmpty() && resetString.isEmpty()) {
-            result += " [" + outputName + " = " + setString + "]";
-        } else if (setString.isEmpty() && !resetString.isEmpty()) {
-            result += " [" + outputName + "\u2193 = " + resetString + "]";
-        } else if (!setString.isEmpty()) {
-            result += " [" + outputName + "\u2191 = " + setString + "; " + outputName + "\u2193 = " + resetString + "]";
+            String outputDetail = null;
+            if (!setString.isEmpty() && resetString.isEmpty()) {
+                outputDetail = outputName + " = " + setString;
+            } else if (setString.isEmpty() && !resetString.isEmpty()) {
+                outputDetail = outputName + RESET_FUNCTION_PREFIX + resetString;
+            } else if (!setString.isEmpty()) {
+                outputDetail = outputName + SET_FUNCTION_PREFIX + setString
+                        + ", " + outputName + RESET_FUNCTION_PREFIX + resetString;
+            }
+            if (outputDetail != null) {
+                if (!isFirstOutputPin) {
+                    outputDetails.append("; ");
+                }
+                outputDetails.append(outputDetail);
+                isFirstOutputPin = false;
+            }
+        }
+        String result = circuit.getComponentReference(cell);
+        if (!outputDetails.isEmpty()) {
+            result += " [" + outputDetails + "]";
         }
         return result;
     }
