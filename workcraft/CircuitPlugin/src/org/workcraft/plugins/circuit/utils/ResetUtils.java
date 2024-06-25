@@ -198,7 +198,7 @@ public final class ResetUtils {
             }
         }
         SpaceUtils.positionPort(circuit, resetPort, false);
-        SpaceUtils.detachAndPositionJoint(circuit, resetPort);
+        CircuitUtils.detachJoint(circuit, resetPort, 0.5);
         setInitialisationProtocol(circuit, resetPort, isActiveLow);
         return true;
     }
