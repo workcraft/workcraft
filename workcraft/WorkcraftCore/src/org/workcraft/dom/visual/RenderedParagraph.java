@@ -60,7 +60,7 @@ public class RenderedParagraph {
             if (alignment == Alignment.RIGHT) {
                 xMargin = boundingBox.getWidth() - lineBox.getWidth();
             }
-            float x = (float) (boundingBox.getX() - lineBox.getX() + xMargin * (1.0 - positioning.xSign));
+            float x = (float) (boundingBox.getX() - lineBox.getX() + xMargin);
             g.drawGlyphVector(glyphVector, x, y);
             y += lineMetricsHeight;
         }

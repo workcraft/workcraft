@@ -413,6 +413,14 @@ public final class CircuitUtils {
         return result;
     }
 
+    public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver, double offset) {
+        VisualJoint joint = detachJoint(circuit, driver);
+        if (joint != null) {
+            joint.setRootSpacePosition(SpaceUtils.getOffsetContactPosition(driver, offset));
+        }
+        return joint;
+    }
+
     public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver) {
         Set<VisualConnection> connections = new HashSet<>(circuit.getConnections(driver));
         if (!driver.isDriver() || (connections.size() <= 1)) {

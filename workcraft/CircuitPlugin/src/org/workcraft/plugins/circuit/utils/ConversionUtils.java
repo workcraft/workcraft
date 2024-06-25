@@ -53,6 +53,10 @@ public class ConversionUtils {
     }
 
     public static VisualConnection replicateDriverContact(VisualCircuit circuit, VisualContact drivenContact) {
+        return replicateDriverContact(circuit, drivenContact, 0.5);
+    }
+
+    public static VisualConnection replicateDriverContact(VisualCircuit circuit, VisualContact drivenContact, double offset) {
         Set<VisualConnection> connections = circuit.getConnections(drivenContact);
         if (connections.size() == 1) {
             VisualConnection connection = connections.iterator().next();
@@ -71,8 +75,8 @@ public class ConversionUtils {
                 int sign = drivenContact.isPort() ? -1 : 1;
                 ModelUtils.refreshBoundingBox(circuit, replicaDriverContact);
                 Rectangle2D replicaBox = replicaDriverContact.getBoundingBoxInLocalSpace();
-                double xOffset = sign * direction.getGradientX() * (0.5 + 0.5 * replicaBox.getWidth());
-                double yOffset = sign * direction.getGradientY() * (0.5 + 0.5 * replicaBox.getHeight());
+                double xOffset = sign * direction.getGradientX() * (offset + 0.5 * replicaBox.getWidth());
+                double yOffset = sign * direction.getGradientY() * (offset + 0.5 * replicaBox.getHeight());
                 replicaDriverContact.setRootSpacePosition(new Point2D.Double(pos.getX() + xOffset, pos.getY() + yOffset));
 
                 VisualNode firstNode = connection.getFirst();

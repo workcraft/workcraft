@@ -93,12 +93,6 @@ public final class GateUtils {
         }
         circuit.reparent(container, circuit, circuit.getRoot(), Collections.singletonList(component));
 
-        LinkedList<VisualComponent> predComponents = new LinkedList<>();
-        for (VisualNode predNode : circuit.getPreset(succContact)) {
-            if (predNode instanceof VisualComponent) {
-                predComponents.add((VisualComponent) predNode);
-            }
-        }
         Point2D.Double pos = new Point2D.Double(
                 succContact.getRootSpaceX() + succContact.getDirection().getGradientX() * offset,
                 succContact.getRootSpaceY() + succContact.getDirection().getGradientY() * offset);
@@ -108,17 +102,17 @@ public final class GateUtils {
         VisualContact outputContact = component.getFirstVisualOutput();
         outputContact.setDirection(succContact.getDirection().flip());
 
-        for (VisualComponent predComponent : predComponents) {
-            VisualConnection connection = circuit.getConnection(predComponent, succContact);
+        for (VisualNode predNode : circuit.getPreset(succContact)) {
+            VisualConnection connection = circuit.getConnection(predNode, succContact);
             LinkedList<Point2D> prefixControlPoints = ConnectionHelper.getPrefixControlPoints(connection, pos);
-            circuit.remove(connection);
             try {
-                VisualConnection inputConnection = circuit.connect(predComponent, inputContact);
+                VisualConnection inputConnection = circuit.connect(predNode, inputContact);
                 inputConnection.copyStyle(connection);
                 ConnectionHelper.addControlPoints(inputConnection, prefixControlPoints);
             } catch (InvalidConnectionException e) {
                 LogUtils.logWarning(e.getMessage());
             }
+            circuit.remove(connection);
         }
         try {
             circuit.connect(outputContact, succContact);
@@ -266,13 +260,6 @@ public final class GateUtils {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("AN", "B"), "ON"),
                 vars -> new Not(new Or(new Not(vars.get(0)), vars.get(1))));
-    }
-
-    public static VisualFunctionComponent createAOI222Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("A1", "A2", "B1", "B2", "C1", "C2"), "ON"),
-                vars -> new Not(new Or(new Or(new And(vars.get(0), vars.get(1)), new And(vars.get(2), vars.get(3))),
-                        new And(vars.get(4), vars.get(5)))));
     }
 
     public static VisualFunctionComponent createGate(VisualCircuit circuit, GateInterface defaultGateInterface,

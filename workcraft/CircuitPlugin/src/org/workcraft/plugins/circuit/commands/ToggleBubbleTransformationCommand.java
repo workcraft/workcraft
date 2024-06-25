@@ -113,6 +113,13 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionContact)) {
+            VisualFunctionComponent component = null;
+            boolean isZeroDelayComponent = false;
+            Node parent = node.getParent();
+            if (parent instanceof VisualFunctionComponent) {
+                component = (VisualFunctionComponent) parent;
+                isZeroDelayComponent = component.getIsZeroDelay();
+            }
             FunctionContact contact = ((VisualFunctionContact) node).getReferencedComponent();
             if (contact.isOutput()) {
                 BooleanFormula setFunction = contact.getSetFunction();
@@ -138,15 +145,15 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                     }
                 }
             }
-            Node parent = node.getParent();
-            if (parent instanceof VisualFunctionComponent) {
-                VisualFunctionComponent component = (VisualFunctionComponent) parent;
+            if (component != null) {
                 String label = component.getLabel();
                 if (!label.isEmpty()) {
-                    String ref = model.getMathReference(node);
-                    LogUtils.logWarning("Label '" + label + "' is removed from component '" + ref + "'.");
+                    VisualCircuit circuit = (VisualCircuit) model;
+                    String ref = circuit.getMathModel().getComponentReference(component.getReferencedComponent());
+                    LogUtils.logWarning("Label '" + label + "' is removed from component '" + ref + "'");
                     component.clearMapping();
                 }
+                component.setIsZeroDelay(isZeroDelayComponent);
                 component.invalidateRenderingResult();
                 model.addToSelection(component);
             }

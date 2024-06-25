@@ -9,6 +9,7 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.utils.Geometry;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -135,8 +136,12 @@ public final class ConnectionUtils {
             Point2D p1 = firstNode.getRootSpacePosition();
             Point2D p2 = secondNode.getRootSpacePosition();
             double x = p1.getX() + dx;
-            polyline.addControlPoint(new Point2D.Double(x, p1.getY()));
-            polyline.addControlPoint(new Point2D.Double(x, p2.getY()));
+            if (!Geometry.isAligned(p1.getX(), x)) {
+                polyline.addControlPoint(new Point2D.Double(x, p1.getY()));
+            }
+            if (!Geometry.isAligned(x, p2.getX())) {
+                polyline.addControlPoint(new Point2D.Double(x, p2.getY()));
+            }
         }
     }
 

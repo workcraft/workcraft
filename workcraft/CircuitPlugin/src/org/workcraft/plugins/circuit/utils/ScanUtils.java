@@ -238,7 +238,7 @@ public final class ScanUtils {
                 connectIfPossible(circuit, port, pin);
             }
             SpaceUtils.positionPort(circuit, port, false);
-            SpaceUtils.detachAndPositionJoint(circuit, port);
+            CircuitUtils.detachJoint(circuit, port, 0.5);
         }
     }
 

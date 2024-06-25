@@ -96,6 +96,7 @@ public class GenlibUtils {
             return null;
         }
         for (Gate gate : library.getGatesOrderedBySize()) {
+            if (gate.isSequential() || gate.isPrimitive()) continue;
             try {
                 BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
 
@@ -183,6 +184,7 @@ public class GenlibUtils {
             return null;
         }
         for (Gate gate : library.getGatesOrderedBySize()) {
+            if (gate.isSequential() || gate.isPrimitive()) continue;
             try {
                 BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
 

@@ -24,10 +24,7 @@ public final class SpaceUtils {
                 = ConnectionUtils.replaceConnectionScaleMode(connections, VisualConnection.ScaleMode.NONE);
 
         SpaceUtils.offsetComponentsFromContact(circuit, contact, space + 1.0);
-        VisualJoint joint = CircuitUtils.detachJoint(circuit, contact);
-        if (joint != null) {
-            joint.setRootSpacePosition(getOffsetContactPosition(contact, space));
-        }
+        CircuitUtils.detachJoint(circuit, contact, space);
         // Restore connection scale mode
         ConnectionUtils.restoreConnectionScaleMode(connectionToScaleModeMap);
     }
@@ -49,10 +46,7 @@ public final class SpaceUtils {
                         && !((node instanceof VisualContact) && ((VisualContact) node).isPin()));
 
         for (VisualTransformableNode transformableNode : transformableNodes) {
-            Rectangle2D bb = (transformableNode instanceof VisualComponent)
-                    ? ((VisualComponent) transformableNode).getInternalBoundingBoxInLocalSpace()
-                    : transformableNode.getBoundingBoxInLocalSpace();
-
+            Rectangle2D bb = getBoundingBox(transformableNode);
             double x = transformableNode.getRootSpaceX();
             double xBorder = x + bb.getX() + ((dx < 0) ? bb.getWidth() : 0.0);
             if ((xBorder - x0) * dx > 0) {
@@ -76,16 +70,16 @@ public final class SpaceUtils {
         connectedNodes.addAll(circuit.getPreset(contact));
         connectedNodes.addAll(circuit.getPostset(contact));
         for (Node connectedNode : connectedNodes) {
-            if (connectedNode instanceof VisualComponent) {
-                VisualComponent component = (VisualComponent) connectedNode;
-                Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
-                double x = component.getRootSpaceX();
+            if (connectedNode instanceof VisualTransformableNode) {
+                VisualTransformableNode transformableNode = (VisualTransformableNode) connectedNode;
+                Rectangle2D bb = getBoundingBox(transformableNode);
+                double x = transformableNode.getRootSpaceX();
                 double xBorder = x + bb.getX() + ((dx < 0) ? bb.getWidth() : 0.0);
                 double xSpace = Math.abs(xBorder - x0);
                 if (((xBorder - x0) * dx > 0) && (xSpace < result)) {
                     result = xSpace;
                 }
-                double y = component.getRootSpaceY();
+                double y = transformableNode.getRootSpaceY();
                 double yBorder = y + bb.getY() + ((dy < 0) ? bb.getHeight() : 0.0);
                 double ySpace = Math.abs(yBorder - y0);
                 if (((yBorder - y0) * dy > 0) && (ySpace < result)) {
@@ -96,10 +90,17 @@ public final class SpaceUtils {
         return result;
     }
 
+    private static Rectangle2D getBoundingBox(VisualTransformableNode transformableNode) {
+        return (transformableNode instanceof VisualComponent)
+                ? ((VisualComponent) transformableNode).getInternalBoundingBoxInLocalSpace()
+                : transformableNode.getBoundingBoxInLocalSpace();
+    }
+
     public static Point2D getOffsetContactPosition(VisualContact contact, double space) {
-        double d = contact.isPort() ? -space : space;
-        double x = contact.getRootSpaceX() + d * contact.getDirection().getGradientX();
-        double y = contact.getRootSpaceY() + d * contact.getDirection().getGradientY();
+        double offset = contact.isPort() ? -space : space;
+        VisualContact.Direction direction = contact.getDirection();
+        double x = contact.getRootSpaceX() + offset * direction.getGradientX();
+        double y = contact.getRootSpaceY() + offset * direction.getGradientY();
         return new Point2D.Double(x, y);
     }
 
@@ -166,13 +167,6 @@ public final class SpaceUtils {
             if (pin != null) {
                 port.setRootSpacePosition(new Point2D.Double(pin.getRootSpaceX() + dx, pin.getRootSpaceY()));
             }
-        }
-    }
-
-    public static void detachAndPositionJoint(VisualCircuit circuit, VisualContact port) {
-        VisualJoint joint = CircuitUtils.detachJoint(circuit, port);
-        if (joint != null) {
-            joint.setRootSpacePosition(getOffsetContactPosition(port, 0.5));
         }
     }
 
