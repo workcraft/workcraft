@@ -20,4 +20,9 @@ public class VisualReplicaContact extends VisualReplica {
         return (Contact) super.getReferencedComponent();
     }
 
+    @Override
+    public VisualContact getMaster() {
+        return (VisualContact) super.getMaster();
+    }
+
 }

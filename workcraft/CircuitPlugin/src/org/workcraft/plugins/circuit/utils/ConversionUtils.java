@@ -9,6 +9,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.commands.DissolveJointTransformationCommand;
+import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.ModelUtils;
 
 import java.awt.geom.Point2D;
@@ -62,11 +63,10 @@ public class ConversionUtils {
             VisualConnection connection = connections.iterator().next();
             if (connection.getSecond() == drivenContact) {
                 VisualContact driverContact = CircuitUtils.findDriver(circuit, drivenContact, false);
-
-                Container container = drivenContact.isPort()
-                        ? (Container) drivenContact.getParent()
-                        : (Container) drivenContact.getParent().getParent();
-
+                Container container = Hierarchy.getNearestContainer(driverContact, drivenContact);
+                if (container instanceof VisualComponent) {
+                    container = (Container) container.getParent();
+                }
                 VisualReplicaContact replicaDriverContact
                         = circuit.createVisualReplica(driverContact, VisualReplicaContact.class, container);
 

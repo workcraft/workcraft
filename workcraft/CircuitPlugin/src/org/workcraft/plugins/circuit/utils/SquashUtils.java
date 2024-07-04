@@ -4,16 +4,19 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.Replica;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
+import org.workcraft.plugins.circuit.VisualReplicaContact;
 import org.workcraft.utils.LogUtils;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -45,7 +48,9 @@ public final class SquashUtils {
         return result;
     }
 
-    public static void squashComponent(VisualCircuit circuit, VisualFunctionComponent component, VisualCircuit componentModel) {
+    public static void squashComponent(VisualCircuit circuit, VisualFunctionComponent component,
+            VisualCircuit componentModel) {
+
         String pageName = circuit.getMathName(component);
         circuit.setMathName(component, Identifier.getTemporaryName());
         Container container = (Container) component.getParent();
@@ -69,35 +74,57 @@ public final class SquashUtils {
             VisualFunctionContact drivenContact = pin.isDriven() ? pin : port;
             VisualFunctionContact driverContact = port.isDriver() ? port : pin;
 
-            Map<VisualComponent, LinkedList<Point2D>> fromShapeComponents = new HashMap<>();
-            for (VisualComponent fromComponent : circuit.getPreset(drivenContact, VisualComponent.class)) {
-                VisualConnection connection = circuit.getConnection(fromComponent, drivenContact);
+            // Collapse adjacent replicas before processing connections
+            collapseReplicaContacts(circuit, drivenContact, driverContact);
+
+            Map<VisualNode, LinkedList<Point2D>> fromNodeConnectionShapes = new HashMap<>();
+            for (VisualNode fromNode : circuit.getPreset(drivenContact)) {
+                VisualConnection connection = circuit.getConnection(fromNode, drivenContact);
                 if (connection != null) {
-                    fromShapeComponents.put(fromComponent, ConnectionHelper.getControlPoints(connection));
+                    fromNodeConnectionShapes.put(fromNode, ConnectionHelper.getControlPoints(connection));
                 }
             }
-            Map<VisualComponent, LinkedList<Point2D>> toShapeComponents = new HashMap<>();
-            for (VisualComponent toComponent : circuit.getPostset(driverContact, VisualComponent.class)) {
-                VisualConnection connection = circuit.getConnection(driverContact, toComponent);
+
+            Map<VisualNode, LinkedList<Point2D>> toNodeConnectionShapes = new HashMap<>();
+            for (VisualNode toNode : circuit.getPostset(driverContact)) {
+                VisualConnection connection = circuit.getConnection(driverContact, toNode);
                 if (connection != null) {
-                    toShapeComponents.put(toComponent, ConnectionHelper.getControlPoints(connection));
+                    toNodeConnectionShapes.put(toNode, ConnectionHelper.getControlPoints(connection));
                 }
             }
             circuit.remove(pin);
             circuit.remove(port);
-            mergeConnections(circuit, fromShapeComponents, toShapeComponents);
+            mergeConnections(circuit, fromNodeConnectionShapes, toNodeConnectionShapes);
         }
     }
 
-    private static void mergeConnections(VisualCircuit circuit, Map<VisualComponent, LinkedList<Point2D>> fromShapeComponents,
-            Map<VisualComponent, LinkedList<Point2D>> toShapeComponents) {
+    private static void collapseReplicaContacts(VisualCircuit circuit,
+            VisualFunctionContact drivenContact, VisualFunctionContact driverContact) {
 
-        for (VisualComponent fromComponent : fromShapeComponents.keySet()) {
-            LinkedList<Point2D> shape = new LinkedList<>(fromShapeComponents.get(fromComponent));
-            for (VisualComponent toComponent : toShapeComponents.keySet()) {
-                shape.addAll(toShapeComponents.get(toComponent));
+        for (VisualNode predNode : new ArrayList<>(circuit.getPreset(drivenContact))) {
+            if (predNode instanceof VisualReplicaContact) {
+                VisualReplicaContact predReplicaContact = (VisualReplicaContact) predNode;
+                ConversionUtils.collapseReplicaContact(circuit, predReplicaContact);
+            }
+        }
+        for (Replica replica : new ArrayList<>(driverContact.getReplicas())) {
+            if (replica instanceof VisualReplicaContact) {
+                VisualReplicaContact replicaContact = (VisualReplicaContact) replica;
+                ConversionUtils.collapseReplicaContact(circuit, replicaContact);
+            }
+        }
+    }
+
+    private static void mergeConnections(VisualCircuit circuit,
+            Map<VisualNode, LinkedList<Point2D>> fromNodeConnectionShapes,
+            Map<VisualNode, LinkedList<Point2D>> toNodeConnectionShapes) {
+
+        for (VisualNode fromNode : fromNodeConnectionShapes.keySet()) {
+            LinkedList<Point2D> shape = new LinkedList<>(fromNodeConnectionShapes.get(fromNode));
+            for (VisualNode toNode : toNodeConnectionShapes.keySet()) {
+                shape.addAll(toNodeConnectionShapes.get(toNode));
                 try {
-                    VisualConnection connection = circuit.connect(fromComponent, toComponent);
+                    VisualConnection connection = circuit.connect(fromNode, toNode);
                     ConnectionHelper.addControlPoints(connection, shape);
                 } catch (InvalidConnectionException e) {
                     throw new RuntimeException(e);

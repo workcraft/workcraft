@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.ReferenceHelper;
@@ -49,7 +50,7 @@ public final class ResetUtils {
     }
 
     public static Set<Contact> getProblematicPins(Circuit circuit) {
-        HashSet<Contact> result = new HashSet<>();
+        Set<Contact> result = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             for (FunctionContact outputContact : component.getFunctionOutputs()) {
                 if (outputContact.getForcedInit()) continue;
@@ -91,7 +92,7 @@ public final class ResetUtils {
     }
 
     public static Set<Contact> tagForcedInitSequentialPins(Circuit circuit) {
-        HashSet<FunctionContact> contacts = new HashSet<>();
+        Set<FunctionContact> contacts = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             for (FunctionContact contact : component.getFunctionOutputs()) {
                 if ((contact.getSetFunction() == null) || (contact.getResetFunction() == null)) continue;
@@ -128,7 +129,7 @@ public final class ResetUtils {
     }
 
     private static Set<Contact> setForcedInit(Collection<? extends Contact> contacts, boolean value) {
-        HashSet<Contact> result = new HashSet<>();
+        Set<Contact> result = new HashSet<>();
         for (Contact contact : contacts) {
             if (contact.getForcedInit() != value) {
                 contact.setForcedInit(value);
@@ -140,7 +141,7 @@ public final class ResetUtils {
 
     private static Set<Contact> simplifyForcedInit(Circuit circuit, Collection<? extends Contact> contacts) {
         Set<Contact> result = new HashSet<>();
-        for (Contact contact : contacts) {
+        for (Contact contact : orderContactsByHeuristic(contacts)) {
             contact.setForcedInit(false);
             InitialisationState initState = new InitialisationState(circuit);
             if (initState.isInitialisedPin(contact)) {
@@ -152,8 +153,37 @@ public final class ResetUtils {
         return result;
     }
 
+    private static List<Contact> orderContactsByHeuristic(Collection<? extends Contact> contacts) {
+        int tierCount = 6;
+        List<List<Contact>> tiers = new ArrayList<>(tierCount);
+        for (int tierIndex = 0; tierIndex < tierCount; tierIndex++) {
+            tiers.add(new ArrayList<>());
+        }
+        for (Contact contact : contacts) {
+            int tierIndex = tierCount - 1;
+            Node parent = contact.getParent();
+            if (parent instanceof FunctionComponent) {
+                FunctionComponent component = (FunctionComponent) parent;
+                if (component.isSequentialGate()) {
+                    tierIndex = 0;
+                } else if (component.getIsArbitrationPrimitive()) {
+                    tierIndex = 1;
+                } else if (component.getInputs().size() > 2) {
+                    tierIndex = 2;
+                } else if (component.getInputs().size() > 1) {
+                    tierIndex = 3;
+                } else {
+                    tierIndex = 4;
+                }
+            }
+            List<Contact> tier = tiers.get(Math.min(tierIndex, tierCount - 1));
+            tier.add(contact);
+        }
+        return tiers.stream().flatMap(List::stream).toList();
+    }
+
     public static Set<Contact> tagForcedInitAutoDiscard(Circuit circuit) {
-        HashSet<FunctionContact> contacts = new HashSet<>();
+        Set<FunctionContact> contacts = new HashSet<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isPin() && contact.isDriver() && contact.getForcedInit()) {
                 contacts.add(contact);
