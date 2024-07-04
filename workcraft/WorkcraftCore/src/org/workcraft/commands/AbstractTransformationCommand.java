@@ -46,6 +46,7 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
         if (!nodes.isEmpty()) {
             we.saveMemento();
             transformNodes(visualModel, nodes);
+            we.setChanged(true);
         }
     }
 
