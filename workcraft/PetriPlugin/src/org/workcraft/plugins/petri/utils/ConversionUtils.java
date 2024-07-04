@@ -116,8 +116,8 @@ public class ConversionUtils {
             }
             // Remove producing and dual consuming arcs (including replicas)
             visualModel.remove(connection);
-            VisualPlace place = (VisualPlace) ((placeOrReplica instanceof VisualPlace) ? placeOrReplica
-                    : ((VisualReplicaPlace) placeOrReplica).getMaster());
+            VisualPlace place = (VisualPlace) ((placeOrReplica instanceof VisualReplicaPlace)
+                    ? ((VisualReplicaPlace) placeOrReplica).getMaster() : placeOrReplica);
 
             VisualConnection dualConsumingArc = visualModel.getConnection(place, transition);
             if (dualConsumingArc != null) {
@@ -157,8 +157,8 @@ public class ConversionUtils {
             transition = connection.getSecond();
             // Remove consuming and dual producing arcs (including replicas)
             visualModel.remove(connection);
-            VisualPlace place = (VisualPlace) ((placeOrReplica instanceof VisualPlace) ? placeOrReplica
-                    : ((VisualReplicaPlace) placeOrReplica).getMaster());
+            VisualPlace place = (VisualPlace) ((placeOrReplica instanceof VisualReplicaPlace)
+                    ? ((VisualReplicaPlace) placeOrReplica).getMaster() : placeOrReplica);
 
             VisualConnection dualProducingArc = visualModel.getConnection(transition, place);
             if (dualProducingArc != null) {
@@ -304,7 +304,7 @@ public class ConversionUtils {
             reverse = true;
         }
         if ((place != null) && (transition != null)) {
-            Container container = Hierarchy.getNearestContainer(transition);
+            Container container = Hierarchy.getNearestContainer(place, transition);
             VisualReplicaPlace replica = visualModel.createVisualReplica(place, VisualReplicaPlace.class, container);
             Boolean closerToSourceNode = null;
             if (connection.getFirst() instanceof VisualPlace) {
