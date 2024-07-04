@@ -10,25 +10,31 @@ import java.awt.font.TextAttribute;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class FormulaToGraphics {
 
+    private static final String DEFAULT_FONT_PATH = "fonts/default.pfb";
+    private static final String FONT_LOAD_ERROR_MESSAGE = "Failed to load " + DEFAULT_FONT_PATH;
+
     public static Font defaultFont;
     public static Font defaultSubFont;
 
     static {
+        InputStream fontResource = ClassLoader.getSystemResourceAsStream(DEFAULT_FONT_PATH);
+        if (fontResource == null) {
+            throw new RuntimeException(FONT_LOAD_ERROR_MESSAGE);
+        }
         try {
-            defaultFont = Font.createFont(Font.TYPE1_FONT,
-                    ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
-
+            defaultFont = Font.createFont(Font.TYPE1_FONT, fontResource).deriveFont(0.5f);
             Map<TextAttribute, Integer> attributes = new HashMap<>();
             attributes.put(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB);
             defaultSubFont = defaultFont.deriveFont(attributes);
         } catch (FontFormatException | IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(FONT_LOAD_ERROR_MESSAGE + ": " + e.getMessage());
         }
     }
 
@@ -267,7 +273,7 @@ public class FormulaToGraphics {
     public static class AndPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(And node) {
-            return visitBinary(this, unicodeAllowed ? "\u00b7" : "*", node);
+            return visitBinary(this, unicodeAllowed ? " \u2022 " : " * ", node);
         }
     }
 
