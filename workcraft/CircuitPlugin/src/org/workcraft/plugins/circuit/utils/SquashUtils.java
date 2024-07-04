@@ -74,52 +74,57 @@ public final class SquashUtils {
             VisualFunctionContact drivenContact = pin.isDriven() ? pin : port;
             VisualFunctionContact driverContact = port.isDriver() ? port : pin;
 
-            // Collapse replicas that drive the driven contacts before processing incoming connections
-            for (VisualNode predNode : new ArrayList<>(circuit.getPreset(drivenContact))) {
-                if (predNode instanceof VisualReplicaContact) {
-                    VisualReplicaContact predReplicaContact = (VisualReplicaContact) predNode;
-                    ConversionUtils.collapseReplicaContact(circuit, predReplicaContact);
-                }
-            }
+            // Collapse adjacent replicas before processing connections
+            collapseReplicaContacts(circuit, drivenContact, driverContact);
 
-            Map<VisualNode, LinkedList<Point2D>> fromShapeComponents = new HashMap<>();
+            Map<VisualNode, LinkedList<Point2D>> fromNodeConnectionShapes = new HashMap<>();
             for (VisualNode fromNode : circuit.getPreset(drivenContact)) {
                 VisualConnection connection = circuit.getConnection(fromNode, drivenContact);
                 if (connection != null) {
-                    fromShapeComponents.put(fromNode, ConnectionHelper.getControlPoints(connection));
+                    fromNodeConnectionShapes.put(fromNode, ConnectionHelper.getControlPoints(connection));
                 }
             }
 
-            // Collapse replicas of driver contact before processing outgoing connections
-            for (Replica replica : new ArrayList<>(driverContact.getReplicas())) {
-                if (replica instanceof VisualReplicaContact) {
-                    VisualReplicaContact replicaContact = (VisualReplicaContact) replica;
-                    ConversionUtils.collapseReplicaContact(circuit, replicaContact);
-                }
-            }
-
-            Map<VisualNode, LinkedList<Point2D>> toShapeComponents = new HashMap<>();
+            Map<VisualNode, LinkedList<Point2D>> toNodeConnectionShapes = new HashMap<>();
             for (VisualNode toNode : circuit.getPostset(driverContact)) {
                 VisualConnection connection = circuit.getConnection(driverContact, toNode);
                 if (connection != null) {
-                    toShapeComponents.put(toNode, ConnectionHelper.getControlPoints(connection));
+                    toNodeConnectionShapes.put(toNode, ConnectionHelper.getControlPoints(connection));
                 }
             }
             circuit.remove(pin);
             circuit.remove(port);
-            mergeConnections(circuit, fromShapeComponents, toShapeComponents);
+            mergeConnections(circuit, fromNodeConnectionShapes, toNodeConnectionShapes);
         }
     }
 
-    private static void mergeConnections(VisualCircuit circuit, Map<VisualNode, LinkedList<Point2D>> fromShapeComponents,
-            Map<VisualNode, LinkedList<Point2D>> toShapeComponents) {
+    private static void collapseReplicaContacts(VisualCircuit circuit,
+            VisualFunctionContact drivenContact, VisualFunctionContact driverContact) {
 
-        for (VisualNode fromComponent : fromShapeComponents.keySet()) {
-            LinkedList<Point2D> shape = new LinkedList<>(fromShapeComponents.get(fromComponent));
-            for (VisualNode toComponent : toShapeComponents.keySet()) {
-                shape.addAll(toShapeComponents.get(toComponent));
+        for (VisualNode predNode : new ArrayList<>(circuit.getPreset(drivenContact))) {
+            if (predNode instanceof VisualReplicaContact) {
+                VisualReplicaContact predReplicaContact = (VisualReplicaContact) predNode;
+                ConversionUtils.collapseReplicaContact(circuit, predReplicaContact);
+            }
+        }
+        for (Replica replica : new ArrayList<>(driverContact.getReplicas())) {
+            if (replica instanceof VisualReplicaContact) {
+                VisualReplicaContact replicaContact = (VisualReplicaContact) replica;
+                ConversionUtils.collapseReplicaContact(circuit, replicaContact);
+            }
+        }
+    }
+
+    private static void mergeConnections(VisualCircuit circuit,
+            Map<VisualNode, LinkedList<Point2D>> fromNodeConnectionShapes,
+            Map<VisualNode, LinkedList<Point2D>> toNodeConnectionShapes) {
+
+        for (VisualNode fromNode : fromNodeConnectionShapes.keySet()) {
+            LinkedList<Point2D> shape = new LinkedList<>(fromNodeConnectionShapes.get(fromNode));
+            for (VisualNode toNode : toNodeConnectionShapes.keySet()) {
+                shape.addAll(toNodeConnectionShapes.get(toNode));
                 try {
-                    VisualConnection connection = circuit.connect(fromComponent, toComponent);
+                    VisualConnection connection = circuit.connect(fromNode, toNode);
                     ConnectionHelper.addControlPoints(connection, shape);
                 } catch (InvalidConnectionException e) {
                     throw new RuntimeException(e);
