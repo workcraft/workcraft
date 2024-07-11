@@ -7,20 +7,28 @@ jobs:
   linux-build:
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04]
+        # As of 2024-07-11, ubuntu-24.04 has a problem with 32bit binaries:
+        # Its kernel is built with 'CONFIG_COMPAT_32BIT_TIME=n'.
+        # This results in the following segfault for any MPSat and PComp execution:
+        #   The futex facility returned an unexpected error code.
+        #   Aborted (core dumped)
+        # See details at:
+        #   https://bugs.launchpad.net/ubuntu/+source/linux-signed-azure/+bug/2071445
+        #   https://github.com/actions/runner-images/issues/9977
+        os: [ubuntu-22.04, ubuntu-20.04]
         java-distribution: [temurin, zulu]
-        java-version: [17, 21]
+        java-version: [21, 17]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Setup JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: ${{ matrix.java-distribution }}
           java-version: ${{ matrix.java-version }}
@@ -32,12 +40,12 @@ jobs:
         run: sudo apt-get install clasp
 
       - name: Run unit tests
-        uses: GabrielBB/xvfb-action@v1
+        uses: coactions/setup-xvfb@v1
         with:
           run: ./gradlew test
 
       - name: Run integration tests
-        uses: GabrielBB/xvfb-action@v1
+        uses: coactions/setup-xvfb@v1
         with:
           run: ./ci/run.sh
 
@@ -45,20 +53,20 @@ jobs:
   osx-build:
     strategy:
       matrix:
-        os: [macos-11, macos-12]
+        os: [macos-14, macos-13, macos-12]
         java-distribution: [temurin]
-        java-version: [17, 21]
+        java-version: [21, 17]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Setup JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: ${{ matrix.java-distribution }}
           java-version: ${{ matrix.java-version }}
@@ -73,7 +81,7 @@ jobs:
         run: ./gradlew test
 
       - name: Run integration tests (without 32-bit backends)
-        uses: GabrielBB/xvfb-action@v1
+        uses: coactions/setup-xvfb@v1
         with:
           run: ./ci/run.sh exec help workspace ci/export-* ci/import-* ci/property-* ci/statistics-*
 
@@ -81,20 +89,20 @@ jobs:
   windows-build:
     strategy:
       matrix:
-        os: [windows-2019, windows-2022]
+        os: [windows-2022, windows-2019]
         java-distribution: [temurin]
-        java-version: [17, 21]
+        java-version: [21, 17]
 
     runs-on: ${{ matrix.os }}
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Setup JDK ${{ matrix.java-version }}
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: ${{ matrix.java-distribution }}
           java-version: ${{ matrix.java-version }}
@@ -115,12 +123,12 @@ jobs:
 
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Setup JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
@@ -138,7 +146,7 @@ jobs:
         run: sudo apt-get install clasp
 
       - name: Run unit tests
-        uses: GabrielBB/xvfb-action@v1
+        uses: coactions/setup-xvfb@v1
         with:
           run: ./gradlew test
 
@@ -151,7 +159,7 @@ jobs:
           format: jacoco
 
 #      - name: Run a specific unit test
-#        uses: GabrielBB/xvfb-action@v1
+#        uses: coactions/setup-xvfb@v1
 #        with:
 #           run: ./gradlew :MpsatSynthesisPlugin:test --tests org.workcraft.plugins.mpsat_synthesis.SynthesisCommandsTests.bufferTechnologyMappingSynthesis
 
