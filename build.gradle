@@ -1,4 +1,5 @@
 plugins {
+    id 'java'
     id 'org.javacc.javacc'
     id 'com.github.kt3k.coveralls'
     id 'de.aaschmid.cpd'
@@ -9,14 +10,17 @@ repositories {
     mavenCentral()
 }
 
+java {
+    sourceCompatibility = gradle.javaSourceVersion
+    targetCompatibility = gradle.javaTargetVersion
+}
+
 subprojects {
     repositories {
         mavenCentral()
     }
 
     apply plugin: 'java'
-    sourceCompatibility = gradle.javaSourceVersion
-    targetCompatibility = gradle.javaTargetVersion
 
     sourceSets {
         main.java.srcDirs = ['src', 'src-gen']
@@ -57,7 +61,7 @@ subprojects {
         lib fileTree(dir: gradle.libDir, include: ['**/*.jar'])
         configurations.api.extendsFrom(configurations.lib)
         testImplementation gradle.junit
-        testRuntimeOnly gradle.junit
+        testRuntimeOnly gradle.junitPlatformLauncher
         javacc gradle.javacc
     }
 

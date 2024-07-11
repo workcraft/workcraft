@@ -33,11 +33,17 @@ public final class ScanUtils {
 
     public static List<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
         List<VisualFunctionComponent> result = new ArrayList<>();
+        boolean clearMapping = circuit.getVisualFunctionComponents().stream()
+                .noneMatch(VisualFunctionComponent::isMapped);
+
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             for (VisualContact contact : component.getVisualOutputs()) {
                 if (contact.getReferencedComponent().getPathBreaker()) {
                     contact.getReferencedComponent().setPathBreaker(false);
                     VisualFunctionComponent testableGate = insertTestableGate(circuit, contact);
+                    if (clearMapping) {
+                        testableGate.clearMapping();
+                    }
                     result.add(testableGate);
                 }
             }
