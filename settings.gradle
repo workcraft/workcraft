@@ -7,7 +7,7 @@ pluginManagement {
         // Plugin for PMD-based Copy-Paste Detection (https://plugins.gradle.org/plugin/de.aaschmid.cpd)
         id 'de.aaschmid.cpd' version '3.3'
         // Plugin for analysing licenses of dependencies (https://plugins.gradle.org/plugin/com.github.jk1.dependency-license-report)
-        id 'com.github.jk1.dependency-license-report' version '2.5'
+        id 'com.github.jk1.dependency-license-report' version '2.8'
     }
 }
 
@@ -22,7 +22,6 @@ gradle.ext.javaTargetVersion = JavaVersion.VERSION_17
 gradle.ext.javaReleaseVersion = 17  /* Must be integer, e.g. 11 for JDK11*/
 
 // Checkstyle code linter (https://checkstyle.sourceforge.io/) 
-// Note: Checkstyle v10.12.6+ hit Gradle long-term issue with guava dependencies
 gradle.ext.checkstyleVersion = '10.17.0'
 // PMD code analyser (https://pmd.github.io/)
 gradle.ext.pmdVersion = '6.55.0'
