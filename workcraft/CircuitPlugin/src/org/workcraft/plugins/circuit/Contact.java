@@ -152,4 +152,8 @@ public class Contact extends MathNode implements BooleanVariable {
         return isDriver() && isZeroDelayPin();
     }
 
+    public boolean isAvoidInitPin() {
+        return (getParent() instanceof FunctionComponent) && ((FunctionComponent) getParent()).getAvoidInit();
+    }
+
 }

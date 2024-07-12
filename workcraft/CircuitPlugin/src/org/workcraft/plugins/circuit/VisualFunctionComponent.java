@@ -56,6 +56,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 FunctionComponent.PROPERTY_IS_ZERO_DELAY,
                 this::setIsZeroDelay, this::getIsZeroDelay));
+
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
+                FunctionComponent.PROPERTY_AVOID_INIT,
+                this::setAvoidInit, this::getAvoidInit));
     }
 
     @Override
@@ -86,6 +90,18 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     public void setIsZeroDelay(boolean value) {
         if (getReferencedComponent() != null) {
             getReferencedComponent().setIsZeroDelay(value);
+        }
+    }
+
+    @NoAutoSerialisation
+    public boolean getAvoidInit() {
+        return (getReferencedComponent() != null) && getReferencedComponent().getAvoidInit();
+    }
+
+    @NoAutoSerialisation
+    public void setAvoidInit(boolean value) {
+        if (getReferencedComponent() != null) {
+            getReferencedComponent().setAvoidInit(value);
         }
     }
 

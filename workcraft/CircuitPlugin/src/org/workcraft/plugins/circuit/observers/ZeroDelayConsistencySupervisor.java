@@ -34,6 +34,11 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
 
                 handleZeroDelayChange((FunctionComponent) sender);
             }
+            if ((sender instanceof FunctionComponent)
+                    && propertyName.equals(FunctionComponent.PROPERTY_AVOID_INIT)) {
+
+                handleAvoidInitChange((FunctionComponent) sender);
+            }
         }
     }
 
@@ -85,6 +90,14 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
             if (componentPostset.size() + portPostset.size() > 1) {
                 component.setIsZeroDelay(false);
                 throw new ArgumentException("A component with a fork at its output cannot be zero delay.");
+            }
+        }
+    }
+
+    private void handleAvoidInitChange(FunctionComponent component) {
+        if (component.getAvoidInit()) {
+            for (Contact contact : component.getOutputs()) {
+                contact.setForcedInit(false);
             }
         }
     }

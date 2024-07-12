@@ -166,7 +166,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 () -> getReferencedComponent().getForcedInit()) {
             @Override
             public boolean isVisible() {
-                return isDriver() && !isZeroDelayPin();
+                return isDriver() && !isZeroDelayPin() && !isAvoidInitPin();
             }
         }.setCombinable().setTemplatable());
 
@@ -476,6 +476,10 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     public boolean isZeroDelayDriver() {
         return getReferencedComponent().isZeroDelayDriver();
+    }
+
+    public boolean isAvoidInitPin() {
+        return getReferencedComponent().isAvoidInitPin();
     }
 
     @Override
