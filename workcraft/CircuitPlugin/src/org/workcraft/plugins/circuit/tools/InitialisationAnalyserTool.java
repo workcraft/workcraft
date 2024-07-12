@@ -57,7 +57,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private JPanel getLegendControlsPanel() {
         ColorLegendTable colorLegendTable = new ColorLegendTable(Arrays.asList(
-                Pair.of(AnalysisDecorationSettings.getDontTouchColor(), "Don't touch zero delay"),
+                Pair.of(AnalysisDecorationSettings.getDontTouchColor(), "Zero delay / Avoid init"),
                 Pair.of(AnalysisDecorationSettings.getProblemColor(), "Problem of initialisation"),
                 Pair.of(VisualCommonSettings.getFillColor(), "Unknown initial state"),
                 Pair.of(AnalysisDecorationSettings.getFixerColor(), "Forced initial state"),
@@ -245,7 +245,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 contact = component.getMainVisualOutput();
             }
 
-            if ((contact != null) && contact.isDriver() && !contact.isZeroDelayPin()) {
+            if ((contact != null) && contact.isDriver() && !contact.isZeroDelayPin() && !contact.isAvoidInitPin()) {
                 editor.getWorkspaceEntry().saveMemento();
                 contact.getReferencedComponent().setForcedInit(!contact.getReferencedComponent().getForcedInit());
                 processed = true;
@@ -290,7 +290,8 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             initialised &= initState.isInitialisedPin(contact);
             hasProblem |= initState.isProblematicPin(contact);
         }
-        final Color color = component.getIsZeroDelay() ? AnalysisDecorationSettings.getDontTouchColor()
+        final Color color = (component.getAvoidInit() || component.getIsZeroDelay())
+                ? AnalysisDecorationSettings.getDontTouchColor()
                 : hasProblem ? AnalysisDecorationSettings.getProblemColor()
                 : forcedInit ? AnalysisDecorationSettings.getFixerColor()
                 : initialised ? AnalysisDecorationSettings.getClearColor() : null;
@@ -410,7 +411,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     Contact contact = initState.getDriverPort(getSelectedRow());
-                    if (contact != null) {
+                    if ((contact != null) && !contact.isZeroDelayPin() && !contact.isAvoidInitPin()) {
                         contact.setForcedInit(!contact.getForcedInit());
                     }
                 }

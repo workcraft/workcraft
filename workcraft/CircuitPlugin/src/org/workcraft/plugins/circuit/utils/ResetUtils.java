@@ -114,7 +114,7 @@ public final class ResetUtils {
     public static Set<Contact> tagForcedInitAutoAppend(Circuit circuit) {
         Set<Contact> contacts = new HashSet<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (!component.getIsZeroDelay()) {
+            if (!component.getIsZeroDelay() && !component.getAvoidInit()) {
                 for (FunctionContact contact : component.getFunctionContacts()) {
                     if (contact.isPin() && contact.isDriver()) {
                         contacts.add(contact);
@@ -584,7 +584,7 @@ public final class ResetUtils {
 
         List<String> uninitialisedPinRefs = new ArrayList<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (!component.getIsZeroDelay()) {
+            if (!component.getIsZeroDelay() && !component.getAvoidInit()) {
                 for (FunctionContact contact : component.getFunctionContacts()) {
                     if (contact.isOutput() && (!initState.isInitialisedPin(contact) || contact.getForcedInit())) {
                         String contactRef = circuit.getNodeReference(contact);

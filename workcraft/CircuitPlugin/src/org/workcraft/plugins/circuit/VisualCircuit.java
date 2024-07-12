@@ -368,6 +368,7 @@ public class VisualCircuit extends AbstractVisualModel {
                     if (Contact.PROPERTY_INIT_TO_ONE.equals(propertyName)
                             || Contact.PROPERTY_FORCED_INIT.equals(propertyName)
                             || Contact.PROPERTY_PATH_BREAKER.equals(propertyName)) {
+
                         properties.add(property);
                     }
                 }

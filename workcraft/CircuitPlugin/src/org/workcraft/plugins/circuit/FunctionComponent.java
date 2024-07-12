@@ -22,9 +22,11 @@ public class FunctionComponent extends CircuitComponent {
 
     public static final String PROPERTY_IS_ZERO_DELAY = "Zero delay";
     public static final String PROPERTY_ARBITRATION_PRIMITIVE = "Arbitration";
+    public static final String PROPERTY_AVOID_INIT = "Avoid init";
 
     private boolean isZeroDelay;
     private boolean isArbitrationPrimitive;
+    private boolean avoidInit;
 
     private final class CircuitHierarchySupervisor extends HierarchySupervisor {
         @Override
@@ -62,6 +64,17 @@ public class FunctionComponent extends CircuitComponent {
 
     public boolean getIsZeroDelay() {
         return isZeroDelay;
+    }
+
+    public boolean getAvoidInit() {
+        return avoidInit;
+    }
+
+    public void setAvoidInit(boolean value) {
+        if (avoidInit != value) {
+            avoidInit = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_AVOID_INIT));
+        }
     }
 
     public void setIsArbitrationPrimitive(boolean value) {
