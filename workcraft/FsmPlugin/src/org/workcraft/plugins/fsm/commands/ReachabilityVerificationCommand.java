@@ -16,12 +16,10 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
-public class ReachabilityVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
+public class ReachabilityVerificationCommand
+        extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
     private static final String TITLE = "Verification result";
 
@@ -46,7 +44,7 @@ public class ReachabilityVerificationCommand extends AbstractVerificationCommand
             return null;
         }
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
-        HashSet<State> unreachableStates = checkReachability(fsm);
+        Set<State> unreachableStates = calcUnreachableStates(fsm);
         if (unreachableStates.isEmpty()) {
             DialogUtils.showInfo("The model does not have unreachable states.", TITLE);
         } else {
@@ -54,7 +52,9 @@ public class ReachabilityVerificationCommand extends AbstractVerificationCommand
             String message = "The model has unreachable state:\n" + refStr;
             String question = "\n\nSelect unreachable states?\n";
             Framework framework = Framework.getInstance();
-            if (DialogUtils.showConfirmInfo(message, question, TITLE, true) && framework.isInGuiMode()) {
+            if (framework.isInGuiMode()
+                    && DialogUtils.showConfirmWarning(message, question, TITLE, true)) {
+
                 MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
@@ -64,10 +64,10 @@ public class ReachabilityVerificationCommand extends AbstractVerificationCommand
         return unreachableStates.isEmpty();
     }
 
-    private HashSet<State> checkReachability(final Fsm fsm) {
-        HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
+    private Set<State> calcUnreachableStates(final Fsm fsm) {
+        Map<State, Set<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
-        HashSet<State> visited = new HashSet<>();
+        Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
 
         State initialState = fsm.getInitialState();
@@ -87,7 +87,7 @@ public class ReachabilityVerificationCommand extends AbstractVerificationCommand
             }
         }
 
-        HashSet<State> unreachableStates = new HashSet<>(fsm.getStates());
+        Set<State> unreachableStates = new HashSet<>(fsm.getStates());
         unreachableStates.removeAll(visited);
         return unreachableStates;
     }

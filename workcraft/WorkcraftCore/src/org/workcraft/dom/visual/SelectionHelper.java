@@ -8,6 +8,7 @@ import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 public class SelectionHelper {
 
@@ -75,7 +76,7 @@ public class SelectionHelper {
         return result;
     }
 
-    public static void selectByReferencedComponents(VisualModel model, HashSet<? extends MathNode> nodes) {
+    public static void selectByReferencedComponents(VisualModel model, Set<? extends MathNode> nodes) {
         model.selectNone();
         for (VisualComponent component: Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class)) {
             MathNode node = component.getReferencedComponent();
