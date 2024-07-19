@@ -16,12 +16,10 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
 
-public class DeadlockFreenessVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
+public class DeadlockFreenessVerificationCommand
+        extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
     private static final String TITLE = "Verification result";
 
@@ -47,7 +45,7 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
         }
         Framework framework = Framework.getInstance();
         Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
-        HashSet<State> deadlockStates = checkDeadlock(fsm);
+        Set<State> deadlockStates = calcDeadlockStates(fsm);
         if (deadlockStates.isEmpty()) {
             DialogUtils.showInfo("The model is deadlock-free.", TITLE);
         } else {
@@ -68,7 +66,9 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
                 message += "\n\nFinal deadlock states: \n" + stateStr;
             }
             String question = "\n\nSelect deadlock states?\n";
-            if (DialogUtils.showConfirmInfo(message, question, TITLE, true) && framework.isInGuiMode()) {
+            if (framework.isInGuiMode()
+                    && DialogUtils.showConfirmWarning(message, question, TITLE, true)) {
+
                 MainWindow mainWindow = framework.getMainWindow();
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
@@ -78,11 +78,11 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
         return deadlockStates.isEmpty();
     }
 
-    private HashSet<State> checkDeadlock(final Fsm fsm) {
-        HashSet<State> deadlockStates = new HashSet<>();
-        HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
+    private Set<State> calcDeadlockStates(final Fsm fsm) {
+        Set<State> deadlockStates = new HashSet<>();
+        Map<State, Set<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
-        HashSet<State> visited = new HashSet<>();
+        Set<State> visited = new HashSet<>();
         Queue<State> queue = new LinkedList<>();
 
         State initialState = fsm.getInitialState();

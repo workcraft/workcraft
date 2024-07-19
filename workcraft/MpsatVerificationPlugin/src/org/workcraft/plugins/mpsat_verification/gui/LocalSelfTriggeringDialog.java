@@ -1,85 +1,50 @@
 package org.workcraft.plugins.mpsat_verification.gui;
 
-import org.workcraft.gui.dialogs.ModalDialog;
+import org.workcraft.gui.dialogs.ListDataDialog;
 import org.workcraft.gui.lists.ColorListCellRenderer;
-import org.workcraft.gui.lists.MultipleListSelectionModel;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringDataPreserver;
-import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringParameters;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.utils.GuiUtils;
-import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.WorkspaceUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.util.List;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
-public class LocalSelfTriggeringDialog extends ModalDialog<LocalSelfTriggeringDataPreserver> {
-
-    private LocalSignalList localSignalList;
-
-    static class LocalSignalList extends JList<String> {
-        LocalSignalList(Set<String> outputSignals, Set<String> internalSignals) {
-            super(new Vector<>(Stream.concat(outputSignals.stream(), internalSignals.stream())
-                    .sorted(SortUtils::compareNatural)
-                    .collect(Collectors.toList())));
-
-            setBorder(GuiUtils.getEmptyBorder());
-            setSelectionModel(new MultipleListSelectionModel());
-            setCellRenderer(new ColorListCellRenderer(signal -> {
-                if (outputSignals.contains(signal)) {
-                    return SignalCommonSettings.getOutputColor();
-                } else if (internalSignals.contains(signal)) {
-                    return SignalCommonSettings.getInternalColor();
-                } else {
-                    return null;
-                }
-            }));
-        }
-    }
+public class LocalSelfTriggeringDialog extends ListDataDialog {
 
     public LocalSelfTriggeringDialog(Window owner, LocalSelfTriggeringDataPreserver userData) {
         super(owner, "Absence of local self-triggering", userData);
+    }
 
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowOpened(WindowEvent e) {
-                requestFocus();
+    @Override
+    public DefaultListCellRenderer getItemListCellRenderer() {
+        Stg stg = WorkspaceUtils.getAs(getUserData().getWorkspaceEntry(), Stg.class);
+        Set<String> outputSignals = stg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> internalSignals = stg.getSignalReferences(Signal.Type.INTERNAL);
+        return new ColorListCellRenderer(signal -> {
+            if (outputSignals.contains(signal)) {
+                return SignalCommonSettings.getOutputColor();
+            } else if (internalSignals.contains(signal)) {
+                return SignalCommonSettings.getInternalColor();
+            } else {
+                return null;
             }
         });
     }
 
     @Override
-    public JPanel createContentPanel() {
+    public Collection<String> getItems() {
+        Collection<String> result = new HashSet<>();
         Stg stg = WorkspaceUtils.getAs(getUserData().getWorkspaceEntry(), Stg.class);
-        localSignalList = new LocalSignalList(
-                getSyntacticSelfTriggeringSignals(stg, stg.getSignalReferences(Signal.Type.OUTPUT)),
-                getSyntacticSelfTriggeringSignals(stg, stg.getSignalReferences(Signal.Type.INTERNAL)));
-
-        LocalSelfTriggeringParameters parameters = getUserData().loadData();
-        List<String> exceptionSignals = parameters.getOrderedExceptionSignals();
-        selectSignals(localSignalList, exceptionSignals);
-
-        JButton clearButton = new JButton("Clear selection");
-        clearButton.addActionListener(event -> localSignalList.clearSelection());
-
-        JPanel result = super.createContentPanel();
-        result.setLayout(GuiUtils.createBorderLayout());
-        result.setBorder(GuiUtils.getEmptyBorder());
-
-        result.add(new JLabel("Select exceptions:"), BorderLayout.NORTH);
-        result.add(new JScrollPane(localSignalList), BorderLayout.CENTER);
-        result.add(clearButton, BorderLayout.SOUTH);
+        result.addAll(getSyntacticSelfTriggeringSignals(stg, stg.getSignalReferences(Signal.Type.OUTPUT)));
+        result.addAll(getSyntacticSelfTriggeringSignals(stg, stg.getSignalReferences(Signal.Type.INTERNAL)));
         return result;
     }
 
@@ -98,31 +63,6 @@ public class LocalSelfTriggeringDialog extends ModalDialog<LocalSelfTriggeringDa
                     break;
                 }
             }
-        }
-        return result;
-    }
-
-    private void selectSignals(LocalSignalList localSignalList, List<String> signals) {
-        ListModel<String> signalListModel = localSignalList.getModel();
-        List<Integer> indices = new ArrayList<>();
-        for (int index = 0; index < signalListModel.getSize(); index++) {
-            String signal = signalListModel.getElementAt(index);
-            if (signals.contains(signal)) {
-                indices.add(index);
-            }
-        }
-        // Convert ArrayList<Integer> to int[]
-        int[] itemsToSelect = indices.stream().mapToInt(i -> i).toArray();
-        localSignalList.setSelectedIndices(itemsToSelect);
-    }
-
-    @Override
-    public boolean okAction() {
-        boolean result = super.okAction();
-        if (result) {
-            Set<String> exceptionSignals = new HashSet<>(localSignalList.getSelectedValuesList());
-            LocalSelfTriggeringParameters parameters = new LocalSelfTriggeringParameters(exceptionSignals);
-            getUserData().saveData(parameters);
         }
         return result;
     }

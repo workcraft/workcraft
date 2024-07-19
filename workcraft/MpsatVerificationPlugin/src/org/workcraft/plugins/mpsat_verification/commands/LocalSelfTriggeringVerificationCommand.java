@@ -12,6 +12,8 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.Collection;
+
 public class LocalSelfTriggeringVerificationCommand extends AbstractVerificationCommand {
 
     @Override
@@ -63,8 +65,8 @@ public class LocalSelfTriggeringVerificationCommand extends AbstractVerification
 
     @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        LocalSelfTriggeringParameters data = new LocalSelfTriggeringDataPreserver(we).loadData();
-        return data.getVerificationParameters();
+        Collection<String> data = new LocalSelfTriggeringDataPreserver(we).loadData();
+        return new LocalSelfTriggeringParameters(data).getVerificationParameters();
     }
 
 }
