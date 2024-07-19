@@ -57,21 +57,9 @@ public class InputPropernessParameters {
         this.exceptionSignals = exceptionSignals == null ? Collections.emptySet() : new HashSet<>(exceptionSignals);
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof InputPropernessParameters) {
-            return exceptionSignals.equals(((InputPropernessParameters) other).exceptionSignals);
-        }
-        return false;
-    }
-
-    public List<String> getOrderedExceptionSignals() {
-        return SortUtils.getSortedNatural(exceptionSignals);
-    }
-
     public VerificationParameters getVerificationParameters() {
         String description = "Input properness";
-        List<String> orderedExceptionSignals = getOrderedExceptionSignals();
+        List<String> orderedExceptionSignals = SortUtils.getSortedNatural(exceptionSignals);
         if (!orderedExceptionSignals.isEmpty()) {
             description += " with exceptions (" + String.join(", ", orderedExceptionSignals) + ")";
         }

@@ -3,11 +3,7 @@ package org.workcraft.plugins.mpsat_verification.presets;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.utils.SortUtils;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class LocalSelfTriggeringParameters {
@@ -45,14 +41,6 @@ public class LocalSelfTriggeringParameters {
 
     public LocalSelfTriggeringParameters(Collection<String> exceptionSignals) {
         this.exceptionSignals = exceptionSignals == null ? Collections.emptySet() : new HashSet<>(exceptionSignals);
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof LocalSelfTriggeringParameters) {
-            return exceptionSignals.equals(((LocalSelfTriggeringParameters) other).exceptionSignals);
-        }
-        return false;
     }
 
     public boolean isException(String signal) {

@@ -11,6 +11,8 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.List;
+
 public class InputPropernessVerificationCommand extends AbstractVerificationCommand {
 
     @Override
@@ -62,8 +64,8 @@ public class InputPropernessVerificationCommand extends AbstractVerificationComm
 
     @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        InputPropernessParameters data = new InputPropernessDataPreserver(we).loadData();
-        return data.getVerificationParameters();
+        List<String> data = new InputPropernessDataPreserver(we).loadData();
+        return new InputPropernessParameters(data).getVerificationParameters();
     }
 
 }

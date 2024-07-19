@@ -23,6 +23,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
 public class CombinedVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
@@ -91,20 +92,22 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
         verificationParametersList.add(ReachUtils.getConsistencyParameters());
         verificationParametersList.add(ReachUtils.getDeadlockParameters());
         if (noDummies) {
-            InputPropernessParameters inputPropernessParameters = new InputPropernessDataPreserver(we).loadData();
-            verificationParametersList.add(inputPropernessParameters.getVerificationParameters());
+            List<String> inputPropernessExceptions = new InputPropernessDataPreserver(we).loadData();
+            verificationParametersList.add(new InputPropernessParameters(inputPropernessExceptions)
+                    .getVerificationParameters());
         }
 
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         verificationParametersList.addAll(ReachUtils.getMutexImplementabilityParameters(mutexes));
         if (noDummies) {
-            LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPersistencyExceptions(stg);
-            verificationParametersList.add(ReachUtils.getOutputPersistencyParameters(exceptions));
+            LinkedList<Pair<String, String>> mutexExceptions = MutexUtils.getMutexGrantPersistencyExceptions(stg);
+            verificationParametersList.add(ReachUtils.getOutputPersistencyParameters(mutexExceptions));
         }
 
         if (noDummies) {
-            LocalSelfTriggeringParameters localSelfTriggeringParameters = new LocalSelfTriggeringDataPreserver(we).loadData();
-            verificationParametersList.add(localSelfTriggeringParameters.getVerificationParameters());
+            Collection<String> localSelfTriggeringExceptions = new LocalSelfTriggeringDataPreserver(we).loadData();
+            verificationParametersList.add(new LocalSelfTriggeringParameters(localSelfTriggeringExceptions)
+                    .getVerificationParameters());
         }
 
         if (noDummies) {

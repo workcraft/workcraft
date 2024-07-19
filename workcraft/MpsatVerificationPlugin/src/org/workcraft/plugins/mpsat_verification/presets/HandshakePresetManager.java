@@ -16,4 +16,5 @@ public class HandshakePresetManager extends PresetManager<HandshakeParameters> {
     public Stg getStg() {
         return WorkspaceUtils.getAs(getWorkspaceEntry(), Stg.class);
     }
+
 }
