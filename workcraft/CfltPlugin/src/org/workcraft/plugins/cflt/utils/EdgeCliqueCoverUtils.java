@@ -7,7 +7,13 @@ import org.workcraft.plugins.cflt.algorithms.MaxMinHeuristic;
 import org.workcraft.plugins.cflt.algorithms.SequenceHeuristic;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Comparator;
 
 public final class EdgeCliqueCoverUtils {
 
@@ -49,12 +55,12 @@ public final class EdgeCliqueCoverUtils {
     public static String argMin(Map<String, Integer> uncoveredDegree, Set<String> uncoveredVertices) {
         return uncoveredVertices.stream()
                 .min(Comparator.comparingInt(uncoveredDegree::get))
-                .orElse("");
+                .orElse(null);
     }
 
     public static String argMax(Map<String, Integer> uncoveredDegree, Set<String> uncoveredVertices) {
         return uncoveredVertices.stream()
                 .max(Comparator.comparingInt(uncoveredDegree::get))
-                .orElse("");
+                .orElse(null);
     }
 }
