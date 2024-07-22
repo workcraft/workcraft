@@ -4,7 +4,12 @@ import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
 import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MaxMinHeuristic {
 
@@ -18,7 +23,7 @@ public class MaxMinHeuristic {
         Map<String, Integer> vertexToLocalUncoveredDegree = new HashMap<>();
 
         List<List<String>> finalCliquesAsVertices = new ArrayList<>();
-        List<List<String>> finalCliquesAsEdges = new ArrayList<>();
+        List<List<String>> finalCliquesAsEdgeNames = new ArrayList<>();
 
         Set<String> uncoveredVertices = new HashSet<>();
         Set<String> optionalEdgeSet = new HashSet<>();
@@ -62,7 +67,7 @@ public class MaxMinHeuristic {
 
                 finalCliquesAsVertices.add(cliqueNumber, new ArrayList<>());
                 finalCliquesAsVertices.get(cliqueNumber).add(i);
-                finalCliquesAsEdges.add(new ArrayList<>());
+                finalCliquesAsEdgeNames.add(new ArrayList<>());
 
                 HashSet<String> localNeighbourhoodOfi = new HashSet<>(vertexToAllNeighbours.get(i));
                 for (String j : localNeighbourhoodOfi) {
@@ -83,8 +88,8 @@ public class MaxMinHeuristic {
                             vertexToUncoveredDegree.replace(j, temp - 1);
                         }
                         // Adding the key edges of the clique
-                        finalCliquesAsEdges.get(cliqueNumber).add(u + j);
-                        finalCliquesAsEdges.get(cliqueNumber).add(j + u);
+                        finalCliquesAsEdgeNames.get(cliqueNumber).add(u + j);
+                        finalCliquesAsEdgeNames.get(cliqueNumber).add(j + u);
 
                         // Updating the number of cliques the edge is contained in
                         int oldVal = edgeNameToNoOfCliquesItsContainedIn.get(u + j);
@@ -140,8 +145,8 @@ public class MaxMinHeuristic {
 
                     for (String s : finalClique) {
                         if (!i.equals(s)) {
-                            finalCliquesAsEdges.get(currentCliqueIndex).add(i + s);
-                            finalCliquesAsEdges.get(currentCliqueIndex).add(s + i);
+                            finalCliquesAsEdgeNames.get(currentCliqueIndex).add(i + s);
+                            finalCliquesAsEdgeNames.get(currentCliqueIndex).add(s + i);
 
                             // Updating the number of cliques the edge is contained in
                             int oldVal = edgeNameToNoOfCliquesItsContainedIn.get(i + s);
@@ -155,9 +160,9 @@ public class MaxMinHeuristic {
         }
 
         // If a clique only contains edges from the optional edge list it needs to be removed
-        for (int i = 0; i < finalCliquesAsEdges.size(); i++) {
+        for (int i = 0; i < finalCliquesAsEdgeNames.size(); i++) {
             boolean containsOnlyOptionalEdges = true;
-            for (String edge : finalCliquesAsEdges.get(i)) {
+            for (String edge : finalCliquesAsEdgeNames.get(i)) {
                 if (!optionalEdgeSet.contains(edge)) {
                     containsOnlyOptionalEdges = false;
                     break;
@@ -170,14 +175,14 @@ public class MaxMinHeuristic {
         }
         // Removing redundant cliques
         for (int i = 0; i < finalCliquesAsVertices.size(); i++) {
-            if (EdgeCliqueCoverUtils.isCliqueRedundant(edgeNameToNoOfCliquesItsContainedIn, finalCliquesAsEdges.get(i))) {
+            if (EdgeCliqueCoverUtils.isCliqueRedundant(edgeNameToNoOfCliquesItsContainedIn, finalCliquesAsEdgeNames.get(i))) {
 
-                for (String edge : finalCliquesAsEdges.get(i)) {
+                for (String edge : finalCliquesAsEdgeNames.get(i)) {
                     int temp = edgeNameToNoOfCliquesItsContainedIn.get(edge);
                     edgeNameToNoOfCliquesItsContainedIn.replace(edge, temp - 1);
                 }
 
-                finalCliquesAsEdges.remove(i);
+                finalCliquesAsEdgeNames.remove(i);
                 finalCliquesAsVertices.remove(i);
             }
         }
