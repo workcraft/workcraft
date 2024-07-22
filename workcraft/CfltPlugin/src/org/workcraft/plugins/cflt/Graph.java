@@ -1,55 +1,55 @@
 package org.workcraft.plugins.cflt;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
 
 /**
- * An undirected and unweighted graph as a set of edges
+ * An undirected and unweighted graph as a list of edges and vertices
  */
 public class Graph {
-    private ArrayList<Edge> edges = new ArrayList<>();
-    private ArrayList<String> vertices = new ArrayList<>();
+    private List<Edge> edges = new ArrayList<>();
+    private List<String> vertices = new ArrayList<>();
 
-    public Graph(ArrayList<Edge> edges, ArrayList<String> vertices) {
+    public Graph(List<Edge> edges, List<String> vertices) {
         this.edges = edges;
         this.vertices = vertices;
     }
     public Graph() {
     }
 
-    public void addVertex(String v) {
-        this.vertices.add(v);
+    public void addVertex(String vertex) {
+        this.vertices.add(vertex);
     }
 
-    public void removeVertex(String v) {
-        this.vertices.remove(v);
+    public void removeVertex(String vertex) {
+        this.vertices.remove(vertex);
     }
 
-    public void addEdge(Edge e) {
-        this.getEdges().add(e);
+    public void addEdge(Edge edge) {
+        this.getEdges().add(edge);
     }
 
-    public void removeEdge(Edge e) {
-        this.getEdges().remove(e);
+    public void removeEdge(Edge edge) {
+        this.getEdges().remove(edge);
     }
 
-    public ArrayList<String> getIsolatedVertices() {
-        if (getEdges().isEmpty()) return this.vertices;
-        ArrayList<String> vertexList = this.vertices.stream().collect(Collectors.toCollection(ArrayList::new));
-        for (Edge e : this.edges) {
-            if (vertexList.contains(e.getFirstVertex())) {
-                vertexList.remove(e.getFirstVertex());
-            }
-            if (vertexList.contains(e.getSecondVertex())) {
-                vertexList.remove(e.getSecondVertex());
-            }
-        }
-        return vertexList;
+    public List<String> getIsolatedVertices() {
+        if (getEdges().isEmpty()) return new ArrayList<>(this.vertices);
 
+        Set<String> connectedVertices = edges.stream()
+                .flatMap(e -> Stream.of(e.getFirstVertex(), e.getSecondVertex()))
+                .collect(Collectors.toSet());
+
+        return vertices.stream()
+                .filter(v -> !connectedVertices.contains(v))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
-    public ArrayList<String> getVertices() {
+    public List<String> getVertices() {
         return vertices;
     }
 
@@ -57,7 +57,7 @@ public class Graph {
         this.vertices = vertices;
     }
 
-    public ArrayList<Edge> getEdges() {
+    public List<Edge> getEdges() {
         return edges;
     }
 

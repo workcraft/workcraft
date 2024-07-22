@@ -5,6 +5,7 @@ import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This algorithm is not as efficient as it should be, it is merely a temporary placeholder until a SAT solver
@@ -12,9 +13,9 @@ import java.util.ArrayList;
  */
 public class ExhaustiveSearch {
 
-    public static ArrayList<ArrayList<String>> getEdgeCliqueCover(Graph initialGraph, ArrayList<Edge> optionalEdges) {
-        ArrayList<ArrayList<String>> edgeCliqueCover = new ArrayList<>();
-        ArrayList<ArrayList<String>> allMaxCliques = null;
+    public static List<List<String>> getEdgeCliqueCover(Graph initialGraph, List<Edge> optionalEdges) {
+        List<List<String>> edgeCliqueCover = new ArrayList<>();
+        List<List<String>> allMaxCliques = null;
 
         try {
             allMaxCliques = MaxCliqueEnumerator.getAllMaxCliques(initialGraph);
@@ -24,36 +25,35 @@ public class ExhaustiveSearch {
 
         AdvancedGraph graph = null;
         if (!initialGraph.getEdges().isEmpty()) {
-            // Max number of cliques to be used in the final edge clique cover (i.e. the depth of the tree to be traversed)
-            int k = 0;
+            int treeDepth = 0;
             while (edgeCliqueCover.isEmpty()) {
                 graph = new AdvancedGraph(initialGraph, allMaxCliques);
-                edgeCliqueCover = branch(graph, k, new ArrayList<>(), optionalEdges);
-                k++;
+                edgeCliqueCover = branch(graph, treeDepth, new ArrayList<>(), optionalEdges);
+                treeDepth++;
             }
         }
         return edgeCliqueCover;
     }
 
-    private static ArrayList<ArrayList<String>> branch(AdvancedGraph graph, int k,
-            ArrayList<ArrayList<String>> edgeCliqueCover, ArrayList<Edge> optionalEdges) {
+    private static List<List<String>> branch(AdvancedGraph graph, int treeDepth,
+            List<List<String>> edgeCliqueCover, List<Edge> optionalEdges) {
 
         if (graph.isCovered(edgeCliqueCover, optionalEdges)) {
             return edgeCliqueCover;
         }
-        if (k < 0) {
+        if (treeDepth < 0) {
             return new ArrayList<>();
         }
-        Edge selectedEdge = graph.selectEdge();
+        Edge selectedEdge = graph.getNextEdge();
         if (selectedEdge == null) {
             return edgeCliqueCover;
         }
 
-        for (ArrayList<String> maxClique : graph.getMaximalCliques(selectedEdge)) {
-            ArrayList<ArrayList<String>> newEcc = new ArrayList<>(edgeCliqueCover);
-            newEcc.add(maxClique);
+        for (List<String> maxClique : graph.getMaximalCliques(selectedEdge)) {
+            List<List<String>> newEdgeCliqueCover = new ArrayList<>(edgeCliqueCover);
+            newEdgeCliqueCover.add(maxClique);
 
-            ArrayList<ArrayList<String>> edgeCliqueCoverPrime = branch(graph, k - 1, newEcc, optionalEdges);
+            List<List<String>> edgeCliqueCoverPrime = branch(graph, treeDepth - 1, newEdgeCliqueCover, optionalEdges);
             if (!edgeCliqueCoverPrime.isEmpty()) {
                 return edgeCliqueCoverPrime;
             }

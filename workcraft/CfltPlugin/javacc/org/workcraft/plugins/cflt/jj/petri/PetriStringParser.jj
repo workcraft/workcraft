@@ -13,10 +13,10 @@ import org.workcraft.plugins.cflt.tools.CotreeTool;
 import org.workcraft.plugins.cflt.*;
 
 public class PetriStringParser {
-    CotreeTool ctr;
+    CotreeTool cotreeTool;
     public void parse(String s) throws ParseException {
-       ctr = new CotreeTool();
-       ctr.reset();
+       cotreeTool = new CotreeTool();
+       cotreeTool.reset();
        InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
        PetriStringParser parser = new PetriStringParser(is);
        parser.parseOneLine();
@@ -44,8 +44,8 @@ void parseOneLine():
     [
         a = concurrency()
         {
-            if (CotreeTool.nodes.size() == 0) {
-                CotreeTool.singleTransition = a;
+            if (cotreeTool.nodes.size() == 0) {
+                cotreeTool.singleTransition = a;
             }
         }
     ]
@@ -63,7 +63,7 @@ String concurrency():
         "|" b = concurrency()
         {
             Node node = new Node(a, b, Operator.CONCURRENCY);
-            CotreeTool.nodes.add(node);
+            cotreeTool.nodes.add(node);
         }
     )*
     {
@@ -82,7 +82,7 @@ String choice():
         "#" b = choice()
         {
         	Node node = new Node(a, b, Operator.CHOICE);
-        	CotreeTool.nodes.add(node);
+        	cotreeTool.nodes.add(node);
         }	
     )*
     {
@@ -101,7 +101,7 @@ String sequence():
         [";"] b = sequence()
         {
             Node node = new Node(a, b, Operator.SEQUENCE);
-            CotreeTool.nodes.add(node);
+            cotreeTool.nodes.add(node);
         }
     )*
     {
@@ -138,8 +138,8 @@ String element():
 |
     "{" a = concurrency() "}"
     {
-        CotreeTool.containsIteration = true;
+        cotreeTool.containsIteration = true;
         Node node = new Node(a, a, Operator.ITERATION);
-        CotreeTool.nodes.add(node); return a;
+        cotreeTool.nodes.add(node); return a;
     }
 }

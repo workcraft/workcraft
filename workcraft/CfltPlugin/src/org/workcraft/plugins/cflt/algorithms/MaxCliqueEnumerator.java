@@ -2,16 +2,18 @@ package org.workcraft.plugins.cflt.algorithms;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.workcraft.plugins.cflt.Graph;
 
 public class MaxCliqueEnumerator {
 
     int nodeCount;
-    ArrayList<Vertex> graph = new ArrayList<>();
-    ArrayList<ArrayList<String>> allMaxCliques = new ArrayList<>();
-    HashMap<String, Integer> vertexNameToIndex = new HashMap<>();
-    HashMap<Integer, String> vertexIndexToName = new HashMap<>();
+    List<Vertex> graph = new ArrayList<>();
+    List<List<String>> allMaxCliques = new ArrayList<>();
+    Map<String, Integer> vertexNameToIndex = new HashMap<>();
+    Map<Integer, String> vertexIndexToName = new HashMap<>();
 
     static class Vertex implements Comparable<Vertex> {
         int x;
@@ -67,7 +69,7 @@ public class MaxCliqueEnumerator {
         }
     }
 
-    public static ArrayList<ArrayList<String>> getAllMaxCliques(Graph graph) {
+    public static List<List<String>> getAllMaxCliques(Graph graph) {
         MaxCliqueEnumerator enumerator = new MaxCliqueEnumerator();
 
         enumerator.initialiseMap(graph);
@@ -105,13 +107,13 @@ public class MaxCliqueEnumerator {
         int i = v.getX();
         return graph.get(i).neighbours;
     }
-    private ArrayList<Vertex> intersect(ArrayList<Vertex> arlFirst,
-            ArrayList<Vertex> arlSecond) {
-        ArrayList<Vertex> arlHold = new ArrayList<>(arlFirst);
+    private List<Vertex> intersect(List<Vertex> arlFirst,
+            List<Vertex> arlSecond) {
+        List<Vertex> arlHold = new ArrayList<>(arlFirst);
         arlHold.retainAll(arlSecond);
         return arlHold;
     }
-    private void bronKerboschWithoutPivot(ArrayList<Vertex> r, ArrayList<Vertex> p, ArrayList<Vertex> x, String pre) {
+    private void bronKerboschWithoutPivot(List<Vertex> r, List<Vertex> p, List<Vertex> x, String pre) {
         if ((p.isEmpty()) && (x.isEmpty())) {
             saveClique(r);
             return;
@@ -128,22 +130,22 @@ public class MaxCliqueEnumerator {
         }
     }
     private void bronKerboschPivotExecute() {
-        ArrayList<Vertex> x = new ArrayList<>();
-        ArrayList<Vertex> r = new ArrayList<>();
-        ArrayList<Vertex> p = new ArrayList<>(graph);
+        List<Vertex> x = new ArrayList<>();
+        List<Vertex> r = new ArrayList<>();
+        List<Vertex> p = new ArrayList<>(graph);
         bronKerboschWithoutPivot(r, p, x, "");
     }
-    private void saveClique(ArrayList<Vertex> r) {
-        ArrayList<String> maxClique = new ArrayList<>();
+    private void saveClique(List<Vertex> r) {
+        List<String> maxClique = new ArrayList<>();
         for (Vertex v : r) {
             maxClique.add(vertexIndexToName.get(v.getX()));
         }
         allMaxCliques.add(maxClique);
     }
     private void initialiseMap(Graph graph) {
-        for (int x = 0; x < graph.getVertices().size(); x++) {
-            vertexNameToIndex.put(graph.getVertices().get(x), x);
-            vertexIndexToName.put(x, graph.getVertices().get(x));
+        for (int i = 0; i < graph.getVertices().size(); i++) {
+            vertexNameToIndex.put(graph.getVertices().get(i), i);
+            vertexIndexToName.put(i, graph.getVertices().get(i));
         }
     }
 }

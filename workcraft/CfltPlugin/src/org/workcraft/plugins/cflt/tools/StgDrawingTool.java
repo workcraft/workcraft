@@ -13,19 +13,17 @@ import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.utils.WorkspaceUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
 
 public class StgDrawingTool {
 
-    private final HashMap<String, VisualSignalTransition> transitionNameToVisualSignalTransition = new HashMap<>();
+    private final Map<String, VisualSignalTransition> transitionNameToVisualSignalTransition = new HashMap<>();
 
     public void drawStg(Graph inputGraph, Graph outputGraph, boolean isSequence, boolean isRoot, Mode mode) {
         VisualStg visualStg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
-        ArrayList<ArrayList<String>> edgeCliqueCover = EdgeCliqueCoverUtils.getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
+        List<List<String>> edgeCliqueCover = EdgeCliqueCoverUtils.getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
         HashSet<String> inputVertices = new HashSet<>(isSequence ? inputGraph.getVertices() : new ArrayList<>());
 
         this.drawIsolatedVisualObjects(inputGraph, visualStg, isSequence, isRoot);
@@ -34,12 +32,12 @@ public class StgDrawingTool {
     }
 
     private void drawRemainingVisualObjects(
-            ArrayList<ArrayList<String>> edgeCliqueCover,
+            List<List<String>> edgeCliqueCover,
             VisualStg visualStg,
-            HashSet<String> inputVertexNames,
+            Set<String> inputVertexNames,
             boolean isRoot) {
 
-        for (ArrayList<String> clique : edgeCliqueCover) {
+        for (List<String> clique : edgeCliqueCover) {
             if (clique != null) {
                 VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, isRoot, Positioning.LEFT);
 

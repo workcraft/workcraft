@@ -88,17 +88,17 @@ public final class ExpressionUtils {
         }
         checkMode(mode);
         checkIteration(mode);
-        CotreeTool ctr = new CotreeTool();
+        CotreeTool contreeTool = new CotreeTool();
         // If the expression is merely a single transition
         if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
-            ctr.drawSingleTransition(Model.PETRI_NET);
+            contreeTool.drawSingleTransition(Model.PETRI_NET);
         }
         labelToName = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
         if (!validateExpression(expressionText, Model.PETRI_NET)) {
             return false;
         }
-        ctr.drawInterpretedGraph(mode, Model.PETRI_NET);
+        contreeTool.drawInterpretedGraph(mode, Model.PETRI_NET);
         return true;
     }
 

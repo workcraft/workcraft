@@ -1,8 +1,6 @@
 package org.workcraft.plugins.cflt.tools;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -18,11 +16,11 @@ import org.workcraft.utils.WorkspaceUtils;
 import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
 
 public class PetriDrawingTool {
-    private final HashMap<String, VisualTransition> transitionNameToVisualTransition = new HashMap<>();
+    private final Map<String, VisualTransition> transitionNameToVisualTransition = new HashMap<>();
 
     public void drawPetri(Graph inputGraph, Graph outputGraph, boolean isSequence, boolean isRoot, Mode mode) {
         VisualPetri visualPetri = WorkspaceUtils.getAs(ExpressionUtils.we, VisualPetri.class);
-        ArrayList<ArrayList<String>> edgeCliqueCover = EdgeCliqueCoverUtils.getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
+        List<List<String>> edgeCliqueCover = EdgeCliqueCoverUtils.getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
         HashSet<String> inputVertexNames = new HashSet<>(isSequence ? inputGraph.getVertices() : new ArrayList<>());
 
         this.drawIsolatedVisualObjects(inputGraph, visualPetri, isSequence, isRoot);
@@ -35,11 +33,11 @@ public class PetriDrawingTool {
         connectVisualPlaceAndVisualTransition(visualPetri, visualPlace, visualTransition, ConnectionDirection.PLACE_TO_TRANSITION);
     }
     private void drawRemainingVisualObjects(
-            ArrayList<ArrayList<String>> edgeCliqueCover,
+            List<List<String>> edgeCliqueCover,
             VisualPetri visualPetri,
             HashSet<String> inputVertexNames,
             boolean isRoot) {
-        for (ArrayList<String> clique : edgeCliqueCover) {
+        for (List<String> clique : edgeCliqueCover) {
             if (clique != null) {
                 VisualPlace visualPlace = createVisualPlace(visualPetri, isRoot, Positioning.LEFT);
 

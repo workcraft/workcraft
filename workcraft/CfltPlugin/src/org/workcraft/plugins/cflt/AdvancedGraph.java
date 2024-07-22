@@ -1,157 +1,76 @@
 package org.workcraft.plugins.cflt;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class AdvancedGraph extends Graph {
-
-    //all common neighbours of v1 and v2 of the edge
     private final HashMap<Edge, HashSet<String>> allCommonNeighbours = new HashMap<>();
-    //only the common neighbours connected via uncovered edges of v1 and v2 of the edge
-    private final HashMap<Edge, HashSet<String>> uncoveredCommonNeighbours = new HashMap<>();
+    private final HashMap<Edge, HashSet<String>> commonNeighboursViaUncoveredEdges = new HashMap<>();
+    private HashMap<String, HashSet<String>> vertexToNeighbours = new HashMap<>();
+    private HashMap<String, HashSet<String>> neighboursViaUncoveredEdges = new HashMap<>();
 
-    //all neighbours of the vertex
-    HashMap<String, HashSet<String>> allNeighbours = new HashMap<>();
-    //only the neighbours connected via uncovered edges
-    HashMap<String, HashSet<String>> uncoveredNeighbours = new HashMap<>();
-
-    //number of edges interconnecting the common (uncovered) neighbours of v1 and v2 of the edge (excluding the edge itself)
-    private final HashMap<Edge, Integer> uncoveredCnInterconnectingEdgeNo = new HashMap<>();
-
-    //edge in the form of s = v1 + v2
-    private final HashMap<String, Edge> allEdges = new HashMap<>();
-
+    /**
+     *  Cn is the number of edges interconnecting the common (uncovered) neighbours
+     *  of first and second vertices of the edge (excluding the edge itself)
+     */
+    private final HashMap<Edge, Integer> edgeToCn = new HashMap<>();
+    private final HashMap<String, Edge> edgeNameToEdge = new HashMap<>();
     private HashSet<Edge> coveredEdges = new HashSet<>();
-
-    //this set is used to make sure that the same cliques is not covered twice for example abc and acb
     private HashSet<HashSet<String>> usedCliques = new HashSet<>();
 
-    private final ArrayList<ArrayList<String>> allMaxCliques;
+    private final List<List<String>> allMaxCliques;
 
-    public AdvancedGraph(Graph g, ArrayList<ArrayList<String>> allMaxCliques) {
+    public AdvancedGraph(Graph graph, List<List<String>> allMaxCliques) {
         this.allMaxCliques = allMaxCliques;
-        //initialising neighbours
-        for (Edge e : g.getEdges()) {
-            if (allNeighbours.containsKey(e.getFirstVertex())) {
-                allNeighbours.get(e.getFirstVertex()).add(e.getSecondVertex());
 
-                uncoveredNeighbours.get(e.getFirstVertex()).add(e.getSecondVertex());
-
+        for (Edge edge : graph.getEdges()) {
+            if (vertexToNeighbours.containsKey(edge.getFirstVertex())) {
+                vertexToNeighbours.get(edge.getFirstVertex()).add(edge.getSecondVertex());
+                neighboursViaUncoveredEdges.get(edge.getFirstVertex()).add(edge.getSecondVertex());
             } else {
-                allNeighbours.put(e.getFirstVertex(), new HashSet<>());
-                allNeighbours.get(e.getFirstVertex()).add(e.getSecondVertex());
-
-                uncoveredNeighbours.put(e.getFirstVertex(), new HashSet<>());
-                uncoveredNeighbours.get(e.getFirstVertex()).add(e.getSecondVertex());
+                vertexToNeighbours.put(edge.getFirstVertex(), new HashSet<>());
+                vertexToNeighbours.get(edge.getFirstVertex()).add(edge.getSecondVertex());
+                neighboursViaUncoveredEdges.put(edge.getFirstVertex(), new HashSet<>());
+                neighboursViaUncoveredEdges.get(edge.getFirstVertex()).add(edge.getSecondVertex());
             }
-            if (allNeighbours.containsKey(e.getSecondVertex())) {
-                allNeighbours.get(e.getSecondVertex()).add(e.getFirstVertex());
-
-                uncoveredNeighbours.get(e.getSecondVertex()).add(e.getFirstVertex());
-
+            if (vertexToNeighbours.containsKey(edge.getSecondVertex())) {
+                vertexToNeighbours.get(edge.getSecondVertex()).add(edge.getFirstVertex());
+                neighboursViaUncoveredEdges.get(edge.getSecondVertex()).add(edge.getFirstVertex());
             } else {
-                allNeighbours.put(e.getSecondVertex(), new HashSet<>());
-                allNeighbours.get(e.getSecondVertex()).add(e.getFirstVertex());
-
-                uncoveredNeighbours.put(e.getSecondVertex(), new HashSet<>());
-                uncoveredNeighbours.get(e.getSecondVertex()).add(e.getFirstVertex());
+                vertexToNeighbours.put(edge.getSecondVertex(), new HashSet<>());
+                vertexToNeighbours.get(edge.getSecondVertex()).add(edge.getFirstVertex());
+                neighboursViaUncoveredEdges.put(edge.getSecondVertex(), new HashSet<>());
+                neighboursViaUncoveredEdges.get(edge.getSecondVertex()).add(edge.getFirstVertex());
             }
-            allEdges.put(e.getFirstVertex() + e.getSecondVertex(), e);
+            edgeNameToEdge.put(edge.getFirstVertex() + edge.getSecondVertex(), edge);
         }
-        //initialising common neighbours
-        for (Edge e : g.getEdges()) {
-            @SuppressWarnings("unchecked")
-            HashSet<String> cn = (HashSet<String>) allNeighbours.get(e.getFirstVertex()).clone();
-            cn.retainAll(allNeighbours.get(e.getSecondVertex()));
-            allCommonNeighbours.put(e, cn);
-            uncoveredCommonNeighbours.put(e, cn);
 
-            int c = 0;
-            for (String n1 : cn) {
-                for (String n2 : cn) {
-                    if ((allEdges.containsKey(n1 + n2) || allEdges.containsKey(n2 + n1)) && !n1.equals(n2)) { c++; }
-                }
-            }
-            c /= 2;
-            c += cn.size() * 2;
-            // Number of edges interconnecting the common neighbours of v1 and v2 of the edge  (excluding the edge itself)
-            HashMap<Edge, Integer> cnInterconnectingEdgeNo = new HashMap<>();
-            cnInterconnectingEdgeNo.put(e, c);
-            uncoveredCnInterconnectingEdgeNo.put(e, c);
+        for (Edge edge : graph.getEdges()) {
+            HashSet<String> original = vertexToNeighbours.get(edge.getFirstVertex());
+            HashSet<String> commonNeighbours = new HashSet<>(original);
+            commonNeighbours.retainAll(vertexToNeighbours.get(edge.getSecondVertex()));
+            allCommonNeighbours.put(edge, commonNeighbours);
+            commonNeighboursViaUncoveredEdges.put(edge, commonNeighbours);
+            edgeToCn.put(edge, getCn(commonNeighbours));
         }
     }
 
-    public  ArrayList<ArrayList<String>> reduceViaRule2() {
-        ArrayList<ArrayList<String>> cliques = new ArrayList<>();
-        for (HashMap.Entry<Edge, Integer> set : uncoveredCnInterconnectingEdgeNo.entrySet()) {
-            if (!coveredEdges.contains(set.getKey())) {
-                // Number of common neighbours of the two vertices of the edge
-                int cn = uncoveredCommonNeighbours.get(set.getKey()).size();
-                // Connections between the common neighbours excluding the edge itself
-                int con = set.getValue();
-                // The number of connections (con) required between v1 and v2 and all of their common neighbours (cn),
-                // for them to induce a clique (excluding the connection between v1 and v2) is as follows: con = 1/2(cn^2+3cn)
-                if (con == (Math.pow(cn, 2) + 3 * cn) / 2) {
-                    ArrayList<String> clique = new ArrayList<>(uncoveredCommonNeighbours.get(set.getKey()));
-                    HashSet<String> cliqueSet = new HashSet<>(uncoveredCommonNeighbours.get(set.getKey()));
-
-                    clique.add(set.getKey().getFirstVertex());
-                    clique.add(set.getKey().getSecondVertex());
-
-                    cliqueSet.add(set.getKey().getFirstVertex());
-                    cliqueSet.add(set.getKey().getSecondVertex());
-
-                    if (!usedCliques.contains(cliqueSet)) {
-                        cliques.add(clique);
-                        usedCliques.add(cliqueSet);
-                        updateSet(clique);
-                    }
-                }
-            }
-        }
-        return cliques;
-    }
-
-    private void updateSet(ArrayList<String> clique) {
-        for (String v1 : clique) {
-            for (String v2 : clique) {
-                if (allEdges.containsKey(v1 + v2) && !v1.equals(v2)) {
-                    coveredEdges.add(allEdges.get(v1 + v2));
-                }
-                if (allEdges.containsKey(v2 + v1) && !v1.equals(v2)) {
-                    coveredEdges.add(allEdges.get(v2 + v1));
-                }
-                if (!v1.equals(v2)) {
-                    if (uncoveredNeighbours.get(v1) != null) {
-                        uncoveredNeighbours.get(v1).remove(v2);
-                    }
-                    if (uncoveredNeighbours.get(v2) != null) {
-                        uncoveredNeighbours.get(v2).remove(v1);
-                    }
-                }
-            }
-        }
-        updateUncoveredCommonNeighbours();
-    }
-
-    public void updateSets(ArrayList<ArrayList<String>> ecc) {
+    public void updateSets(List<List<String>> edgeCliqueCover) {
         coveredEdges = new HashSet<>();
-        for (ArrayList<String> clique : ecc) {
-            for (String v1 : clique) {
-                for (String v2 : clique) {
-                    if (allEdges.containsKey(v1 + v2) && !v1.equals(v2)) {
-                        coveredEdges.add(allEdges.get(v1 + v2));
+        for (List<String> clique : edgeCliqueCover) {
+            for (String firstVertex : clique) {
+                for (String secondVertex : clique) {
+                    if (edgeNameToEdge.containsKey(firstVertex + secondVertex) && !firstVertex.equals(secondVertex)) {
+                        coveredEdges.add(edgeNameToEdge.get(firstVertex + secondVertex));
                     }
-                    if (allEdges.containsKey(v2 + v1) && !v1.equals(v2)) {
-                        coveredEdges.add(allEdges.get(v2 + v1));
+                    if (edgeNameToEdge.containsKey(secondVertex + firstVertex) && !firstVertex.equals(secondVertex)) {
+                        coveredEdges.add(edgeNameToEdge.get(secondVertex + firstVertex));
                     }
-                    if (!v1.equals(v2)) {
-                        if (uncoveredNeighbours.get(v1) != null) {
-                            uncoveredNeighbours.get(v1).remove(v2);
+                    if (!firstVertex.equals(secondVertex)) {
+                        if (neighboursViaUncoveredEdges.get(firstVertex) != null) {
+                            neighboursViaUncoveredEdges.get(firstVertex).remove(secondVertex);
                         }
-                        if (uncoveredNeighbours.get(v2) != null) {
-                            uncoveredNeighbours.get(v2).remove(v1);
+                        if (neighboursViaUncoveredEdges.get(secondVertex) != null) {
+                            neighboursViaUncoveredEdges.get(secondVertex).remove(firstVertex);
                         }
                     }
                 }
@@ -161,60 +80,42 @@ public class AdvancedGraph extends Graph {
     }
 
     public void updateUncoveredCommonNeighbours() {
-        for (HashMap.Entry<String, Edge> set : allEdges.entrySet()) {
-            @SuppressWarnings("unchecked")
-            HashSet<String> cn = (HashSet<String>) allNeighbours.get(set.getValue().getFirstVertex()).clone();
-            cn.retainAll(uncoveredNeighbours.get(set.getValue().getSecondVertex()));
-            uncoveredCommonNeighbours.replace(set.getValue(), cn);
-            int c = 0;
-            for (String n1 : cn) {
-                for (String n2 : cn) {
-                    if ((allEdges.containsKey(n1 + n2) || allEdges.containsKey(n2 + n1)) && !n1.equals(n2)) { c++; }
-                }
-            }
-            c /= 2;
-            c += cn.size() * 2;
-            uncoveredCnInterconnectingEdgeNo.replace(set.getValue(), c);
+        for (HashMap.Entry<String, Edge> set : edgeNameToEdge.entrySet()) {
+            HashSet<String> original = vertexToNeighbours.get(set.getValue().getFirstVertex());
+            HashSet<String> commonNeighbours = new HashSet<>(original);
+            commonNeighbours.retainAll(neighboursViaUncoveredEdges.get(set.getValue().getSecondVertex()));
+            commonNeighboursViaUncoveredEdges.replace(set.getValue(), commonNeighbours);
+            edgeToCn.replace(set.getValue(), getCn(commonNeighbours));
         }
     }
 
-    // Selecting the edge with the highest number of uncovered interconnecting edges in its closes neighbourhood
-    public Edge selectEdge() {
-        int highest = -1;
-        Edge selectedEdge = null;
-        for (HashMap.Entry<Edge, Integer> set : uncoveredCnInterconnectingEdgeNo.entrySet()) {
-            if (!coveredEdges.contains(set.getKey())) {
-                if (set.getValue() > highest) {
-                    highest = set.getValue();
-                    selectedEdge = set.getKey();
-                }
-            }
-        }
-        return selectedEdge;
+    // Getting edge with the highest number of uncovered interconnecting edges in its closes neighbourhood
+    public Edge getNextEdge() {
+        return edgeToCn.entrySet().stream()
+                .filter(entry -> !coveredEdges.contains(entry.getKey()))
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(null);
     }
 
-    public boolean isCovered(ArrayList<ArrayList<String>> ecc, ArrayList<Edge> optionalEdges) {
-        coveredEdges = new HashSet<>();
-        usedCliques = new HashSet<>();
-        updateSets(ecc);
-        if (optionalEdges != null) {
-            coveredEdges.addAll(optionalEdges);
-        }
-        return allEdges.size() <= coveredEdges.size();
+    public boolean isCovered(List<List<String>> edgeCliqueCover, List<Edge> optionalEdges) {
+        coveredEdges = optionalEdges != null ? new HashSet<>(optionalEdges) : new HashSet<>();
+        updateSets(edgeCliqueCover);
+        return edgeNameToEdge.size() <= coveredEdges.size();
     }
 
-    public ArrayList<ArrayList<String>> getMaximalCliques(Edge e) {
-        ArrayList<ArrayList<String>> cliques = new ArrayList<>();
-        HashSet<String> cn = allCommonNeighbours.get(e);
+    public List<List<String>> getMaximalCliques(Edge edge) {
+        List<List<String>> cliques = new ArrayList<>();
+        HashSet<String> cn = allCommonNeighbours.get(edge);
 
         if ((cn == null) || cn.isEmpty()) {
             ArrayList<String> clique = new ArrayList<>();
-            clique.add(e.getFirstVertex());
-            clique.add(e.getSecondVertex());
+            clique.add(edge.getFirstVertex());
+            clique.add(edge.getSecondVertex());
             cliques.add(clique);
         } else {
-            for (ArrayList<String> maxClique : allMaxCliques) {
-                if (maxClique.contains(e.getFirstVertex()) && maxClique.contains(e.getSecondVertex())) {
+            for (List<String> maxClique : allMaxCliques) {
+                if (maxClique.contains(edge.getFirstVertex()) && maxClique.contains(edge.getSecondVertex())) {
                     HashSet<String> cliqueSet = new HashSet<>(maxClique);
                     if (!usedCliques.contains(cliqueSet)) {
                         cliques.add(maxClique);
@@ -226,6 +127,17 @@ public class AdvancedGraph extends Graph {
         return cliques;
     }
 
+    private int getCn(HashSet<String> commonNeighbours) {
+        int cn = 0;
+        for (String firstNeighbour : commonNeighbours) {
+            for (String secondNeighbour : commonNeighbours) {
+                if ((edgeNameToEdge.containsKey(firstNeighbour + secondNeighbour)
+                        || edgeNameToEdge.containsKey(secondNeighbour + firstNeighbour))
+                        && !firstNeighbour.equals(secondNeighbour)) cn++;
+            }
+        }
+        return cn / 2 + commonNeighbours.size() * 2;
+    }
 }
 
 

@@ -4,26 +4,24 @@ import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
 import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class MaxMinHeuristic {
 
-    public static ArrayList<ArrayList<String>> getEdgeCliqueCover(Graph graph, ArrayList<Edge> optionalEdges, boolean isMaxHeuristic)  {
+    public static List<List<String>> getEdgeCliqueCover(Graph graph, List<Edge> optionalEdges, boolean isMaxHeuristic)  {
         int cliqueNumber = -1;
 
-        HashMap<String, Boolean> edgeNameToIsCovered = new HashMap<>();
-        HashMap<String, Integer> vertexToUncoveredDegree = new HashMap<>();
-        HashMap<String, HashSet<String>> vertexToAllNeighbours = EdgeCliqueCoverUtils.initialiseNeighbours(graph);
-        HashMap<String, Integer> edgeNameToNoOfCliquesItsContainedIn = new HashMap<>();
-        HashMap<String, Integer> vertexToLocalUncoveredDegree = new HashMap<>();
+        Map<String, Boolean> edgeNameToIsCovered = new HashMap<>();
+        Map<String, Integer> vertexToUncoveredDegree = new HashMap<>();
+        Map<String, HashSet<String>> vertexToAllNeighbours = EdgeCliqueCoverUtils.initialiseNeighbours(graph);
+        Map<String, Integer> edgeNameToNoOfCliquesItsContainedIn = new HashMap<>();
+        Map<String, Integer> vertexToLocalUncoveredDegree = new HashMap<>();
 
-        ArrayList<ArrayList<String>> finalCliquesAsVertices = new ArrayList<>();
-        ArrayList<ArrayList<String>> finalCliquesAsEdges = new ArrayList<>();
+        List<List<String>> finalCliquesAsVertices = new ArrayList<>();
+        List<List<String>> finalCliquesAsEdges = new ArrayList<>();
 
-        HashSet<String> uncoveredVertices = new HashSet<>();
-        HashSet<String> optionalEdgeSet = new HashSet<>();
+        Set<String> uncoveredVertices = new HashSet<>();
+        Set<String> optionalEdgeSet = new HashSet<>();
 
         for (Edge edge : optionalEdges) {
             optionalEdgeSet.add(edge.getFirstVertex() + edge.getSecondVertex());
@@ -126,13 +124,13 @@ public class MaxMinHeuristic {
 
         int currentCliqueIndex = 0;
         // Dealing with cliques which are not maximal
-        for (ArrayList<String> finalClique : finalCliquesAsVertices) {
+        for (List<String> finalClique : finalCliquesAsVertices) {
             // If the clique is not maximal
             if (finalClique.size() < maxCliqueSize && !finalClique.isEmpty()) {
                 HashSet<String> neighboursOfFirstVertex = new HashSet<>(vertexToAllNeighbours.get(finalClique.get(0)));
                 ArrayList<String> verticesToBeAdded = new ArrayList<>(neighboursOfFirstVertex);
-                for (int x = 1; x < finalClique.size(); x++) {
-                    verticesToBeAdded.retainAll(vertexToAllNeighbours.get(finalClique.get(x)));
+                for (int i = 1; i < finalClique.size(); i++) {
+                    verticesToBeAdded.retainAll(vertexToAllNeighbours.get(finalClique.get(i)));
                 }
 
                 while (!verticesToBeAdded.isEmpty()) {
@@ -157,30 +155,30 @@ public class MaxMinHeuristic {
         }
 
         // If a clique only contains edges from the optional edge list it needs to be removed
-        for (int x = 0; x < finalCliquesAsEdges.size(); x++) {
+        for (int i = 0; i < finalCliquesAsEdges.size(); i++) {
             boolean containsOnlyOptionalEdges = true;
-            for (String edge : finalCliquesAsEdges.get(x)) {
+            for (String edge : finalCliquesAsEdges.get(i)) {
                 if (!optionalEdgeSet.contains(edge)) {
                     containsOnlyOptionalEdges = false;
                     break;
                 }
             }
             if (containsOnlyOptionalEdges) {
-                finalCliquesAsVertices.remove(x);
-                finalCliquesAsVertices.add(x, new ArrayList<>());
+                finalCliquesAsVertices.remove(i);
+                finalCliquesAsVertices.add(i, new ArrayList<>());
             }
         }
         // Removing redundant cliques
-        for (int x = 0; x < finalCliquesAsVertices.size(); x++) {
-            if (EdgeCliqueCoverUtils.checkRedundancy(edgeNameToNoOfCliquesItsContainedIn, finalCliquesAsEdges.get(x))) {
+        for (int i = 0; i < finalCliquesAsVertices.size(); i++) {
+            if (EdgeCliqueCoverUtils.isCliqueRedundant(edgeNameToNoOfCliquesItsContainedIn, finalCliquesAsEdges.get(i))) {
 
-                for (String edge : finalCliquesAsEdges.get(x)) {
+                for (String edge : finalCliquesAsEdges.get(i)) {
                     int temp = edgeNameToNoOfCliquesItsContainedIn.get(edge);
                     edgeNameToNoOfCliquesItsContainedIn.replace(edge, temp - 1);
                 }
 
-                finalCliquesAsEdges.remove(x);
-                finalCliquesAsVertices.remove(x);
+                finalCliquesAsEdges.remove(i);
+                finalCliquesAsVertices.remove(i);
             }
         }
         return finalCliquesAsVertices;
