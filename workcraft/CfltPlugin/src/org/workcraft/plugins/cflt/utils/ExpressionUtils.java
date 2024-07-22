@@ -6,7 +6,7 @@ import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.tools.CotreeTool;
-import org.workcraft.plugins.cflt.tools.CotreeTool.Model;
+import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
@@ -108,10 +108,10 @@ public final class ExpressionUtils {
         }
         checkMode(mode);
         checkIteration(mode);
-        CotreeTool ctr = new CotreeTool();
+        CotreeTool cotreeTool = new CotreeTool();
         // If the expression is merely a single transition
         if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
-            ctr.drawSingleTransition(Model.STG);
+            cotreeTool.drawSingleTransition(Model.STG);
         }
         nameToDirection = new HashMap<>();
         labelToName = new HashMap<>();
@@ -120,7 +120,7 @@ public final class ExpressionUtils {
             return false;
         }
 
-        ctr.drawInterpretedGraph(mode, Model.STG);
+        cotreeTool.drawInterpretedGraph(mode, Model.STG);
         return true;
     }
 

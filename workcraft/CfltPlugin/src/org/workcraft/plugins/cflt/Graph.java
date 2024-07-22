@@ -13,6 +13,8 @@ import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTE
  */
 public class Graph {
     private List<Edge> edges = new ArrayList<>();
+
+    // TODO: Change to List<Vertex> and in all respective places once wrapper is created
     private List<String> vertices = new ArrayList<>();
 
     public Graph(List<Edge> edges, List<String> vertices) {
@@ -42,7 +44,7 @@ public class Graph {
         if (getEdges().isEmpty()) return new ArrayList<>(this.vertices);
 
         Set<String> connectedVertices = edges.stream()
-                .flatMap(e -> Stream.of(e.getFirstVertex(), e.getSecondVertex()))
+                .flatMap(edge -> Stream.of(edge.getFirstVertex(), edge.getSecondVertex()))
                 .collect(Collectors.toSet());
 
         return vertices.stream()
@@ -65,6 +67,7 @@ public class Graph {
         this.edges = edges;
     }
 
+    // TODO: Create a wrapper for the Vertex to avoid overcomplicated string concatenation
     public Graph cloneGraph(int counter) {
         String suffix = SPECIAL_CLONE_CHARACTER + counter;
 

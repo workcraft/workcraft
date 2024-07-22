@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.workcraft.plugins.cflt.Graph;
+import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.cflt.Node;
 import org.workcraft.plugins.cflt.Operator;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
@@ -11,6 +12,7 @@ import org.workcraft.plugins.cflt.utils.GraphUtils;
 
 public final class CotreeTool {
 
+    // TODO: Make this class a singleton to avoid using static variables
     public static ArrayList<Node> nodes;
     public static String singleTransition;
     public static boolean containsIteration;
@@ -24,10 +26,6 @@ public final class CotreeTool {
         CotreeTool.nodes = new ArrayList<>();
         CotreeTool.singleTransition = null;
         CotreeTool.containsIteration = false;
-    }
-
-    public enum Model {
-        PETRI_NET, STG, DEFAULT
     }
 
     public void drawSingleTransition(Model model) {
