@@ -29,11 +29,9 @@ public final class GraphUtils {
 
     public static Graph join(Graph firstGraph, Graph secondGraph) {
         Graph newGraph = disjointUnion(firstGraph, secondGraph);
-        List<String> firstVertices = firstGraph.getVertices();
-        List<String> secondVertices = secondGraph.getVertices();
 
-        firstVertices.stream()
-                .flatMap(firstVertex -> secondVertices.stream()
+        firstGraph.getVertices().stream()
+                .flatMap(firstVertex -> secondGraph.getVertices().stream()
                         .map(secondVertex -> new Edge(firstVertex, secondVertex)))
                 .forEach(newGraph::addEdge);
 
