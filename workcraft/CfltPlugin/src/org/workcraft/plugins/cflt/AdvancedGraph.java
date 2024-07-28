@@ -25,37 +25,37 @@ public class AdvancedGraph extends Graph {
         this.allMaxCliques = allMaxCliques;
 
         for (Edge edge : graph.getEdges()) {
-            if (vertexNameToNeighbours.containsKey(edge.getFirstVertex())) {
-                vertexNameToNeighbours.get(edge.getFirstVertex()).add(edge.getSecondVertex());
-                neighboursViaUncoveredEdges.get(edge.getFirstVertex()).add(edge.getSecondVertex());
+            if (vertexNameToNeighbours.containsKey(edge.getFirstVertexName())) {
+                vertexNameToNeighbours.get(edge.getFirstVertexName()).add(edge.getSecondVertexName());
+                neighboursViaUncoveredEdges.get(edge.getFirstVertexName()).add(edge.getSecondVertexName());
             } else {
-                vertexNameToNeighbours.put(edge.getFirstVertex(), new HashSet<>());
-                vertexNameToNeighbours.get(edge.getFirstVertex()).add(edge.getSecondVertex());
-                neighboursViaUncoveredEdges.put(edge.getFirstVertex(), new HashSet<>());
-                neighboursViaUncoveredEdges.get(edge.getFirstVertex()).add(edge.getSecondVertex());
+                vertexNameToNeighbours.put(edge.getFirstVertexName(), new HashSet<>());
+                vertexNameToNeighbours.get(edge.getFirstVertexName()).add(edge.getSecondVertexName());
+                neighboursViaUncoveredEdges.put(edge.getFirstVertexName(), new HashSet<>());
+                neighboursViaUncoveredEdges.get(edge.getFirstVertexName()).add(edge.getSecondVertexName());
             }
-            if (vertexNameToNeighbours.containsKey(edge.getSecondVertex())) {
-                vertexNameToNeighbours.get(edge.getSecondVertex()).add(edge.getFirstVertex());
-                neighboursViaUncoveredEdges.get(edge.getSecondVertex()).add(edge.getFirstVertex());
+            if (vertexNameToNeighbours.containsKey(edge.getSecondVertexName())) {
+                vertexNameToNeighbours.get(edge.getSecondVertexName()).add(edge.getFirstVertexName());
+                neighboursViaUncoveredEdges.get(edge.getSecondVertexName()).add(edge.getFirstVertexName());
             } else {
-                vertexNameToNeighbours.put(edge.getSecondVertex(), new HashSet<>());
-                vertexNameToNeighbours.get(edge.getSecondVertex()).add(edge.getFirstVertex());
-                neighboursViaUncoveredEdges.put(edge.getSecondVertex(), new HashSet<>());
-                neighboursViaUncoveredEdges.get(edge.getSecondVertex()).add(edge.getFirstVertex());
+                vertexNameToNeighbours.put(edge.getFirstVertexName(), new HashSet<>());
+                vertexNameToNeighbours.get(edge.getFirstVertexName()).add(edge.getFirstVertexName());
+                neighboursViaUncoveredEdges.put(edge.getSecondVertexName(), new HashSet<>());
+                neighboursViaUncoveredEdges.get(edge.getSecondVertexName()).add(edge.getFirstVertexName());
             }
-            edgeNameToEdge.put(edge.getFirstVertex() + edge.getSecondVertex(), edge);
+            edgeNameToEdge.put(edge.getFirstVertexName() + edge.getSecondVertexName(), edge);
+            edgeNameToEdge.put(edge.getSecondVertexName() + edge.getFirstVertexName(), edge);
         }
 
         for (Edge edge : graph.getEdges()) {
-            HashSet<String> original = vertexNameToNeighbours.get(edge.getFirstVertex());
+            HashSet<String> original = vertexNameToNeighbours.get(edge.getFirstVertexName());
             HashSet<String> commonNeighbours = new HashSet<>(original);
-            commonNeighbours.retainAll(vertexNameToNeighbours.get(edge.getSecondVertex()));
+            commonNeighbours.retainAll(vertexNameToNeighbours.get(edge.getSecondVertexName()));
             allCommonNeighbours.put(edge, commonNeighbours);
             edgeToCn.put(edge, getCn(commonNeighbours));
         }
     }
 
-    //is used
     public void updateSets(List<Clique> edgeCliqueCover) {
         coveredEdges = new HashSet<>();
         for (Clique clique : edgeCliqueCover) {
@@ -81,12 +81,11 @@ public class AdvancedGraph extends Graph {
         updateUncoveredCommonNeighbours();
     }
 
-    // is used
     public void updateUncoveredCommonNeighbours() {
         for (HashMap.Entry<String, Edge> set : edgeNameToEdge.entrySet()) {
-            HashSet<String> original = vertexNameToNeighbours.get(set.getValue().getFirstVertex());
+            HashSet<String> original = vertexNameToNeighbours.get(set.getValue().getFirstVertexName());
             HashSet<String> commonNeighbours = new HashSet<>(original);
-            commonNeighbours.retainAll(neighboursViaUncoveredEdges.get(set.getValue().getSecondVertex()));
+            commonNeighbours.retainAll(neighboursViaUncoveredEdges.get(set.getValue().getSecondVertexName()));
             edgeToCn.replace(set.getValue(), getCn(commonNeighbours));
         }
     }
@@ -111,13 +110,13 @@ public class AdvancedGraph extends Graph {
 
         if ((cn == null) || cn.isEmpty()) {
             Clique clique = new Clique();
-            clique.addVertexName(edge.getFirstVertex());
-            clique.addVertexName(edge.getSecondVertex());
+            clique.addVertexName(edge.getFirstVertexName());
+            clique.addVertexName(edge.getSecondVertexName());
             cliques.add(clique);
         } else {
             for (Clique maxClique : allMaxCliques) {
-                if (maxClique.getVertexNames().contains(edge.getFirstVertex())
-                        && maxClique.getVertexNames().contains(edge.getSecondVertex())) {
+                if (maxClique.getVertexNames().contains(edge.getFirstVertexName())
+                        && maxClique.getVertexNames().contains(edge.getSecondVertexName())) {
                     HashSet<String> cliqueSet = new HashSet<>(maxClique.getVertexNames());
                     if (!usedCliques.contains(cliqueSet)) {
                         cliques.add(maxClique);

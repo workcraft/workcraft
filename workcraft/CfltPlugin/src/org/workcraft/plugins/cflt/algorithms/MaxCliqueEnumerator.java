@@ -96,8 +96,8 @@ public class MaxCliqueEnumerator {
 
         for (int k = 0; k < edgesCount; k++) {
             String[] strArr = new String[2];
-            strArr[0] = g.getEdges().get(k).getFirstVertex();
-            strArr[1] = g.getEdges().get(k).getSecondVertex();
+            strArr[0] = g.getEdges().get(k).getFirstVertexName();
+            strArr[1] = g.getEdges().get(k).getSecondVertexName();
             int u = vertexNameToIndex.get(strArr[0]);
             int v = vertexNameToIndex.get(strArr[1]);
             Vertex vertexU = graph.get(u);

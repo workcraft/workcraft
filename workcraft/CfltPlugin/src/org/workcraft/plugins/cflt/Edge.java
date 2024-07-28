@@ -10,11 +10,11 @@ public class Edge {
         this.secondVertexName = vertex2;
     }
 
-    public String getFirstVertex() {
+    public String getFirstVertexName() {
         return firstVertexName;
     }
 
-    public String getSecondVertex() {
+    public String getSecondVertexName() {
         return secondVertexName;
     }
 

@@ -3,35 +3,26 @@ package org.workcraft.plugins.cflt.algorithms;
 import org.workcraft.plugins.cflt.Clique;
 import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
+import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.*;
+import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.removeRedundantCliques;
 
 public class SequenceHeuristic {
 
     public static List<Clique> getEdgeCliqueCover(Graph graph, List<Edge> optionalEdges) {
         List<Clique> finalCliques = new ArrayList<>();
 
-        Map<String, Integer> vertexNameToUncoveredDegree = new HashMap<>();
-        Map<String, Integer> vertexNameToLocalUncoveredDegree = new HashMap<>();
+        HashMap<String, Integer> vertexNameToUncoveredDegree = new HashMap<>();
+        HashMap<String, Integer> vertexNameToLocalUncoveredDegree = new HashMap<>();
         Map<String, Set<String>> vertexNameToAllNeighbours = new HashMap<>();
 
-        Map<String, Integer> edgeNameToNoOfCliquesItsContainedIn = new HashMap<>();
-        Map<String, Boolean> edgeNameToIsCovered = new HashMap<>();
+        HashMap<String, Integer> edgeNameToNoOfCliquesItsContainedIn = new HashMap<>();
+        HashMap<String, Boolean> edgeNameToIsCovered = new HashMap<>();
 
-        Set<String> optionalEdgeNameSet = new HashSet<>();
-
-        for (String vertex : graph.getVertexNames()) {
-            vertexNameToUncoveredDegree.put(vertex,
-                    vertexNameToAllNeighbours.get(vertex) != null && !vertexNameToAllNeighbours.get(vertex).isEmpty() ?
-                            vertexNameToAllNeighbours.get(vertex).size() : 0);
-        }
+        HashSet<String> optionalEdgeNameSet = new HashSet<>();
 
         initialiseHeuristicDataStructures(
                 graph,
@@ -42,6 +33,13 @@ public class SequenceHeuristic {
                 edgeNameToNoOfCliquesItsContainedIn
         );
 
+        for (String vertex : graph.getVertexNames()) {
+            if (vertexNameToAllNeighbours.get(vertex) != null && !vertexNameToAllNeighbours.get(vertex).isEmpty()) {
+                vertexNameToUncoveredDegree.put(vertex, vertexNameToAllNeighbours.get(vertex).size());
+            } else {
+                vertexNameToUncoveredDegree.put(vertex, 0);
+            }
+        }
         int cliqueNumber = -1;
         int maxCliqueSize = 0;
         int currentCliqueSize = 0;
@@ -62,7 +60,7 @@ public class SequenceHeuristic {
                     vertexNameToLocalUncoveredDegree.put(j, 1 - (edgeNameToIsCovered.get(i + j) ? 1 : 0));
                 }
 
-                String u = argMax(vertexNameToLocalUncoveredDegree, localNeighbourhoodOfi);
+                String u = EdgeCliqueCoverUtils.argMax(vertexNameToLocalUncoveredDegree, localNeighbourhoodOfi);
                 while (vertexNameToLocalUncoveredDegree.get(u) > 0) {
                     boolean isOptional = true;
                     for (String j : finalCliques.get(cliqueNumber).getVertexNames()) {
@@ -85,7 +83,7 @@ public class SequenceHeuristic {
                         edgeNameToNoOfCliquesItsContainedIn.replace(u + j, oldVal + 1);
                         edgeNameToNoOfCliquesItsContainedIn.replace(j + u, oldVal + 1);
 
-                        if (!optionalEdgeNameSet.contains(u + j) || !optionalEdgeNameSet.contains(j + u)) {
+                        if (!optionalEdgeNameSet.contains(u + j)) {
                             isOptional = false;
                         }
                     }
@@ -101,7 +99,7 @@ public class SequenceHeuristic {
                             vertexNameToLocalUncoveredDegree.replace(j, temp + 1);
                         }
                     }
-                    u = argMax(vertexNameToLocalUncoveredDegree, localNeighbourhoodOfi);
+                    u = EdgeCliqueCoverUtils.argMax(vertexNameToLocalUncoveredDegree, localNeighbourhoodOfi);
                     if (localNeighbourhoodOfi.isEmpty()) { break; }
                 }
             }

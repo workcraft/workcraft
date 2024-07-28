@@ -40,21 +40,21 @@ public final class EdgeCliqueCoverUtils {
             Map<String, Boolean> edgeNameToIsCovered,
             Map<String, Integer> edgeNameToNoOfCliquesItsContainedIn) {
         for (Edge edge : graph.getEdges()) {
-            vertexNameToAllNeighbours.putIfAbsent(edge.getFirstVertex(), new HashSet<>());
-            vertexNameToAllNeighbours.putIfAbsent(edge.getSecondVertex(), new HashSet<>());
-            vertexNameToAllNeighbours.get(edge.getFirstVertex()).add(edge.getSecondVertex());
-            vertexNameToAllNeighbours.get(edge.getSecondVertex()).add(edge.getFirstVertex());
+            vertexNameToAllNeighbours.putIfAbsent(edge.getFirstVertexName(), new HashSet<>());
+            vertexNameToAllNeighbours.putIfAbsent(edge.getSecondVertexName(), new HashSet<>());
+            vertexNameToAllNeighbours.get(edge.getFirstVertexName()).add(edge.getSecondVertexName());
+            vertexNameToAllNeighbours.get(edge.getSecondVertexName()).add(edge.getFirstVertexName());
         }
         for (Edge edge : optionalEdges) {
-            optionalEdgeNameSet.add(edge.getFirstVertex() + edge.getSecondVertex());
-            optionalEdgeNameSet.add(edge.getSecondVertex() + edge.getFirstVertex());
+            optionalEdgeNameSet.add(edge.getFirstVertexName() + edge.getSecondVertexName());
+            optionalEdgeNameSet.add(edge.getSecondVertexName() + edge.getFirstVertexName());
         }
         for (Edge edge : graph.getEdges()) {
-            edgeNameToIsCovered.put(edge.getFirstVertex() + edge.getSecondVertex(), false);
-            edgeNameToIsCovered.put(edge.getSecondVertex() + edge.getFirstVertex(), false);
+            edgeNameToIsCovered.put(edge.getFirstVertexName() + edge.getSecondVertexName(), false);
+            edgeNameToIsCovered.put(edge.getSecondVertexName() + edge.getFirstVertexName(), false);
 
-            edgeNameToNoOfCliquesItsContainedIn.put(edge.getFirstVertex() + edge.getSecondVertex(), 0);
-            edgeNameToNoOfCliquesItsContainedIn.put(edge.getSecondVertex() + edge.getFirstVertex(), 0);
+            edgeNameToNoOfCliquesItsContainedIn.put(edge.getFirstVertexName() + edge.getSecondVertexName(), 0);
+            edgeNameToNoOfCliquesItsContainedIn.put(edge.getSecondVertexName() + edge.getFirstVertexName(), 0);
         }
     }
 

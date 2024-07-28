@@ -41,7 +41,7 @@ public class Graph {
         if (getEdges().isEmpty()) return new ArrayList<>(this.vertexNames);
 
         Set<String> connectedVertices = edges.stream()
-                .flatMap(edge -> Stream.of(edge.getFirstVertex(), edge.getSecondVertex()))
+                .flatMap(edge -> Stream.of(edge.getFirstVertexName(), edge.getSecondVertexName()))
                 .collect(Collectors.toSet());
 
         return vertexNames.stream()
@@ -72,7 +72,7 @@ public class Graph {
         }).collect(Collectors.toCollection(ArrayList::new));
 
         ArrayList<Edge> edges = this.getEdges().stream().map(edgeName -> {
-            return new Edge(edgeName.getFirstVertex() + suffix, edgeName.getSecondVertex() + suffix);
+            return new Edge(edgeName.getFirstVertexName() + suffix, edgeName.getSecondVertexName() + suffix);
         }).collect(Collectors.toCollection(ArrayList::new));
 
         return new Graph(edges, vertices);
