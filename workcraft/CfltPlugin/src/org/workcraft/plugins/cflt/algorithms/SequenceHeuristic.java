@@ -27,7 +27,7 @@ public class SequenceHeuristic {
 
         Set<String> optionalEdgeNameSet = new HashSet<>();
 
-        for (String vertex : graph.getVertices()) {
+        for (String vertex : graph.getVertexNames()) {
             vertexNameToUncoveredDegree.put(vertex,
                     vertexNameToAllNeighbours.get(vertex) != null && !vertexNameToAllNeighbours.get(vertex).isEmpty() ?
                             vertexNameToAllNeighbours.get(vertex).size() : 0);
@@ -46,7 +46,7 @@ public class SequenceHeuristic {
         int maxCliqueSize = 0;
         int currentCliqueSize = 0;
 
-        for (String i : graph.getVertices()) {
+        for (String i : graph.getVertexNames()) {
             while (vertexNameToUncoveredDegree.get(i) > 0) {
                 if (currentCliqueSize > maxCliqueSize) {
                     maxCliqueSize = currentCliqueSize;

@@ -90,7 +90,7 @@ public class MaxCliqueEnumerator {
     }
 
     private void readNextGraph(Graph g) {
-        nodeCount = g.getVertices().size();
+        nodeCount = g.getVertexNames().size();
         int edgesCount = g.getEdges().size();
         initGraph();
 
@@ -145,9 +145,9 @@ public class MaxCliqueEnumerator {
         allMaxCliques.add(maxClique);
     }
     private void initialiseMap(Graph graph) {
-        for (int i = 0; i < graph.getVertices().size(); i++) {
-            vertexNameToIndex.put(graph.getVertices().get(i), i);
-            vertexIndexToName.put(i, graph.getVertices().get(i));
+        for (int i = 0; i < graph.getVertexNames().size(); i++) {
+            vertexNameToIndex.put(graph.getVertexNames().get(i), i);
+            vertexIndexToName.put(i, graph.getVertexNames().get(i));
         }
     }
 }

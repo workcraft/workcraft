@@ -19,8 +19,8 @@ public final class GraphUtils {
                         secondGraph.getEdges().stream())
                 .collect(Collectors.toList());
 
-        List<String> newVertices = Stream.concat(firstGraph.getVertices().stream(),
-                        secondGraph.getVertices().stream())
+        List<String> newVertices = Stream.concat(firstGraph.getVertexNames().stream(),
+                        secondGraph.getVertexNames().stream())
                 .collect(Collectors.toList());
 
         return new Graph(newEdges, newVertices);
@@ -29,8 +29,8 @@ public final class GraphUtils {
     public static Graph join(Graph firstGraph, Graph secondGraph) {
         Graph newGraph = disjointUnion(firstGraph, secondGraph);
 
-        firstGraph.getVertices().stream()
-                .flatMap(firstVertex -> secondGraph.getVertices().stream()
+        firstGraph.getVertexNames().stream()
+                .flatMap(firstVertex -> secondGraph.getVertexNames().stream()
                         .map(secondVertex -> new Edge(firstVertex, secondVertex)))
                 .forEach(newGraph::addEdge);
 

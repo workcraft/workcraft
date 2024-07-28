@@ -4,15 +4,16 @@ import java.util.*;
 
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.cflt.Clique;
 import org.workcraft.plugins.cflt.Graph;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
-import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
 import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.WorkspaceUtils;
 
+import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.getEdgeCliqueCover;
 import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
 
 public class PetriDrawingTool {
@@ -20,8 +21,8 @@ public class PetriDrawingTool {
 
     public void drawPetri(Graph inputGraph, Graph outputGraph, boolean isSequence, boolean isRoot, Mode mode) {
         VisualPetri visualPetri = WorkspaceUtils.getAs(ExpressionUtils.we, VisualPetri.class);
-        List<List<String>> edgeCliqueCover = EdgeCliqueCoverUtils.getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
-        HashSet<String> inputVertexNames = new HashSet<>(isSequence ? inputGraph.getVertices() : new ArrayList<>());
+        List<Clique> edgeCliqueCover = getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
+        HashSet<String> inputVertexNames = new HashSet<>(isSequence ? inputGraph.getVertexNames() : new ArrayList<>());
 
         this.drawIsolatedVisualObjects(inputGraph, visualPetri, isSequence, isRoot);
         this.drawRemainingVisualObjects(edgeCliqueCover, visualPetri, inputVertexNames, isRoot);
@@ -33,15 +34,15 @@ public class PetriDrawingTool {
         connectVisualPlaceAndVisualTransition(visualPetri, visualPlace, visualTransition, ConnectionDirection.PLACE_TO_TRANSITION);
     }
     private void drawRemainingVisualObjects(
-            List<List<String>> edgeCliqueCover,
+            List<Clique> edgeCliqueCover,
             VisualPetri visualPetri,
             HashSet<String> inputVertexNames,
             boolean isRoot) {
-        for (List<String> clique : edgeCliqueCover) {
+        for (Clique clique : edgeCliqueCover) {
             if (clique != null) {
                 VisualPlace visualPlace = createVisualPlace(visualPetri, isRoot, Positioning.LEFT);
 
-                for (String vertexName : clique) {
+                for (String vertexName : clique.getVertexNames()) {
                     boolean isClone = vertexName.contains(SPECIAL_CLONE_CHARACTER);
                     String cleanVertexName = isClone ? vertexName.substring(0, vertexName.indexOf(SPECIAL_CLONE_CHARACTER)) :
                             vertexName;

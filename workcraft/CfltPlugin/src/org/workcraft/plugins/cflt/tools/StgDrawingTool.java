@@ -2,6 +2,7 @@ package org.workcraft.plugins.cflt.tools;
 
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.cflt.Clique;
 import org.workcraft.plugins.cflt.Graph;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
@@ -23,8 +24,8 @@ public class StgDrawingTool {
 
     public void drawStg(Graph inputGraph, Graph outputGraph, boolean isSequence, boolean isRoot, Mode mode) {
         VisualStg visualStg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
-        List<List<String>> edgeCliqueCover = EdgeCliqueCoverUtils.getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
-        HashSet<String> inputVertices = new HashSet<>(isSequence ? inputGraph.getVertices() : new ArrayList<>());
+        List<Clique> edgeCliqueCover = EdgeCliqueCoverUtils.getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
+        HashSet<String> inputVertices = new HashSet<>(isSequence ? inputGraph.getVertexNames() : new ArrayList<>());
 
         this.drawIsolatedVisualObjects(inputGraph, visualStg, isSequence, isRoot);
         this.drawRemainingVisualObjects(edgeCliqueCover, visualStg, inputVertices, isRoot);
@@ -32,16 +33,16 @@ public class StgDrawingTool {
     }
 
     private void drawRemainingVisualObjects(
-            List<List<String>> edgeCliqueCover,
+            List<Clique> edgeCliqueCover,
             VisualStg visualStg,
             Set<String> inputVertexNames,
             boolean isRoot) {
 
-        for (List<String> clique : edgeCliqueCover) {
+        for (Clique clique : edgeCliqueCover) {
             if (clique != null) {
                 VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, isRoot, Positioning.LEFT);
 
-                for (String vertexName : clique) {
+                for (String vertexName : clique.getVertexNames()) {
                     boolean isClone = vertexName.contains(SPECIAL_CLONE_CHARACTER);
                     String cleanVertexName = isClone ? vertexName.substring(0, vertexName.indexOf(SPECIAL_CLONE_CHARACTER)) :
                             vertexName;

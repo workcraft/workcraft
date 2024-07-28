@@ -20,20 +20,16 @@ public final class EdgeCliqueCoverUtils {
     private EdgeCliqueCoverUtils() {
     }
 
-    public static List<List<String>> getEdgeCliqueCover(boolean isSequence, Mode mode, Graph inputG, Graph outputG) {
+    public static List<Clique> getEdgeCliqueCover(boolean isSequence, Mode mode, Graph inputG, Graph outputG) {
         Graph initGraph = isSequence ? GraphUtils.join(inputG, outputG) : inputG;
         List<Edge> optionalEdges = isSequence ? inputG.getEdges() : new ArrayList<>();
-        switch (mode) {
-        case SLOW_EXACT:
-            return ExhaustiveSearch.getEdgeCliqueCover(initGraph, optionalEdges);
-        case FAST_SEQ:
-            return SequenceHeuristic.getEdgeCliqueCover(initGraph, optionalEdges);
-        case FAST_MAX:
-            return MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, true);
-        case FAST_MIN:
-            return MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, false);
-        }
-        return new ArrayList<>();
+        return switch (mode) {
+            case SLOW_EXACT -> ExhaustiveSearch.getEdgeCliqueCover(initGraph, optionalEdges);
+            case FAST_SEQ -> SequenceHeuristic.getEdgeCliqueCover(initGraph, optionalEdges);
+            case FAST_MAX -> MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, true);
+            case FAST_MIN -> MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, false);
+            default -> new ArrayList<>();
+        };
     }
 
     public static  void initialiseHeuristicDataStructures(

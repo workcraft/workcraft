@@ -8,28 +8,25 @@ import java.util.stream.Stream;
 
 import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
 
-/**
- * An undirected and unweighted graph as a list of edges and vertices
- */
 public class Graph {
     private List<Edge> edges = new ArrayList<>();
 
-    // TODO: Change to List<Vertex> and in all respective places once wrapper is created
-    private List<String> vertices = new ArrayList<>();
+    // TODO: Consider using a custom class for the Vertex rather than using a simple String
+    private List<String> vertexNames = new ArrayList<>();
 
     public Graph(List<Edge> edges, List<String> vertices) {
         this.edges = edges;
-        this.vertices = vertices;
+        this.vertexNames = vertices;
     }
     public Graph() {
     }
 
     public void addVertex(String vertex) {
-        this.vertices.add(vertex);
+        this.vertexNames.add(vertex);
     }
 
     public void removeVertex(String vertex) {
-        this.vertices.remove(vertex);
+        this.vertexNames.remove(vertex);
     }
 
     public void addEdge(Edge edge) {
@@ -41,22 +38,22 @@ public class Graph {
     }
 
     public List<String> getIsolatedVertices() {
-        if (getEdges().isEmpty()) return new ArrayList<>(this.vertices);
+        if (getEdges().isEmpty()) return new ArrayList<>(this.vertexNames);
 
         Set<String> connectedVertices = edges.stream()
                 .flatMap(edge -> Stream.of(edge.getFirstVertex(), edge.getSecondVertex()))
                 .collect(Collectors.toSet());
 
-        return vertices.stream()
-                .filter(v -> !connectedVertices.contains(v))
+        return vertexNames.stream()
+                .filter(vertexName -> !connectedVertices.contains(vertexName))
                 .collect(Collectors.toCollection(ArrayList::new));
     }
-    public List<String> getVertices() {
-        return vertices;
+    public List<String> getVertexNames() {
+        return vertexNames;
     }
 
-    public void setVertices(ArrayList<String> vertices) {
-        this.vertices = vertices;
+    public void setVertexNames(ArrayList<String> vertices) {
+        this.vertexNames = vertices;
     }
 
     public List<Edge> getEdges() {
@@ -67,11 +64,10 @@ public class Graph {
         this.edges = edges;
     }
 
-    // TODO: Create a wrapper for the Vertex to avoid overcomplicated string concatenation
     public Graph cloneGraph(int counter) {
         String suffix = SPECIAL_CLONE_CHARACTER + counter;
 
-        ArrayList<String> vertices = this.vertices.stream().map(vertexName -> {
+        ArrayList<String> vertices = this.vertexNames.stream().map(vertexName -> {
             return vertexName + suffix;
         }).collect(Collectors.toCollection(ArrayList::new));
 

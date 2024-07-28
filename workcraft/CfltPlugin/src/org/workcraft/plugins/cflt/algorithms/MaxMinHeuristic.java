@@ -37,7 +37,7 @@ public class MaxMinHeuristic {
                 edgeNameToNoOfCliquesItsContainedIn
         );
 
-        for (String vertexName : graph.getVertices()) {
+        for (String vertexName : graph.getVertexNames()) {
             if (vertexNameToAllNeighbours.get(vertexName) != null && !vertexNameToAllNeighbours.get(vertexName).isEmpty()) {
                 vertexNameToUncoveredDegree.put(vertexName, vertexNameToAllNeighbours.get(vertexName).size());
                 uncoveredVertexNames.add(vertexName);
