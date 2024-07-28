@@ -12,34 +12,31 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.*;
+
 public class MaxMinHeuristic {
 
     public static List<Clique> getEdgeCliqueCover(Graph graph, List<Edge> optionalEdges, boolean isMaxHeuristic)  {
-        int cliqueNumber = -1;
-
-        Map<String, Boolean> edgeNameToIsCovered = new HashMap<>();
-        Map<String, Integer> vertexNameToUncoveredDegree = new HashMap<>();
-        Map<String, HashSet<String>> vertexNameToAllNeighbours = EdgeCliqueCoverUtils.getVertexNameToNeighbours(graph);
-        Map<String, Integer> edgeNameToNoOfCliquesItsContainedIn = new HashMap<>();
-        Map<String, Integer> vertexToLocalUncoveredDegree = new HashMap<>();
-
         List<Clique> finalCliques = new ArrayList<>();
+
+        Map<String, Integer> vertexNameToUncoveredDegree = new HashMap<>();
+        Map<String, Integer> vertexNameToLocalUncoveredDegree = new HashMap<>();
+        Map<String, Set<String>> vertexNameToAllNeighbours = new HashMap<>();
+
+        Map<String, Integer> edgeNameToNoOfCliquesItsContainedIn = new HashMap<>();
+        Map<String, Boolean> edgeNameToIsCovered = new HashMap<>();
 
         Set<String> uncoveredVertexNames = new HashSet<>();
         Set<String> optionalEdgeNameSet = new HashSet<>();
 
-        for (Edge edge : optionalEdges) {
-            optionalEdgeNameSet.add(edge.getFirstVertex() + edge.getSecondVertex());
-            optionalEdgeNameSet.add(edge.getSecondVertex() + edge.getFirstVertex());
-        }
-
-        for (Edge edge : graph.getEdges()) {
-            edgeNameToIsCovered.put(edge.getFirstVertex() + edge.getSecondVertex(), false);
-            edgeNameToIsCovered.put(edge.getSecondVertex() + edge.getFirstVertex(), false);
-
-            edgeNameToNoOfCliquesItsContainedIn.put(edge.getFirstVertex() + edge.getSecondVertex(), 0);
-            edgeNameToNoOfCliquesItsContainedIn.put(edge.getSecondVertex() + edge.getFirstVertex(), 0);
-        }
+        initialiseHeuristicDataStructures(
+                graph,
+                vertexNameToAllNeighbours,
+                optionalEdges,
+                optionalEdgeNameSet,
+                edgeNameToIsCovered,
+                edgeNameToNoOfCliquesItsContainedIn
+        );
 
         for (String vertexName : graph.getVertices()) {
             if (vertexNameToAllNeighbours.get(vertexName) != null && !vertexNameToAllNeighbours.get(vertexName).isEmpty()) {
@@ -50,13 +47,14 @@ public class MaxMinHeuristic {
             }
         }
 
+        int cliqueNumber = -1;
         int maxCliqueSize = 0;
         int currentCliqueSize = 0;
 
         while (!uncoveredVertexNames.isEmpty()) {
             String i = isMaxHeuristic ?
-                    EdgeCliqueCoverUtils.argMax(vertexNameToUncoveredDegree, uncoveredVertexNames) :
-                    EdgeCliqueCoverUtils.argMin(vertexNameToUncoveredDegree, uncoveredVertexNames);
+                    argMax(vertexNameToUncoveredDegree, uncoveredVertexNames) :
+                    argMin(vertexNameToUncoveredDegree, uncoveredVertexNames);
 
             while (vertexNameToUncoveredDegree.get(i) > 0) {
                 if (currentCliqueSize > maxCliqueSize) {
@@ -70,11 +68,11 @@ public class MaxMinHeuristic {
 
                 HashSet<String> localNeighbourhoodOfi = new HashSet<>(vertexNameToAllNeighbours.get(i));
                 for (String j : localNeighbourhoodOfi) {
-                    vertexToLocalUncoveredDegree.put(j, 1 - (edgeNameToIsCovered.get(i + j) ? 1 : 0));
+                    vertexNameToLocalUncoveredDegree.put(j, 1 - (edgeNameToIsCovered.get(i + j) ? 1 : 0));
                 }
 
-                String u = EdgeCliqueCoverUtils.argMax(vertexToLocalUncoveredDegree, localNeighbourhoodOfi);
-                while (vertexToLocalUncoveredDegree.get(u) > 0) {
+                String u = argMax(vertexNameToLocalUncoveredDegree, localNeighbourhoodOfi);
+                while (vertexNameToLocalUncoveredDegree.get(u) > 0) {
                     boolean isOptional = true;
                     for (String j : finalCliques.get(cliqueNumber).getVertexNames()) {
                         if (!edgeNameToIsCovered.get(u + j)) {
@@ -108,11 +106,11 @@ public class MaxMinHeuristic {
                     for (String j : localNeighbourhoodOfi) {
 
                         if (!edgeNameToIsCovered.get(u + j)) {
-                            int temp = vertexToLocalUncoveredDegree.get(j);
-                            vertexToLocalUncoveredDegree.replace(j, temp + 1);
+                            int temp = vertexNameToLocalUncoveredDegree.get(j);
+                            vertexNameToLocalUncoveredDegree.replace(j, temp + 1);
                         }
                     }
-                    u = EdgeCliqueCoverUtils.argMax(vertexToLocalUncoveredDegree, localNeighbourhoodOfi);
+                    u = argMax(vertexNameToLocalUncoveredDegree, localNeighbourhoodOfi);
                     if (localNeighbourhoodOfi.isEmpty()) { break; }
                 }
             }
@@ -126,61 +124,9 @@ public class MaxMinHeuristic {
             uncoveredVertexNames = updatedUncoveredVertices;
         }
 
-        int currentCliqueIndex = 0;
-        // Dealing with cliques which are not maximal
-        for (Clique finalClique : finalCliques) {
-            // If the clique is not maximal
-            if (finalClique.getVertexNames().size() < maxCliqueSize && !finalClique.getVertexNames().isEmpty()) {
-                HashSet<String> neighboursOfFirstVertex =
-                        new HashSet<>(vertexNameToAllNeighbours.get(finalClique.getVertexNames().get(0)));
-                List<String> verticesToBeAdded = new ArrayList<>(neighboursOfFirstVertex);
-                for (int i = 1; i < finalClique.getVertexNames().size(); i++) {
-                    verticesToBeAdded.retainAll(vertexNameToAllNeighbours.get(finalClique.getVertexNames().get(i)));
-                }
-
-                while (!verticesToBeAdded.isEmpty()) {
-                    String i = verticesToBeAdded.get(0);
-                    finalClique.addVertexName(i);
-                    verticesToBeAdded.retainAll(vertexNameToAllNeighbours.get(i));
-
-                    for (String s : finalClique.getVertexNames()) {
-                        if (!i.equals(s)) {
-                            finalCliques.get(currentCliqueIndex).addEdgeName(i + s);
-                            finalCliques.get(currentCliqueIndex).addEdgeName(s + i);
-
-                            // Updating the number of cliques the edge is contained in
-                            int oldVal = edgeNameToNoOfCliquesItsContainedIn.get(i + s);
-                            edgeNameToNoOfCliquesItsContainedIn.replace(i + s, oldVal + 1);
-                            edgeNameToNoOfCliquesItsContainedIn.replace(s + i, oldVal + 1);
-                        }
-                    }
-                }
-            }
-            currentCliqueIndex++;
-        }
-
-        // If a clique only contains edges from the optional edge list it needs to be removed
-        List<Clique> updatedCliques = finalCliques.stream().map(finalClique -> {
-                    boolean containsOnlyOptionalEdges = optionalEdgeNameSet.containsAll(finalClique.getEdgeNames());
-                    return containsOnlyOptionalEdges ? new Clique() : finalClique;
-                })
-                .toList();
-
-        finalCliques.clear();
-        finalCliques.addAll(updatedCliques);
-
-        // Removing redundant cliques
-        for (int i = 0; i < finalCliques.size(); i++) {
-            if (EdgeCliqueCoverUtils.isCliqueRedundant(edgeNameToNoOfCliquesItsContainedIn, finalCliques.get(i).getEdgeNames())) {
-
-                for (String edge : finalCliques.get(i).getEdgeNames()) {
-                    int temp = edgeNameToNoOfCliquesItsContainedIn.get(edge);
-                    edgeNameToNoOfCliquesItsContainedIn.replace(edge, temp - 1);
-                }
-
-                finalCliques.remove(i);
-            }
-        }
+        handleNonMaximalCliques(finalCliques, maxCliqueSize, edgeNameToNoOfCliquesItsContainedIn, vertexNameToAllNeighbours);
+        removeCliquesConsistingOfOptionalEdges(finalCliques, optionalEdgeNameSet);
+        removeRedundantCliques(finalCliques, edgeNameToNoOfCliquesItsContainedIn);
         return finalCliques;
     }
 
