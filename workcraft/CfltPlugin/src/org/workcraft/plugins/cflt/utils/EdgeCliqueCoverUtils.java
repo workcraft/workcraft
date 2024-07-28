@@ -36,7 +36,7 @@ public final class EdgeCliqueCoverUtils {
         return new ArrayList<>();
     }
 
-    public static Map<String, HashSet<String>> initialiseNeighbours(Graph graph) {
+    public static Map<String, HashSet<String>> getVertexNameToNeighbours(Graph graph) {
         Map<String, HashSet<String>> allNeighbours = new HashMap<>();
         for (Edge edge : graph.getEdges()) {
             allNeighbours.putIfAbsent(edge.getFirstVertex(), new HashSet<>());
@@ -47,8 +47,8 @@ public final class EdgeCliqueCoverUtils {
         return allNeighbours;
     }
 
-    public static boolean isCliqueRedundant(Map<String, Integer> edgeToNoOfCliquesItsContainedIn, List<String> cliqueAsEdges) {
-        return cliqueAsEdges.stream()
+    public static boolean isCliqueRedundant(Map<String, Integer> edgeToNoOfCliquesItsContainedIn, List<String> cliqueAsEdgeNames) {
+        return cliqueAsEdgeNames.stream()
                 .allMatch(edge -> edgeToNoOfCliquesItsContainedIn.getOrDefault(edge, 0) > 1);
     }
 

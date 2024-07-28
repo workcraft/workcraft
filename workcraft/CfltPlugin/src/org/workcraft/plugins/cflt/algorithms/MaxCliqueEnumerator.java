@@ -5,13 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.workcraft.plugins.cflt.Clique;
 import org.workcraft.plugins.cflt.Graph;
 
+// TODO: Remove this once SAT Solver is used instead of the ExhaustiveSearch
 public class MaxCliqueEnumerator {
 
     int nodeCount;
     List<Vertex> graph = new ArrayList<>();
-    List<List<String>> allMaxCliques = new ArrayList<>();
+    List<Clique> allMaxCliques = new ArrayList<>();
     Map<String, Integer> vertexNameToIndex = new HashMap<>();
     Map<Integer, String> vertexIndexToName = new HashMap<>();
 
@@ -69,7 +71,7 @@ public class MaxCliqueEnumerator {
         }
     }
 
-    public static List<List<String>> getAllMaxCliques(Graph graph) {
+    public static List<Clique> getAllMaxCliques(Graph graph) {
         MaxCliqueEnumerator enumerator = new MaxCliqueEnumerator();
 
         enumerator.initialiseMap(graph);
@@ -136,9 +138,9 @@ public class MaxCliqueEnumerator {
         bronKerboschWithoutPivot(r, p, x, "");
     }
     private void saveClique(List<Vertex> r) {
-        List<String> maxClique = new ArrayList<>();
+        Clique maxClique = new Clique();
         for (Vertex v : r) {
-            maxClique.add(vertexIndexToName.get(v.getX()));
+            maxClique.addVertexName(vertexIndexToName.get(v.getX()));
         }
         allMaxCliques.add(maxClique);
     }
