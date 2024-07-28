@@ -2,6 +2,7 @@ package org.workcraft.plugins.cflt.tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.workcraft.plugins.cflt.Graph;
 import org.workcraft.plugins.cflt.Model;
@@ -47,23 +48,10 @@ public final class CotreeTool {
             String rightChildName = node.getRightChildName();
             Operator operator = node.getOperator();
 
-            if (!entryGraph.containsKey(leftChildName)) {
-                entryGraph.put(leftChildName, new Graph());
-                entryGraph.get(leftChildName).addVertex(leftChildName);
-            }
-            if (!entryGraph.containsKey(rightChildName)) {
-                entryGraph.put(rightChildName, new Graph());
-                entryGraph.get(rightChildName).addVertex(rightChildName);
-            }
-
-            if (!exitGraph.containsKey(leftChildName)) {
-                exitGraph.put(leftChildName, new Graph());
-                exitGraph.get(leftChildName).addVertex(leftChildName);
-            }
-            if (!exitGraph.containsKey(rightChildName)) {
-                exitGraph.put(rightChildName, new Graph());
-                exitGraph.get(rightChildName).addVertex(rightChildName);
-            }
+            ensureGraphContainsVertex(entryGraph, leftChildName);
+            ensureGraphContainsVertex(entryGraph, rightChildName);
+            ensureGraphContainsVertex(exitGraph, leftChildName);
+            ensureGraphContainsVertex(exitGraph, rightChildName);
 
             switch (operator) {
             case CONCURRENCY:
@@ -91,6 +79,13 @@ public final class CotreeTool {
                 }
             }
             nodeCounter++;
+        }
+    }
+
+    private void ensureGraphContainsVertex(Map<String, Graph> graphNameToGraph, String vertexName) {
+        if (!graphNameToGraph.containsKey(vertexName)) {
+            graphNameToGraph.put(vertexName, new Graph());
+            graphNameToGraph.get(vertexName).addVertex(vertexName);
         }
     }
 

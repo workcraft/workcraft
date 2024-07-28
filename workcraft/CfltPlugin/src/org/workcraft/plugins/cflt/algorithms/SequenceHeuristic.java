@@ -107,8 +107,6 @@ public class SequenceHeuristic {
             }
         }
 
-
-
         handleNonMaximalCliques(finalCliques, maxCliqueSize, edgeNameToNoOfCliquesItsContainedIn, vertexNameToAllNeighbours);
         removeCliquesConsistingOfOptionalEdges(finalCliques, optionalEdgeNameSet);
         removeRedundantCliques(finalCliques, edgeNameToNoOfCliquesItsContainedIn);

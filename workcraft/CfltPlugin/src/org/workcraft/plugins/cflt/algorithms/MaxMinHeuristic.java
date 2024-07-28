@@ -3,7 +3,6 @@ package org.workcraft.plugins.cflt.algorithms;
 import org.workcraft.plugins.cflt.Clique;
 import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
-import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
