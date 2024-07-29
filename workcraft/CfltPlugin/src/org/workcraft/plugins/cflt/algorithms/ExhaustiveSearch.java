@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This algorithm is not as efficient as it should be, it is merely a temporary placeholder
+ * This algorithm is VERY inefficient, it is merely a temporary placeholder, a proof of concept
  * TODO: Replace this with a SAT Solver solution
  */
 public class ExhaustiveSearch {
@@ -17,7 +17,6 @@ public class ExhaustiveSearch {
     public static List<Clique> getEdgeCliqueCover(Graph initialGraph, List<Edge> optionalEdges) {
         List<Clique> edgeCliqueCover = new ArrayList<>();
         List<Clique> allMaxCliques = MaxCliqueEnumerator.getAllMaxCliques(initialGraph);
-
 
         AdvancedGraph graph = null;
         if (!initialGraph.getEdges().isEmpty()) {

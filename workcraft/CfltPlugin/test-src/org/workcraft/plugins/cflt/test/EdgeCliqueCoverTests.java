@@ -23,12 +23,12 @@ class EdgeCliqueCoverTests {
         List<Clique> seqEcc = SequenceHeuristic.getEdgeCliqueCover(graph, new ArrayList<Edge>());
         List<Clique> maxEcc = MaxMinHeuristic.getEdgeCliqueCover(graph, new ArrayList<Edge>(), true);
         List<Clique> minEcc = MaxMinHeuristic.getEdgeCliqueCover(graph, new ArrayList<Edge>(), false);
-//        List<Clique> exactEcc = ExhaustiveSearch.getEdgeCliqueCover(graph, new ArrayList<Edge>());
+        List<Clique> exactEcc = ExhaustiveSearch.getEdgeCliqueCover(graph, new ArrayList<Edge>());
 
         Assertions.assertTrue(doesCover(seqEcc, graph));
         Assertions.assertTrue(doesCover(maxEcc, graph));
         Assertions.assertTrue(doesCover(minEcc, graph));
-//        Assertions.assertTrue(doesCover(exactEcc, graph));
+        Assertions.assertTrue(doesCover(exactEcc, graph));
     }
 
     @Test
