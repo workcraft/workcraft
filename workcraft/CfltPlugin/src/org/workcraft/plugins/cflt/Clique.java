@@ -12,7 +12,8 @@ public class Clique {
         this.edgeNames = edgeNames;
     }
 
-    public Clique() {}
+    public Clique() {
+    }
 
     public List<String> getVertexNames() {
         return vertexNames;

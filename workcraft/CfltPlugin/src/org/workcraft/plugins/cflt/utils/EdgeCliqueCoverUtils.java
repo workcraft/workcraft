@@ -24,11 +24,11 @@ public final class EdgeCliqueCoverUtils {
         Graph initGraph = isSequence ? GraphUtils.join(inputG, outputG) : inputG;
         List<Edge> optionalEdges = isSequence ? inputG.getEdges() : new ArrayList<>();
         return switch (mode) {
-            case SLOW_EXACT -> ExhaustiveSearch.getEdgeCliqueCover(initGraph, optionalEdges);
-            case FAST_SEQ -> SequenceHeuristic.getEdgeCliqueCover(initGraph, optionalEdges);
-            case FAST_MAX -> MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, true);
-            case FAST_MIN -> MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, false);
-            default -> new ArrayList<>();
+        case SLOW_EXACT -> ExhaustiveSearch.getEdgeCliqueCover(initGraph, optionalEdges);
+        case FAST_SEQ -> SequenceHeuristic.getEdgeCliqueCover(initGraph, optionalEdges);
+        case FAST_MAX -> MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, true);
+        case FAST_MIN -> MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, false);
+        default -> new ArrayList<>();
         };
     }
 
@@ -72,9 +72,9 @@ public final class EdgeCliqueCoverUtils {
 
     public static void removeCliquesConsistingOfOptionalEdges(List<Clique> cliques, Set<String> optionalEdgeNameSet) {
         List<Clique> updatedCliques = cliques.stream().map(finalClique -> {
-                    boolean containsOnlyOptionalEdges = optionalEdgeNameSet.containsAll(finalClique.getEdgeNames());
-                    return containsOnlyOptionalEdges ? new Clique() : finalClique;
-                })
+            boolean containsOnlyOptionalEdges = optionalEdgeNameSet.containsAll(finalClique.getEdgeNames());
+            return containsOnlyOptionalEdges ? new Clique() : finalClique;
+        })
                 .toList();
 
         cliques.clear();
