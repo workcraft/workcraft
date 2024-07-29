@@ -45,7 +45,9 @@ public class AdvancedGraph extends Graph {
                 vertexNameToUncoveredNeighbours.get(edge.getSecondVertexName()).add(edge.getFirstVertexName());
             }
             allEdgeNames.put(edge.getFirstVertexName() + edge.getSecondVertexName(), edge);
+        }
 
+        for (Edge edge : graph.getEdges()) {
             Set<String> firstVertexNeighbours = vertexNameToAllNeighbours.getOrDefault(edge.getFirstVertexName(), new HashSet<>());
             Set<String> secondVertexNeighbours = vertexNameToAllNeighbours.getOrDefault(edge.getSecondVertexName(), new HashSet<>());
 
