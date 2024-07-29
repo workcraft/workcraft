@@ -13,7 +13,7 @@ import org.workcraft.plugins.cflt.utils.GraphUtils;
 
 public final class CotreeTool {
 
-    // TODO: Make this class a singleton, or find a different way to avoid using static variables to avoid using static variables
+    // TODO: Make this class a singleton, or find a different way to avoid using static variables in this way
     public static ArrayList<Node> nodes;
     public static String singleTransition;
     public static boolean containsIteration;

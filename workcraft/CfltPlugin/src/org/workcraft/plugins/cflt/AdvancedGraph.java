@@ -3,12 +3,12 @@ package org.workcraft.plugins.cflt;
 import java.util.*;
 
 /**
- * A temporary Class which contains more detail that the regular Graph class
+ * A temporary class which contains more specific attributes than the regular Graph class
  * TODO: Remove this class once the SAT Solver (or any other efficient) solution is implemented
  */
 public class AdvancedGraph extends Graph {
 
-    //All common neighbours of each of the vertices of the edge
+    // All common neighbours of each of the vertices of the edge
     private final HashMap<Edge, HashSet<String>> edgeNameToAllCommonNeighbours = new HashMap<>();
     // Number of edges interconnecting the common (uncovered) neighbours of both vertices of the edge (excluding the edge itself)
     private final HashMap<Edge, Integer> edgeToCn = new HashMap<>();
