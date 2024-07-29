@@ -8,12 +8,7 @@ import org.workcraft.plugins.cflt.algorithms.MaxMinHeuristic;
 import org.workcraft.plugins.cflt.algorithms.SequenceHeuristic;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.Comparator;
+import java.util.*;
 
 public final class EdgeCliqueCoverUtils {
 
@@ -61,23 +56,25 @@ public final class EdgeCliqueCoverUtils {
     public static void removeRedundantCliques(
             List<Clique> cliques,
             Map<String, Integer> edgeNameToNoOfCliquesItsContainedIn) {
-        for (int i = 0; i < cliques.size(); i++) {
-            if (isCliqueRedundant(edgeNameToNoOfCliquesItsContainedIn, cliques.get(i).getEdgeNames())) {
-                for (String edge : cliques.get(i).getEdgeNames()) {
+        Iterator<Clique> iterator = cliques.iterator();
+        while (iterator.hasNext()) {
+            Clique clique = iterator.next();
+            if (isCliqueRedundant(edgeNameToNoOfCliquesItsContainedIn, clique.getEdgeNames())) {
+                for (String edge : clique.getEdgeNames()) {
                     int temp = edgeNameToNoOfCliquesItsContainedIn.get(edge);
                     edgeNameToNoOfCliquesItsContainedIn.replace(edge, temp - 1);
                 }
-                cliques.remove(i);
+                iterator.remove();
             }
         }
     }
+
 
     public static void removeCliquesConsistingOfOptionalEdges(List<Clique> cliques, Set<String> optionalEdgeNameSet) {
         List<Clique> updatedCliques = cliques.stream().map(finalClique -> {
             boolean containsOnlyOptionalEdges = optionalEdgeNameSet.containsAll(finalClique.getEdgeNames());
             return containsOnlyOptionalEdges ? new Clique() : finalClique;
-        })
-                .toList();
+        }).toList();
 
         cliques.clear();
         cliques.addAll(updatedCliques);
