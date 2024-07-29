@@ -75,6 +75,12 @@ public class MaxMinHeuristic {
                     boolean isOptional = true;
                     for (String j : finalCliques.get(cliqueNumber).getVertexNames()) {
                         if (!edgeNameToIsCovered.get(u + j)) {
+                            /*
+                             * TODO:
+                             *  -Come up with, and implement, a way to avoid having to store edges/ edge names twice
+                             *  -Do this for Min, Max, Sequence heuristics and edge clique cover utils class
+                             *  -There is probably a way to avoid having so many Maps & Sets as well
+                             */
                             edgeNameToIsCovered.replace(u + j, true);
                             edgeNameToIsCovered.replace(j + u, true);
 
@@ -85,7 +91,7 @@ public class MaxMinHeuristic {
                         }
                         // Adding the key edges of the clique
                         finalCliques.get(cliqueNumber).addEdgeName(u + j);
-                        finalCliques.get(cliqueNumber).addEdgeName(u + j);
+                        finalCliques.get(cliqueNumber).addEdgeName(j + i);
 
                         // Updating the number of cliques the edge is contained in
                         int oldVal = edgeNameToNoOfCliquesItsContainedIn.get(u + j);

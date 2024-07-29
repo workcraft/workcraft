@@ -39,6 +39,7 @@ public class ExhaustiveSearch {
         if (treeDepth < 0) {
             return new ArrayList<>();
         }
+        
         Edge selectedEdge = graph.getNextEdge();
         if (selectedEdge == null) {
             return edgeCliqueCover;

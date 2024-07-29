@@ -8,7 +8,7 @@ import java.util.Map;
 import org.workcraft.plugins.cflt.Clique;
 import org.workcraft.plugins.cflt.Graph;
 
-// TODO: Remove this once SAT Solver is used instead of the ExhaustiveSearch
+// TODO: Remove this once a SAT Solver (or other efficient solution) is used instead of the ExhaustiveSearch
 public class MaxCliqueEnumerator {
 
     int nodeCount;

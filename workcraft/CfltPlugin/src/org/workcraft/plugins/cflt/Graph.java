@@ -11,7 +11,7 @@ import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTE
 public class Graph {
     private List<Edge> edges = new ArrayList<>();
 
-    // TODO: Consider using a custom class for the Vertex rather than using a simple String
+    // TODO: Consider using a custom class/ wrapper for Vertices rather than using a simple String ti represent their names;
     private List<String> vertexNames = new ArrayList<>();
 
     public Graph(List<Edge> edges, List<String> vertices) {

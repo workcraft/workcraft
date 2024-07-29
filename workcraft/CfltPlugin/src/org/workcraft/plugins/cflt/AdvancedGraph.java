@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  * A temporary Class which contains more detail that the regular Graph class
- * TODO: Remove this class once the SAT Solver solution is implemented
+ * TODO: Remove this class once the SAT Solver (or any other efficient) solution is implemented
  */
 public class AdvancedGraph extends Graph {
 

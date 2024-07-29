@@ -12,6 +12,7 @@ import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.LogUtils;
 
 import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.getEdgeCliqueCover;
 import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
@@ -111,8 +112,9 @@ public class PetriDrawingTool {
                 visualPetri.connect(visualTransition, visualPlace);
                 break;
             }
-        } catch (InvalidConnectionException invalidConnectionException) {
-            invalidConnectionException.printStackTrace();
+        } catch (InvalidConnectionException e) {
+            LogUtils.logError("Invalid connection of VisualPlace and VisualTransition");
+            e.printStackTrace();
         }
     }
 }

@@ -1,5 +1,7 @@
 package org.workcraft.plugins.cflt;
 
 public enum Model {
-    PETRI_NET, STG, DEFAULT
+    PETRI_NET,
+    STG,
+    DEFAULT
 }

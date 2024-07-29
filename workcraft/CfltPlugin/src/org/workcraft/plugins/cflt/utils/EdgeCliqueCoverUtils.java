@@ -20,19 +20,19 @@ public final class EdgeCliqueCoverUtils {
     private EdgeCliqueCoverUtils() {
     }
 
-    public static List<Clique> getEdgeCliqueCover(boolean isSequence, Mode mode, Graph inputG, Graph outputG) {
-        Graph initGraph = isSequence ? GraphUtils.join(inputG, outputG) : inputG;
-        List<Edge> optionalEdges = isSequence ? inputG.getEdges() : new ArrayList<>();
+    public static List<Clique> getEdgeCliqueCover(boolean isSequence, Mode mode, Graph inputGraph, Graph outputGraph) {
+        Graph initialGraph = isSequence ? GraphUtils.join(inputGraph, outputGraph) : inputGraph;
+        List<Edge> optionalEdges = isSequence ? inputGraph.getEdges() : new ArrayList<>();
         return switch (mode) {
-        case SLOW_EXACT -> ExhaustiveSearch.getEdgeCliqueCover(initGraph, optionalEdges);
-        case FAST_SEQ -> SequenceHeuristic.getEdgeCliqueCover(initGraph, optionalEdges);
-        case FAST_MAX -> MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, true);
-        case FAST_MIN -> MaxMinHeuristic.getEdgeCliqueCover(initGraph, optionalEdges, false);
+        case SLOW_EXACT -> ExhaustiveSearch.getEdgeCliqueCover(initialGraph, optionalEdges);
+        case FAST_SEQ -> SequenceHeuristic.getEdgeCliqueCover(initialGraph, optionalEdges);
+        case FAST_MAX -> MaxMinHeuristic.getEdgeCliqueCover(initialGraph, optionalEdges, true);
+        case FAST_MIN -> MaxMinHeuristic.getEdgeCliqueCover(initialGraph, optionalEdges, false);
         default -> new ArrayList<>();
         };
     }
 
-    public static  void initialiseHeuristicDataStructures(
+    public static void initialiseHeuristicDataStructures(
             Graph graph,
             Map<String, Set<String>> vertexNameToAllNeighbours,
             List<Edge> optionalEdges,
@@ -58,7 +58,9 @@ public final class EdgeCliqueCoverUtils {
         }
     }
 
-    public static void removeRedundantCliques(List<Clique> cliques, Map<String, Integer> edgeNameToNoOfCliquesItsContainedIn) {
+    public static void removeRedundantCliques(
+            List<Clique> cliques,
+            Map<String, Integer> edgeNameToNoOfCliquesItsContainedIn) {
         for (int i = 0; i < cliques.size(); i++) {
             if (isCliqueRedundant(edgeNameToNoOfCliquesItsContainedIn, cliques.get(i).getEdgeNames())) {
                 for (String edge : cliques.get(i).getEdgeNames()) {
@@ -92,7 +94,8 @@ public final class EdgeCliqueCoverUtils {
             // If the clique is not maximal
             if (clique.getVertexNames().size() < maxCliqueSize && !clique.getVertexNames().isEmpty()) {
 
-                Set<String> neighboursOfFirstVertex = new HashSet<>(vertexNameToAllNeighbours.get(clique.getVertexNames().get(0)));
+                Set<String> neighboursOfFirstVertex =
+                        new HashSet<>(vertexNameToAllNeighbours.get(clique.getVertexNames().get(0)));
                 List<String> verticesToBeAdded = new ArrayList<>(neighboursOfFirstVertex);
                 for (int x = 1; x < clique.getVertexNames().size(); x++) {
                     verticesToBeAdded.retainAll(vertexNameToAllNeighbours.get(clique.getVertexNames().get(x)));
@@ -132,7 +135,9 @@ public final class EdgeCliqueCoverUtils {
                 .orElse(null);
     }
 
-    private static boolean isCliqueRedundant(Map<String, Integer> edgeToNoOfCliquesItsContainedIn, List<String> cliqueAsEdgeNames) {
+    private static boolean isCliqueRedundant(
+            Map<String, Integer> edgeToNoOfCliquesItsContainedIn,
+            List<String> cliqueAsEdgeNames) {
         return cliqueAsEdgeNames.stream()
                 .allMatch(edge -> edgeToNoOfCliquesItsContainedIn.getOrDefault(edge, 0) > 1);
     }

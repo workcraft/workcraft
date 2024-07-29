@@ -13,7 +13,7 @@ import org.workcraft.plugins.cflt.utils.GraphUtils;
 
 public final class CotreeTool {
 
-    // TODO: Make this class a singleton to avoid using static variables
+    // TODO: Make this class a singleton, or find a different way to avoid using static variables to avoid using static variables
     public static ArrayList<Node> nodes;
     public static String singleTransition;
     public static boolean containsIteration;
@@ -95,12 +95,14 @@ public final class CotreeTool {
         Graph xG =  GraphUtils.disjointUnion(exitGraph.get(leftChildName), exitGraph.get(rightChildName));
         exitGraph.replace(leftChildName, xG);
     }
+
     private void handleChoice(String leftChildName, String rightChildName) {
         Graph eG =  GraphUtils.join(entryGraph.get(leftChildName), entryGraph.get(rightChildName));
         entryGraph.replace(leftChildName, eG);
         Graph xG =  GraphUtils.join(exitGraph.get(leftChildName), exitGraph.get(rightChildName));
         exitGraph.replace(leftChildName, xG);
     }
+
     private void handleSequence(String leftChildName, String rightChildName, Model model, Mode mode) {
         switch (model) {
         case PETRI_NET:
@@ -112,6 +114,7 @@ public final class CotreeTool {
         }
         exitGraph.replace(leftChildName, exitGraph.get(rightChildName));
     }
+
     private void handleIteration(String leftChildName, int nodeCounter) {
         Graph clone = exitGraph.get(leftChildName).cloneGraph(nodeCounter);
         Graph eG =  GraphUtils.join(entryGraph.get(leftChildName), clone);

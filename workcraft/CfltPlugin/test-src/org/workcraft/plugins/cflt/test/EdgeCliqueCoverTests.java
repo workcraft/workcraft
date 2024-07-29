@@ -15,6 +15,7 @@ import org.workcraft.plugins.cflt.algorithms.MaxMinHeuristic;
 import org.workcraft.plugins.cflt.algorithms.SequenceHeuristic;
 import org.workcraft.plugins.cflt.utils.GraphUtils;
 
+//TODO: Add more different test cases
 class EdgeCliqueCoverTests {
 
     @Test
