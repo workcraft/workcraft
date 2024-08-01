@@ -65,20 +65,20 @@ class EdgeCliqueCoverTests {
      */
     private Graph getGraph() {
         Graph graph = new Graph();
-        graph.addVertex("A");
-        graph.addVertex("B");
+        graph.addVertexName("A");
+        graph.addVertexName("B");
 
         Graph secondGraph = new Graph();
-        secondGraph.addVertex("C");
-        secondGraph.addVertex("D");
+        secondGraph.addVertexName("C");
+        secondGraph.addVertexName("D");
 
         Graph thirdGraph = new Graph();
-        thirdGraph.addVertex("E");
-        thirdGraph.addVertex("F");
+        thirdGraph.addVertexName("E");
+        thirdGraph.addVertexName("F");
 
         Graph fourthGraph = new Graph();
-        fourthGraph.addVertex("G");
-        fourthGraph.addVertex("H");
+        fourthGraph.addVertexName("G");
+        fourthGraph.addVertexName("H");
 
         Graph finalGraph = GraphUtils.join(graph, secondGraph);
         finalGraph = GraphUtils.join(finalGraph, thirdGraph);

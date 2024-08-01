@@ -85,7 +85,7 @@ public final class CotreeTool {
     private void ensureGraphContainsVertex(Map<String, Graph> graphNameToGraph, String vertexName) {
         if (!graphNameToGraph.containsKey(vertexName)) {
             graphNameToGraph.put(vertexName, new Graph());
-            graphNameToGraph.get(vertexName).addVertex(vertexName);
+            graphNameToGraph.get(vertexName).addVertexName(vertexName);
         }
     }
 

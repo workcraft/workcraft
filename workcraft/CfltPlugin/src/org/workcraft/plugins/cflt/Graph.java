@@ -21,12 +21,12 @@ public class Graph {
     public Graph() {
     }
 
-    public void addVertex(String vertex) {
-        this.vertexNames.add(vertex);
+    public void addVertexName(String vertexName) {
+        this.vertexNames.add(vertexName);
     }
 
-    public void removeVertex(String vertex) {
-        this.vertexNames.remove(vertex);
+    public void removeVertexName(String vertexName) {
+        this.vertexNames.remove(vertexName);
     }
 
     public void addEdge(Edge edge) {
@@ -45,33 +45,33 @@ public class Graph {
                 .collect(Collectors.toSet());
 
         return vertexNames.stream()
-                .filter(vertexName -> !connectedVertices.contains(vertexName))
-                .collect(Collectors.toCollection(ArrayList::new));
+            .filter(vertexName -> !connectedVertices.contains(vertexName))
+            .collect(Collectors.toCollection(ArrayList::new));
     }
     public List<String> getVertexNames() {
         return vertexNames;
     }
 
-    public void setVertexNames(ArrayList<String> vertices) {
-        this.vertexNames = vertices;
+    public void setVertexNames(List<String> vertexNames) {
+        this.vertexNames = vertexNames;
     }
 
     public List<Edge> getEdges() {
         return edges;
     }
 
-    public void setEdges(ArrayList<Edge> edges) {
+    public void setEdges(List<Edge> edges) {
         this.edges = edges;
     }
 
     public Graph cloneGraph(int counter) {
         String suffix = SPECIAL_CLONE_CHARACTER + counter;
 
-        ArrayList<String> vertices = this.vertexNames.stream().map(vertexName -> {
+        List<String> vertices = this.vertexNames.stream().map(vertexName -> {
             return vertexName + suffix;
         }).collect(Collectors.toCollection(ArrayList::new));
 
-        ArrayList<Edge> edges = this.getEdges().stream().map(edgeName -> {
+        List<Edge> edges = this.getEdges().stream().map(edgeName -> {
             return new Edge(edgeName.getFirstVertexName() + suffix, edgeName.getSecondVertexName() + suffix);
         }).collect(Collectors.toCollection(ArrayList::new));
 
