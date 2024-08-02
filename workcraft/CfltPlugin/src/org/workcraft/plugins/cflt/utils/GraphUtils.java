@@ -3,7 +3,9 @@ package org.workcraft.plugins.cflt.utils;
 import org.workcraft.plugins.cflt.Edge;
 import org.workcraft.plugins.cflt.Graph;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class GraphUtils {
 
@@ -12,24 +14,26 @@ public final class GraphUtils {
 
     public static final String SPECIAL_CLONE_CHARACTER = "$";
 
-    public static Graph disjointUnion(Graph g1, Graph g2) {
-        ArrayList<Edge> newEdges = new ArrayList<>();
-        newEdges.addAll(g1.getEdges());
-        newEdges.addAll(g2.getEdges());
-        ArrayList<String> newVertices = new ArrayList<>();
-        newVertices.addAll(g1.getVertices());
-        newVertices.addAll(g2.getVertices());
+    public static Graph disjointUnion(Graph firstGraph, Graph secondGraph) {
+        List<Edge> newEdges = Stream.concat(firstGraph.getEdges().stream(),
+                        secondGraph.getEdges().stream())
+                .collect(Collectors.toList());
+
+        List<String> newVertices = Stream.concat(firstGraph.getVertexNames().stream(),
+                        secondGraph.getVertexNames().stream())
+                .collect(Collectors.toList());
+
         return new Graph(newEdges, newVertices);
     }
 
-    public static Graph join(Graph g1, Graph g2) {
-        Graph newGraph = disjointUnion(g1, g2);
-        for (String v1 : g1.getVertices()) {
-            for (String v2 : g2.getVertices()) {
-                newGraph.addEdge(new Edge(v1, v2));
-            }
-        }
+    public static Graph join(Graph firstGraph, Graph secondGraph) {
+        Graph newGraph = disjointUnion(firstGraph, secondGraph);
+
+        firstGraph.getVertexNames().stream()
+                .flatMap(firstVertex -> secondGraph.getVertexNames().stream()
+                        .map(secondVertex -> new Edge(firstVertex, secondVertex)))
+                .forEach(newGraph::addEdge);
+
         return newGraph;
     }
-
 }

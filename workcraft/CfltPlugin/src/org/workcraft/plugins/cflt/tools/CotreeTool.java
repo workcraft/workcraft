@@ -2,8 +2,10 @@ package org.workcraft.plugins.cflt.tools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.workcraft.plugins.cflt.Graph;
+import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.cflt.Node;
 import org.workcraft.plugins.cflt.Operator;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
@@ -11,6 +13,7 @@ import org.workcraft.plugins.cflt.utils.GraphUtils;
 
 public final class CotreeTool {
 
+    // TODO: Make this class a singleton, or find a different way to avoid using static variables in this way
     public static ArrayList<Node> nodes;
     public static String singleTransition;
     public static boolean containsIteration;
@@ -24,10 +27,6 @@ public final class CotreeTool {
         CotreeTool.nodes = new ArrayList<>();
         CotreeTool.singleTransition = null;
         CotreeTool.containsIteration = false;
-    }
-
-    public enum Model {
-        PETRI_NET, STG, DEFAULT
     }
 
     public void drawSingleTransition(Model model) {
@@ -49,23 +48,10 @@ public final class CotreeTool {
             String rightChildName = node.getRightChildName();
             Operator operator = node.getOperator();
 
-            if (!entryGraph.containsKey(leftChildName)) {
-                entryGraph.put(leftChildName, new Graph());
-                entryGraph.get(leftChildName).addVertex(leftChildName);
-            }
-            if (!entryGraph.containsKey(rightChildName)) {
-                entryGraph.put(rightChildName, new Graph());
-                entryGraph.get(rightChildName).addVertex(rightChildName);
-            }
-
-            if (!exitGraph.containsKey(leftChildName)) {
-                exitGraph.put(leftChildName, new Graph());
-                exitGraph.get(leftChildName).addVertex(leftChildName);
-            }
-            if (!exitGraph.containsKey(rightChildName)) {
-                exitGraph.put(rightChildName, new Graph());
-                exitGraph.get(rightChildName).addVertex(rightChildName);
-            }
+            ensureGraphContainsVertex(entryGraph, leftChildName);
+            ensureGraphContainsVertex(entryGraph, rightChildName);
+            ensureGraphContainsVertex(exitGraph, leftChildName);
+            ensureGraphContainsVertex(exitGraph, rightChildName);
 
             switch (operator) {
             case CONCURRENCY:
@@ -96,18 +82,27 @@ public final class CotreeTool {
         }
     }
 
+    private void ensureGraphContainsVertex(Map<String, Graph> graphNameToGraph, String vertexName) {
+        if (!graphNameToGraph.containsKey(vertexName)) {
+            graphNameToGraph.put(vertexName, new Graph());
+            graphNameToGraph.get(vertexName).addVertexName(vertexName);
+        }
+    }
+
     private void handleConcurrency(String leftChildName, String rightChildName) {
         Graph eG =  GraphUtils.disjointUnion(entryGraph.get(leftChildName), entryGraph.get(rightChildName));
         entryGraph.replace(leftChildName, eG);
         Graph xG =  GraphUtils.disjointUnion(exitGraph.get(leftChildName), exitGraph.get(rightChildName));
         exitGraph.replace(leftChildName, xG);
     }
+
     private void handleChoice(String leftChildName, String rightChildName) {
         Graph eG =  GraphUtils.join(entryGraph.get(leftChildName), entryGraph.get(rightChildName));
         entryGraph.replace(leftChildName, eG);
         Graph xG =  GraphUtils.join(exitGraph.get(leftChildName), exitGraph.get(rightChildName));
         exitGraph.replace(leftChildName, xG);
     }
+
     private void handleSequence(String leftChildName, String rightChildName, Model model, Mode mode) {
         switch (model) {
         case PETRI_NET:
@@ -119,6 +114,7 @@ public final class CotreeTool {
         }
         exitGraph.replace(leftChildName, exitGraph.get(rightChildName));
     }
+
     private void handleIteration(String leftChildName, int nodeCounter) {
         Graph clone = exitGraph.get(leftChildName).cloneGraph(nodeCounter);
         Graph eG =  GraphUtils.join(entryGraph.get(leftChildName), clone);
