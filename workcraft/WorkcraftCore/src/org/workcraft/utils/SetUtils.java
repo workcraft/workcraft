@@ -2,7 +2,10 @@ package org.workcraft.utils;
 
 import org.workcraft.types.Pair;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public class SetUtils {
@@ -27,6 +30,17 @@ public class SetUtils {
         return result;
     }
 
+    public static <T> Set<T> difference(Set<T> set1, Set<T> set2) {
+        Set<T> result = new HashSet<>();
+        if (set1 != null) {
+            result.addAll(set1);
+        }
+        if (set2 != null) {
+            result.removeAll(set2);
+        }
+        return result;
+    }
+
     public static <T> Set<T> symmetricDifference(Set<T> set1, Set<T> set2) {
         Set<T> result = new HashSet<>();
         Set<T> tmp = new HashSet<>();
@@ -40,7 +54,6 @@ public class SetUtils {
         }
         result.removeAll(tmp);
         return result;
-
     }
 
     public static <T> boolean isFirstSmaller(HashSet<T> set1, HashSet<T> set2, boolean equalWins) {

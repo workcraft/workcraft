@@ -76,22 +76,21 @@ public class SelectionHelper {
         return result;
     }
 
-    public static void selectByMathRefs(VisualModel model, Set<String> mathRefs) {
-        model.selectNone();
-        for (VisualComponent component : Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class)) {
-            String ref = model.getMathReference(component);
-            if (mathRefs.contains(ref)) {
-                model.addToSelection(component);
-            }
-        }
-    }
-
     public static void selectByReferencedComponents(VisualModel model, Set<? extends MathNode> nodes) {
         model.selectNone();
         for (VisualComponent component : Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class)) {
             MathNode node = component.getReferencedComponent();
             if (nodes.contains(node)) {
                 model.addToSelection(component);
+            }
+        }
+    }
+    public static void selectVisualNodesByMathRefs(VisualModel model, Set<String> mathRefs) {
+        model.selectNone();
+        for (VisualNode visualNode : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
+            String ref = model.getMathReference(visualNode);
+            if (mathRefs.contains(ref)) {
+                model.addToSelection(visualNode);
             }
         }
     }
