@@ -43,15 +43,15 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
 
     @Override
     public JPanel createContentPanel() {
+        JPanel result = super.createContentPanel();
+        result.setLayout(GuiUtils.createBorderLayout());
+        result.setBorder(GuiUtils.getEmptyBorder());
+
         itemList = new ItemList(getItems());
         selectListItems(itemList, getUserData().loadData());
 
         JButton clearButton = new JButton("Clear selection");
         clearButton.addActionListener(event -> itemList.clearSelection());
-
-        JPanel result = super.createContentPanel();
-        result.setLayout(GuiUtils.createBorderLayout());
-        result.setBorder(GuiUtils.getEmptyBorder());
 
         result.add(new JLabel(getSelectionPrompt()), BorderLayout.NORTH);
         result.add(new JScrollPane(itemList), BorderLayout.CENTER);
@@ -59,7 +59,7 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
         return result;
     }
 
-    public static String getSelectionPrompt() {
+    public String getSelectionPrompt() {
         return "Select exceptions:";
     }
 
@@ -87,7 +87,7 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
     }
 
     public DefaultListCellRenderer getItemListCellRenderer() {
-        return null;
+        return new DefaultListCellRenderer();
     }
 
     public abstract Collection<String> getItems();
