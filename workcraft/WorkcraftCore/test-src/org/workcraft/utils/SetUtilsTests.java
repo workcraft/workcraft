@@ -15,6 +15,9 @@ class SetUtilsTests {
 
     @Test
     void intersectionTest() {
+        Assertions.assertEquals(NUM_SET_1,
+                SetUtils.intersection(NUM_SET_1, NUM_SET_1));
+
         Assertions.assertEquals(new HashSet<>(Arrays.asList(2, 3, 4)),
                 SetUtils.intersection(NUM_SET_1, NUM_SET_2));
 
@@ -24,6 +27,9 @@ class SetUtilsTests {
 
     @Test
     void unionTest() {
+        Assertions.assertEquals(NUM_SET_1,
+                SetUtils.union(NUM_SET_1, NUM_SET_1));
+
         Assertions.assertEquals(new HashSet<>(Arrays.asList(1, 2, 3, 4, 5)),
                 SetUtils.union(NUM_SET_1, NUM_SET_2));
 
@@ -32,7 +38,25 @@ class SetUtilsTests {
     }
 
     @Test
+    void differenceTest() {
+        Assertions.assertEquals(new HashSet<>(),
+                SetUtils.difference(NUM_SET_1, NUM_SET_1));
+
+        Assertions.assertEquals(new HashSet<>(Arrays.asList(1)),
+                SetUtils.difference(NUM_SET_1, NUM_SET_2));
+
+        Assertions.assertEquals(new HashSet<>(Arrays.asList("a")),
+                SetUtils.difference(STRING_SET_1, STRING_SET_2));
+
+        Assertions.assertEquals(new HashSet<>(Arrays.asList("dddd")),
+                SetUtils.difference(STRING_SET_2, STRING_SET_1));
+    }
+
+    @Test
     void symmetricDifferenceTest() {
+        Assertions.assertEquals(new HashSet<>(),
+                SetUtils.symmetricDifference(NUM_SET_1, NUM_SET_1));
+
         Assertions.assertEquals(new HashSet<>(Arrays.asList(1, 5)),
                 SetUtils.symmetricDifference(NUM_SET_1, NUM_SET_2));
 
