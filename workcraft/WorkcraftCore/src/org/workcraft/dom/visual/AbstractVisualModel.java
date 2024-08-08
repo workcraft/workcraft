@@ -474,8 +474,11 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         if (node instanceof VisualComponent) {
             VisualComponent component = (VisualComponent) node;
             node = component.getReferencedComponent();
+        } else if (node instanceof VisualConnection) {
+            VisualConnection connection = (VisualConnection) node;
+            node = connection.getReferencedConnection();
         }
-        return getMathModel().getNodeReference(node);
+        return node == null ? null : getMathModel().getNodeReference(node);
     }
 
     @Override
@@ -483,8 +486,11 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         if (node instanceof VisualComponent) {
             VisualComponent component = (VisualComponent) node;
             node = component.getReferencedComponent();
+        } else if (node instanceof VisualConnection) {
+            VisualConnection connection = (VisualConnection) node;
+            node = connection.getReferencedConnection();
         }
-        return getMathModel().getName(node);
+        return node == null ? null : getMathModel().getName(node);
     }
 
     @Override
