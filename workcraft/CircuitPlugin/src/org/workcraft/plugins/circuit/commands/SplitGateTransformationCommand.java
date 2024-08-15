@@ -80,7 +80,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         Set<NodeConnectionPair> toNodeConnections = getComponentNonLoopDrivenNodes(circuit, complexGate);
         Container container = (Container) complexGate.getParent();
         VisualFunctionContact complexOutputContact = complexGate.getGateOutput();
-        ConversionUtils.removeComponentConnections(circuit, complexGate);
+        circuit.remove(circuit.getConnections(complexOutputContact));
 
         Stack<Set<NodeConnectionPair>> toNodeConnectionsStack = new Stack<>();
         toNodeConnectionsStack.push(toNodeConnections);

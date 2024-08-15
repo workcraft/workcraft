@@ -733,7 +733,7 @@ public final class CircuitUtils {
         return One.getInstance().equals(formula);
     }
 
-    public static VisualContact getPinByTypeAndName(VisualFunctionComponent component, IOType type, String name) {
+    public static VisualContact getPinByTypeAndName(VisualCircuitComponent component, IOType type, String name) {
         if (name != null) {
             for (VisualContact contact : component.getVisualContacts()) {
                 if ((contact.getReferencedComponent().getIOType() == type) && name.equals(contact.getName())) {
