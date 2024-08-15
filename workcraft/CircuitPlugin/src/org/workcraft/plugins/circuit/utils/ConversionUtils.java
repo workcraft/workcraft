@@ -7,14 +7,20 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualJoint;
+import org.workcraft.plugins.circuit.VisualReplicaContact;
 import org.workcraft.plugins.circuit.commands.DissolveJointTransformationCommand;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.ModelUtils;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ConversionUtils {
@@ -127,14 +133,6 @@ public class ConversionUtils {
                 }
             }
         }
-    }
-
-    public static void removeComponentConnections(VisualCircuit circuit, VisualFunctionComponent component) {
-        Set<VisualConnection> unneededConnections = new HashSet<>();
-        for (VisualContact contact : component.getVisualContacts()) {
-            unneededConnections.addAll(circuit.getConnections(contact));
-        }
-        circuit.remove(unneededConnections);
     }
 
 }
