@@ -59,8 +59,4 @@ public class RenderedText implements RenderingResult {
         return boundingBox;
     }
 
-    public boolean isEmpty() {
-        return (text == null) || text.isEmpty();
-    }
-
 }
