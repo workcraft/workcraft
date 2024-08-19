@@ -74,12 +74,10 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     protected void drawNameInLocalSpace(DrawRequest r) {
         cacheNameRenderedText(r);
-        if (!nameRenderedText.isEmpty()) {
-            Graphics2D g = r.getGraphics();
-            Decoration d = r.getDecoration();
-            g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
-            nameRenderedText.draw(g);
-        }
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
+        nameRenderedText.draw(g);
     }
 
     // This method is needed for VisualGroup to update the rendered text of its children
@@ -92,21 +90,13 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
      * The internal bounding box does not include the related label and name of the node
      */
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return BoundingBoxHelper.expand(getNameBoundingBox(), 0.2, 0.2);
+        Rectangle2D bb = (nameRenderedText == null) ? new Rectangle2D.Double() : nameRenderedText.getBoundingBox();
+        return BoundingBoxHelper.expand(bb, 0.2, 0.2);
     }
 
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
-        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        return BoundingBoxHelper.union(bb, getNameBoundingBox());
-    }
-
-    public Rectangle2D getNameBoundingBox() {
-        if ((nameRenderedText != null) && !nameRenderedText.isEmpty()) {
-            return nameRenderedText.getBoundingBox();
-        } else {
-            return new Rectangle2D.Double();
-        }
+        return getInternalBoundingBoxInLocalSpace();
     }
 
     @Override

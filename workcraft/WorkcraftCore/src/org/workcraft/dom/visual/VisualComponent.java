@@ -263,12 +263,10 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     protected void drawLabelInLocalSpace(DrawRequest r) {
         if (getLabelVisibility()) {
             cacheLabelRenderedText(r);
-            if (!labelRenderedText.isEmpty()) {
-                Graphics2D g = r.getGraphics();
-                Decoration d = r.getDecoration();
-                g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
-                labelRenderedText.draw(g);
-            }
+            Graphics2D g = r.getGraphics();
+            Decoration d = r.getDecoration();
+            g.setColor(ColorUtils.colorise(getLabelColor(), d.getColorisation()));
+            labelRenderedText.draw(g);
         }
     }
 
@@ -331,12 +329,10 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     protected void drawNameInLocalSpace(DrawRequest r) {
         if (getNameVisibility()) {
             cacheNameRenderedText(r);
-            if (!nameRenderedText.isEmpty()) {
-                Graphics2D g = r.getGraphics();
-                Decoration d = r.getDecoration();
-                g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
-                nameRenderedText.draw(g);
-            }
+            Graphics2D g = r.getGraphics();
+            Decoration d = r.getDecoration();
+            g.setColor(ColorUtils.colorise(getNameColor(), d.getColorisation()));
+            nameRenderedText.draw(g);
         }
     }
 
@@ -384,28 +380,30 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        if (getLabelVisibility()) {
+        if ((labelRenderedText != null) && getLabelVisibility()) {
             bb = BoundingBoxHelper.union(bb, getLabelBoundingBox());
         }
-        if (getNameVisibility()) {
+        if ((nameRenderedText != null) && getNameVisibility()) {
             bb = BoundingBoxHelper.union(bb, getNameBoundingBox());
         }
         return bb;
     }
 
     public Rectangle2D getLabelBoundingBox() {
-        if ((labelRenderedText != null) && !labelRenderedText.isEmpty()) {
+        if (labelRenderedText != null) {
             return labelRenderedText.getBoundingBox();
         } else {
-            return new Rectangle2D.Double();
+            Rectangle2D box = getInternalBoundingBoxInLocalSpace();
+            return new Rectangle2D.Double(box.getCenterX(), box.getCenterY(), 0.0, 0.0);
         }
     }
 
     public Rectangle2D getNameBoundingBox() {
-        if ((nameRenderedText != null) && !nameRenderedText.isEmpty()) {
+        if (nameRenderedText != null) {
             return nameRenderedText.getBoundingBox();
         } else {
-            return new Rectangle2D.Double();
+            Rectangle2D box = getInternalBoundingBoxInLocalSpace();
+            return new Rectangle2D.Double(box.getCenterX(), box.getCenterY(), 0.0, 0.0);
         }
     }
 

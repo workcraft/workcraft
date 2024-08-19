@@ -3,10 +3,7 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
-import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.Replica;
-import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -14,8 +11,10 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.VisualReplicaContact;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.ModelUtils;
 
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -51,14 +50,24 @@ public final class SquashUtils {
     public static void squashComponent(VisualCircuit circuit, VisualFunctionComponent component,
             VisualCircuit componentModel) {
 
+        // Move all nodes of the refinement circuit to the position of the component in the current circuit
+        ModelUtils.refreshBoundingBox(componentModel);
+        Rectangle2D componentModelBox = componentModel.getBoundingBox();
+        componentModel.selectAll();
+        double dx = component.getRootSpaceX() - componentModelBox.getCenterX();
+        double dy = component.getRootSpaceY() - componentModelBox.getCenterY();
+        VisualModelTransformer.translateSelection(componentModel, dx, dy);
+
+        // Insert all nodes of refinement circuit into a page of the current circuit
         String pageName = circuit.getMathName(component);
         circuit.setMathName(component, Identifier.getTemporaryName());
         Container container = (Container) component.getParent();
         VisualPage page = circuit.createVisualPage(container);
         circuit.setMathName(page, pageName);
-        circuit.reparent(page, componentModel, componentModel.getRoot(), null);
         page.setPosition(component.getPosition());
+        circuit.reparent(page, componentModel, componentModel.getRoot(), null);
 
+        // Merge connections of the current circuit with connections of the inserted refinement circuit
         for (VisualFunctionContact pin : component.getVisualFunctionContacts()) {
             String pinName = pin.getName();
             String pageRef = circuit.getMathReference(page);

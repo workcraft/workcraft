@@ -493,20 +493,24 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             }
             Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
             if ((modelBox != null) && (viewportBox != null)) {
-                double ratioX = 1.0;
-                double ratioY = 1.0;
-                if ((viewportBox.getWidth() > VIEWPORT_MARGIN) && (viewportBox.getHeight() > VIEWPORT_MARGIN)) {
-                    double minDimension = Math.min(viewportBox.getWidth(), viewportBox.getHeight());
-                    ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / minDimension;
-                    ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / minDimension;
-                }
-                double scaleX = ratioX / modelBox.getWidth();
-                double scaleY = ratioY / modelBox.getHeight();
-                double scale = Math.min(scaleX, scaleY);
+                double scale = getScale(viewportBox, modelBox);
                 viewport.scale(scale);
                 panCenter();
             }
         });
+    }
+
+    private static double getScale(Rectangle2D viewportBox, Rectangle2D modelBox) {
+        double ratioX = 1.0;
+        double ratioY = 1.0;
+        if ((viewportBox.getWidth() > VIEWPORT_MARGIN) && (viewportBox.getHeight() > VIEWPORT_MARGIN)) {
+            double minDimension = Math.min(viewportBox.getWidth(), viewportBox.getHeight());
+            ratioX = (viewportBox.getWidth() - VIEWPORT_MARGIN) / minDimension;
+            ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / minDimension;
+        }
+        double scaleX = ratioX / modelBox.getWidth();
+        double scaleY = ratioY / modelBox.getHeight();
+        return Math.min(scaleX, scaleY);
     }
 
     @Override
