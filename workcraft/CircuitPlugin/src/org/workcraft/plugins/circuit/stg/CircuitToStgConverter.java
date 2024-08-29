@@ -520,7 +520,7 @@ public class CircuitToStgConverter {
         // Position STG pages according to the location circuit pages and components.
         for (VisualPage page: Hierarchy.getDescendantsOfType(stg.getRoot(), VisualPage.class)) {
             String pageRef = stg.getMathReference(page);
-            VisualComponent circuitComponent = circuit.getVisualComponentByMathReference(pageRef, VisualComponent.class);
+            VisualComponent circuitComponent = circuit.getVisualComponentByMathReference(pageRef);
             if (circuitComponent != null) {
                 Point2D pos = circuitComponent.getRootSpacePosition();
                 page.setRootSpacePosition(new Point2D.Double(SCALE_X * pos.getX(), SCALE_Y * pos.getY()));

@@ -1052,7 +1052,7 @@ public abstract class AbstractVerilogImporter implements Importer {
         FunctionContact r2Contact = addComponentPin(circuit, component, module.r2, instance.r2, signalToNetMap);
         FunctionContact g2Contact = addComponentPin(circuit, component, module.g2, instance.g2, signalToNetMap);
 
-        ArbitrationUtils.assignMutexFunctions(instance.protocol, r1Contact, g1Contact, r2Contact, g2Contact);
+        ArbitrationUtils.setMutexFunctionsQuiet(instance.protocol, r1Contact, g1Contact, r2Contact, g2Contact);
 
         setMutexGrant(circuit, instance.g1, signalToNetMap);
         setMutexGrant(circuit, instance.g2, signalToNetMap);

@@ -579,7 +579,7 @@ public final class CircuitUtils {
             IOType ioType, VisualContact.Direction direction) {
 
         VisualFunctionContact result = null;
-        VisualComponent component = circuit.getVisualComponentByMathReference(portName, VisualComponent.class);
+        VisualComponent component = circuit.getVisualComponentByMathReference(portName);
         if (component == null) {
             result = circuit.getOrCreatePort(portName, ioType);
             if (result == null) {

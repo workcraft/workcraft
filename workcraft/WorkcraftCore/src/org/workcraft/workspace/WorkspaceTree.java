@@ -94,7 +94,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
 
     public static boolean isLeaf(Workspace workspace, Path<String> path) {
         MountTree mount = workspace.getMountTree(path);
-        return mount.subDirs.size() == 0 && !mount.mountTo.isDirectory();
+        return mount.subDirs.isEmpty() && !mount.mountTo.isDirectory();
     }
 
     @Override

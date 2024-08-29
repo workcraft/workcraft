@@ -53,16 +53,7 @@ public class ArbitrationUtils {
         return getModuleNameToWaitMap().get(moduleName);
     }
 
-    public static void assignMutexFunctions(Mutex.Protocol protocol,
-            VisualFunctionContact r1Contact, VisualFunctionContact g1Contact,
-            VisualFunctionContact r2Contact, VisualFunctionContact g2Contact) {
-
-        assignMutexFunctions(protocol,
-                r1Contact.getReferencedComponent(), g1Contact.getReferencedComponent(),
-                r2Contact.getReferencedComponent(), g2Contact.getReferencedComponent());
-    }
-
-    public static void assignMutexFunctions(Mutex.Protocol protocol,
+    public static void setMutexFunctionsQuiet(Mutex.Protocol protocol,
             FunctionContact r1Contact, FunctionContact g1Contact,
             FunctionContact r2Contact, FunctionContact g2Contact) {
 
@@ -77,6 +68,19 @@ public class ArbitrationUtils {
 
         BooleanFormula g2ResetFormula = getMutexGrantResetFunction(r2Contact);
         g2Contact.setResetFunctionQuiet(g2ResetFormula);
+    }
+
+    public static void setMutexFunctions(Mutex.Protocol protocol,
+            FunctionContact r1Contact, FunctionContact g1Contact,
+            FunctionContact r2Contact, FunctionContact g2Contact) {
+
+        BooleanFormula g1SetFormula = getMutexGrantSetFunction(protocol, r1Contact, g2Contact, r2Contact);
+        BooleanFormula g1ResetFormula = getMutexGrantResetFunction(r1Contact);
+        g1Contact.setBothFunctions(g1SetFormula, g1ResetFormula);
+
+        BooleanFormula g2SetFormula = getMutexGrantSetFunction(protocol, r2Contact, g1Contact, r1Contact);
+        BooleanFormula g2ResetFormula = getMutexGrantResetFunction(r2Contact);
+        g2Contact.setBothFunctions(g2SetFormula, g2ResetFormula);
     }
 
     private static BooleanFormula getMutexGrantSetFunction(Mutex.Protocol mutexProtocol, BooleanFormula reqContact,
@@ -108,6 +112,18 @@ public class ArbitrationUtils {
 
     public static Mutex getMutexModule(String moduleName) {
         return getModuleNameToMutexMap().get(moduleName);
+    }
+
+    public static boolean hasMutexInterface(VisualFunctionComponent component) {
+        return (component.getVisualInputs().size() == 2) && (component.getVisualOutputs().size() == 2);
+    }
+
+    public static boolean isMutex(FunctionComponent component) {
+        if (component.getIsArbitrationPrimitive()) {
+            Map<String, Mutex> moduleNameToMutexMap = getModuleNameToMutexMap();
+            return moduleNameToMutexMap.containsKey(component.getModule());
+        }
+        return false;
     }
 
     public static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Circuit circuit) {
