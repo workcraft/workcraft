@@ -116,7 +116,7 @@ public class CircuitPlugin implements Plugin {
 
         // Forced init attributes and Reset insertion
         ScriptableCommandUtils.registerCommand(ForcedInitInputPortsTagCommand.class, "tagCircuitForcedInitInputPorts",
-                "force init all input ports in the Circuit 'work'  (environment must initialise them)");
+                "force init all input ports in the Circuit 'work' (environment must initialise them)");
         ScriptableCommandUtils.registerCommand(ForcedInitProblematicPinsTagCommand.class, "tagCircuitForcedInitProblematicPins",
                 "force init output pins with problematic initial state in the Circuit 'work'");
         ScriptableCommandUtils.registerCommand(ForcedInitSequentialPinsTagCommand.class, "tagCircuitForcedInitSequentialPins",
@@ -153,6 +153,12 @@ public class CircuitPlugin implements Plugin {
         // Fork buffering
         ScriptableCommandUtils.registerCommand(BufferHighFanoutTransformationCommand.class, "transformCircuitBufferHighFanout",
                 "buffer forks with high fanout in the Circuit 'work'");
+
+        // Mutex protocol conversion
+        ScriptableCommandUtils.registerCommand(MutexProtocolEarlyTransformationCommand.class, "transformCircuitMutexProtocolEarly",
+                "transform the Circuit 'work' by setting early protocol for selected (or all) mutex components");
+        ScriptableCommandUtils.registerCommand(MutexProtocolLateTransformationCommand.class, "transformCircuitMutexProtocolLate",
+                "transform the Circuit 'work' by setting late protocol for selected (or all) mutex components");
     }
 
     private void initCompatibilityManager() {

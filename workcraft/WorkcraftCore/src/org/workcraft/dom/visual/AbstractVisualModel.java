@@ -296,6 +296,11 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     }
 
     @Override
+    public VisualComponent getVisualComponentByMathReference(String ref) {
+        return getVisualComponentByMathReference(ref, VisualComponent.class);
+    }
+
+    @Override
     public <T extends VisualReplica> T createVisualReplica(VisualComponent masterComponent, Class<T> type, Container container) {
         T replica = null;
         try {

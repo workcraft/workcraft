@@ -292,7 +292,7 @@ class TransformationCommandTests {
     private void selectVisualComponentsByMathRefs(VisualStg stg, String[] refs) {
         stg.selectNone();
         for (String ref : refs) {
-            VisualComponent t = stg.getVisualComponentByMathReference(ref, VisualComponent.class);
+            VisualComponent t = stg.getVisualComponentByMathReference(ref);
             if (t != null) {
                 stg.addToSelection(t);
             }

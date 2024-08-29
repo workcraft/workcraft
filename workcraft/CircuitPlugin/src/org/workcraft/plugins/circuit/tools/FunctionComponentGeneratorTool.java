@@ -376,7 +376,9 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             circuit.setMathName(g2Contact, module.g2.name);
             g2Contact.setPosition(new Point2D.Double(1.5, 0.5));
 
-            ArbitrationUtils.assignMutexFunctions(protocol, r1Contact, g1Contact, r2Contact, g2Contact);
+            ArbitrationUtils.setMutexFunctionsQuiet(protocol,
+                    r1Contact.getReferencedComponent(), g1Contact.getReferencedComponent(),
+                    r2Contact.getReferencedComponent(), g2Contact.getReferencedComponent());
         };
         return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
     }
