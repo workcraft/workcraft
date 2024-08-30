@@ -29,14 +29,7 @@ public class Workspace {
     private final Map<Path<String>, File> permanentMounts = new HashMap<>();
     private final LinkedTwoWayMap<Path<String>, WorkspaceEntry> openFiles = new LinkedTwoWayMap<>();
     private final List<WorkspaceListener> workspaceListeners = new ArrayList<>();
-
-    public WorkspaceTree getTree() {
-        return new WorkspaceTree(this);
-    }
-
-    private File getBaseDir() {
-        return workspaceFile.getParentFile();
-    }
+    private final WorkspaceTree workspaceTree;
 
     public Workspace() {
         try {
@@ -45,12 +38,21 @@ public class Workspace {
             if (!baseDir.mkdir()) {
                 throw new RuntimeException("Could not create a temporary workspace directory.");
             }
+            workspaceFile = new File(baseDir, "workspace.works");
             baseDir.deleteOnExit();
-            this.workspaceFile = new File(baseDir, "workspace.works");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         addMount(Path.empty(), getBaseDir(), true);
+        workspaceTree = new WorkspaceTree(this);
+    }
+
+    public WorkspaceTree getTree() {
+        return workspaceTree;
+    }
+
+    private File getBaseDir() {
+        return workspaceFile.getParentFile();
     }
 
     public File getFile(Path<String> wsPath) {
@@ -172,6 +174,10 @@ public class Workspace {
 
     public void addListener(WorkspaceListener l) {
         workspaceListeners.add(l);
+    }
+
+    public void removeListener(WorkspaceListener l) {
+        workspaceListeners.remove(l);
     }
 
     public boolean isChanged() {

@@ -18,14 +18,6 @@ class TreeListenerWrapper<T> implements TreeListener<T> {
         l.treeNodesInserted(tme(path));
     }
 
-    private TreeModelEvent tme(Path<T> path) {
-        return new TreeModelEvent(this, path(path));
-    }
-
-    private Object[] path(Path<T> path) {
-        return Path.getPath(path).toArray();
-    }
-
     @Override
     public void changed(Path<T> path) {
         l.treeNodesChanged(tme(path));
@@ -39,6 +31,14 @@ class TreeListenerWrapper<T> implements TreeListener<T> {
     @Override
     public void restructured(Path<T> path) {
         l.treeStructureChanged(tme(path));
+    }
+
+    private TreeModelEvent tme(Path<T> path) {
+        return new TreeModelEvent(this, path(path));
+    }
+
+    private Object[] path(Path<T> path) {
+        return Path.getPath(path).toArray();
     }
 
 }

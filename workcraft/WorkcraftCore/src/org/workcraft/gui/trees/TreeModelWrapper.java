@@ -1,25 +1,16 @@
 package org.workcraft.gui.trees;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
-
-import org.workcraft.gui.workspace.Path;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 final class TreeModelWrapper<T> implements TreeModel {
 
     private final TreeSource<T> source;
     private final Map<TreeModelListener, TreeListenerWrapper<T>> listeners = new HashMap<>();
-
-    public void update(Path<T> path) {
-        for (TreeListenerWrapper<T> l : listeners.values()) {
-            l.restructured(path);
-        }
-    }
 
     TreeModelWrapper(TreeSource<T> source) {
         this.source = source;
@@ -31,11 +22,7 @@ final class TreeModelWrapper<T> implements TreeModel {
     }
 
     private TreeListenerWrapper<T> wrap(final TreeModelListener l) {
-        TreeListenerWrapper<T> result = listeners.get(l);
-        if (result == null) {
-            listeners.put(l, result = new TreeListenerWrapper<T>(l));
-        }
-        return result;
+        return listeners.computeIfAbsent(l, TreeListenerWrapper::new);
     }
 
     @Override

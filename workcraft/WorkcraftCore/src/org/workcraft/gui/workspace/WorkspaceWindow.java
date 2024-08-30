@@ -22,13 +22,15 @@ public class WorkspaceWindow extends JPanel {
     private static final String DIALOG_OPEN_WORKSPACE = "Open workspace";
     private static final String DIALOG_SAVE_WORKSPACE_AS = "Save workspace as...";
 
+    private final TreeWindow<Path<String>> workspaceTree;
+
     public WorkspaceWindow() {
         super();
         Framework framework = Framework.getInstance();
         Workspace workspace = framework.getWorkspace();
         MainWindow mainWindow = framework.getMainWindow();
 
-        TreeWindow<Path<String>> workspaceTree = TreeWindow.create(workspace.getTree(),
+        workspaceTree = new TreeWindow<>(workspace.getTree(),
                 new WorkspaceTreeDecorator(workspace),
                 new WorkspacePopupProvider(this),
                 path -> {
@@ -43,6 +45,7 @@ public class WorkspaceWindow extends JPanel {
                     }
                 });
 
+        workspaceTree.setAutoExpand(true);
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.getVerticalScrollBar().setUnitIncrement(8);
 
@@ -195,6 +198,14 @@ public class WorkspaceWindow extends JPanel {
         } catch (OperationCancelledException e) {
             // Operation cancelled by the user
         }
+    }
+
+    public void setAutoExpand(boolean value) {
+        workspaceTree.setAutoExpand(value);
+    }
+
+    public void refresh() {
+        workspaceTree.refresh();
     }
 
 }

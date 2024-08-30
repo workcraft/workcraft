@@ -1,6 +1,5 @@
 package org.workcraft.workspace;
 
-import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.trees.TreeListener;
 import org.workcraft.gui.trees.TreeSource;
 import org.workcraft.gui.workspace.Path;
@@ -9,59 +8,22 @@ import java.util.*;
 
 public class WorkspaceTree implements TreeSource<Path<String>> {
 
-    private final class WorkspaceListenerWrapper implements WorkspaceListener {
-        private final TreeListener<Path<String>> listener;
-
-        private WorkspaceListenerWrapper(TreeListener<Path<String>> listener) {
-            this.listener = listener;
-        }
-
-        @Override
-        public void entryAdded(WorkspaceEntry we) {
-            listener.restructured(Path.root(getRoot()));
-        }
-
-        @Override
-        public void entryChanged(WorkspaceEntry we) {
-            listener.restructured(Path.root(getRoot()));
-        }
-
-        @Override
-        public void entryRemoved(WorkspaceEntry we) {
-            listener.restructured(Path.root(getRoot()));
-        }
-
-        @Override
-        public void workspaceSaved() {
-            listener.restructured(Path.root(getRoot()));
-        }
-
-        @Override
-        public void workspaceLoaded() {
-            listener.restructured(Path.root(getRoot()));
-        }
-    }
-
     private final Workspace workspace;
+    private final Map<TreeListener<Path<String>>, WorkspaceListener> wrapListeners = new HashMap<>();
 
     public WorkspaceTree(Workspace workspace) {
         this.workspace = workspace;
     }
 
     @Override
-    public void addListener(final TreeListener<Path<String>> listener) {
-        workspace.addListener(wrap(listener));
+    public void addListener(final TreeListener<Path<String>> treeListener) {
+        workspace.addListener(wrapListeners.computeIfAbsent(treeListener,
+                l -> new WorkspaceListener(this, l)));
     }
 
-    private final Map<TreeListener<Path<String>>, WorkspaceListener> wrappers = new HashMap<>();
-
-    private WorkspaceListener wrap(TreeListener<Path<String>> listener) {
-        WorkspaceListener res = wrappers.get(listener);
-        if (res == null) {
-            res = new WorkspaceListenerWrapper(listener);
-            wrappers.put(listener, res);
-        }
-        return res;
+    @Override
+    public void removeListener(TreeListener<Path<String>> treeListener) {
+        workspace.removeListener(wrapListeners.get(treeListener));
     }
 
     @Override
@@ -95,11 +57,6 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
     public static boolean isLeaf(Workspace workspace, Path<String> path) {
         MountTree mount = workspace.getMountTree(path);
         return mount.subDirs.isEmpty() && !mount.mountTo.isDirectory();
-    }
-
-    @Override
-    public void removeListener(TreeListener<Path<String>> listener) {
-        throw new NotSupportedException(); //TODO
     }
 
     @Override
