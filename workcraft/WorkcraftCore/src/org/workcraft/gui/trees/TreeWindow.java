@@ -16,23 +16,45 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serial;
 import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
 
 public class TreeWindow<T> extends JPanel {
 
+    public enum CheckBoxMode { NONE, LEAF, ALL }
+
+    @Serial
+    private static final long serialVersionUID = 1L;
     public static final String TRICKY_PREFIX = "!";
 
     private JTree tree;
     private final TreePopupProvider<T> popupProvider;
     private final Consumer<T> doubleClickAction;
+
     private final Set<T> checkedNodes = new HashSet<>();
     private CheckBoxMode checkBoxMode = CheckBoxMode.NONE;
     private JCheckBox checkBox;
-    private boolean externalExpanded = false;
+    private DecorationTreeSourceAdapter sourceWithRestructuredTrapped;
+    private boolean autoExpand = true;
 
-    public enum CheckBoxMode { NONE, LEAF, ALL }
+    private final class ExpandTreeListenerAdapter extends TreeListenerAdapter<T> {
+        ExpandTreeListenerAdapter(TreeListener<T> chain) {
+            super(chain);
+        }
+
+        @Override
+        public void restructured(Path<T> path) {
+            if (!autoExpand) {
+                super.restructured(path);
+            } else {
+                List<TreePath> treePaths = calcExpandPaths();
+                super.restructured(path);
+                expandPaths(treePaths);
+            }
+        }
+    }
 
     private final class DecorationTreeSourceAdapter extends TreeSourceAdapter<T> {
         private final TreeDecorator<T> decorator;
@@ -44,31 +66,11 @@ public class TreeWindow<T> extends JPanel {
 
         @Override
         public TreeListener<T> getListener(final TreeListener<T> chain) {
-            return new TreeListenerAdapter<T>(chain) {
-                @Override
-                public void restructured(Path<T> path) {
-                    List<TreePath> expanded = new ArrayList<>();
-                    for (int i = 0; i < tree.getRowCount(); i++) {
-                        final TreePath treePath = tree.getPathForRow(i);
-                        if (tree.isExpanded(i)) {
-                            expanded.add(treePath);
-                        }
-                    }
+            return new ExpandTreeListenerAdapter(chain);
+        }
 
-                    if (!externalExpanded) {
-                        for (T node : getChildren(getRoot())) {
-                            if (Workspace.EXTERNAL_PATH.equals(decorator.getName(node))) {
-                                expanded.add(new TreePath(Path.getPath(getPath(node)).toArray()));
-                                externalExpanded = true;
-                            }
-                        }
-                    }
-                    super.restructured(path);
-                    for (TreePath treePath : expanded) {
-                        tree.expandPath(treePath);
-                    }
-                }
-            };
+        public TreeDecorator<T> getDecorator() {
+            return decorator;
         }
     }
 
@@ -94,12 +96,15 @@ public class TreeWindow<T> extends JPanel {
                 final int x = e.getX();
                 final int y = e.getY();
                 tree.setSelectionPath(tree.getClosestPathForLocation(x, y));
-                final Rectangle rowBounds = tree.getRowBounds(tree.getSelectionRows()[0]);
-                if (y < rowBounds.getMinY() || y > rowBounds.getMaxY()) {
-                    tree.setSelectionPath(null);
-                    popupProvider.getPopup(source.getRoot()).show(tree, x, y);
-                } else {
-                    popupProvider.getPopup(selected()).show(tree, x, y);
+                int[] selectionRows = tree.getSelectionRows();
+                if ((selectionRows != null) && (selectionRows.length > 0)) {
+                    final Rectangle rowBounds = tree.getRowBounds(selectionRows[0]);
+                    if ((y < rowBounds.getMinY()) || (y > rowBounds.getMaxY())) {
+                        tree.setSelectionPath(null);
+                        popupProvider.getPopup(source.getRoot()).show(tree, x, y);
+                    } else {
+                        popupProvider.getPopup(selected()).show(tree, x, y);
+                    }
                 }
             }
         }
@@ -121,8 +126,7 @@ public class TreeWindow<T> extends JPanel {
                 if (row != -1) {
                     final Rectangle rowBounds = tree.getRowBounds(row);
                     if (rowBounds.contains(x, y)) {
-                        @SuppressWarnings("unchecked")
-                        T node = (T) tree.getPathForRow(row).getLastPathComponent();
+                        T node = cast(tree.getPathForRow(row).getLastPathComponent());
                         if (e.getClickCount() > 1) {
                             if (doubleClickAction != null) {
                                 doubleClickAction.accept(node);
@@ -146,6 +150,7 @@ public class TreeWindow<T> extends JPanel {
     private final class TreeCellRenderer extends DefaultTreeCellRenderer {
         private final TreeSource<T> source;
         private final TreeDecorator<T> decorator;
+        @Serial
         private static final long serialVersionUID = 1L;
 
         private final TableLayout layout = GuiUtils.createTableLayout(
@@ -166,7 +171,7 @@ public class TreeWindow<T> extends JPanel {
                 Object value, boolean sel, boolean expanded, boolean leaf,
                 int row, boolean hasFocus) {
 
-            T node = (T) value;
+            T node = cast(value);
             String name = decorator.getName(node);
             boolean tricky = name.startsWith(TRICKY_PREFIX);
             if (tricky) {
@@ -209,9 +214,10 @@ public class TreeWindow<T> extends JPanel {
                 sourceWithRestructuredTrapped.getListener().restructured(root);
             }
             if ((checkBoxMode != CheckBoxMode.NONE) && (e.getKeyCode() == KeyEvent.VK_SPACE)) {
-                Object selectedComponent = tree.getSelectionPath().getLastPathComponent();
+                TreePath selectionPath = tree.getSelectionPath();
+                Object selectedComponent = selectionPath == null ? null : selectionPath.getLastPathComponent();
                 if (selectedComponent != null) {
-                    T node = (T) selectedComponent;
+                    T node = cast(selectedComponent);
                     setChecked(node, !getCheckedNodes().contains(node));
                 }
             }
@@ -223,16 +229,12 @@ public class TreeWindow<T> extends JPanel {
 
         this.popupProvider = popupProvider;
         this.doubleClickAction = doubleClickAction;
-        startup(source, decorator);
+        init(source, decorator);
     }
 
-    private static final long serialVersionUID = 1L;
-    private TreeSourceAdapter<T> sourceWithRestructuredTrapped;
-
-    @SuppressWarnings("unchecked")
     public T selected() {
-        TreePath path = tree.getSelectionPath();
-        return (T) path.getLastPathComponent();
+        TreePath selectionPath = tree.getSelectionPath();
+        return selectionPath == null ? null : cast(selectionPath.getLastPathComponent());
     }
 
     public void setCheckBoxMode(CheckBoxMode mode) {
@@ -242,21 +244,15 @@ public class TreeWindow<T> extends JPanel {
         sourceWithRestructuredTrapped.getListener().restructured(root);
     }
 
-    public void clearCheckBoxes() {
-        checkedNodes.clear();
-        tree.repaint();
-    }
-
     public Set<T> getCheckedNodes() {
         return Collections.unmodifiableSet(checkedNodes);
     }
 
-    public void startup(final TreeSource<T> source, final TreeDecorator<T> decorator) {
+    public void init(final TreeSource<T> source, final TreeDecorator<T> decorator) {
         tree = new JTree();
         tree.setFocusable(true);
         tree.setBorder(GuiUtils.getEmptyBorder());
         tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-
 
         checkBox = new JCheckBox();
         checkBox.setBackground(tree.getBackground());
@@ -279,25 +275,53 @@ public class TreeWindow<T> extends JPanel {
         tree.makeVisible(new TreePath(Path.getPath(node).toArray()));
     }
 
-    public static <T> TreeWindow<T> create(TreeSource<T> source, TreeDecorator<T> decorator) {
-        return create(source, decorator, null, null);
-    }
-
-    public static <T> TreeWindow<T> create(TreeSource<T> source, TreeDecorator<T> decorator,
-            TreePopupProvider<T> popupProvider, Consumer<T> doubleClickAction) {
-
-        return new TreeWindow<>(source, decorator, popupProvider, doubleClickAction);
-    }
-
     public void setChecked(T node, boolean value) {
-        boolean needsRepaint = false;
-        if (value) {
-            needsRepaint = checkedNodes.add(node);
-        } else {
-            needsRepaint = checkedNodes.remove(node);
-        }
+        boolean needsRepaint = value ? checkedNodes.add(node) : checkedNodes.remove(node);
         if (needsRepaint) {
             tree.repaint();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private T cast(Object node) {
+        return (T) node;
+    }
+
+    public void refresh() {
+        Path<T> root = Path.root(sourceWithRestructuredTrapped.getRoot());
+        sourceWithRestructuredTrapped.getListener().restructured(root);
+    }
+
+    public void setAutoExpand(boolean value) {
+        autoExpand = value;
+    }
+
+    private List<TreePath> calcExpandPaths() {
+        List<TreePath> result = new ArrayList<>();
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            if (tree.isExpanded(i)) {
+                final TreePath treePath = tree.getPathForRow(i);
+                result.add(treePath);
+            }
+        }
+        TreeDecorator<T> decorator = sourceWithRestructuredTrapped.getDecorator();
+        if (decorator != null) {
+            T root = sourceWithRestructuredTrapped.getRoot();
+            for (T node : sourceWithRestructuredTrapped.getChildren(root)) {
+                String nodeName = decorator.getName(node);
+                if (Workspace.EXTERNAL_PATH.equals(nodeName)) {
+                    Path<T> nodePath = sourceWithRestructuredTrapped.getPath(node);
+                    result.add(new TreePath(Path.getPath(nodePath).toArray()));
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    private void expandPaths(List<TreePath> expandPaths) {
+        for (TreePath treePath : expandPaths) {
+            tree.expandPath(treePath);
         }
     }
 

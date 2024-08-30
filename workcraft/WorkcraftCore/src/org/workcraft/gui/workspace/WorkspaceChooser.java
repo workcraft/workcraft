@@ -14,7 +14,6 @@ import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@SuppressWarnings("serial")
 public class WorkspaceChooser extends JPanel {
     private final Func<Path<String>, Boolean> filter;
     private final TreeWindow<Path<String>> tree;
@@ -51,8 +50,9 @@ public class WorkspaceChooser extends JPanel {
 
         filteredSource = new FilteredTreeSource<>(workspace.getTree(), filter);
         filteredSource.setFilter(filter);
-        tree = TreeWindow.create(filteredSource, new WorkspaceTreeDecorator(workspace));
-        expand();
+        tree = new TreeWindow<>(filteredSource, new WorkspaceTreeDecorator(workspace), null, null);
+        tree.setAutoExpand(true);
+        expand(filteredSource.getRoot());
 
         JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(tree);
@@ -72,10 +72,6 @@ public class WorkspaceChooser extends JPanel {
         add(toggleButton, BorderLayout.SOUTH);
     }
 
-    private void expand() {
-        expand(filteredSource.getRoot());
-    }
-
     private void expand(Path<String> node) {
         if (filteredSource.isLeaf(node)) {
             if (filter.eval(node)) {
@@ -90,7 +86,7 @@ public class WorkspaceChooser extends JPanel {
 
     private void updateFilter() {
         filteredSource.setFilter(this::isFiltered);
-        expand();
+        expand(filteredSource.getRoot());
     }
 
     private boolean isFiltered(Path<String> arg) {
