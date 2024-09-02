@@ -20,7 +20,7 @@ import java.util.Collection;
 public class VisualPetri extends AbstractVisualModel {
 
     public VisualPetri(Petri model) {
-        this (model, null);
+        this(model, null);
     }
 
     public VisualPetri(Petri model, VisualGroup root) {
