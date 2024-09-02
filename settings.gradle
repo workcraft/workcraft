@@ -4,8 +4,8 @@ pluginManagement {
         id 'org.javacc.javacc' version '3.0.2'
         // Plugin for sending Jacoco coverage reports to coveralls.io (https://plugins.gradle.org/plugin/com.github.kt3k.coveralls)
         id 'com.github.kt3k.coveralls' version '2.12.2'
-        // Plugin for PMD-based Copy-Paste Detection (https://plugins.gradle.org/plugin/de.aaschmid.cpd)
-        id 'de.aaschmid.cpd' version '3.4'
+        // Plugin for PMD-based Copy-Paste Detection (https://plugins.gradle.org/plugin/de.aaschmid.cpd) - v3.4 fails in WSL
+        id 'de.aaschmid.cpd' version '3.3'
         // Plugin for analysing licenses of dependencies (https://plugins.gradle.org/plugin/com.github.jk1.dependency-license-report)
         id 'com.github.jk1.dependency-license-report' version '2.9'
     }
@@ -23,7 +23,7 @@ gradle.ext.javaReleaseVersion = 17  /* Must be integer, e.g. 11 for JDK11*/
 
 // Checkstyle code linter (https://checkstyle.sourceforge.io/) 
 gradle.ext.checkstyleVersion = '10.18.1'
-// PMD code analyser (https://pmd.github.io/)
+// PMD code analyser (https://pmd.github.io/) - v7.x.x requires update of rules
 gradle.ext.pmdVersion = '6.55.0'
 // Jacoco code coverage (https://www.eclemma.org/jacoco/)
 gradle.ext.jacocoVersion = '0.8.12'
