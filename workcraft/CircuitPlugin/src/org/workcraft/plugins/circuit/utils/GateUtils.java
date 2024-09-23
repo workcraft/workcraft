@@ -53,14 +53,17 @@ public final class GateUtils {
             }
         }
 
+        VisualContact.Direction direction = predContact.isPin()
+                ? predContact.getDirection() : predContact.getDirection().flip();
+
         Point2D.Double pos = new Point2D.Double(
-                predContact.getRootSpaceX() + predContact.getDirection().getGradientX() * offset,
-                predContact.getRootSpaceY() + predContact.getDirection().getGradientY() * offset);
+                predContact.getRootSpaceX() + direction.getGradientX() * offset,
+                predContact.getRootSpaceY() + direction.getGradientY() * offset);
 
         component.setRootSpacePosition(pos);
         VisualContact inputContact = component.getFirstVisualInput();
         VisualContact outputContact = component.getFirstVisualOutput();
-        outputContact.setDirection(predContact.getDirection());
+        outputContact.setDirection(direction);
 
         try {
             circuit.connect(predContact, inputContact);
