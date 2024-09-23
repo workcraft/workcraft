@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.GateInterface;
@@ -33,18 +32,11 @@ public final class ScanUtils {
 
     public static List<VisualFunctionComponent> insertTestableGates(VisualCircuit circuit) {
         List<VisualFunctionComponent> result = new ArrayList<>();
-        boolean clearMapping = circuit.getVisualFunctionComponents().stream()
-                .noneMatch(VisualFunctionComponent::isMapped);
-
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             for (VisualContact contact : component.getVisualOutputs()) {
                 if (contact.getReferencedComponent().getPathBreaker()) {
                     contact.getReferencedComponent().setPathBreaker(false);
-                    VisualFunctionComponent testableGate = insertTestableGate(circuit, contact);
-                    if (clearMapping) {
-                        testableGate.clearMapping();
-                    }
-                    result.add(testableGate);
+                    result.add(insertTestableGate(circuit, contact));
                 }
             }
         }
@@ -241,7 +233,7 @@ public final class ScanUtils {
         if (port != null) {
             for (VisualFunctionComponent component : components) {
                 VisualContact pin = getContactWithPathbreakerPinNameOrWithPortName(circuit, portName, component, pinName);
-                connectIfPossible(circuit, port, pin);
+                CircuitUtils.connectIfPossible(circuit, port, pin);
             }
             SpaceUtils.positionPort(circuit, port, false);
             CircuitUtils.detachJoint(circuit, port, 0.5);
@@ -400,7 +392,7 @@ public final class ScanUtils {
                 VisualContact.Direction.WEST, initToOne);
 
         CircuitUtils.disconnectContact(circuit, pin);
-        VisualConnection connection = connectIfPossible(circuit, port, pin);
+        VisualConnection connection = CircuitUtils.connectIfPossible(circuit, port, pin);
         SpaceUtils.positionPort(circuit, port, false);
         return connection;
     }
@@ -413,7 +405,7 @@ public final class ScanUtils {
                 Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
 
         CircuitUtils.disconnectContact(circuit, port);
-        VisualConnection connection = connectIfPossible(circuit, pin, port);
+        VisualConnection connection = CircuitUtils.connectIfPossible(circuit, pin, port);
         port.setInitToOne(pin.getInitToOne());
         SpaceUtils.positionPort(circuit, port, true);
         return connection;
@@ -440,21 +432,6 @@ public final class ScanUtils {
             }
         }
         return result;
-    }
-
-    private static VisualConnection connectIfPossible(VisualCircuit circuit, VisualContact fromContact, VisualContact toContact) {
-        VisualConnection connection = null;
-        if ((fromContact != null) && (toContact != null) && circuit.getConnections(toContact).isEmpty()) {
-            connection = circuit.getConnection(fromContact, toContact);
-            if (connection == null) {
-                try {
-                    connection = circuit.connect(fromContact, toContact);
-                } catch (InvalidConnectionException e) {
-                    LogUtils.logWarning(e.getMessage());
-                }
-            }
-        }
-        return connection;
     }
 
     private static void stitchScanComponents(VisualCircuit circuit, List<VisualFunctionComponent> components) {
@@ -501,7 +478,7 @@ public final class ScanUtils {
             VisualContact scaninPin = getContactWithPathbreakerPinNameOrWithPortName(circuit, CircuitSettings.getScaninPort(),
                     component, CircuitSettings.getScaninPin());
 
-            connectIfPossible(circuit, contact, scaninPin);
+            CircuitUtils.connectIfPossible(circuit, contact, scaninPin);
         }
         return (component.getVisualOutputs().size() == 1) ? component.getFirstVisualOutput()
                 : getContactWithPathbreakerPinNameOrWithPortName(circuit, CircuitSettings.getScanoutPort(),
@@ -516,7 +493,7 @@ public final class ScanUtils {
         if (needsBuffering(circuit, contact)) {
             contact = addBuffering(circuit, contact);
         }
-        connectIfPossible(circuit, contact, scanoutPort);
+        CircuitUtils.connectIfPossible(circuit, contact, scanoutPort);
         SpaceUtils.positionPort(circuit, scanoutPort, true);
     }
 
@@ -534,7 +511,7 @@ public final class ScanUtils {
         VisualFunctionComponent bufferComponent = GateUtils.createBufferGate(circuit);
         Point2D pos = contact.getRootSpacePosition();
         bufferComponent.setRootSpacePosition(new Point2D.Double(pos.getX() + 1.0, pos.getY() + 0.5));
-        connectIfPossible(circuit, contact, bufferComponent.getFirstVisualInput());
+        CircuitUtils.connectIfPossible(circuit, contact, bufferComponent.getFirstVisualInput());
         VisualFunctionContact outputContact = bufferComponent.getGateOutput();
         outputContact.setInitToOne(contact.getInitToOne());
         return outputContact;
@@ -544,7 +521,7 @@ public final class ScanUtils {
             Set<VisualContact> drivenContacts) {
 
         for (VisualContact outContact : drivenContacts) {
-            connectIfPossible(circuit, dataContact, outContact);
+            CircuitUtils.connectIfPossible(circuit, dataContact, outContact);
         }
     }
 

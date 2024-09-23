@@ -189,6 +189,14 @@ public class FunctionComponent extends CircuitComponent {
         return isTie1() || isTie0();
     }
 
+    public boolean isMutex() {
+        return getIsArbitrationPrimitive() && (getInputs().size() == 2) && (getOutputs().size() == 2);
+    }
+
+    public boolean isWait() {
+        return getIsArbitrationPrimitive() && (getInputs().size() == 2) && (getOutputs().size() == 1);
+    }
+
     public FunctionContact getGateOutput() {
         FunctionContact gateOutput = null;
         for (Node node: getChildren()) {

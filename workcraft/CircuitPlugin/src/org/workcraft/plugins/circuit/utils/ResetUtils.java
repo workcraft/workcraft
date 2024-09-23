@@ -5,8 +5,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
@@ -20,7 +18,6 @@ import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
 
@@ -209,21 +206,17 @@ public final class ResetUtils {
         if (resetPort == null) {
             return false;
         }
-
-        boolean clearMapping = circuit.getVisualFunctionComponents().stream()
-                .noneMatch(VisualFunctionComponent::isMapped);
-
         for (VisualFunctionComponent component : resetComponents) {
             if (component.isBuffer()) {
-                resetBuffer(circuit, component, resetPort, isActiveLow, clearMapping);
+                resetBuffer(circuit, component, resetPort, isActiveLow);
             } else if (component.isInverter()) {
-                resetInverter(circuit, component, resetPort, isActiveLow, clearMapping);
+                resetInverter(circuit, component, resetPort, isActiveLow);
             } else {
                 VisualFunctionContact resetContact = CircuitUtils.getFunctionContact(circuit, component, portName);
                 if (resetContact == null) {
-                    resetComponent(circuit, component, resetPort, isActiveLow, clearMapping);
+                    resetComponent(circuit, component, resetPort, isActiveLow);
                 } else {
-                    connectIfPossible(circuit, resetPort, resetContact);
+                    CircuitUtils.connectIfPossible(circuit, resetPort, resetContact);
                 }
             }
         }
@@ -242,21 +235,8 @@ public final class ResetUtils {
         return false;
     }
 
-    private static void connectIfPossible(VisualCircuit circuit, VisualContact fromContact, VisualContact toContact) {
-        if ((fromContact != null) && (toContact != null)) {
-            VisualConnection connection = circuit.getConnection(fromContact, toContact);
-            if (connection == null) {
-                try {
-                    circuit.connect(fromContact, toContact);
-                } catch (InvalidConnectionException e) {
-                    LogUtils.logWarning(e.getMessage());
-                }
-            }
-        }
-    }
-
     private static VisualFunctionComponent resetBuffer(VisualCircuit circuit, VisualFunctionComponent component,
-            VisualFunctionContact resetPort, boolean activeLow, boolean clearMapping) {
+            VisualFunctionContact resetPort, boolean activeLow) {
 
         VisualFunctionContact outputContact = component.getFirstVisualOutput();
         if ((outputContact == null) || !outputContact.getForcedInit()) {
@@ -274,7 +254,7 @@ public final class ResetUtils {
         Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
         if (mapping != null) {
             Gate gate = mapping.getFirst();
-            gateName = clearMapping ? "" : gate.name;
+            gateName = gate.name;
             Map<BooleanVariable, String> assignments = mapping.getSecond();
             in1Name = assignments.get(in1Var);
             in2Name = assignments.get(in2Var);
@@ -287,7 +267,7 @@ public final class ResetUtils {
         circuit.setMathName(inputContact, in1Name);
         circuit.setMathName(outputContact, outName);
         VisualFunctionContact resetContact = circuit.getOrCreateContact(component, in2Name, Contact.IOType.INPUT);
-        connectIfPossible(circuit, resetPort, resetContact);
+        CircuitUtils.connectIfPossible(circuit, resetPort, resetContact);
 
         Contact in1Contact = inputContact.getReferencedComponent();
         Contact in2Contact = resetContact.getReferencedComponent();
@@ -318,7 +298,7 @@ public final class ResetUtils {
     }
 
     private static VisualFunctionComponent resetInverter(VisualCircuit circuit, VisualFunctionComponent component,
-            VisualFunctionContact resetPort, boolean activeLow, boolean clearMapping) {
+            VisualFunctionContact resetPort, boolean activeLow) {
 
         VisualFunctionContact outputContact = component.getFirstVisualOutput();
         if ((outputContact == null) || !outputContact.getForcedInit()) {
@@ -336,7 +316,7 @@ public final class ResetUtils {
         Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
         if (mapping != null) {
             Gate gate = mapping.getFirst();
-            gateName = clearMapping ? "" : gate.name;
+            gateName = gate.name;
             Map<BooleanVariable, String> assignments = mapping.getSecond();
             in1Name = assignments.get(in1Var);
             in2Name = assignments.get(in2Var);
@@ -349,7 +329,7 @@ public final class ResetUtils {
         circuit.setMathName(inputContact, in2Name);
         circuit.setMathName(outputContact, outName);
         VisualFunctionContact resetContact = circuit.getOrCreateContact(component, in1Name, Contact.IOType.INPUT);
-        connectIfPossible(circuit, resetPort, resetContact);
+        CircuitUtils.connectIfPossible(circuit, resetPort, resetContact);
 
         Contact in1Contact = resetContact.getReferencedComponent();
         Contact in2Contact = inputContact.getReferencedComponent();
@@ -380,11 +360,11 @@ public final class ResetUtils {
     }
 
     private static Collection<VisualFunctionComponent> resetComponent(VisualCircuit circuit,
-            VisualFunctionComponent component, VisualContact resetPort, boolean isActiveLow, boolean clearMapping) {
+            VisualFunctionComponent component, VisualContact resetPort, boolean isActiveLow) {
 
         return component.isMapped()
             ? resetMappedComponent(circuit, component, resetPort, isActiveLow)
-            : resetUnmappedComponent(circuit, component, resetPort, isActiveLow, clearMapping);
+            : resetUnmappedComponent(circuit, component, resetPort, isActiveLow);
     }
 
     private static Collection<VisualFunctionComponent> resetMappedComponent(VisualCircuit circuit,
@@ -407,22 +387,22 @@ public final class ResetUtils {
         Pair<String, String> initLowGatePinPair = CircuitSettings.getInitLowGatePinPair(moduleName);
         Pair<String, String> initHighGatePinPair = CircuitSettings.getInitHighGatePinPair(moduleName);
         if ((initLowGatePinPair == null) && (initHighGatePinPair == null)) {
-            result.addAll(resetByAddingGate(circuit, component, initLowOutputs, resetPort, isActiveLow, false));
-            result.addAll(resetByAddingGate(circuit, component, initHighOutputs, resetPort, isActiveLow, false));
+            result.addAll(resetByAddingGate(circuit, component, initLowOutputs, resetPort, isActiveLow));
+            result.addAll(resetByAddingGate(circuit, component, initHighOutputs, resetPort, isActiveLow));
         } else {
             if ((initLowGatePinPair != null) && ((initLowOutputs.size() > initHighOutputs.size()) || (initHighGatePinPair == null))) {
                 result.addAll(resetByReplacingGate(circuit, component, initLowOutputs, resetPort, isActiveLow, initLowGatePinPair));
-                result.addAll(resetByAddingGate(circuit, component, initHighOutputs, resetPort, isActiveLow, false));
+                result.addAll(resetByAddingGate(circuit, component, initHighOutputs, resetPort, isActiveLow));
             } else {
                 result.addAll(resetByReplacingGate(circuit, component, initHighOutputs, resetPort, isActiveLow, initHighGatePinPair));
-                result.addAll(resetByAddingGate(circuit, component, initLowOutputs, resetPort, isActiveLow, false));
+                result.addAll(resetByAddingGate(circuit, component, initLowOutputs, resetPort, isActiveLow));
             }
         }
         return result;
     }
 
     private static Collection<VisualFunctionComponent> resetUnmappedComponent(VisualCircuit circuit,
-            VisualFunctionComponent component, VisualContact resetPort, boolean isActiveLow, boolean clearMapping) {
+            VisualFunctionComponent component, VisualContact resetPort, boolean isActiveLow) {
 
         Collection<VisualFunctionComponent> result = new HashSet<>();
         Collection<VisualFunctionContact> combInitOutputs = new HashSet<>();
@@ -442,7 +422,7 @@ public final class ResetUtils {
             }
         }
 
-        result.addAll(resetByAddingGate(circuit, component, combInitOutputs, resetPort, isActiveLow, clearMapping));
+        result.addAll(resetByAddingGate(circuit, component, combInitOutputs, resetPort, isActiveLow));
         result.addAll(resetByReplacingGate(circuit, component, seqInitLowOutputs, resetPort, isActiveLow, Pair.of("", "R")));
         result.addAll(resetByReplacingGate(circuit, component, seqInitHighOutputs, resetPort, isActiveLow, Pair.of("", "S")));
         return result;
@@ -450,15 +430,12 @@ public final class ResetUtils {
 
     private static Collection<VisualFunctionComponent> resetByAddingGate(VisualCircuit circuit,
             VisualFunctionComponent component, Collection<VisualFunctionContact> forcedInitOutputs,
-            VisualContact resetPort, boolean isActiveLow, boolean clearMapping) {
+            VisualContact resetPort, boolean isActiveLow) {
 
         Collection<VisualFunctionComponent> result = new HashSet<>();
         for (VisualFunctionContact contact : forcedInitOutputs) {
             VisualFunctionComponent resetGate = insertResetGate(circuit, resetPort, contact, isActiveLow);
             result.add(resetGate);
-            if (clearMapping) {
-                resetGate.clearMapping();
-            }
         }
         GateUtils.propagateInitialState(circuit, component, forcedInitOutputs);
         return result;
@@ -471,7 +448,7 @@ public final class ResetUtils {
         Collection<VisualFunctionComponent> result = new HashSet<>();
         if (!forcedInitOutputs.isEmpty()) {
             VisualFunctionContact initContact = getOrCreateResetPin(circuit, component, initGatePinPair.getSecond());
-            connectIfPossible(circuit, resetPort, initContact);
+            CircuitUtils.connectIfPossible(circuit, resetPort, initContact);
             for (VisualFunctionContact contact : forcedInitOutputs) {
                 insertResetFunction(contact, initContact, isActiveLow);
             }
@@ -536,7 +513,7 @@ public final class ResetUtils {
         SpaceUtils.makeSpaceAroundContact(circuit, contact, 3.0);
         VisualFunctionComponent resetGate = createResetGate(circuit, contact.getInitToOne(), activeLow);
         GateUtils.insertGateAfter(circuit, resetGate, contact, 2.0);
-        connectHangingInputs(circuit, resetPort, resetGate);
+        CircuitUtils.connectToHangingInputPins(circuit, resetPort, resetGate, true);
         GateUtils.propagateInitialState(circuit, resetGate);
         return resetGate;
     }
@@ -546,14 +523,6 @@ public final class ResetUtils {
             return initToOne ? GateUtils.createNand2bGate(circuit) : GateUtils.createAnd2Gate(circuit);
         } else {
             return initToOne ? GateUtils.createOr2Gate(circuit) : GateUtils.createNor2bGate(circuit);
-        }
-    }
-
-    private static void connectHangingInputs(VisualCircuit circuit, VisualContact port, VisualFunctionComponent component) {
-        for (VisualContact contact : component.getVisualInputs()) {
-            if (circuit.getPreset(contact).isEmpty()) {
-                connectIfPossible(circuit, port, contact);
-            }
         }
     }
 

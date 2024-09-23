@@ -784,4 +784,33 @@ public final class CircuitUtils {
         }
     }
 
+    public static VisualConnection connectIfPossible(VisualCircuit circuit, VisualContact fromContact, VisualContact toContact) {
+        if ((fromContact != null) && (toContact != null)) {
+            VisualConnection connection = circuit.getConnection(fromContact, toContact);
+            if (connection == null) {
+                try {
+                    return circuit.connect(fromContact, toContact);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarning(e.getMessage());
+                }
+            }
+        }
+        return null;
+    }
+
+    public static boolean connectToHangingInputPins(VisualCircuit circuit, VisualContact srcContact,
+            VisualCircuitComponent component, boolean useDriverReplica) {
+
+        boolean result = false;
+        for (VisualContact contact : component.getVisualInputs()) {
+            if (circuit.getPreset(contact).isEmpty()) {
+                result |= (connectIfPossible(circuit, srcContact, contact) != null);
+                if (useDriverReplica) {
+                    ConversionUtils.replicateDriverContact(circuit, contact);
+                }
+            }
+        }
+        return result;
+    }
+
 }
