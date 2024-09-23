@@ -1,21 +1,213 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.formula.And;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.Not;
-import org.workcraft.formula.Or;
+import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.SortUtils;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ArbitrationUtils {
+
+    public record WaitData(
+            Wait.Type waitType,
+            Contact sigInputPin,
+            Contact ctrlInputPin,
+            Contact sanOutputPin) { }
+
+    public record MutexData(
+            Mutex.Protocol mutexProtocol,
+            Contact r1InputPin,
+            Contact g1OutputPin,
+            Contact r2InputPin,
+            Contact g2OutputPin) { }
+
+
+    public static WaitData getWaitData(Circuit circuit, FunctionComponent component,
+            String errorPrefixOrNullToSilence) {
+
+        Collection<FunctionContact> outputPins = component.getFunctionOutputs();
+        if (outputPins.size() != 1) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : expected 1 output pin");
+            }
+            return null;
+        }
+
+        FunctionContact sanPin = outputPins.iterator().next();
+        if (sanPin == null) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : problem with san output pin");
+            }
+            return null;
+        }
+
+        BooleanFormula setFunction = sanPin.getSetFunction();
+        BooleanFormula resetFunction = sanPin.getResetFunction();
+        if ((setFunction == null) || (resetFunction == null)) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : missing set / reset function on san output pin");
+            }
+            return null;
+        }
+
+        FreeVariable ctrlVar = new FreeVariable("ctrl");
+        BooleanFormula sanWaitResetFunction = new Not(ctrlVar);
+        Map<BooleanVariable, String> resetVarMapping
+                = GenlibUtils.getVariableMappingIfEquivalentOrNull(sanWaitResetFunction, resetFunction);
+
+        if (resetVarMapping == null) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : incorrect reset function on san output pin");
+            }
+            return null;
+        }
+
+        String ctrlPinName = resetVarMapping.get(ctrlVar);
+        Contact ctrlPin = ctrlPinName == null ? null : circuit.getPin(component, ctrlPinName);
+        if (ctrlPin == null) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : problem with ctrl input pin");
+            }
+            return null;
+        }
+
+        FreeVariable sigVar = new FreeVariable("sig");
+        BooleanFormula sanWait1SetFunction = new And(ctrlVar, sigVar);
+        BooleanFormula sanWait0SetFunction = new And(ctrlVar, new Not(sigVar));
+        Map<BooleanVariable, String> waitSetVarMapping
+                = GenlibUtils.getVariableMappingIfEquivalentOrNull(sanWait1SetFunction, setFunction);
+
+        Wait.Type waitType = null;
+        if (waitSetVarMapping != null) {
+            waitType = Wait.Type.WAIT1;
+        } else {
+            waitSetVarMapping = GenlibUtils.getVariableMappingIfEquivalentOrNull(sanWait0SetFunction, setFunction);
+            if (waitSetVarMapping != null) {
+                waitType = Wait.Type.WAIT0;
+            }
+        }
+
+        if (waitType == null) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : incorrect set function on san output pin");
+            }
+            return null;
+        }
+
+        String sigPinName = waitSetVarMapping.values().stream()
+                .filter(pinName -> !ctrlPinName.equals(pinName))
+                .findFirst().orElse(null);
+
+        Contact sigPin = sigPinName == null ? null : circuit.getPin(component, sigPinName);
+        if (sigPin == null) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : problem with sig input pin");
+            }
+            return null;
+        }
+
+        return new WaitData(waitType, sigPin, ctrlPin, sanPin);
+    }
+
+    public static MutexData getMutexData(Circuit circuit, FunctionComponent component,
+            String errorPrefixOrNullToSilence) {
+
+        Collection<FunctionContact> outputPins = component.getFunctionOutputs();
+        List<FunctionContact> orderedOutputPins = SortUtils.getSortedNatural(outputPins, Contact::getName);
+        if (orderedOutputPins.size() != 2) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : expected 2 output pins");
+            }
+            return null;
+        }
+
+        Iterator<FunctionContact> outputPinIterator = orderedOutputPins.iterator();
+        FunctionContact g1Pin = outputPinIterator.next();
+        FunctionContact g2Pin = outputPinIterator.next();
+        if ((g1Pin == null) || (g2Pin == null)) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : problem with g1 / g2 output pins");
+            }
+            return null;
+        }
+
+        BooleanFormula g1SetFunction = g1Pin.getSetFunction();
+        BooleanFormula g1ResetFunction = g1Pin.getResetFunction();
+        BooleanFormula g2SetFunction = g2Pin.getSetFunction();
+        BooleanFormula g2ResetFunction = g2Pin.getResetFunction();
+        if ((g1SetFunction == null) || (g1ResetFunction == null) || (g2SetFunction == null) || (g2ResetFunction == null)) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : missing set / reset functions on g1 / g2 output pins");
+            }
+            return null;
+        }
+
+        FreeVariable r1Var = new FreeVariable("r1");
+        BooleanFormula g1MutexResetFunction = new Not(r1Var);
+        Map<BooleanVariable, String> g1ResetVarMapping
+                = GenlibUtils.getVariableMappingIfEquivalentOrNull(g1MutexResetFunction, g1ResetFunction);
+
+        FreeVariable r2Var = new FreeVariable("r2");
+        BooleanFormula g2MutexResetFunction = new Not(r2Var);
+        Map<BooleanVariable, String> g2ResetVarMapping
+                = GenlibUtils.getVariableMappingIfEquivalentOrNull(g2MutexResetFunction, g2ResetFunction);
+
+        if ((g1ResetVarMapping == null) || (g2ResetVarMapping == null)) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : incorrect reset function on g1 / g2 output pins");
+            }
+            return null;
+        }
+
+        String r1PinName = g1ResetVarMapping.get(r1Var);
+        Contact r1Pin = r1PinName == null ? null : circuit.getPin(component, r1PinName);
+        String r2PinName = g2ResetVarMapping.get(r2Var);
+        Contact r2Pin = r2PinName == null ? null : circuit.getPin(component, r2PinName);
+        if ((r1Pin == null) || (r2Pin == null)) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : problem with r1 / r2 input pins");
+            }
+            return null;
+        }
+
+        FreeVariable g2Var = new FreeVariable("g2");
+        BooleanFormula g1MutexLateSetFunction = new And(r1Var, new Not(g2Var));
+        Map<BooleanVariable, String> g1SetVarMapping
+                = GenlibUtils.getVariableMappingIfEquivalentOrNull(g1MutexLateSetFunction, g1SetFunction);
+
+        FreeVariable g1Var = new FreeVariable("g1");
+        BooleanFormula g2MutexLateSetFunction = new And(r2Var, new Not(g1Var));
+        Map<BooleanVariable, String> g2SetVarMapping
+                = GenlibUtils.getVariableMappingIfEquivalentOrNull(g2MutexLateSetFunction, g2SetFunction);
+
+        Mutex.Protocol mutexProtocol = null;
+        if ((g1SetVarMapping != null) && (g2SetVarMapping != null)) {
+            mutexProtocol = Mutex.Protocol.LATE;
+        } else {
+            BooleanFormula g1MutexEarlySetFunction = new And(r1Var, new Not(new And(g2Var, r2Var)));
+            g1SetVarMapping = GenlibUtils.getVariableMappingIfEquivalentOrNull(g1MutexEarlySetFunction, g1SetFunction);
+
+            BooleanFormula g2MutexEarlySetFunction = new And(r2Var, new Not(new And(g1Var, r1Var)));
+            g2SetVarMapping = GenlibUtils.getVariableMappingIfEquivalentOrNull(g2MutexEarlySetFunction, g2SetFunction);
+            if ((g1SetVarMapping != null) && (g2SetVarMapping != null)) {
+                mutexProtocol = Mutex.Protocol.EARLY;
+            }
+        }
+
+        if (mutexProtocol == null) {
+            if (errorPrefixOrNullToSilence != null) {
+                LogUtils.logWarning(errorPrefixOrNullToSilence + " : incorrect set functions on g1 / g2 output pins");
+            }
+            return null;
+        }
+        return new MutexData(mutexProtocol, r1Pin, g1Pin, r2Pin, g2Pin);
+    }
 
     public static void assignWaitFunctions(Wait.Type type, VisualFunctionContact sigContact,
             VisualFunctionContact ctrlContact, VisualFunctionContact sanContact) {
@@ -116,14 +308,6 @@ public class ArbitrationUtils {
 
     public static boolean hasMutexInterface(VisualFunctionComponent component) {
         return (component.getVisualInputs().size() == 2) && (component.getVisualOutputs().size() == 2);
-    }
-
-    public static boolean isMutex(FunctionComponent component) {
-        if (component.getIsArbitrationPrimitive()) {
-            Map<String, Mutex> moduleNameToMutexMap = getModuleNameToMutexMap();
-            return moduleNameToMutexMap.containsKey(component.getModule());
-        }
-        return false;
     }
 
     public static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Circuit circuit) {

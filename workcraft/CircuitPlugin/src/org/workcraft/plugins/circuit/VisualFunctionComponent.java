@@ -137,6 +137,14 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         return (getReferencedComponent() != null) && getReferencedComponent().isTie0();
     }
 
+    public boolean isMutex() {
+        return (getReferencedComponent() != null) && getReferencedComponent().isMutex();
+    }
+
+    public boolean isWait() {
+        return (getReferencedComponent() != null) && getReferencedComponent().isWait();
+    }
+
     public boolean isBlackbox() {
         return (getReferencedComponent() != null) && getReferencedComponent().isBlackbox();
     }
