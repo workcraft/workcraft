@@ -22,8 +22,6 @@ import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class ResetUtils {
 
@@ -588,10 +586,8 @@ public final class ResetUtils {
     }
 
     public static boolean isResetInputPortName(String portName) {
-        Set<String> names = Stream.of(CircuitSettings.getResetActiveLowPort(), CircuitSettings.getResetActiveHighPort())
-                .filter(Objects::nonNull).collect(Collectors.toSet());
-
-        return names.contains(portName);
+        return MatchingUtils.isMatchingExact(portName, CircuitSettings.getResetActiveLowPort())
+                || MatchingUtils.isMatchingExact(portName, CircuitSettings.getResetActiveHighPort());
     }
 
 }

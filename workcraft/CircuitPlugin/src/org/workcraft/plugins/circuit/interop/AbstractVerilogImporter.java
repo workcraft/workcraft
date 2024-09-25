@@ -873,7 +873,7 @@ public abstract class AbstractVerilogImporter implements Importer {
                     updateContactTypeAndNetConnectivity(verilogPort, contact, net);
                     component.add(contact);
                     Integer contactBusIndex = portRange == null ? null : portRange.getBottomIndex();
-                    String contactName = VerilogUtils.getSignalWithBusSuffix(portName, contactBusIndex);
+                    String contactName = MatchingUtils.getSignalWithBusSuffix(portName, contactBusIndex);
                     circuit.setName(contact, contactName);
                 }
             } else {
@@ -895,7 +895,7 @@ public abstract class AbstractVerilogImporter implements Importer {
                         updateContactTypeAndNetConnectivity(verilogPort, contact, net);
                         component.add(contact);
                         int contactBusIndex = bottomIndex + step * index;
-                        String contactName = VerilogUtils.getSignalWithBusSuffix(portName, contactBusIndex);
+                        String contactName = MatchingUtils.getSignalWithBusSuffix(portName, contactBusIndex);
                         circuit.setName(contact, contactName);
                     }
                 }

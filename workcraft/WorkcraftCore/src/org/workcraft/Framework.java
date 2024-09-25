@@ -569,7 +569,7 @@ public final class Framework {
         if (open && isInGuiMode()) {
             // Attempt automatic layout only if the model entry changed (because of creating visual layer)
             if ((me == we.getModelEntry()) || LayoutUtils.attemptLayout(we)) {
-                getMainWindow().getOrCreateEditor(we);
+                openWorkEditor(we);
             }
         }
         we.setChanged(changed);
@@ -623,8 +623,8 @@ public final class Framework {
         // Check if work is already loaded
         WorkspaceEntry we = getWorkspace().getWork(file);
         if (we != null) {
-            if (open && isInGuiMode()) {
-                getMainWindow().getOrCreateEditor(we);
+            if (open) {
+                openWorkEditor(we);
             }
             return we;
         }
@@ -640,6 +640,12 @@ public final class Framework {
         }
         updateJavaScript(we);
         return we;
+    }
+
+    public void openWorkEditor(WorkspaceEntry we) {
+        if ((mainWindow != null) && (we != null)) {
+            mainWindow.getOrCreateEditor(we);
+        }
     }
 
     public void mergeWork(WorkspaceEntry we, File file) throws DeserialisationException {
