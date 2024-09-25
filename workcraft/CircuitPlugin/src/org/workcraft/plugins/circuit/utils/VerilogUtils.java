@@ -223,20 +223,12 @@ public final class VerilogUtils {
         return (verilogNets.size() > 1) ? "{" + s + "}" : s;
     }
 
-    public static String getNetBusIndexName(VerilogNet net) {
+    private static String getNetBusIndexName(VerilogNet net) {
         return net == null ? null : net.getName() + (net.getIndex() == null ? "" : "[" + net.getIndex() + "]");
     }
 
     public static String getNetBusSuffixName(VerilogNet net) {
-        return (net == null) || (net.getName() == null) ? null : net.getName() + getBusSuffix(net.getIndex());
-    }
-
-    public static String getSignalWithBusSuffix(String name, Integer index) {
-        return name + getBusSuffix(index);
-    }
-
-    private static String getBusSuffix(Integer index) {
-        return (index == null) ? "" : CircuitSettings.getProcessedBusSuffix(Integer.toString(index));
+        return (net == null) ? null : MatchingUtils.getSignalWithBusSuffix(net.getName(), net.getIndex());
     }
 
     public static String getFormulaWithBusSuffixNames(String verilogFormula) {

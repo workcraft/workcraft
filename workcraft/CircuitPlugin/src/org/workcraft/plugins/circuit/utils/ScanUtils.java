@@ -8,13 +8,13 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.GateInterface;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.SortUtils;
 
 import java.awt.geom.Point2D;
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class ScanUtils {
 
@@ -347,9 +347,9 @@ public final class ScanUtils {
     private static int connectIndividualScanHierarchy(VisualCircuit circuit, VisualFunctionComponent component,
             ScanData scanData, int index) {
 
-        List<VisualContact> scaninPins = getSortedInputPinsByPrefix(component, scanData.scaninPortPrefix);
-        List<VisualContact> scanenPins = getSortedInputPinsByPrefix(component, scanData.scanenPortPrefix);
-        List<VisualContact> scanoutPins = getSortedOutputPinsByPrefix(component, scanData.scanoutPortPrefix);
+        List<VisualContact> scaninPins = MatchingUtils.getSortedMatchingInputPins(component, scanData.scaninPortPrefix);
+        List<VisualContact> scanenPins = MatchingUtils.getSortedMatchingInputPins(component, scanData.scanenPortPrefix);
+        List<VisualContact> scanoutPins = MatchingUtils.getSortedMatchingOutputPins(component, scanData.scanoutPortPrefix);
 
         int count = scaninPins.size();
         if ((scanenPins.size() != count) || (scanoutPins.size() != count)) {
@@ -370,24 +370,10 @@ public final class ScanUtils {
         return count;
     }
 
-    private static List<VisualContact> getSortedInputPinsByPrefix(VisualFunctionComponent component, String prefix) {
-        return component.getVisualContacts().stream()
-                .filter(contact -> contact.isInput() && contact.getName().startsWith(prefix))
-                .sorted((c1, c2) -> SortUtils.compareNatural(c1, c2, VisualContact::getName))
-                .collect(Collectors.toList());
-    }
-
-    private static List<VisualContact> getSortedOutputPinsByPrefix(VisualFunctionComponent component, String prefix) {
-        return component.getVisualContacts().stream()
-                .filter(contact -> contact.isOutput() && contact.getName().startsWith(prefix))
-                .sorted((c1, c2) -> SortUtils.compareNatural(c1, c2, VisualContact::getName))
-                .collect(Collectors.toList());
-    }
-
     private static VisualConnection connectFromIndividualInputPort(VisualCircuit circuit, String portPrefix,
             int index, VisualContact pin, boolean initToOne) {
 
-        String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
+        String portName = MatchingUtils.getSignalWithBusSuffix(portPrefix, index);
         VisualContact port = getOrCreateNeverRiseForcedInitInputPort(circuit, portName,
                 VisualContact.Direction.WEST, initToOne);
 
@@ -400,7 +386,7 @@ public final class ScanUtils {
     private static VisualConnection connectToIndividualOutputPort(VisualCircuit circuit, VisualContact pin,
             String portPrefix, int index) {
 
-        String portName = VerilogUtils.getSignalWithBusSuffix(portPrefix, index);
+        String portName = MatchingUtils.getSignalWithBusSuffix(portPrefix, index);
         VisualContact port = CircuitUtils.getOrCreatePort(circuit, portName,
                 Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
 
@@ -539,46 +525,15 @@ public final class ScanUtils {
     }
 
     public static boolean isScanInputPortName(String portName) {
-        return isScanInputPortName(portName, true, true);
-    }
-
-    public static boolean isScanInputPortName(String portName, boolean indexedScanin, boolean indexedScanen) {
-        String scaninPort = CircuitSettings.getScaninPort();
-        String scanenPort = CircuitSettings.getScanenPort();
-        String scanckPort = CircuitSettings.getScanckPort();
-        String scantmPort = CircuitSettings.getScantmPort();
-
-        Set<String> exactNames = Stream.of(scaninPort, scanenPort, scanckPort, scantmPort)
-                .filter(Objects::nonNull).collect(Collectors.toSet());
-
-        Set<Pattern> patterns = Stream.of(indexedScanin ? scaninPort : null, indexedScanen ? scanenPort : null)
-                .filter(Objects::nonNull)
-                .map(CircuitSettings::getBusSignalPattern)
-                .collect(Collectors.toSet());
-
-        return isMatchingName(portName, exactNames, patterns);
+        return MatchingUtils.isMatchingExactOrBus(portName, CircuitSettings.getScaninPort())
+               || MatchingUtils.isMatchingExactOrBus(portName, CircuitSettings.getScanenPort())
+               || MatchingUtils.isMatchingExact(portName, CircuitSettings.getScanckPort())
+               || MatchingUtils.isMatchingExact(portName, CircuitSettings.getScantmPort());
     }
 
     public static boolean isScanOutputPortName(String portName) {
-        return isScanOutputPortName(portName, true);
-    }
-
-    public static boolean isScanOutputPortName(String portName, boolean indexedScanout) {
         String scanoutPort = CircuitSettings.getScanoutPort();
-        Set<String> exactNames = Stream.of(scanoutPort)
-                .filter(Objects::nonNull).collect(Collectors.toSet());
-
-        Set<Pattern> patterns = Stream.of(indexedScanout ? scanoutPort : null)
-                .filter(Objects::nonNull)
-                .map(CircuitSettings::getBusSignalPattern)
-                .collect(Collectors.toSet());
-
-        return isMatchingName(portName, exactNames, patterns);
-    }
-
-    private static boolean isMatchingName(String name, Set<String> exactNames, Collection<Pattern> patterns) {
-        return ((exactNames != null) && exactNames.contains(name)) ||
-                ((patterns != null) && patterns.stream().anyMatch(pattern -> pattern.matcher(name).matches()));
+        return MatchingUtils.isMatchingExactOrBus(portName, scanoutPort);
     }
 
     public static Set<String> getScanoutAndAuxiliarySignals(Circuit circuit) {
