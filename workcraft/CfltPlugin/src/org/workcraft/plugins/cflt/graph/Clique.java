@@ -1,4 +1,4 @@
-package org.workcraft.plugins.cflt;
+package org.workcraft.plugins.cflt.graph;
 
 import java.util.ArrayList;
 import java.util.List;

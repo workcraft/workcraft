@@ -1,7 +1,7 @@
 package org.workcraft.plugins.cflt.utils;
 
-import org.workcraft.plugins.cflt.Edge;
-import org.workcraft.plugins.cflt.Graph;
+import org.workcraft.plugins.cflt.graph.Edge;
+import org.workcraft.plugins.cflt.graph.Graph;
 
 import java.util.List;
 import java.util.stream.Collectors;

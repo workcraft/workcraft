@@ -3,9 +3,10 @@ package org.workcraft.plugins.cflt.utils;
 import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
 import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
+import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
-import org.workcraft.plugins.cflt.tools.CotreeTool;
+import org.workcraft.plugins.cflt.tools.NodeTraversalTool;
 import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -30,6 +31,8 @@ public final class ExpressionUtils {
     private static final char CLOSED_BRACKET = ')';
     private static final char OPEN_CURLY_BRACKET = '{';
     private static final char CLOSED_CURLY_BRACKET = '}';
+
+    private static final NodeCollection nodeCollection = NodeCollection.getInstance();
 
     public static final char PLUS_DIR = '+';
     public static final char MINUS_DIR = '-';
@@ -94,17 +97,18 @@ public final class ExpressionUtils {
         }
         checkMode(mode);
         checkIteration(mode);
-        CotreeTool contreeTool = new CotreeTool();
+        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool();
+
         // If the expression is merely a single transition
-        if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
-            contreeTool.drawSingleTransition(Model.PETRI_NET);
+        if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
+            nodeTraversalTool.drawSingleTransition(Model.PETRI_NET);
         }
         labelToName = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
         if (!isExpressionValid(expressionText, Model.PETRI_NET)) {
             return false;
         }
-        contreeTool.drawInterpretedGraph(mode, Model.PETRI_NET);
+        nodeTraversalTool.drawInterpretedGraph(mode, Model.PETRI_NET);
         return true;
     }
 
@@ -114,10 +118,11 @@ public final class ExpressionUtils {
         }
         checkMode(mode);
         checkIteration(mode);
-        CotreeTool cotreeTool = new CotreeTool();
+        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool();
+
         // If the expression is merely a single transition
-        if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
-            cotreeTool.drawSingleTransition(Model.STG);
+        if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
+            nodeTraversalTool.drawSingleTransition(Model.STG);
         }
         nameToDirection = new HashMap<>();
         labelToName = new HashMap<>();
@@ -126,7 +131,7 @@ public final class ExpressionUtils {
             return false;
         }
 
-        cotreeTool.drawInterpretedGraph(mode, Model.STG);
+        nodeTraversalTool.drawInterpretedGraph(mode, Model.STG);
         return true;
     }
 
@@ -134,6 +139,7 @@ public final class ExpressionUtils {
      * Transitions in the expression text are made unique and their original name is stored, later to be used as a label
      * @param expressionText original expression, possibly with reused transition names
      * @return expression with all transitions being unique
+     * TODO: Consider whether this could be handled by javaCC parsers rather than doing it here
      */
     private static String makeTransitionsUnique(String expressionText) {
         String str = expressionText;
@@ -218,8 +224,9 @@ public final class ExpressionUtils {
             return SignalTransition.Direction.TOGGLE;
         }
     }
+
     private static void checkIteration(Mode mode) {
-        if ((mode != null) && CotreeTool.containsIteration) {
+        if ((mode != null) && nodeCollection.containsIteration()) {
             DialogUtils.showWarning("Iteration operator is experimental and may yield incorrect result.");
         }
     }

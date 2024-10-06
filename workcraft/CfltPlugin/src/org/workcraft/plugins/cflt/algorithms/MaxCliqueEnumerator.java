@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.workcraft.plugins.cflt.Clique;
-import org.workcraft.plugins.cflt.Graph;
+import org.workcraft.plugins.cflt.graph.Clique;
+import org.workcraft.plugins.cflt.graph.Graph;
 
 // TODO: Remove this once a SAT Solver (or other efficient solution) is used instead of the ExhaustiveSearch
 public class MaxCliqueEnumerator {

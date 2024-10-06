@@ -1,4 +1,4 @@
-package org.workcraft.plugins.cflt;
+package org.workcraft.plugins.cflt.graph;
 
 public class Edge {
 

@@ -1,8 +1,8 @@
 package org.workcraft.plugins.cflt.utils;
 
-import org.workcraft.plugins.cflt.Clique;
-import org.workcraft.plugins.cflt.Edge;
-import org.workcraft.plugins.cflt.Graph;
+import org.workcraft.plugins.cflt.graph.Clique;
+import org.workcraft.plugins.cflt.graph.Edge;
+import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.algorithms.ExhaustiveSearch;
 import org.workcraft.plugins.cflt.algorithms.MaxMinHeuristic;
 import org.workcraft.plugins.cflt.algorithms.SequenceHeuristic;
