@@ -43,15 +43,20 @@ public final class ExpressionUtils {
     }
 
     public static void checkSyntax(CodePanel codePanel) {
-        Model model = Model.DEFAULT;
+        Model model;
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
             model = Model.PETRI_NET;
         } else if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {
             model = Model.STG;
+        } else {
+            String message = "Couldn't determine which model to check";
+            codePanel.showWarningStatus(message);
+            return;
         }
 
         String data = codePanel.getText();
         String errorText = getErrorText(data, model);
+
         if (errorText == null) {
             String message = "Property is syntactically correct";
             codePanel.showInfoStatus(message);
@@ -64,6 +69,7 @@ public final class ExpressionUtils {
     private static String getErrorText(String data, Model model) {
         InputStream is = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         String errorText = null;
+
         if (model == Model.PETRI_NET) {
             PetriStringParser parser = new PetriStringParser(is);
             try {
@@ -83,7 +89,7 @@ public final class ExpressionUtils {
     }
 
     public static boolean insertPetri(String expressionText, ExpressionParameters.Mode mode) {
-        if (!validateExpression(expressionText, Model.PETRI_NET)) {
+        if (!isExpressionValid(expressionText, Model.PETRI_NET)) {
             return false;
         }
         checkMode(mode);
@@ -95,7 +101,7 @@ public final class ExpressionUtils {
         }
         labelToName = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
-        if (!validateExpression(expressionText, Model.PETRI_NET)) {
+        if (!isExpressionValid(expressionText, Model.PETRI_NET)) {
             return false;
         }
         contreeTool.drawInterpretedGraph(mode, Model.PETRI_NET);
@@ -103,7 +109,7 @@ public final class ExpressionUtils {
     }
 
     public static boolean insertStg(String expressionText, ExpressionParameters.Mode mode) {
-        if (!validateExpression(expressionText, Model.STG)) {
+        if (!isExpressionValid(expressionText, Model.STG)) {
             return false;
         }
         checkMode(mode);
@@ -116,7 +122,7 @@ public final class ExpressionUtils {
         nameToDirection = new HashMap<>();
         labelToName = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
-        if (!validateExpression(expressionText, Model.STG)) {
+        if (!isExpressionValid(expressionText, Model.STG)) {
             return false;
         }
 
@@ -178,7 +184,7 @@ public final class ExpressionUtils {
         return str;
     }
 
-    public static boolean validateExpression(String expressionText, Model model) {
+    public static boolean isExpressionValid(String expressionText, Model model) {
         InputStream is = new ByteArrayInputStream(expressionText.getBytes(StandardCharsets.UTF_8));
         if (model == Model.PETRI_NET) {
             PetriStringParser parser = new PetriStringParser(is);
