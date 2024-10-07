@@ -5,6 +5,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.ParseUtils;
+import org.workcraft.utils.SortUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -23,24 +24,30 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 public class Config {
+
+    private static final String KEY_SEPARATOR = ".";
+    private static final String WORKCRAFT_CONFIG_ELEMENT_NAME = "workcraft-config";
+    private static final String GROUP_ELEMENT_NAME = "group";
+    private static final String VAR_ELEMENT_NAME = "var";
+    private static final String NAME_ATTRIBUTE_NAME = "name";
+    private static final String VALUE_ATTRIBUTE_NAME = "value";
 
     private final HashMap<String, HashMap<String, String>> groups = new HashMap<>();
     private final HashMap<String, String> rootGroup = new HashMap<>();
 
     public String get(String key) {
-        String[] k = key.split("\\.", 2);
+        String[] splitKey = key.split(Pattern.quote(KEY_SEPARATOR), 2);
         HashMap<String, String> group;
-
-        if (k.length == 1) {
-            return rootGroup.get(k[0]);
+        if (splitKey.length <= 1) {
+            return rootGroup.get(key);
         } else {
-            group = groups.get(k[0]);
-            if (group == null) {
-                return null;
-            }
-            return group.get(k[1]);
+            group = groups.get(splitKey[0]);
+            return group == null ? null : group.get(splitKey[1]);
         }
     }
 
@@ -122,13 +129,13 @@ public class Config {
     }
 
     public void set(String key, String value) {
-        String[] k = key.split("\\.", 2);
+        String[] splitKey = key.split(Pattern.quote("."), 2);
         HashMap<String, String> group;
-        if (k.length == 1) {
-            rootGroup.put(k[0], value);
+        if (splitKey.length <= 1) {
+            rootGroup.put(key, value);
         } else {
-            group = groups.computeIfAbsent(k[0], s -> new HashMap<>());
-            group.put(k[1], value);
+            group = groups.computeIfAbsent(splitKey[0], s -> new HashMap<>());
+            group.put(splitKey[1], value);
         }
     }
 
@@ -152,24 +159,17 @@ public class Config {
                 continue;
             }
             Element element = (Element) nodes.item(i);
-
-            if ("var".equals(element.getTagName())) {
-                set(element.getAttribute("name"), element.getAttribute("value"));
-            } else if ("group".equals(element.getTagName())) {
-                String name = element.getAttribute("name");
-                // FIXME: Skipping deprecated gui group (now split into window, toolbar, and recent)
-                if ("gui".equals(name)) {
-                    continue;
-                }
+            if (!GROUP_ELEMENT_NAME.equals(element.getTagName())) {
+                loadVarElement(element, null);
+            } else {
+                String groupName = element.getAttribute(NAME_ATTRIBUTE_NAME);
                 NodeList groupNodes = element.getChildNodes();
                 for (int j = 0; j < groupNodes.getLength(); j++) {
                     if (!(groupNodes.item(j) instanceof Element)) {
                         continue;
                     }
                     Element childElement = (Element) groupNodes.item(j);
-                    if ("var".equals(childElement.getTagName())) {
-                        set(name + "." + childElement.getAttribute("name"), childElement.getAttribute("value"));
-                    }
+                    loadVarElement(childElement, groupName);
                 }
             }
         }
@@ -186,28 +186,24 @@ public class Config {
             return;
         }
 
-        Element root = doc.createElement("workcraft-config");
+        Element root = doc.createElement(WORKCRAFT_CONFIG_ELEMENT_NAME);
         doc.appendChild(root);
-
-        for (String k: rootGroup.keySet()) {
-            Element var = doc.createElement("var");
-            var.setAttribute("name", k);
-            var.setAttribute("value", rootGroup.get(k));
-            root.appendChild(var);
+        for (String name : rootGroup.keySet()) {
+            saveVarElement(doc, root, name, rootGroup.get(name));
         }
 
-        for (String k: groups.keySet()) {
-            Element group = doc.createElement("group");
-            group.setAttribute("name", k);
-
-            HashMap<String, String> g = groups.get(k);
-            for (String l: g.keySet()) {
-                Element var = doc.createElement("var");
-                var.setAttribute("name", l);
-                var.setAttribute("value", g.get(l));
-                group.appendChild(var);
+        List<String> orderedGroupNames = SortUtils.getSortedNatural(groups.keySet());
+        for (String groupName : orderedGroupNames) {
+            HashMap<String, String> vars = groups.get(groupName);
+            if (vars != null) {
+                Element group = doc.createElement(GROUP_ELEMENT_NAME);
+                group.setAttribute(NAME_ATTRIBUTE_NAME, groupName);
+                Set<String> orderedVarNames = vars.keySet();
+                for (String name : orderedVarNames) {
+                    saveVarElement(doc, group, name, vars.get(name));
+                }
+                root.appendChild(group);
             }
-            root.appendChild(group);
         }
 
         try {
@@ -217,10 +213,12 @@ public class Config {
             transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
 
             File parentDir = file.getParentFile();
-            if ((parentDir != null) && !parentDir.exists()) {
-                parentDir.mkdirs();
+            if ((parentDir != null) && !parentDir.exists() && !parentDir.mkdirs()) {
+                throw new IOException("Cannot create parent directory for config file " + file.getAbsolutePath());
             }
-            file.createNewFile();
+            if (!file.exists() && !file.createNewFile()) {
+                throw new IOException("Cannot create config file " + file.getAbsolutePath());
+            }
             FileOutputStream fos = new FileOutputStream(file);
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(new OutputStreamWriter(fos, StandardCharsets.UTF_8));
@@ -229,6 +227,22 @@ public class Config {
             fos.close();
         } catch (TransformerException | IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void loadVarElement(Element element, String groupName) {
+        if (VAR_ELEMENT_NAME.equals(element.getTagName())) {
+            String prefix = (groupName == null) || groupName.isEmpty() ? "" : (groupName + KEY_SEPARATOR);
+            set(prefix + element.getAttribute(NAME_ATTRIBUTE_NAME), element.getAttribute(VALUE_ATTRIBUTE_NAME));
+        }
+    }
+
+    private void saveVarElement(Document doc, Element parent, String name, String value) {
+        if ((name != null) && (value != null)) {
+            Element element = doc.createElement(VAR_ELEMENT_NAME);
+            element.setAttribute(NAME_ATTRIBUTE_NAME, name);
+            element.setAttribute(VALUE_ATTRIBUTE_NAME, value);
+            parent.appendChild(element);
         }
     }
 
