@@ -1,9 +1,9 @@
 package org.workcraft.plugins.cflt.algorithms;
 
-import org.workcraft.plugins.cflt.AdvancedGraph;
-import org.workcraft.plugins.cflt.Clique;
-import org.workcraft.plugins.cflt.Edge;
-import org.workcraft.plugins.cflt.Graph;
+import org.workcraft.plugins.cflt.graph.AdvancedGraph;
+import org.workcraft.plugins.cflt.graph.Clique;
+import org.workcraft.plugins.cflt.graph.Edge;
+import org.workcraft.plugins.cflt.graph.Graph;
 
 import java.util.ArrayList;
 import java.util.List;

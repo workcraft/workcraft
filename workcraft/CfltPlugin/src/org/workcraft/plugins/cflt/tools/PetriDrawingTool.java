@@ -4,8 +4,8 @@ import java.util.*;
 
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.cflt.Clique;
-import org.workcraft.plugins.cflt.Graph;
+import org.workcraft.plugins.cflt.graph.Clique;
+import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.plugins.petri.VisualPetri;

@@ -3,9 +3,10 @@ package org.workcraft.plugins.cflt.utils;
 import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
 import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
+import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
-import org.workcraft.plugins.cflt.tools.CotreeTool;
+import org.workcraft.plugins.cflt.tools.NodeTraversalTool;
 import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -31,6 +32,8 @@ public final class ExpressionUtils {
     private static final char OPEN_CURLY_BRACKET = '{';
     private static final char CLOSED_CURLY_BRACKET = '}';
 
+    private static final NodeCollection nodeCollection = NodeCollection.getInstance();
+
     public static final char PLUS_DIR = '+';
     public static final char MINUS_DIR = '-';
     public static final char TOGGLE_DIR = '~';
@@ -43,15 +46,20 @@ public final class ExpressionUtils {
     }
 
     public static void checkSyntax(CodePanel codePanel) {
-        Model model = Model.DEFAULT;
+        Model model;
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
             model = Model.PETRI_NET;
         } else if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {
             model = Model.STG;
+        } else {
+            String message = "Couldn't determine which model to check";
+            codePanel.showWarningStatus(message);
+            return;
         }
 
         String data = codePanel.getText();
         String errorText = getErrorText(data, model);
+
         if (errorText == null) {
             String message = "Property is syntactically correct";
             codePanel.showInfoStatus(message);
@@ -64,6 +72,7 @@ public final class ExpressionUtils {
     private static String getErrorText(String data, Model model) {
         InputStream is = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         String errorText = null;
+
         if (model == Model.PETRI_NET) {
             PetriStringParser parser = new PetriStringParser(is);
             try {
@@ -83,44 +92,46 @@ public final class ExpressionUtils {
     }
 
     public static boolean insertPetri(String expressionText, ExpressionParameters.Mode mode) {
-        if (!validateExpression(expressionText, Model.PETRI_NET)) {
+        if (!isExpressionValid(expressionText, Model.PETRI_NET)) {
             return false;
         }
         checkMode(mode);
         checkIteration(mode);
-        CotreeTool contreeTool = new CotreeTool();
+        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool();
+
         // If the expression is merely a single transition
-        if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
-            contreeTool.drawSingleTransition(Model.PETRI_NET);
+        if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
+            nodeTraversalTool.drawSingleTransition(Model.PETRI_NET);
         }
         labelToName = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
-        if (!validateExpression(expressionText, Model.PETRI_NET)) {
+        if (!isExpressionValid(expressionText, Model.PETRI_NET)) {
             return false;
         }
-        contreeTool.drawInterpretedGraph(mode, Model.PETRI_NET);
+        nodeTraversalTool.drawInterpretedGraph(mode, Model.PETRI_NET);
         return true;
     }
 
     public static boolean insertStg(String expressionText, ExpressionParameters.Mode mode) {
-        if (!validateExpression(expressionText, Model.STG)) {
+        if (!isExpressionValid(expressionText, Model.STG)) {
             return false;
         }
         checkMode(mode);
         checkIteration(mode);
-        CotreeTool cotreeTool = new CotreeTool();
+        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool();
+
         // If the expression is merely a single transition
-        if (CotreeTool.nodes.isEmpty() && CotreeTool.singleTransition != null) {
-            cotreeTool.drawSingleTransition(Model.STG);
+        if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
+            nodeTraversalTool.drawSingleTransition(Model.STG);
         }
         nameToDirection = new HashMap<>();
         labelToName = new HashMap<>();
         expressionText = makeTransitionsUnique(expressionText);
-        if (!validateExpression(expressionText, Model.STG)) {
+        if (!isExpressionValid(expressionText, Model.STG)) {
             return false;
         }
 
-        cotreeTool.drawInterpretedGraph(mode, Model.STG);
+        nodeTraversalTool.drawInterpretedGraph(mode, Model.STG);
         return true;
     }
 
@@ -128,6 +139,7 @@ public final class ExpressionUtils {
      * Transitions in the expression text are made unique and their original name is stored, later to be used as a label
      * @param expressionText original expression, possibly with reused transition names
      * @return expression with all transitions being unique
+     * TODO: Consider whether this could be handled by javaCC parsers rather than doing it here
      */
     private static String makeTransitionsUnique(String expressionText) {
         String str = expressionText;
@@ -178,7 +190,7 @@ public final class ExpressionUtils {
         return str;
     }
 
-    public static boolean validateExpression(String expressionText, Model model) {
+    public static boolean isExpressionValid(String expressionText, Model model) {
         InputStream is = new ByteArrayInputStream(expressionText.getBytes(StandardCharsets.UTF_8));
         if (model == Model.PETRI_NET) {
             PetriStringParser parser = new PetriStringParser(is);
@@ -212,8 +224,9 @@ public final class ExpressionUtils {
             return SignalTransition.Direction.TOGGLE;
         }
     }
+
     private static void checkIteration(Mode mode) {
-        if ((mode != null) && CotreeTool.containsIteration) {
+        if ((mode != null) && nodeCollection.containsIteration()) {
             DialogUtils.showWarning("Iteration operator is experimental and may yield incorrect result.");
         }
     }

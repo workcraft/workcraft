@@ -1,4 +1,4 @@
-package org.workcraft.plugins.cflt;
+package org.workcraft.plugins.cflt.node;
 
 public class Node {
     private String leftChildName;

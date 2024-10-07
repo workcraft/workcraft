@@ -9,14 +9,14 @@ package org.workcraft.plugins.cflt.jj.stg;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import org.workcraft.plugins.cflt.tools.CotreeTool;
-import org.workcraft.plugins.cflt.*;
+import org.workcraft.plugins.cflt.node.Node;
+import org.workcraft.plugins.cflt.node.Operator;
+import org.workcraft.plugins.cflt.node.NodeCollection;
 
 public class StgStringParser {
-    CotreeTool cotreeTool;
+    private final NodeCollection nodeCollection = NodeCollection.getInstance();
     public void parse(String s) throws ParseException {
-        cotreeTool = new CotreeTool();
-        cotreeTool.reset();
+        nodeCollection.clear();
         InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
         StgStringParser parser = new StgStringParser(is);
         parser.parseOneLine();
@@ -46,8 +46,8 @@ void parseOneLine():
     [
         a = concurrency()
         {
-            if (cotreeTool.nodes.size() == 0) {
-                cotreeTool.singleTransition = a;
+            if (nodeCollection.isEmpty()) {
+                nodeCollection.setSingleTransition(a);
             }
         }
     ]
@@ -65,7 +65,7 @@ String concurrency():
         "|" b = concurrency()
         {
             Node node = new Node(a, b, Operator.CONCURRENCY);
-            cotreeTool.nodes.add(node);
+            nodeCollection.addNode(node);
         }
     )*
     {
@@ -84,7 +84,7 @@ String choice():
         "#" b = choice()
         {
             Node node = new Node(a, b, Operator.CHOICE);
-            cotreeTool.nodes.add(node);
+            nodeCollection.addNode(node);
         }
     )*
     {
@@ -103,7 +103,7 @@ String sequence():
         [";"] b = sequence()
         {
             Node node = new Node(a, b, Operator.SEQUENCE);
-            cotreeTool.nodes.add(node);
+            nodeCollection.addNode(node);
         }
     )*
     {
@@ -140,8 +140,8 @@ String element():
 |
     "{" a = concurrency() "}"
     {
-        cotreeTool.containsIteration = true;
+        nodeCollection.setContainsIteration(true);
         Node node = new Node(a, a, Operator.ITERATION);
-        cotreeTool.nodes.add(node); return a;
+        nodeCollection.addNode(node); return a;
     }
 }

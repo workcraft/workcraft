@@ -1,49 +1,42 @@
 package org.workcraft.plugins.cflt.tools;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.workcraft.plugins.cflt.Graph;
+import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.Model;
-import org.workcraft.plugins.cflt.Node;
-import org.workcraft.plugins.cflt.Operator;
+import org.workcraft.plugins.cflt.node.Node;
+import org.workcraft.plugins.cflt.node.NodeCollection;
+import org.workcraft.plugins.cflt.node.NodeIterator;
+import org.workcraft.plugins.cflt.node.Operator;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.utils.GraphUtils;
 
-public final class CotreeTool {
+public class NodeTraversalTool {
 
-    // TODO: Make this class a singleton, or find a different way to avoid using static variables in this way
-    public static ArrayList<Node> nodes;
-    public static String singleTransition;
-    public static boolean containsIteration;
+    private final NodeCollection nodeCollection = NodeCollection.getInstance();
 
     HashMap<String, Graph> entryGraph = new HashMap<>();
     HashMap<String, Graph> exitGraph = new HashMap<>();
     PetriDrawingTool petriDrawingTool = new PetriDrawingTool();
     StgDrawingTool stgDrawingTool = new StgDrawingTool();
 
-    public void reset() {
-        CotreeTool.nodes = new ArrayList<>();
-        CotreeTool.singleTransition = null;
-        CotreeTool.containsIteration = false;
-    }
-
     public void drawSingleTransition(Model model) {
         switch (model) {
         case PETRI_NET:
-            petriDrawingTool.drawSingleTransition(singleTransition);
+            petriDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition());
             break;
         case STG:
-            stgDrawingTool.drawSingleTransition(singleTransition);
+            stgDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition());
             break;
         }
     }
 
     public void drawInterpretedGraph(Mode mode, Model model) {
-        int nodeCounter = 0;
+        NodeIterator nodeIterator = nodeCollection.getNodeIterator();
+        while (nodeIterator.hasNext()) {
+            Node node = nodeIterator.next();
 
-        for (Node node : nodes) {
             String leftChildName = node.getLeftChildName();
             String rightChildName = node.getRightChildName();
             Operator operator = node.getOperator();
@@ -64,11 +57,11 @@ public final class CotreeTool {
                 this.handleSequence(leftChildName, rightChildName, model, mode);
                 break;
             case ITERATION:
-                this.handleIteration(leftChildName, nodeCounter);
+                this.handleIteration(leftChildName, nodeIterator.getCurrentPosition());
                 break;
             }
 
-            if (nodeCounter == nodes.size() - 1) {
+            if (nodeIterator.isLastNode()) {
                 switch (model) {
                 case PETRI_NET:
                     petriDrawingTool.drawPetri(entryGraph.get(leftChildName), new Graph(), false, true, mode);
@@ -78,7 +71,6 @@ public final class CotreeTool {
                     break;
                 }
             }
-            nodeCounter++;
         }
     }
 
