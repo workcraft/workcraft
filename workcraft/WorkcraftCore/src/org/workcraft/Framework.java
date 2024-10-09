@@ -11,7 +11,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.*;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
@@ -41,6 +40,7 @@ public final class Framework {
     private static final String SETTINGS_DIRECTORY_PATH = DesktopApi.getConfigPath() + File.separator + SETTINGS_DIRECTORY_NAME;
     private static final String CONFIG_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
     public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
+    private static final Set<String> BUILTIN_CONFIG_GROUPS = Set.of("filechooser", "recent", "toolbar", "window");
 
     private static final String FRAMEWORK_VARIABLE = "framework";
     private static final String MAIN_WINDOW_VARIABLE = "mainWindow";
@@ -58,27 +58,24 @@ public final class Framework {
     private static final int JAVASCRIPT_FUNCTION_NAME_GROUP = 1;
     private static final int JAVASCRIPT_FUNCTION_PARAMS_GROUP = 2;
 
-
     private static Framework instance = null;
-    private final PluginManager pluginManager;
-    private final TaskManager taskManager;
-    private final CompatibilityManager compatibilityManager;
-    private final Workspace workspace;
-    private MainWindow mainWindow;
+    private final Config config = new Config();
+    private final PluginManager pluginManager = new PluginManager();
+    private final TaskManager taskManager = new ExtendedTaskManager();
+    private final CompatibilityManager compatibilityManager = new CompatibilityManager();
+    private final Workspace workspace = new Workspace();
+    private final ContextFactory contextFactory = new ContextFactory();
+    private final HashMap<String, JavascriptItem> javascriptHelp = new HashMap<>();
+    private final LinkedHashSet<String> recentFilePaths = new LinkedHashSet<>();
 
-    private Config config;
+    private MainWindow mainWindow;
     private ScriptableObject systemScope;
     private ScriptableObject globalScope;
-
-    private boolean shutdownRequested = false;
-    private final ContextFactory contextFactory = new ContextFactory();
     public Resource clipboard;
-    private final HashMap<String, JavascriptItem> javascriptHelp = new HashMap<>();
-
     private File workingDirectory = null;
     private File importContextDirectory = null;
     private File lastDirectory = null;
-    private final LinkedHashSet<String> recentFilePaths = new LinkedHashSet<>();
+    private boolean shutdownRequested = false;
 
     static class ExecuteScriptAction implements ContextAction<Object> {
         private final String script;
@@ -184,11 +181,6 @@ public final class Framework {
     }
 
     private Framework() {
-        pluginManager = new PluginManager();
-        taskManager = new ExtendedTaskManager();
-        compatibilityManager = new CompatibilityManager();
-        config = new Config();
-        workspace = new Workspace();
     }
 
     public static Framework getInstance() {
@@ -198,37 +190,45 @@ public final class Framework {
         return instance;
     }
 
-    private void loadPluginsSettings() {
-        for (Settings settings : pluginManager.getSortedSettings()) {
-            settings.load(config);
-        }
-    }
-
-    private void savePluginsSettings() {
-        for (Settings settings : pluginManager.getSortedSettings()) {
-            settings.save(config);
-        }
-    }
-
     public void resetConfig() {
-        config = new Config();
-        loadPluginsSettings();
-        savePluginsSettings();
+        config.clear();
+        pluginManager.loadSettings(config);
+        pluginManager.saveSettings(config);
     }
 
     public void loadConfig(File file) {
         if (file == null) {
             file = new File(CONFIG_FILE_PATH);
         }
-        LogUtils.logMessage("Loading global preferences from " + file.getAbsolutePath());
+        LogUtils.logMessage("Loading global preferences from config file " + file.getAbsolutePath());
         config.load(file);
-        loadPluginsSettings();
+        pluginManager.loadSettings(config);
+        checkConfig();
         loadRecentFilesFromConfig();
+    }
+
+    private void checkConfig() {
+        Set<String> groupNames = config.getGroupNames();
+        Config defaultConfig = new Config();
+        pluginManager.saveSettings(defaultConfig);
+        groupNames.removeAll(defaultConfig.getGroupNames());
+        groupNames.removeAll(BUILTIN_CONFIG_GROUPS);
+        if (!groupNames.isEmpty()) {
+            LogUtils.logWarning(TextUtils.wrapMessageWithItems("Unrecognised config group", groupNames));
+        }
+        for (String groupName : defaultConfig.getGroupNames()) {
+            Set<String> keyNames = config.getKeyNames(groupName);
+            keyNames.removeAll(defaultConfig.getKeyNames(groupName));
+            if (!keyNames.isEmpty()) {
+                LogUtils.logWarning(TextUtils.wrapText("Unrecognised keys in known config group " + groupName + ": "
+                        + String.join(", ", keyNames)));
+            }
+        }
     }
 
     public void saveConfig(File file) {
         saveRecentFilesToConfig();
-        savePluginsSettings();
+        pluginManager.saveSettings(config);
         if (file == null) {
             file = new File(CONFIG_FILE_PATH);
         }
@@ -242,7 +242,7 @@ public final class Framework {
     public void setConfigVar(String key, String value, boolean reloadPluginSettings) {
         config.set(key, value);
         if (reloadPluginSettings) {
-            loadPluginsSettings();
+            pluginManager.loadSettings(config);
         }
     }
 
@@ -251,7 +251,7 @@ public final class Framework {
      */
     public String getConfigVar(String key, boolean flushPluginSettings) {
         if (flushPluginSettings) {
-            savePluginsSettings();
+            pluginManager.saveSettings(config);
         }
         return config.get(key);
     }

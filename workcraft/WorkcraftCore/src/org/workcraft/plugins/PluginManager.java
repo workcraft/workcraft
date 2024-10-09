@@ -1,5 +1,6 @@
 package org.workcraft.plugins;
 
+import org.workcraft.Config;
 import org.workcraft.commands.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.exceptions.PluginInstantiationException;
@@ -90,9 +91,14 @@ public class PluginManager implements PluginProvider {
                 .collect(Collectors.toList());
     }
 
-    public List<Settings> getSortedSettings() {
+    private Set<Settings> getSettings() {
         return getPlugins(Settings.class).stream()
                 .map(PluginInfo::getInstance)
+                .collect(Collectors.toSet());
+    }
+
+    public List<Settings> getSortedSettings() {
+        return getSettings().stream()
                 .sorted((o1, o2) -> {
                     if (o1 == o2) return 0;
                     if (o1 == null) return -1;
@@ -226,6 +232,18 @@ public class PluginManager implements PluginProvider {
         }
         final PluginInfo<T> pluginInfo = new PluginInfo<>(initialiser, singleton);
         plugins.put(cls, pluginInfo);
+    }
+
+    public void loadSettings(Config config) {
+        for (Settings settings : getSettings()) {
+            settings.load(config);
+        }
+    }
+
+    public void saveSettings(Config config) {
+        for (Settings settings : getSettings()) {
+            settings.save(config);
+        }
     }
 
 }
