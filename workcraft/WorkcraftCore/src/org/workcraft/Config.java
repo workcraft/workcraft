@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -37,8 +38,21 @@ public class Config {
     private static final String NAME_ATTRIBUTE_NAME = "name";
     private static final String VALUE_ATTRIBUTE_NAME = "value";
 
-    private final HashMap<String, HashMap<String, String>> groups = new HashMap<>();
     private final HashMap<String, String> rootGroup = new HashMap<>();
+    private final HashMap<String, HashMap<String, String>> groups = new HashMap<>();
+
+    public void clear() {
+        rootGroup.clear();
+        groups.clear();
+    }
+
+    public Set<String> getGroupNames() {
+        return new HashSet<>(groups.keySet());
+    }
+
+    public Set<String> getKeyNames(String groupName) {
+        return new HashSet<>((isRootGroup(groupName) ? rootGroup : groups.getOrDefault(groupName, new HashMap<>())).keySet());
+    }
 
     public String get(String key) {
         String[] splitKey = key.split(Pattern.quote(KEY_SEPARATOR), 2);
@@ -230,9 +244,13 @@ public class Config {
         }
     }
 
+    private static boolean isRootGroup(String groupName) {
+        return (groupName == null) || groupName.isEmpty();
+    }
+
     private void loadVarElement(Element element, String groupName) {
         if (VAR_ELEMENT_NAME.equals(element.getTagName())) {
-            String prefix = (groupName == null) || groupName.isEmpty() ? "" : (groupName + KEY_SEPARATOR);
+            String prefix = isRootGroup(groupName) ? "" : (groupName + KEY_SEPARATOR);
             set(prefix + element.getAttribute(NAME_ATTRIBUTE_NAME), element.getAttribute(VALUE_ATTRIBUTE_NAME));
         }
     }
