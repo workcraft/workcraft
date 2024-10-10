@@ -37,25 +37,23 @@ class ParserTests {
 
         List<Node> nodes = nodeCollection.getNodes();
 
-        Assertions.assertEquals(nodes.get(0).getLeftChildName(), "E");
-        Assertions.assertEquals(nodes.get(0).getOperator(), Operator.ITERATION);
+        Assertions.assertEquals("E", nodeCollection.getNodeDetails(nodes.get(0).getLeftChildName()).getLabel());
+        Assertions.assertEquals(Operator.ITERATION, nodes.get(0).getOperator());
 
-        Assertions.assertEquals(nodes.get(1).getLeftChildName(), "D");
-        Assertions.assertEquals(nodes.get(1).getRightChildName(), "E");
-        Assertions.assertEquals(nodes.get(1).getOperator(), Operator.CONCURRENCY);
+        Assertions.assertEquals("D", nodeCollection.getNodeDetails(nodes.get(1).getLeftChildName()).getLabel());
+        Assertions.assertEquals("E", nodeCollection.getNodeDetails(nodes.get(1).getRightChildName()).getLabel());
+        Assertions.assertEquals(Operator.CONCURRENCY, nodes.get(1).getOperator());
 
-        Assertions.assertEquals(nodes.get(2).getLeftChildName(), "C");
-        Assertions.assertEquals(nodes.get(2).getRightChildName(), "D");
-        Assertions.assertEquals(nodes.get(2).getOperator(), Operator.SEQUENCE);
+        Assertions.assertEquals("C", nodeCollection.getNodeDetails(nodes.get(2).getLeftChildName()).getLabel());
+        Assertions.assertEquals("D", nodeCollection.getNodeDetails(nodes.get(2).getRightChildName()).getLabel());
+        Assertions.assertEquals(Operator.SEQUENCE, nodes.get(2).getOperator());
 
-        Assertions.assertEquals(nodes.get(3).getLeftChildName(), "B");
-        Assertions.assertEquals(nodes.get(3).getRightChildName(), "C");
-        Assertions.assertEquals(nodes.get(3).getOperator(), Operator.CHOICE);
+        Assertions.assertEquals("B", nodeCollection.getNodeDetails(nodes.get(3).getLeftChildName()).getLabel());
+        Assertions.assertEquals("C", nodeCollection.getNodeDetails(nodes.get(3).getRightChildName()).getLabel());
+        Assertions.assertEquals(Operator.CHOICE, nodes.get(3).getOperator());
 
-        Assertions.assertEquals(nodes.get(4).getLeftChildName(), "A");
-        Assertions.assertEquals(nodes.get(4).getRightChildName(), "B");
-        Assertions.assertEquals(nodes.get(4).getOperator(), Operator.CONCURRENCY);
-
+        Assertions.assertEquals("A", nodeCollection.getNodeDetails(nodes.get(4).getLeftChildName()).getLabel());
+        Assertions.assertEquals("B", nodeCollection.getNodeDetails(nodes.get(4).getRightChildName()).getLabel());
+        Assertions.assertEquals(Operator.CONCURRENCY, nodes.get(4).getOperator());
     }
-
 }

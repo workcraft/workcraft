@@ -1,8 +1,8 @@
 package org.workcraft.plugins.cflt.node;
 
 public class Node {
-    private String leftChildName;
-    private String rightChildName;
+    private final String leftChildName;
+    private final String rightChildName;
     private Operator operator;
 
     public Node(String leftChildName, String rightChildName, Operator operator) {
@@ -15,16 +15,8 @@ public class Node {
         return this.leftChildName;
     }
 
-    public void setLeftChildName(String leftChildName) {
-        this.leftChildName = leftChildName;
-    }
-
     public String getRightChildName() {
         return this.rightChildName;
-    }
-
-    public void setRightChildName(String rightChildName) {
-        this.rightChildName = rightChildName;
     }
 
     public Operator getOperator() {
@@ -34,5 +26,4 @@ public class Node {
     public void setOperator(Operator operator) {
         this.operator = operator;
     }
-
 }

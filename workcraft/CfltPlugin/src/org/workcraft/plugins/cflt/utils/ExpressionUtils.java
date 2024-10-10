@@ -9,7 +9,6 @@ import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.tools.NodeTraversalTool;
 import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.petri.VisualPetri;
-import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.JavaccSyntaxUtils;
@@ -20,17 +19,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 
 public final class ExpressionUtils {
-
-    private static final char CHOICE = '#';
-    private static final char CONCURRENCY = '|';
-    private static final char SEQUENCE = ';';
-    private static final char OPEN_BRACKET = '(';
-    private static final char CLOSED_BRACKET = ')';
-    private static final char OPEN_CURLY_BRACKET = '{';
-    private static final char CLOSED_CURLY_BRACKET = '}';
 
     private static final NodeCollection nodeCollection = NodeCollection.getInstance();
 
@@ -39,8 +29,6 @@ public final class ExpressionUtils {
     public static final char TOGGLE_DIR = '~';
 
     public static WorkspaceEntry we;
-    public static HashMap<String, String> labelToName = new HashMap<>();
-    public static HashMap<String, SignalTransition.Direction> nameToDirection = new HashMap<>();
 
     private ExpressionUtils() {
     }
@@ -103,8 +91,7 @@ public final class ExpressionUtils {
         if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
             nodeTraversalTool.drawSingleTransition(Model.PETRI_NET);
         }
-        labelToName = new HashMap<>();
-        expressionText = makeTransitionsUnique(expressionText);
+
         if (!isExpressionValid(expressionText, Model.PETRI_NET)) {
             return false;
         }
@@ -124,70 +111,13 @@ public final class ExpressionUtils {
         if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
             nodeTraversalTool.drawSingleTransition(Model.STG);
         }
-        nameToDirection = new HashMap<>();
-        labelToName = new HashMap<>();
-        expressionText = makeTransitionsUnique(expressionText);
+
         if (!isExpressionValid(expressionText, Model.STG)) {
             return false;
         }
 
         nodeTraversalTool.drawInterpretedGraph(mode, Model.STG);
         return true;
-    }
-
-    /**
-     * Transitions in the expression text are made unique and their original name is stored, later to be used as a label
-     * @param expressionText original expression, possibly with reused transition names
-     * @return expression with all transitions being unique
-     * TODO: Consider whether this could be handled by javaCC parsers rather than doing it here
-     */
-    private static String makeTransitionsUnique(String expressionText) {
-        String str = expressionText;
-        int i = 0;
-        int repNo = 0;
-        while (i < expressionText.length()) {
-
-            StringBuilder transitionNameBuilder = new StringBuilder();
-            while ((expressionText.charAt(i) != CONCURRENCY)
-                    && (expressionText.charAt(i) != SEQUENCE)
-                    && (expressionText.charAt(i) != CHOICE)
-                    && (expressionText.charAt(i) != OPEN_BRACKET)
-                    && (expressionText.charAt(i) != CLOSED_BRACKET)
-                    && (expressionText.charAt(i) != OPEN_CURLY_BRACKET)
-                    && (expressionText.charAt(i) != CLOSED_CURLY_BRACKET)
-                    && (expressionText.charAt(i) != '\t')
-                    && (expressionText.charAt(i) != '\n')
-                    && (expressionText.charAt(i) != ' ')
-                    && (expressionText.charAt(i) != '/')) {
-
-                transitionNameBuilder.append(expressionText.charAt(i));
-                i++;
-                if (i == expressionText.length()) {
-                    break;
-                }
-            }
-            final String s = transitionNameBuilder.toString();
-            if (!s.isEmpty() && !s.contains("//") && !s.equals("\n")) {
-                String uniqueT = "t" + repNo;
-
-                char lastC = expressionText.charAt(i - 1);
-                int wasAltered = 0;
-                nameToDirection.put(uniqueT, getDirection(lastC));
-                if (lastC == PLUS_DIR || lastC == MINUS_DIR || lastC == TOGGLE_DIR) {
-                    transitionNameBuilder = new StringBuilder(transitionNameBuilder.substring(0, transitionNameBuilder.length() - 1));
-                    wasAltered = 1;
-                }
-                labelToName.put(uniqueT, transitionNameBuilder.toString());
-
-                str = str.substring(0, i - transitionNameBuilder.length() - wasAltered) + uniqueT + str.substring(i);
-                i -= transitionNameBuilder.length();
-                i += uniqueT.length() - 1;
-                repNo++;
-                expressionText = str;
-            }
-            i++;
-        }
-        return str;
     }
 
     public static boolean isExpressionValid(String expressionText, Model model) {
@@ -212,17 +142,6 @@ public final class ExpressionUtils {
             return true;
         }
         return false;
-    }
-
-    private static SignalTransition.Direction getDirection(char dir) {
-        switch (dir) {
-        case PLUS_DIR:
-            return SignalTransition.Direction.PLUS;
-        case MINUS_DIR:
-            return SignalTransition.Direction.MINUS;
-        default:
-            return SignalTransition.Direction.TOGGLE;
-        }
     }
 
     private static void checkIteration(Mode mode) {

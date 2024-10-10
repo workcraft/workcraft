@@ -87,6 +87,7 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
 
     private static void insert(WorkspaceEntry we, String expression, ExpressionParameters.Mode mode) {
         we.captureMemento();
+        // TODO: fix: we is only updated when model is inserted, but is required for pre-insertion syntax check
         ExpressionUtils.we = we;
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
             if (ExpressionUtils.insertPetri(expression, mode)) {

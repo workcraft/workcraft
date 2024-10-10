@@ -4,11 +4,12 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Graph;
+import org.workcraft.plugins.cflt.node.NodeCollection;
+import org.workcraft.plugins.cflt.node.NodeDetails;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
 import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.plugins.stg.Signal.Type;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualStgPlace;
@@ -20,8 +21,8 @@ import java.util.*;
 import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
 
 public class StgDrawingTool {
-
     private final Map<String, VisualSignalTransition> transitionNameToVisualSignalTransition = new HashMap<>();
+    private final NodeCollection nodeCollection = NodeCollection.getInstance();
 
     public void drawStg(Graph inputGraph, Graph outputGraph, boolean isSequence, boolean isRoot, Mode mode) {
         VisualStg visualStg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
@@ -71,20 +72,6 @@ public class StgDrawingTool {
     public void drawSingleTransition(String label) {
         VisualStg visualStg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
         VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.LEFT);
-
-        switch (label.charAt(label.length() - 1)) {
-        case ExpressionUtils.PLUS_DIR:
-            ExpressionUtils.nameToDirection.put(label, Direction.PLUS);
-            label = label.substring(0, label.length() - 1);
-            break;
-        case ExpressionUtils.MINUS_DIR:
-            ExpressionUtils.nameToDirection.put(label, Direction.MINUS);
-            label = label.substring(0, label.length() - 1);
-            break;
-        default:
-            ExpressionUtils.nameToDirection.put(label, Direction.TOGGLE);
-            break;
-        }
         VisualSignalTransition visualSignalTransition = createVisualSignalTransition(visualStg, label);
         connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
     }
@@ -118,13 +105,16 @@ public class StgDrawingTool {
         visualStgPlace.setNamePositioning(positioning);
         return visualStgPlace;
     }
-    private VisualSignalTransition createVisualSignalTransition(VisualStg visualStg, String label) {
+
+    private VisualSignalTransition createVisualSignalTransition(VisualStg visualStg, String name) {
+        NodeDetails nodeDetails = nodeCollection.getNodeDetails(name);
         VisualSignalTransition visualSignalTransition = visualStg.createVisualSignalTransition(
-                ExpressionUtils.labelToName.get(label), Type.INTERNAL, ExpressionUtils.nameToDirection.get(label));
+                nodeDetails.getLabel(), Type.INTERNAL, nodeDetails.getDirection());
         visualSignalTransition.setLabelPositioning(Positioning.BOTTOM);
         visualSignalTransition.setNamePositioning(Positioning.LEFT);
         return visualSignalTransition;
     }
+
     private void connectVisualPlaceAndVisualSignalTransition(
             VisualStg visualStg,
             VisualStgPlace visualStgPlace,
