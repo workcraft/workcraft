@@ -41,3 +41,4 @@
 # Crash dumps and temporary files
 /*.hprof
 .DS_Store
+.idea/

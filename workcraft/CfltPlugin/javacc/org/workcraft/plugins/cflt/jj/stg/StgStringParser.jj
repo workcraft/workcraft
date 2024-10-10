@@ -11,10 +11,13 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import org.workcraft.plugins.cflt.node.Node;
 import org.workcraft.plugins.cflt.node.Operator;
+import org.workcraft.plugins.cflt.node.NodeDetails;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 
 public class StgStringParser {
     private final NodeCollection nodeCollection = NodeCollection.getInstance();
+    private int transitionCounter;
+
     public void parse(String s) throws ParseException {
         nodeCollection.clear();
         InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
@@ -130,7 +133,13 @@ String element():
 {
     t = <TRANSITION>
     {
-        return t.toString();
+        String uniqueName = "t" + transitionCounter++;
+        NodeDetails nodeDetails = new NodeDetails(
+              uniqueName,
+              t.toString()
+        );
+        nodeCollection.addNodeDetails(nodeDetails);
+        return uniqueName.toString();
     }
 |
     "(" a = concurrency() ")"
