@@ -1,19 +1,21 @@
 package org.workcraft.plugins.cflt.node;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public final class NodeCollection {
     private static NodeCollection instance;
 
     private final List<Node> nodes;
+    private final Map<String, NodeDetails> nameToNodeDetailsMap;
+
     private boolean isIterationPresent;
     private String singleTransition;
 
     private NodeCollection() {
         nodes = new ArrayList<>();
         isIterationPresent = false;
+        nameToNodeDetailsMap = new HashMap<>();
+        singleTransition = null;
     }
 
     public static NodeCollection getInstance() {
@@ -21,6 +23,10 @@ public final class NodeCollection {
             instance = new NodeCollection();
         }
         return instance;
+    }
+
+    public void addNodeDetails(NodeDetails nodeDetails) {
+        nameToNodeDetailsMap.put(nodeDetails.getName(), nodeDetails);
     }
 
     public void setContainsIteration(boolean containsIteration) {
@@ -43,6 +49,10 @@ public final class NodeCollection {
         nodes.add(node);
     }
 
+    public NodeDetails getNodeDetails(String name) {
+        return nameToNodeDetailsMap.get(name);
+    }
+
     public boolean removeNode(Node node) {
         return nodes.remove(node);
     }
@@ -55,6 +65,7 @@ public final class NodeCollection {
         nodes.clear();
         isIterationPresent = false;
         singleTransition = null;
+        nameToNodeDetailsMap.clear();
     }
 
     public boolean isEmpty() {
