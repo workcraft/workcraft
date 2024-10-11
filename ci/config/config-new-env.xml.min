@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <workcraft-config>
-  <group name="CommonEditorSettings">
-    <var name="backgroundColor" value="#ffeeff"/>
-  </group>
   <group name="CircuitSettings">
     <var name="gateLibrary" value="/path/to/gate/library-additional-env"/>
+  </group>
+  <group name="CommonEditorSettings">
+    <var name="backgroundColor" value="#ffeeff"/>
   </group>
 </workcraft-config>
