@@ -346,7 +346,8 @@ public final class RefinementUtils {
         return (aTitle == null) || !aTitle.equals(bTitle);
     }
 
-    public static void updateInterfacesAndNewOutputInitialStates(VisualCircuit circuit, Set<File> changedRefinementFiles) {
+    public static boolean updateInterfacesAndNewOutputInitialStates(VisualCircuit circuit, Set<File> changedRefinementFiles) {
+        boolean result = false;
         for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
             File refinementCircuitFile = getRefinementCircuitFile(component.getReferencedComponent());
             if ((refinementCircuitFile != null) && changedRefinementFiles.contains(refinementCircuitFile)) {
@@ -360,15 +361,17 @@ public final class RefinementUtils {
 
                     Set<String> newOutputSignals = CircuitUtils.getOutputPinNames(component.getReferencedComponent());
                     newOutputSignals.removeAll(outputSignals);
-                    Map<String, Boolean> refinementOutputInitialState = RefinementUtils.getSignalsInitialState(
-                            refinementCircuit, newOutputSignals);
-
-                    RefinementUtils.updateInitialState(component.getReferencedComponent(), refinementOutputInitialState);
+                    result = !newOutputSignals.isEmpty();
+                    if (result) {
+                        RefinementUtils.updateInitialState(component.getReferencedComponent(),
+                                RefinementUtils.getSignalsInitialState(refinementCircuit, newOutputSignals));
+                    }
                 } catch (DeserialisationException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
+        return result;
     }
 
     public static void updateInterface(VisualCircuit circuit, VisualFunctionComponent component,
