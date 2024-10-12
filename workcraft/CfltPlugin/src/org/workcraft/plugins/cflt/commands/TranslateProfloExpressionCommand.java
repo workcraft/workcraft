@@ -6,6 +6,7 @@ import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.controls.CodePanel;
+import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.cflt.gui.ExpressionDialog;
 import org.workcraft.plugins.cflt.presets.ExpressionDataSerialiser;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters;
@@ -76,6 +77,7 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
     private static void process(WorkspaceEntry we, ExpressionParameters data) {
         ExpressionParameters.Mode mode = data.getMode();
         String expression = data.getExpression();
+
         if (mode != null) {
             if (mode == ExpressionParameters.Mode.EXTERNAL) {
                 externalTranslator.accept(we, expression);
@@ -85,19 +87,19 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
         }
     }
 
-    private static void insert(WorkspaceEntry we, String expression, ExpressionParameters.Mode mode) {
-        we.captureMemento();
-        // TODO: fix: we is only updated when model is inserted, but is required for pre-insertion syntax check
+    private static <T> void insert(WorkspaceEntry we, String expression, ExpressionParameters.Mode mode) {
         ExpressionUtils.we = we;
+        we.captureMemento();
+
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
-            if (ExpressionUtils.insertPetri(expression, mode)) {
+            if (ExpressionUtils.insertInterpretedGraph(expression, mode, Model.PETRI_NET)) {
                 LayoutUtils.attemptLayout(we);
             } else {
                 we.cancelMemento();
             }
         }
         if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {
-            if (ExpressionUtils.insertStg(expression, mode)) {
+            if (ExpressionUtils.insertInterpretedGraph(expression, mode, Model.STG)) {
                 LayoutUtils.attemptLayout(we);
             } else {
                 we.cancelMemento();

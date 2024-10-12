@@ -79,69 +79,24 @@ public final class ExpressionUtils {
         return errorText;
     }
 
-    public static boolean insertPetri(String expressionText, ExpressionParameters.Mode mode) {
-        if (!isExpressionValid(expressionText, Model.PETRI_NET)) {
+    public static boolean insertInterpretedGraph(
+            String expressionText,
+            ExpressionParameters.Mode mode,
+            Model model) {
+        String errorMessage = getErrorText(expressionText, model);
+        if (errorMessage != null) {
+            DialogUtils.showError(errorMessage);
             return false;
         }
         checkMode(mode);
         checkIteration(mode);
         NodeTraversalTool nodeTraversalTool = new NodeTraversalTool();
 
-        // If the expression is merely a single transition
         if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
-            nodeTraversalTool.drawSingleTransition(Model.PETRI_NET);
+            nodeTraversalTool.drawSingleTransition(model);
         }
-
-        if (!isExpressionValid(expressionText, Model.PETRI_NET)) {
-            return false;
-        }
-        nodeTraversalTool.drawInterpretedGraph(mode, Model.PETRI_NET);
+        nodeTraversalTool.drawInterpretedGraph(mode, model);
         return true;
-    }
-
-    public static boolean insertStg(String expressionText, ExpressionParameters.Mode mode) {
-        if (!isExpressionValid(expressionText, Model.STG)) {
-            return false;
-        }
-        checkMode(mode);
-        checkIteration(mode);
-        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool();
-
-        // If the expression is merely a single transition
-        if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
-            nodeTraversalTool.drawSingleTransition(Model.STG);
-        }
-
-        if (!isExpressionValid(expressionText, Model.STG)) {
-            return false;
-        }
-
-        nodeTraversalTool.drawInterpretedGraph(mode, Model.STG);
-        return true;
-    }
-
-    public static boolean isExpressionValid(String expressionText, Model model) {
-        InputStream is = new ByteArrayInputStream(expressionText.getBytes(StandardCharsets.UTF_8));
-        if (model == Model.PETRI_NET) {
-            PetriStringParser parser = new PetriStringParser(is);
-            try {
-                parser.parse(expressionText);
-            } catch (org.workcraft.plugins.cflt.jj.petri.ParseException | org.workcraft.plugins.cflt.jj.petri.TokenMgrError e) {
-                DialogUtils.showError(e.getMessage());
-                return false;
-            }
-            return true;
-        } else if (model == Model.STG) {
-            StgStringParser parser = new StgStringParser(is);
-            try {
-                parser.parse(expressionText);
-            } catch (org.workcraft.plugins.cflt.jj.stg.ParseException | org.workcraft.plugins.cflt.jj.stg.TokenMgrError e) {
-                DialogUtils.showError(e.getMessage());
-                return false;
-            }
-            return true;
-        }
-        return false;
     }
 
     private static void checkIteration(Mode mode) {
