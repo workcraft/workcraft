@@ -9,11 +9,12 @@ import org.workcraft.presets.PresetDialog;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.presets.PresetManagerPanel;
 import org.workcraft.utils.GuiUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
 
@@ -22,7 +23,7 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
     private CodePanel codePanel;
 
     public ExpressionDialog(Window owner, PresetManager presetManager,
-            Consumer<CodePanel> syntaxChecker, boolean addExternalMode) {
+            BiConsumer<WorkspaceEntry, CodePanel> syntaxChecker, boolean addExternalMode, WorkspaceEntry we) {
 
         super(owner, "ProFlo translator", presetManager);
 
@@ -32,7 +33,7 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
         }
         presetPanel.selectFirst();
         addHelpButton(new File("help/control_flow_expressions/start.html"));
-        addCheckerButton(event -> syntaxChecker.accept(codePanel));
+        addCheckerButton(event -> syntaxChecker.accept(we, codePanel));
     }
 
     @Override

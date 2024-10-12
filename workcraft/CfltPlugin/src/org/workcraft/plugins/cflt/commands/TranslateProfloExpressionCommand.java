@@ -19,7 +19,6 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
 
@@ -28,7 +27,7 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
 
     private static ExpressionParameters preservedData = null;
 
-    public static Consumer<CodePanel> syntaxChecker = ExpressionUtils::checkSyntax;
+    public static BiConsumer<WorkspaceEntry, CodePanel> syntaxChecker = ExpressionUtils::checkSyntax;
     public static BiConsumer<WorkspaceEntry, String> externalTranslator = null;
 
     @Override
@@ -66,7 +65,7 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
                 = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
 
         ExpressionDialog dialog = new ExpressionDialog(mainWindow, presetManager,
-                syntaxChecker, externalTranslator != null);
+                syntaxChecker, externalTranslator != null, we);
 
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
@@ -87,19 +86,17 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
         }
     }
 
-    private static <T> void insert(WorkspaceEntry we, String expression, ExpressionParameters.Mode mode) {
-        ExpressionUtils.we = we;
+    private static void insert(WorkspaceEntry we, String expression, ExpressionParameters.Mode mode) {
         we.captureMemento();
-
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
-            if (ExpressionUtils.insertInterpretedGraph(expression, mode, Model.PETRI_NET)) {
+            if (ExpressionUtils.insertInterpretedGraph(expression, mode, Model.PETRI_NET, we)) {
                 LayoutUtils.attemptLayout(we);
             } else {
                 we.cancelMemento();
             }
         }
         if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {
-            if (ExpressionUtils.insertInterpretedGraph(expression, mode, Model.STG)) {
+            if (ExpressionUtils.insertInterpretedGraph(expression, mode, Model.STG, we)) {
                 LayoutUtils.attemptLayout(we);
             } else {
                 we.cancelMemento();

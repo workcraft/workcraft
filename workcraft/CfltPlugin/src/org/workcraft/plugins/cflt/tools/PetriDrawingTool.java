@@ -8,12 +8,12 @@ import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
-import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.getEdgeCliqueCover;
 import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
@@ -22,16 +22,23 @@ public class PetriDrawingTool {
     private final Map<String, VisualTransition> transitionNameToVisualTransition = new HashMap<>();
     private final NodeCollection nodeCollection = NodeCollection.getInstance();
 
-    public void drawPetri(Graph inputGraph, Graph outputGraph, boolean isSequence, boolean isRoot, Mode mode) {
-        VisualPetri visualPetri = WorkspaceUtils.getAs(ExpressionUtils.we, VisualPetri.class);
+    public void drawPetri(
+            Graph inputGraph,
+            Graph outputGraph,
+            boolean isSequence,
+            boolean isRoot,
+            Mode mode,
+            WorkspaceEntry we) {
+        VisualPetri visualPetri = WorkspaceUtils.getAs(we, VisualPetri.class);
         List<Clique> edgeCliqueCover = getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
         HashSet<String> inputVertexNames = new HashSet<>(isSequence ? inputGraph.getVertexNames() : new ArrayList<>());
 
         this.drawIsolatedVisualObjects(inputGraph, visualPetri, isSequence, isRoot);
         this.drawRemainingVisualObjects(edgeCliqueCover, visualPetri, inputVertexNames, isRoot);
     }
-    public void drawSingleTransition(String name) {
-        VisualPetri visualPetri = WorkspaceUtils.getAs(ExpressionUtils.we, VisualPetri.class);
+
+    public void drawSingleTransition(String name, WorkspaceEntry we) {
+        VisualPetri visualPetri = WorkspaceUtils.getAs(we, VisualPetri.class);
         VisualPlace visualPlace = createVisualPlace(visualPetri, true, Positioning.LEFT);
         VisualTransition visualTransition = createVisualTransition(visualPetri, name);
         connectVisualPlaceAndVisualTransition(visualPetri, visualPlace, visualTransition, ConnectionDirection.PLACE_TO_TRANSITION);

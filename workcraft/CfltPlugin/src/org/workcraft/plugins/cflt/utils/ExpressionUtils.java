@@ -28,12 +28,10 @@ public final class ExpressionUtils {
     public static final char MINUS_DIR = '-';
     public static final char TOGGLE_DIR = '~';
 
-    public static WorkspaceEntry we;
-
     private ExpressionUtils() {
     }
 
-    public static void checkSyntax(CodePanel codePanel) {
+    public static void checkSyntax(WorkspaceEntry we, CodePanel codePanel) {
         Model model;
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
             model = Model.PETRI_NET;
@@ -82,20 +80,23 @@ public final class ExpressionUtils {
     public static boolean insertInterpretedGraph(
             String expressionText,
             ExpressionParameters.Mode mode,
-            Model model) {
+            Model model,
+            WorkspaceEntry we) {
         String errorMessage = getErrorText(expressionText, model);
         if (errorMessage != null) {
             DialogUtils.showError(errorMessage);
             return false;
         }
+
         checkMode(mode);
         checkIteration(mode);
         NodeTraversalTool nodeTraversalTool = new NodeTraversalTool();
 
         if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
-            nodeTraversalTool.drawSingleTransition(model);
+            nodeTraversalTool.drawSingleTransition(model, we);
+        } else {
+            nodeTraversalTool.drawInterpretedGraph(mode, model, we);
         }
-        nodeTraversalTool.drawInterpretedGraph(mode, model);
         return true;
     }
 
