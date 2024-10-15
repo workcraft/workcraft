@@ -8,13 +8,13 @@ import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.node.NodeDetails;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils;
-import org.workcraft.plugins.cflt.utils.ExpressionUtils;
 import org.workcraft.plugins.stg.Signal.Type;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.*;
 
@@ -24,8 +24,14 @@ public class StgDrawingTool {
     private final Map<String, VisualSignalTransition> transitionNameToVisualSignalTransition = new HashMap<>();
     private final NodeCollection nodeCollection = NodeCollection.getInstance();
 
-    public void drawStg(Graph inputGraph, Graph outputGraph, boolean isSequence, boolean isRoot, Mode mode) {
-        VisualStg visualStg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
+    public void drawStg(
+            Graph inputGraph,
+            Graph outputGraph,
+            boolean isSequence,
+            boolean isRoot,
+            Mode mode,
+            WorkspaceEntry we) {
+        VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
         List<Clique> edgeCliqueCover = EdgeCliqueCoverUtils.getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
         HashSet<String> inputVertices = new HashSet<>(isSequence ? inputGraph.getVertexNames() : new ArrayList<>());
 
@@ -69,10 +75,10 @@ public class StgDrawingTool {
         }
     }
 
-    public void drawSingleTransition(String label) {
-        VisualStg visualStg = WorkspaceUtils.getAs(ExpressionUtils.we, VisualStg.class);
+    public void drawSingleTransition(String name, WorkspaceEntry we) {
+        VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
         VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.LEFT);
-        VisualSignalTransition visualSignalTransition = createVisualSignalTransition(visualStg, label);
+        VisualSignalTransition visualSignalTransition = createVisualSignalTransition(visualStg, name);
         connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
     }
 

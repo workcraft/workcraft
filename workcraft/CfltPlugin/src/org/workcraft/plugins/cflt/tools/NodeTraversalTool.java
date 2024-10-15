@@ -11,6 +11,7 @@ import org.workcraft.plugins.cflt.node.NodeIterator;
 import org.workcraft.plugins.cflt.node.Operator;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.utils.GraphUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class NodeTraversalTool {
 
@@ -21,18 +22,18 @@ public class NodeTraversalTool {
     PetriDrawingTool petriDrawingTool = new PetriDrawingTool();
     StgDrawingTool stgDrawingTool = new StgDrawingTool();
 
-    public void drawSingleTransition(Model model) {
+    public void drawSingleTransition(Model model, WorkspaceEntry we) {
         switch (model) {
         case PETRI_NET:
-            petriDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition());
+            petriDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition(), we);
             break;
         case STG:
-            stgDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition());
+            stgDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition(), we);
             break;
         }
     }
 
-    public void drawInterpretedGraph(Mode mode, Model model) {
+    public void drawInterpretedGraph(Mode mode, Model model, WorkspaceEntry we) {
         NodeIterator nodeIterator = nodeCollection.getNodeIterator();
         while (nodeIterator.hasNext()) {
             Node node = nodeIterator.next();
@@ -54,7 +55,7 @@ public class NodeTraversalTool {
                 this.handleChoice(leftChildName, rightChildName);
                 break;
             case SEQUENCE:
-                this.handleSequence(leftChildName, rightChildName, model, mode);
+                this.handleSequence(leftChildName, rightChildName, model, mode, we);
                 break;
             case ITERATION:
                 this.handleIteration(leftChildName, nodeIterator.getCurrentPosition());
@@ -64,10 +65,12 @@ public class NodeTraversalTool {
             if (nodeIterator.isLastNode()) {
                 switch (model) {
                 case PETRI_NET:
-                    petriDrawingTool.drawPetri(entryGraph.get(leftChildName), new Graph(), false, true, mode);
+                    petriDrawingTool.drawPetri(entryGraph.get(leftChildName), new Graph(),
+                            false, true, mode, we);
                     break;
                 case STG:
-                    stgDrawingTool.drawStg(entryGraph.get(leftChildName), new Graph(), false, true, mode);
+                    stgDrawingTool.drawStg(entryGraph.get(leftChildName), new Graph(),
+                            false, true, mode, we);
                     break;
                 }
             }
@@ -95,13 +98,15 @@ public class NodeTraversalTool {
         exitGraph.replace(leftChildName, xG);
     }
 
-    private void handleSequence(String leftChildName, String rightChildName, Model model, Mode mode) {
+    private void handleSequence(String leftChildName, String rightChildName, Model model, Mode mode, WorkspaceEntry we) {
         switch (model) {
         case PETRI_NET:
-            petriDrawingTool.drawPetri(exitGraph.get(leftChildName), entryGraph.get(rightChildName), true, false,  mode);
+            petriDrawingTool.drawPetri(exitGraph.get(leftChildName), entryGraph.get(rightChildName),
+                    true, false, mode, we);
             break;
         case STG:
-            stgDrawingTool.drawStg(exitGraph.get(leftChildName), entryGraph.get(rightChildName), true, false, mode);
+            stgDrawingTool.drawStg(exitGraph.get(leftChildName), entryGraph.get(rightChildName),
+                    true, false, mode, we);
             break;
         }
         exitGraph.replace(leftChildName, exitGraph.get(rightChildName));

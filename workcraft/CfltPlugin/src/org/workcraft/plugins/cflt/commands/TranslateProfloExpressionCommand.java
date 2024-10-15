@@ -6,6 +6,7 @@ import org.workcraft.commands.Command;
 import org.workcraft.commands.MenuOrdering;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.controls.CodePanel;
+import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.cflt.gui.ExpressionDialog;
 import org.workcraft.plugins.cflt.presets.ExpressionDataSerialiser;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters;
@@ -18,7 +19,6 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
 
@@ -27,7 +27,7 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
 
     private static ExpressionParameters preservedData = null;
 
-    public static Consumer<CodePanel> syntaxChecker = ExpressionUtils::checkSyntax;
+    public static BiConsumer<WorkspaceEntry, CodePanel> syntaxChecker = ExpressionUtils::checkSyntax;
     public static BiConsumer<WorkspaceEntry, String> externalTranslator = null;
 
     @Override
@@ -65,7 +65,7 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
                 = new PresetManager<>(we, PRESET_KEY, DATA_SERIALISER, preservedData);
 
         ExpressionDialog dialog = new ExpressionDialog(mainWindow, presetManager,
-                syntaxChecker, externalTranslator != null);
+                syntaxChecker, externalTranslator != null, we);
 
         if (dialog.reveal()) {
             preservedData = dialog.getPresetData();
@@ -76,6 +76,7 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
     private static void process(WorkspaceEntry we, ExpressionParameters data) {
         ExpressionParameters.Mode mode = data.getMode();
         String expression = data.getExpression();
+
         if (mode != null) {
             if (mode == ExpressionParameters.Mode.EXTERNAL) {
                 externalTranslator.accept(we, expression);
@@ -87,17 +88,15 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
 
     private static void insert(WorkspaceEntry we, String expression, ExpressionParameters.Mode mode) {
         we.captureMemento();
-        // TODO: fix: we is only updated when model is inserted, but is required for pre-insertion syntax check
-        ExpressionUtils.we = we;
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
-            if (ExpressionUtils.insertPetri(expression, mode)) {
+            if (ExpressionUtils.insertInterpretedGraph(expression, mode, Model.PETRI_NET, we)) {
                 LayoutUtils.attemptLayout(we);
             } else {
                 we.cancelMemento();
             }
         }
         if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {
-            if (ExpressionUtils.insertStg(expression, mode)) {
+            if (ExpressionUtils.insertInterpretedGraph(expression, mode, Model.STG, we)) {
                 LayoutUtils.attemptLayout(we);
             } else {
                 we.cancelMemento();
