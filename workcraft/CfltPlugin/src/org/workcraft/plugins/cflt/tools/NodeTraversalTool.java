@@ -19,6 +19,7 @@ public class NodeTraversalTool {
 
     HashMap<String, Graph> entryGraph = new HashMap<>();
     HashMap<String, Graph> exitGraph = new HashMap<>();
+
     PetriDrawingTool petriDrawingTool = new PetriDrawingTool();
     StgDrawingTool stgDrawingTool = new StgDrawingTool();
 

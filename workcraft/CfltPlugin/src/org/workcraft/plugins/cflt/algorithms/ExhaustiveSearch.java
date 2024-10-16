@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class ExhaustiveSearch {
 
-    public static List<Clique> getEdgeCliqueCover(Graph initialGraph, List<Edge> optionalEdges) {
+    public List<Clique> getEdgeCliqueCover(Graph initialGraph, List<Edge> optionalEdges) {
         List<Clique> edgeCliqueCover = new ArrayList<>();
         List<Clique> allMaxCliques = MaxCliqueEnumerator.getAllMaxCliques(initialGraph);
 

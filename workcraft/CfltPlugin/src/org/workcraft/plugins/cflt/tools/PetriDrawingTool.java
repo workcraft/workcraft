@@ -22,16 +22,14 @@ public class PetriDrawingTool {
     private final Map<String, VisualTransition> transitionNameToVisualTransition = new HashMap<>();
     private final NodeCollection nodeCollection = NodeCollection.getInstance();
 
-    public void drawPetri(
-            Graph inputGraph,
-            Graph outputGraph,
-            boolean isSequence,
-            boolean isRoot,
-            Mode mode,
-            WorkspaceEntry we) {
+    public void drawPetri(Graph inputGraph, Graph outputGraph,
+            boolean isSequence, boolean isRoot, Mode mode, WorkspaceEntry we) {
         VisualPetri visualPetri = WorkspaceUtils.getAs(we, VisualPetri.class);
-        List<Clique> edgeCliqueCover = getEdgeCliqueCover(isSequence, mode, inputGraph, outputGraph);
-        HashSet<String> inputVertexNames = new HashSet<>(isSequence ? inputGraph.getVertexNames() : new ArrayList<>());
+        List<Clique> edgeCliqueCover = getEdgeCliqueCover(inputGraph, outputGraph, isSequence, mode);
+
+        HashSet<String> inputVertexNames = new HashSet<>(isSequence
+                ? inputGraph.getVertexNames()
+                : new ArrayList<>());
 
         this.drawIsolatedVisualObjects(inputGraph, visualPetri, isSequence, isRoot);
         this.drawRemainingVisualObjects(edgeCliqueCover, visualPetri, inputVertexNames, isRoot);
@@ -41,34 +39,35 @@ public class PetriDrawingTool {
         VisualPetri visualPetri = WorkspaceUtils.getAs(we, VisualPetri.class);
         VisualPlace visualPlace = createVisualPlace(visualPetri, true, Positioning.LEFT);
         VisualTransition visualTransition = createVisualTransition(visualPetri, name);
+
         connectVisualPlaceAndVisualTransition(visualPetri, visualPlace, visualTransition, ConnectionDirection.PLACE_TO_TRANSITION);
     }
 
-    private void drawRemainingVisualObjects(
-            List<Clique> edgeCliqueCover,
-            VisualPetri visualPetri,
-            HashSet<String> inputVertexNames,
-            boolean isRoot) {
+    private void drawRemainingVisualObjects(List<Clique> edgeCliqueCover, VisualPetri visualPetri,
+            HashSet<String> inputVertexNames, boolean isRoot) {
+
         for (Clique clique : edgeCliqueCover) {
-            if (clique != null) {
-                VisualPlace visualPlace = createVisualPlace(visualPetri, isRoot, Positioning.LEFT);
+            VisualPlace visualPlace = createVisualPlace(visualPetri, isRoot, Positioning.LEFT);
+            for (String vertexName : clique.getVertexNames()) {
+                boolean isClone = vertexName.contains(SPECIAL_CLONE_CHARACTER);
 
-                for (String vertexName : clique.getVertexNames()) {
-                    boolean isClone = vertexName.contains(SPECIAL_CLONE_CHARACTER);
-                    String cleanVertexName = isClone ? vertexName.substring(0, vertexName.indexOf(SPECIAL_CLONE_CHARACTER)) :
-                            vertexName;
+                String cleanVertexName = isClone
+                        ? vertexName.substring(0, vertexName.indexOf(SPECIAL_CLONE_CHARACTER))
+                        : vertexName;
 
-                    boolean isTransitionPresent = transitionNameToVisualTransition.containsKey(cleanVertexName);
+                boolean isTransitionPresent = transitionNameToVisualTransition.containsKey(cleanVertexName);
 
-                    VisualTransition visualTransition = isTransitionPresent ? transitionNameToVisualTransition.get(cleanVertexName) :
-                            createVisualTransition(visualPetri, cleanVertexName);
+                VisualTransition visualTransition = isTransitionPresent
+                        ? transitionNameToVisualTransition.get(cleanVertexName)
+                        : createVisualTransition(visualPetri, cleanVertexName);
 
-                    transitionNameToVisualTransition.put(cleanVertexName, visualTransition);
-                    connectVisualPlaceAndVisualTransition(visualPetri, visualPlace, visualTransition,
-                            inputVertexNames.contains(cleanVertexName) || isClone ?
-                            ConnectionDirection.TRANSITION_TO_PLACE :
-                            ConnectionDirection.PLACE_TO_TRANSITION);
-                }
+                transitionNameToVisualTransition.put(cleanVertexName, visualTransition);
+
+                ConnectionDirection connectionDirection = inputVertexNames.contains(cleanVertexName) || isClone
+                        ? ConnectionDirection.TRANSITION_TO_PLACE
+                        : ConnectionDirection.PLACE_TO_TRANSITION;
+
+                connectVisualPlaceAndVisualTransition(visualPetri, visualPlace, visualTransition, connectionDirection);
             }
         }
     }
@@ -78,15 +77,21 @@ public class PetriDrawingTool {
             for (String vertex : inputGraph.getIsolatedVertices()) {
                 boolean isTransitionNamePresent = transitionNameToVisualTransition.containsKey(vertex);
 
-                VisualPlace visualPlace = !isTransitionNamePresent && !isSequence ?
-                        createVisualPlace(visualPetri, true, Positioning.LEFT) :
-                        isRoot ? createVisualPlace(visualPetri, true, Positioning.TOP) :
-                                null;
+                VisualPlace visualPlace = null;
 
-                VisualTransition visualTransition = !isTransitionNamePresent && !isSequence ?
-                        createVisualTransition(visualPetri, vertex) :
-                        isRoot ?  transitionNameToVisualTransition.get(vertex) :
-                                null;
+                if (!isTransitionNamePresent && !isSequence) {
+                    visualPlace = createVisualPlace(visualPetri, true, Positioning.LEFT);
+                } else if (isRoot) {
+                    visualPlace = createVisualPlace(visualPetri, true, Positioning.TOP);
+                }
+
+                VisualTransition visualTransition = null;
+
+                if (!isTransitionNamePresent && !isSequence) {
+                    visualTransition = createVisualTransition(visualPetri, vertex);
+                } else if (isRoot) {
+                    visualTransition = transitionNameToVisualTransition.get(vertex);
+                }
 
                 if (visualPlace != null && visualTransition != null) {
                     transitionNameToVisualTransition.put(vertex, visualTransition);
@@ -98,17 +103,21 @@ public class PetriDrawingTool {
 
     private VisualPlace createVisualPlace(VisualPetri visualPetri, boolean hasToken, Positioning positioning) {
         VisualPlace visualPlace = visualPetri.createPlace(null, null);
+
         visualPlace.getReferencedComponent().setTokens(hasToken ? 1 : 0);
         visualPlace.setNamePositioning(positioning);
+
         return visualPlace;
     }
 
     private VisualTransition createVisualTransition(VisualPetri visualPetri, String name) {
         String label = nodeCollection.getNodeDetails(name).getLabel();
         VisualTransition visualTransition = visualPetri.createTransition(null, null);
+
         visualTransition.setLabel(label);
         visualTransition.setLabelPositioning(Positioning.BOTTOM);
         visualTransition.setNamePositioning(Positioning.LEFT);
+
         return visualTransition;
     }
 
