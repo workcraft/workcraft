@@ -7,24 +7,25 @@ import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.workcraft.plugins.cflt.algorithms.EdgeCliqueCoverHeuristic;
+import org.workcraft.plugins.cflt.algorithms.HeuristicType;
 import org.workcraft.plugins.cflt.graph.Clique;
-import org.workcraft.plugins.cflt.graph.Edge;
 import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.algorithms.ExhaustiveSearch;
-import org.workcraft.plugins.cflt.algorithms.MaxMinHeuristic;
-import org.workcraft.plugins.cflt.algorithms.SequenceHeuristic;
 import org.workcraft.plugins.cflt.utils.GraphUtils;
 
-//TODO: Add more different test cases
 class EdgeCliqueCoverTests {
 
     @Test
     void doesCliqueCoverGraph() {
+        var heuristic = new EdgeCliqueCoverHeuristic();
+        var exhaustiveSearch = new ExhaustiveSearch();
         Graph graph = getGraph();
-        List<Clique> seqEcc = SequenceHeuristic.getEdgeCliqueCover(graph, new ArrayList<Edge>());
-        List<Clique> maxEcc = MaxMinHeuristic.getEdgeCliqueCover(graph, new ArrayList<Edge>(), true);
-        List<Clique> minEcc = MaxMinHeuristic.getEdgeCliqueCover(graph, new ArrayList<Edge>(), false);
-        List<Clique> exactEcc = ExhaustiveSearch.getEdgeCliqueCover(graph, new ArrayList<Edge>());
+
+        List<Clique> seqEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.SEQUENCE);
+        List<Clique> maxEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.MAXIMAL);
+        List<Clique> minEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.MINIMAL);
+        List<Clique> exactEcc = exhaustiveSearch.getEdgeCliqueCover(graph, new ArrayList<>());
 
         Assertions.assertTrue(doesCover(seqEcc, graph));
         Assertions.assertTrue(doesCover(maxEcc, graph));
@@ -34,11 +35,14 @@ class EdgeCliqueCoverTests {
 
     @Test
     void areCliquesMaximal() {
+        var heuristic = new EdgeCliqueCoverHeuristic();
+        var exhaustiveSearch = new ExhaustiveSearch();
         Graph graph = getGraph();
-        List<Clique> seqEcc = SequenceHeuristic.getEdgeCliqueCover(graph, new ArrayList<Edge>());
-        List<Clique> maxEcc = MaxMinHeuristic.getEdgeCliqueCover(graph, new ArrayList<Edge>(), true);
-        List<Clique> minEcc = MaxMinHeuristic.getEdgeCliqueCover(graph, new ArrayList<Edge>(), false);
-        List<Clique> exactEcc = ExhaustiveSearch.getEdgeCliqueCover(graph, new ArrayList<Edge>());
+
+        List<Clique> seqEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.SEQUENCE);
+        List<Clique> maxEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.MAXIMAL);
+        List<Clique> minEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.MINIMAL);
+        List<Clique> exactEcc = exhaustiveSearch.getEdgeCliqueCover(graph, new ArrayList<>());
 
         Assertions.assertTrue(areCliquesMaxSize(seqEcc, 4));
         Assertions.assertTrue(areCliquesMaxSize(maxEcc, 4));

@@ -15,15 +15,12 @@ import org.workcraft.plugins.cflt.node.NodeDetails;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 
 public class PetriStringParser {
-    private final NodeCollection nodeCollection = NodeCollection.getInstance();
-    private int transitionCounter;
+    private NodeCollection nodeCollection = new NodeCollection();
+    private int transitionCounter = 0;
 
-    public void parse(String s) throws ParseException {
-       nodeCollection.clear();
-       transitionCounter = 0;
-       InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
-       PetriStringParser parser = new PetriStringParser(is);
-       parser.parseOneLine();
+    public NodeCollection parse() throws ParseException {
+       this.parseOneLine();
+       return nodeCollection;
     }
 }
 PARSER_END(PetriStringParser)
@@ -138,7 +135,7 @@ String element():
             t.toString()
         );
         nodeCollection.addNodeDetails(nodeDetails);
-        return uniqueName.toString();
+        return uniqueName;
     }
 |
     "(" a = concurrency() ")"

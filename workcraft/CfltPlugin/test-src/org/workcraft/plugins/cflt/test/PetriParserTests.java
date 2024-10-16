@@ -177,7 +177,7 @@ class PetriParserTests {
     private void parseExpression(String expressionText) throws ParseException {
         InputStream is = new ByteArrayInputStream(expressionText.getBytes(StandardCharsets.UTF_8));
         PetriStringParser parser = new PetriStringParser(is);
-        parser.parse(expressionText);
+        parser.parse();
 
     }
 

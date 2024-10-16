@@ -1,10 +1,11 @@
 package org.workcraft.plugins.cflt.utils;
 
 import org.workcraft.gui.controls.CodePanel;
+import org.workcraft.plugins.cflt.jj.petri.ParseException;
 import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
+import org.workcraft.plugins.cflt.jj.petri.TokenMgrError;
 import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
 import org.workcraft.plugins.cflt.node.NodeCollection;
-import org.workcraft.plugins.cflt.presets.ExpressionParameters;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.tools.NodeTraversalTool;
 import org.workcraft.plugins.cflt.Model;
@@ -21,9 +22,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 public final class ExpressionUtils {
-
-    private static final NodeCollection nodeCollection = NodeCollection.getInstance();
-
     public static final char PLUS_DIR = '+';
     public static final char MINUS_DIR = '-';
     public static final char TOGGLE_DIR = '~';
@@ -32,19 +30,15 @@ public final class ExpressionUtils {
     }
 
     public static void checkSyntax(WorkspaceEntry we, CodePanel codePanel) {
-        Model model;
+        Model model = null;
         if (WorkspaceUtils.isApplicable(we, VisualPetri.class)) {
             model = Model.PETRI_NET;
         } else if (WorkspaceUtils.isApplicable(we, VisualStg.class)) {
             model = Model.STG;
-        } else {
-            String message = "Couldn't determine which model to check";
-            codePanel.showWarningStatus(message);
-            return;
         }
 
         String data = codePanel.getText();
-        String errorText = getErrorText(data, model);
+        String errorText = getParseExpressionResponse(data, model).errorText;
 
         if (errorText == null) {
             String message = "Property is syntactically correct";
@@ -55,42 +49,40 @@ public final class ExpressionUtils {
         }
     }
 
-    private static String getErrorText(String data, Model model) {
+    private static ParseExpressionResponse getParseExpressionResponse(String data, Model model) {
         InputStream is = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
         String errorText = null;
+        NodeCollection nodeCollection = null;
 
         if (model == Model.PETRI_NET) {
             PetriStringParser parser = new PetriStringParser(is);
             try {
-                parser.parse(data);
-            } catch (org.workcraft.plugins.cflt.jj.petri.TokenMgrError | org.workcraft.plugins.cflt.jj.petri.ParseException e) {
+                nodeCollection = parser.parse();
+            } catch (TokenMgrError | ParseException e) {
                 errorText = e.getMessage();
             }
         } else if (model == Model.STG) {
             StgStringParser parser = new StgStringParser(is);
             try {
-                parser.parse(data);
+                nodeCollection = parser.parse();
             } catch (org.workcraft.plugins.cflt.jj.stg.TokenMgrError | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
                 errorText = e.getMessage();
             }
         }
-        return errorText;
+        return new ParseExpressionResponse(nodeCollection, errorText);
     }
 
-    public static boolean insertInterpretedGraph(
-            String expressionText,
-            ExpressionParameters.Mode mode,
-            Model model,
-            WorkspaceEntry we) {
-        String errorMessage = getErrorText(expressionText, model);
+    public static boolean insertInterpretedGraph(String expressionText, Mode mode, Model model, WorkspaceEntry we) {
+        var response = getParseExpressionResponse(expressionText, model);
+        var errorMessage = response.errorText;
         if (errorMessage != null) {
             DialogUtils.showError(errorMessage);
             return false;
         }
-
+        var nodeCollection = response.nodeCollection;
         checkMode(mode);
-        checkIteration(mode);
-        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool();
+        checkIteration(mode, nodeCollection);
+        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool(nodeCollection);
 
         if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
             nodeTraversalTool.drawSingleTransition(model, we);
@@ -100,7 +92,7 @@ public final class ExpressionUtils {
         return true;
     }
 
-    private static void checkIteration(Mode mode) {
+    private static void checkIteration(Mode mode, NodeCollection nodeCollection) {
         if ((mode != null) && nodeCollection.containsIteration()) {
             DialogUtils.showWarning("Iteration operator is experimental and may yield incorrect result.");
         }
@@ -111,6 +103,9 @@ public final class ExpressionUtils {
             DialogUtils.showWarning("The exhaustive search algorithm may take a long time to compute,\n"
                     + "heuristics may be used instead.");
         }
+    }
+
+    private record ParseExpressionResponse(NodeCollection nodeCollection, String errorText) {
     }
 
 }
