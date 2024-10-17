@@ -2,12 +2,14 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
+import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.workers.BooleanWorker;
@@ -19,6 +21,7 @@ import org.workcraft.plugins.circuit.genlib.GateInterface;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
@@ -388,7 +391,7 @@ public final class GateUtils {
         Set<BooleanVariable> result = new HashSet<>();
         for (FunctionContact contact : component.getFunctionOutputs()) {
             result.add(contact);
-            result.addAll(GateUtils.getUsedVariables(contact));
+            result.addAll(getUsedVariables(contact));
         }
         return result;
     }
@@ -457,8 +460,8 @@ public final class GateUtils {
         // Insert fork buffer if reuse did not work out
         if (result == null) {
             SpaceUtils.makeSpaceAroundContact(circuit, contact, 3.0);
-            result = GateUtils.createBufferGate(circuit);
-            GateUtils.insertGateAfter(circuit, result, contact, 2.0);
+            result = createBufferGate(circuit);
+            insertGateAfter(circuit, result, contact, 2.0);
             VisualFunctionContact gateOutput = result.getGateOutput();
             gateOutput.setInitToOne(contact.getInitToOne());
         }
@@ -490,7 +493,146 @@ public final class GateUtils {
         return component;
     }
 
-    public static void convertBufferToInverter(VisualCircuit circuit, VisualFunctionComponent component) {
+    public static VisualContact convertGate(VisualCircuit circuit, VisualFunctionComponent component,
+            Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping) {
+
+        Gate gate = extendedMapping.getFirst();
+        Map<BooleanVariable, String> pinRenames = extendedMapping.getSecond();
+        Set<String> invertedPins = extendedMapping.getThird();
+        component.getReferencedComponent().setModule(gate.name);
+
+        VisualFunctionContact outputPin = component.getGateOutput();
+        BooleanFormula setFunction = outputPin.getSetFunction();
+        BooleanFormula newSetFunction = convertInputPins(circuit, component, pinRenames, invertedPins, setFunction);
+        return convertOutputPin(circuit, gate, outputPin, invertedPins, newSetFunction);
+    }
+
+    private static BooleanFormula convertInputPins(VisualCircuit circuit, VisualFunctionComponent component,
+            Map<BooleanVariable, String> pinRenames, Set<String> invertedPins, BooleanFormula setFunction) {
+
+        List<BooleanVariable> invertedInputVars = new ArrayList<>();
+        List<BooleanFormula> newInvertedInputVars = new ArrayList<>();
+        for (VisualContact inputPin : component.getVisualInputs()) {
+            Contact inputPinVar = inputPin.getReferencedComponent();
+            String newInputPinName = pinRenames.get(inputPinVar);
+            if (newInputPinName == null) {
+                continue;
+            }
+            circuit.setMathName(inputPin, Identifier.makeInternal(newInputPinName));
+            if (invertedPins.contains(newInputPinName)) {
+                invertedInputVars.add(inputPinVar);
+                newInvertedInputVars.add(new Not(inputPinVar));
+            }
+        }
+
+        for (VisualContact inputPin : component.getVisualInputs()) {
+            Contact inputPinVar = inputPin.getReferencedComponent();
+            String newInputPinName = pinRenames.get(inputPinVar);
+            if (newInputPinName == null) {
+                continue;
+            }
+            circuit.setMathName(inputPin, newInputPinName);
+            if (invertedPins.contains(newInputPinName)) {
+                VisualFunctionComponent trivialDriverComponent = getDedicatedTrivialDriverOrNull(circuit, inputPin);
+                if (trivialDriverComponent == null) {
+                    VisualFunctionComponent newInverter = createInverterGate(circuit);
+                    SpaceUtils.makeSpaceAroundContact(circuit, inputPin, 2.0);
+                    insertGateBefore(circuit, newInverter, inputPin, 1.5);
+                    newInverter.setIsZeroDelay(true);
+                } else if (trivialDriverComponent.isInverter()) {
+                    VisualFunctionContact existingInverterInputPin = trivialDriverComponent.getFirstVisualInput();
+                    VisualFunctionContact existingInverterOutputPin = trivialDriverComponent.getFirstVisualOutput();
+                    CircuitUtils.fuseContacts(circuit, existingInverterInputPin, existingInverterOutputPin);
+                    circuit.remove(trivialDriverComponent);
+                } else if (trivialDriverComponent.isBuffer()) {
+                    convertBufferToInverter(circuit, trivialDriverComponent);
+                    trivialDriverComponent.setIsZeroDelay(true);
+                } else if (trivialDriverComponent.isTie1()) {
+                    convertTie1ToTie0(circuit, trivialDriverComponent);
+                } else if (trivialDriverComponent.isTie1()) {
+                    convertTie0ToTie1(circuit, trivialDriverComponent);
+                }
+            }
+        }
+        return FormulaUtils.replace(setFunction, invertedInputVars, newInvertedInputVars,
+                CleverBooleanWorker.getInstance());
+    }
+
+    private static VisualFunctionComponent getDedicatedTrivialDriverOrNull(
+            VisualCircuit circuit, VisualContact contact) {
+
+        VisualContact driverContact = CircuitUtils.findDriver(circuit, contact, false);
+        if (driverContact != null) {
+            Set<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, driverContact);
+            if (drivenContacts.size() == 1) {
+                Node parent = driverContact.getParent();
+                if ((parent instanceof VisualFunctionComponent drivenComponent)
+                        && (drivenComponent.isInverter() || drivenComponent.isBuffer()
+                        || drivenComponent.isTie1() || drivenComponent.isTie0())) {
+
+                    return drivenComponent;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static VisualContact convertOutputPin(VisualCircuit circuit, Gate gate, VisualFunctionContact outputPin,
+            Set<String> invertedPins, BooleanFormula setFunction) {
+
+        VisualContact result = outputPin;
+        String newOutputPinName = gate.function.name;
+        if (newOutputPinName != null) {
+            circuit.setMathName(outputPin, newOutputPinName);
+            if (invertedPins.contains(newOutputPinName)) {
+                VisualFunctionComponent existingInverter = getOnlyDrivenInverterOrNull(circuit, outputPin);
+                boolean initToOne = outputPin.getInitToOne();
+                if (existingInverter != null) {
+                    VisualFunctionContact existingInverterInputPin = existingInverter.getFirstVisualInput();
+                    VisualFunctionContact existingInverterOutputPin = existingInverter.getFirstVisualOutput();
+                    CircuitUtils.fuseContacts(circuit, existingInverterInputPin, existingInverterOutputPin);
+                    circuit.remove(existingInverter);
+                } else {
+                    VisualFunctionComponent newInverter = createInverterGate(circuit);
+                    SpaceUtils.makeSpaceAroundContact(circuit, outputPin, 2.0);
+                    insertGateAfter(circuit, newInverter, outputPin, 1.5);
+                    result = newInverter.getGateOutput();
+                    result.setInitToOne(initToOne);
+                }
+                outputPin.setInitToOne(!initToOne);
+                setFunction = FormulaUtils.invert(setFunction);
+            }
+        }
+        updateFunction(gate, setFunction, outputPin);
+        return result;
+    }
+
+    private static VisualFunctionComponent getOnlyDrivenInverterOrNull(
+            VisualCircuit circuit, VisualFunctionContact contact) {
+
+        Set<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact);
+        if (drivenContacts.size() == 1) {
+            VisualContact drivenContact = drivenContacts.iterator().next();
+            Node parent = drivenContact.getParent();
+            if ((parent instanceof VisualFunctionComponent drivenComponent) && drivenComponent.isInverter()) {
+                return drivenComponent;
+            }
+        }
+        return null;
+    }
+
+    private static void updateFunction(Gate gate, BooleanFormula setFunction, VisualFunctionContact outputPin) {
+        try {
+            BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
+            if ((setFunction instanceof Not) != (gateFormula instanceof Not)) {
+                setFunction = FormulaUtils.propagateInversion(setFunction);
+            }
+        } catch (ParseException ignored) {
+        }
+        outputPin.setSetFunction(setFunction);
+    }
+
+    private static void convertBufferToInverter(VisualCircuit circuit, VisualFunctionComponent component) {
         if (!component.isBuffer()) {
             throw new RuntimeException("Buffer is expected");
         }
@@ -515,7 +657,7 @@ public final class GateUtils {
         outputPin.setSetFunction(FormulaUtils.invert(outputPin.getSetFunction()));
     }
 
-    public static void convertTie1ToTie0(VisualCircuit circuit, VisualFunctionComponent component) {
+    private static void convertTie1ToTie0(VisualCircuit circuit, VisualFunctionComponent component) {
         if (!component.isTie1()) {
             throw new RuntimeException("Tie1 is expected");
         }
@@ -535,7 +677,7 @@ public final class GateUtils {
         outputPin.setInitToOne(false);
     }
 
-    public static void convertTie0ToTie1(VisualCircuit circuit, VisualFunctionComponent component) {
+    private static void convertTie0ToTie1(VisualCircuit circuit, VisualFunctionComponent component) {
         if (!component.isTie0()) {
             throw new RuntimeException("Tie0 is expected");
         }
