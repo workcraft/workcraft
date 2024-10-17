@@ -214,6 +214,11 @@ public class FunctionComponent extends CircuitComponent {
         return gateOutput;
     }
 
+    public boolean isCombinationalGate() {
+        FunctionContact gateOutput = getGateOutput();
+        return (gateOutput != null) && gateOutput.isCombinational();
+    }
+
     public boolean isSequentialGate() {
         FunctionContact gateOutput = getGateOutput();
         return (gateOutput != null) && gateOutput.isSequential();

@@ -3,12 +3,10 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.*;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
-import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.*;
@@ -17,6 +15,7 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.types.Pair;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
@@ -25,7 +24,6 @@ import java.util.*;
 
 public final class ResetUtils {
 
-    private static final BooleanWorker DUMB_WORKER = DumbBooleanWorker.getInstance();
     private static final BooleanWorker CLEVER_WORKER = CleverBooleanWorker.getInstance();
     private static final String VERIFICATION_RESULT_TITLE = "Verification result";
 
@@ -205,18 +203,7 @@ public final class ResetUtils {
             return false;
         }
         for (VisualFunctionComponent component : resetComponents) {
-            if (component.isBuffer()) {
-                resetBuffer(circuit, component, resetPort, isActiveLow);
-            } else if (component.isInverter()) {
-                resetInverter(circuit, component, resetPort, isActiveLow);
-            } else {
-                VisualFunctionContact resetContact = CircuitUtils.getFunctionContact(circuit, component, portName);
-                if (resetContact == null) {
-                    resetComponent(circuit, component, resetPort, isActiveLow);
-                } else {
-                    CircuitUtils.connectIfPossible(circuit, resetPort, resetContact);
-                }
-            }
+            insertReset(circuit, component, resetPort, isActiveLow);
         }
         SpaceUtils.positionPort(circuit, resetPort, false);
         CircuitUtils.detachJoint(circuit, resetPort, 0.5);
@@ -225,139 +212,94 @@ public final class ResetUtils {
     }
 
     public static boolean hasForcedInitOutput(CircuitComponent component) {
-        for (Contact outputContact : component.getOutputs()) {
-            if (outputContact.getForcedInit()) {
-                return true;
-            }
-        }
-        return false;
+        return component.getOutputs().stream().anyMatch(Contact::getForcedInit);
     }
 
-    private static VisualFunctionComponent resetBuffer(VisualCircuit circuit, VisualFunctionComponent component,
-            VisualFunctionContact resetPort, boolean activeLow) {
+    private static boolean insertReset(VisualCircuit circuit, VisualFunctionComponent component,
+            VisualFunctionContact resetPort, boolean isActiveLow) {
 
-        VisualFunctionContact outputContact = component.getFirstVisualOutput();
-        if ((outputContact == null) || !outputContact.getForcedInit()) {
-            return null;
+        if (insertResetIntoMappedCombinationalGate(circuit, component, resetPort, isActiveLow)) {
+            return true;
         }
-
-        String gateName = "";
-        String in1Name = "AN";
-        String in2Name = "B";
-        String outName = "ON";
-
-        FreeVariable in1Var = new FreeVariable(in1Name);
-        FreeVariable in2Var = new FreeVariable(in2Name);
-        BooleanFormula formula = getResetBufferFormula(activeLow, outputContact.getInitToOne(), in1Var, in2Var);
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
-        if (mapping != null) {
-            Gate gate = mapping.getFirst();
-            gateName = gate.name;
-            Map<BooleanVariable, String> assignments = mapping.getSecond();
-            in1Name = assignments.get(in1Var);
-            in2Name = assignments.get(in2Var);
-            outName = gate.function.name;
+        String portName = isActiveLow ? CircuitSettings.getResetActiveLowPort() : CircuitSettings.getResetActiveHighPort();
+        VisualFunctionContact resetInputPin = CircuitUtils.getFunctionContact(circuit, component, portName);
+        if (resetInputPin == null) {
+            appendResetToComponent(circuit, component, resetPort, isActiveLow);
+        } else {
+            CircuitUtils.connectIfPossible(circuit, resetPort, resetInputPin);
         }
-
-        VisualFunctionContact inputContact = component.getFirstVisualInput();
-        // Temporary rename gate output, so there is no name clash on renaming gate input
-        circuit.setMathName(outputContact, Identifier.getTemporaryName());
-        circuit.setMathName(inputContact, in1Name);
-        circuit.setMathName(outputContact, outName);
-        VisualFunctionContact resetContact = circuit.getOrCreateContact(component, in2Name, Contact.IOType.INPUT);
-        CircuitUtils.connectIfPossible(circuit, resetPort, resetContact);
-
-        Contact in1Contact = inputContact.getReferencedComponent();
-        Contact in2Contact = resetContact.getReferencedComponent();
-        BooleanFormula setFunction = FormulaUtils.replace(formula, Arrays.asList(in1Var, in2Var),
-                Arrays.asList(in1Contact, in2Contact));
-
-        outputContact.setSetFunction(setFunction);
-        component.setLabel(gateName);
-        return component;
+        return true;
     }
 
-    private static BooleanFormula getResetBufferFormula(boolean activeLow, boolean initToOne,
-            BooleanVariable in1Var, BooleanVariable in2Var) {
+    private static boolean insertResetIntoMappedCombinationalGate(VisualCircuit circuit,
+            VisualFunctionComponent component, VisualFunctionContact resetPort, boolean activeLow) {
+
+        if (!component.isMapped() || !component.isCombinationalGate()) {
+            return false;
+        }
+        VisualFunctionContact outputPin = component.getGateOutput();
+        if (outputPin == null) {
+            return false;
+        }
+        BooleanFormula setFunction = outputPin.getSetFunction();
+        if (setFunction == null) {
+            return false;
+        }
+        FunctionContact resetVar = new FunctionContact(Contact.IOType.INPUT);
+        BooleanFormula formulaWithReset = getFormulaWithReset(setFunction, resetVar, activeLow, outputPin.getInitToOne());
+        Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping = GenlibUtils.findExtendedMapping(
+                formulaWithReset, LibraryManager.getLibrary(), true, true);
+
+        if (extendedMapping == null) {
+            return false;
+        }
+        // Add reset pin and update gate function
+        VisualFunctionContact resetInputPin = new VisualFunctionContact(resetVar);
+        component.addContact(resetInputPin);
+        outputPin.setSetFunction(formulaWithReset);
+        // Connect reset pin to reset port proxy
+        CircuitUtils.connectIfPossible(circuit, resetPort, resetInputPin);
+        ConversionUtils.replicateDriverContact(circuit, resetInputPin);
+        // Convert the gate according to the extended mapping data
+        GateUtils.convertGate(circuit, component, extendedMapping);
+        return true;
+    }
+
+    private static BooleanFormula getFormulaWithReset(BooleanFormula formula, BooleanVariable initVar,
+            boolean activeLow, boolean initToOne) {
 
         if (initToOne) {
             if (activeLow) {
-                return new Not(new And(new Not(in1Var), in2Var));
+                if (formula instanceof Not notFormula) {
+                    return new Not(new And(notFormula.getX(), initVar));
+                } else {
+                    return new Or(formula, new Not(initVar));
+                }
             } else {
-                return new Or(in1Var, in2Var);
+                if (formula instanceof Not notFormula) {
+                    return new Not(new And(notFormula.getX(), new Not(initVar)));
+                } else {
+                    return new Or(formula, initVar);
+                }
             }
         } else {
             if (activeLow) {
-                return new And(in1Var, in2Var);
+                if (formula instanceof Not notFormula) {
+                    return new Not(new Or(notFormula.getX(), new Not(initVar)));
+                } else {
+                    return new And(formula, initVar);
+                }
             } else {
-                return new Not(new Or(new Not(in1Var), in2Var));
+                if (formula instanceof Not notFormula) {
+                    return new Not(new Or(notFormula.getX(), initVar));
+                } else {
+                    return new And(formula, new Not(initVar));
+                }
             }
         }
     }
 
-    private static VisualFunctionComponent resetInverter(VisualCircuit circuit, VisualFunctionComponent component,
-            VisualFunctionContact resetPort, boolean activeLow) {
-
-        VisualFunctionContact outputContact = component.getFirstVisualOutput();
-        if ((outputContact == null) || !outputContact.getForcedInit()) {
-            return null;
-        }
-
-        String gateName = "";
-        String in1Name = "AN";
-        String in2Name = "B";
-        String outName = "ON";
-
-        FreeVariable in1Var = new FreeVariable(in1Name);
-        FreeVariable in2Var = new FreeVariable(in2Name);
-        BooleanFormula formula = getResetInverterFormula(activeLow, outputContact.getInitToOne(), in1Var, in2Var);
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
-        if (mapping != null) {
-            Gate gate = mapping.getFirst();
-            gateName = gate.name;
-            Map<BooleanVariable, String> assignments = mapping.getSecond();
-            in1Name = assignments.get(in1Var);
-            in2Name = assignments.get(in2Var);
-            outName = gate.function.name;
-        }
-
-        VisualFunctionContact inputContact = component.getFirstVisualInput();
-        // Temporary rename gate output, so there is no name clash on renaming gate input
-        circuit.setMathName(outputContact, Identifier.getTemporaryName());
-        circuit.setMathName(inputContact, in2Name);
-        circuit.setMathName(outputContact, outName);
-        VisualFunctionContact resetContact = circuit.getOrCreateContact(component, in1Name, Contact.IOType.INPUT);
-        CircuitUtils.connectIfPossible(circuit, resetPort, resetContact);
-
-        Contact in1Contact = resetContact.getReferencedComponent();
-        Contact in2Contact = inputContact.getReferencedComponent();
-        BooleanFormula setFunction = FormulaUtils.replace(formula, Arrays.asList(in1Var, in2Var),
-                Arrays.asList(in1Contact, in2Contact));
-
-        outputContact.setSetFunction(setFunction);
-        component.setLabel(gateName);
-        return component;
-    }
-
-    private static BooleanFormula getResetInverterFormula(boolean activeLow, boolean initToOne,
-            BooleanVariable in1Var, BooleanVariable in2Var) {
-
-        if (initToOne) {
-            if (activeLow) {
-                return new Not(new And(in1Var, in2Var));
-            } else {
-                return new Not(new And(new Not(in1Var), in2Var));
-            }
-        } else {
-            if (activeLow) {
-                return new Not(new Or(new Not(in1Var), in2Var));
-            } else {
-                return new Not(new Or(in1Var, in2Var));
-            }
-        }
-    }
-
-    private static Collection<VisualFunctionComponent> resetComponent(VisualCircuit circuit,
+    private static Collection<VisualFunctionComponent> appendResetToComponent(VisualCircuit circuit,
             VisualFunctionComponent component, VisualContact resetPort, boolean isActiveLow) {
 
         return component.isMapped()
@@ -469,39 +411,13 @@ public final class ResetUtils {
     private static void insertResetFunction(VisualFunctionContact contact, VisualContact resetContact, boolean activeLow) {
         BooleanFormula setFunction = contact.getSetFunction();
         BooleanFormula resetFunction = contact.getResetFunction();
-        Contact resetVar = resetContact.getReferencedComponent();
-        if (activeLow) {
-            if (contact.getInitToOne()) {
-                if (setFunction != null) {
-                    contact.setSetFunction(DUMB_WORKER.or(DUMB_WORKER.not(resetVar), setFunction));
-                }
-                if (resetFunction != null) {
-                    contact.setResetFunction(DUMB_WORKER.and(resetVar, resetFunction));
-                }
-            } else {
-                if (setFunction != null) {
-                    contact.setSetFunction(DUMB_WORKER.and(resetVar, setFunction));
-                }
-                if (resetFunction != null) {
-                    contact.setResetFunction(DUMB_WORKER.or(DUMB_WORKER.not(resetVar), resetFunction));
-                }
-            }
-        } else {
-            if (contact.getInitToOne()) {
-                if (setFunction != null) {
-                    contact.setSetFunction(DUMB_WORKER.or(resetVar, setFunction));
-                }
-                if (resetFunction != null) {
-                    contact.setResetFunction(DUMB_WORKER.and(DUMB_WORKER.not(resetVar), resetFunction));
-                }
-            } else {
-                if (setFunction != null) {
-                    contact.setSetFunction(DUMB_WORKER.and(DUMB_WORKER.not(resetVar), setFunction));
-                }
-                if (resetFunction != null) {
-                    contact.setResetFunction(DUMB_WORKER.or(resetVar, resetFunction));
-                }
-            }
+        Contact initVar = resetContact.getReferencedComponent();
+        boolean initToOne = contact.getInitToOne();
+        if (setFunction != null) {
+            contact.setSetFunction(getFormulaWithReset(setFunction, initVar, activeLow, initToOne));
+        }
+        if (resetFunction != null) {
+            contact.setResetFunction(getFormulaWithReset(resetFunction, initVar, activeLow, !initToOne));
         }
     }
 
