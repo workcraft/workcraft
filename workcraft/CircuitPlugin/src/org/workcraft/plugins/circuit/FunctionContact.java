@@ -72,6 +72,10 @@ public class FunctionContact extends Contact {
         return (setFunction != null) || (resetFunction != null);
     }
 
+    public boolean isCombinational() {
+        return (setFunction != null) && (resetFunction == null);
+    }
+
     public boolean isSequential() {
         return (setFunction != null) && (resetFunction != null);
     }

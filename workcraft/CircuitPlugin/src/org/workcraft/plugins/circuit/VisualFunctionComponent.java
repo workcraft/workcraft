@@ -157,6 +157,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         return null;
     }
 
+    public boolean isCombinationalGate() {
+        return (getReferencedComponent() != null) && getReferencedComponent().isCombinationalGate();
+    }
+
     public boolean isSequentialGate() {
         return (getReferencedComponent() != null) && getReferencedComponent().isSequentialGate();
     }
