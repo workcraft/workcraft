@@ -205,8 +205,7 @@ public final class ResetUtils {
         for (VisualFunctionComponent component : resetComponents) {
             insertReset(circuit, component, resetPort, isActiveLow);
         }
-        SpaceUtils.positionPort(circuit, resetPort, false);
-        CircuitUtils.detachJoint(circuit, resetPort, 0.5);
+        SpaceUtils.positionPortAtBottom(circuit, resetPort, false);
         setInitialisationProtocol(circuit, resetPort, isActiveLow);
         return true;
     }
@@ -227,6 +226,7 @@ public final class ResetUtils {
             appendResetToComponent(circuit, component, resetPort, isActiveLow);
         } else {
             CircuitUtils.connectIfPossible(circuit, resetPort, resetInputPin);
+            ConversionUtils.replicateDriverContact(circuit, resetInputPin);
         }
         return true;
     }
@@ -389,6 +389,7 @@ public final class ResetUtils {
         if (!forcedInitOutputs.isEmpty()) {
             VisualFunctionContact initContact = getOrCreateResetPin(circuit, component, initGatePinPair.getSecond());
             CircuitUtils.connectIfPossible(circuit, resetPort, initContact);
+            ConversionUtils.replicateDriverContact(circuit, initContact);
             for (VisualFunctionContact contact : forcedInitOutputs) {
                 insertResetFunction(contact, initContact, isActiveLow);
             }
