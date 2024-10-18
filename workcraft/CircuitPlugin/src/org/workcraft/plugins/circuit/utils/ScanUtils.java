@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.Identifier;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.GateInterface;
@@ -234,9 +233,9 @@ public final class ScanUtils {
             for (VisualFunctionComponent component : components) {
                 VisualContact pin = getContactWithPathbreakerPinNameOrWithPortName(circuit, portName, component, pinName);
                 CircuitUtils.connectIfPossible(circuit, port, pin);
+                ConversionUtils.replicateDriverContact(circuit, pin);
             }
-            SpaceUtils.positionPort(circuit, port, false);
-            CircuitUtils.detachJoint(circuit, port, 0.5);
+            SpaceUtils.positionPortAtBottom(circuit, port, false);
         }
     }
 
@@ -309,14 +308,13 @@ public final class ScanUtils {
             return 0;
         }
 
-        VisualConnection scaninConnection = connectFromIndividualInputPort(
-                circuit, scanData.scaninPortPrefix, index, scaninPin, false);
-
-        if ((scaninConnection != null) && needScaninInversion) {
+        connectFromIndividualInputPort(circuit, scanData.scaninPortPrefix, index, scaninPin, false);
+        if (needScaninInversion) {
             VisualFunctionComponent inverterGate = GateUtils.createInverterGate(circuit);
             String invInstancePrefix = CircuitSettings.getInitialisationInverterInstancePrefix();
             circuit.setMathName(inverterGate, invInstancePrefix + index);
-            GateUtils.insertGateWithin(circuit, inverterGate, scaninConnection);
+            SpaceUtils.makeSpaceAroundContact(circuit, scaninPin, 2.0);
+            GateUtils.insertGateBefore(circuit, inverterGate, scaninPin, -1.5 * scanenPin.getDirection().getGradientX());
             GateUtils.propagateInitialState(circuit, inverterGate);
         }
 
@@ -370,7 +368,7 @@ public final class ScanUtils {
         return count;
     }
 
-    private static VisualConnection connectFromIndividualInputPort(VisualCircuit circuit, String portPrefix,
+    private static void connectFromIndividualInputPort(VisualCircuit circuit, String portPrefix,
             int index, VisualContact pin, boolean initToOne) {
 
         String portName = MatchingUtils.getSignalWithBusSuffix(portPrefix, index);
@@ -378,12 +376,12 @@ public final class ScanUtils {
                 VisualContact.Direction.WEST, initToOne);
 
         CircuitUtils.disconnectContact(circuit, pin);
-        VisualConnection connection = CircuitUtils.connectIfPossible(circuit, port, pin);
-        SpaceUtils.positionPort(circuit, port, false);
-        return connection;
+        CircuitUtils.connectIfPossible(circuit, port, pin);
+        SpaceUtils.positionPortAtBottom(circuit, port, false);
+        ConversionUtils.replicateDriverContact(circuit, pin);
     }
 
-    private static VisualConnection connectToIndividualOutputPort(VisualCircuit circuit, VisualContact pin,
+    private static void connectToIndividualOutputPort(VisualCircuit circuit, VisualContact pin,
             String portPrefix, int index) {
 
         String portName = MatchingUtils.getSignalWithBusSuffix(portPrefix, index);
@@ -391,10 +389,10 @@ public final class ScanUtils {
                 Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
 
         CircuitUtils.disconnectContact(circuit, port);
-        VisualConnection connection = CircuitUtils.connectIfPossible(circuit, pin, port);
+        CircuitUtils.connectIfPossible(circuit, pin, port);
         port.setInitToOne(pin.getInitToOne());
-        SpaceUtils.positionPort(circuit, port, true);
-        return connection;
+        SpaceUtils.positionPortAtBottom(circuit, port, true);
+        ConversionUtils.replicateDriverContact(circuit, port);
     }
 
     private static VisualContact getOrCreateContact(VisualCircuit circuit, VisualFunctionComponent component,
@@ -454,7 +452,7 @@ public final class ScanUtils {
         } else {
             connectExistingScanChain(circuit, contact, oldScaninContacts);
         }
-        SpaceUtils.positionPort(circuit, scaninPort, true);
+        SpaceUtils.alignPortWithPin(circuit, scaninPort, scaninPort.getDirection().getGradientX());
     }
 
     private static VisualContact stitchScanComponent(VisualCircuit circuit, VisualFunctionComponent component,
@@ -480,7 +478,8 @@ public final class ScanUtils {
             contact = addBuffering(circuit, contact);
         }
         CircuitUtils.connectIfPossible(circuit, contact, scanoutPort);
-        SpaceUtils.positionPort(circuit, scanoutPort, true);
+        SpaceUtils.positionPortAtBottom(circuit, scanoutPort, true);
+        ConversionUtils.replicateDriverContact(circuit, scanoutPort);
     }
 
     private static boolean needsBuffering(VisualCircuit circuit, VisualContact contact) {

@@ -4,7 +4,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
@@ -104,44 +106,33 @@ public final class SpaceUtils {
         return new Point2D.Double(x, y);
     }
 
-    public static void positionPort(VisualCircuit circuit, VisualContact port, boolean alignToRight) {
-        Collection<Touchable> nodes = new HashSet<>(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualConnection.class));
-        for (VisualConnection connection : circuit.getConnections(port)) {
-            nodes.remove(connection);
-        }
-        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualCircuitComponent.class));
-        nodes.addAll(Hierarchy.getChildrenOfType(circuit.getRoot(), VisualJoint.class));
-
-        Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-        double x = TransformHelper.snapP5(alignToRight ? modelBox.getMaxX() : modelBox.getMinX());
-        double y = modelBox.getCenterY();
-        if (port.isOutput()) {
-            VisualContact driver = CircuitUtils.findDriver(circuit, port, false);
-            if (driver != null) {
-                y = driver.getRootSpaceY();
-            }
-        } else {
-            Collection<VisualContact> driven = CircuitUtils.findDriven(circuit, port, false);
-            if (driven.size() == 1) {
-                y = driven.iterator().next().getRootSpaceY();
-            } else if (!driven.isEmpty()) {
-                Point2D p = MixUtils.middleRootspacePosition(driven);
-                if (p != null) {
-                    y = TransformHelper.snapP5(p.getY());
+    public static void positionPortAtBottom(VisualCircuit circuit, VisualContact port, boolean alignToRight) {
+        Rectangle2D modelBox = circuit.getBoundingBox();
+        double x = (modelBox == null) ? 0.0 : (alignToRight ? modelBox.getMaxX() : modelBox.getMinX());
+        double y = (modelBox == null) ? 0.0 : modelBox.getCenterY();
+        boolean foundOtherPortForAlignment = false;
+        double centerX = (modelBox == null) ? 0.0 : modelBox.getCenterX();
+        for (VisualContact otherPort : circuit.getVisualPorts()) {
+            if (port != otherPort) {
+                double otherX = otherPort.getRootSpaceX();
+                if (alignToRight == (otherX > centerX)) {
+                    double otherY = otherPort.getRootSpaceY();
+                    if (!foundOtherPortForAlignment) {
+                        x = otherX;
+                        y = otherY;
+                        foundOtherPortForAlignment = true;
+                    } else {
+                        if (alignToRight == (x < otherX)) {
+                            x = otherX;
+                        }
+                        if (y < otherY) {
+                            y = otherY;
+                        }
+                    }
                 }
             }
         }
-        boolean done = false;
-        while (!done) {
-            done = true;
-            for (VisualContact otherPort : circuit.getVisualPorts()) {
-                if ((port != otherPort) && (otherPort.getRootSpacePosition().distance(x, y) < 0.1)) {
-                    y = TransformHelper.snapP5(y + 0.5);
-                    done = false;
-                }
-            }
-        }
-        port.setRootSpacePosition(new Point2D.Double(x, y));
+        port.setRootSpacePosition(new Point2D.Double(TransformHelper.snapP5(x), TransformHelper.snapP5(y + 1.0)));
     }
 
     public static void alignPortWithPin(VisualContact port, VisualContact pin, double dx) {
