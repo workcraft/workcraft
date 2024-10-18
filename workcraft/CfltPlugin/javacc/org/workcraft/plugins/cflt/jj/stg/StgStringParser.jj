@@ -15,14 +15,12 @@ import org.workcraft.plugins.cflt.node.NodeDetails;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 
 public class StgStringParser {
-    private final NodeCollection nodeCollection = NodeCollection.getInstance();
-    private int transitionCounter;
+    private NodeCollection nodeCollection = new NodeCollection();
+    private int transitionCounter = 0;
 
-    public void parse(String s) throws ParseException {
-        nodeCollection.clear();
-        InputStream is = new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8));
-        StgStringParser parser = new StgStringParser(is);
-        parser.parseOneLine();
+    public NodeCollection parse() throws ParseException {
+        this.parseOneLine();
+        return nodeCollection;
     }
 }
 PARSER_END(StgStringParser)

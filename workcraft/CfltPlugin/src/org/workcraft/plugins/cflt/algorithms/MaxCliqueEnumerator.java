@@ -8,7 +8,7 @@ import java.util.Map;
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Graph;
 
-// TODO: Remove this once a SAT Solver (or other efficient solution) is used instead of the ExhaustiveSearch
+// TODO: Remove this once a SAT Solver (or any other exact, efficient solution) is used instead of the ExhaustiveSearch
 public class MaxCliqueEnumerator {
 
     int nodeCount;
@@ -96,8 +96,8 @@ public class MaxCliqueEnumerator {
 
         for (int k = 0; k < edgesCount; k++) {
             String[] strArr = new String[2];
-            strArr[0] = g.getEdges().get(k).getFirstVertexName();
-            strArr[1] = g.getEdges().get(k).getSecondVertexName();
+            strArr[0] = g.getEdges().get(k).firstVertexName();
+            strArr[1] = g.getEdges().get(k).secondVertexName();
             int u = vertexNameToIndex.get(strArr[0]);
             int v = vertexNameToIndex.get(strArr[1]);
             Vertex vertexU = graph.get(u);

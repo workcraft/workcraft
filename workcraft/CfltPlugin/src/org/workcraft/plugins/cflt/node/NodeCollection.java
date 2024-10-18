@@ -2,8 +2,7 @@ package org.workcraft.plugins.cflt.node;
 
 import java.util.*;
 
-public final class NodeCollection {
-    private static NodeCollection instance;
+public class NodeCollection {
 
     private final List<Node> nodes;
     private final Map<String, NodeDetails> nameToNodeDetailsMap;
@@ -11,18 +10,11 @@ public final class NodeCollection {
     private boolean isIterationPresent;
     private String singleTransition;
 
-    private NodeCollection() {
+    public NodeCollection() {
         nodes = new ArrayList<>();
         isIterationPresent = false;
         nameToNodeDetailsMap = new HashMap<>();
         singleTransition = null;
-    }
-
-    public static NodeCollection getInstance() {
-        if (instance == null) {
-            instance = new NodeCollection();
-        }
-        return instance;
     }
 
     public void addNodeDetails(NodeDetails nodeDetails) {
@@ -53,19 +45,8 @@ public final class NodeCollection {
         return nameToNodeDetailsMap.get(name);
     }
 
-    public boolean removeNode(Node node) {
-        return nodes.remove(node);
-    }
-
     public List<Node> getNodes() {
         return Collections.unmodifiableList(nodes);
-    }
-
-    public void clear() {
-        nodes.clear();
-        isIterationPresent = false;
-        singleTransition = null;
-        nameToNodeDetailsMap.clear();
     }
 
     public boolean isEmpty() {

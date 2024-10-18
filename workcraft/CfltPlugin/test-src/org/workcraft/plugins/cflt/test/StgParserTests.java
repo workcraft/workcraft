@@ -185,7 +185,7 @@ class StgParserTests {
     private void parseExpression(String expressionText) throws ParseException {
         InputStream is = new ByteArrayInputStream(expressionText.getBytes(StandardCharsets.UTF_8));
         StgStringParser parser = new StgStringParser(is);
-        parser.parse(expressionText);
+        parser.parse();
     }
 
 }

@@ -4,12 +4,13 @@ import java.util.*;
 
 /**
  * A temporary class which contains more specific attributes than the regular Graph class
- * TODO: Remove this class once the SAT Solver (or any other efficient) solution is implemented
+ * TODO: Remove this class once the SAT Solver (or any other exact, efficient) solution is implemented
  */
 public class AdvancedGraph extends Graph {
 
     // All common neighbours of each of the vertices of the edge
     private final HashMap<Edge, HashSet<String>> edgeNameToAllCommonNeighbours = new HashMap<>();
+
     // Number of edges interconnecting the common (uncovered) neighbours of both vertices of the edge (excluding the edge itself)
     private final HashMap<Edge, Integer> edgeToCn = new HashMap<>();
     private final HashMap<String, Edge> allEdgeNames = new HashMap<>();
@@ -25,31 +26,34 @@ public class AdvancedGraph extends Graph {
 
     public AdvancedGraph(Graph graph, List<Clique> allMaxCliques) {
         this.allMaxCliques = allMaxCliques;
+
         for (Edge edge : graph.getEdges()) {
-            if (vertexNameToAllNeighbours.containsKey(edge.getFirstVertexName())) {
-                vertexNameToAllNeighbours.get(edge.getFirstVertexName()).add(edge.getSecondVertexName());
-                vertexNameToUncoveredNeighbours.get(edge.getFirstVertexName()).add(edge.getSecondVertexName());
-            } else {
-                vertexNameToAllNeighbours.put(edge.getFirstVertexName(), new HashSet<>());
-                vertexNameToAllNeighbours.get(edge.getFirstVertexName()).add(edge.getSecondVertexName());
-                vertexNameToUncoveredNeighbours.put(edge.getFirstVertexName(), new HashSet<>());
-                vertexNameToUncoveredNeighbours.get(edge.getFirstVertexName()).add(edge.getSecondVertexName());
+            String firstVertexName = edge.firstVertexName();
+            String secondVertexName = edge.secondVertexName();
+
+            if (!vertexNameToAllNeighbours.containsKey(firstVertexName)) {
+                vertexNameToAllNeighbours.put(firstVertexName, new HashSet<>());
+                vertexNameToUncoveredNeighbours.put(firstVertexName, new HashSet<>());
             }
-            if (vertexNameToAllNeighbours.containsKey(edge.getSecondVertexName())) {
-                vertexNameToAllNeighbours.get(edge.getSecondVertexName()).add(edge.getFirstVertexName());
-                vertexNameToUncoveredNeighbours.get(edge.getSecondVertexName()).add(edge.getFirstVertexName());
-            } else {
-                vertexNameToAllNeighbours.put(edge.getSecondVertexName(), new HashSet<>());
-                vertexNameToAllNeighbours.get(edge.getSecondVertexName()).add(edge.getFirstVertexName());
-                vertexNameToUncoveredNeighbours.put(edge.getSecondVertexName(), new HashSet<>());
-                vertexNameToUncoveredNeighbours.get(edge.getSecondVertexName()).add(edge.getFirstVertexName());
+            vertexNameToAllNeighbours.get(firstVertexName).add(secondVertexName);
+            vertexNameToUncoveredNeighbours.get(firstVertexName).add(secondVertexName);
+
+            if (!vertexNameToAllNeighbours.containsKey(secondVertexName)) {
+                vertexNameToAllNeighbours.put(secondVertexName, new HashSet<>());
+                vertexNameToUncoveredNeighbours.put(secondVertexName, new HashSet<>());
             }
-            allEdgeNames.put(edge.getFirstVertexName() + edge.getSecondVertexName(), edge);
+            vertexNameToAllNeighbours.get(secondVertexName).add(firstVertexName);
+            vertexNameToUncoveredNeighbours.get(secondVertexName).add(firstVertexName);
+
+            allEdgeNames.put(firstVertexName + secondVertexName, edge);
         }
 
         for (Edge edge : graph.getEdges()) {
-            Set<String> firstVertexNeighbours = vertexNameToAllNeighbours.getOrDefault(edge.getFirstVertexName(), new HashSet<>());
-            Set<String> secondVertexNeighbours = vertexNameToAllNeighbours.getOrDefault(edge.getSecondVertexName(), new HashSet<>());
+            String firstVertexName = edge.firstVertexName();
+            String secondVertexName = edge.secondVertexName();
+
+            Set<String> firstVertexNeighbours = vertexNameToAllNeighbours.getOrDefault(firstVertexName, new HashSet<>());
+            Set<String> secondVertexNeighbours = vertexNameToAllNeighbours.getOrDefault(secondVertexName, new HashSet<>());
 
             HashSet<String> commonNeighbours = new HashSet<>(firstVertexNeighbours);
             commonNeighbours.retainAll(secondVertexNeighbours);
@@ -60,7 +64,8 @@ public class AdvancedGraph extends Graph {
 
     // Getting the edge with the highest number of uncovered interconnecting edges in it's closed neighbourhood
     public Edge getNextEdge() {
-        return edgeToCn.entrySet().stream()
+        return edgeToCn.entrySet()
+                .stream()
                 .filter(entry -> !coveredEdges.contains(entry.getKey()))
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
@@ -81,16 +86,23 @@ public class AdvancedGraph extends Graph {
         List<Clique> cliques = new ArrayList<>();
         HashSet<String> commonNeighbours = edgeNameToAllCommonNeighbours.get(edge);
 
+        String firstVertexName = edge.firstVertexName();
+        String secondVertexName = edge.secondVertexName();
+
         if ((commonNeighbours == null) || commonNeighbours.isEmpty()) {
             Clique clique = new Clique();
-            clique.addVertexName(edge.getFirstVertexName());
-            clique.addVertexName(edge.getSecondVertexName());
+            clique.addVertexName(firstVertexName);
+            clique.addVertexName(secondVertexName);
             cliques.add(clique);
         } else {
             for (Clique maxClique : allMaxCliques) {
-                if (maxClique.getVertexNames().contains(edge.getFirstVertexName())
-                        && maxClique.getVertexNames().contains(edge.getSecondVertexName())) {
-                    HashSet<String> usedVertexNameSet = new HashSet<>(maxClique.getVertexNames());
+                var vertexNames = maxClique.getVertexNames();
+                boolean hasFirstVertex = vertexNames.contains(edge.firstVertexName());
+                boolean hasSecondVertex = vertexNames.contains(edge.secondVertexName());
+
+                if (hasFirstVertex && hasSecondVertex) {
+                    HashSet<String> usedVertexNameSet = new HashSet<>(vertexNames);
+
                     if (!usedVertexNameSets.contains(usedVertexNameSet)) {
                         cliques.add(maxClique);
                         usedVertexNameSets.add(usedVertexNameSet);
@@ -103,33 +115,40 @@ public class AdvancedGraph extends Graph {
 
     private void updateSets(List<Clique> edgeCliqueCover) {
         coveredEdges = new HashSet<>();
-        for (Clique clique : edgeCliqueCover) {
-            for (String firstVertex : clique.getVertexNames()) {
-                for (String secondVertex : clique.getVertexNames()) {
-                    if (!firstVertex.equals(secondVertex)) {
-                        if (allEdgeNames.containsKey(firstVertex + secondVertex)) {
-                            coveredEdges.add(allEdgeNames.get(firstVertex + secondVertex));
-                        }
-                        if (allEdgeNames.containsKey(secondVertex + firstVertex)) {
-                            coveredEdges.add(allEdgeNames.get(secondVertex + firstVertex));
-                        }
-                        if (vertexNameToUncoveredNeighbours.get(firstVertex) != null) {
-                            vertexNameToUncoveredNeighbours.get(firstVertex).remove(secondVertex);
-                        }
-                        if (vertexNameToUncoveredNeighbours.get(secondVertex) != null) {
-                            vertexNameToUncoveredNeighbours.get(secondVertex).remove(firstVertex);
-                        }
+        edgeCliqueCover.forEach(this::updateCoveredEdges);
+        updateUncoveredCommonNeighbours();
+    }
+
+    private void updateCoveredEdges(Clique clique) {
+        for (String firstVertex : clique.getVertexNames()) {
+            for (String secondVertex : clique.getVertexNames()) {
+                if (!firstVertex.equals(secondVertex)) {
+
+                    String edgeName1 = firstVertex + secondVertex;
+                    String edgeName2 = secondVertex + firstVertex;
+
+                    if (allEdgeNames.containsKey(edgeName1)) {
+                        coveredEdges.add(allEdgeNames.get(edgeName1));
                     }
+                    if (allEdgeNames.containsKey(edgeName2)) {
+                        coveredEdges.add(allEdgeNames.get(edgeName2));
+                    }
+
+                    var v1UncoveredNeighbours = vertexNameToUncoveredNeighbours.get(firstVertex);
+                    if (v1UncoveredNeighbours != null) v1UncoveredNeighbours.remove(secondVertex);
+
+                    var v2UncoveredNeighbours = vertexNameToUncoveredNeighbours.get(secondVertex);
+                    if (v2UncoveredNeighbours != null) v2UncoveredNeighbours.remove(firstVertex);
                 }
             }
         }
-        updateUncoveredCommonNeighbours();
     }
 
     private void updateUncoveredCommonNeighbours() {
         for (HashMap.Entry<String, Edge> entry : allEdgeNames.entrySet()) {
-            String firstVertex = entry.getValue().getFirstVertexName();
-            String secondVertex = entry.getValue().getSecondVertexName();
+
+            String firstVertex = entry.getValue().firstVertexName();
+            String secondVertex = entry.getValue().secondVertexName();
 
             Set<String> commonNeighbours = new HashSet<>(vertexNameToAllNeighbours.getOrDefault(firstVertex, new HashSet<>()));
             commonNeighbours.retainAll(vertexNameToUncoveredNeighbours.getOrDefault(secondVertex, new HashSet<>()));
@@ -143,14 +162,13 @@ public class AdvancedGraph extends Graph {
         int count = 0;
         for (String firstNeighbour : commonNeighbours) {
             for (String secondNeighbour : commonNeighbours) {
-                if (!firstNeighbour.equals(secondNeighbour) &&
-                        (allEdgeNames.containsKey(firstNeighbour + secondNeighbour) ||
-                                allEdgeNames.containsKey(secondNeighbour + firstNeighbour))) {
-                    count++;
-                }
+                boolean areEqual = firstNeighbour.equals(secondNeighbour);
+                boolean isV1V2Present = allEdgeNames.containsKey(firstNeighbour + secondNeighbour);
+                boolean isV2V1Present = allEdgeNames.containsKey(secondNeighbour + firstNeighbour);
+
+                if (!areEqual && (isV1V2Present || isV2V1Present)) count++;
             }
         }
-
         count = (count / 2) + (commonNeighbours.size() * 2);
         return count;
     }
