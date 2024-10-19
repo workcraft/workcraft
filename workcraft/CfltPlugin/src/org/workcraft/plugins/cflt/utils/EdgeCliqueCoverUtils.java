@@ -31,7 +31,7 @@ public final class EdgeCliqueCoverUtils {
         case FAST_SEQ -> heuristic.getEdgeCliqueCover(initialGraph, optionalEdges, HeuristicType.SEQUENCE);
         case FAST_MAX -> heuristic.getEdgeCliqueCover(initialGraph, optionalEdges, HeuristicType.MAXIMAL);
         case FAST_MIN -> heuristic.getEdgeCliqueCover(initialGraph, optionalEdges, HeuristicType.MINIMAL);
-        default -> new ArrayList<>();
+        default -> throw new RuntimeException("Unsupported mode: " + mode);
         };
     }
 }

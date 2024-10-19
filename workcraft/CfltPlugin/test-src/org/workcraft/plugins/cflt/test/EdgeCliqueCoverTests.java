@@ -51,13 +51,16 @@ class EdgeCliqueCoverTests {
     }
 
     private boolean areCliquesMaxSize(List<Clique> edgeCliqueCover, int requiredSize) {
-        return edgeCliqueCover.stream()
+        return edgeCliqueCover
+                .stream()
                 .allMatch(clique -> clique.getVertexNames().size() == requiredSize);
     }
 
     private boolean doesCover(List<Clique> edgeCliqueCover, Graph graph) {
-        Set<String> vertexNames = edgeCliqueCover.stream()
-                .flatMap(clique -> clique.getVertexNames().stream())
+        Set<String> vertexNames = edgeCliqueCover
+                .stream()
+                .flatMap(clique -> clique.getVertexNames()
+                        .stream())
                 .collect(Collectors.toSet());
 
         return vertexNames.containsAll(graph.getVertexNames());
