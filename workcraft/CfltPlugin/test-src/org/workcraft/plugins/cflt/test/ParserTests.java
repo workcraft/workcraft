@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.plugins.cflt.node.Node;
 import org.workcraft.plugins.cflt.node.NodeCollection;
+import org.workcraft.plugins.cflt.node.NodeDetails;
 import org.workcraft.plugins.cflt.node.Operator;
 import org.workcraft.plugins.cflt.jj.petri.ParseException;
 import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
 import org.workcraft.plugins.cflt.jj.petri.TokenMgrError;
-import org.workcraft.utils.DialogUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -26,34 +26,34 @@ class ParserTests {
 
         try {
             nodeCollection = parser.parse();
-        } catch (ParseException e) {
-            DialogUtils.showError(e.getMessage(), "Parse Exception");
-            e.printStackTrace();
-        } catch (TokenMgrError e) {
-            DialogUtils.showError(e.getMessage(), "Error");
+        } catch (ParseException | TokenMgrError e) {
             e.printStackTrace();
         }
 
         assert nodeCollection != null;
         List<Node> nodes = nodeCollection.getNodes();
 
-        Assertions.assertEquals("E", nodeCollection.getNodeDetails(nodes.get(0).leftChildName()).getLabel());
-        Assertions.assertEquals(Operator.ITERATION, nodes.get(0).operator());
+        String[] leftLabels = {"E", "D", "C", "B", "A"};
+        String[] rightLabels = {"E", "E", "D", "C", "B"};
+        Operator[] operators = {
+                Operator.ITERATION,
+                Operator.CONCURRENCY,
+                Operator.SEQUENCE,
+                Operator.CHOICE,
+                Operator.CONCURRENCY,
+        };
 
-        Assertions.assertEquals("D", nodeCollection.getNodeDetails(nodes.get(1).leftChildName()).getLabel());
-        Assertions.assertEquals("E", nodeCollection.getNodeDetails(nodes.get(1).rightChildName()).getLabel());
-        Assertions.assertEquals(Operator.CONCURRENCY, nodes.get(1).operator());
+        for (int i = 0; i < nodes.size(); i++) {
+            String leftChildName = nodes.get(i).leftChildName();
+            String rightChildName = nodes.get(i).rightChildName();
 
-        Assertions.assertEquals("C", nodeCollection.getNodeDetails(nodes.get(2).leftChildName()).getLabel());
-        Assertions.assertEquals("D", nodeCollection.getNodeDetails(nodes.get(2).rightChildName()).getLabel());
-        Assertions.assertEquals(Operator.SEQUENCE, nodes.get(2).operator());
+            NodeDetails leftChildNodeDetails = nodeCollection.getNodeDetails(leftChildName);
+            NodeDetails rightChildNodeDetails = nodeCollection.getNodeDetails(rightChildName);
 
-        Assertions.assertEquals("B", nodeCollection.getNodeDetails(nodes.get(3).leftChildName()).getLabel());
-        Assertions.assertEquals("C", nodeCollection.getNodeDetails(nodes.get(3).rightChildName()).getLabel());
-        Assertions.assertEquals(Operator.CHOICE, nodes.get(3).operator());
+            Assertions.assertEquals(leftLabels[i], leftChildNodeDetails.getLabel());
+            Assertions.assertEquals(rightLabels[i], rightChildNodeDetails.getLabel());
+            Assertions.assertEquals(operators[i], nodes.get(i).operator());
+        }
 
-        Assertions.assertEquals("A", nodeCollection.getNodeDetails(nodes.get(4).leftChildName()).getLabel());
-        Assertions.assertEquals("B", nodeCollection.getNodeDetails(nodes.get(4).rightChildName()).getLabel());
-        Assertions.assertEquals(Operator.CONCURRENCY, nodes.get(4).operator());
     }
 }

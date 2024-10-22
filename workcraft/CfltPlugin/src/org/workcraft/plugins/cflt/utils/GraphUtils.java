@@ -38,4 +38,16 @@ public final class GraphUtils {
 
         return newGraph;
     }
+
+    public static GetCleanVertexNameResponse getCleanVertexName(String vertexName) {
+        int index = vertexName.indexOf(SPECIAL_CLONE_CHARACTER);
+        boolean isClone = index != -1;
+        String cleanVertexName = isClone
+                ? vertexName.substring(0, index)
+                : vertexName;
+        return new GetCleanVertexNameResponse(cleanVertexName, isClone);
+    }
+
+    public record GetCleanVertexNameResponse(String vertexName, boolean isClone) {
+    }
 }

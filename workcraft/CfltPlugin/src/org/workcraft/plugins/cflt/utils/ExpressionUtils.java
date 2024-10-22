@@ -82,13 +82,8 @@ public final class ExpressionUtils {
         var nodeCollection = response.nodeCollection;
         checkMode(mode);
         checkIteration(mode, nodeCollection);
-        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool(nodeCollection);
-
-        if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
-            nodeTraversalTool.drawSingleTransition(model, we);
-        } else {
-            nodeTraversalTool.drawInterpretedGraph(mode, model, we);
-        }
+        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool(nodeCollection, model);
+        nodeTraversalTool.drawInterpretedGraph(mode, model, we);
         return true;
     }
 

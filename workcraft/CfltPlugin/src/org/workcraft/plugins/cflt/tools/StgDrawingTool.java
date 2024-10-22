@@ -19,9 +19,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.*;
 
 import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.getEdgeCliqueCover;
-import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
+import static org.workcraft.plugins.cflt.utils.GraphUtils.getCleanVertexName;
 
-public class StgDrawingTool {
+public class StgDrawingTool implements VisualModelDrawingTool {
     private final Map<String, VisualSignalTransition> transitionNameToVisualTransition = new HashMap<>();
     private final NodeCollection nodeCollection;
 
@@ -29,21 +29,24 @@ public class StgDrawingTool {
         this.nodeCollection = nodeCollection;
     }
 
-    public void drawStg(Graph inputGraph, Graph outputGraph,
+    @Override
+    public void drawVisualObjects(Graph inputGraph, Graph outputGraph,
             boolean isSequence, boolean isRoot, Mode mode, WorkspaceEntry we) {
-        VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
         var edgeCliqueCover = getEdgeCliqueCover(inputGraph, outputGraph, isSequence, mode);
-
         List<String> vertexNames = isSequence
                 ? inputGraph.getVertexNames()
                 : new ArrayList<>();
         HashSet<String> inputVertexNames = new HashSet<>(vertexNames);
 
-        this.drawIsolatedVisualObjects(inputGraph, visualStg, isSequence, isRoot);
+        VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
+        if (inputGraph.getIsolatedVertices() != null) {
+            this.drawIsolatedVisualObjects(inputGraph, visualStg, isSequence, isRoot);
+        }
         this.drawRemainingVisualObjects(edgeCliqueCover, visualStg, inputVertexNames, isRoot);
         makePlacesImplicit(visualStg);
     }
 
+    @Override
     public void drawSingleTransition(String name, WorkspaceEntry we) {
         VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
         VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.LEFT);
@@ -53,15 +56,13 @@ public class StgDrawingTool {
 
     private void drawRemainingVisualObjects(List<Clique> edgeCliqueCover, VisualStg visualStg,
             Set<String> inputVertexNames, boolean isRoot) {
-
         for (Clique clique : edgeCliqueCover) {
             VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, isRoot, Positioning.LEFT);
 
             for (String vertexName : clique.getVertexNames()) {
-                boolean isClone = vertexName.contains(SPECIAL_CLONE_CHARACTER);
-                String cleanVertexName = isClone
-                        ? vertexName.split(SPECIAL_CLONE_CHARACTER, 2)[0]
-                        : vertexName;
+                var getCleanVertexNameResponse = getCleanVertexName(vertexName);
+                String cleanVertexName = getCleanVertexNameResponse.vertexName();
+                boolean isClone = getCleanVertexNameResponse.isClone();
                 boolean isTransitionPresent = transitionNameToVisualTransition.containsKey(cleanVertexName);
 
                 VisualSignalTransition visualSignalTransition = isTransitionPresent
@@ -80,28 +81,26 @@ public class StgDrawingTool {
     }
 
     private void drawIsolatedVisualObjects(Graph inputGraph, VisualStg visualStg, boolean isSequence, boolean isRoot) {
-        if (inputGraph.getIsolatedVertices() != null) {
-            for (String vertex : inputGraph.getIsolatedVertices()) {
-                boolean isTransitionNamePresent = transitionNameToVisualTransition.containsKey(vertex);
+        for (String vertex : inputGraph.getIsolatedVertices()) {
+            boolean isTransitionNamePresent = transitionNameToVisualTransition.containsKey(vertex);
 
-                VisualStgPlace visualStgPlace = null;
-                if (!isTransitionNamePresent && !isSequence) {
-                    visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.LEFT);
-                } else if (isRoot) {
-                    visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.TOP);
-                }
+            VisualStgPlace visualStgPlace = null;
+            if (!isTransitionNamePresent && !isSequence) {
+                visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.LEFT);
+            } else if (isRoot) {
+                visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.TOP);
+            }
 
-                VisualSignalTransition visualSignalTransition = null;
-                if (!isTransitionNamePresent && !isSequence) {
-                    visualSignalTransition = createVisualSignalTransition(visualStg, vertex);
-                } else if (isRoot) {
-                    visualSignalTransition = transitionNameToVisualTransition.get(vertex);
-                }
+            VisualSignalTransition visualSignalTransition = null;
+            if (!isTransitionNamePresent && !isSequence) {
+                visualSignalTransition = createVisualSignalTransition(visualStg, vertex);
+            } else if (isRoot) {
+                visualSignalTransition = transitionNameToVisualTransition.get(vertex);
+            }
 
-                if (visualStgPlace != null && visualSignalTransition != null) {
-                    transitionNameToVisualTransition.put(vertex, visualSignalTransition);
-                    connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
-                }
+            if (visualStgPlace != null && visualSignalTransition != null) {
+                transitionNameToVisualTransition.put(vertex, visualSignalTransition);
+                connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
             }
         }
     }

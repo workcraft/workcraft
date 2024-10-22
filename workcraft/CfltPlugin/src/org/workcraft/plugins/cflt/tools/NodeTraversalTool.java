@@ -19,25 +19,20 @@ public class NodeTraversalTool {
     HashMap<String, Graph> entryGraph = new HashMap<>();
     HashMap<String, Graph> exitGraph = new HashMap<>();
 
-    PetriDrawingTool petriDrawingTool;
-    StgDrawingTool stgDrawingTool;
+    VisualModelDrawingTool visualModelDrawingTool;
 
-    public NodeTraversalTool(NodeCollection nodeCollection) {
+    public NodeTraversalTool(NodeCollection nodeCollection, Model model) {
         this.nodeCollection = nodeCollection;
-        petriDrawingTool = new PetriDrawingTool(nodeCollection);
-        stgDrawingTool = new StgDrawingTool(nodeCollection);
-    }
-
-    public void drawSingleTransition(Model model, WorkspaceEntry we) {
-        switch (model) {
-        case PETRI_NET -> petriDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition(), we);
-        case STG -> stgDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition(), we);
-        }
+        if (model == Model.PETRI_NET) visualModelDrawingTool = new PetriDrawingTool(nodeCollection);
+        if (model == Model.STG) visualModelDrawingTool = new StgDrawingTool(nodeCollection);
     }
 
     public void drawInterpretedGraph(Mode mode, Model model, WorkspaceEntry we) {
-        NodeIterator nodeIterator = nodeCollection.getNodeIterator();
+        if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
+            drawSingleTransition(we);
+        }
 
+        NodeIterator nodeIterator = nodeCollection.getNodeIterator();
         while (nodeIterator.hasNext()) {
             Node node = nodeIterator.next();
 
@@ -53,17 +48,18 @@ public class NodeTraversalTool {
             switch (operator) {
             case CONCURRENCY -> this.handleConcurrency(leftChildName, rightChildName);
             case CHOICE -> this.handleChoice(leftChildName, rightChildName);
-            case SEQUENCE -> this.handleSequence(leftChildName, rightChildName, model, mode, we);
+            case SEQUENCE -> this.handleSequence(leftChildName, rightChildName, mode, we);
             case ITERATION -> this.handleIteration(leftChildName, nodeIterator.getCurrentPosition());
             }
 
             if (nodeIterator.isLastNode()) {
-                switch (model) {
-                case PETRI_NET -> petriDrawingTool.drawPetri(entryGraph.get(leftChildName), new Graph(), false, true, mode, we);
-                case STG -> stgDrawingTool.drawStg(entryGraph.get(leftChildName), new Graph(), false, true, mode, we);
-                }
+                visualModelDrawingTool.drawVisualObjects(entryGraph.get(leftChildName), new Graph(), false, true, mode, we);
             }
         }
+    }
+
+    private void drawSingleTransition(WorkspaceEntry we) {
+        visualModelDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition(), we);
     }
 
     private void ensureGraphContainsVertex(Map<String, Graph> graphNameToGraph, String vertexName) {
@@ -97,14 +93,11 @@ public class NodeTraversalTool {
         exitGraph.replace(leftChildName, newExitGraph);
     }
 
-    private void handleSequence(String leftChildName, String rightChildName, Model model, Mode mode, WorkspaceEntry we) {
+    private void handleSequence(String leftChildName, String rightChildName, Mode mode, WorkspaceEntry we) {
         Graph leftExitGraph = exitGraph.get(leftChildName);
         Graph righEntryGraph = entryGraph.get(rightChildName);
-        switch (model) {
-        case PETRI_NET -> petriDrawingTool.drawPetri(leftExitGraph, righEntryGraph, true, false, mode, we);
-        case STG -> stgDrawingTool.drawStg(leftExitGraph, righEntryGraph, true, false, mode, we);
-        }
         exitGraph.replace(leftChildName, exitGraph.get(rightChildName));
+        visualModelDrawingTool.drawVisualObjects(leftExitGraph, righEntryGraph, true, false, mode, we);
     }
 
     private void handleIteration(String leftChildName, int nodeCounter) {
