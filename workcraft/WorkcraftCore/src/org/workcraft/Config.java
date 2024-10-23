@@ -212,7 +212,7 @@ public class Config {
             if (vars != null) {
                 Element group = doc.createElement(GROUP_ELEMENT_NAME);
                 group.setAttribute(NAME_ATTRIBUTE_NAME, groupName);
-                Set<String> orderedVarNames = vars.keySet();
+                List<String> orderedVarNames = SortUtils.getSortedNatural(vars.keySet());
                 for (String name : orderedVarNames) {
                     saveVarElement(doc, group, name, vars.get(name));
                 }
