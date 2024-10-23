@@ -598,6 +598,8 @@ public final class GateUtils {
                     insertGateAfter(circuit, newInverter, outputPin, 1.5);
                     result = newInverter.getGateOutput();
                     result.setInitToOne(initToOne);
+                    result.getReferencedComponent().setPathBreaker(outputPin.getReferencedComponent().getPathBreaker());
+                    outputPin.getReferencedComponent().setPathBreaker(false);
                 }
                 outputPin.setInitToOne(!initToOne);
                 setFunction = FormulaUtils.invert(setFunction);
