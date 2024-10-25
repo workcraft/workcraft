@@ -14,8 +14,8 @@ If extra ~10MB and several unnecessary dependencies are not a problem,
 then Batik and FOP transcoders can be included via Gradle in
 dependencies section of WorkcraftCore\build.gradle as follows:
 
-    lib 'org.apache.xmlgraphics:batik-transcoder:1.17'
-    lib 'org.apache.xmlgraphics:fop-transcoder:2.9'
+    lib 'org.apache.xmlgraphics:batik-transcoder:1.18'
+    lib 'org.apache.xmlgraphics:fop-transcoder:2.10'
 
 
 ## Dependency analysis
@@ -94,9 +94,11 @@ functionality of Workcraft.
   * batik-js
   * batik-rasterizer
   * batik-rasterizer-ext
+  * batik-shared-resources (since v1.18)
   * batik-slideshow
   * batik-squiggle
   * batik-squiggle-ext
+  * batik-svgbrowser (since v1.18)
   * batik-svgpp
   * batik-svgrasterizer
   * batik-swing
@@ -105,5 +107,8 @@ functionality of Workcraft.
   * batik-test-svg
   * batik-test-swing
   * batic-ttf2svg
+  * batik-util-*-tests  (since v1.18)
   * fop-pdf-images
+  * rhino (since v1.18)
+  * serialiser (since v1.18)
   * xml-apis  -- there is still run-time dependency on xml-apis-ext
