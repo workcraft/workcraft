@@ -30,7 +30,7 @@ public class Circuit extends AbstractMathModel {
 
     public Circuit(Container root, References refs) {
         super(root, new CircuitReferenceManager(refs));
-        new FunctionConsistencySupervisor().attach(getRoot());
+        new FunctionConsistencySupervisor(this).attach(getRoot());
         new ZeroDelayConsistencySupervisor(this).attach(getRoot());
         new IOTypeConsistencySupervisor(this).attach(getRoot());
     }

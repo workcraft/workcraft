@@ -1,14 +1,15 @@
 package org.workcraft.plugins.circuit.observers;
 
-import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.StructureUtils;
-
-import java.util.Set;
+import org.workcraft.plugins.circuit.utils.ZeroDelayUtils;
 
 public class ZeroDelayConsistencySupervisor extends StateSupervisor {
 
@@ -24,11 +25,6 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
-            if ((sender instanceof FunctionContact)
-                    && (propertyName.equals(FunctionContact.PROPERTY_FUNCTION))) {
-
-                handleFunctionChange((FunctionContact) sender);
-            }
             if ((sender instanceof FunctionComponent)
                     && propertyName.equals(FunctionComponent.PROPERTY_IS_ZERO_DELAY)) {
 
@@ -42,54 +38,38 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
         }
     }
 
-    private void handleFunctionChange(FunctionContact contact) {
-        Node parent = contact.getParent();
-        if (parent instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent) parent;
-            component.setIsZeroDelay(false);
-        }
-    }
-
     private void handleZeroDelayChange(FunctionComponent component) {
         if (component.getIsZeroDelay()) {
-            for (Contact contact : component.getOutputs()) {
-                contact.setForcedInit(false);
-                contact.setPathBreaker(false);
-            }
+            String componentRef = circuit.getComponentReference(component);
+            String messagePrefix = "Component '" + componentRef + "' cannot be zero delay because ";
             if (!component.isInverter() && !component.isBuffer()) {
                 component.setIsZeroDelay(false);
-                throw new ArgumentException("Only inverters and buffers can be zero delay.");
+                throw new ArgumentException(messagePrefix + "it is neither inverters nor buffers.");
             }
-            Set<CircuitComponent> componentPreset = StructureUtils.getPresetComponents(circuit, component);
-            for (CircuitComponent predComponent: componentPreset) {
-                if (predComponent instanceof FunctionComponent) {
-                    FunctionComponent predFunctionComponent = (FunctionComponent) predComponent;
-                    if (predFunctionComponent.getIsZeroDelay()) {
-                        component.setIsZeroDelay(false);
-                        throw new ArgumentException("Zero delay components cannot be connected to each other.");
-                    }
-                }
-            }
-            Set<CircuitComponent> componentPostset = StructureUtils.getPostsetComponents(circuit, component);
-            for (CircuitComponent succComponent: componentPostset) {
-                if (succComponent instanceof FunctionComponent) {
-                    FunctionComponent succFunctionComponent = (FunctionComponent) succComponent;
-                    if (succFunctionComponent.getIsZeroDelay()) {
-                        component.setIsZeroDelay(false);
-                        throw new ArgumentException("Zero delay components cannot be connected to each other.");
-                    }
-                }
-            }
-            Set<Contact> portPostset = StructureUtils.getPostsetPorts(circuit, component);
-            for (Contact succContact: portPostset) {
-                if (succContact.isPort()) {
-                    component.setIsZeroDelay(false);
-                    throw new ArgumentException("A component connected to an output port cannot be zero delay.");
-                }
-            }
-            if (componentPostset.size() + portPostset.size() > 1) {
+            if (StructureUtils.hasSelfLoop(circuit, component)) {
                 component.setIsZeroDelay(false);
-                throw new ArgumentException("A component with a fork at its output cannot be zero delay.");
+                throw new ArgumentException(messagePrefix + "has self-loop.");
+            }
+            if (ZeroDelayUtils.hasAdjacentOtherZeroDelayComponent(circuit, component)) {
+                component.setIsZeroDelay(false);
+                throw new ArgumentException(messagePrefix + "it is connected to another zero delay component.");
+            }
+            if (ZeroDelayUtils.hasDrivenHierarchicalComponent(circuit, component)) {
+                component.setIsZeroDelay(false);
+                throw new ArgumentException(messagePrefix + "it drives hierarchical component.");
+            }
+            if (!StructureUtils.getPostsetPorts(circuit, component).isEmpty()) {
+                component.setIsZeroDelay(false);
+                throw new ArgumentException(messagePrefix + "it drives output port.");
+            }
+            if (CircuitUtils.findDriven(circuit, component.getGateOutput(), false).size() > 1) {
+                component.setIsZeroDelay(false);
+                throw new ArgumentException(messagePrefix + "it has fork at its output.");
+            }
+            for (Contact contact : component.getOutputs()) {
+                // Zero delay component cannot be ForceInit or PathBreaker
+                contact.setForcedInit(false);
+                contact.setPathBreaker(false);
             }
         }
     }

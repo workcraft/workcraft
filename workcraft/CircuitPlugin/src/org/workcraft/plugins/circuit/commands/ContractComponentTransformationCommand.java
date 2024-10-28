@@ -78,7 +78,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
 
     private boolean isValidContraction(VisualCircuit circuit, VisualCircuitComponent component) {
         Collection<VisualContact> inputContacts = component.getVisualInputs();
-        String componentName = circuit.getMathName(component);
+        String componentName = circuit.getMathModel().getComponentReference(component.getReferencedComponent());
         if (inputContacts.size() > 2) {
             LogUtils.logError("Cannot contract component '" + componentName + "' with " + inputContacts.size() + " inputs.");
             return false;

@@ -56,7 +56,9 @@ public class VisualCircuitComponent extends VisualComponent
                 this::setIsEnvironment, this::getIsEnvironment).setCombinable().setTemplatable());
 
         // TODO: Rename label to module name (?)
-        //  renamePropertyDeclarationByName(PROPERTY_LABEL, CircuitComponent.PROPERTY_MODULE);
+        //renamePropertyDeclarationByName(PROPERTY_LABEL, "Module name");
+        //renamePropertyDeclarationByName(PROPERTY_LABEL_COLOR, "Module name color");
+        //renamePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING, "Module name positioning");
     }
 
     @Override

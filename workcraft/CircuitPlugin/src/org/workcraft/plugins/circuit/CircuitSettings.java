@@ -242,7 +242,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getContactFontSize));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Show names of zero-delay components",
+                PropertyHelper.BULLET_PREFIX + "Show names of zero delay components",
                 CircuitSettings::setShowZeroDelayNames,
                 CircuitSettings::getShowZeroDelayNames));
 
