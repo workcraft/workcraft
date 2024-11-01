@@ -34,7 +34,7 @@ public class GenlibUtils {
             try {
                 circuit.setName(component, instanceName);
             } catch (ArgumentException e) {
-                String componentName = circuit.getName(component);
+                String componentName = circuit.getComponentReference(component);
                 LogUtils.logWarning("Cannot set name '" + instanceName + "' for component '" + componentName + "'");
             }
         }

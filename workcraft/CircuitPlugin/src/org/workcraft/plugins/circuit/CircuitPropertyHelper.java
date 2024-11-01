@@ -211,23 +211,12 @@ public class CircuitPropertyHelper {
             if (answer == 0) {
                 RefinementUtils.updateInitialState(component.getReferencedComponent(), refinementOutputInitialState);
             }
-
         }
 
         Set<String> constrainedPins = RefinementUtils.getConstrainedPins(component);
         if (!constrainedPins.isEmpty()) {
-            String message = "Component has constrained pins that may conflict with the refinement model."
-                    + "\n\nRemove set/reset functions for the component pins?";
-
-            int answer = DialogUtils.showYesNoCancel(message, title);
-            if (answer == 2) {
-                return;
-            }
-            if (answer == 0) {
-                RefinementUtils.removeComponentFunctions(component);
-            }
+            RefinementUtils.removeComponentFunctions(component);
         }
-
         component.getReferencedComponent().setRefinement(value);
     }
 

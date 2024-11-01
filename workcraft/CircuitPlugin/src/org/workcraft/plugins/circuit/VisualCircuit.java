@@ -122,37 +122,80 @@ public class VisualCircuit extends AbstractVisualModel {
         if (secondNode == null) {
             throw new InvalidConnectionException("Cannot detect connection destination.");
         }
+
         Circuit circuit = getMathModel();
+        Collection<Contact> newDrivenSet = CircuitUtils.findDriven(circuit, secondNode, false);
         Contact driver = CircuitUtils.findDriver(circuit, firstNode, false);
-        Set<Contact> drivenSet = new HashSet<>(CircuitUtils.findDriven(circuit, secondNode, false));
-        // Forbid zero-delay component to drive another zero-delay component or output port
+        Collection<Contact> existingDrivenSet = (driver == null)
+                ? CircuitUtils.findDriven(circuit, firstNode, false)
+                : CircuitUtils.findDriven(circuit, driver, false);
+
+        // Math connection may already be present in the model, e.g. when a default visual layer is created for existing
+        // math model via createDefaultStructure. Therefore, newDrivenSet should be subtracted from existingDrivenSet.
+        existingDrivenSet.removeAll(newDrivenSet);
+
+        // Forbid zero delay component to drive another zero delay component or output port
         if ((driver != null) && (driver.isZeroDelayPin())) {
-            for (Contact driven : drivenSet) {
-                if (driven.isZeroDelayPin()) {
-                    throw new InvalidConnectionException("Zero delay components cannot drive each other.");
-                }
-                if (driven.isOutput() && driven.isPort()) {
-                    throw new InvalidConnectionException("Zero delay component cannot drive output port.");
-                }
+            if (!existingDrivenSet.isEmpty() || newDrivenSet.size() > 1) {
+                throw new InvalidConnectionException("Zero delay component cannot have a fork on its output.");
+            }
+            Contact newDriven = newDrivenSet.iterator().next();
+            if ((newDriven != null) && newDriven.isZeroDelayPin()) {
+                throw new InvalidConnectionException("Zero delay components cannot drive each other.");
+            }
+            if ((newDriven != null) && newDriven.isOutput() && newDriven.isPort()) {
+                throw new InvalidConnectionException("Zero delay component cannot drive output port.");
+            }
+            if ((newDriven != null) && !newDriven.isCellPin()) {
+                throw new InvalidConnectionException("Zero delay components cannot drive hierarchical components.");
             }
         }
+
         // Forbid input port to drive output port (zero delay components are forbidden to drive output ports)
         if ((driver != null) && driver.isInput() && driver.isPort()) {
-            for (Contact driven : drivenSet) {
+            for (Contact driven : newDrivenSet) {
                 if (driven.isOutput() && driven.isPort()) {
                     throw new InvalidConnectionException("Input port cannot drive output port.");
                 }
             }
         }
+
         // Forbid fork to several output ports (zero delay components are forbidden to drive output ports)
-        drivenSet.addAll(CircuitUtils.findDriven(circuit, firstNode, false));
+        Set<Contact> combinedDrivenSet = new HashSet<>(existingDrivenSet);
+        combinedDrivenSet.addAll(newDrivenSet);
         int outputPortCount = 0;
-        for (Contact driven : drivenSet) {
+        for (Contact driven : combinedDrivenSet) {
             if (driven.isOutput() && driven.isPort()) {
                 if (outputPortCount > 0) {
-                    throw new InvalidConnectionException("Fork several output ports is not allowed.");
+                    throw new InvalidConnectionException("Fork to several output ports is not allowed.");
                 }
                 outputPortCount++;
+            }
+        }
+
+        // Forbid self-loops on hierarchical components
+        if ((driver != null) && !driver.isCellPin()) {
+            Node parent = driver.getParent();
+            for (Contact newDriven : newDrivenSet) {
+                if (newDriven.getParent() == parent) {
+                    throw new InvalidConnectionException("Self-loop on hierarchical component is not allowed.");
+                }
+            }
+        }
+
+        // Forbid fused input pins on hierarchical components
+        Set<FunctionComponent> drivenHierarchicalComponents = new HashSet<>();
+        for (Contact driven : combinedDrivenSet) {
+            Node drivenParent = driven.getParent();
+            if (drivenParent instanceof FunctionComponent) {
+                FunctionComponent drivenComponent = (FunctionComponent) drivenParent;
+                if (!drivenComponent.isCell()) {
+                    if (drivenHierarchicalComponents.contains(drivenComponent)) {
+                        throw new InvalidConnectionException("Fusing inputs of hierarchical component is not allowed.");
+                    } else {
+                        drivenHierarchicalComponents.add(drivenComponent);
+                    }
+                }
             }
         }
     }

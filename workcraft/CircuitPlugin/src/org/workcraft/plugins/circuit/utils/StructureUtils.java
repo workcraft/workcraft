@@ -3,10 +3,7 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitComponent;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.Joint;
+import org.workcraft.plugins.circuit.*;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -18,12 +15,12 @@ public final class StructureUtils {
     private StructureUtils() {
     }
 
-    public static Set<CircuitComponent> getPresetComponents(final Circuit circuit, MathNode curNode) {
-        Set<CircuitComponent> result = new HashSet<>();
+    public static Set<FunctionComponent> getPresetComponents(final Circuit circuit, MathNode curNode) {
+        Set<FunctionComponent> result = new HashSet<>();
         Set<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
-        if (curNode instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent) curNode;
+        if (curNode instanceof FunctionComponent) {
+            FunctionComponent component = (FunctionComponent) curNode;
             queue.addAll(component.getInputs());
         } else {
             queue.add(curNode);
@@ -35,11 +32,11 @@ public final class StructureUtils {
                 continue;
             }
             visited.add(node);
-            if (node instanceof CircuitComponent) {
-                CircuitComponent component = (CircuitComponent) node;
+            if (node instanceof FunctionComponent) {
+                FunctionComponent component = (FunctionComponent) node;
                 result.add(component);
-            } else if (node instanceof Contact) {
-                Contact contact = (Contact) node;
+            } else if (node instanceof FunctionContact) {
+                FunctionContact contact = (FunctionContact) node;
                 if (contact.isPort() == contact.isOutput()) {
                     queue.addAll(circuit.getPreset(contact));
                 } else {
@@ -56,12 +53,12 @@ public final class StructureUtils {
         return result;
     }
 
-    public static Set<CircuitComponent> getPostsetComponents(final Circuit circuit, MathNode curNode) {
-        Set<CircuitComponent> result = new HashSet<>();
+    public static Set<FunctionComponent> getPostsetComponents(final Circuit circuit, MathNode curNode) {
+        Set<FunctionComponent> result = new HashSet<>();
         Set<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
-        if (curNode instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent) curNode;
+        if (curNode instanceof FunctionComponent) {
+            FunctionComponent component = (FunctionComponent) curNode;
             queue.addAll(component.getOutputs());
         } else {
             queue.add(curNode);
@@ -73,11 +70,11 @@ public final class StructureUtils {
                 continue;
             }
             visited.add(node);
-            if (node instanceof CircuitComponent) {
-                CircuitComponent component = (CircuitComponent) node;
+            if (node instanceof FunctionComponent) {
+                FunctionComponent component = (FunctionComponent) node;
                 result.add(component);
-            } else if (node instanceof Contact) {
-                Contact contact = (Contact) node;
+            } else if (node instanceof FunctionContact) {
+                FunctionContact contact = (FunctionContact) node;
                 if (contact.isPort() == contact.isInput()) {
                     queue.addAll(circuit.getPostset(contact));
                 } else {
@@ -94,12 +91,20 @@ public final class StructureUtils {
         return result;
     }
 
-    public static Set<Contact> getPostsetPorts(final Circuit circuit, MathNode curNode) {
-        Set<Contact> result = new HashSet<>();
+    public static Set<FunctionComponent> getAdjacentComponents(Circuit circuit, FunctionComponent component) {
+        Set<FunctionComponent> result = new HashSet<>();
+        result.addAll(StructureUtils.getPresetComponents(circuit, component));
+        result.addAll(StructureUtils.getPostsetComponents(circuit, component));
+        result.remove(component);
+        return result;
+    }
+
+    public static Set<FunctionContact> getPostsetPorts(final Circuit circuit, MathNode curNode) {
+        Set<FunctionContact> result = new HashSet<>();
         Set<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
-        if (curNode instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent) curNode;
+        if (curNode instanceof FunctionComponent) {
+            FunctionComponent component = (FunctionComponent) curNode;
             queue.addAll(component.getOutputs());
         } else {
             queue.add(curNode);
@@ -111,8 +116,8 @@ public final class StructureUtils {
                 continue;
             }
             visited.add(node);
-            if (node instanceof Contact) {
-                Contact contact = (Contact) node;
+            if (node instanceof FunctionContact) {
+                FunctionContact contact = (FunctionContact) node;
                 if (contact.isOutput() && contact.isPort()) {
                     result.add(contact);
                 } else {
@@ -127,6 +132,16 @@ public final class StructureUtils {
             }
         }
         return result;
+    }
+
+    public static boolean hasSelfLoop(Circuit circuit, FunctionComponent component) {
+        for (Contact inputPin : component.getInputs()) {
+            Contact driver = CircuitUtils.findDriver(circuit, inputPin, false);
+            if (driver.getParent() == component) {
+                return true;
+            }
+        }
+        return false;
     }
 
 }

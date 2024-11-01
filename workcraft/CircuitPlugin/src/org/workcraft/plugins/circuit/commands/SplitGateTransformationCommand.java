@@ -18,6 +18,7 @@ import org.workcraft.plugins.circuit.naryformula.SplitFormGenerator;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.ConversionUtils;
 import org.workcraft.plugins.circuit.utils.GateUtils;
+import org.workcraft.plugins.circuit.utils.ZeroDelayUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -76,6 +77,11 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
     }
 
     private static void splitComplexGate(VisualCircuit circuit, VisualFunctionComponent complexGate, SplitForm functions) {
+        Set<FunctionComponent> savedZeroDelayComponents = ZeroDelayUtils.getPrecedingZeroDelayComponents(
+                circuit.getMathModel(), complexGate.getReferencedComponent());
+
+        savedZeroDelayComponents.forEach(component -> component.setIsZeroDelay(false));
+
         List<NodeConnectionPair> fromNodeConnections = getComponentDriverNodes(circuit, complexGate);
         Set<NodeConnectionPair> toNodeConnections = getComponentNonLoopDrivenNodes(circuit, complexGate);
         Container container = (Container) complexGate.getParent();
@@ -116,6 +122,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         }
         propagateInitValues(circuit, nonRootGates);
         circuit.remove(complexGate);
+        ZeroDelayUtils.makeZeroDelayIfValid(circuit.getMathModel(), savedZeroDelayComponents);
     }
 
     private static void connectTerminal(VisualCircuit circuit, Iterator<NodeConnectionPair> fromNodeConnectionIterator,
