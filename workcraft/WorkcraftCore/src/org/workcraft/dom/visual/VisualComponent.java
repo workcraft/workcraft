@@ -26,8 +26,8 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     public static final String PROPERTY_COLOR = "Color";
     public static final String PROPERTY_FILL_COLOR = "Fill color";
 
-    public static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 1);
-    public static final Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
+    public static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
+    public static final Font LABEL_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 1);
 
     private final MathNode refNode;
     private Color foregroundColor = VisualCommonSettings.getBorderColor();

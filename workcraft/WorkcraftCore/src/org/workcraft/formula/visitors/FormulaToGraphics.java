@@ -116,7 +116,8 @@ public class FormulaToGraphics {
             init(imply, or, fontRenderContext, font, unicodeAllowed);
             init(or, xor, fontRenderContext, font, unicodeAllowed);
             init(xor, and, fontRenderContext, font, unicodeAllowed);
-            init(and, not, fontRenderContext, font, unicodeAllowed);
+            // Use default.pfb font with improved u00B7 symbol for AND operator
+            init(and, not, fontRenderContext, defaultFont, unicodeAllowed);
             init(not, vars, fontRenderContext, font, unicodeAllowed);
             init(vars, constants, fontRenderContext, font, unicodeAllowed);
             init(constants, paren, fontRenderContext, font, unicodeAllowed);
@@ -273,35 +274,35 @@ public class FormulaToGraphics {
     public static class AndPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(And node) {
-            return visitBinary(this, unicodeAllowed ? " \u2022 " : " * ", node);
+            return visitBinary(this, unicodeAllowed ? "\u00B7" : "*", node);
         }
     }
 
     public static class OrPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(Or node) {
-            return visitBinary(this, " + ", node);
+            return visitBinary(this, "+", node);
         }
     }
 
     public static class XorPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(Xor node) {
-            return visitBinary(this, unicodeAllowed ? " \u2295 " : " ^ ", node);
+            return visitBinary(this, unicodeAllowed ? "\u2295" : "^", node);
         }
     }
 
     public static class ImplyPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(Imply node) {
-            return visitBinary(next, unicodeAllowed ? " \u21d2 " : " => ", node);
+            return visitBinary(next, unicodeAllowed ? "\u21d2" : "=>", node);
         }
     }
 
     public static class IffPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(Iff node) {
-            return visitBinary(this, " = ", node);
+            return visitBinary(this, "=", node);
         }
     }
 

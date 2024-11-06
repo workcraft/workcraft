@@ -16,7 +16,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     public static final String PROPERTY_NAME_COLOR = "Name color";
 
-    public static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 1);
+    public static final Font NAME_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
 
     private RenderedText nameRenderedText = new RenderedText("", getNameFont(), getNamePositioning(), getNameOffset());
     private Color nameColor = VisualCommonSettings.getNameColor();

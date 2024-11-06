@@ -124,7 +124,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     private static final double size = 0.3;
-    public static final Font FANOUT_FONT = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
+    public static final Font FANOUT_FONT = new Font(Font.SANS_SERIF, Font.ITALIC, 1);
     private static final double X_FANOUT_OFFSET = -0.25 * size;
     private static final double Y_FANOUT_OFFSET = -0.5 * size;
 
