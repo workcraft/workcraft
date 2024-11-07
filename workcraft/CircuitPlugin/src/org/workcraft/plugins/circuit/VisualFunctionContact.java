@@ -31,8 +31,8 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private enum ArrowType { UP, DOWN }
 
-    private static final double X_FUNC_OFFSET_SCALE = 1.0;
-    private static final double ARROW_WIDTH_SCALE = 0.6;
+    private static final double X_FUNC_OFFSET_SCALE = 0.8;
+    private static final double ARROW_WIDTH_SCALE = 0.5;
 
     private static final Font functionFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
     private static final FontRenderContext context = new FontRenderContext(
@@ -107,7 +107,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     private Point2D getSetFormulaOffset() {
         double s = CircuitSettings.getContactFontSize();
         double xOffset = (X_FUNC_OFFSET_SCALE + ARROW_WIDTH_SCALE) * s;
-        double yOffset = -0.5 * CircuitSettings.getContactFontSize();
+        double yOffset = -0.4 * CircuitSettings.getContactFontSize();
         FormulaRenderingResult renderingResult = getRenderedSetFunction();
         if (renderingResult != null) {
             Direction dir = getDirection();
@@ -156,7 +156,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     private Point2D getResetFormulaOffset() {
         double s = CircuitSettings.getContactFontSize();
         double xOffset = (X_FUNC_OFFSET_SCALE + ARROW_WIDTH_SCALE) * s;
-        double yOffset = 0.5 * s;
+        double yOffset = 0.3 * s;
         FormulaRenderingResult renderingResult = getRenderedResetFunction();
         if (renderingResult != null) {
             Direction dir = getDirection();
@@ -166,7 +166,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
                 xOffset = -X_FUNC_OFFSET_SCALE * s - renderingResult.boundingBox.getWidth();
             }
-            yOffset = 0.5 * s + renderingResult.boundingBox.getHeight();
+            yOffset -= renderingResult.getBoundingBox().getY(); // + renderingResult.boundingBox.getHeight();
         }
         return new Point2D.Double(xOffset, yOffset);
     }
@@ -191,17 +191,17 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private void drawArrow(Graphics2D g, ArrowType arrowType, Point2D offset) {
         double s = CircuitSettings.getContactFontSize();
-        g.setStroke(new BasicStroke(0.08f * (float) s));
+        float lineStrokeWidth = 0.08f * (float) s;
+        g.setStroke(new BasicStroke(lineStrokeWidth));
         double middleX = offset.getX() - ARROW_WIDTH_SCALE * s;
         double middleY = offset.getY() - 0.3 * s;
-        double lineLongHeight = 0.25 * s;
-        double lineShortHeight = 0.15 * s;
-        double headHeight = 0.4 * s;
+        double lineHeight = 0.3 * s;
+        double headHeight = 0.3 * s;
         double headWidth = 0.15 * s;
         switch (arrowType) {
         case UP:
-            double upLineY = middleY + lineLongHeight;
-            double upHeadY = middleY - lineShortHeight;
+            double upLineY = offset.getY() - 0.5 * lineStrokeWidth;
+            double upHeadY = upLineY - lineHeight;
             Path2D upHeadPath = new Path2D.Double();
             upHeadPath.moveTo(middleX - headWidth, upHeadY);
             upHeadPath.lineTo(middleX + headWidth, upHeadY);
@@ -211,8 +211,8 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             g.draw(new Line2D.Double(middleX, upLineY, middleX, upHeadY));
             break;
         case DOWN:
-            double downLineY = middleY - lineLongHeight;
-            double downHeadY = middleY + lineShortHeight;
+            double downHeadY = offset.getY() - headHeight;
+            double downLineY = downHeadY - lineHeight;
             Path2D downHeadPath = new Path2D.Double();
             downHeadPath.moveTo(middleX - headWidth, downHeadY);
             downHeadPath.lineTo(middleX + headWidth, downHeadY);
@@ -222,12 +222,13 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             g.draw(new Line2D.Double(middleX, downLineY, middleX, downHeadY));
             break;
         }
-        double assignStartX = middleX + 0.25 * s;
-        double assignEndX = middleX + 0.55 * s;
-        double assignTopY = middleY - 0.08 * s;
-        double assignBottomY = middleY + 0.08 * s;
-        g.draw(new Line2D.Double(assignStartX, assignTopY, assignEndX, assignTopY));
-        g.draw(new Line2D.Double(assignStartX, assignBottomY, assignEndX, assignBottomY));
+        float columnStrokeWidth = 1.25f * lineStrokeWidth;
+        g.setStroke(new BasicStroke(columnStrokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
+        double columnX = middleX + 0.25 * s;
+        double columnTopY = middleY - 0.1 * s;
+        double columnBottomY = offset.getY() - 0.5 * columnStrokeWidth;
+        g.draw(new Line2D.Double(columnX, columnTopY, columnX, columnTopY));
+        g.draw(new Line2D.Double(columnX, columnBottomY, columnX, columnBottomY));
     }
 
     private void drawFormula(Graphics2D g, ArrowType arrowType, Point2D offset, FormulaRenderingResult renderingResult) {
