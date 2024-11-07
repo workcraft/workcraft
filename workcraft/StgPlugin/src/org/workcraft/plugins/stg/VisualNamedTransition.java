@@ -37,7 +37,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
 
     @Override
     public  Font getNameFont() {
-        return LABEL_FONT.deriveFont((float) StgSettings.getTransitionFontSize());
+        return NAME_FONT.deriveFont((float) StgSettings.getTransitionFontSize());
     }
 
     @Override

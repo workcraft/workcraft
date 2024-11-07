@@ -136,17 +136,19 @@ public class CircuitSelectionTool extends SelectionTool {
     @Override
     public Collection<VisualNode> getNodeWithAdjacentConnections(VisualModel model, VisualNode node) {
         HashSet<VisualNode> result = new HashSet<>();
-        if (node instanceof VisualCircuitComponent) {
-            VisualCircuitComponent component = (VisualCircuitComponent) node;
+        if ((node instanceof VisualContact contact) && contact.isDriven()) {
+            result.add(contact);
+            for (VisualConnection connection : model.getConnections(contact)) {
+                VisualNode firstNode = connection.getFirst();
+                if (firstNode instanceof VisualReplica) {
+                    result.add(connection);
+                    result.add(firstNode);
+                }
+            }
+        } else if (node instanceof VisualCircuitComponent component) {
             result.add(component);
             for (VisualContact inputContact : component.getVisualInputs()) {
-                for (VisualConnection connection : model.getConnections(inputContact)) {
-                    VisualNode firstNode = connection.getFirst();
-                    if (firstNode instanceof VisualReplica) {
-                        result.add(connection);
-                        result.add(firstNode);
-                    }
-                }
+                result.addAll(getNodeWithAdjacentConnections(model, inputContact));
             }
         } else {
             Queue<VisualNode> queue = new LinkedList<>(super.getNodeWithAdjacentConnections(model, node));
@@ -156,8 +158,7 @@ public class CircuitSelectionTool extends SelectionTool {
                     continue;
                 }
                 result.add(node);
-                if (node instanceof VisualConnection) {
-                    VisualConnection connection = (VisualConnection) node;
+                if (node instanceof VisualConnection connection) {
                     VisualNode firstNode = connection.getFirst();
                     if (firstNode instanceof VisualJoint) {
                         result.add(firstNode);
