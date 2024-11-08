@@ -31,7 +31,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private enum ArrowType { UP, DOWN }
 
-    private static final double X_FUNC_OFFSET_SCALE = 0.8;
+    private static final double X_FUNC_OFFSET_SCALE = 0.9;
     private static final double ARROW_WIDTH_SCALE = 0.5;
 
     private static final Font functionFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
