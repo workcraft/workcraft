@@ -32,6 +32,7 @@ import org.xml.sax.SAXException;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -324,6 +325,15 @@ public final class WorkUtils {
     public static void saveModel(ModelEntry me, Collection<Resource> resources, File file)
             throws SerialisationException {
 
+        File directory = file.getParentFile();
+        if ((directory != null) && !directory.exists()) {
+            try {
+                LogUtils.logInfo("Missing directories are created to save file '" + file.getAbsolutePath() + "'");
+                Files.createDirectories(directory.toPath());
+            } catch (IOException e) {
+                throw new SerialisationException(e);
+            }
+        }
         try (FileOutputStream os = new FileOutputStream(file)) {
             String base = FileUtils.getBasePath(file);
             adjustPropertyFilePaths(me.getVisualModel(), base, false);
