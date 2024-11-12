@@ -549,7 +549,7 @@ public final class GateUtils {
                     trivialDriverComponent.setIsZeroDelay(true);
                 } else if (trivialDriverComponent.isTie1()) {
                     convertTie1ToTie0(circuit, trivialDriverComponent);
-                } else if (trivialDriverComponent.isTie1()) {
+                } else if (trivialDriverComponent.isTie0()) {
                     convertTie0ToTie1(circuit, trivialDriverComponent);
                 }
             }
