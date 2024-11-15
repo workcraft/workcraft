@@ -35,12 +35,9 @@ public class VisualStgPlace extends VisualPlace {
         addPropertyDeclaration(new PropertyDeclaration<>(
                 Mutex.Protocol.class, StgPlace.PROPERTY_MUTEX_PROTOCOL,
                 value -> getReferencedComponent().setMutexProtocol(value),
-                () -> getReferencedComponent().getMutexProtocol()) {
-            @Override
-            public boolean isVisible() {
-                return getReferencedComponent().isMutex();
-            }
-        }.setCombinable());
+                () -> getReferencedComponent().getMutexProtocol())
+                .setVisibilitySupplier(() -> getReferencedComponent().isMutex())
+                .setCombinable());
     }
 
     @Override

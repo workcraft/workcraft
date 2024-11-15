@@ -71,17 +71,18 @@ public final class CircuitUtils {
         if (driver == null) {
             return null;
         }
-        boolean inversion = false;
         Node parent = driver.getParent();
         if (parent instanceof FunctionComponent) {
             FunctionComponent component = (FunctionComponent) parent;
             if (component.getIsZeroDelay() && (component.isInverter() || component.isBuffer())) {
                 Contact input = component.getFirstInput();
-                driver = CircuitUtils.findDriver(circuit, input, false);
-                inversion = component.isInverter();
+                Contact zeroDelayDriver = CircuitUtils.findDriver(circuit, input, false);
+                if (zeroDelayDriver != null) {
+                    return Pair.of(zeroDelayDriver, component.isInverter());
+                }
             }
         }
-        return Pair.of(driver, inversion);
+        return Pair.of(driver, false);
     }
 
     public static boolean findInitToOneFromDriver(VisualCircuit circuit, VisualContact contact) {
@@ -121,15 +122,18 @@ public final class CircuitUtils {
                 queue.addAll(circuit.getPreset(node));
             } else if (node instanceof Contact) {
                 Contact contact = (Contact) node;
-                // Support for zero delay buffers and inverters.
-                Contact zeroDelayInput = transparentZeroDelayComponents ? findZeroDelayInput(contact) : null;
-                if (zeroDelayInput != null) {
-                    queue.addAll(circuit.getPreset(zeroDelayInput));
-                } else if (contact.isDriver()) {
-                    result = contact;
-                } else {
+                if (contact.isDriven()) {
                     // Is it necessary to check that (node == curNode) before adding preset to queue?
                     queue.addAll(circuit.getPreset(contact));
+                } else {
+                    result = contact;
+                    // Support for zero delay buffers and inverters.
+                    if (contact.isZeroDelayPin() && transparentZeroDelayComponents) {
+                        Contact zeroDelayInput = findZeroDelayInput(contact);
+                        if (zeroDelayInput != null) {
+                            queue.addAll(circuit.getPreset(zeroDelayInput));
+                        }
+                    }
                 }
             } else {
                 throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)

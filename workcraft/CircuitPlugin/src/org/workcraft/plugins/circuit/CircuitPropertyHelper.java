@@ -229,12 +229,9 @@ public class CircuitPropertyHelper {
                         throw new RuntimeException(e);
                     }
                 },
-                () -> StringGenerator.toString(contact.getSetFunction())) {
-            @Override
-            public boolean isVisible() {
-                return contact.isDriver();
-            }
-        }.setCombinable();
+                () -> StringGenerator.toString(contact.getSetFunction()))
+                .setVisibilitySupplier(contact::isDriver)
+                .setCombinable();
     }
 
     public static PropertyDescriptor getResetFunctionProperty(VisualCircuit circuit, VisualFunctionContact contact) {
@@ -246,12 +243,9 @@ public class CircuitPropertyHelper {
                         throw new RuntimeException(e);
                     }
                 },
-                () -> StringGenerator.toString(contact.getResetFunction())) {
-            @Override
-            public boolean isVisible() {
-                return contact.isDriver();
-            }
-        }.setCombinable();
+                () -> StringGenerator.toString(contact.getResetFunction()))
+                .setVisibilitySupplier(contact::isDriver)
+                .setCombinable();
     }
 
 }

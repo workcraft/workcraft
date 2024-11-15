@@ -4,7 +4,6 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
-import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
@@ -52,9 +51,6 @@ public class VisualCircuitComponent extends VisualComponent
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, CircuitComponent.PROPERTY_IS_ENVIRONMENT,
-                this::setIsEnvironment, this::getIsEnvironment).setCombinable().setTemplatable());
-
         // TODO: Rename label to module name (?)
         //renamePropertyDeclarationByName(PROPERTY_LABEL, "Module name");
         //renamePropertyDeclarationByName(PROPERTY_LABEL_COLOR, "Module name color");
@@ -592,6 +588,10 @@ public class VisualCircuitComponent extends VisualComponent
         }
 
         g.setTransform(savedTransform);
+    }
+
+    public boolean getFanoutVisibility() {
+        return CircuitSettings.getShowContactFanout();
     }
 
     @Override
