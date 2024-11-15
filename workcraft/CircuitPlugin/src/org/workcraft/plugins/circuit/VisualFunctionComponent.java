@@ -48,18 +48,26 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     private void addPropertyDeclarations() {
+        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, CircuitComponent.PROPERTY_IS_ENVIRONMENT,
+                this::setIsEnvironment, this::getIsEnvironment)
+                .setVisibilitySupplier(() -> !getIsZeroDelay())
+                .setCombinable().setTemplatable());
+
         addPropertyDeclaration(new PropertyDeclaration<>(RenderType.class,
                 PROPERTY_RENDER_TYPE,
                 this::setRenderType, this::getRenderType)
+                .setVisibilitySupplier(() -> !getIsZeroDelay())
                 .setCombinable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 FunctionComponent.PROPERTY_IS_ZERO_DELAY,
-                this::setIsZeroDelay, this::getIsZeroDelay));
+                this::setIsZeroDelay, this::getIsZeroDelay)
+                .setVisibilitySupplier(() -> !getIsEnvironment()));
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 FunctionComponent.PROPERTY_AVOID_INIT,
-                this::setAvoidInit, this::getAvoidInit));
+                this::setAvoidInit, this::getAvoidInit)
+                .setVisibilitySupplier(() -> !getIsZeroDelay()));
     }
 
     @Override
@@ -68,7 +76,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     public RenderType getRenderType() {
-        return renderType;
+        return getIsZeroDelay() ? RenderType.GATE : renderType;
     }
 
     public void setRenderType(RenderType value) {
@@ -90,6 +98,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     public void setIsZeroDelay(boolean value) {
         if (getReferencedComponent() != null) {
             getReferencedComponent().setIsZeroDelay(value);
+            if (value) {
+                setRenderType(RenderType.GATE);
+            }
         }
     }
 
