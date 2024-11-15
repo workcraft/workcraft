@@ -140,12 +140,9 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<>(Direction.class, PROPERTY_DIRECTION,
-                this::setDirection, this::getDirection) {
-            @Override
-            public boolean isVisible() {
-                return isPort();
-            }
-        }.setCombinable());
+                this::setDirection, this::getDirection)
+                .setVisibilitySupplier(this::isPort)
+                .setCombinable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(IOType.class, Contact.PROPERTY_IO_TYPE,
                 value -> getReferencedComponent().setIOType(value),
@@ -154,30 +151,21 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Contact.PROPERTY_INIT_TO_ONE,
                 value -> getReferencedComponent().setInitToOne(value),
-                () -> getReferencedComponent().getInitToOne()) {
-            @Override
-            public boolean isVisible() {
-                return isDriver() && !isZeroDelayDriver();
-            }
-        }.setCombinable().setTemplatable());
+                () -> getReferencedComponent().getInitToOne())
+                .setVisibilitySupplier(() -> isDriver() && !isZeroDelayDriver())
+                .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Contact.PROPERTY_FORCED_INIT,
                 value -> getReferencedComponent().setForcedInit(value),
-                () -> getReferencedComponent().getForcedInit()) {
-            @Override
-            public boolean isVisible() {
-                return isDriver() && !isZeroDelayPin() && !isAvoidInitPin();
-            }
-        }.setCombinable().setTemplatable());
+                () -> getReferencedComponent().getForcedInit())
+                .setVisibilitySupplier(() -> isDriver() && !isZeroDelayPin() && !isAvoidInitPin())
+                .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Contact.PROPERTY_PATH_BREAKER,
                 value -> getReferencedComponent().setPathBreaker(value),
-                () -> getReferencedComponent().getPathBreaker()) {
-            @Override
-            public boolean isVisible() {
-                return isPin() && !isZeroDelayDriver();
-            }
-        }.setCombinable().setTemplatable());
+                () -> getReferencedComponent().getPathBreaker())
+                .setVisibilitySupplier(() -> isPin() && !isZeroDelayDriver())
+                .setCombinable().setTemplatable());
     }
 
     @NoAutoSerialisation

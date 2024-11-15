@@ -46,6 +46,10 @@ public class CircuitComponent extends MathGroup {
         }
     }
 
+    public boolean getIsEnvironment() {
+        return isEnvironment;
+    }
+
     public FileReference getRefinement() {
         return refinement;
     }
@@ -73,10 +77,6 @@ public class CircuitComponent extends MathGroup {
             refinement = new FileReference();
         }
         refinement.setPath(path);
-    }
-
-    public boolean getIsEnvironment() {
-        return isEnvironment;
     }
 
     public Collection<Contact> getContacts() {

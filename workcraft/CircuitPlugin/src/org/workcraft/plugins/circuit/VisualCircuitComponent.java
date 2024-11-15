@@ -52,9 +52,6 @@ public class VisualCircuitComponent extends VisualComponent
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, CircuitComponent.PROPERTY_IS_ENVIRONMENT,
-                this::setIsEnvironment, this::getIsEnvironment).setCombinable().setTemplatable());
-
         // TODO: Rename label to module name (?)
         //renamePropertyDeclarationByName(PROPERTY_LABEL, "Module name");
         //renamePropertyDeclarationByName(PROPERTY_LABEL_COLOR, "Module name color");
