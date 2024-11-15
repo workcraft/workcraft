@@ -48,6 +48,16 @@ public class InstancePanel extends JPanel {
             public boolean getNameVisibility() {
                 return false;
             }
+
+            @Override
+            public boolean getLabelVisibility() {
+                return true;
+            }
+
+            @Override
+            public boolean getFanoutVisibility() {
+                return false;
+            }
         };
         circuit.getMathModel().add(component.getReferencedComponent());
         circuit.add(component);

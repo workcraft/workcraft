@@ -31,7 +31,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private enum ArrowType { UP, DOWN }
 
-    private static final double X_FUNC_OFFSET_SCALE = 0.9;
+    private static final double FORMULA_OFFSET_SCALE = 0.9;
     private static final double ARROW_WIDTH_SCALE = 0.5;
 
     private static final Font functionFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
@@ -104,9 +104,13 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         return renderedSetFunction;
     }
 
+    private double getFormulaScaleOffset() {
+        return getFanoutVisibility() ? FORMULA_OFFSET_SCALE : 0.0;
+    }
+
     private Point2D getSetFormulaOffset() {
         double s = CircuitSettings.getContactFontSize();
-        double xOffset = (X_FUNC_OFFSET_SCALE + ARROW_WIDTH_SCALE) * s;
+        double xOffset = (getFormulaScaleOffset() + ARROW_WIDTH_SCALE) * s;
         double yOffset = -0.4 * CircuitSettings.getContactFontSize();
         FormulaRenderingResult renderingResult = getRenderedSetFunction();
         if (renderingResult != null) {
@@ -115,7 +119,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
                 dir = dir.flip();
             }
             if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
-                xOffset = -X_FUNC_OFFSET_SCALE * s - renderingResult.boundingBox.getWidth();
+                xOffset = -s * getFormulaScaleOffset() - renderingResult.boundingBox.getWidth();
             }
         }
         return new Point2D.Double(xOffset, yOffset);
@@ -155,7 +159,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private Point2D getResetFormulaOffset() {
         double s = CircuitSettings.getContactFontSize();
-        double xOffset = (X_FUNC_OFFSET_SCALE + ARROW_WIDTH_SCALE) * s;
+        double xOffset = (getFormulaScaleOffset() + ARROW_WIDTH_SCALE) * s;
         double yOffset = 0.3 * s;
         FormulaRenderingResult renderingResult = getRenderedResetFunction();
         if (renderingResult != null) {
@@ -164,9 +168,9 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
                 dir = dir.flip();
             }
             if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
-                xOffset = -X_FUNC_OFFSET_SCALE * s - renderingResult.boundingBox.getWidth();
+                xOffset = -s * getFormulaScaleOffset() - renderingResult.boundingBox.getWidth();
             }
-            yOffset -= renderingResult.getBoundingBox().getY(); // + renderingResult.boundingBox.getHeight();
+            yOffset -= renderingResult.getBoundingBox().getY();
         }
         return new Point2D.Double(xOffset, yOffset);
     }

@@ -590,6 +590,10 @@ public class VisualCircuitComponent extends VisualComponent
         g.setTransform(savedTransform);
     }
 
+    public boolean getFanoutVisibility() {
+        return CircuitSettings.getShowContactFanout();
+    }
+
     @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
         if ((groupImpl != null) && (internalBB == null)) {
