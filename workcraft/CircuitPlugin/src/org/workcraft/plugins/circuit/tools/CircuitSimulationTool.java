@@ -27,15 +27,31 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 public class CircuitSimulationTool extends StgSimulationTool {
 
     private CircuitToStgConverter converter;
+    private Set<VisualFunctionComponent> undrivenZeroDelayComponents;
 
     @Override
     public void generateUnderlyingModel(WorkspaceEntry we) {
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         converter = new CircuitToStgConverter(circuit);
+        undrivenZeroDelayComponents = calcUndrivenZeroDelayComponents(circuit);
+    }
+
+    private Set<VisualFunctionComponent> calcUndrivenZeroDelayComponents(VisualCircuit circuit) {
+        Set<VisualFunctionComponent> result = new HashSet<>();
+        for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
+            if (component.getIsZeroDelay()) {
+                VisualFunctionContact zeroDelayInputPin = component.getFirstVisualInput();
+                if (CircuitUtils.findDriver(circuit, zeroDelayInputPin, false) == null) {
+                    result.add(component);
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -87,8 +103,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
 
     private Collection<VisualContact> getExcitedOutputs(VisualFunctionComponent component) {
         HashSet<VisualContact> excitedOutputs = new HashSet<>();
-        if (!component.getIsZeroDelay()) {
-            for (VisualContact output: component.getVisualOutputs()) {
+        if (!component.getIsZeroDelay() || undrivenZeroDelayComponents.contains(component)) {
+            for (VisualContact output : component.getVisualOutputs()) {
                 HashSet<SignalTransition> excitedTransitions = getContactExcitedTransitions(output);
                 if (!excitedTransitions.isEmpty()) {
                     excitedOutputs.add(output);

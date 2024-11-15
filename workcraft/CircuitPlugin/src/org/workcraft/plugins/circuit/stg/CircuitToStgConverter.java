@@ -254,16 +254,17 @@ public class CircuitToStgConverter {
         for (VisualContact driver: drivers) {
             BooleanFormula setFunc = null;
             BooleanFormula resetFunc = null;
-            if (driver instanceof VisualFunctionContact) {
+            String driverRef = circuit.getMathReference(driver);
+            if (driver.isDriven()) {
+                LogUtils.logWarning("Pin '" + driverRef + "' does not have a driver.");
+            } else if (driver instanceof VisualFunctionContact) {
                 setFunc = ((VisualFunctionContact) driver).getSetFunction();
                 resetFunc = ((VisualFunctionContact) driver).getResetFunction();
-            }
-
-            // Warn about undefined set/reset functions, if they are expected
-            if ((setFunc == null) && (resetFunc == null) && driver.isPin() && expectFunctionForDriverPin) {
-                String driverRef = circuit.getMathReference(driver);
-                LogUtils.logWarning("Driver pin '" + driverRef + "' does not have set/reset function " +
-                        "and is considered free running.");
+                // Warn about undefined set/reset functions, if they are expected
+                if ((setFunc == null) && (resetFunc == null) && driver.isPin() && expectFunctionForDriverPin) {
+                    LogUtils.logWarning("Driver pin '" + driverRef + "' does not have set/reset function " +
+                            "and is considered free running.");
+                }
             }
 
             // Create complementary set/reset if only one of them is defined
@@ -362,7 +363,6 @@ public class CircuitToStgConverter {
 
             if (!isDeadTransition) {
                 VisualSignalTransition transition = stg.createVisualSignalTransition(signalName, signalType, direction, container);
-                transition.setLabel(StringGenerator.toString(clause));
                 transitions.add(transition);
                 // Create read-arcs.
                 for (VisualPlace place : placesToRead) {

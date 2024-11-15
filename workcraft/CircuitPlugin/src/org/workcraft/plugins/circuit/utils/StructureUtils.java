@@ -137,7 +137,7 @@ public final class StructureUtils {
     public static boolean hasSelfLoop(Circuit circuit, FunctionComponent component) {
         for (Contact inputPin : component.getInputs()) {
             Contact driver = CircuitUtils.findDriver(circuit, inputPin, false);
-            if (driver.getParent() == component) {
+            if ((driver != null) && (driver.getParent() == component)) {
                 return true;
             }
         }
