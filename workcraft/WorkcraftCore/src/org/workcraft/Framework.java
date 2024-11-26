@@ -59,6 +59,7 @@ public final class Framework {
     private static final int JAVASCRIPT_FUNCTION_PARAMS_GROUP = 2;
 
     private static Framework instance = null;
+    private final Config defaultConfig = new Config();
     private final Config config = new Config();
     private final PluginManager pluginManager = new PluginManager();
     private final TaskManager taskManager = new ExtendedTaskManager();
@@ -196,34 +197,45 @@ public final class Framework {
         pluginManager.saveSettings(config);
     }
 
-    public void loadConfig(File file) {
+    public void loadMainConfig(File file) {
         if (file == null) {
             file = new File(CONFIG_FILE_PATH);
         }
         LogUtils.logMessage("Loading global preferences from config file " + file.getAbsolutePath());
-        config.load(file);
-        pluginManager.loadSettings(config);
-        checkConfig();
-        loadRecentFilesFromConfig();
+        config.clear();
+        config.load(loadConfigWithChecks(file));
     }
 
-    private void checkConfig() {
-        Set<String> groupNames = config.getGroupNames();
-        Config defaultConfig = new Config();
-        pluginManager.saveSettings(defaultConfig);
+    public void loadAdditionalConfig(File file) {
+        if (file != null) {
+            LogUtils.logMessage("Loading additional global preferences from config file " + file.getAbsolutePath());
+            config.load(loadConfigWithChecks(file));
+        }
+    }
+
+    private Config loadConfigWithChecks(File file) {
+        Config result = new Config();
+        result.load(file);
+        Set<String> groupNames = new HashSet<>(result.getGroupNames());
         groupNames.removeAll(defaultConfig.getGroupNames());
         groupNames.removeAll(BUILTIN_CONFIG_GROUPS);
         if (!groupNames.isEmpty()) {
             LogUtils.logWarning(TextUtils.wrapMessageWithItems("Unrecognised config group", groupNames));
         }
         for (String groupName : defaultConfig.getGroupNames()) {
-            Set<String> keyNames = config.getKeyNames(groupName);
+            Set<String> keyNames = new HashSet<>(result.getKeyNames(groupName));
             keyNames.removeAll(defaultConfig.getKeyNames(groupName));
             if (!keyNames.isEmpty()) {
                 LogUtils.logWarning(TextUtils.wrapText("Unrecognised keys in known config group " + groupName + ": "
                         + String.join(", ", keyNames)));
             }
         }
+        return result;
+    }
+
+    public void applyConfig() {
+        pluginManager.loadSettings(config);
+        loadRecentFilesFromConfig();
     }
 
     public void saveConfig(File file) {
@@ -264,6 +276,11 @@ public final class Framework {
 
         initJavaScript();
         initPlugins();
+        initConfig();
+    }
+
+    private void initConfig() {
+        pluginManager.saveSettings(defaultConfig);
     }
 
     private void initPlugins() {

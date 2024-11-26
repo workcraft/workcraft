@@ -23,10 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 public class Config {
@@ -47,11 +45,14 @@ public class Config {
     }
 
     public Set<String> getGroupNames() {
-        return new HashSet<>(groups.keySet());
+        return Collections.unmodifiableSet(groups.keySet());
     }
 
     public Set<String> getKeyNames(String groupName) {
-        return new HashSet<>((isRootGroup(groupName) ? rootGroup : groups.getOrDefault(groupName, new HashMap<>())).keySet());
+        if (isRootGroup(groupName)) {
+            return Collections.unmodifiableSet(rootGroup.keySet());
+        }
+        return Collections.unmodifiableSet(groups.getOrDefault(groupName, new HashMap<>()).keySet());
     }
 
     public String get(String key) {
@@ -186,6 +187,14 @@ public class Config {
                     loadVarElement(childElement, groupName);
                 }
             }
+        }
+    }
+
+    public void load(Config otherConfig) {
+        rootGroup.putAll(otherConfig.rootGroup);
+        for (String groupName : otherConfig.groups.keySet()) {
+            Map<String, String> group = groups.computeIfAbsent(groupName, s -> new HashMap<>());
+            group.putAll(otherConfig.groups.get(groupName));
         }
     }
 
