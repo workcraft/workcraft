@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<workcraft-config>
+  <group name="UnknownSettings">
+    <var name="unknownKey" value="123"/>
+  </group>
+</workcraft-config>

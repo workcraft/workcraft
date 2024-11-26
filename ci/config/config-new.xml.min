@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<workcraft-config>
+  <group name="CircuitSettings">
+    <var name="gateLibrary" value="/path/to/gate/library-additional-cli"/>
+  </group>
+  <group name="CommonEditorSettings">
+    <var name="backgroundColor" value="#ffeeee"/>
+  </group>
+</workcraft-config>

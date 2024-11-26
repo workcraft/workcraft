@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 public class Console {
 
     static {
-        // Enable font anti-aliasing
+        // Enable font antialiasing
         System.setProperty("awt.useSystemAAFontSettings", "on");
         System.setProperty("swing.aatext", "true");
 
@@ -64,15 +64,19 @@ public class Console {
         // NOTE: Initialisation of plugins needs to be before config because of plugin-specific settings
         framework.init();
 
-        // NOTE: Config needs to be loaded before scripts and saved on exit
+        // NOTE: Config needs to be loaded and applied before scripts
         File configFile = framework.getFileByAbsoluteOrRelativePath(options.getConfig());
         if (!options.hasNoConfigLoadFlag()) {
-            framework.loadConfig(configFile);
+            framework.loadMainConfig(configFile);
         }
-        File configAdditionFile = framework.getFileByAbsoluteOrRelativePath(options.getConfigAddition());
-        if (configAdditionFile != null) {
-            framework.loadConfig(configAdditionFile);
+        for (String configAddition : options.getConfigAdditions()) {
+            File configAdditionFile = framework.getFileByAbsoluteOrRelativePath(configAddition);
+            if (configAdditionFile != null) {
+                framework.loadAdditionalConfig(configAdditionFile);
+            }
         }
+        framework.applyConfig();
+        // Config needs to be saved on exit
         if (!options.hasNoConfigSaveFlag()) {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> framework.saveConfig(configFile)));
         }

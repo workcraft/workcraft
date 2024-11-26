@@ -29,19 +29,22 @@ public class Options {
     private static final String HELP = "Usage:  workcraft [OPTIONS] [FILES]"
             + "\nOPTIONS - space-separated list of the following options:"
             + "\n  " + DIR_OPTION + "DIR           path to the working directory"
-            + "\n  " + CONFIG_OPTION + "CONFIG     user config file (default is global config.xml)"
-            + "\n  " + CONFIG_ADD_OPTION + "CONFIG additional read-only config file to override user config settings"
+            + "\n  " + CONFIG_OPTION + "CONFIG     base config file (default is global config.xml)"
+            + "\n  " + CONFIG_ADD_OPTION + "CONFIG additional read-only config file to override base config settings"
             + "\n  " + EXEC_OPTION + "SCRIPT       JavaScript file or one-liner to execute on startup"
             + "\n  " + PORT_OPTION + "PORT         reuse running instance on PORT to open FILES"
             + "\n  " + NOGUI_OPTION + "             run in console mode"
-            + "\n  " + NOCONFIG_LOAD_OPTION + "     use default settings instead of loading them from user config"
-            + "\n  " + NOCONFIG_SAVE_OPTION + "     do not overwrite user config on exit"
-            + "\n  " + NOCONFIG_OPTION + "          use default settings and do not overwrite user config"
+            + "\n  " + NOCONFIG_LOAD_OPTION + "     use default settings instead of loading them from base config"
+            + "\n  " + NOCONFIG_SAVE_OPTION + "     do not overwrite base config on exit"
+            + "\n  " + NOCONFIG_OPTION + "          use default settings and do not overwrite base config"
             + "\n  " + VERSION_OPTION + "           report the version information and exit"
             + "\n  " + HELP_OPTION + "              display this help message and exit"
             + "\nFILES - space-separated list of work files to open or arguments for SCRIPT"
             + '\n'
             + "\nNote that file path parameters CONFIG, SCRIPT and FILES are relative to the working directory."
+            + '\n'
+            + "\nMultiple additional config files can be passed by using " + CONFIG_ADD_OPTION + " several times,"
+            + "\neach next file overriding the matching setting in the preceding ones."
             + '\n'
             + "\nUse environment variables " + CONFIG_ENV + " and " + CONFIG_ADD_ENV + " as lower priority"
             + "\nalternatives to command line options " + CONFIG_OPTION + " and " + CONFIG_ADD_OPTION + " respectively."
@@ -50,7 +53,7 @@ public class Options {
     private final Collection<String> paths;
     private final File directory;
     private final String config;
-    private final String configAddition;
+    private final List<String> configAdditions;
     private final String script;
     private final Integer port;
     private final boolean noGuiFlag;
@@ -69,8 +72,8 @@ public class Options {
                 .collect(Collectors.toList());
 
         directory = getOptionLastValue(args, DIR_OPTION, File::new);
-        config = getOptionOrEnvLastValue(args, CONFIG_OPTION, CONFIG_ENV);
-        configAddition = getOptionOrEnvLastValue(args, CONFIG_ADD_OPTION, CONFIG_ADD_ENV);
+        config = getOptionLastValueOrEnvValue(args, CONFIG_OPTION, CONFIG_ENV);
+        configAdditions = getOptionAllValuesOrEnvValue(args, CONFIG_ADD_OPTION, CONFIG_ADD_ENV);
         script = getOptionLastValue(args, EXEC_OPTION);
         port = getOptionLastValue(args, PORT_OPTION, Integer::valueOf);
         noGuiFlag = args.contains(NOGUI_OPTION);
@@ -80,9 +83,20 @@ public class Options {
         versionFlag = args.contains(VERSION_OPTION);
     }
 
-    private String getOptionOrEnvLastValue(List<String> args, String optionPrefix, String envName) {
+    private String getOptionLastValueOrEnvValue(List<String> args, String optionPrefix, String envName) {
         String optionLastValue = getOptionLastValue(args, optionPrefix);
         return optionLastValue == null ? System.getenv(envName) : optionLastValue;
+    }
+
+    private List<String> getOptionAllValuesOrEnvValue(List<String> args, String optionPrefix, String envName) {
+        List<String> optionAllValues = getOptionAllValues(args, optionPrefix);
+        if (optionAllValues.isEmpty()) {
+            String envValue = System.getenv(envName);
+            if (envValue != null) {
+                return List.of(envValue);
+            }
+        }
+        return optionAllValues;
     }
 
     private <T> T getOptionLastValue(List<String> args, String optionPrefix, Function<String, T> transformer) {
@@ -98,6 +112,13 @@ public class Options {
                 .orElse(null);
     }
 
+    private List<String> getOptionAllValues(List<String> args, String optionPrefix) {
+        return args.stream()
+                .filter(arg -> (arg != null) && arg.startsWith(optionPrefix))
+                .map(arg -> arg.substring(optionPrefix.length()))
+                .toList();
+    }
+
     public Collection<String> getPaths() {
         return Collections.unmodifiableCollection(paths);
     }
@@ -110,8 +131,8 @@ public class Options {
         return config;
     }
 
-    public String getConfigAddition() {
-        return configAddition;
+    public List<String> getConfigAdditions() {
+        return configAdditions;
     }
 
     public String getScript() {
