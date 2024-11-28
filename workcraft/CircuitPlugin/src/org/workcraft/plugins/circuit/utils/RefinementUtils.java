@@ -254,10 +254,6 @@ public final class RefinementUtils {
         return (aSignals == null) || !aSignals.equals(bSignals);
     }
 
-    public static Map<String, Boolean> getInterfaceInitialState(ModelEntry me) {
-        return me == null ? null : getInterfaceInitialState(me.getMathModel());
-    }
-
     public static Map<String, Boolean> getSignalsInitialState(MathModel model, Collection<String> signals) {
         Map<String, Boolean> interfaceInitialState = getInterfaceInitialState(model);
         return filterStates(interfaceInitialState, signals);
@@ -335,6 +331,10 @@ public final class RefinementUtils {
     public static boolean isInconsistentModelTitle(Stg stg, ModelEntry refinementModelEntry) {
         String refinementTitle = refinementModelEntry == null ? null : refinementModelEntry.getModel().getTitle();
         return isInconsistentModelTitle(stg.getTitle(), refinementTitle);
+    }
+
+    public static boolean isInconsistentModelTitle(Circuit circuit, File envFile) {
+        return isInconsistentModelTitle(circuit.getTitle(), WorkUtils.extractModelTitle(envFile));
     }
 
     public static boolean isInconsistentModelTitle(CircuitComponent component, ModelEntry refinementModelEntry) {
@@ -433,7 +433,8 @@ public final class RefinementUtils {
                     stack.addAll(refinementFiles);
                 }
             } catch (DeserialisationException e) {
-                e.printStackTrace();
+                LogUtils.logError("Cannot refinement read model from file '" + FileUtils.getFullPath(curFile) + "':\n"
+                        + e.getMessage());
             }
         }
         return result;
