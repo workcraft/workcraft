@@ -20,6 +20,7 @@ public class RefinementDependencyGraph {
 
     private static final String COMPOSITE_LABEL_SEPARATOR = ":";
 
+    private final File topFile;
     private final Map<File, Map<String, File>> detailedDependencyGraph = new HashMap<>();
     private final Map<File, ModelEntry> fileToModelMap = new HashMap<>();
 
@@ -28,17 +29,19 @@ public class RefinementDependencyGraph {
     }
 
     public RefinementDependencyGraph(File topFile) {
+        this.topFile = topFile;
         Stack<File> stack = new Stack<>();
         try {
             ModelEntry topMe = WorkUtils.loadModel(topFile);
-            fileToModelMap.put(topFile, topMe);
             Map<String, File> topDependencyMap = extractInstanceDependencyMap(topMe);
             stack.addAll(topDependencyMap.values());
             detailedDependencyGraph.put(topFile, topDependencyMap);
+            fileToModelMap.put(topFile, topMe);
         } catch (DeserialisationException e) {
             String filePath = FileUtils.getFullPath(topFile);
             LogUtils.logError("Cannot read top-level file '" + filePath + "':\n" + e.getMessage());
         }
+
         Set<File> visited = new HashSet<>();
         while (!stack.empty()) {
             File file = stack.pop();
@@ -61,6 +64,10 @@ public class RefinementDependencyGraph {
                 }
             }
         }
+    }
+
+    public File getTopFile() {
+        return topFile;
     }
 
     private Map<String, File> extractInstanceDependencyMap(ModelEntry me) {
@@ -154,6 +161,17 @@ public class RefinementDependencyGraph {
 
     public ModelEntry getModelEntry(File file) {
         return fileToModelMap.get(file);
+    }
+
+    public String getFileDescription(File file) {
+        if (file == topFile) {
+            if (!file.exists()) {
+                return "(top-level circuit not saved in a file)";
+            } else {
+                return FileUtils.getFullPath(file) + " (top-level circuit)";
+            }
+        }
+        return FileUtils.getFullPath(file);
     }
 
 }
