@@ -19,6 +19,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Console {
@@ -41,6 +42,12 @@ public class Console {
                 + Info.getJavaDescription() + '\n');
 
         Options options = new Options(args);
+        List<String> unsupportedFlags = options.getUnsupportedFlags();
+        if (!unsupportedFlags.isEmpty()) {
+            LogUtils.logError("Unsupported command line options:\n  " + String.join("\n  ", unsupportedFlags));
+            LogUtils.logMessage(Options.getHelpMessage());
+            return;
+        }
 
         if (options.hasVersionFlag()) {
             LogUtils.logMessage(Info.getVersion().toString());
@@ -162,9 +169,15 @@ public class Console {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         for (String path : paths) {
-            if (FileFilters.isWorkPath(path)) {
+            if (!FileFilters.isWorkPath(path)) {
+                LogUtils.logError("Skipping not a work file '" + path + "'");
+            } else {
                 File file = framework.getFileByAbsoluteOrRelativePath(path);
-                mainWindow.openWork(file);
+                if (!FileUtils.isReadableFile(file)) {
+                    LogUtils.logError("Cannot read work file '" + path + "'");
+                } else {
+                    mainWindow.openWork(file);
+                }
             }
         }
     }
