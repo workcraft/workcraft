@@ -311,7 +311,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getWait0Data));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "MUTEX name and request-grant pairs (early protocol)",
+                PropertyHelper.BULLET_PREFIX + "Early protocol MUTEX name and request-grant pairs",
                 value -> {
                     if (parseMutexDataOrNull(value, Mutex.Protocol.EARLY) != null) {
                         setMutexData(value);
@@ -322,7 +322,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getMutexData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "MUTEX name and request-grant pairs (late protocol)",
+                PropertyHelper.BULLET_PREFIX + "Late protocol MUTEX name and request-grant pairs",
                 value -> {
                     if (parseMutexDataOrNull(value, Mutex.Protocol.LATE) != null) {
                         setMutexLateData(value);
