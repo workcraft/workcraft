@@ -1,10 +1,7 @@
 package org.workcraft;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -50,7 +47,8 @@ public class Options {
             + "\nalternatives to command line options " + CONFIG_OPTION + " and " + CONFIG_ADD_OPTION + " respectively."
             + '\n';
 
-    private final Collection<String> paths;
+    private final List<String> unsupportedFlags;
+    private final List<String> paths;
     private final File directory;
     private final String config;
     private final List<String> configAdditions;
@@ -67,6 +65,21 @@ public class Options {
     }
 
     Options(List<String> args) {
+        unsupportedFlags = args.stream()
+                .filter(arg -> arg.startsWith(FLAG_PREFIX)
+                        && !arg.startsWith(DIR_OPTION)
+                        && !arg.startsWith(CONFIG_OPTION)
+                        && !arg.startsWith(CONFIG_ADD_OPTION)
+                        && !arg.startsWith(EXEC_OPTION)
+                        && !arg.startsWith(PORT_OPTION)
+                        && !arg.equals(NOGUI_OPTION)
+                        && !arg.equals(NOCONFIG_OPTION)
+                        && !arg.equals(NOCONFIG_LOAD_OPTION)
+                        && !arg.equals(NOCONFIG_SAVE_OPTION)
+                        && !arg.equals(HELP_OPTION)
+                        && !arg.equals(VERSION_OPTION))
+                .collect(Collectors.toList());
+
         paths = args.stream()
                 .filter(arg -> (arg != null) && !arg.isEmpty() && !arg.startsWith(FLAG_PREFIX))
                 .collect(Collectors.toList());
@@ -81,6 +94,7 @@ public class Options {
         noConfigSaveFlag = args.contains(NOCONFIG_SAVE_OPTION) || args.contains(NOCONFIG_OPTION);
         helpFlag = args.contains(HELP_OPTION);
         versionFlag = args.contains(VERSION_OPTION);
+
     }
 
     private String getOptionLastValueOrEnvValue(List<String> args, String optionPrefix, String envName) {
@@ -119,8 +133,12 @@ public class Options {
                 .toList();
     }
 
-    public Collection<String> getPaths() {
-        return Collections.unmodifiableCollection(paths);
+    public List<String> getUnsupportedFlags() {
+        return Collections.unmodifiableList(unsupportedFlags);
+    }
+
+    public List<String> getPaths() {
+        return Collections.unmodifiableList(paths);
     }
 
     public File getDirectory() {

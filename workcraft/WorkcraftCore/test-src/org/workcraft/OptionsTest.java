@@ -14,9 +14,10 @@ class OptionsTest {
     @Test
     void testEmptyOptions() {
         testOptions(new Options(Collections.emptyList()),
-                Collections.emptyList(),
-                null, null, Collections.emptyList(), null, null,
-                false, false, false, false, false);
+                Collections.emptyList(), null,
+                null, Collections.emptyList(), null,
+                null, false, false, false,
+                false, false, Collections.emptyList());
     }
 
     @Test
@@ -24,8 +25,9 @@ class OptionsTest {
         testOptions(new Options(Arrays.asList("aaa", "bbb", "-dir:abc/def", "-exec:script.js", "-port:12345",
                         "-nogui", "-noconfig-save", "-help", "-version")),
                 Arrays.asList("aaa", "bbb"), new File("abc/def"),
-                null, Collections.emptyList(), "script.js", 12345,
-                true, false, true, true, true);
+                null, Collections.emptyList(), "script.js",
+                12345, true, false, true,
+                true, true, Collections.emptyList());
     }
 
     @Test
@@ -35,15 +37,17 @@ class OptionsTest {
                         "-exec:script.js", "-port:12345", "-nogui", "-noconfig", "-help", "-version")),
                 Arrays.asList("aaa", "bbb"), new File("abc/def"),
                 "config-local.xml", List.of("config-add_1.xml", "config-add_2.xml"), "script.js",
-                12345, true, true, true, true, true);
+                12345, true, true, true,
+                true, true, Collections.emptyList());
     }
 
     @Test
     void testWrongOptions() {
-        testOptions(new Options(new String[] {"-skip", "aaa", "-skip", "bbb", ""}),
+        testOptions(new Options(new String[] {"-skip", "aaa", "-skip", "bbb", "-error", ""}),
                 Arrays.asList("aaa", "bbb"), null,
-                null, Collections.emptyList(), null, null,
-                false, false, false, false, false);
+                null, Collections.emptyList(), null,
+                null, false, false, false,
+                false, false, Arrays.asList("-skip", "-skip", "-error"));
     }
 
     @Test
@@ -51,8 +55,9 @@ class OptionsTest {
         testOptions(new Options(Arrays.asList("-dir:123", "-exec:\"oneliner\"", "-port:0",
                         "aaa", "bbb", "-dir:abc/def", "-exec:script.js", "-port:12345")),
                 Arrays.asList("aaa", "bbb"), new File("abc/def"),
-                null, Collections.emptyList(), "script.js", 12345,
-                false, false, false, false, false);
+                null, Collections.emptyList(), "script.js",
+                12345, false, false, false,
+                false, false, Collections.emptyList());
     }
 
     @Test
@@ -65,7 +70,7 @@ class OptionsTest {
     private void testOptions(Options options, Collection<String> paths, File directory,
             String config, List<String> configAdditions, String script, Integer port,
             boolean noGuiFlag, boolean noConfigLoadFlag, boolean noConfigSaveFlag,
-            boolean helpFlag, boolean versionFlag) {
+            boolean helpFlag, boolean versionFlag, List<String> unsupportedFlags) {
 
         Assertions.assertArrayEquals(paths.toArray(), options.getPaths().toArray());
         Assertions.assertEquals(directory, options.getDirectory());
@@ -78,6 +83,7 @@ class OptionsTest {
         Assertions.assertEquals(noConfigSaveFlag, options.hasNoConfigSaveFlag());
         Assertions.assertEquals(helpFlag, options.hasHelpFlag());
         Assertions.assertEquals(versionFlag, options.hasVersionFlag());
+        Assertions.assertEquals(unsupportedFlags, options.getUnsupportedFlags());
     }
 
 }
