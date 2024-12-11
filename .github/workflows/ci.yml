@@ -53,7 +53,7 @@ jobs:
   osx-build:
     strategy:
       matrix:
-        os: [macos-14, macos-13, macos-12]
+        os: [macos-14, macos-13]
         java-distribution: [temurin]
         java-version: [21, 17]
 
