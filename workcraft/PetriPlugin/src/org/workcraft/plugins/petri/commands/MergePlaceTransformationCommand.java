@@ -1,15 +1,16 @@
 package org.workcraft.plugins.petri.commands;
 
-import java.util.Set;
-
 import org.workcraft.commands.AbstractMergeTransformationCommand;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public final class MergePlaceTransformationCommand extends AbstractMergeTransformationCommand {
+
+    public MergePlaceTransformationCommand() {
+        registerMergableClass(VisualPlace.class);
+    }
 
     @Override
     public String getDisplayName() {
@@ -19,13 +20,6 @@ public final class MergePlaceTransformationCommand extends AbstractMergeTransfor
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, PetriModel.class);
-    }
-
-    @Override
-    public Set<Class<? extends VisualComponent>> getMergableClasses() {
-        Set<Class<? extends VisualComponent>> result = super.getMergableClasses();
-        result.add(VisualPlace.class);
-        return result;
     }
 
     @Override

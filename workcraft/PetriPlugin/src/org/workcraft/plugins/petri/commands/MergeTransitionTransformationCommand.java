@@ -1,15 +1,16 @@
 package org.workcraft.plugins.petri.commands;
 
 import org.workcraft.commands.AbstractMergeTransformationCommand;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.Set;
-
 public final class MergeTransitionTransformationCommand extends AbstractMergeTransformationCommand {
+
+    public MergeTransitionTransformationCommand() {
+        registerMergableClass(VisualTransition.class);
+    }
 
     @Override
     public String getDisplayName() {
@@ -24,13 +25,6 @@ public final class MergeTransitionTransformationCommand extends AbstractMergeTra
     @Override
     public Position getPosition() {
         return Position.TOP;
-    }
-
-    @Override
-    public Set<Class<? extends VisualComponent>> getMergableClasses() {
-        Set<Class<? extends VisualComponent>> result = super.getMergableClasses();
-        result.add(VisualTransition.class);
-        return result;
     }
 
 }
