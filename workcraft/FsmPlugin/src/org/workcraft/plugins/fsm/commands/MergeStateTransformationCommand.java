@@ -10,9 +10,11 @@ import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.Set;
-
 public final class MergeStateTransformationCommand extends AbstractMergeTransformationCommand {
+
+    public MergeStateTransformationCommand() {
+        registerMergableClass(VisualState.class);
+    }
 
     @Override
     public String getDisplayName() {
@@ -25,20 +27,11 @@ public final class MergeStateTransformationCommand extends AbstractMergeTransfor
     }
 
     @Override
-    public Set<Class<? extends VisualComponent>> getMergableClasses() {
-        Set<Class<? extends VisualComponent>> result = super.getMergableClasses();
-        result.add(VisualState.class);
-        return result;
-    }
-
-    @Override
     public VisualConnection createMergedConnection(VisualModel model, VisualConnection connection,
             VisualComponent component, VisualComponent newComponent) {
 
         VisualConnection newConnection = super.createMergedConnection(model, connection, component, newComponent);
-        if ((connection instanceof VisualEvent) && (newConnection instanceof VisualEvent)) {
-            VisualEvent event = (VisualEvent) connection;
-            VisualEvent newEvent = (VisualEvent) newConnection;
+        if ((connection instanceof VisualEvent event) && (newConnection instanceof VisualEvent newEvent)) {
             newEvent.getReferencedConnection().setSymbol(event.getReferencedConnection().getSymbol());
         }
         return newConnection;

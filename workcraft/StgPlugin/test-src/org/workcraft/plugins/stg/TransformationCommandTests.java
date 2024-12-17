@@ -367,6 +367,11 @@ class TransformationCommandTests {
 
         framework.closeWork(we);
         checkVisualStgNodeCount(stg, 1, 3, 0, 4, 0, 1, 1, 0);
+
+        SplitTransitionTransformationCommand splitTransitionCommand = new SplitTransitionTransformationCommand();
+        stg.select(Arrays.asList(inPlus, outPlus));
+        splitTransitionCommand.execute(we);
+        checkVisualStgNodeCount(stg, 1, 5, 0, 6, 0, 1, 1, 0);
     }
 
     @Test

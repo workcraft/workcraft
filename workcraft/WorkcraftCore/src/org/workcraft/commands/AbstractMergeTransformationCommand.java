@@ -18,19 +18,20 @@ import java.util.*;
 
 public abstract class AbstractMergeTransformationCommand extends AbstractTransformationCommand {
 
+    private final Set<Class<? extends VisualComponent>> mergableClasses = new HashSet<>();
+
     @Override
     public String getDisplayName() {
         return "Merge selected nodes";
     }
 
-    public Set<Class<? extends VisualComponent>> getMergableClasses() {
-        return new HashSet<>();
+    public void registerMergableClass(Class<? extends VisualComponent> mergableClass) {
+        mergableClasses.add(mergableClass);
     }
 
     @Override
     public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
         Map<Class<? extends VisualComponent>, Set<VisualComponent>> classComponents = new HashMap<>();
-        Set<Class<? extends VisualComponent>> mergableClasses = getMergableClasses();
         for (Class<? extends VisualComponent> mergableClass : mergableClasses) {
             Set<VisualComponent> components = new HashSet<>();
             for (Node component: nodes) {
@@ -40,7 +41,7 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
             }
             classComponents.put(mergableClass, components);
         }
-        for (Class<? extends VisualComponent> mergableClass: mergableClasses) {
+        for (Class<? extends VisualComponent> mergableClass : mergableClasses) {
             Set<VisualComponent> components = classComponents.get(mergableClass);
             if (components.size() > 1) {
                 VisualComponent mergedComponent = createMergedComponent(model, components, mergableClass);
@@ -58,7 +59,7 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
             double x = 0.0;
             double y = 0.0;
             ArrayList<MathNode> nodes = new ArrayList<>();
-            for (VisualComponent component: components) {
+            for (VisualComponent component : components) {
                 x += component.getRootSpaceX();
                 y += component.getRootSpaceY();
                 nodes.add(component.getReferencedComponent());

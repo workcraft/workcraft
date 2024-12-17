@@ -10,6 +10,11 @@ import org.workcraft.utils.ScriptableCommandUtils;
 public class MpsatSynthesisPlugin implements Plugin {
 
     @Override
+    public String getDescription() {
+        return "MPSat synthesis support";
+    }
+
+    @Override
     public void init() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
@@ -29,11 +34,6 @@ public class MpsatSynthesisPlugin implements Plugin {
 
         ScriptableCommandUtils.registerCommand(TechnologyMappingSynthesisCommand.class, "synthTechnologyMappingMpsat",
                 "technology mapping of the STG 'work' into a Circuit work using MPSat backend");
-    }
-
-    @Override
-    public String getDescription() {
-        return "MPSat synthesis support";
     }
 
 }

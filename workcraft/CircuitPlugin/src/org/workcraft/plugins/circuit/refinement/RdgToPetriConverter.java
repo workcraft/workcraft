@@ -1,5 +1,6 @@
 package org.workcraft.plugins.circuit.refinement;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualModel;
@@ -8,12 +9,12 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
-import org.workcraft.plugins.petri.Petri;
-import org.workcraft.plugins.petri.VisualPetri;
-import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.petri.*;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.util.List;
@@ -100,7 +101,7 @@ public class RdgToPetriConverter {
         if ((fromNode != null) && (toNode != null)) {
             try {
                 model.connect(fromNode, toNode);
-            } catch (InvalidConnectionException e) {
+            } catch (InvalidConnectionException ignored) {
             }
         }
     }
@@ -126,8 +127,7 @@ public class RdgToPetriConverter {
 
     private void highlightNodesAndAdjacentConnections(Collection<VisualNode> nodes, Color color) {
         for (VisualNode node : nodes) {
-            if (node instanceof VisualPlace) {
-                VisualPlace place = (VisualPlace) node;
+            if (node instanceof VisualPlace place) {
                 place.setForegroundColor(color);
             }
             for (VisualConnection connection : petri.getConnections(node)) {
@@ -196,6 +196,24 @@ public class RdgToPetriConverter {
                 .map(this::getVertexPage)
                 .filter(Objects::nonNull)
                 .forEach(page -> page.setIsCollapsed(true));
+    }
+
+    public WorkspaceEntry createPetriWork(String desiredName, Set<File> vertexes, List<File> cycle,
+            Map<File, Set<String>> vertexToLabelsMap) {
+
+        ModelEntry me = new ModelEntry(new PetriDescriptor(), petri);
+        Framework framework = Framework.getInstance();
+        WorkspaceEntry we = framework.createWork(me, desiredName);
+        SwingUtilities.invokeLater(() -> {
+            petri.getBestLayouter().run(we);
+            collapse(rdg.getStgFiles());
+            collapse(rdg.getInvalidFiles());
+            highlightVertexes(vertexes, AnalysisDecorationSettings.getProblemColor());
+            highlightCycle(cycle, AnalysisDecorationSettings.getProblemColor());
+            highlightInstances(vertexToLabelsMap, AnalysisDecorationSettings.getProblemColor());
+            framework.requestFocus(we);
+        });
+        return we;
     }
 
 }
