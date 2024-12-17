@@ -51,6 +51,8 @@ public class FsmPlugin implements Plugin {
 
         ScriptableCommandUtils.registerCommand(MergeStateTransformationCommand.class, "transformFsmMergeState",
                 "transform the FSM/FST 'work' by merging selected states");
+        ScriptableCommandUtils.registerCommand(SplitStateTransformationCommand.class, "transformFsmSplitState",
+                "transform the FSM/FST 'work' by splitting selected states");
         ScriptableCommandUtils.registerCommand(ContractStateTransformationCommand.class, "transformFsmContractState",
                 "transform the FSM/FST 'work' by contracting selected states");
     }

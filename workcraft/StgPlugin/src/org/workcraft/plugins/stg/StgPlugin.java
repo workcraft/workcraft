@@ -59,6 +59,8 @@ public class StgPlugin implements Plugin {
                 "transform the STG 'work' by contracting a selected transition");
         ScriptableCommandUtils.registerCommand(MergeTransitionTransformationCommand.class, "transformStgMergeTransition",
                 "transform the STG 'work' by merging selected transitions");
+        ScriptableCommandUtils.registerCommand(SplitTransitionTransformationCommand.class, "transformStgSplitTransition",
+                "transform the STG 'work' by splitting selected transitions");
         ScriptableCommandUtils.registerCommand(InsertDummyTransformationCommand.class, "transformStgInsertDummy",
                 "transform the STG 'work' by inserting dummies into selected arcs");
         ScriptableCommandUtils.registerCommand(InsertInputTransformationCommand.class, "transformStgInsertInputTransition",
