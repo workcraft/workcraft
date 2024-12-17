@@ -20,7 +20,7 @@ public class PolicyPlugin implements Plugin {
 
     @Override
     public String getDescription() {
-        return "Policy Net";
+        return "Policy Net plugin";
     }
 
     @Override
