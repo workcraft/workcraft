@@ -5,10 +5,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.WorkUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -172,6 +169,12 @@ public class RefinementDependencyGraph {
             }
         }
         return FileUtils.getFullPath(file);
+    }
+
+    public List<File> getRefinementsInDependencyCycle() {
+        Map<File, Set<File>> graph = getSimpleGraph();
+        Set<List<File>> simpleCycles = DirectedGraphUtils.findSimpleCycles(graph);
+        return simpleCycles.isEmpty() ? Collections.emptyList() : simpleCycles.iterator().next();
     }
 
 }
