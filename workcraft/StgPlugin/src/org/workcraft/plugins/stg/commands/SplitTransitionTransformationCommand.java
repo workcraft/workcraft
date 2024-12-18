@@ -18,6 +18,9 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public final class SplitTransitionTransformationCommand extends AbstractSplitTransformationCommand {
 
     public SplitTransitionTransformationCommand() {
@@ -42,10 +45,14 @@ public final class SplitTransitionTransformationCommand extends AbstractSplitTra
     @Override
     public void beforeNodeTransformation(VisualModel model, VisualNode node) {
         if (model instanceof VisualStg stg) {
+            Set<VisualReadArc> readArcs = new HashSet<>();
             for (VisualConnection connection : stg.getConnections(node)) {
                 if (connection instanceof VisualReadArc readArc) {
-                    ConversionUtils.convertReadArcTotDualArc(model, readArc);
+                    readArcs.add(readArc);
                 }
+            }
+            for (VisualReadArc readArc : readArcs) {
+                ConversionUtils.convertReadArcTotDualArc(model, readArc);
             }
         }
     }
