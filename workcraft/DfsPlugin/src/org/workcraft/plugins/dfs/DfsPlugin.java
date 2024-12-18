@@ -55,18 +55,21 @@ public class DfsPlugin implements Plugin {
         ScriptableCommandUtils.registerCommand(InsertCounterflowRegisterTransformationCommand.class, "transformDfsInsertCounterflowRegister",
                 "transform the DFS 'work' by inserting counterflow register nodes into selected arcs");
 
+        ScriptableCommandUtils.registerCommand(SplitComponentTransformationCommand.class, "transformDfsSplitComponent",
+                " transform the DFS 'work' by splitting selected components");
         ScriptableCommandUtils.registerCommand(MergeComponentTransformationCommand.class, "transformDfsMergeComponent",
                 " transform the DFS 'work' by merging selected components");
         ScriptableCommandUtils.registerCommand(ContractComponentTransformationCommand.class, "transformDfsContractComponent",
                 " transform the DFS 'work' by contracting selected components");
+
+        // Do not register JavaScript wrapper for generic WaggingGeneratorCommand as it requires user input
+        pm.registerCommand(WaggingGeneratorCommand.class);
         ScriptableCommandUtils.registerCommand(WaggingGenerator2WayCommand.class, "transformDfsWagging2Way",
                 "transform the DFS 'work' by applying 2-way wagging to the selected pipeline section");
         ScriptableCommandUtils.registerCommand(WaggingGenerator3WayCommand.class, "transformDfsWagging3Way",
                 "transform the DFS 'work' by applying 3-way wagging to the selected pipeline section");
         ScriptableCommandUtils.registerCommand(WaggingGenerator4WayCommand.class, "transformDfsWagging4Way",
                 "transform the DFS 'work' by applying 4-way wagging to the selected pipeline section");
-        // Do not register generic WaggingGeneratorCommand as it requires user input
-        pm.registerCommand(WaggingGeneratorCommand.class);
     }
 
     private void initCompatibilityManager() {

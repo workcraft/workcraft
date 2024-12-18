@@ -11,10 +11,15 @@ import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.utils.LabelParser;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public final class SplitTransitionTransformationCommand extends AbstractSplitTransformationCommand {
 
@@ -40,10 +45,14 @@ public final class SplitTransitionTransformationCommand extends AbstractSplitTra
     @Override
     public void beforeNodeTransformation(VisualModel model, VisualNode node) {
         if (model instanceof VisualStg stg) {
+            Set<VisualReadArc> readArcs = new HashSet<>();
             for (VisualConnection connection : stg.getConnections(node)) {
                 if (connection instanceof VisualReadArc readArc) {
-                    ConversionUtils.convertReadArcTotDualArc(model, readArc);
+                    readArcs.add(readArc);
                 }
+            }
+            for (VisualReadArc readArc : readArcs) {
+                ConversionUtils.convertReadArcTotDualArc(model, readArc);
             }
         }
     }
@@ -52,7 +61,9 @@ public final class SplitTransitionTransformationCommand extends AbstractSplitTra
     public VisualComponent createDuplicate(VisualModel model, VisualComponent component) {
         if (model instanceof VisualStg stg) {
             if (component instanceof VisualDummyTransition dummyTransition) {
-                VisualDummyTransition result = stg.createVisualDummyTransition(stg.getMathName(dummyTransition),
+                String dummyName = stg.getMathName(dummyTransition);
+                Pair<String, Integer> nameInstancePair = LabelParser.parseInstancedTransition(dummyName);
+                VisualDummyTransition result = stg.createVisualDummyTransition(nameInstancePair.getFirst(),
                         Hierarchy.getNearestContainer(component));
 
                 result.copyPosition(component);

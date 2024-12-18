@@ -28,6 +28,11 @@ public class SelectAllSignalTransitionsTransformationCommand extends AbstractTra
     }
 
     @Override
+    public MenuVisibility getMenuVisibility() {
+        return MenuVisibility.APPLICABLE_POPUP_ONLY;
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, VisualStg.class);
     }
