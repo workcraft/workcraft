@@ -174,26 +174,35 @@ public class ReachUtils {
     }
 
     // REACH expression for checking if these two pairs of signals can be implemented by a mutex
+    private static final String MUTEX_PROTOCOL_REPLACEMENT = "/* insert true or false for late protocol here */";
     private static final String MUTEX_R1_REPLACEMENT = "/* insert r1 name here */";
     private static final String MUTEX_G1_REPLACEMENT = "/* insert g1 name here */";
     private static final String MUTEX_R2_REPLACEMENT = "/* insert r2 name here */";
     private static final String MUTEX_G2_REPLACEMENT = "/* insert g2 name here */";
 
-    private static final String MUTEX_EARLY_PROTOCOL_IMPLEMENTABILITY_REACH =
-            "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
-            "// by an early protocol mutex with requests r1/r2 and grants g1/g2.\n" +
+    private static final String MUTEX_IMPLEMENTABILITY_REACH =
+            "// For given signals r1, r2, g1, g2, check whether they follow\n" +
+            "// the early or late mutex protocol mutex with requests r1/r2 and grants g1/g2.\n" +
             "// The properties to check are:\n" +
-            "//   nxt(g1) = r1 & (~r2 | ~g2)\n" +
-            "//   nxt(g2) = r2 & (~r1 | ~g1)\n" +
-            "// Furthermore, the mutual exclusion of the critical sections is checked:\n" +
+            "//   1. The mutex has a sensible initial state:\n" +
+            "//      (r1<->g1) & (r2<->g2) & (~r1 | ~r2) in the initial state\n" +
+            "//   2. The constraints on the values of the next state functions\n" +
+            "//      which depend on whether the protocol is early or late.\n" +
+            "// Note that the mutual exclusion of the critical sections:\n" +
             "//   ~((r1 & g1) & (r2 & g2))\n" +
-            "// Note that the latter property does not follow from the above constraints\n" +
-            "// for the next state functions of the grants (e.g. in the initial state).\n" +
+            "// follows from these constraints inductively, as it is implied\n" +
+            "// in the initial state by the first constraint, and the constraints\n" +
+            "// on the next state function ensure that it is preserved.\n" +
             "let\n" +
+            "    is_late_protocol = " + MUTEX_PROTOCOL_REPLACEMENT + ",\n" +
             "    r1s = S\"" + MUTEX_R1_REPLACEMENT + "\",\n" +
             "    g1s = S\"" + MUTEX_G1_REPLACEMENT + "\",\n" +
             "    r2s = S\"" + MUTEX_R2_REPLACEMENT + "\",\n" +
             "    g2s = S\"" + MUTEX_G2_REPLACEMENT + "\",\n" +
+            "    r1i = is_init r1s,\n" +
+            "    g1i = is_init g1s,\n" +
+            "    r2i = is_init r2s,\n" +
+            "    g2i = is_init g2s,\n" +
             "    r1 = $r1s,\n" +
             "    g1 = $g1s,\n" +
             "    r2 = $r2s,\n" +
@@ -201,61 +210,34 @@ public class ReachUtils {
             "    g1nxt = 'g1s,\n" +
             "    g2nxt = 'g2s\n" +
             "{\n" +
-            "    (g1nxt ^ (r1 & (~r2 | ~g2)))  // negated definition of nxt(g1)\n" +
+            "    (r1i ^ g1i) | (r2i ^ g2i) | (r1i & r2i) // bad initial state\n" +
             "    |\n" +
-            "    (g2nxt ^ (r2 & (~r1 | ~g1)))  // negated definition of nxt(g2)\n" +
-            "    |\n" +
-            "    r1 & g1 & r2 & g2  // mutual exclusion of critical sections\n" +
-            "}\n";
-
-    private static final String MUTEX_LATE_PROTOCOL_IMPLEMENTABILITY_REACH =
-            "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
-                    "// by a late protocol mutex with requests r1/r2 and grants g1/g2.\n" +
-                    "// The properties to check are:\n" +
-                    "//   r1 & ~g2 => nxt(g1)\n" +
-                    "//   ~r1 => ~nxt(g1)\n" +
-                    "//   r2 & g2 => ~nxt(g1)\n" +
-                    "// (and the symmetric constraints for nxt(g2)).\n" +
-                    "// Furthermore, the mutual exclusion of the critical sections is checked:\n" +
-                    "//   ~((r1 & g1) & (r2 & g2))\n" +
-                    "// Note that the latter property does not follow from the above constraints\n" +
-                    "// for the next state functions of the grants (e.g. in the initial state).\n" +
-                    "let\n" +
-                    "    r1s = S\"" + MUTEX_R1_REPLACEMENT + "\",\n" +
-                    "    g1s = S\"" + MUTEX_G1_REPLACEMENT + "\",\n" +
-                    "    r2s = S\"" + MUTEX_R2_REPLACEMENT + "\",\n" +
-                    "    g2s = S\"" + MUTEX_G2_REPLACEMENT + "\",\n" +
-                    "    r1 = $r1s,\n" +
-                    "    g1 = $g1s,\n" +
-                    "    r2 = $r2s,\n" +
-                    "    g2 = $g2s,\n" +
-                    "    g1nxt = 'g1s,\n" +
-                    "    g2nxt = 'g2s\n" +
-                    "{\n" +
-                    "    // constraints on nxt(g1)\n" +
-                    "    r1 & ~g2 & ~g1nxt  // negation of r1&~g2 => nxt(g1)\n" +
-                    "    |\n" +
-                    "    ~r1 & g1nxt        // negation of ~r1 => ~nxt(g1)\n" +
-                    "    |\n" +
-                    "    r2 & g2 & g1nxt    // negation of r2&g2 => ~nxt(g1)\n" +
-                    "    |\n" +
-                    "    // constraints on nxt(g2)\n" +
-                    "    r2 & ~g1 & ~g2nxt  // negation of r2&~g1 => nxt(g2)\n" +
-                    "    |\n" +
-                    "    ~r2 & g2nxt        // negation of ~r2 => ~nxt(g2)\n" +
-                    "    |\n" +
-                    "    r1 & g1 & g2nxt    // negation of r1&g1 => ~nxt(g2)\n" +
-                    "    |\n" +
-                    "    // mutual exclusion of critical sections\n" +
-                    "    r1 & g1 & r2 & g2\n" +
-                    "}\n";
+            "    (is_late_protocol ?\n" +
+            "        r1 & ~g2 & ~g1nxt  // negation of r1&~g2 => nxt(g1)\n" +
+            "        |\n" +
+            "        ~r1 & g1nxt        // negation of ~r1 => ~nxt(g1)\n" +
+            "        |\n" +
+            "        r2 & g2 & g1nxt    // negation of r2&g2 => ~nxt(g1)\n" +
+            "        |\n" +
+            "        r2 & ~g1 & ~g2nxt  // negation of r2&~g1 => nxt(g2)\n" +
+            "        |\n" +
+            "        ~r2 & g2nxt        // negation of ~r2 => ~nxt(g2)\n" +
+            "        |\n" +
+            "        r1 & g1 & g2nxt    // negation of r1&g1 => ~nxt(g2)\n" +
+            "    :\n" +
+            "        (g1nxt ^ (r1 & (~r2 | ~g2)))  // negation of nxt(g1) := r1 & (~r2 | ~g2)\n" +
+            "        |\n" +
+            "        (g2nxt ^ (r2 & (~r1 | ~g1)))  // negation of nxt(g2) := r2 & (~r1 | ~g1)\n" +
+            "    )\n" +
+            "}";
 
     public static List<VerificationParameters> getMutexImplementabilityParameters(Collection<Mutex> mutexes) {
         return mutexes.stream().map(ReachUtils::getMutexImplementabilityParameters).collect(Collectors.toList());
     }
 
     private static VerificationParameters getMutexImplementabilityParameters(Mutex mutex) {
-        String reach = getMutexImplementabilityReach(mutex.protocol)
+        String reach = MUTEX_IMPLEMENTABILITY_REACH
+                .replace(MUTEX_PROTOCOL_REPLACEMENT, mutex.protocol == Mutex.Protocol.LATE ? "true" : "false")
                 .replace(MUTEX_R1_REPLACEMENT, mutex.r1.name)
                 .replace(MUTEX_G1_REPLACEMENT, mutex.g1.name)
                 .replace(MUTEX_R2_REPLACEMENT, mutex.r2.name)
@@ -276,12 +258,6 @@ public class ReachUtils {
                 return "-Mutex_implementability-" + mutex.name;
             }
         };
-    }
-
-    private static String getMutexImplementabilityReach(Mutex.Protocol mutexProtocol) {
-        return mutexProtocol == Mutex.Protocol.LATE
-                ? MUTEX_LATE_PROTOCOL_IMPLEMENTABILITY_REACH
-                : MUTEX_EARLY_PROTOCOL_IMPLEMENTABILITY_REACH;
     }
 
     public static String getBooleanAsString(boolean value) {
