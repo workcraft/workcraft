@@ -78,70 +78,84 @@ public abstract class AbstractSplitTransformationCommand extends AbstractTransfo
     public void transformNode(VisualModel model, VisualNode node) {
         if (node instanceof VisualComponent component) {
             VisualComponent firstComponent = createDuplicate(model, component);
-            VisualComponent secondComponent = createDuplicate(model, component);
-            for (Replica replica : component.getReplicas()) {
-                if (replica instanceof VisualReplica vReplica) {
-                    Class<? extends VisualReplica> replicaClass = vReplica.getClass();
-                    Container replicaContainer = Hierarchy.getNearestContainer(vReplica);
-                    VisualReplica fromReplica = null;
-                    VisualReplica toReplica = null;
-                    for (VisualConnection connection : model.getConnections(vReplica)) {
-                        VisualNode predNode = connection.getFirst();
-                        VisualNode succNode = connection.getSecond();
-                        if (predNode == replica) {
-                            if (toReplica == null) {
-                                toReplica = model.createVisualReplica(secondComponent, replicaClass, replicaContainer);
-                                toReplica.copyStyle(vReplica);
-                                toReplica.copyPosition(vReplica);
-                            }
-                            try {
-                                VisualConnection newConnection = model.connect(toReplica, succNode);
-                                copyConnectionDetails(model, connection, newConnection);
-                            } catch (InvalidConnectionException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                        if (succNode == replica) {
-                            if (fromReplica == null) {
-                                fromReplica = model.createVisualReplica(firstComponent, replicaClass, replicaContainer);
-                                fromReplica.copyStyle(vReplica);
-                                fromReplica.copyPosition(vReplica);
-                            }
-                            try {
-                                VisualConnection newConnection = model.connect(predNode, fromReplica);
-                                copyConnectionDetails(model, connection, newConnection);
-                            } catch (InvalidConnectionException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-            }
-            for (VisualConnection connection : model.getConnections(component)) {
-                VisualNode predNode = connection.getFirst();
-                VisualNode succNode = connection.getSecond();
-                if (predNode == component) {
-                    try {
-                        VisualConnection newConnection = model.connect(secondComponent, succNode);
-                        copyConnectionDetails(model, connection, newConnection);
-                    } catch (InvalidConnectionException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                if (succNode == component) {
-                    try {
-                        VisualConnection newConnection = model.connect(predNode, firstComponent);
-                        copyConnectionDetails(model, connection, newConnection);
-                    } catch (InvalidConnectionException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
+            createDuplicateIncomingConnections(model, component, firstComponent);
 
-            // Adjust positions of split components
+            VisualComponent secondComponent = createDuplicate(model, component);
+            createDuplicateOutgoingConnections(model, component, secondComponent);
+
             removeOriginalComponentAndInheritName(model, component, firstComponent, secondComponent);
             adjustSplitComponentPositions(model, firstComponent, secondComponent);
             connectSplitComponents(model, firstComponent, secondComponent);
+        }
+    }
+
+    private void createDuplicateIncomingConnections(VisualModel model, VisualComponent component, VisualComponent firstComponent) {
+        for (VisualConnection connection : model.getConnections(component)) {
+            if (component == connection.getSecond()) {
+                try {
+                    VisualConnection newConnection = model.connect(connection.getFirst(), firstComponent);
+                    copyConnectionDetails(model, connection, newConnection);
+                } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        for (Replica replica : component.getReplicas()) {
+            if (replica instanceof VisualReplica vReplica) {
+                Class<? extends VisualReplica> replicaClass = vReplica.getClass();
+                Container replicaContainer = Hierarchy.getNearestContainer(vReplica);
+                VisualReplica newReplica = null;
+                for (VisualConnection connection : model.getConnections(vReplica)) {
+                    if (replica == connection.getSecond()) {
+                        if (newReplica == null) {
+                            newReplica = model.createVisualReplica(firstComponent, replicaClass, replicaContainer);
+                            newReplica.copyStyle(vReplica);
+                            newReplica.copyPosition(vReplica);
+                        }
+                        try {
+                            VisualConnection newConnection = model.connect(connection.getFirst(), newReplica);
+                            copyConnectionDetails(model, connection, newConnection);
+                        } catch (InvalidConnectionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void createDuplicateOutgoingConnections(VisualModel model, VisualComponent component, VisualComponent secondComponent) {
+        for (VisualConnection connection : model.getConnections(component)) {
+            if (component == connection.getFirst()) {
+                try {
+                    VisualConnection newConnection = model.connect(secondComponent, connection.getSecond());
+                    copyConnectionDetails(model, connection, newConnection);
+                } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        for (Replica replica : component.getReplicas()) {
+            if (replica instanceof VisualReplica vReplica) {
+                Class<? extends VisualReplica> replicaClass = vReplica.getClass();
+                Container replicaContainer = Hierarchy.getNearestContainer(vReplica);
+                VisualReplica newReplica = null;
+                for (VisualConnection connection : model.getConnections(vReplica)) {
+                    if (connection.getFirst() == replica) {
+                        if (newReplica == null) {
+                            newReplica = model.createVisualReplica(secondComponent, replicaClass, replicaContainer);
+                            newReplica.copyStyle(vReplica);
+                            newReplica.copyPosition(vReplica);
+                        }
+                        try {
+                            VisualConnection newConnection = model.connect(newReplica, connection.getSecond());
+                            copyConnectionDetails(model, connection, newConnection);
+                        } catch (InvalidConnectionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                }
+            }
         }
     }
 
