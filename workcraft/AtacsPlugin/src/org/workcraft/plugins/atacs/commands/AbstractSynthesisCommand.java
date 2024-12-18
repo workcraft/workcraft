@@ -28,7 +28,7 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
 
     @Override
     public MenuVisibility getMenuVisibility() {
-        return AtacsSettings.getShowInMenu() ? MenuVisibility.ACTIVE_APPLICABLE : MenuVisibility.NEVER;
+        return AtacsSettings.getShowInMenu() ? MenuVisibility.APPLICABLE : MenuVisibility.NEVER;
     }
 
     @Override

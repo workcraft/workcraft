@@ -39,7 +39,7 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Col
 
     @Override
     public MenuVisibility getMenuVisibility() {
-        return MsfsmSettings.getShowInMenu() ? MenuVisibility.ACTIVE_APPLICABLE : MenuVisibility.NEVER;
+        return MsfsmSettings.getShowInMenu() ? MenuVisibility.APPLICABLE : MenuVisibility.NEVER;
     }
 
     @Override

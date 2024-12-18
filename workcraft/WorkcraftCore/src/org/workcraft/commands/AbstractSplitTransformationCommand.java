@@ -34,6 +34,11 @@ public abstract class AbstractSplitTransformationCommand extends AbstractTransfo
     }
 
     @Override
+    public MenuVisibility getMenuVisibility() {
+        return MenuVisibility.APPLICABLE_POPUP_ONLY;
+    }
+
+    @Override
     public boolean isApplicableTo(VisualNode node) {
         for (Class<? extends VisualComponent> splitableClass : splittableClasses) {
             if (splitableClass.isInstance(node)) {
@@ -166,7 +171,7 @@ public abstract class AbstractSplitTransformationCommand extends AbstractTransfo
         if (outgoingGradients.isEmpty() && incomingGradients.isEmpty()) {
             Point2D firstPos = firstComponent.getRootSpacePosition();
             firstComponent.setRootSpacePosition(new Point2D.Double(firstPos.getX() - offset, firstPos.getY()));
-            Point2D secondPos = firstComponent.getRootSpacePosition();
+            Point2D secondPos = secondComponent.getRootSpacePosition();
             secondComponent.setRootSpacePosition(new Point2D.Double(secondPos.getX() + offset, secondPos.getY()));
         } else if (outgoingGradients.isEmpty()) {
             adjustPosition(secondComponent, incomingGradients, -2 * offset);

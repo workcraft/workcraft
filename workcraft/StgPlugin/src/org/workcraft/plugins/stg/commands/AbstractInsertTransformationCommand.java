@@ -38,6 +38,11 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
     }
 
     @Override
+    public MenuVisibility getMenuVisibility() {
+        return MenuVisibility.APPLICABLE_POPUP_ONLY;
+    }
+
+    @Override
     public boolean isEnabled(ModelEntry me, VisualNode node) {
         return true;
     }

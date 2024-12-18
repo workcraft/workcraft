@@ -1,11 +1,9 @@
 package org.workcraft.utils;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.Command;
-import org.workcraft.commands.MenuOrdering;
+import org.workcraft.commands.*;
 import org.workcraft.commands.MenuOrdering.Position;
-import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.commands.ScriptableDataCommand;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.workspace.Path;
@@ -47,9 +45,26 @@ public class CommandUtils {
     }
 
     public static List<Command> getApplicableVisibleCommands(WorkspaceEntry we) {
-        return getCommands(command -> (command.getMenuVisibility() == Command.MenuVisibility.ALWAYS)
-                || ((command.getMenuVisibility() == Command.MenuVisibility.ACTIVE_APPLICABLE)
-                        && (we != null) && command.isApplicableTo(we)));
+        return getCommands(command -> {
+            Command.MenuVisibility menuVisibility = command.getMenuVisibility();
+            return (menuVisibility == Command.MenuVisibility.ALWAYS)
+                    || ((menuVisibility == Command.MenuVisibility.APPLICABLE) && command.isApplicableTo(we));
+        });
+    }
+
+    public static List<Command> getApplicableVisiblePopupCommands(WorkspaceEntry we, VisualNode node) {
+        return getCommands(command -> {
+            if ((command instanceof NodeTransformer nodeTransformer)
+                    && command.isApplicableTo(we)
+                    && (nodeTransformer.isApplicableTo(node))) {
+
+                Command.MenuVisibility menuVisibility = command.getMenuVisibility();
+                return (menuVisibility == Command.MenuVisibility.ALWAYS)
+                        || (menuVisibility == Command.MenuVisibility.APPLICABLE)
+                        || (menuVisibility == Command.MenuVisibility.APPLICABLE_POPUP_ONLY);
+            }
+            return false;
+        });
     }
 
     public static List<String> getSections(List<Command> commands) {

@@ -44,6 +44,11 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
+    public MenuVisibility getMenuVisibility() {
+        return MenuVisibility.APPLICABLE_POPUP_ONLY;
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, VisualPetri.class);
     }

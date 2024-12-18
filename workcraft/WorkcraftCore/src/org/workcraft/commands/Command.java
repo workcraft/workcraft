@@ -3,7 +3,7 @@ package org.workcraft.commands;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public interface Command {
-    enum MenuVisibility { NEVER, ACTIVE_APPLICABLE, ALWAYS }
+    enum MenuVisibility { NEVER, APPLICABLE, ALWAYS, APPLICABLE_POPUP_ONLY }
 
     String getSection();
     String getDisplayName();
@@ -11,7 +11,7 @@ public interface Command {
     void run(WorkspaceEntry we);
 
     default MenuVisibility getMenuVisibility() {
-        return MenuVisibility.ACTIVE_APPLICABLE;
+        return MenuVisibility.APPLICABLE;
     }
 
 }
