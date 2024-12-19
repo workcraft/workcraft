@@ -15,7 +15,7 @@ transformCircuitSquashComponent(work) - transform the Circuit 'work' by replacin
 transformCircuitToggleBubble(work) - transform the Circuit 'work' by toggling inversion of selected contacts and outputs of selected components
 transformCircuitToggleZeroDelay(work) - transform the Circuit 'work' by toggling zero delay of selected inverters and buffers
 transformCircuitUpdateComponentInterface(work) - transform the Circuit 'work' by updating selected (or all) components from their refinement models
-transformDfsContractComponent(work) -  transform the DFS 'work' by contracting selected components
+transformDfsContractComponent(work) - transform the DFS 'work' by contracting selected components
 transformDfsInsertControlRegister(work) - transform the DFS 'work' by inserting control register nodes into selected arcs
 transformDfsInsertCounterflowLogic(work) - transform the DFS 'work' by inserting counterflow logic nodes into selected arcs
 transformDfsInsertCounterflowRegister(work) - transform the DFS 'work' by inserting counterflow register nodes into selected arcs
@@ -23,12 +23,14 @@ transformDfsInsertLogic(work) - transform the DFS 'work' by inserting logic node
 transformDfsInsertPopRegister(work) - transform the DFS 'work' by inserting pop register nodes into selected arcs
 transformDfsInsertPushRegister(work) - transform the DFS 'work' by inserting push register nodes into selected arcs
 transformDfsInsertRegister(work) - transform the DFS 'work' by inserting register nodes into selected arcs
-transformDfsMergeComponent(work) -  transform the DFS 'work' by merging selected components
+transformDfsMergeComponent(work) - transform the DFS 'work' by merging selected components
+transformDfsSplitComponent(work) - transform the DFS 'work' by splitting selected components
 transformDfsWagging2Way(work) - transform the DFS 'work' by applying 2-way wagging to the selected pipeline section
 transformDfsWagging3Way(work) - transform the DFS 'work' by applying 3-way wagging to the selected pipeline section
 transformDfsWagging4Way(work) - transform the DFS 'work' by applying 4-way wagging to the selected pipeline section
 transformFsmContractState(work) - transform the FSM/FST 'work' by contracting selected states
 transformFsmMergeState(work) - transform the FSM/FST 'work' by merging selected states
+transformFsmSplitState(work) - transform the FSM/FST 'work' by splitting selected states
 transformModelAnonymise(work) - anonymise the model 'work' by randomly renaming its nodes
 transformModelStraightenConnection(work) - transform the model 'work' by straightening selected (or all) arcs
 transformPetriCollapseProxy(work) - transform the Petri net (or derived model, e.g.STG) 'work' by collapsing selected (or all) proxy places
@@ -56,4 +58,5 @@ transformStgMirrorSignal(work) - transform the STG 'work' by mirroring selected 
 transformStgMirrorTransition(work) - transform the STG 'work' by mirroring selected (or all) transition sign
 transformStgSelectAllSignalTransitions(work) - select all transitions of selected signals in the STG 'work'
 transformStgSignalToDummyTransition(work) - transform the STG 'work' by converting selected signal transitions to dummies
+transformStgSplitTransition(work) - transform the STG 'work' by splitting selected transitions
 transformWtgStructureWaveform(work) - transform the WTG 'work' by structuring the waveforms
