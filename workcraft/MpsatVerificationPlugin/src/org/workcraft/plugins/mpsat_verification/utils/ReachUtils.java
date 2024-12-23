@@ -165,6 +165,15 @@ public class ReachUtils {
                 reach, true);
     }
 
+    public static VerificationParameters getNwayConformationParameters(Collection<String> shadowTransitionNames) {
+        String reach = getConformationReach(shadowTransitionNames);
+        return new VerificationParameters("N-way conformation",
+                VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
+                MpsatVerificationSettings.getSolutionMode(),
+                MpsatVerificationSettings.getSolutionCount(),
+                reach, true);
+    }
+
     private static String getConformationReach(Collection<String> shadowTransitionNames) {
         String str = shadowTransitionNames.stream()
                 .map(ref -> "\"" + ref + "\", ")

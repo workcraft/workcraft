@@ -384,7 +384,7 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
 
         // Fill verification parameters with the inserted shadow transitions
         Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(compositionStg, shadowTransitions);
-        VerificationParameters verificationParameters = ReachUtils.getConformationParameters(shadowTransitionRefs);
+        VerificationParameters verificationParameters = ReachUtils.getNwayConformationParameters(shadowTransitionRefs);
 
         File shadowCompositionStgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
         Result<? extends ExportOutput> exportResult = StgUtils.exportStg(compositionStg, shadowCompositionStgFile, monitor);
@@ -406,12 +406,14 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
         VerificationParameters verificationParameters = payload.getVerificationParameters();
         MpsatTask mpsatTask = new MpsatTask(compositionStgFile, verificationParameters, directory);
         Result<? extends MpsatOutput>  mpsatResult = Framework.getInstance().getTaskManager().execute(
-                mpsatTask, "Running refinement check [MPSat]", new SubtaskMonitor<>(monitor));
+                mpsatTask, "Running N-way conformation check [MPSat]", new SubtaskMonitor<>(monitor));
 
         if (mpsatResult.isSuccess()) {
-            payload = payload.applyMessage(mpsatResult.getPayload().hasSolutions()
+            String message = mpsatResult.getPayload().hasSolutions()
                     ? "This model does not conform to the environment."
-                    : "N-way conformation holds.");
+                    : "N-way conformation holds.";
+
+            payload = payload.applyMessage(message);
         }
 
         return new Result<>(mpsatResult.getOutcome(), payload.applyMpsatResult(mpsatResult));
