@@ -189,33 +189,33 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             editor.requestFocus();
         });
 
-        JPanel simulationControl = new JPanel();
-        simulationControl.add(playButton);
-        simulationControl.add(backwardButton);
-        simulationControl.add(forwardButton);
-        simulationControl.add(recordButton);
-        simulationControl.add(ejectButton);
-        GuiUtils.setButtonPanelLayout(simulationControl, playButton.getPreferredSize());
+        JPanel simulationControlPanel = new JPanel();
+        simulationControlPanel.add(playButton);
+        simulationControlPanel.add(backwardButton);
+        simulationControlPanel.add(forwardButton);
+        simulationControlPanel.add(recordButton);
+        simulationControlPanel.add(ejectButton);
+        GuiUtils.setButtonPanelLayout(simulationControlPanel, playButton.getPreferredSize());
 
-        JPanel speedControl = new JPanel();
-        speedControl.add(speedSlider);
-        GuiUtils.setButtonPanelLayout(speedControl, speedSlider.getPreferredSize());
+        JPanel speedControlPanel = new JPanel();
+        speedControlPanel.add(speedSlider);
+        GuiUtils.setButtonPanelLayout(speedControlPanel, speedSlider.getPreferredSize());
 
-        JPanel traceControl = new JPanel();
+        JPanel traceControlPanel = new JPanel();
         if (enableTraceGraph) {
-            traceControl.add(generateGraphButton);
+            traceControlPanel.add(generateGraphButton);
         }
-        traceControl.add(copyStateButton);
-        traceControl.add(pasteStateButton);
-        traceControl.add(mergeTraceButton);
-        traceControl.add(saveInitStateButton);
-        GuiUtils.setButtonPanelLayout(simulationControl, copyStateButton.getPreferredSize());
+        traceControlPanel.add(copyStateButton);
+        traceControlPanel.add(pasteStateButton);
+        traceControlPanel.add(mergeTraceButton);
+        traceControlPanel.add(saveInitStateButton);
+        GuiUtils.setButtonPanelLayout(simulationControlPanel, copyStateButton.getPreferredSize());
 
         controlPanel = new JPanel();
         controlPanel.setLayout(new WrapLayout());
-        controlPanel.add(simulationControl);
-        controlPanel.add(speedControl);
-        controlPanel.add(traceControl);
+        controlPanel.add(simulationControlPanel);
+        controlPanel.add(speedControlPanel);
+        controlPanel.add(traceControlPanel);
 
         traceTable = new JTable(new TraceTableModel());
         traceTable.getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
@@ -513,7 +513,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             try {
                 result = (String) contents.getTransferData(DataFlavor.stringFlavor);
             } catch (UnsupportedFlavorException | IOException e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
             }
         }
         return result;
@@ -783,10 +783,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             public Color getColorisation() {
                 return isExcited ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
         };
     }
 
@@ -794,20 +790,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     public Decoration getContainerDecoration(VisualModel model, Container container) {
         final boolean isExcited = isContainerExcited(model, container);
-        return new ContainerDecoration() {
-            @Override
-            public Color getColorisation() {
-                return null;
-            }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
-            @Override
-            public boolean isContainerExcited() {
-                return isExcited;
-            }
-        };
+        return (ContainerDecoration) () -> isExcited;
     }
 
     public boolean isContainerExcited(VisualModel model, Container container) {

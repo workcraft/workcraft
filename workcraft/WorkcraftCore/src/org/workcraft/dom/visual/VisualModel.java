@@ -55,6 +55,8 @@ public interface VisualModel extends Model<VisualNode, VisualConnection>, Observ
     void selectInverse();
     void select(VisualNode node);
     void select(Collection<? extends VisualNode> nodes);
+    void toggleSelection(VisualNode node);
+    void toggleSelection(Collection<? extends VisualNode> nodes);
     void addToSelection(VisualNode node);
     void addToSelection(Collection<? extends VisualNode> nodes);
     void removeFromSelection(VisualNode node);
