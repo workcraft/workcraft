@@ -12,9 +12,11 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.VisualReplicaContact;
 import org.workcraft.plugins.circuit.commands.DissolveJointTransformationCommand;
+import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.ModelUtils;
 
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -35,8 +37,14 @@ public class ConversionUtils {
         if (outgoingConnections.size() > 1) {
             VisualJoint joint = circuit.createJoint(container);
             joint.setRootSpacePosition(replicaPositionInRootSpace);
+            LinkedList<Color> colors = new LinkedList<>();
+            for (VisualConnection outgoingConnection : outgoingConnections) {
+                colors.add(outgoingConnection.getColor());
+            }
+            joint.setForegroundColor(ColorUtils.mix(colors));
             try {
-                circuit.connect(firstNode, joint);
+                VisualConnection newIncomingConnection = circuit.connect(firstNode, joint);
+                newIncomingConnection.mixStyle(outgoingConnections.toArray(new VisualConnection[0]));
             } catch (InvalidConnectionException ignored) {
             }
             firstNode = joint;
@@ -52,8 +60,9 @@ public class ConversionUtils {
             }
             circuit.remove(outgoingConnection);
             try {
-                VisualConnection newConnection = circuit.connect(firstNode, secondNode);
-                ConnectionHelper.addControlPoints(newConnection, locationsInRootSpace);
+                VisualConnection newOutgoingConnection = circuit.connect(firstNode, secondNode);
+                ConnectionHelper.addControlPoints(newOutgoingConnection, locationsInRootSpace);
+                newOutgoingConnection.copyStyle(outgoingConnection);
             } catch (InvalidConnectionException ignored) {
             }
         }
@@ -64,6 +73,7 @@ public class ConversionUtils {
     }
 
     public static VisualConnection replicateDriverContact(VisualCircuit circuit, VisualContact drivenContact, double offset) {
+        VisualConnection result = null;
         Set<VisualConnection> connections = circuit.getConnections(drivenContact);
         if (connections.size() == 1) {
             VisualConnection connection = connections.iterator().next();
@@ -97,12 +107,13 @@ public class ConversionUtils {
                 }
 
                 try {
-                    return circuit.connect(replicaDriverContact, drivenContact);
+                    result = circuit.connect(replicaDriverContact, drivenContact);
+                    result.copyStyle(connection);
                 } catch (InvalidConnectionException ignored) {
                 }
             }
         }
-        return null;
+        return result;
     }
 
     public static void updateReplicas(VisualCircuit circuit, VisualContact oldContact, VisualContact newContact) {
