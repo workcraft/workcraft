@@ -428,23 +428,24 @@ public abstract class AbstractVerilogImporter implements Importer {
     private Mutex instanceToMutexWithProtocol(VerilogInstance verilogInstance, Collection<Mutex> mutexes) {
         String name = verilogInstance.name;
 
-        Mutex.Protocol protocol = mutexes.stream()
+        Mutex.Protocol mutexProtocol = mutexes.stream()
                 .filter(mutex -> (mutex.name != null) && mutex.name.equals(name))
                 .findFirst()
                 .map(mutex -> mutex.protocol)
                 .orElse(Mutex.Protocol.EARLY);
 
-        Mutex module = CircuitSettings.parseMutexData(protocol);
-        if ((module == null) || (module.name == null)) {
+        Mutex mutexModule = CircuitSettings.parseMutexData(mutexProtocol);
+        if (mutexModule == null) {
+            LogUtils.logError(ArbitrationUtils.getMissingMutexMessage(mutexProtocol));
             return null;
         }
 
-        Signal r1 = getPinConnectedSignal(verilogInstance, module.r1.name, 0);
-        Signal g1 = getPinConnectedSignal(verilogInstance, module.g1.name, 1);
-        Signal r2 = getPinConnectedSignal(verilogInstance, module.r2.name, 2);
-        Signal g2 = getPinConnectedSignal(verilogInstance, module.g2.name, 3);
+        Signal r1 = getPinConnectedSignal(verilogInstance, mutexModule.r1.name, 0);
+        Signal g1 = getPinConnectedSignal(verilogInstance, mutexModule.g1.name, 1);
+        Signal r2 = getPinConnectedSignal(verilogInstance, mutexModule.r2.name, 2);
+        Signal g2 = getPinConnectedSignal(verilogInstance, mutexModule.g2.name, 3);
 
-        return new Mutex(name, r1, g1, r2, g2, protocol);
+        return new Mutex(name, r1, g1, r2, g2, mutexProtocol);
     }
 
     private Signal getPinConnectedSignal(VerilogInstance verilogInstance, String portName, int portIndexIfNoPortName) {
@@ -1011,51 +1012,57 @@ public abstract class AbstractVerilogImporter implements Importer {
         circuit.setName(component, name);
     }
 
-    private FunctionComponent createWait(Circuit circuit, Wait instance, HashMap<String, Net> signalToNetMap) {
-        if (instance == null) {
+    private FunctionComponent createWait(Circuit circuit, Wait waitInstance, HashMap<String, Net> signalToNetMap) {
+        if (waitInstance == null) {
             return null;
         }
-        Wait module = CircuitSettings.parseWaitData(instance.type);
-        if ((module == null) || (module.name == null)) {
+        Wait.Type waitType = waitInstance.type;
+        Wait waitModule = CircuitSettings.parseWaitData(waitType);
+        if (waitModule == null) {
+            LogUtils.logError(ArbitrationUtils.getMissingWaitMessage(waitType));
             return null;
         }
+
         FunctionComponent component = new FunctionComponent();
         circuit.add(component);
-        component.setModule(module.name);
+        component.setModule(waitModule.name);
         component.setIsArbitrationPrimitive(true);
 
-        reparentAndRenameComponent(circuit, component, instance.name);
-        FunctionContact sigContact = addComponentPin(circuit, component, module.sig, instance.sig, signalToNetMap);
-        FunctionContact ctrlContact = addComponentPin(circuit, component, module.ctrl, instance.ctrl, signalToNetMap);
-        FunctionContact sanContact = addComponentPin(circuit, component, module.san, instance.san, signalToNetMap);
+        reparentAndRenameComponent(circuit, component, waitInstance.name);
+        FunctionContact sigContact = addComponentPin(circuit, component, waitModule.sig, waitInstance.sig, signalToNetMap);
+        FunctionContact ctrlContact = addComponentPin(circuit, component, waitModule.ctrl, waitInstance.ctrl, signalToNetMap);
+        FunctionContact sanContact = addComponentPin(circuit, component, waitModule.san, waitInstance.san, signalToNetMap);
 
-        ArbitrationUtils.assignWaitFunctions(instance.type, sigContact, ctrlContact, sanContact);
+        ArbitrationUtils.assignWaitFunctions(waitInstance.type, sigContact, ctrlContact, sanContact);
         return component;
     }
 
-    private FunctionComponent createMutex(Circuit circuit, Mutex instance, HashMap<String, Net> signalToNetMap) {
-        if (instance == null) {
+    private FunctionComponent createMutex(Circuit circuit, Mutex mutexInstance, HashMap<String, Net> signalToNetMap) {
+        if (mutexInstance == null) {
             return null;
         }
-        Mutex module = CircuitSettings.parseMutexData(instance.protocol);
-        if ((module == null) || (module.name == null)) {
+        Mutex.Protocol mutexProtocol = mutexInstance.protocol;
+        Mutex mutexModule = CircuitSettings.parseMutexData(mutexProtocol);
+        if (mutexModule == null) {
+            LogUtils.logError(ArbitrationUtils.getMissingMutexMessage(mutexProtocol));
             return null;
         }
+
         FunctionComponent component = new FunctionComponent();
         circuit.add(component);
-        component.setModule(module.name);
+        component.setModule(mutexModule.name);
         component.setIsArbitrationPrimitive(true);
 
-        reparentAndRenameComponent(circuit, component, instance.name);
-        FunctionContact r1Contact = addComponentPin(circuit, component, module.r1, instance.r1, signalToNetMap);
-        FunctionContact g1Contact = addComponentPin(circuit, component, module.g1, instance.g1, signalToNetMap);
-        FunctionContact r2Contact = addComponentPin(circuit, component, module.r2, instance.r2, signalToNetMap);
-        FunctionContact g2Contact = addComponentPin(circuit, component, module.g2, instance.g2, signalToNetMap);
+        reparentAndRenameComponent(circuit, component, mutexInstance.name);
+        FunctionContact r1Contact = addComponentPin(circuit, component, mutexModule.r1, mutexInstance.r1, signalToNetMap);
+        FunctionContact g1Contact = addComponentPin(circuit, component, mutexModule.g1, mutexInstance.g1, signalToNetMap);
+        FunctionContact r2Contact = addComponentPin(circuit, component, mutexModule.r2, mutexInstance.r2, signalToNetMap);
+        FunctionContact g2Contact = addComponentPin(circuit, component, mutexModule.g2, mutexInstance.g2, signalToNetMap);
 
-        ArbitrationUtils.setMutexFunctionsQuiet(instance.protocol, r1Contact, g1Contact, r2Contact, g2Contact);
+        ArbitrationUtils.setMutexFunctionsQuiet(mutexProtocol, r1Contact, g1Contact, r2Contact, g2Contact);
 
-        setMutexGrant(circuit, instance.g1, signalToNetMap);
-        setMutexGrant(circuit, instance.g2, signalToNetMap);
+        setMutexGrant(circuit, mutexInstance.g1, signalToNetMap);
+        setMutexGrant(circuit, mutexInstance.g2, signalToNetMap);
         return component;
     }
 

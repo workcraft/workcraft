@@ -1,12 +1,18 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.*;
+import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.Wait;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
 
@@ -245,6 +251,38 @@ public class ArbitrationUtils {
         return getModuleNameToWaitMap().get(moduleName);
     }
 
+    public static LinkedList<Pair<String, String>> getWaitPersistencyExceptions(Circuit circuit,
+            boolean useInternalSignal) {
+
+        LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
+        Set<String> waitModuleNames = ArbitrationUtils.getWaitModuleNames();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getIsArbitrationPrimitive()) {
+                String moduleName = component.getModule();
+                if (waitModuleNames.contains(moduleName)) {
+                    Wait waitModule = getWaitModule(moduleName);
+                    if (waitModule != null) {
+                        String sanSignal = getPinSignal(circuit, component, waitModule.san.name);
+                        if (useInternalSignal && (sanSignal != null)) {
+                            String intRef = circuit.getNodeReference(component) + "internal";
+                            grantPairs.add(Pair.of(sanSignal, intRef));
+                            grantPairs.add(Pair.of(intRef, sanSignal));
+                        }
+                        String sigSignal = getPinSignal(circuit, component, waitModule.sig.name);
+                        if ((sigSignal != null) && (sanSignal != null)) {
+                            grantPairs.add(Pair.of(sigSignal, sanSignal));
+                        }
+                    }
+                }
+            }
+        }
+        return grantPairs;
+    }
+
+    public static String getMissingWaitMessage(Wait.Type type) {
+        return type + " definition is missing in Digital Circuit settings";
+    }
+
     public static void setMutexFunctionsQuiet(Mutex.Protocol protocol,
             FunctionContact r1Contact, FunctionContact g1Contact,
             FunctionContact r2Contact, FunctionContact g2Contact) {
@@ -329,32 +367,54 @@ public class ArbitrationUtils {
         return grantPairs;
     }
 
-    public static LinkedList<Pair<String, String>> getWaitPersistencyExceptions(Circuit circuit,
-            boolean useInternalSignal) {
+    public static List<Mutex> getImplementableMutexesOrNullForError(Stg stg) {
+        List<Mutex> result = new LinkedList<>();
+        List<StgPlace> missingEarlyMutexPlaces = new ArrayList<>();
+        List<StgPlace> missingLateMutexPlaces = new ArrayList<>();
+        List<StgPlace> unimplementableMutexPlaces = new ArrayList<>();
+        for (StgPlace place : stg.getMutexPlaces()) {
+            if (CircuitSettings.parseMutexData(place.getMutexProtocol()) == null) {
+                List<StgPlace> missingMutexPlaces = (place.getMutexProtocol() == Mutex.Protocol.LATE) ?
+                        missingLateMutexPlaces : missingEarlyMutexPlaces;
 
-        LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
-        Set<String> waitModuleNames = ArbitrationUtils.getWaitModuleNames();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getIsArbitrationPrimitive()) {
-                String moduleName = component.getModule();
-                if (waitModuleNames.contains(moduleName)) {
-                    Wait waitModule = getWaitModule(moduleName);
-                    if (waitModule != null) {
-                        String sanSignal = getPinSignal(circuit, component, waitModule.san.name);
-                        if (useInternalSignal && (sanSignal != null)) {
-                            String intRef = circuit.getNodeReference(component) + "internal";
-                            grantPairs.add(Pair.of(sanSignal, intRef));
-                            grantPairs.add(Pair.of(intRef, sanSignal));
-                        }
-                        String sigSignal = getPinSignal(circuit, component, waitModule.sig.name);
-                        if ((sigSignal != null) && (sanSignal != null)) {
-                            grantPairs.add(Pair.of(sigSignal, sanSignal));
-                        }
-                    }
-                }
+                missingMutexPlaces.add(place);
+            }
+            Mutex mutex = MutexUtils.getMutex(stg, place);
+            if (mutex == null) {
+                unimplementableMutexPlaces.add(place);
+            } else {
+                result.add(mutex);
             }
         }
-        return grantPairs;
+
+        String messageDetails = "";
+        boolean addSettingsHint = false;
+        if (!unimplementableMutexPlaces.isEmpty()) {
+            messageDetails += "\n" + PropertyHelper.BULLET_PREFIX + "Not implementable by MUTEX: "
+                    + ReferenceHelper.getNodesAsString(stg, unimplementableMutexPlaces);
+        }
+        if (!missingEarlyMutexPlaces.isEmpty()) {
+            addSettingsHint = true;
+            messageDetails += "\n" + PropertyHelper.BULLET_PREFIX + "Missing definition of Early protocol MUTEX: "
+                    + ReferenceHelper.getNodesAsString(stg, missingEarlyMutexPlaces);
+
+        }
+        if (!missingLateMutexPlaces.isEmpty()) {
+            addSettingsHint = true;
+            messageDetails += "\n" + PropertyHelper.BULLET_PREFIX + "Missing definition of Late protocol MUTEX: "
+                    + ReferenceHelper.getNodesAsString(stg, missingLateMutexPlaces);
+        }
+        if (!messageDetails.isEmpty()) {
+            String messagePrefix = "Synthesis cannot be performed due to problems with Mutex places.";
+            String messageSuffix = addSettingsHint ? "\n\nSee Digital Circuit settings for MUTEX definitions." : "";
+            DialogUtils.showError(messagePrefix + messageDetails + messageSuffix);
+            return null;
+        }
+        return result;
+    }
+
+    public static String getMissingMutexMessage(Mutex.Protocol protocol) {
+        return protocol + " MUTEX definition is missing in Digital Circuit settings";
     }
 
     private static String getPinSignal(Circuit circuit, CircuitComponent component, String pinName) {

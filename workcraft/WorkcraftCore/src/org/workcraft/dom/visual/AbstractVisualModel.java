@@ -27,6 +27,7 @@ import org.workcraft.types.Func;
 import org.workcraft.types.Pair;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.SetUtils;
 
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -336,12 +337,8 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         DrawMan.draw(this, g, decorator, getRoot());
     }
 
-    private Collection<VisualNode> saveSelection() {
-        return new HashSet<>(selection);
-    }
-
-    private void notifySelectionChanged(Collection<? extends VisualNode> prevSelection) {
-        sendNotification(new SelectionChangedEvent(this, prevSelection));
+    private void notifySelectionChanged(Collection<? extends VisualNode> oldSelection) {
+        sendNotification(new SelectionChangedEvent(this, oldSelection));
     }
 
     /**
@@ -352,7 +349,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         if (selection.size() == getCurrentLevel().getChildren().size()) {
             return;
         }
-        Collection<VisualNode> s = saveSelection();
+        Collection<VisualNode> s = new HashSet<>(selection);
         selection.clear();
         Collection<VisualNode> nodes = NodeHelper.filterByType(getCurrentLevel().getChildren(), VisualNode.class);
         selection.addAll(nodes);
@@ -365,7 +362,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     @Override
     public void selectNone() {
         if (!selection.isEmpty()) {
-            Collection<VisualNode> s = saveSelection();
+            Collection<VisualNode> s = new HashSet<>(selection);
             selection.clear();
             notifySelectionChanged(s);
         }
@@ -376,7 +373,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
      */
     @Override
     public void selectInverse() {
-        Collection<VisualNode> s = saveSelection();
+        Collection<VisualNode> s = new HashSet<>(selection);
         selection.clear();
         Collection<VisualNode> nodes = NodeHelper.filterByType(getCurrentLevel().getChildren(), VisualNode.class);
         for (VisualNode node: nodes) {
@@ -406,12 +403,20 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     }
 
     @Override
-    public void select(Collection<? extends VisualNode> nodes) {
-        if (nodes.isEmpty()) {
-            selectNone();
+    public void select(VisualNode node) {
+        if ((selection.size() == 1) && selection.contains(node)) {
             return;
         }
-        Collection<VisualNode> s = saveSelection();
+        validateSelection(node);
+        Collection<VisualNode> oldSelection = new HashSet<>(selection);
+        selection.clear();
+        selection.add(node);
+        notifySelectionChanged(oldSelection);
+    }
+
+    @Override
+    public void select(Collection<? extends VisualNode> nodes) {
+        Collection<VisualNode> s = new HashSet<>(selection);
         validateSelection(nodes);
         selection.clear();
         selection.addAll(nodes);
@@ -419,53 +424,54 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     }
 
     @Override
-    public void select(VisualNode node) {
-        if (selection.size() == 1 && selection.contains(node)) {
-            return;
+    public void toggleSelection(VisualNode node) {
+        if (selection.contains(node)) {
+            removeFromSelection(node);
+        } else {
+            addToSelection(node);
         }
-        Collection<VisualNode> s = saveSelection();
-        validateSelection(node);
-        selection.clear();
-        selection.add(node);
-        notifySelectionChanged(s);
+    }
+
+    @Override
+    public void toggleSelection(Collection<? extends VisualNode> nodes) {
+        select(SetUtils.symmetricDifference(new HashSet<>(selection), new HashSet<>(nodes)));
     }
 
     @Override
     public void addToSelection(VisualNode node) {
-        if (selection.contains(node)) {
-            return;
+        if (!selection.contains(node)) {
+            validateSelection(node);
+            Collection<VisualNode> oldSelection = new HashSet<>(selection);
+            selection.add(node);
+            notifySelectionChanged(oldSelection);
         }
-        Collection<VisualNode> s = saveSelection();
-        validateSelection(node);
-        selection.add(node);
-        notifySelectionChanged(s);
     }
 
     @Override
     public void addToSelection(Collection<? extends VisualNode> nodes) {
-        Collection<VisualNode> s = saveSelection();
         validateSelection(nodes);
+        Collection<VisualNode> oldSelection = new HashSet<>(selection);
         selection.addAll(nodes);
-        if (s.size() != selection.size()) {
-            notifySelectionChanged(s);
+        if (oldSelection.size() != selection.size()) {
+            notifySelectionChanged(oldSelection);
         }
     }
 
     @Override
     public void removeFromSelection(VisualNode node) {
         if (selection.contains(node)) {
-            Collection<VisualNode> s = saveSelection();
+            Collection<VisualNode> oldSelection = new HashSet<>(selection);
             selection.remove(node);
-            notifySelectionChanged(s);
+            notifySelectionChanged(oldSelection);
         }
     }
 
     @Override
     public void removeFromSelection(Collection<? extends VisualNode> nodes) {
-        Collection<VisualNode> s = saveSelection();
+        Collection<VisualNode> oldSelection = new HashSet<>(selection);
         selection.removeAll(nodes);
-        if (s.size() != selection.size()) {
-            notifySelectionChanged(s);
+        if (oldSelection.size() != selection.size()) {
+            notifySelectionChanged(oldSelection);
         }
     }
 

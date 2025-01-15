@@ -332,6 +332,7 @@ public class ConversionUtils {
                     }
                 }
                 ConnectionHelper.addControlPoints(result, locationsInRootSpace);
+                result.copyStyle(connection);
             } catch (InvalidConnectionException ignored) {
             }
         }

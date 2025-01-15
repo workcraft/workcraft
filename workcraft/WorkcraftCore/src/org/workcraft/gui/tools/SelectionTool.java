@@ -39,7 +39,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public static final String GROUP_ICON = "images/selection-group.svg";
     public static final String GROUP_HINT = "Group selection (" + DesktopApi.getMenuKeyName() + "-G)";
     public static final String PAGE_ICON = "images/selection-page.svg";
-    public static final String PAGE_HINT = "Combine selection into a page (Alt-G)";
+    public static final String PAGE_HINT = "Combine selection into a page (" + DesktopApi.getMenuKeyName() + "+Alt-G)";
     public static final String UNGROUP_ICON = "images/selection-ungroup.svg";
     public static final String UNGROUP_HINT = "Ungroup selection (" + DesktopApi.getMenuKeyName() + "+Shift-G)";
     public static final String UP_LEVEL_ICON = "images/selection-level_up.svg";
@@ -56,7 +56,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public static final String CCW_ROTATE_HINT = "Rotate counterclockwise";
 
     public enum DragState { NONE, MOVE, SELECT }
-    public enum SelectionMode { NONE, ADD, REMOVE, REPLACE }
+    public enum SelectionMode { NONE, TOGGLE, REPLACE }
 
     private DragState dragState = DragState.NONE;
     private boolean ignoreMouseButton1 = false;
@@ -274,14 +274,12 @@ public class SelectionTool extends AbstractGraphEditorTool {
                         return;
                     }
                 } else {
-                    Collection<VisualNode> nodes = e.isExtendKeyDown()
+                    Collection<VisualNode> nodes = e.isShiftKeyDown()
                             ? getNodeWithAdjacentConnections(model, node)
                             : Collections.singleton(node);
 
-                    if (e.isShiftKeyDown()) {
-                        model.addToSelection(nodes);
-                    } else if (e.isMenuKeyDown()) {
-                        model.removeFromSelection(nodes);
+                    if (e.isCtrlKeyDown()) {
+                        model.toggleSelection(nodes);
                     } else {
                         model.select(nodes);
                     }
@@ -367,9 +365,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
             VisualNode node = HitMan.hitFirstInCurrentLevel(pos, model);
             if (currentNode != node) {
                 currentNode = node;
-                currentNodes = e.isExtendKeyDown()
+                currentNodes = e.isShiftKeyDown()
                         ? getNodeWithAdjacentConnections(model, node)
                         : Collections.singleton(node);
+
                 editor.repaint();
             }
         }
@@ -414,10 +413,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
             if (hitNode == null) {
                 // If hit nothing then start region selection
-                if (e.isShiftKeyDown()) {
-                    selectionMode = SelectionMode.ADD;
-                } else if (e.isMenuKeyDown()) {
-                    selectionMode = SelectionMode.REMOVE;
+                if (e.isMenuKeyDown()) {
+                    selectionMode = SelectionMode.TOGGLE;
                 } else {
                     selectionMode = SelectionMode.REPLACE;
                 }
@@ -458,10 +455,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
             VisualModel model = e.getModel();
             if (selectionMode == SelectionMode.REPLACE) {
                 model.select(selected);
-            } else if (selectionMode == SelectionMode.ADD) {
-                model.addToSelection(selected);
-            } else if (selectionMode == SelectionMode.REMOVE) {
-                model.removeFromSelection(selected);
+            } else if (selectionMode == SelectionMode.TOGGLE) {
+                model.toggleSelection(selected);
             }
             selectionBox = null;
         }
@@ -519,21 +514,12 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
         }
 
-        if (enablePaging && e.isAltKeyDown() && !e.isMenuKeyDown()) {
+        if (enablePaging && e.isMenuKeyDown()) {
             if (e.getKeyCode() == KeyEvent.VK_G) {
                 if (e.isShiftKeyDown()) {
                     ungroupSelection(editor);
-                } else {
+                } else if (e.isAltKeyDown()) {
                     pageSelection(editor);
-                }
-                return true;
-            }
-        }
-
-        if (enableGrouping && e.isMenuKeyDown() && !e.isAltKeyDown()) {
-            if (e.getKeyCode() == KeyEvent.VK_G) {
-                if (e.isShiftKeyDown()) {
-                    ungroupSelection(editor);
                 } else {
                     groupSelection(editor);
                 }
@@ -549,7 +535,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
         }
 
-        if (e.isExtendKeyDown()) {
+        if (e.isShiftKeyDown() && !e.isAltKeyDown()) {
             currentNodes = getNodeWithAdjacentConnections(e.getModel(), currentNode);
             editor.repaint();
             return true;
@@ -560,7 +546,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     @Override
     public boolean keyReleased(GraphEditorKeyEvent e) {
-        if (!e.isExtendKeyDown()) {
+        if (!e.isShiftKeyDown()) {
             currentNodes = Collections.singleton(currentNode);
             e.getEditor().repaint();
         }
@@ -589,9 +575,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
         if (dragState == DragState.MOVE) {
             return "Hold Shift for dragging parallel to axes.";
         }
-        return "Hold Shift for adding to selection or " +
-                DesktopApi.getMenuKeyName() + " for removing from selection. " +
-                "Hold Alt/AltGr for extending selection to proxies and adjacent connections.";
+        return "Hold " + DesktopApi.getMenuKeyName() + " for adding to or removing from selection. "
+                + "Hold Shift for extending selection to proxies and adjacent connections.";
     }
 
     @Override
@@ -614,27 +599,16 @@ public class SelectionTool extends AbstractGraphEditorTool {
             if ((currentNodes != null) && currentNodes.contains(node)) {
                 return Decoration.Highlighted.INSTANCE;
             }
-
             VisualModel model = editor.getModel();
             if (node == model.getCurrentLevel()) {
                 return Decoration.Empty.INSTANCE;
             }
-
             if (node == model.getRoot()) {
                 return Decoration.Shaded.INSTANCE;
             }
-            /*
-             * r & !c & s | !r & (c | s) <=> (!r & c) | (!c & s)
-             * where
-             *   r = (selectionMode == SelectionState.REMOVE)
-             *   c = selected.contains(node)
-             *   s = model.getSelection().contains(node)
-             */
-            if (((selectionMode != SelectionMode.REMOVE) && selected.contains(node))
-                    || (!selected.contains(node) && model.getSelection().contains(node))) {
+            if (selected.contains(node) != model.getSelection().contains(node)) {
                 return Decoration.Selected.INSTANCE;
             }
-
             return null;
         };
     }

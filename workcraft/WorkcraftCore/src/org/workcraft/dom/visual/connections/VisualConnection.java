@@ -122,7 +122,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         addPropertyDeclaration(new PropertyDeclaration<>(Double.class, PROPERTY_ARROW_WIDTH,
                 this::setArrowWidth, this::getArrowWidth).setCombinable().setTemplatable());
 
-        addPropertyDeclaration(new PropertyDeclaration<Double>(Double.class, PROPERTY_ARROW_LENGTH,
+        addPropertyDeclaration(new PropertyDeclaration<>(Double.class, PROPERTY_ARROW_LENGTH,
                 this::setArrowLength, this::getArrowLength) {
             @Override
             public Map<Double, String> getChoice() {
@@ -155,8 +155,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         if (graphic != null) {
             children.add(graphic);
         }
-        if (refConnection instanceof ObservableState) {
-            ((ObservableState) refConnection).addObserver(e -> observableStateImpl.sendNotification(e));
+        if (refConnection != null) {
+            refConnection.addObserver(e -> observableStateImpl.sendNotification(e));
         }
     }
 
@@ -269,12 +269,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     public void setArrowWidth(double value) {
         if (value > 1.0) value = 1.0;
         if (value < 0.0) value = 0.0;
-        if (arrowLength != value) {
+        if (arrowWidth != value) {
             arrowWidth = value;
             invalidate();
             sendNotification(new PropertyChangedEvent(this, PROPERTY_ARROW_WIDTH));
         }
-
     }
 
     @Override
