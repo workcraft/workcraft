@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.atacs.AtacsSettings;
 import org.workcraft.plugins.atacs.tasks.AtacsTask;
 import org.workcraft.plugins.atacs.tasks.SynthesisResultHandlingMonitor;
+import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
@@ -16,7 +17,6 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractSynthesisCommand extends org.workcraft.commands.AbstractSynthesisCommand {
@@ -56,7 +56,7 @@ public abstract class AbstractSynthesisCommand extends org.workcraft.commands.Ab
 
             return null;
         }
-        LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
+        List<Mutex> mutexes = ArbitrationUtils.getImplementableMutexesOrNullForError(stg);
         if (mutexes == null) {
             return null;
         }

@@ -1,6 +1,7 @@
 package org.workcraft.plugins.petrify.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
 import org.workcraft.plugins.petrify.tasks.SynthesisResultHandlingMonitor;
 import org.workcraft.plugins.petrify.tasks.SynthesisTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -11,7 +12,6 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.AbstractSynthesisCommand {
@@ -38,7 +38,7 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
 
     private SynthesisResultHandlingMonitor queueSynthesis(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
+        List<Mutex> mutexes = ArbitrationUtils.getImplementableMutexesOrNullForError(stg);
         if (mutexes == null) {
             return null;
         }

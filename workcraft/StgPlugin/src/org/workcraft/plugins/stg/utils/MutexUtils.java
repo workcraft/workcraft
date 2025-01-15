@@ -2,11 +2,9 @@ package org.workcraft.plugins.stg.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
@@ -27,30 +25,8 @@ public class MutexUtils {
         return result;
     }
 
-    public static LinkedList<Mutex> getImplementableMutexes(Stg stg) {
-        LinkedList<Mutex> result = new LinkedList<>();
-        final ArrayList<StgPlace> problematicPlaces = new ArrayList<>();
-        for (StgPlace place: stg.getMutexPlaces()) {
-            Mutex mutex = getMutex(stg, place);
-            if (mutex != null) {
-                result.add(mutex);
-            } else {
-                problematicPlaces.add(place);
-            }
-        }
-        if (!problematicPlaces.isEmpty()) {
-            String problematicPlacesString = ReferenceHelper.getNodesAsWrapString(stg, problematicPlaces);
-            String message = "The following mutex places may not be implementable by mutex:\n\n" + problematicPlacesString;
-            String question = "\n\nProceed with synthesis anyway?";
-            if (!DialogUtils.showConfirmError(message, question, "Synthesis", false)) {
-                result = null;
-            }
-        }
-        return result;
-    }
-
-    public static LinkedList<Mutex> getMutexes(Stg stg) {
-        LinkedList<Mutex> result = new LinkedList<>();
+    public static List<Mutex> getMutexes(Stg stg) {
+        List<Mutex> result = new LinkedList<>();
         for (StgPlace place: stg.getMutexPlaces()) {
             Mutex mutex = getMutex(stg, place);
             if (mutex != null) {

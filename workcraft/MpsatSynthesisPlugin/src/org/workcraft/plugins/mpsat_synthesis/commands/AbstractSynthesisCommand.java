@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat_synthesis.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
 import org.workcraft.plugins.mpsat_synthesis.SynthesisMode;
 import org.workcraft.plugins.mpsat_synthesis.tasks.SynthesisChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_synthesis.tasks.SynthesisChainTask;
@@ -14,7 +15,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.LinkedList;
+import java.util.List;
 
 /*
   To get Verilog from mpsat, just specify the output file with the extension *.v:
@@ -54,7 +55,7 @@ public abstract class AbstractSynthesisCommand extends  org.workcraft.commands.A
             return null;
         }
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
+        List<Mutex> mutexes = ArbitrationUtils.getImplementableMutexesOrNullForError(stg);
         if (mutexes == null) {
             return null;
         }

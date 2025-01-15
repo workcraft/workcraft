@@ -291,7 +291,7 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "WAIT name, dirty input and clean handshake",
                 value -> {
-                    if (parseWaitDataOrNull(value, Wait.Type.WAIT1) != null) {
+                    if (value.isEmpty() || parseWaitDataOrNull(value, Wait.Type.WAIT1) != null) {
                         setWaitData(value);
                     } else {
                         errorDescriptionFormat("WAIT", defaultWaitData);
@@ -302,7 +302,7 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "WAIT0 name, dirty input and clean handshake",
                 value -> {
-                    if (parseWaitDataOrNull(value, Wait.Type.WAIT0) != null) {
+                    if (value.isEmpty() || parseWaitDataOrNull(value, Wait.Type.WAIT0) != null) {
                         setWait0Data(value);
                     } else {
                         errorDescriptionFormat("WAIT0", defaultWait0Data);
@@ -313,7 +313,7 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Early protocol MUTEX name and request-grant pairs",
                 value -> {
-                    if (parseMutexDataOrNull(value, Mutex.Protocol.EARLY) != null) {
+                    if (value.isEmpty() || (parseMutexDataOrNull(value, Mutex.Protocol.EARLY) != null)) {
                         setMutexData(value);
                     } else {
                         errorDescriptionFormat("MUTEX", defaultMutexData);
@@ -324,7 +324,7 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Late protocol MUTEX name and request-grant pairs",
                 value -> {
-                    if (parseMutexDataOrNull(value, Mutex.Protocol.LATE) != null) {
+                    if (value.isEmpty() || parseMutexDataOrNull(value, Mutex.Protocol.LATE) != null) {
                         setMutexLateData(value);
                     } else {
                         errorDescriptionFormat("MUTEX", defaultMutexData);
