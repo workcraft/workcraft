@@ -154,13 +154,20 @@ public class RdgToPetriConverter {
             return;
         }
         for (File vertex : vertexToLabelsMap.keySet()) {
-            VisualPage page = getVertexPage(vertex);
-            if (page != null) {
+            VisualPage vertexPage = getVertexPage(vertex);
+            if (vertexPage != null) {
                 Set<String> labels = vertexToLabelsMap.get(vertex);
-                for (VisualPlace place : getVertexPlaces(vertex)) {
-                    if (labels.contains(place.getLabel())) {
-                        place.setFillColor(color);
-                        page.setFillColor(color);
+                boolean hasEmptyLabel = labels.stream().anyMatch(String::isEmpty);
+                if (hasEmptyLabel) {
+                    VisualPlace vertexPlace = getVertexPlace(vertex);
+                    if (vertexPlace != null) {
+                        vertexPlace.setForegroundColor(color);
+                    }
+                }
+                for (VisualPlace instancePlace : Hierarchy.getDescendantsOfType(vertexPage, VisualPlace.class)) {
+                    if (labels.contains(instancePlace.getLabel())) {
+                        instancePlace.setFillColor(color);
+                        vertexPage.setFillColor(color);
                     }
                 }
             }
@@ -169,6 +176,20 @@ public class RdgToPetriConverter {
 
     private VisualTransition getVertexTransition(File file) {
         return vertexToTransitionMap.get(file);
+    }
+
+    private VisualPlace getVertexPlace(File file) {
+        VisualTransition transition = getVertexTransition(file);
+        if (transition != null) {
+            Set<VisualNode> preset = petri.getPreset(transition);
+            if (preset.size() == 1) {
+                VisualNode onlyPredNode = preset.iterator().next();
+                if (onlyPredNode instanceof VisualPlace) {
+                    return (VisualPlace) onlyPredNode;
+                }
+            }
+        }
+        return null;
     }
 
     private VisualPage getVertexPage(File vertex) {
@@ -180,15 +201,6 @@ public class RdgToPetriConverter {
             }
         }
         return null;
-    }
-
-    private Set<VisualPlace> getVertexPlaces(File vertex) {
-        Set<VisualPlace> result = new HashSet<>();
-        VisualPage page = getVertexPage(vertex);
-        if (page != null) {
-            result.addAll(Hierarchy.getDescendantsOfType(page, VisualPlace.class));
-        }
-        return result;
     }
 
     public void collapse(Collection<File> vertices) {
