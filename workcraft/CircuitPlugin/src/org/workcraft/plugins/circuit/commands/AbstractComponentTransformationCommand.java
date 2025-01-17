@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -28,12 +29,21 @@ public abstract class AbstractComponentTransformationCommand extends AbstractTra
 
     @Override
     public boolean isEnabled(ModelEntry me, VisualNode node) {
-        return true;
+        return isApplicableTo(node);
     }
 
     @Override
     public Position getPosition() {
         return Position.TOP;
+    }
+
+    @Override
+    public void logNoNodesWarning(VisualModel model) {
+        if (model.getSelection().isEmpty()) {
+            LogUtils.logWarning("Circuit has no components that can be transformed");
+        } else {
+            LogUtils.logWarning("Current selection has no components that can be transformed");
+        }
     }
 
     @Override

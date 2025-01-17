@@ -43,11 +43,17 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
     public void transform(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<? extends VisualNode> nodes = collectNodes(visualModel);
-        if (!nodes.isEmpty()) {
+        if (nodes.isEmpty()) {
+            logNoNodesWarning(visualModel);
+        } else {
             we.saveMemento();
             transformNodes(visualModel, nodes);
             we.setChanged(true);
         }
+    }
+
+    public void logNoNodesWarning(VisualModel model) {
+        // Skip warning
     }
 
     public Collection<? extends VisualNode> collectNodes(VisualModel model) {

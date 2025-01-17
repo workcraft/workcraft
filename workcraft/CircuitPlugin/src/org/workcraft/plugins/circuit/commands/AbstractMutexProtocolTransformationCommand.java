@@ -8,7 +8,6 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
-import org.workcraft.workspace.ModelEntry;
 
 import java.awt.geom.Point2D;
 import java.util.*;
@@ -16,14 +15,22 @@ import java.util.*;
 public abstract class AbstractMutexProtocolTransformationCommand extends AbstractComponentTransformationCommand {
 
     @Override
-    public boolean isEnabled(ModelEntry me, VisualNode node) {
-        return (node instanceof VisualFunctionComponent)
-                && ArbitrationUtils.hasMutexInterface((VisualFunctionComponent) node);
+    public boolean isApplicableTo(VisualNode node) {
+        return (node instanceof VisualFunctionComponent component) && component.isMutex();
     }
 
     @Override
     public Position getPosition() {
         return Position.TOP_MIDDLE;
+    }
+
+    @Override
+    public void logNoNodesWarning(VisualModel model) {
+        if (model.getSelection().isEmpty()) {
+            LogUtils.logWarning("Circuit has no Mutex that can be transformed");
+        } else {
+            LogUtils.logWarning("Current selection has no Mutex that can be transformed");
+        }
     }
 
     @Override
@@ -37,10 +44,8 @@ public abstract class AbstractMutexProtocolTransformationCommand extends Abstrac
 
         Collection<VisualNode> result = new HashSet<>();
         for (VisualNode node : super.collectNodes(model)) {
-            if ((node instanceof VisualFunctionComponent component)
-                    && (component.getReferencedComponent().getIsArbitrationPrimitive())) {
-
-                result.add(component);
+            if (isApplicableTo(node)) {
+                result.add(node);
             }
         }
         return result;
@@ -66,7 +71,7 @@ public abstract class AbstractMutexProtocolTransformationCommand extends Abstrac
     private void transformComponent(Circuit circuit, FunctionComponent component) {
         Collection<FunctionContact> inputPins = component.getFunctionInputs();
         Collection<FunctionContact> outputPins = component.getFunctionOutputs();
-        if ((inputPins.size() != 2) && (outputPins.size() != 2)) {
+        if ((inputPins.size() != 2) || (outputPins.size() != 2)) {
             LogUtils.logError("Component " + circuit.getComponentReference(component)
                     + " has incorrect number of inputs/outputs for a Mutex");
 
