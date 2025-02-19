@@ -35,7 +35,10 @@ public final class ScanUtils {
             for (VisualContact contact : component.getVisualOutputs()) {
                 if (contact.getReferencedComponent().getPathBreaker()) {
                     contact.getReferencedComponent().setPathBreaker(false);
-                    result.add(insertTestableGate(circuit, contact));
+                    VisualFunctionComponent testableGate = insertTestableGate(circuit, contact);
+                    if (testableGate != null) {
+                        result.add(testableGate);
+                    }
                 }
             }
         }
@@ -49,6 +52,18 @@ public final class ScanUtils {
 
     private static VisualFunctionComponent insertTestableGate(VisualCircuit circuit, VisualContact contact) {
         VisualFunctionComponent result = getAdjacentBufferOrInverter(circuit, contact);
+
+        boolean needTestableInverter = (result != null) && result.isInverter();
+        GateInterface testableGateInterface = needTestableInverter
+                ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
+
+        if (testableGateInterface == null) {
+            LogUtils.logError("Cannot insert testable " + (needTestableInverter ? "inverter" : "buffer") + " for pin "
+                    + circuit.getMathReference(contact) + " because of missing definition in Digital Circuit settings");
+
+            return null;
+        }
+
         if (result == null) {
             SpaceUtils.makeSpaceAroundContact(circuit, contact, 3.0);
             result = GateUtils.createBufferGate(circuit);
@@ -56,7 +71,7 @@ public final class ScanUtils {
             GateUtils.propagateInitialState(circuit, result);
             result.getGateOutput().getReferencedComponent().setPathBreaker(true);
         }
-        GateInterface testableGateInterface = result.isInverter() ? CircuitSettings.parseTinvData() : CircuitSettings.parseTbufData();
+
         result.getReferencedComponent().setModule(testableGateInterface.getName());
 
         VisualContact inputContact = result.getFirstVisualInput();
@@ -324,9 +339,7 @@ public final class ScanUtils {
         if (!scanoutPin.isDriver()) {
             scanoutPin = CircuitUtils.findDriver(circuit, scanoutPin, true);
         }
-        if (needsBuffering(circuit, scanoutPin)) {
-            scanoutPin = addBuffering(circuit, scanoutPin);
-        }
+        scanoutPin = bufferScanoutAsNeeded(circuit, scanoutPin);
         connectToIndividualOutputPort(circuit, scanoutPin, scanData.scanoutPortPrefix, index);
         return 1;
     }
@@ -474,32 +487,32 @@ public final class ScanUtils {
         VisualContact scanoutPort = CircuitUtils.getOrCreatePort(circuit, scanoutPortName,
                 Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
 
-        if (needsBuffering(circuit, contact)) {
-            contact = addBuffering(circuit, contact);
-        }
+        contact = bufferScanoutAsNeeded(circuit, contact);
         CircuitUtils.connectIfPossible(circuit, contact, scanoutPort);
         SpaceUtils.positionPortAtBottom(circuit, scanoutPort, true);
         ConversionUtils.replicateDriverContact(circuit, scanoutPort);
     }
 
-    private static boolean needsBuffering(VisualCircuit circuit, VisualContact contact) {
-        if (contact == null) {
-            return false;
-        }
-        if (contact.isPort() && contact.isInput()) {
-            return true;
-        }
-        return CircuitUtils.getDrivenOutputPort(circuit.getMathModel(), contact.getReferencedComponent()) != null;
-    }
+    private static VisualContact bufferScanoutAsNeeded(VisualCircuit circuit, VisualContact contact) {
+        VisualContact result = contact;
+        if (contact != null) {
+            CircuitSettings.ScanoutBufferingStyle bufferingStyle = CircuitSettings.getScanoutBufferingStyle();
+            if (bufferingStyle.isAlways()
+                    || (contact.isPort() && contact.isInput())
+                    || (CircuitUtils.getDrivenOutputPort(circuit.getMathModel(), contact.getReferencedComponent()) != null)) {
 
-    private static VisualContact addBuffering(VisualCircuit circuit, VisualContact contact) {
-        VisualFunctionComponent bufferComponent = GateUtils.createBufferGate(circuit);
-        Point2D pos = contact.getRootSpacePosition();
-        bufferComponent.setRootSpacePosition(new Point2D.Double(pos.getX() + 1.0, pos.getY() + 0.5));
-        CircuitUtils.connectIfPossible(circuit, contact, bufferComponent.getFirstVisualInput());
-        VisualFunctionContact outputContact = bufferComponent.getGateOutput();
-        outputContact.setInitToOne(contact.getInitToOne());
-        return outputContact;
+                VisualFunctionComponent bufferingComponent = bufferingStyle.isInverted()
+                        ? GateUtils.createInverterGate(circuit)
+                        : GateUtils.createBufferGate(circuit);
+
+                Point2D pos = contact.getRootSpacePosition();
+                bufferingComponent.setRootSpacePosition(new Point2D.Double(pos.getX() + 1.0, pos.getY() + 0.5));
+                CircuitUtils.connectIfPossible(circuit, contact, bufferingComponent.getFirstVisualInput());
+                result = bufferingComponent.getGateOutput();
+                result.setInitToOne(bufferingStyle.isInverted() != contact.getInitToOne());
+            }
+        }
+        return result;
     }
 
     private static void connectExistingScanChain(VisualCircuit circuit, VisualContact dataContact,
