@@ -44,6 +44,32 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static final String GATE_LIBRARY_TITLE = "Gate library for technology mapping";
 
+    public enum ScanoutBufferingStyle {
+        BUFFER_NEEDED("Buffer if needed"),
+        INVERTER_NEEDED("Inverter if needed"),
+        BUFFER_ALWAYS("Buffer always"),
+        INVERTER_ALWAYS("Inverter always");
+
+        public final String name;
+
+        ScanoutBufferingStyle(String name) {
+            this.name = name;
+        }
+
+        public boolean isInverted() {
+            return (this == INVERTER_NEEDED) || (this == INVERTER_ALWAYS);
+        }
+
+        public boolean isAlways() {
+            return (this == BUFFER_ALWAYS) || (this == INVERTER_ALWAYS);
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
     private static final Pattern MUTEX_DATA_PATTERN = Pattern.compile(
             "(\\w+)\\(\\((\\w+),(\\w+)\\),\\((\\w+),(\\w+)\\)\\)");
 
@@ -126,6 +152,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Forks
     private static final String keyForkHighFanout = prefix + ".forkHighFanout";
     private static final String keyForkBufferPattern = prefix + ".forkBufferPattern";
+    private static final String keyScanoutBufferingStyle = prefix + ".scanoutBufferingStyle";
 
     /*
      * Defaults
@@ -179,6 +206,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Forks
     private static final int defaultForkHighFanout = 4;
     private static final String defaultForkBufferPattern = "fork_x" + FORK_FUNOUT_PLACEHOLDER + "_";
+    private static final ScanoutBufferingStyle defaultScanoutBufferingStyle = ScanoutBufferingStyle.BUFFER_NEEDED;
 
     /*
      * Variables
@@ -232,6 +260,7 @@ public class CircuitSettings extends AbstractModelSettings {
     // Forks
     private static Integer forkHighFanout = defaultForkHighFanout;
     private static String forkBufferPattern = defaultForkBufferPattern;
+    private static ScanoutBufferingStyle scanoutBufferingStyle = defaultScanoutBufferingStyle;
 
     static {
         properties.add(PropertyHelper.createSeparatorProperty("Visualisation"));
@@ -294,7 +323,7 @@ public class CircuitSettings extends AbstractModelSettings {
                     if (value.isEmpty() || parseWaitDataOrNull(value, Wait.Type.WAIT1) != null) {
                         setWaitData(value);
                     } else {
-                        errorDescriptionFormat("WAIT", defaultWaitData);
+                        errorDescriptionFormat("WAIT", defaultWaitData, true);
                     }
                 },
                 CircuitSettings::getWaitData));
@@ -305,7 +334,7 @@ public class CircuitSettings extends AbstractModelSettings {
                     if (value.isEmpty() || parseWaitDataOrNull(value, Wait.Type.WAIT0) != null) {
                         setWait0Data(value);
                     } else {
-                        errorDescriptionFormat("WAIT0", defaultWait0Data);
+                        errorDescriptionFormat("WAIT0", defaultWait0Data, true);
                     }
                 },
                 CircuitSettings::getWait0Data));
@@ -316,7 +345,7 @@ public class CircuitSettings extends AbstractModelSettings {
                     if (value.isEmpty() || (parseMutexDataOrNull(value, Mutex.Protocol.EARLY) != null)) {
                         setMutexData(value);
                     } else {
-                        errorDescriptionFormat("MUTEX", defaultMutexData);
+                        errorDescriptionFormat("MUTEX", defaultMutexData, true);
                     }
                 },
                 CircuitSettings::getMutexData));
@@ -327,7 +356,7 @@ public class CircuitSettings extends AbstractModelSettings {
                     if (value.isEmpty() || parseMutexDataOrNull(value, Mutex.Protocol.LATE) != null) {
                         setMutexLateData(value);
                     } else {
-                        errorDescriptionFormat("MUTEX", defaultMutexData);
+                        errorDescriptionFormat("MUTEX", defaultMutexData, true);
                     }
                 },
                 CircuitSettings::getMutexLateData));
@@ -491,7 +520,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::setAuxiliaryPortRegex,
                 CircuitSettings::getAuxiliaryPortRegex));
 
-        properties.add(PropertyHelper.createSeparatorProperty("Buffering forks with high fanout"));
+        properties.add(PropertyHelper.createSeparatorProperty("Buffering of forks with high fanout and scanout output"));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
                 PropertyHelper.BULLET_PREFIX + "Fork high fanout",
@@ -503,10 +532,17 @@ public class CircuitSettings extends AbstractModelSettings {
                         + FORK_FUNOUT_PLACEHOLDER + " denotes fanout)",
                 CircuitSettings::setForkBufferPattern,
                 CircuitSettings::getForkBufferPattern));
+
+        properties.add(new PropertyDeclaration<>(ScanoutBufferingStyle.class,
+                PropertyHelper.BULLET_PREFIX + "Buffering style for scanout output",
+                CircuitSettings::setScanoutBufferingStyle,
+                CircuitSettings::getScanoutBufferingStyle));
     }
 
-    private static void errorDescriptionFormat(String prefix, String suffix) {
-        DialogUtils.showError(prefix + " description format is incorrect. It should be as follows:\n" + suffix);
+    private static void errorDescriptionFormat(String prefix, String suffix, boolean allowEmpty) {
+        String emptyText = allowEmpty ? " either empty or" : "";
+        DialogUtils.showError(prefix + " description format is incorrect." +
+                "\nIt should be " + emptyText + "as follows:\n" + suffix);
     }
 
     private static void errorPortPinFormat(String prefix) {
@@ -574,6 +610,7 @@ public class CircuitSettings extends AbstractModelSettings {
         // Forks
         setForkHighFanout(config.getInt(keyForkHighFanout, defaultForkHighFanout));
         setForkBufferPattern(config.getString(keyForkBufferPattern, defaultForkBufferPattern));
+        setScanoutBufferingStyle(config.getEnum(keyScanoutBufferingStyle, ScanoutBufferingStyle.class, defaultScanoutBufferingStyle));
     }
 
     @Override
@@ -627,6 +664,7 @@ public class CircuitSettings extends AbstractModelSettings {
         // Forks
         config.setInt(keyForkHighFanout, getForkHighFanout());
         config.set(keyForkBufferPattern, getForkBufferPattern());
+        config.setEnum(keyScanoutBufferingStyle, getScanoutBufferingStyle());
     }
 
     public static double getContactFontSize() {
@@ -1111,11 +1149,19 @@ public class CircuitSettings extends AbstractModelSettings {
         return pattern.replace(FORK_FUNOUT_PLACEHOLDER, Integer.toString(fanout));
     }
 
+    public static ScanoutBufferingStyle getScanoutBufferingStyle() {
+        return scanoutBufferingStyle;
+    }
+
+    public static void setScanoutBufferingStyle(ScanoutBufferingStyle value) {
+        scanoutBufferingStyle = value;
+    }
+
     private static void setGate2Data(String value, Consumer<String> setter, String msg, String defaultValue) {
         if (parseGate2DataOrNull(value) != null) {
             setter.accept(value);
         } else {
-            errorDescriptionFormat(msg, defaultValue);
+            errorDescriptionFormat(msg, defaultValue, false);
         }
     }
 

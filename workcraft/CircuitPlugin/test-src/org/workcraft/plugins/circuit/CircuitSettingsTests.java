@@ -141,6 +141,9 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getUseIndividualScan()),
                 framework.getConfigVar(prefix + ".useIndividualScan", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getScanoutBufferingStyle()),
+                framework.getConfigVar(prefix + ".scanoutBufferingStyle", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getUseScanInitialisation()),
                 framework.getConfigVar(prefix + ".useScanInitialisation", false));
 
