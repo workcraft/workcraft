@@ -771,7 +771,7 @@ public final class CircuitUtils {
     public static void fuseContacts(VisualCircuit circuit, VisualContact inputContact, VisualContact outputContact) {
         for (VisualConnection inputConnection: circuit.getConnections(inputContact)) {
             VisualNode fromNode = inputConnection.getFirst();
-            for (VisualConnection outputConnection: new ArrayList<>(circuit.getConnections(outputContact))) {
+            for (VisualConnection outputConnection : new ArrayList<>(circuit.getConnections(outputContact))) {
                 VisualNode toNode = outputConnection.getSecond();
                 LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(outputContact,
                         inputConnection, outputConnection);
@@ -784,6 +784,10 @@ public final class CircuitUtils {
                 } catch (InvalidConnectionException e) {
                     LogUtils.logWarning(e.getMessage());
                 }
+            }
+            VisualContact inputDriver = CircuitUtils.findDriver(circuit, inputContact, false);
+            if (inputDriver != null) {
+                ConversionUtils.updateReplicas(circuit, outputContact, inputDriver);
             }
         }
     }
