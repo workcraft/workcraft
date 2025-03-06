@@ -312,10 +312,11 @@ public final class VerilogUtils {
     }
 
     public static String getAssignDelayHelp() {
-        return "Delay for Verilog assign statement must be one of these:\n" +
-                PropertyHelper.BULLET_PREFIX + "empty string\n" +
-                PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n" +
-                PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. `(1ps * $urandom_range(10, 20))`";
+        return "Verilog delay parameter must be one of these:\n"
+                + PropertyHelper.BULLET_PREFIX + "empty string\n"
+                + PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n"
+                + PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. "
+                + CircuitSettings.DEFAULT_RANDOM_DELAY_INTERVAL;
     }
 
     private static String getPortNameWithSubstitutions(String moduleName, String portName) {

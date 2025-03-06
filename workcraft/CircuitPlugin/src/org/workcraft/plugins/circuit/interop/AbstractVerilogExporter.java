@@ -4,18 +4,20 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
+import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogBus;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
@@ -24,6 +26,7 @@ import java.io.File;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -234,14 +237,14 @@ public abstract class AbstractVerilogExporter implements Exporter {
             if ((useAssignments || !component.isMapped()) && (component.getRefinementFile() == null)) {
                 if (!useAssignments) {
                     String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
-                    LogUtils.logWarning("Component '" + instanceFlatName
-                            + "' is not associated to a module and is exported as assign statement.");
+                    LogUtils.logWarning("Component " + instanceFlatName
+                            + " is not associated to a module and is exported as assign statement.");
                 }
-                if (writeAssigns(writer, circuitInfo, component)) {
+                if (writeAssign(writer, circuitInfo, component)) {
                     hasAssignments = true;
                 } else {
                     String ref = circuitInfo.getCircuit().getComponentReference(component);
-                    LogUtils.logError("Unmapped component '" + ref + "' cannot be exported as assign statements.");
+                    LogUtils.logError("Component " + ref + " cannot be exported as assign statement.");
                 }
             }
         }
@@ -261,40 +264,156 @@ public abstract class AbstractVerilogExporter implements Exporter {
         }
     }
 
-    private boolean writeAssigns(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+    private static boolean writeAssign(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         boolean result = false;
-        Collection<CircuitSignalInfo.SignalInfo> signalInfos = circuitInfo.getComponentSignalInfos(component,
-                signal -> getNetName(signal, circuitInfo));
+        if (component.isMutex()) {
+            result = writeMutexAssign(writer, circuitInfo, component);
+        } else if (component.isWait()) {
+            result = writeWaitAssign(writer, circuitInfo, component);
+        } else {
+            result = writeGateAssign(writer, circuitInfo, component);
+        }
+        return result;
+    }
 
-        for (CircuitSignalInfo.SignalInfo signalInfo : signalInfos) {
-            String signalName = circuitInfo.getContactSignal(signalInfo.contact);
-            String netName = getNetName(signalName, circuitInfo);
-            if (netName != null) {
-                BooleanFormula setFormula = signalInfo.setFormula;
-                String setExpr = StringGenerator.toString(setFormula, StringGenerator.Style.VERILOG);
-                String resetExpr = StringGenerator.toString(FormulaUtils.invert(signalInfo.resetFormula),
-                        StringGenerator.Style.VERILOG);
+    private static boolean writeMutexAssign(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+        boolean result = false;
+        Circuit circuit = circuitInfo.getCircuit();
+        String errorPrefix = "Error writing assign statement for Mutex "
+                + circuit.getComponentReference(component) + ": ";
 
-                String expr = null;
-                if (!setExpr.isEmpty() && !resetExpr.isEmpty()) {
-                    expr = setExpr + " | " + netName + " & (" + resetExpr + ")";
-                } else if (!setExpr.isEmpty()) {
-                    expr = setExpr;
-                } else if (!resetExpr.isEmpty()) {
-                    expr = resetExpr;
+        ArbitrationUtils.MutexData mutexData = ArbitrationUtils.getMutexData(circuit, component, null);
+        if (mutexData == null) {
+            LogUtils.logWarning(errorPrefix + "cannot match pins or protocol");
+        } else {
+            String g1NetName = getNetName(mutexData.g1OutputPin(), circuitInfo);
+            String g2NetName = getNetName(mutexData.g2OutputPin(), circuitInfo);
+            String r1NetName = getNetName(mutexData.r1InputPin(), circuitInfo);
+            String r2NetName = getNetName(mutexData.r2InputPin(), circuitInfo);
+            if ((g1NetName == null) || (g2NetName == null) || (r1NetName == null) || (r2NetName == null)) {
+                LogUtils.logWarning(errorPrefix + "cannot identify nets connected to pins");
+            } else {
+                if (mutexData.mutexProtocol() == Mutex.Protocol.EARLY) {
+                    String grantDelay = getAssignDelay(CircuitSettings::getMutexEarlyGrantDelay);
+                    String g1LateName = CircuitSettings.getDerivedNetName(g1NetName);
+                    String g2LateName = CircuitSettings.getDerivedNetName(g2NetName);
+                    writer.write("    " + KEYWORD_ASSIGN + grantDelay + ' ' + g1NetName + " = " + g1LateName + ";\n");
+                    writer.write("    " + KEYWORD_ASSIGN + grantDelay + ' ' + g2NetName + " = " + g2LateName + ";\n");
+                    g1NetName = g1LateName;
+                    g2NetName = g2LateName;
                 }
-                if (expr != null) {
-                    String delay = component.getIsZeroDelay() ? "" : getDelayParameter();
-                    writer.write("    " + KEYWORD_ASSIGN + delay + ' ' + netName + " = " + expr + ";\n");
-                    result = true;
-                }
+                String delay = getAssignDelay(CircuitSettings::getVerilogAssignDelay);
+                String netName = "{%s, %s}".formatted(g1NetName, g2NetName);
+                String expr = getMutexExpression(g1NetName, g2NetName, r1NetName, r2NetName);
+                writer.write("    " + KEYWORD_ASSIGN + delay + ' ' + netName + " = " + expr + ";\n");
+                result = true;
             }
         }
         return result;
     }
 
-    private String getDelayParameter() {
-        String assignDelay = CircuitSettings.getVerilogAssignDelay();
+    private static String getMutexExpression(String g1, String g2, String r1, String r2) {
+        String winner = switch (CircuitSettings.getMutexArbitrationWinner()) {
+        case RANDOM -> "$urandom_range(1, 2)";
+        case FIRST -> "2'b01";
+        case SECOND -> "2'b10";
+        };
+
+        return "{%s, %s, %s, %s} == 4'b0011 ? %s : ".formatted(g1, g2, r1, r2, winner)
+                + "{%s & (~%s | ~%s), %s & (~%s | ~%s)}".formatted(r1, g2, r2, r2, g1, r1);
+    }
+
+    private static boolean writeWaitAssign(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+        boolean result = false;
+        Circuit circuit = circuitInfo.getCircuit();
+        String errorPrefix = "Error writing assign statement for Wait "
+                + circuit.getComponentReference(component) + ": ";
+
+        ArbitrationUtils.WaitData waitData = ArbitrationUtils.getWaitData(circuit, component, null);
+        if (waitData == null) {
+            LogUtils.logWarning(errorPrefix + "cannot match pins or type");
+        } else {
+            String sigNetName = getNetName(waitData.sigInputPin(), circuitInfo);
+            String ctrlNetName = getNetName(waitData.ctrlInputPin(), circuitInfo);
+            String sanNetName = getNetName(waitData.sanOutputPin(), circuitInfo);
+            if ((sigNetName == null) || (ctrlNetName == null) || (sanNetName == null)) {
+                LogUtils.logWarning(errorPrefix + "cannot identify nets connected to pins");
+            } else {
+                String sigIgnoreTime = getAssignDelay(CircuitSettings::getWaitSigIgnoreTime);
+                String sigTempName = CircuitSettings.getDerivedNetName(sigNetName);
+                String sigExpr = getWaitSigExpression(sigNetName);
+                writer.write("    " + KEYWORD_ASSIGN + sigIgnoreTime + ' ' + sigTempName + " = " + sigExpr + ";\n");
+
+                String delay = getAssignDelay(CircuitSettings::getVerilogAssignDelay);
+                boolean negateSig = waitData.waitType() == Wait.Type.WAIT0;
+                String expr = getWaitExpression(sigTempName, ctrlNetName, sanNetName, negateSig);
+                writer.write("    " + KEYWORD_ASSIGN + delay + ' ' + sanNetName + " = " + expr + ";\n");
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    private static String getWaitSigExpression(String sig) {
+        String interpretation = switch (CircuitSettings.getWaitUndefinedInterpretation()) {
+        case RANDOM -> "$urandom_range(0, 1)";
+        case HIGH -> "1'b1";
+        case LOW -> "1'b0";
+        };
+
+        return "(%s != 1'b0) && (%s != 1'b1) ? %s : %s".formatted(sig, sig, interpretation, sig);
+    }
+
+    private static String getWaitExpression(String sig, String ctrl, String san, boolean negateSig) {
+        return (negateSig ? "%s & (~%s | %s)" : "%s & (%s | %s)").formatted(ctrl, sig, san);
+    }
+
+    private static boolean writeGateAssign(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+        boolean result = false;
+        Collection<CircuitSignalInfo.SignalInfo> signalInfos = circuitInfo.getComponentSignalInfos(component,
+                signal -> getNetName(signal, circuitInfo));
+
+        String errorPrefix = "Error writing assign statement for component "
+                + circuitInfo.getCircuit().getComponentReference(component) + ": ";
+
+        for (CircuitSignalInfo.SignalInfo signalInfo : signalInfos) {
+            String netName = getNetName(signalInfo.contact, circuitInfo);
+            if (netName == null) {
+                String pinName = signalInfo.contact.getName();
+                LogUtils.logWarning(errorPrefix + "cannot identify net connected to pin " + pinName);
+                continue;
+            }
+            String expr = calcGateExpression(signalInfo, netName);
+            if (expr == null) {
+                LogUtils.logWarning(errorPrefix + "cannot derive expression for net " + netName);
+                continue;
+            }
+            String delay = getAssignDelay(component.getIsZeroDelay() ? null : CircuitSettings::getVerilogAssignDelay);
+            writer.write("    " + KEYWORD_ASSIGN + delay + ' ' + netName + " = " + expr + ";\n");
+            result = true;
+        }
+        return result;
+    }
+
+    private static String calcGateExpression(CircuitSignalInfo.SignalInfo signalInfo, String netName) {
+
+        String setExpression = StringGenerator.toString(signalInfo.setFormula, StringGenerator.Style.VERILOG);
+
+        String notResetExpression = StringGenerator.toString(FormulaUtils.invert(signalInfo.resetFormula),
+                StringGenerator.Style.VERILOG);
+
+        if (!setExpression.isEmpty() && !notResetExpression.isEmpty()) {
+            return setExpression + " | " + netName + " & (" + notResetExpression + ")";
+        } else if (!setExpression.isEmpty()) {
+            return setExpression;
+        } else if (!notResetExpression.isEmpty()) {
+            return notResetExpression;
+        }
+        return null;
+    }
+
+    private static String getAssignDelay(Supplier<String> delaySupplier) {
+        String assignDelay = (delaySupplier == null) ? null : delaySupplier.get();
         return (assignDelay == null) || assignDelay.isEmpty() || "0".equals(assignDelay.trim())
                 ? "" : ' ' + KEYWORD_ASSIGN_DELAY + assignDelay;
     }
@@ -467,7 +586,11 @@ public abstract class AbstractVerilogExporter implements Exporter {
         return result;
     }
 
-    private String getNetName(String signal, CircuitSignalInfo circuitInfo) {
+    private static String getNetName(Contact contact, CircuitSignalInfo circuitInfo) {
+        return getNetName(circuitInfo.getContactSignal(contact), circuitInfo);
+    }
+
+    private static String getNetName(String signal, CircuitSignalInfo circuitInfo) {
         if (signal != null) {
             Pattern pattern = CircuitSettings.getBusSignalPattern();
             Matcher matcher = pattern.matcher(signal);

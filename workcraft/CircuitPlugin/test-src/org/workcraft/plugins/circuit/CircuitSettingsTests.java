@@ -76,11 +76,26 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getInvertImportSubstitutionRules()),
                 framework.getConfigVar(prefix + ".invertImportSubstitutionRules", false));
 
+        Assertions.assertEquals(Config.toString(CircuitSettings.getVerilogTimescale()),
+                framework.getConfigVar(prefix + ".verilogTimescale", false));
+
         Assertions.assertEquals(Config.toString(CircuitSettings.getVerilogAssignDelay()),
                 framework.getConfigVar(prefix + ".verilogAssignDelay", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getVerilogTimescale()),
-                framework.getConfigVar(prefix + ".verilogTimescale", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getWaitSigIgnoreTime()),
+                framework.getConfigVar(prefix + ".waitSigIgnoreTime", false));
+
+        Assertions.assertEquals(Config.toString(CircuitSettings.getWaitUndefinedInterpretation()),
+                framework.getConfigVar(prefix + ".waitUndefinedInterpretation", false));
+
+        Assertions.assertEquals(Config.toString(CircuitSettings.getMutexEarlyGrantDelay()),
+                framework.getConfigVar(prefix + ".mutexEarlyGrantDelay", false));
+
+        Assertions.assertEquals(Config.toString(CircuitSettings.getMutexArbitrationWinner()),
+                framework.getConfigVar(prefix + ".mutexArbitrationWinner", false));
+
+        Assertions.assertEquals(Config.toString(CircuitSettings.getDerivedNetPattern()),
+                framework.getConfigVar(prefix + ".derivedNetPattern", false));
 
         Assertions.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));

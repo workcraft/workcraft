@@ -27,12 +27,15 @@ import java.util.regex.Pattern;
 
 public class CircuitSettings extends AbstractModelSettings {
 
+    public static final String DEFAULT_RANDOM_DELAY = "(1ps * $urandom(50))";
+    public static final String DEFAULT_RANDOM_DELAY_INTERVAL = "(1ps * $urandom_range(20, 50))";
     public static final Map<String, String> PREDEFINED_DELAY_PARAMETERS = new LinkedHashMap<>();
 
     static {
         PREDEFINED_DELAY_PARAMETERS.put("", "No delay");
         PREDEFINED_DELAY_PARAMETERS.put("1", "One unit delay (time unit and precision should be defined)");
-        PREDEFINED_DELAY_PARAMETERS.put("(1ps * $urandom_range(40, 90))", "Random delay between 40ps and 90ps");
+        PREDEFINED_DELAY_PARAMETERS.put(DEFAULT_RANDOM_DELAY, "Random delay up to 50ps");
+        PREDEFINED_DELAY_PARAMETERS.put(DEFAULT_RANDOM_DELAY_INTERVAL, "Random delay between 20ps and 50ps");
     }
 
     public static final Map<String, String> PREDEFINED_TIMESCALE_PARAMETERS = new LinkedHashMap<>();
@@ -41,6 +44,41 @@ public class CircuitSettings extends AbstractModelSettings {
         PREDEFINED_TIMESCALE_PARAMETERS.put("", "No delay");
         PREDEFINED_TIMESCALE_PARAMETERS.put("1ns / 1ps", "1ns per unit with 1ps precision");
     }
+
+    public enum WaitUndefinedInterpretation {
+        RANDOM("Random value"),
+        HIGH("High value"),
+        LOW("Low value");
+
+        public final String name;
+
+        WaitUndefinedInterpretation(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
+    public enum MutexArbitrationWinner {
+        RANDOM("Random grant"),
+        FIRST("First grant"),
+        SECOND("Second grant");
+
+        public final String name;
+
+        MutexArbitrationWinner(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    }
+
 
     public static final String GATE_LIBRARY_TITLE = "Gate library for technology mapping";
 
@@ -92,6 +130,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final int GATE_INPUT_GROUP = 2;
     private static final int GATE_OUTPUT_GROUP = 3;
 
+    private static final String NET_NAME_PLACEHOLDER = "$";
     private static final String BUS_INDEX_PLACEHOLDER = "$";
     private static final String MODULE_NAME_PLACEHOLDER = "$";
     private static final String FORK_FUNOUT_PLACEHOLDER = "$";
@@ -123,8 +162,13 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyInvertExportSubstitutionRules = prefix + ".invertExportSubstitutionRules";
     private static final String keyImportSubstitutionLibrary = prefix + ".importSubstitutionLibrary";
     private static final String keyInvertImportSubstitutionRules = prefix + ".invertImportSubstitutionRules";
-    private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
     private static final String keyVerilogTimescale = prefix + ".verilogTimescale";
+    private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
+    private static final String keyWaitSigIgnoreTime = prefix + ".waitSigIgnoreTime";
+    private static final String keyWaitUndefinedInterpretation = prefix + ".waitUndefinedInterpretation";
+    private static final String keyMutexEarlyGrantDelay = prefix + ".mutexEarlyGrantDelay";
+    private static final String keyMutexArbitrationWinner = prefix + ".mutexArbitrationWinner";
+    private static final String keyDerivedNetPattern = prefix + ".derivedNetPattern";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyDissolveSingletonBus = prefix + ".dissolveSingletonBus";
     private static final String keyAcceptInoutPort = prefix + ".acceptInoutPort";
@@ -177,8 +221,13 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final boolean defaultInvertExportSubstitutionRules = false;
     private static final String defaultImportSubstitutionLibrary = "";
     private static final boolean defaultInvertImportSubstitutionRules = true;
-    private static final String defaultVerilogAssignDelay = "1";
     private static final String defaultVerilogTimescale = "";
+    private static final String defaultVerilogAssignDelay = "1";
+    private static final String defaultWaitSigIgnoreTime = DEFAULT_RANDOM_DELAY_INTERVAL;
+    private static final WaitUndefinedInterpretation defaultWaitUndefinedInterpretation = WaitUndefinedInterpretation.RANDOM;
+    private static final String defaultMutexEarlyGrantDelay = DEFAULT_RANDOM_DELAY;
+    private static final MutexArbitrationWinner defaultMutexArbitrationWinner = MutexArbitrationWinner.RANDOM;
+    private static final String defaultDerivedNetPattern = "__" + NET_NAME_PLACEHOLDER;
     private static final String defaultBusSuffix = "__" + BUS_INDEX_PLACEHOLDER;
     private static final boolean defaultDissolveSingletonBus = true;
     private static final boolean defaultAcceptInoutPort = true;
@@ -231,8 +280,13 @@ public class CircuitSettings extends AbstractModelSettings {
     private static boolean invertExportSubstitutionRules = defaultInvertExportSubstitutionRules;
     private static String importSubstitutionLibrary = defaultImportSubstitutionLibrary;
     private static boolean invertImportSubstitutionRules = defaultInvertImportSubstitutionRules;
-    private static String verilogAssignDelay = defaultVerilogAssignDelay;
     private static String verilogTimescale = defaultVerilogTimescale;
+    private static String verilogAssignDelay = defaultVerilogAssignDelay;
+    private static String waitSigIgnoreTime = defaultWaitSigIgnoreTime;
+    private static WaitUndefinedInterpretation waitUndefinedInterpretation = defaultWaitUndefinedInterpretation;
+    private static String mutexEarlyGrantDelay = defaultMutexEarlyGrantDelay;
+    private static MutexArbitrationWinner mutexArbitrationWinner = defaultMutexArbitrationWinner;
+    private static String derivedNetPattern = defaultDerivedNetPattern;
     private static String busSuffix = defaultBusSuffix;
     private static boolean dissolveSingletonBus = defaultDissolveSingletonBus;
     private static boolean acceptInoutPort = defaultAcceptInoutPort;
@@ -384,7 +438,17 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getInvertImportSubstitutionRules));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Delay for assign statements in Verilog export (empty to suppress)",
+                PropertyHelper.BULLET_PREFIX + "Verilog time unit / precision (empty to suppress)",
+                CircuitSettings::setVerilogTimescale,
+                CircuitSettings::getVerilogTimescale) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_TIMESCALE_PARAMETERS;
+            }
+        });
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Delay for assign statements (empty to suppress)",
                 CircuitSettings::setVerilogAssignDelay,
                 CircuitSettings::getVerilogAssignDelay) {
             @Override
@@ -394,14 +458,40 @@ public class CircuitSettings extends AbstractModelSettings {
         });
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Verilog time unit / precision (empty to suppress)",
-                CircuitSettings::setVerilogTimescale,
-                CircuitSettings::getVerilogTimescale) {
+                PropertyHelper.BULLET_PREFIX + "Ignore time for WAIT non-persistent input",
+                CircuitSettings::setWaitSigIgnoreTime,
+                CircuitSettings::getWaitSigIgnoreTime) {
             @Override
             public Map<String, String> getChoice() {
-                return PREDEFINED_TIMESCALE_PARAMETERS;
+                return PREDEFINED_DELAY_PARAMETERS;
             }
         });
+
+        properties.add(new PropertyDeclaration<>(WaitUndefinedInterpretation.class,
+                PropertyHelper.BULLET_PREFIX + "WAIT interpretation of X on non-persistent input",
+                CircuitSettings::setWaitUndefinedInterpretation,
+                CircuitSettings::getWaitUndefinedInterpretation));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Delay of Early MUTEX grants",
+                CircuitSettings::setMutexEarlyGrantDelay,
+                CircuitSettings::getMutexEarlyGrantDelay) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_DELAY_PARAMETERS;
+            }
+        });
+
+        properties.add(new PropertyDeclaration<>(MutexArbitrationWinner.class,
+                PropertyHelper.BULLET_PREFIX + "MUTEX winning grant when both requests are high",
+                CircuitSettings::setMutexArbitrationWinner,
+                CircuitSettings::getMutexArbitrationWinner));
+
+        properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.BULLET_PREFIX + "Derived net name for WAIT non-persistent input and Early MUTEX grants ("
+                        + NET_NAME_PLACEHOLDER + " denotes original net name)",
+                CircuitSettings::setDerivedNetPattern,
+                CircuitSettings::getDerivedNetPattern));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Bus split/merge suffix on Verilog import/export ("
@@ -581,8 +671,13 @@ public class CircuitSettings extends AbstractModelSettings {
         setInvertExportSubstitutionRules(config.getBoolean(keyInvertExportSubstitutionRules, defaultInvertExportSubstitutionRules));
         setImportSubstitutionLibrary(config.getString(keyImportSubstitutionLibrary, defaultImportSubstitutionLibrary));
         setInvertImportSubstitutionRules(config.getBoolean(keyInvertImportSubstitutionRules, defaultInvertImportSubstitutionRules));
-        setVerilogAssignDelay(config.getString(keyVerilogAssignDelay, defaultVerilogAssignDelay));
         setVerilogTimescale(config.getString(keyVerilogTimescale, defaultVerilogTimescale));
+        setVerilogAssignDelay(config.getString(keyVerilogAssignDelay, defaultVerilogAssignDelay));
+        setWaitSigIgnoreTime(config.getString(keyWaitSigIgnoreTime, defaultWaitSigIgnoreTime));
+        setWaitUndefinedInterpretation(config.getEnum(keyWaitUndefinedInterpretation, WaitUndefinedInterpretation.class, defaultWaitUndefinedInterpretation));
+        setMutexEarlyGrantDelay(config.getString(keyMutexEarlyGrantDelay, defaultMutexEarlyGrantDelay));
+        setMutexArbitrationWinner(config.getEnum(keyMutexArbitrationWinner, MutexArbitrationWinner.class, defaultMutexArbitrationWinner));
+        setDerivedNetPattern(config.getString(keyDerivedNetPattern, defaultDerivedNetPattern));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setDissolveSingletonBus(config.getBoolean(keyDissolveSingletonBus, defaultDissolveSingletonBus));
         setAcceptInoutPort(config.getBoolean(keyAcceptInoutPort, defaultAcceptInoutPort));
@@ -635,8 +730,13 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setBoolean(keyInvertExportSubstitutionRules, getInvertExportSubstitutionRules());
         config.set(keyImportSubstitutionLibrary, getImportSubstitutionLibrary());
         config.setBoolean(keyInvertImportSubstitutionRules, getInvertImportSubstitutionRules());
-        config.set(keyVerilogAssignDelay, getVerilogAssignDelay());
         config.set(keyVerilogTimescale, getVerilogTimescale());
+        config.set(keyVerilogAssignDelay, getVerilogAssignDelay());
+        config.set(keyWaitSigIgnoreTime, getWaitSigIgnoreTime());
+        config.setEnum(keyWaitUndefinedInterpretation, getWaitUndefinedInterpretation());
+        config.set(keyMutexEarlyGrantDelay, getMutexEarlyGrantDelay());
+        config.setEnum(keyMutexArbitrationWinner, getMutexArbitrationWinner());
+        config.set(keyDerivedNetPattern, getDerivedNetPattern());
         config.set(keyBusSuffix, getBusSuffix());
         config.setBoolean(keyDissolveSingletonBus, getDissolveSingletonBus());
         config.setBoolean(keyAcceptInoutPort, getAcceptInoutPort());
@@ -819,6 +919,17 @@ public class CircuitSettings extends AbstractModelSettings {
         invertImportSubstitutionRules = value;
     }
 
+    public static String getVerilogTimescale() {
+        return verilogTimescale;
+    }
+
+    public static void setVerilogTimescale(String value) {
+        if (value == null) {
+            value = "";
+        }
+        verilogTimescale = value.trim();
+    }
+
     public static String getVerilogAssignDelay() {
         return verilogAssignDelay;
     }
@@ -835,15 +946,72 @@ public class CircuitSettings extends AbstractModelSettings {
         }
     }
 
-    public static String getVerilogTimescale() {
-        return verilogTimescale;
+    public static String getWaitSigIgnoreTime() {
+        return waitSigIgnoreTime;
     }
 
-    public static void setVerilogTimescale(String value) {
+    public static void setWaitSigIgnoreTime(String value) {
         if (value == null) {
             value = "";
         }
-        verilogTimescale = value.trim();
+        value = value.trim();
+        if (VerilogUtils.checkAssignDelay(value)) {
+            waitSigIgnoreTime = value;
+        } else {
+            DialogUtils.showError(VerilogUtils.getAssignDelayHelp());
+        }
+    }
+
+    public static WaitUndefinedInterpretation getWaitUndefinedInterpretation() {
+        return waitUndefinedInterpretation;
+    }
+
+    public static void setWaitUndefinedInterpretation(WaitUndefinedInterpretation value) {
+        waitUndefinedInterpretation = value;
+    }
+
+    public static String getMutexEarlyGrantDelay() {
+        return mutexEarlyGrantDelay;
+    }
+
+    public static void setMutexEarlyGrantDelay(String value) {
+        if (value == null) {
+            value = "";
+        }
+        value = value.trim();
+        if (VerilogUtils.checkAssignDelay(value)) {
+            mutexEarlyGrantDelay = value;
+        } else {
+            DialogUtils.showError(VerilogUtils.getAssignDelayHelp());
+        }
+    }
+
+    public static MutexArbitrationWinner getMutexArbitrationWinner() {
+        return mutexArbitrationWinner;
+    }
+
+    public static void setMutexArbitrationWinner(MutexArbitrationWinner value) {
+        mutexArbitrationWinner = value;
+    }
+
+    public static String getDerivedNetPattern() {
+        return derivedNetPattern;
+    }
+
+    public static void setDerivedNetPattern(String value) {
+        if ((value == null) || !value.contains(NET_NAME_PLACEHOLDER)) {
+            DialogUtils.showError("Derived net pattern must have original net name placeholder " + NET_NAME_PLACEHOLDER);
+        } else {
+            derivedNetPattern = value;
+        }
+    }
+
+    public static String getDerivedNetName(String netName) {
+        String pattern = getDerivedNetPattern();
+        if (pattern == null) {
+            pattern = defaultDerivedNetPattern;
+        }
+        return pattern.replace(NET_NAME_PLACEHOLDER, netName);
     }
 
     public static String getBusSuffix() {
