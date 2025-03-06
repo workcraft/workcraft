@@ -170,4 +170,52 @@ class VerilogAssignTests {
                 () -> framework.importWork(classLoader.getResource(stringErrorName).getFile()));
     }
 
+    @Test
+    void testArbLateRandomAssignExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "arb-late.circuit.work");
+        String svRandomisedName = PackageUtils.getPackagePath(getClass(), "arb-late-randomised.circuit.sv");
+        String svPredefinedName = PackageUtils.getPackagePath(getClass(), "arb-late-predefined.circuit.sv");
+        testAssignExport(workName, svRandomisedName, svPredefinedName);
+    }
+
+    @Test
+    void testArbEarlyRandomAssignExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "arb-early.circuit.work");
+        String svRandomisedName = PackageUtils.getPackagePath(getClass(), "arb-early-randomised.circuit.sv");
+        String svPredefinedName = PackageUtils.getPackagePath(getClass(), "arb-early-predefined.circuit.sv");
+        testAssignExport(workName, svRandomisedName, svPredefinedName);
+    }
+
+    private void testAssignExport(String workName, String svRandomisedName, String svPredefinedName) throws DeserialisationException {
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+
+        URL weUrl = classLoader.getResource(workName);
+        WorkspaceEntry we = framework.loadWork(weUrl.getFile());
+
+        URL svRandomisedUrl = classLoader.getResource(svRandomisedName);
+        File svRandomisedFile = new File(svRandomisedUrl.getFile());
+
+        URL svPredefiendUrl = classLoader.getResource(svPredefinedName);
+        File svPredefinedFile = new File(svPredefiendUrl.getFile());
+
+        try {
+            File tmpRandomisedFile = File.createTempFile("workcraft-", ".sv");
+            tmpRandomisedFile.deleteOnExit();
+            CircuitSettings.setWaitUndefinedInterpretation(CircuitSettings.WaitUndefinedInterpretation.RANDOM);
+            CircuitSettings.setMutexArbitrationWinner(CircuitSettings.MutexArbitrationWinner.RANDOM);
+            framework.exportWork(we, tmpRandomisedFile, VerilogFormat.SYSTEM_VERILOG_ASSIGN_STATEMENTS);
+            Assertions.assertEquals(FileUtils.readAllText(svRandomisedFile), FileUtils.readAllText(tmpRandomisedFile));
+
+            File tmpPredefinedFile = File.createTempFile("workcraft-", ".sv");
+            tmpPredefinedFile.deleteOnExit();
+            CircuitSettings.setWaitUndefinedInterpretation(CircuitSettings.WaitUndefinedInterpretation.HIGH);
+            CircuitSettings.setMutexArbitrationWinner(CircuitSettings.MutexArbitrationWinner.FIRST);
+            framework.exportWork(we, tmpPredefinedFile, VerilogFormat.SYSTEM_VERILOG_ASSIGN_STATEMENTS);
+            Assertions.assertEquals(FileUtils.readAllText(svPredefinedFile), FileUtils.readAllText(tmpPredefinedFile));
+        } catch (IOException | SerialisationException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
