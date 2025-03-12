@@ -16,6 +16,7 @@ import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogBus;
+import org.workcraft.plugins.circuit.verilog.VerilogWriter;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
@@ -24,24 +25,11 @@ import org.workcraft.workspace.ModelEntry;
 
 import java.io.File;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.*;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public abstract class AbstractVerilogExporter implements Exporter {
-
-    private static final String KEYWORD_INPUT = "input";
-    private static final String KEYWORD_OUTPUT = "output";
-    private static final String KEYWORD_WIRE = "wire";
-    private static final String KEYWORD_MODULE = "module";
-    private static final String KEYWORD_ENDMODULE = "endmodule";
-    private static final String KEYWORD_ASSIGN = "assign";
-    private static final String KEYWORD_ASSIGN_DELAY = "#";
-    private static final String KEYWORD_TIMESCALE = "`timescale";
-    private static final String KEYWORD_TIMEUNIT = "timeunit";
 
     private final Queue<Pair<File, Circuit>> refinementCircuits = new LinkedList<>();
 
@@ -56,17 +44,14 @@ public abstract class AbstractVerilogExporter implements Exporter {
     @Override
     public void serialise(Model model, OutputStream out) {
         if (model instanceof Circuit) {
-            PrintWriter writer = new PrintWriter(out);
+            VerilogWriter writer = new VerilogWriter(out);
             Circuit circuit = (Circuit) model;
             String moduleName = ExportUtils.getTitleAsIdentifier(circuit.getTitle());
             File file = getCurrentFile();
             writer.write(ExportUtils.getExportHeader("Verilog netlist", "//", moduleName, file, getFormat()));
             refinementCircuits.clear();
             if (!getFormat().useSystemVerilogSyntax()) {
-                String timescale = CircuitSettings.getVerilogTimescale();
-                if ((timescale != null) && !timescale.isEmpty()) {
-                    writer.write(KEYWORD_TIMESCALE + ' ' + timescale + "\n\n");
-                }
+                writer.writeTimescaleDefinition();
             }
             writeCircuit(writer, circuit, moduleName);
             writeRefinementCircuits(writer);
@@ -76,7 +61,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         }
     }
 
-    private void writeCircuit(PrintWriter writer, Circuit circuit, String moduleName) {
+    private void writeCircuit(VerilogWriter writer, Circuit circuit, String moduleName) {
         Set<FunctionComponent> badComponents = RefinementUtils.getIncompatibleRefinementCircuitComponents(circuit);
         if (!badComponents.isEmpty()) {
             LogUtils.logError(TextUtils.wrapMessageWithItems(
@@ -87,11 +72,10 @@ public abstract class AbstractVerilogExporter implements Exporter {
         writeHeader(writer, circuitInfo, moduleName);
         writeInstances(writer, circuitInfo);
         writeInitialState(writer, circuitInfo);
-        writer.write(KEYWORD_ENDMODULE);
-        writer.write('\n');
+        writer.writeModuleOutro();
     }
 
-    private void writeRefinementCircuits(PrintWriter writer) {
+    private void writeRefinementCircuits(VerilogWriter writer) {
         Map<String, String> exportedModules = new HashMap<>();
         while (!refinementCircuits.isEmpty()) {
             Pair<File, Circuit> refinement = refinementCircuits.remove();
@@ -114,7 +98,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         }
     }
 
-    private void writeHeader(PrintWriter writer, CircuitSignalInfo circuitInfo, String moduleName) {
+    private void writeHeader(VerilogWriter writer, CircuitSignalInfo circuitInfo, String moduleName) {
         Set<String> inputPorts = new LinkedHashSet<>();
         Set<String> outputPorts = new LinkedHashSet<>();
         for (Contact contact : circuitInfo.getCircuit().getPorts()) {
@@ -146,18 +130,14 @@ public abstract class AbstractVerilogExporter implements Exporter {
 
         Set<VerilogBus> inputBuses = extractSignalBuses(inputPorts, circuitInfo);
         Set<VerilogBus> outputBuses = extractSignalBuses(outputPorts, circuitInfo);
-        writePortDeclarations(writer, moduleName, inputPorts, inputBuses, outputPorts, outputBuses);
-
-        writeSignalDefinitions(writer, KEYWORD_INPUT, inputPorts, inputBuses);
-        writeSignalDefinitions(writer, KEYWORD_OUTPUT, outputPorts, outputBuses);
+        writer.writeModuleIntro(moduleName, inputPorts, inputBuses, outputPorts, outputBuses);
+        writer.writeSignalDefinitions(VerilogWriter.SignalType.INPUT, inputPorts, inputBuses);
+        writer.writeSignalDefinitions(VerilogWriter.SignalType.OUTPUT, outputPorts, outputBuses);
         Set<VerilogBus> wireBuses = extractSignalBuses(wires, circuitInfo);
-        writeSignalDefinitions(writer, KEYWORD_WIRE, wires, wireBuses);
+        writer.writeSignalDefinitions(VerilogWriter.SignalType.WIRE, wires, wireBuses);
         writer.write('\n');
         if (getFormat().useSystemVerilogSyntax()) {
-            String timescale = CircuitSettings.getVerilogTimescale();
-            if ((timescale != null) && !timescale.isEmpty()) {
-                writer.write("    " + KEYWORD_TIMEUNIT + ' ' + timescale + ";\n\n");
-            }
+            writer.writeTimeunitDefinition();
         }
     }
 
@@ -194,42 +174,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         return result;
     }
 
-    private void writePortDeclarations(PrintWriter writer, String title,
-            Set<String> inputPorts, Set<VerilogBus> inputBuses,
-            Set<String> outputPorts, Set<VerilogBus> outputBuses) {
-
-        Set<String> ports = new LinkedHashSet<>();
-        ports.addAll(inputPorts);
-        ports.addAll(inputBuses.stream().map(VerilogBus::getName).collect(Collectors.toList()));
-        ports.addAll(outputPorts);
-        ports.addAll(outputBuses.stream().map(VerilogBus::getName).collect(Collectors.toList()));
-
-        writer.write(KEYWORD_MODULE + ' ' + title + " (");
-        boolean isFirstPort = true;
-        for (String port : ports) {
-            if (isFirstPort) {
-                isFirstPort = false;
-            } else {
-                writer.write(", ");
-            }
-            writer.write(port);
-        }
-        writer.write(");\n");
-    }
-
-    private void writeSignalDefinitions(PrintWriter writer, String keyword, Set<String> signals, Set<VerilogBus> buses) {
-        if (!signals.isEmpty()) {
-            writer.write("    " + keyword + ' ' + String.join(", ", signals) + ";\n");
-        }
-        for (VerilogBus bus : buses) {
-            Integer maxIndex = bus.getMaxIndex();
-            Integer minIndex = bus.getMinIndex();
-            String name = bus.getName();
-            writer.write("    " + keyword + " [" + maxIndex + ':' + minIndex + "] " + name + ";\n");
-        }
-    }
-
-    private void writeInstances(PrintWriter writer, CircuitSignalInfo circuitInfo) {
+    private void writeInstances(VerilogWriter writer, CircuitSignalInfo circuitInfo) {
         boolean useAssignments = getFormat().useAssignOnly();
         // Write assign statements
         boolean hasAssignments = false;
@@ -264,7 +209,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         }
     }
 
-    private static boolean writeAssign(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+    private static boolean writeAssign(VerilogWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         boolean result = false;
         if (component.isMutex()) {
             result = writeMutexAssign(writer, circuitInfo, component);
@@ -276,7 +221,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         return result;
     }
 
-    private static boolean writeMutexAssign(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+    private static boolean writeMutexAssign(VerilogWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         boolean result = false;
         Circuit circuit = circuitInfo.getCircuit();
         String errorPrefix = "Error writing assign statement for Mutex "
@@ -294,18 +239,16 @@ public abstract class AbstractVerilogExporter implements Exporter {
                 LogUtils.logWarning(errorPrefix + "cannot identify nets connected to pins");
             } else {
                 if (mutexData.mutexProtocol() == Mutex.Protocol.EARLY) {
-                    String grantDelay = getAssignDelay(CircuitSettings::getMutexEarlyGrantDelay);
                     String g1LateName = CircuitSettings.getDerivedNetName(g1NetName);
                     String g2LateName = CircuitSettings.getDerivedNetName(g2NetName);
-                    writer.write("    " + KEYWORD_ASSIGN + grantDelay + ' ' + g1NetName + " = " + g1LateName + ";\n");
-                    writer.write("    " + KEYWORD_ASSIGN + grantDelay + ' ' + g2NetName + " = " + g2LateName + ";\n");
+                    writer.writeAssign(CircuitSettings::getMutexEarlyGrantDelay, g1NetName, g1LateName);
+                    writer.writeAssign(CircuitSettings::getMutexEarlyGrantDelay, g2NetName, g2LateName);
                     g1NetName = g1LateName;
                     g2NetName = g2LateName;
                 }
-                String delay = getAssignDelay(CircuitSettings::getVerilogAssignDelay);
                 String netName = "{%s, %s}".formatted(g1NetName, g2NetName);
                 String expr = getMutexExpression(g1NetName, g2NetName, r1NetName, r2NetName);
-                writer.write("    " + KEYWORD_ASSIGN + delay + ' ' + netName + " = " + expr + ";\n");
+                writer.writeAssign(CircuitSettings::getVerilogAssignDelay, netName, expr);
                 result = true;
             }
         }
@@ -323,7 +266,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
                 + "{%s & (~%s | ~%s), %s & (~%s | ~%s)}".formatted(r1, g2, r2, r2, g1, r1);
     }
 
-    private static boolean writeWaitAssign(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+    private static boolean writeWaitAssign(VerilogWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         boolean result = false;
         Circuit circuit = circuitInfo.getCircuit();
         String errorPrefix = "Error writing assign statement for Wait "
@@ -339,15 +282,13 @@ public abstract class AbstractVerilogExporter implements Exporter {
             if ((sigNetName == null) || (ctrlNetName == null) || (sanNetName == null)) {
                 LogUtils.logWarning(errorPrefix + "cannot identify nets connected to pins");
             } else {
-                String sigIgnoreTime = getAssignDelay(CircuitSettings::getWaitSigIgnoreTime);
                 String sigTempName = CircuitSettings.getDerivedNetName(sigNetName);
                 String sigExpr = getWaitSigExpression(sigNetName);
-                writer.write("    " + KEYWORD_ASSIGN + sigIgnoreTime + ' ' + sigTempName + " = " + sigExpr + ";\n");
+                writer.writeAssign(CircuitSettings::getWaitSigIgnoreTime, sigTempName, sigExpr);
 
-                String delay = getAssignDelay(CircuitSettings::getVerilogAssignDelay);
                 boolean negateSig = waitData.waitType() == Wait.Type.WAIT0;
                 String expr = getWaitExpression(sigTempName, ctrlNetName, sanNetName, negateSig);
-                writer.write("    " + KEYWORD_ASSIGN + delay + ' ' + sanNetName + " = " + expr + ";\n");
+                writer.writeAssign(CircuitSettings::getVerilogAssignDelay, sanNetName, expr);
                 result = true;
             }
         }
@@ -368,7 +309,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         return (negateSig ? "%s & (~%s | %s)" : "%s & (%s | %s)").formatted(ctrl, sig, san);
     }
 
-    private static boolean writeGateAssign(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+    private static boolean writeGateAssign(VerilogWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         boolean result = false;
         Collection<CircuitSignalInfo.SignalInfo> signalInfos = circuitInfo.getComponentSignalInfos(component,
                 signal -> getNetName(signal, circuitInfo));
@@ -388,8 +329,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
                 LogUtils.logWarning(errorPrefix + "cannot derive expression for net " + netName);
                 continue;
             }
-            String delay = getAssignDelay(component.getIsZeroDelay() ? null : CircuitSettings::getVerilogAssignDelay);
-            writer.write("    " + KEYWORD_ASSIGN + delay + ' ' + netName + " = " + expr + ";\n");
+            writer.writeAssign(component.getIsZeroDelay() ? null : CircuitSettings::getVerilogAssignDelay, netName, expr);
             result = true;
         }
         return result;
@@ -412,13 +352,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         return null;
     }
 
-    private static String getAssignDelay(Supplier<String> delaySupplier) {
-        String assignDelay = (delaySupplier == null) ? null : delaySupplier.get();
-        return (assignDelay == null) || assignDelay.isEmpty() || "0".equals(assignDelay.trim())
-                ? "" : ' ' + KEYWORD_ASSIGN_DELAY + assignDelay;
-    }
-
-    private void writeInstance(PrintWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
+    private void writeInstance(VerilogWriter writer, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         // Module name
         String title = component.getModule();
         File refinementCircuitFile = RefinementUtils.getRefinementCircuitFile(component);
@@ -465,7 +399,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         writer.write(");\n");
     }
 
-    private void writeInstanceContacts(PrintWriter writer, CircuitSignalInfo circuitInfo,
+    private void writeInstanceContacts(VerilogWriter writer, CircuitSignalInfo circuitInfo,
             Map<String, String> contactToSignalMap) {
 
         Map<String, Map<Integer, String>> contactBusToIndexedSignalMap = extractContactBuses(contactToSignalMap);
@@ -509,7 +443,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         }
     }
 
-    private void writeInitialState(PrintWriter writer, CircuitSignalInfo circuitInfo) {
+    private void writeInitialState(VerilogWriter writer, CircuitSignalInfo circuitInfo) {
         Circuit circuit = circuitInfo.getCircuit();
         Set<Contact> driversAndPorts = new HashSet<>(circuit.getDrivers());
         driversAndPorts.addAll(circuit.getPorts());
