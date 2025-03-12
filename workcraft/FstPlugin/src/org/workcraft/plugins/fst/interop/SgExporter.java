@@ -36,7 +36,7 @@ public class SgExporter implements Exporter {
         PrintWriter writer = new PrintWriter(out);
         String title = ExportUtils.getTitleAsIdentifier(model.getTitle());
         File file = getCurrentFile();
-        SgFormat format = SgFormat.getInstance();
+        Format format = getFormat();
         writer.write(ExportUtils.getExportHeader("SG file", "#", title, file, format));
         writer.write(".model " + title + '\n');
         if (model instanceof Fsm) {

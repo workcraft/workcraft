@@ -57,7 +57,7 @@ public class VerilogExporter implements Exporter {
             PrintWriter writer = new PrintWriter(out);
             String moduleName = ExportUtils.getTitleAsIdentifier(model.getTitle());
             File file = getCurrentFile();
-            VerilogFormat format = VerilogFormat.getInstance();
+            VerilogFormat format = getFormat();
             writer.write(ExportUtils.getExportHeader("Verilog netlist", "//", moduleName, file, format));
             writeModule(writer, (Dfs) model, moduleName);
             writer.close();
