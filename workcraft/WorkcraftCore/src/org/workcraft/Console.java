@@ -46,23 +46,23 @@ public class Console {
         if (!unsupportedFlags.isEmpty()) {
             LogUtils.logError("Unsupported command line options:\n  " + String.join("\n  ", unsupportedFlags));
             LogUtils.logMessage(Options.getHelpMessage());
-            return;
+            System.exit(1);
         }
 
         if (options.hasVersionFlag()) {
             LogUtils.logMessage(Info.getVersion().toString());
-            return;
+            System.exit(0);
         }
 
         if (options.hasHelpFlag()) {
             LogUtils.logMessage(Options.getHelpMessage());
-            return;
+            System.exit(0);
         }
 
         Integer port = options.getPort();
         if ((port != null) && reuseRunningInstance(port, options.getDirectory(), options.getPaths())) {
             LogUtils.logInfo("Reusing Workcraft instance on port " + port);
-            return;
+            System.exit(0);
         }
 
         Framework framework = Framework.getInstance();
