@@ -217,6 +217,7 @@ public class CircuitPropertyHelper {
         if (!constrainedPins.isEmpty()) {
             RefinementUtils.removeComponentFunctions(component);
         }
+        component.getReferencedComponent().setIsArbitrationPrimitive(false);
         component.getReferencedComponent().setRefinement(value);
     }
 

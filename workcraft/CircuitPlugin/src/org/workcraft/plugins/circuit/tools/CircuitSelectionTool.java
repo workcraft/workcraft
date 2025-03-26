@@ -37,6 +37,7 @@ public class CircuitSelectionTool extends SelectionTool {
             JMenuItem addOutputMenuItem = new JMenuItem("Add output pin");
             addOutputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
+                component.getReferencedComponent().setIsArbitrationPrimitive(false);
                 VisualContact contact = component.createContact(IOType.OUTPUT);
                 component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
             });
@@ -45,6 +46,7 @@ public class CircuitSelectionTool extends SelectionTool {
             JMenuItem addInputMenuItem = new JMenuItem("Add input pin");
             addInputMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
+                component.getReferencedComponent().setIsArbitrationPrimitive(false);
                 VisualContact contact = component.createContact(IOType.INPUT);
                 component.setPositionByDirection(contact, VisualContact.Direction.WEST, false);
             });
@@ -54,6 +56,7 @@ public class CircuitSelectionTool extends SelectionTool {
             JMenuItem removePinsMenuItem = new JMenuItem("Remove all pins");
             removePinsMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
+                component.getReferencedComponent().setIsArbitrationPrimitive(false);
                 component.remove(component.getVisualFunctionContacts());
             });
             popup.add(removePinsMenuItem);
@@ -83,6 +86,7 @@ public class CircuitSelectionTool extends SelectionTool {
             JMenuItem removeUnusedPinsMenuItem = new JMenuItem("Remove unused pins");
             removeUnusedPinsMenuItem.addActionListener(event -> {
                 editor.getWorkspaceEntry().saveMemento();
+                component.getReferencedComponent().setIsArbitrationPrimitive(false);
                 VisualCircuit circuit = (VisualCircuit) editor.getModel();
                 CircuitUtils.removeUnusedPins(circuit, component);
             });
