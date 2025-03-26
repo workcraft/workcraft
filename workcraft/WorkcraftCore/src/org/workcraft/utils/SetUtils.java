@@ -82,4 +82,15 @@ public class SetUtils {
         return Pair.of(trueItems, falseItems);
     }
 
+    public static <T> Set<T> duplicates(Collection<T> values) {
+        Set<T> result = new HashSet<>();
+        Set<T> seen = new HashSet<>();
+        for (T value : values) {
+            if (!seen.add(value)) {
+                result.add(value);
+            }
+        }
+        return result;
+    }
+
 }

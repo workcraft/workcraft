@@ -56,6 +56,7 @@ public class FunctionConsistencySupervisor extends StateSupervisor {
         Node parent = contact.getParent();
         if (parent instanceof FunctionComponent) {
             FunctionComponent component = (FunctionComponent) parent;
+            component.setIsArbitrationPrimitive(false);
             if (!component.isBlackbox() && (component.getRefinement() != null)) {
                 component.setRefinement(null);
                 component.setModule("");

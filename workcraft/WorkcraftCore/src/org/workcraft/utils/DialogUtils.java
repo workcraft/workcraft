@@ -149,6 +149,10 @@ public class DialogUtils {
         return showYesNoCancel(message, title, JOptionPane.YES_OPTION, JOptionPane.QUESTION_MESSAGE);
     }
 
+    public static int showYesNoCancelWarning(String message, String title) {
+        return showYesNoCancel(message, title, JOptionPane.YES_OPTION, JOptionPane.WARNING_MESSAGE);
+    }
+
     public static int showYesNoCancel(String message, String title, int defaultChoice, int messageType) {
         int result = JOptionPane.CANCEL_OPTION;
         Framework framework = Framework.getInstance();
@@ -183,6 +187,25 @@ public class DialogUtils {
             }
         }
         return result;
+    }
+
+    public static boolean showOkCancel(String message, String title) {
+        return showOkCancel(message, title, true, JOptionPane.PLAIN_MESSAGE);
+    }
+
+
+    public static boolean showOkCancelWarning(String message, String title) {
+        return showOkCancel(message, title, true, JOptionPane.WARNING_MESSAGE);
+    }
+
+    private static boolean showOkCancel(String message, String title, boolean defaultChoice, int messageType) {
+        Framework framework = Framework.getInstance();
+        if (framework.isInGuiMode()) {
+            MainWindow mainWindow = framework.getMainWindow();
+            int result = JOptionPane.showConfirmDialog(mainWindow, message, title, JOptionPane.OK_CANCEL_OPTION, messageType);
+            return (result == JOptionPane.OK_OPTION);
+        }
+        return defaultChoice;
     }
 
     private static void setupDialogPaneButton(JDialog dialog, JOptionPane pane, JButton button, String label) {
