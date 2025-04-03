@@ -5,10 +5,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.Undirected;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.utils.Hierarchy;
@@ -34,7 +31,7 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
         Map<Class<? extends VisualComponent>, Set<VisualComponent>> classComponents = new HashMap<>();
         for (Class<? extends VisualComponent> mergableClass : mergableClasses) {
             Set<VisualComponent> components = new HashSet<>();
-            for (Node component: nodes) {
+            for (Node component : nodes) {
                 if (mergableClass.isInstance(component)) {
                     components.add((VisualComponent) component);
                 }
@@ -83,6 +80,17 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
             VisualComponent newComponent) {
 
         for (VisualComponent component : components) {
+            for (Replica replica : component.getReplicas()) {
+                if (replica instanceof VisualReplica componentReplica) {
+                    Container container = Hierarchy.getNearestContainer(componentReplica);
+                    VisualReplica newComponentReplica = model.createVisualReplica(newComponent, componentReplica.getClass(), container);
+                    newComponentReplica.copyStyle(componentReplica);
+                    newComponentReplica.copyPosition(componentReplica);
+                    for (VisualConnection connection : model.getConnections(componentReplica)) {
+                        createMergedConnection(model, connection, componentReplica, newComponentReplica);
+                    }
+                }
+            }
             for (VisualConnection connection : model.getConnections(component)) {
                 createMergedConnection(model, connection, component, newComponent);
             }
@@ -91,7 +99,7 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
     }
 
     public VisualConnection createMergedConnection(VisualModel model, VisualConnection connection,
-            VisualComponent component, VisualComponent newComponent) {
+            VisualNode component, VisualNode newComponent) {
 
         boolean isUndirected = connection instanceof Undirected;
         VisualNode first = connection.getFirst();

@@ -325,53 +325,51 @@ class TransformationCommandTests {
         VisualStgPlace p0 = stg.getVisualComponentByMathReference("p0", VisualStgPlace.class);
         Assertions.assertNotNull(p0);
 
-        VisualConnection connection = stg.getConnection(p0, inPlus);
-        Assertions.assertNotNull(connection);
+        VisualConnection p0InPlusConnection = stg.getConnection(p0, inPlus);
+        Assertions.assertNotNull(p0InPlusConnection);
 
         stg.connect(outPlus, p1);
         stg.connect(p1, intToggle);
         stg.connect(intToggle, inPlus);
 
-        InsertDummyTransformationCommand insertDummyCommand = new InsertDummyTransformationCommand();
-        stg.select(connection);
-        insertDummyCommand.execute(we);
+        stg.select(p0InPlusConnection);
+        new InsertDummyTransformationCommand().execute(we);
         checkVisualStgNodeCount(stg, 2, 5, 0, 5, 1, 2, 2, 0);
 
-        DummyToSignalTransitionTransformationCommand dummyToSignalTransitionCommand = new DummyToSignalTransitionTransformationCommand();
+        stg.select(stg.getConnections(p0));
+        new ProxyDirectedArcPlaceTransformationCommand().execute(we);
+        checkVisualStgNodeCount(stg, 2, 5, 2, 5, 1, 2, 2, 0);
+
         VisualDummyTransition dummy = stg.getVisualComponentByMathReference("dum", VisualDummyTransition.class);
         Assertions.assertNotNull(dummy);
         stg.select(dummy);
-        dummyToSignalTransitionCommand.execute(we);
-        checkVisualStgNodeCount(stg, 2, 5, 0, 6, 0, 2, 2, 0);
+        new DummyToSignalTransitionTransformationCommand().execute(we);
+        checkVisualStgNodeCount(stg, 2, 5, 2, 6, 0, 2, 2, 0);
 
-        MergePlaceTransformationCommand mergePlaceCommand = new MergePlaceTransformationCommand();
         stg.select(Arrays.asList(p0, p1));
-        mergePlaceCommand.execute(we);
-        checkVisualStgNodeCount(stg, 1, 5, 0, 6, 0, 1, 2, 0);
+        new MergePlaceTransformationCommand().execute(we);
+        checkVisualStgNodeCount(stg, 1, 5, 2, 6, 0, 1, 2, 0);
 
-        MergeTransitionTransformationCommand mergeTransitionCommand = new MergeTransitionTransformationCommand();
         VisualSignalTransition sigToggle = stg.getVisualComponentByMathReference("sig~", VisualSignalTransition.class);
         Assertions.assertNotNull(sigToggle);
         stg.select(Arrays.asList(intToggle, sigToggle));
-        mergeTransitionCommand.execute(we);
-        checkVisualStgNodeCount(stg, 1, 4, 0, 5, 0, 1, 1, 0);
+        new MergeTransitionTransformationCommand().execute(we);
+        checkVisualStgNodeCount(stg, 1, 4, 1, 5, 0, 1, 1, 0);
 
-        ContractNamedTransitionTransformationCommand contractTransitionCommand = new ContractNamedTransitionTransformationCommand();
         VisualSignalTransition intsigToggle = stg.getVisualComponentByMathReference("int_sig~", VisualSignalTransition.class);
         if (intsigToggle == null) {
             intsigToggle = stg.getVisualComponentByMathReference("sig_int~", VisualSignalTransition.class);
         }
         Assertions.assertNotNull(intsigToggle);
         stg.select(intsigToggle);
-        contractTransitionCommand.execute(we);
+        new ContractNamedTransitionTransformationCommand().execute(we);
 
         framework.closeWork(we);
-        checkVisualStgNodeCount(stg, 1, 3, 0, 4, 0, 1, 1, 0);
+        checkVisualStgNodeCount(stg, 1, 3, 1, 4, 0, 1, 1, 0);
 
-        SplitTransitionTransformationCommand splitTransitionCommand = new SplitTransitionTransformationCommand();
         stg.select(Arrays.asList(inPlus, outPlus));
-        splitTransitionCommand.execute(we);
-        checkVisualStgNodeCount(stg, 1, 5, 0, 6, 0, 1, 1, 0);
+        new SplitTransitionTransformationCommand().execute(we);
+        checkVisualStgNodeCount(stg, 1, 5, 1, 6, 0, 1, 1, 0);
     }
 
     @Test
