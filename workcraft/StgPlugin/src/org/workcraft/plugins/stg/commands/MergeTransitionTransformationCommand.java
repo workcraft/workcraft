@@ -10,8 +10,8 @@ import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 public final class MergeTransitionTransformationCommand extends AbstractMergeTransformationCommand {
 
@@ -36,7 +36,7 @@ public final class MergeTransitionTransformationCommand extends AbstractMergeTra
     }
 
     @Override
-    public <T extends VisualComponent> T createMergedComponent(VisualModel model, Set<VisualComponent> components, Class<T> type) {
+    public <T extends VisualComponent> T createMergedComponent(VisualModel model, Collection<VisualComponent> components, Class<T> type) {
         T result = super.createMergedComponent(model, components, type);
 
         HashSet<String> signalNames = new HashSet<>();

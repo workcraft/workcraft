@@ -28,9 +28,9 @@ public final class MergeStateTransformationCommand extends AbstractMergeTransfor
 
     @Override
     public VisualConnection createMergedConnection(VisualModel model, VisualConnection connection,
-            VisualNode component, VisualNode newComponent) {
+            VisualNode node, VisualNode mergedNode) {
 
-        VisualConnection newConnection = super.createMergedConnection(model, connection, component, newComponent);
+        VisualConnection newConnection = super.createMergedConnection(model, connection, node, mergedNode);
         if ((connection instanceof VisualEvent event) && (newConnection instanceof VisualEvent newEvent)) {
             newEvent.getReferencedConnection().setSymbol(event.getReferencedConnection().getSymbol());
         }

@@ -63,10 +63,11 @@ class TransformationCommandTests {
         Set<String> dstOutputs = stg.getSignalReferences(Signal.Type.OUTPUT);
         Set<String> dstInternals = stg.getSignalReferences(Signal.Type.INTERNAL);
 
-        framework.closeWork(we);
         Assertions.assertEquals(srcInputs, dstOutputs);
         Assertions.assertEquals(srcOutputs, dstInputs);
         Assertions.assertEquals(srcInternals, dstInternals);
+
+        framework.closeWork(we);
     }
 
     @Test
@@ -130,10 +131,11 @@ class TransformationCommandTests {
             }
         }
 
-        framework.closeWork(we);
         Assertions.assertEquals(srcMinusCount, dstPlusCount);
         Assertions.assertEquals(srcPlusCount, dstMinusCount);
         Assertions.assertEquals(srcToggleCount, dstToggleCount);
+
+        framework.closeWork(we);
     }
 
     @Test
@@ -184,10 +186,11 @@ class TransformationCommandTests {
         int impSignalTransitions = stg.getVisualSignalTransitions().size();
         int impDummyTransitions = stg.getVisualDummyTransitions().size();
 
-        framework.closeWork(we);
         Assertions.assertEquals(srcPlaces + srcImplicitPlaceArcs, impPlaces + impImplicitPlaceArcs);
         Assertions.assertEquals(srcSignalTransitions, impSignalTransitions);
         Assertions.assertEquals(srcDummyTransitions, impDummyTransitions);
+
+        framework.closeWork(we);
     }
 
     @Test
@@ -224,12 +227,13 @@ class TransformationCommandTests {
         int dstDummyTransitions = stg.getVisualDummyTransitions().size();
         int dstConnections = stg.getVisualConnections().size();
 
-        framework.closeWork(we);
         Assertions.assertEquals(srcPlaces, dstPlaces);
         Assertions.assertEquals(srcSignalTransitions * 2, dstSignalTransitions);
         Assertions.assertEquals(srcDummyTransitions, dstDummyTransitions);
         Assertions.assertEquals(srcImplicitPlaceArcs + srcSignalTransitions, dstImplicitPlaceArcs);
         Assertions.assertEquals(srcConnections + srcSignalTransitions, dstConnections);
+
+        framework.closeWork(we);
     }
 
     @Test
@@ -252,9 +256,9 @@ class TransformationCommandTests {
         SelectAllSignalTransitionsTransformationCommand command = new SelectAllSignalTransitionsTransformationCommand();
         command.execute(we);
         int count = stg.getSelection().size();
+        Assertions.assertEquals(expCount, count);
 
         framework.closeWork(we);
-        Assertions.assertEquals(expCount, count);
     }
 
     @Test
@@ -283,10 +287,10 @@ class TransformationCommandTests {
 
         int dstSignalTransitionCount = stg.getVisualSignalTransitions().size();
         int dstDummyTransitionCount = stg.getVisualDummyTransitions().size();
-
-        framework.closeWork(we);
         Assertions.assertEquals(srcDummyTransitionCount + selectionCount, dstDummyTransitionCount);
         Assertions.assertEquals(srcSignalTransitionCount - selectionCount, dstSignalTransitionCount);
+
+        framework.closeWork(we);
     }
 
     private void selectVisualComponentsByMathRefs(VisualStg stg, String[] refs) {
@@ -348,13 +352,13 @@ class TransformationCommandTests {
 
         stg.select(Arrays.asList(p0, p1));
         new MergePlaceTransformationCommand().execute(we);
-        checkVisualStgNodeCount(stg, 1, 5, 2, 6, 0, 1, 2, 0);
+        checkVisualStgNodeCount(stg, 1, 5, 1, 6, 0, 1, 2, 0);
 
         VisualSignalTransition sigToggle = stg.getVisualComponentByMathReference("sig~", VisualSignalTransition.class);
         Assertions.assertNotNull(sigToggle);
         stg.select(Arrays.asList(intToggle, sigToggle));
         new MergeTransitionTransformationCommand().execute(we);
-        checkVisualStgNodeCount(stg, 1, 4, 1, 5, 0, 1, 1, 0);
+        checkVisualStgNodeCount(stg, 1, 4, 0, 5, 0, 1, 1, 0);
 
         VisualSignalTransition intsigToggle = stg.getVisualComponentByMathReference("int_sig~", VisualSignalTransition.class);
         if (intsigToggle == null) {
@@ -363,13 +367,13 @@ class TransformationCommandTests {
         Assertions.assertNotNull(intsigToggle);
         stg.select(intsigToggle);
         new ContractNamedTransitionTransformationCommand().execute(we);
-
-        framework.closeWork(we);
-        checkVisualStgNodeCount(stg, 1, 3, 1, 4, 0, 1, 1, 0);
+        checkVisualStgNodeCount(stg, 1, 3, 0, 4, 0, 1, 1, 0);
 
         stg.select(Arrays.asList(inPlus, outPlus));
         new SplitTransitionTransformationCommand().execute(we);
-        checkVisualStgNodeCount(stg, 1, 5, 1, 6, 0, 1, 1, 0);
+        checkVisualStgNodeCount(stg, 1, 5, 0, 6, 0, 1, 1, 0);
+
+        framework.closeWork(we);
     }
 
     @Test
@@ -408,9 +412,9 @@ class TransformationCommandTests {
         Assertions.assertNotNull(dummyTransition);
         stg.select(dummyTransition);
         contractTransitionCommand.execute(we);
+        checkVisualStgNodeCount(stg, 1, 3, 1, 4, 0, 1, 1, 0);
 
         framework.closeWork(we);
-        checkVisualStgNodeCount(stg, 1, 3, 1, 4, 0, 1, 1, 0);
     }
 
     private void checkVisualStgNodeCount(VisualStg stg, int explicitPlaceCount, int implicitPlaceCount, int replicaPlaceCount,
