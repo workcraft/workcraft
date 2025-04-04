@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 
 public class CircuitSettings extends AbstractModelSettings {
 
-    public static final String DEFAULT_RANDOM_DELAY = "(1ps * $urandom(50))";
+    public static final String DEFAULT_RANDOM_DELAY = "(1ps * $urandom_range(0, 50))";
     public static final String DEFAULT_RANDOM_DELAY_INTERVAL = "(1ps * $urandom_range(20, 50))";
     public static final Map<String, String> PREDEFINED_DELAY_PARAMETERS = new LinkedHashMap<>();
 
@@ -130,7 +130,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final int GATE_INPUT_GROUP = 2;
     private static final int GATE_OUTPUT_GROUP = 3;
 
-    private static final String NET_NAME_PLACEHOLDER = "$";
     private static final String BUS_INDEX_PLACEHOLDER = "$";
     private static final String MODULE_NAME_PLACEHOLDER = "$";
     private static final String FORK_FUNOUT_PLACEHOLDER = "$";
@@ -166,9 +165,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyVerilogAssignDelay = prefix + ".verilogAssignDelay";
     private static final String keyWaitSigIgnoreTime = prefix + ".waitSigIgnoreTime";
     private static final String keyWaitUndefinedInterpretation = prefix + ".waitUndefinedInterpretation";
-    private static final String keyMutexEarlyGrantDelay = prefix + ".mutexEarlyGrantDelay";
+    private static final String keyMutexEarlyGrantDelay = prefix + ".mutexGrantDelay";
     private static final String keyMutexArbitrationWinner = prefix + ".mutexArbitrationWinner";
-    private static final String keyDerivedNetPattern = prefix + ".derivedNetPattern";
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyDissolveSingletonBus = prefix + ".dissolveSingletonBus";
     private static final String keyAcceptInoutPort = prefix + ".acceptInoutPort";
@@ -227,7 +225,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final WaitUndefinedInterpretation defaultWaitUndefinedInterpretation = WaitUndefinedInterpretation.RANDOM;
     private static final String defaultMutexEarlyGrantDelay = DEFAULT_RANDOM_DELAY;
     private static final MutexArbitrationWinner defaultMutexArbitrationWinner = MutexArbitrationWinner.RANDOM;
-    private static final String defaultDerivedNetPattern = "__" + NET_NAME_PLACEHOLDER;
     private static final String defaultBusSuffix = "__" + BUS_INDEX_PLACEHOLDER;
     private static final boolean defaultDissolveSingletonBus = true;
     private static final boolean defaultAcceptInoutPort = true;
@@ -286,7 +283,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static WaitUndefinedInterpretation waitUndefinedInterpretation = defaultWaitUndefinedInterpretation;
     private static String mutexEarlyGrantDelay = defaultMutexEarlyGrantDelay;
     private static MutexArbitrationWinner mutexArbitrationWinner = defaultMutexArbitrationWinner;
-    private static String derivedNetPattern = defaultDerivedNetPattern;
     private static String busSuffix = defaultBusSuffix;
     private static boolean dissolveSingletonBus = defaultDissolveSingletonBus;
     private static boolean acceptInoutPort = defaultAcceptInoutPort;
@@ -473,7 +469,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getWaitUndefinedInterpretation));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Delay of Early MUTEX grants",
+                PropertyHelper.BULLET_PREFIX + "Delay of Early protocol MUTEX grants",
                 CircuitSettings::setMutexEarlyGrantDelay,
                 CircuitSettings::getMutexEarlyGrantDelay) {
             @Override
@@ -486,12 +482,6 @@ public class CircuitSettings extends AbstractModelSettings {
                 PropertyHelper.BULLET_PREFIX + "MUTEX winning grant when both requests are high",
                 CircuitSettings::setMutexArbitrationWinner,
                 CircuitSettings::getMutexArbitrationWinner));
-
-        properties.add(new PropertyDeclaration<>(String.class,
-                PropertyHelper.BULLET_PREFIX + "Derived net name for WAIT non-persistent input and Early MUTEX grants ("
-                        + NET_NAME_PLACEHOLDER + " denotes original net name)",
-                CircuitSettings::setDerivedNetPattern,
-                CircuitSettings::getDerivedNetPattern));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.BULLET_PREFIX + "Bus split/merge suffix on Verilog import/export ("
@@ -677,7 +667,6 @@ public class CircuitSettings extends AbstractModelSettings {
         setWaitUndefinedInterpretation(config.getEnum(keyWaitUndefinedInterpretation, WaitUndefinedInterpretation.class, defaultWaitUndefinedInterpretation));
         setMutexEarlyGrantDelay(config.getString(keyMutexEarlyGrantDelay, defaultMutexEarlyGrantDelay));
         setMutexArbitrationWinner(config.getEnum(keyMutexArbitrationWinner, MutexArbitrationWinner.class, defaultMutexArbitrationWinner));
-        setDerivedNetPattern(config.getString(keyDerivedNetPattern, defaultDerivedNetPattern));
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setDissolveSingletonBus(config.getBoolean(keyDissolveSingletonBus, defaultDissolveSingletonBus));
         setAcceptInoutPort(config.getBoolean(keyAcceptInoutPort, defaultAcceptInoutPort));
@@ -736,7 +725,6 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setEnum(keyWaitUndefinedInterpretation, getWaitUndefinedInterpretation());
         config.set(keyMutexEarlyGrantDelay, getMutexEarlyGrantDelay());
         config.setEnum(keyMutexArbitrationWinner, getMutexArbitrationWinner());
-        config.set(keyDerivedNetPattern, getDerivedNetPattern());
         config.set(keyBusSuffix, getBusSuffix());
         config.setBoolean(keyDissolveSingletonBus, getDissolveSingletonBus());
         config.setBoolean(keyAcceptInoutPort, getAcceptInoutPort());
@@ -992,26 +980,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setMutexArbitrationWinner(MutexArbitrationWinner value) {
         mutexArbitrationWinner = value;
-    }
-
-    public static String getDerivedNetPattern() {
-        return derivedNetPattern;
-    }
-
-    public static void setDerivedNetPattern(String value) {
-        if ((value == null) || !value.contains(NET_NAME_PLACEHOLDER)) {
-            DialogUtils.showError("Derived net pattern must have original net name placeholder " + NET_NAME_PLACEHOLDER);
-        } else {
-            derivedNetPattern = value;
-        }
-    }
-
-    public static String getDerivedNetName(String netName) {
-        String pattern = getDerivedNetPattern();
-        if (pattern == null) {
-            pattern = defaultDerivedNetPattern;
-        }
-        return pattern.replace(NET_NAME_PLACEHOLDER, netName);
     }
 
     public static String getBusSuffix() {

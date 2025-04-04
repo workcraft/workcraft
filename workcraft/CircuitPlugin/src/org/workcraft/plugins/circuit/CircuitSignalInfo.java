@@ -24,6 +24,7 @@ public class CircuitSignalInfo {
     private final Circuit circuit;
     private final Map<Contact, Contact> contactDriverMap = new HashMap<>();
     private final Map<Contact, String> driverFlatNameMap = new HashMap<>();
+    private final Map<Contact, String> contactAuxNameMap = new HashMap<>();
     private final Set<String> takenFlatNames = new HashSet<>();
     private final Map<String, Set<Integer>> busIndexesMap;
 
@@ -71,16 +72,36 @@ public class CircuitSignalInfo {
         } else {
             signal = CircuitUtils.getContactReference(circuit, driver);
         }
-        if (signal == null) {
+        if (signal != null) {
+            signal = getUntakenSignal(driver, signal);
+            driverFlatNameMap.put(driver, signal);
+        }
+        return signal;
+    }
+
+    public final String getContactAuxiliarySignal(Contact contact) {
+        if (contact == null) {
             return null;
         }
+        String signal = contactAuxNameMap.get(contact);
+        if (signal != null) {
+            return signal;
+        }
+        signal = CircuitUtils.getContactReference(circuit, contact);
+        if (signal != null) {
+            signal = getUntakenSignal(contact, signal);
+            contactAuxNameMap.put(contact, signal);
+        }
+        return signal;
+    }
 
+    private String getUntakenSignal(Contact contact, String signal) {
         if (NamespaceHelper.isHierarchical(signal)) {
             HierarchyReferenceManager refManager = circuit.getReferenceManager();
             NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
             NameManager nameManager = refManager.getNameManager(namespaceProvider);
             String flatCandidateName = NamespaceHelper.flattenReference(signal);
-            signal = nameManager.getDerivedName(driver, flatCandidateName);
+            signal = nameManager.getDerivedName(contact, flatCandidateName);
         }
         int code = 0;
         while (takenFlatNames.contains(signal)) {
@@ -88,7 +109,6 @@ public class CircuitSignalInfo {
             code++;
         }
         takenFlatNames.add(signal);
-        driverFlatNameMap.put(driver, signal);
         return signal;
     }
 
