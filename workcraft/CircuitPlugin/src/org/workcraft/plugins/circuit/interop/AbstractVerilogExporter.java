@@ -101,7 +101,8 @@ public abstract class AbstractVerilogExporter implements Exporter {
     private void writeHeader(VerilogWriter writer, CircuitSignalInfo circuitInfo, String moduleName) {
         Set<String> inputPorts = new LinkedHashSet<>();
         Set<String> outputPorts = new LinkedHashSet<>();
-        for (Contact contact : circuitInfo.getCircuit().getPorts()) {
+        Circuit circuit = circuitInfo.getCircuit();
+        for (Contact contact : circuit.getPorts()) {
             String signal = circuitInfo.getContactSignal(contact);
             Set<String> ports = contact.isInput() ? inputPorts : outputPorts;
             ports.add(signal);
@@ -112,20 +113,9 @@ public abstract class AbstractVerilogExporter implements Exporter {
             }
         }
 
-        Set<String> wires = new LinkedHashSet<>();
-        for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
-            for (FunctionContact contact : component.getFunctionOutputs()) {
-                String signal = circuitInfo.getContactSignal(contact);
-                if ((signal == null) || inputPorts.contains(signal) || outputPorts.contains(signal)) continue;
-                wires.add(signal);
-                if (circuitInfo.getBusIndexes(signal) != null) {
-                    circuitInfo.removeBus(signal);
-                    LogUtils.logWarning("Nets of bus '" + signal + "' cannot be merged because " +
-                            "wire with the same name exists");
-                }
-            }
-        }
-
+        Set<String> wires = calcWires(circuitInfo);
+        wires.removeAll(inputPorts);
+        wires.removeAll(outputPorts);
         adjustBuses(inputPorts, outputPorts, wires, circuitInfo);
 
         Set<VerilogBus> inputBuses = extractSignalBuses(inputPorts, circuitInfo);
@@ -139,6 +129,81 @@ public abstract class AbstractVerilogExporter implements Exporter {
         if (getFormat().useSystemVerilogSyntax()) {
             writer.writeTimeunitDefinition();
         }
+    }
+
+    private Set<String> calcWires(CircuitSignalInfo circuitInfo) {
+        Set<String> result = new LinkedHashSet<>();
+        Circuit circuit = circuitInfo.getCircuit();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            for (FunctionContact contact : component.getFunctionOutputs()) {
+                String signal = circuitInfo.getContactSignal(contact);
+                if (signal != null) {
+                    result.add(signal);
+                }
+                if (circuitInfo.getBusIndexes(signal) != null) {
+                    circuitInfo.removeBus(signal);
+                    LogUtils.logWarning("Nets of bus '" + signal + "' cannot be merged because " +
+                            "wire with the same name exists");
+                }
+            }
+        }
+        // Auxiliary wires for assign-statement models of WAIT (non-persistent input) and Early MUTEX (for grants)
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (useAssignStatement(component)) {
+                if (component.isMutex()) {
+                    Set<String> auxMutexWires = getAuxMutexWires(circuitInfo, component);
+                    if (!auxMutexWires.isEmpty()) {
+                        String componentRef = circuit.getComponentReference(component);
+                        String message = "Assign-statement model for Early protocol MUTEX " + componentRef + " uses auxiliary wire";
+                        LogUtils.logInfo(TextUtils.wrapMessageWithItems(message, auxMutexWires));
+                        result.addAll(auxMutexWires);
+                    }
+                } else if (component.isWait()) {
+                    Set<String> auxWaitWires = getAuxWaitWires(circuitInfo, component);
+                    if (!auxWaitWires.isEmpty()) {
+                        String componentRef = circuit.getComponentReference(component);
+                        String message = "Assign-statement model for WAIT element " + componentRef + " uses auxiliary wire";
+                        LogUtils.logInfo(TextUtils.wrapMessageWithItems(message, auxWaitWires));
+                        result.addAll(auxWaitWires);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private boolean useAssignStatement(FunctionComponent component) {
+        return (getFormat().useAssignOnly() || !component.isMapped()) && (component.getRefinementFile() == null);
+    }
+
+    private static Set<String> getAuxMutexWires(CircuitSignalInfo circuitInfo, FunctionComponent component) {
+        Set<String> result = new LinkedHashSet<>();
+        Circuit circuit = circuitInfo.getCircuit();
+        ArbitrationUtils.MutexData mutexData = ArbitrationUtils.getMutexData(circuit, component, null);
+        if ((mutexData != null) && (mutexData.mutexProtocol() == Mutex.Protocol.EARLY)) {
+            String g1AuxNetName = circuitInfo.getContactAuxiliarySignal(mutexData.g1OutputPin());
+            if (g1AuxNetName != null) {
+                result.add(g1AuxNetName);
+            }
+            String g2AuxNetName = circuitInfo.getContactAuxiliarySignal(mutexData.g2OutputPin());
+            if (g2AuxNetName != null) {
+                result.add(g2AuxNetName);
+            }
+        }
+        return result;
+    }
+
+    private static Set<String> getAuxWaitWires(CircuitSignalInfo circuitInfo, FunctionComponent component) {
+        Set<String> result = new LinkedHashSet<>();
+        Circuit circuit = circuitInfo.getCircuit();
+        ArbitrationUtils.WaitData waitData = ArbitrationUtils.getWaitData(circuit, component, null);
+        if (waitData != null) {
+            String sigAuxNetName = circuitInfo.getContactAuxiliarySignal(waitData.sigInputPin());
+            if (sigAuxNetName != null) {
+                result.add(sigAuxNetName);
+            }
+        }
+        return result;
     }
 
     private void adjustBuses(Set<String> inputs, Set<String> outputs, Set<String> wires,
@@ -175,12 +240,11 @@ public abstract class AbstractVerilogExporter implements Exporter {
     }
 
     private void writeInstances(VerilogWriter writer, CircuitSignalInfo circuitInfo) {
-        boolean useAssignments = getFormat().useAssignOnly();
         // Write assign statements
         boolean hasAssignments = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
-            if ((useAssignments || !component.isMapped()) && (component.getRefinementFile() == null)) {
-                if (!useAssignments) {
+            if (useAssignStatement(component)) {
+                if (!getFormat().useAssignOnly()) {
                     String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
                     LogUtils.logWarning("Component " + instanceFlatName
                             + " is not associated to a module and is exported as assign statement.");
@@ -199,7 +263,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         // Write mapped components
         boolean hasMappedComponents = false;
         for (FunctionComponent component : circuitInfo.getCircuit().getFunctionComponents()) {
-            if ((!useAssignments && component.isMapped()) || (component.getRefinementFile() != null)) {
+            if (!useAssignStatement(component)) {
                 writeInstance(writer, circuitInfo, component);
                 hasMappedComponents = true;
             }
@@ -239,12 +303,12 @@ public abstract class AbstractVerilogExporter implements Exporter {
                 LogUtils.logWarning(errorPrefix + "cannot identify nets connected to pins");
             } else {
                 if (mutexData.mutexProtocol() == Mutex.Protocol.EARLY) {
-                    String g1LateName = CircuitSettings.getDerivedNetName(g1NetName);
-                    String g2LateName = CircuitSettings.getDerivedNetName(g2NetName);
-                    writer.writeAssign(CircuitSettings::getMutexEarlyGrantDelay, g1NetName, g1LateName);
-                    writer.writeAssign(CircuitSettings::getMutexEarlyGrantDelay, g2NetName, g2LateName);
-                    g1NetName = g1LateName;
-                    g2NetName = g2LateName;
+                    String g1AuxNetName = circuitInfo.getContactAuxiliarySignal(mutexData.g1OutputPin());
+                    String g2AuxNetName = circuitInfo.getContactAuxiliarySignal(mutexData.g2OutputPin());
+                    writer.writeAssign(CircuitSettings::getMutexEarlyGrantDelay, g1NetName, g1AuxNetName);
+                    writer.writeAssign(CircuitSettings::getMutexEarlyGrantDelay, g2NetName, g2AuxNetName);
+                    g1NetName = g1AuxNetName;
+                    g2NetName = g2AuxNetName;
                 }
                 String netName = "{%s, %s}".formatted(g1NetName, g2NetName);
                 String expr = getMutexExpression(g1NetName, g2NetName, r1NetName, r2NetName);
@@ -282,7 +346,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
             if ((sigNetName == null) || (ctrlNetName == null) || (sanNetName == null)) {
                 LogUtils.logWarning(errorPrefix + "cannot identify nets connected to pins");
             } else {
-                String sigTempName = CircuitSettings.getDerivedNetName(sigNetName);
+                String sigTempName = circuitInfo.getContactAuxiliarySignal(waitData.sigInputPin());
                 String sigExpr = getWaitSigExpression(sigNetName);
                 writer.writeAssign(CircuitSettings::getWaitSigIgnoreTime, sigTempName, sigExpr);
 
@@ -302,7 +366,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         case LOW -> "1'b0";
         };
 
-        return "(%s != 1'b0) && (%s != 1'b1) ? %s : %s".formatted(sig, sig, interpretation, sig);
+        return "(%s == 1'b0) || (%s == 1'b1) ? %s : %s".formatted(sig, sig, sig, interpretation);
     }
 
     private static String getWaitExpression(String sig, String ctrl, String san, boolean negateSig) {

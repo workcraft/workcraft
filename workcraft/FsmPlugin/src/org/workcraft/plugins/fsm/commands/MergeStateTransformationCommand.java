@@ -1,8 +1,8 @@
 package org.workcraft.plugins.fsm.commands;
 
 import org.workcraft.commands.AbstractMergeTransformationCommand;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
@@ -28,9 +28,9 @@ public final class MergeStateTransformationCommand extends AbstractMergeTransfor
 
     @Override
     public VisualConnection createMergedConnection(VisualModel model, VisualConnection connection,
-            VisualComponent component, VisualComponent newComponent) {
+            VisualNode node, VisualNode mergedNode) {
 
-        VisualConnection newConnection = super.createMergedConnection(model, connection, component, newComponent);
+        VisualConnection newConnection = super.createMergedConnection(model, connection, node, mergedNode);
         if ((connection instanceof VisualEvent event) && (newConnection instanceof VisualEvent newEvent)) {
             newEvent.getReferencedConnection().setSymbol(event.getReferencedConnection().getSymbol());
         }

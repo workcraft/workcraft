@@ -37,9 +37,9 @@ class TransformationCommandTests {
         new ReadArcToDualArcTransformationCommand().execute(we);
         checkArcCount(petri, 4, 4, 0);
 
-        VisualPlace p1 = petri.getVisualComponentByMathReference("p1", VisualPlace.class);
         VisualTransition t2 = petri.getVisualComponentByMathReference("t2", VisualTransition.class);
-        VisualConnection connection = petri.getConnection(p1, t2);
+        VisualPlace p2 = petri.getVisualComponentByMathReference("p2", VisualPlace.class);
+        VisualConnection connection = petri.getConnection(t2, p2);
         Assertions.assertNotNull(connection);
 
         petri.select(connection);
@@ -68,16 +68,16 @@ class TransformationCommandTests {
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         VisualPetri petri = WorkspaceUtils.getAs(we, VisualPetri.class);
-        Assertions.assertEquals(0, ConnectionUtils.getVisualReplicaPlaces(petri).size());
+        Assertions.assertEquals(1, ConnectionUtils.getVisualReplicaPlaces(petri).size());
 
         VisualPlace p1 = petri.getVisualComponentByMathReference("p1", VisualPlace.class);
         VisualTransition t2 = petri.getVisualComponentByMathReference("t2", VisualTransition.class);
         VisualConnection readArc = petri.getConnection(p1, t2);
-        Assertions.assertTrue(readArc instanceof VisualReadArc);
+        Assertions.assertInstanceOf(VisualReadArc.class, readArc);
 
         petri.select(readArc);
         new ProxyReadArcPlaceTransformationCommand().execute(we);
-        Assertions.assertEquals(1, ConnectionUtils.getVisualReplicaPlaces(petri).size());
+        Assertions.assertEquals(2, ConnectionUtils.getVisualReplicaPlaces(petri).size());
 
         VisualPlace p2 = petri.getVisualComponentByMathReference("p2", VisualPlace.class);
         VisualConnection producingArc = petri.getConnection(t2, p2);
@@ -85,7 +85,7 @@ class TransformationCommandTests {
 
         petri.select(producingArc);
         new ProxyDirectedArcPlaceTransformationCommand().execute(we);
-        Assertions.assertEquals(2, ConnectionUtils.getVisualReplicaPlaces(petri).size());
+        Assertions.assertEquals(3, ConnectionUtils.getVisualReplicaPlaces(petri).size());
 
         petri.selectNone();
         new CollapseProxyTransformationCommand().execute(we);

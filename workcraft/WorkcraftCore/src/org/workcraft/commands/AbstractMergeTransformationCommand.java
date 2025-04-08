@@ -5,10 +5,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.Undirected;
-import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.utils.Hierarchy;
@@ -33,27 +30,45 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
     public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
         Map<Class<? extends VisualComponent>, Set<VisualComponent>> classComponents = new HashMap<>();
         for (Class<? extends VisualComponent> mergableClass : mergableClasses) {
-            Set<VisualComponent> components = new HashSet<>();
-            for (Node component: nodes) {
-                if (mergableClass.isInstance(component)) {
-                    components.add((VisualComponent) component);
-                }
-            }
+            Set<VisualComponent> components = calcMergableComponents(nodes, mergableClass);
             classComponents.put(mergableClass, components);
         }
         for (Class<? extends VisualComponent> mergableClass : mergableClasses) {
             Set<VisualComponent> components = classComponents.get(mergableClass);
             if (components.size() > 1) {
                 VisualComponent mergedComponent = createMergedComponent(model, components, mergableClass);
-                replaceComponents(model, components, mergedComponent);
                 if (mergedComponent != null) {
+                    replaceComponents(model, components, mergedComponent);
                     model.addToSelection(mergedComponent);
                 }
             }
         }
     }
 
-    public <T extends VisualComponent> T createMergedComponent(VisualModel model, Set<VisualComponent> components, Class<T> type) {
+    private static Set<VisualComponent> calcMergableComponents(Collection<? extends VisualNode> nodes,
+            Class<? extends VisualComponent> mergableClass) {
+
+        Set<VisualComponent> components = new HashSet<>();
+        for (Node node : nodes) {
+            // Add node if it is of mergable class
+            if (mergableClass.isInstance(node)) {
+                VisualComponent component = (VisualComponent) node;
+                components.add(component);
+            }
+            // Add replica node master if that is of mergable class
+            if (node instanceof Replica replica) {
+                VisualComponent masterComponent = replica.getMaster();
+                if (mergableClass.isInstance(masterComponent)) {
+                    components.add(masterComponent);
+                }
+            }
+        }
+        return components;
+    }
+
+    public <T extends VisualComponent> T createMergedComponent(VisualModel model,
+            Collection<VisualComponent> components, Class<T> type) {
+
         T result = null;
         if (components != null) {
             double x = 0.0;
@@ -67,7 +82,8 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
             if (!components.isEmpty()) {
                 Container vContainer = Hierarchy.getNearestContainer(new ArrayList<Node>(components));
                 Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
-                Class<? extends MathNode> mathNodeClass = components.iterator().next().getReferencedComponent().getClass();
+                VisualComponent component = components.iterator().next();
+                Class<? extends MathNode> mathNodeClass = component.getReferencedComponent().getClass();
                 MathModel mathModel = model.getMathModel();
                 MathNode mathNode = mathModel.createMergedNode(nodes, mContainer, mathNodeClass);
                 result = model.createVisualComponent(mathNode, type, vContainer);
@@ -79,43 +95,82 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
         return result;
     }
 
-    public void replaceComponents(VisualModel model, Set<VisualComponent> components,
-            VisualComponent newComponent) {
+    public void replaceComponents(VisualModel model, Collection<VisualComponent> components,
+            VisualComponent mergedComponent) {
 
+        // First, create all connections to/from non-proxies
         for (VisualComponent component : components) {
             for (VisualConnection connection : model.getConnections(component)) {
-                createMergedConnection(model, connection, component, newComponent);
+                if (!(connection.getFirst() instanceof Replica) && !(connection.getSecond() instanceof Replica)) {
+                    createMergedConnection(model, connection, component, mergedComponent);
+                }
             }
-            model.remove(component);
         }
+        // Then, create all connections to/from proxies
+        for (VisualComponent component : components) {
+            for (VisualConnection connection : model.getConnections(component)) {
+                if ((connection.getFirst() instanceof Replica) || (connection.getSecond() instanceof Replica)) {
+                    createMergedConnection(model, connection, component, mergedComponent);
+                }
+            }
+        }
+        // Finally, create connections to/from proxies of the nodes
+        for (VisualComponent component : components) {
+            for (Replica replica : component.getReplicas()) {
+                if (replica instanceof VisualReplica componentReplica) {
+                    Set<VisualConnection> replicaConnections = model.getConnections(componentReplica);
+                    Container container = Hierarchy.getNearestContainer(componentReplica);
+                    VisualReplica mergedComponentReplica = model.createVisualReplica(mergedComponent,
+                            componentReplica.getClass(), container);
+
+                    mergedComponentReplica.copyStyle(componentReplica);
+                    mergedComponentReplica.copyPosition(componentReplica);
+                    Set<VisualConnection> mergedReplicaConnections = new HashSet<>();
+                    for (VisualConnection replicaConnection : replicaConnections) {
+                        VisualConnection mergedReplicaConnection = createMergedConnection(model,
+                                replicaConnection, componentReplica, mergedComponentReplica);
+
+                        if (mergedReplicaConnection != null) {
+                            mergedReplicaConnections.add(mergedReplicaConnection);
+                        }
+                    }
+                    if (mergedReplicaConnections.isEmpty()) {
+                        mergedComponent.removeReplica(mergedComponentReplica);
+                        model.remove(mergedComponentReplica);
+                    }
+                }
+            }
+        }
+        // Remove original components after all connections to their merged counterpart are created
+        model.remove(components);
     }
 
     public VisualConnection createMergedConnection(VisualModel model, VisualConnection connection,
-            VisualComponent component, VisualComponent newComponent) {
+            VisualNode node, VisualNode mergedNode) {
 
         boolean isUndirected = connection instanceof Undirected;
-        VisualNode first = connection.getFirst();
-        VisualNode second = connection.getSecond();
-        VisualConnection newConnection = null;
-        if ((first != component) && (second == component)) {
-            newConnection = createConnection(model, first, newComponent, isUndirected);
+        VisualNode firstNode = connection.getFirst();
+        VisualNode secondNode = connection.getSecond();
+        VisualConnection mergedConnection = null;
+        if ((firstNode != node) && (secondNode == node)) {
+            mergedConnection = createConnection(model, firstNode, mergedNode, isUndirected);
         }
-        if ((first == component) && (second != component)) {
-            newConnection = createConnection(model, newComponent, second, isUndirected);
+        if ((firstNode == node) && (secondNode != node)) {
+            mergedConnection = createConnection(model, mergedNode, secondNode, isUndirected);
         }
-        if ((first == component) && (second == component)) {
-            newConnection = createConnection(model, newComponent, newComponent, isUndirected);
+        if ((firstNode == node) && (secondNode == node)) {
+            mergedConnection = createConnection(model, mergedNode, mergedNode, isUndirected);
         }
 
-        if (newConnection != null) {
-            newConnection.copyStyle(connection);
-            if (newConnection.getFirst() == newConnection.getSecond()) {
-                newConnection.getGraphic().setDefaultControlPoints();
+        if (mergedConnection != null) {
+            mergedConnection.copyStyle(connection);
+            if (mergedConnection.getFirst() == mergedConnection.getSecond()) {
+                mergedConnection.getGraphic().setDefaultControlPoints();
             } else {
-                newConnection.copyShape(connection);
+                mergedConnection.copyShape(connection);
             }
         }
-        return newConnection;
+        return mergedConnection;
     }
 
     private VisualConnection createConnection(VisualModel model, VisualNode first,

@@ -89,13 +89,10 @@ class CircuitSettingsTests {
                 framework.getConfigVar(prefix + ".waitUndefinedInterpretation", false));
 
         Assertions.assertEquals(Config.toString(CircuitSettings.getMutexEarlyGrantDelay()),
-                framework.getConfigVar(prefix + ".mutexEarlyGrantDelay", false));
+                framework.getConfigVar(prefix + ".mutexGrantDelay", false));
 
         Assertions.assertEquals(Config.toString(CircuitSettings.getMutexArbitrationWinner()),
                 framework.getConfigVar(prefix + ".mutexArbitrationWinner", false));
-
-        Assertions.assertEquals(Config.toString(CircuitSettings.getDerivedNetPattern()),
-                framework.getConfigVar(prefix + ".derivedNetPattern", false));
 
         Assertions.assertEquals(Config.toString(CircuitSettings.getBusSuffix()),
                 framework.getConfigVar(prefix + ".busSuffix", false));

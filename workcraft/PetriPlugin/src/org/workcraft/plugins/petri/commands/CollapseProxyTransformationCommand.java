@@ -1,17 +1,18 @@
 package org.workcraft.plugins.petri.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
+import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.petri.PetriModel;
-import org.workcraft.plugins.petri.VisualReadArc;
+import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -25,7 +26,7 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
 
     @Override
     public String getPopupName(ModelEntry me, VisualNode node) {
-        return "Collapse proxy place";
+        return (node instanceof Replica) ? "Collapse proxy place" : "Collapse all proxies of place";
     }
 
     @Override
@@ -35,12 +36,13 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        return node instanceof VisualReplicaPlace;
+        return (node instanceof VisualReplicaPlace) || (node instanceof VisualPlace);
     }
 
     @Override
     public boolean isEnabled(ModelEntry me, VisualNode node) {
-        return true;
+        return (node instanceof VisualReplicaPlace)
+                || ((node instanceof VisualPlace place) && !place.getReplicas().isEmpty());
     }
 
     @Override
@@ -50,33 +52,28 @@ public class CollapseProxyTransformationCommand extends AbstractTransformationCo
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> replicas = new HashSet<>();
         // Collect selected (or all) replicas
-        replicas.addAll(ConnectionUtils.getVisualReplicaPlaces(model));
+        Collection<VisualNode> result = new HashSet<>(ConnectionUtils.getVisualReplicaPlaces(model));
         Collection<VisualNode> selection = model.getSelection();
         if (!selection.isEmpty()) {
-            replicas.retainAll(selection);
-        }
-        // Collect replicas on selected (or all) read-arcs
-        HashSet<VisualReadArc> readArcs = ConnectionUtils.getVisualReadArcs(model);
-        if (!selection.isEmpty()) {
-            readArcs.retainAll(selection);
-        }
-        if (!readArcs.isEmpty()) {
-            for (VisualReadArc readArc: readArcs) {
-                if (readArc.getFirst() instanceof VisualReplicaPlace) {
-                    VisualReplicaPlace replica = (VisualReplicaPlace) readArc.getFirst();
-                    replicas.add(replica);
+            result.retainAll(selection);
+            // Collect replicas of selected places
+            for (VisualNode node : selection) {
+                if (node instanceof VisualPlace place) {
+                    for (Replica replica : place.getReplicas()) {
+                        if (replica instanceof VisualReplicaPlace replicaPlace) {
+                            result.add(replicaPlace);
+                        }
+                    }
                 }
             }
         }
-        return replicas;
+        return result;
     }
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if (node instanceof VisualReplicaPlace) {
-            VisualReplicaPlace replicaPlace = (VisualReplicaPlace) node;
+        if (node instanceof VisualReplicaPlace replicaPlace) {
             ConversionUtils.collapseReplicaPlace(model, replicaPlace);
         }
     }
