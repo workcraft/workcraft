@@ -366,7 +366,7 @@ public abstract class AbstractVerilogExporter implements Exporter {
         case LOW -> "1'b0";
         };
 
-        return "(%s == 1'b0) || (%s == 1'b1) ? %s : %s".formatted(sig, sig, sig, interpretation);
+        return "(%s !== 1'b0) && (%s !== 1'b1) ? %s : %s".formatted(sig, sig, interpretation, sig);
     }
 
     private static String getWaitExpression(String sig, String ctrl, String san, boolean negateSig) {

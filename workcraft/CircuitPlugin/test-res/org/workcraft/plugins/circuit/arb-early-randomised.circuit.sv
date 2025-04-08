@@ -7,9 +7,9 @@ module test (sig, ctrl, san1, san0);
     assign #(1ps * $urandom_range(0, 50)) san1 = me_g1;
     assign #(1ps * $urandom_range(0, 50)) san0 = me_g2;
     assign #1 {me_g1, me_g2} = {me_g1, me_g2, wait1_san, wait0_san} == 4'b0011 ? $urandom_range(1, 2) : {wait1_san & (~me_g2 | ~wait0_san), wait0_san & (~me_g1 | ~wait1_san)};
-    assign #(1ps * $urandom_range(20, 50)) wait1_sig = (sig == 1'b0) || (sig == 1'b1) ? sig : $urandom_range(0, 1);
+    assign #(1ps * $urandom_range(20, 50)) wait1_sig = (sig !== 1'b0) && (sig !== 1'b1) ? $urandom_range(0, 1) : sig;
     assign #1 wait1_san = ctrl & (wait1_sig | wait1_san);
-    assign #(1ps * $urandom_range(20, 50)) wait0_sig = (sig == 1'b0) || (sig == 1'b1) ? sig : $urandom_range(0, 1);
+    assign #(1ps * $urandom_range(20, 50)) wait0_sig = (sig !== 1'b0) && (sig !== 1'b1) ? $urandom_range(0, 1) : sig;
     assign #1 wait0_san = ctrl & (~wait0_sig | wait0_san);
 
     // signal values at the initial state:
