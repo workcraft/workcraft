@@ -24,7 +24,7 @@ public class SelectionHelper {
         return result;
     }
 
-    public static Collection<VisualNode> getRecursivelyIncludedNodes(Collection<? extends VisualNode> nodes) {
+    private static Collection<VisualNode> getRecursivelyIncludedNodes(Collection<? extends VisualNode> nodes) {
         HashSet<VisualNode> result = new HashSet<>();
         for (VisualNode node : nodes) {
             result.add(node);
@@ -93,6 +93,12 @@ public class SelectionHelper {
                 model.addToSelection(visualNode);
             }
         }
+    }
+
+    public static <T extends VisualNode> Collection<T> getSelectedNodes(VisualModel model, Class<T> type) {
+        Collection<T> result = Hierarchy.getDescendantsOfType(model.getRoot(), type);
+        result.retainAll(model.getSelection());
+        return result;
     }
 
 }
