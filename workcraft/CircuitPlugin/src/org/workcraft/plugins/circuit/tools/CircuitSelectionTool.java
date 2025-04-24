@@ -186,11 +186,15 @@ public class CircuitSelectionTool extends SelectionTool {
     @Override
     public void beforeSelectionModification(final GraphEditor editor) {
         super.beforeSelectionModification(editor);
+        VisualModel model = editor.getModel();
+        // Exclude pins of selected components as pins are dragged together with the components
+        for (VisualCircuitComponent component : SelectionHelper.getSelectedNodes(model, VisualCircuitComponent.class)) {
+            model.removeFromSelection(component.getVisualContacts());
+        }
         // FIXME: A hack to preserve the shape of selected connections on relocation of their adjacent components (intro).
         // Flipping/rotation of VisualContacts are processed after ControlPoints of VisualConnections.
         // Therefore the shape of connections may change (e.g. if LOCK_RELATIVELY scale mode is selected).
         // To prevent this, the connection scale mode is temporary changed to NONE, and then restored (in afterSelectionModification).
-        VisualModel model = editor.getModel();
         Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class);
         Collection<VisualConnection> includedConnections = SelectionHelper.getIncludedConnections(model.getSelection(), connections);
         connectionToScaleModeMap = ConnectionUtils.replaceConnectionScaleMode(includedConnections, VisualConnection.ScaleMode.NONE);
