@@ -67,7 +67,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class,
                 FunctionComponent.PROPERTY_AVOID_INIT,
                 this::setAvoidInit, this::getAvoidInit)
-                .setVisibilitySupplier(() -> !getIsZeroDelay()));
+                .setVisibilitySupplier(() -> !getIsZeroDelay())
+                .setCombinable().setTemplatable());
     }
 
     @Override
@@ -601,6 +602,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         if (src instanceof VisualFunctionComponent) {
             VisualFunctionComponent srcComponent = (VisualFunctionComponent) src;
             setIsZeroDelay(srcComponent.getIsZeroDelay());
+            setAvoidInit(srcComponent.getAvoidInit());
         }
     }
 
