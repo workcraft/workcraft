@@ -69,14 +69,18 @@ public class VerilogWriter extends PrintWriter {
     }
 
     public void writeSignalDefinitions(SignalType signalType, Collection<String> signals, Collection<VerilogBus> buses) {
+        writeSignalDefinitions(signalType.name, signals, buses);
+    }
+
+    public void writeSignalDefinitions(String signalTypeKeyword, Collection<String> signals, Collection<VerilogBus> buses) {
         if (!signals.isEmpty()) {
-            write("    " + signalType + ' ' + String.join(", ", signals) + ";\n");
+            write("    " + signalTypeKeyword + ' ' + String.join(", ", signals) + ";\n");
         }
         for (VerilogBus bus : buses) {
             Integer maxIndex = bus.getMaxIndex();
             Integer minIndex = bus.getMinIndex();
             String name = bus.getName();
-            write("    " + signalType + " [" + maxIndex + ':' + minIndex + "] " + name + ";\n");
+            write("    " + signalTypeKeyword + " [" + maxIndex + ':' + minIndex + "] " + name + ";\n");
         }
     }
 
