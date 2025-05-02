@@ -30,7 +30,7 @@ public class HitMan {
             toLocal.transform(p2, p2);
         }
         LinkedList<VisualNode> result = new LinkedList<>();
-        Rectangle2D rect = new Rectangle2D.Double(
+        Rectangle2D border = new Rectangle2D.Double(
                 Math.min(p1.getX(), p2.getX()),
                 Math.min(p1.getY(), p2.getY()),
                 Math.abs(p1.getX() - p2.getX()),
@@ -39,16 +39,41 @@ public class HitMan {
         for (VisualNode node : Hierarchy.getChildrenOfType(container, VisualNode.class)) {
             if (node.isHidden()) continue;
             if (p1.getX() <= p2.getX()) {
-                if (TouchableHelper.insideRectangle(node, rect)) {
+                if (isInside(node, border)) {
                     result.add(node);
                 }
             } else {
-                if (TouchableHelper.touchesRectangle(node, rect)) {
+                if (isTouched(node, border)) {
                     result.add(node);
                 }
             }
         }
         return result;
+    }
+
+    private static boolean isInside(Touchable node, Rectangle2D border) {
+        Rectangle2D nodeBox = node.getBoundingBox();
+        if ((border == null) || border.isEmpty() || (nodeBox == null)) {
+            return false;
+        }
+        return nodeBox.isEmpty() ? border.contains(nodeBox.getX(), nodeBox.getY()) : border.contains(nodeBox);
+    }
+
+    private static boolean isTouched(Touchable node, Rectangle2D border) {
+        Rectangle2D nodeBox = node.getBoundingBox();
+        if ((border == null) || border.isEmpty() || (nodeBox == null)) {
+            return false;
+        }
+        if (nodeBox.isEmpty()) {
+            return border.contains(nodeBox.getX(), nodeBox.getY());
+        }
+        if (border.intersects(nodeBox)) {
+            if (node instanceof VisualConnection connection) {
+                return border.contains(nodeBox) || !connection.getIntersections(border).isEmpty();
+            }
+            return true;
+        }
+        return false;
     }
 
     public static VisualNode hitFirstInCurrentLevel(Point2D point, VisualModel model) {
