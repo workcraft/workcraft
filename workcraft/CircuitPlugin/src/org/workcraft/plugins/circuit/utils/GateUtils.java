@@ -536,7 +536,7 @@ public final class GateUtils {
                 VisualFunctionComponent trivialDriverComponent = getDedicatedTrivialDriverOrNull(circuit, inputPin);
                 if (trivialDriverComponent == null) {
                     VisualFunctionComponent newInverter = createInverterGate(circuit);
-                    newInverter.copyStyle(component);
+                    newInverter.copyStylePreserveMapping(component);
                     SpaceUtils.makeSpaceAroundContact(circuit, inputPin, 2.0);
                     insertGateBefore(circuit, newInverter, inputPin, 1.5);
                     newInverter.setIsZeroDelay(true);
@@ -596,7 +596,7 @@ public final class GateUtils {
                 } else {
                     VisualFunctionComponent newInverter = createInverterGate(circuit);
                     if (outputPin.getParent() instanceof VisualFunctionComponent component) {
-                        newInverter.copyStyle(component);
+                        newInverter.copyStylePreserveMapping(component);
                     }
                     SpaceUtils.makeSpaceAroundContact(circuit, outputPin, 2.0);
                     insertGateAfter(circuit, newInverter, outputPin, 1.5);

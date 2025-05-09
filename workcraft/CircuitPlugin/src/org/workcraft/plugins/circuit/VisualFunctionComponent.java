@@ -117,14 +117,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         }
     }
 
-    public boolean isMapped() {
-        return (getReferencedComponent() != null) && getReferencedComponent().isMapped();
-    }
-
-    public void clearMapping() {
-        getReferencedComponent().setModule("");
-    }
-
     public boolean isCell() {
         return (getReferencedComponent() != null) && getReferencedComponent().isCell();
     }
