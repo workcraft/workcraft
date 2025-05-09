@@ -19,8 +19,8 @@ import java.awt.font.GlyphVector;
 import java.awt.font.LineMetrics;
 import java.awt.geom.*;
 import java.io.File;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -75,6 +75,14 @@ public class VisualCircuitComponent extends VisualComponent
         if (getReferencedComponent() != null) {
             getReferencedComponent().setIsEnvironment(value);
         }
+    }
+
+    public boolean isMapped() {
+        return (getReferencedComponent() != null) && getReferencedComponent().isMapped();
+    }
+
+    public void clearMapping() {
+        getReferencedComponent().setModule("");
     }
 
     private LinkedList<VisualContact> getOrderedOutsideContacts(Direction dir) {
@@ -815,6 +823,13 @@ public class VisualCircuitComponent extends VisualComponent
             VisualCircuitComponent srcComponent = (VisualCircuitComponent) src;
             setIsEnvironment(srcComponent.getIsEnvironment());
         }
+    }
+
+    public void copyStylePreserveMapping(Stylable src) {
+        CircuitComponent mathComponent = getReferencedComponent();
+        String module = mathComponent.getModule();
+        copyStyle(src);
+        mathComponent.setModule(module);
     }
 
     @Override
