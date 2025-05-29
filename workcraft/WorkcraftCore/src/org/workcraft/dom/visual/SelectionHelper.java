@@ -85,12 +85,17 @@ public class SelectionHelper {
             }
         }
     }
-    public static void selectVisualNodesByMathRefs(VisualModel model, Set<String> mathRefs) {
+
+    public static void selectByReferencedComponentsOrConnections(VisualModel model, Set<? extends MathNode> mathNodes) {
         model.selectNone();
-        for (VisualNode visualNode : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
-            String ref = model.getMathReference(visualNode);
-            if (mathRefs.contains(ref)) {
-                model.addToSelection(visualNode);
+        for (VisualComponent visualComponent : Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class)) {
+            if (mathNodes.contains(visualComponent.getReferencedComponent())) {
+                model.addToSelection(visualComponent);
+            }
+        }
+        for (VisualConnection visualConnection : Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class)) {
+            if (mathNodes.contains(visualConnection.getReferencedConnection())) {
+                model.addToSelection(visualConnection);
             }
         }
     }
