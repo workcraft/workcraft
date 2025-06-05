@@ -124,8 +124,8 @@ public class TransitionBundler {
         Queue<Step> queue = null;
         do {
             if (queue == null) {
-                queue = new LinkedList<>();
-                slice = new LinkedList<>();
+                queue = new ArrayDeque<>();
+                slice = new ArrayDeque<>();
             } else {
                 Step step = queue.remove();
                 setMarking(step2marking.get(step));

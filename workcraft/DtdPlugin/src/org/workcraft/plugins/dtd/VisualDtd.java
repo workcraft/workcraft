@@ -203,7 +203,7 @@ public class VisualDtd extends AbstractVisualModel {
         //To go around that restriction, we first compute the dependencies between nodes
         //(i.e. the X of B is bigger than the X of A, so B depends on A)
         Map<VisualEvent, Integer> nodeDependencies = new HashMap<>();
-        Queue<VisualEvent> toVisit = new LinkedList<>();
+        Queue<VisualEvent> toVisit = new ArrayDeque<>();
         toVisit.add(event);
         while (!toVisit.isEmpty()) {
             VisualEvent visitingEvent = toVisit.poll();

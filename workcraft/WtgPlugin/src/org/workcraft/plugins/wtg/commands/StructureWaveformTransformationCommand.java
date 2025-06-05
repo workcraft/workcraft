@@ -100,7 +100,7 @@ public class StructureWaveformTransformationCommand extends AbstractTransformati
             }
         }
         Double maxX = null;
-        Queue<VisualEvent> toVisit = new LinkedList<>(noInboundDependencies);
+        Queue<VisualEvent> toVisit = new ArrayDeque<>(noInboundDependencies);
         while (!toVisit.isEmpty()) {
             VisualEvent visitingEvent = toVisit.poll();
             for (VisualNode node : visualWtg.getPostset(visitingEvent))  {

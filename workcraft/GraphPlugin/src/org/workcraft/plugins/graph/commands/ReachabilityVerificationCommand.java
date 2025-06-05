@@ -15,8 +15,8 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.ArrayDeque;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Queue;
 
 public class ReachabilityVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
@@ -63,7 +63,7 @@ public class ReachabilityVerificationCommand extends AbstractVerificationCommand
     }
 
     private HashSet<Vertex> checkReachability(final Graph graph) {
-        Queue<Vertex> queue = new LinkedList<>();
+        Queue<Vertex> queue = new ArrayDeque<>();
         for (Vertex vertex: graph.getVertices()) {
             if (graph.getPreset(vertex).isEmpty()) {
                 queue.add(vertex);

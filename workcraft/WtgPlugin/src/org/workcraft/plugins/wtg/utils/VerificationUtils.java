@@ -530,7 +530,7 @@ public class VerificationUtils {
     public static boolean checkNodeReachability(Wtg wtg) {
         Set<MathNode> reachableNodes = new HashSet<>();
         State initialState = wtg.getInitialState();
-        Queue<MathNode> nodesToVisit = new LinkedList<>();
+        Queue<MathNode> nodesToVisit = new ArrayDeque<>();
         nodesToVisit.add(initialState);
         reachableNodes.add(initialState);
         //BFS
@@ -572,7 +572,7 @@ public class VerificationUtils {
     public static boolean checkTransitionReachability(Wtg wtg, Waveform waveform) {
         Set<Event> reachableTransitions = new HashSet<>();
         int nonReachableTransitions = wtg.getTransitions(waveform).size();
-        Queue<Event> eventsToVisit = new LinkedList<>();
+        Queue<Event> eventsToVisit = new ArrayDeque<>();
         for (Event entryEvent : wtg.getEntries(waveform)) {
             eventsToVisit.add(entryEvent);
         }
@@ -700,7 +700,7 @@ public class VerificationUtils {
         Map<String, Signal.State> initialSignalStates = getInitialSignalStates(wtg);
         State initialState = wtg.getInitialState();
         Map<State, Map<String, Signal.State>> signalStates = new HashMap<>();
-        Queue<MathNode> nodesToVisit = new LinkedList<>();
+        Queue<MathNode> nodesToVisit = new ArrayDeque<>();
         nodesToVisit.add(initialState);
         signalStates.put(initialState, initialSignalStates);
         while (!nodesToVisit.isEmpty()) {
@@ -909,7 +909,7 @@ public class VerificationUtils {
 
     private static boolean signalFollowsSynthesisGuidelines(Wtg wtg, String signal, Map<Waveform, Set<String>> firedBeforeOut,
                                                             Map<Waveform, Set<String>> firedAfterOut, Map<Waveform, Boolean> hasOutput) {
-        Queue<Waveform> toVisit = new LinkedList<>();
+        Queue<Waveform> toVisit = new ArrayDeque<>();
         Set<Waveform> visited = new HashSet<>();
         //We only need to look waveforms in which the signal fired after any output
         for (Map.Entry<Waveform, Set<String>> entry : firedAfterOut.entrySet()) {
@@ -1087,7 +1087,7 @@ public class VerificationUtils {
             transitionDependencies.put(transition, wtg.getPreset(transition).size());
         }
 
-        Queue<TransitionEvent> toVisit = new LinkedList<>();
+        Queue<TransitionEvent> toVisit = new ArrayDeque<>();
 
         Set<TransitionEvent> outputHasFired = new HashSet<>();
         Map<TransitionEvent, Map<Signal, Pair<Boolean, Integer>>> inputsFiredAfterOutput = new HashMap<>();

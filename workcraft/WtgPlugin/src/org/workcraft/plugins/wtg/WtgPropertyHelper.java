@@ -177,7 +177,7 @@ public class WtgPropertyHelper {
         }
         Signal.State result = null;
         Set<MathNode> visitedNodes = new HashSet<>();
-        Queue<MathNode> nodesToVisit = new LinkedList<>();
+        Queue<MathNode> nodesToVisit = new ArrayDeque<>();
         visitedNodes.add(waveform);
         MathNode previousState = wtg.getPreset(waveform).iterator().next();
         visitedNodes.add(previousState);

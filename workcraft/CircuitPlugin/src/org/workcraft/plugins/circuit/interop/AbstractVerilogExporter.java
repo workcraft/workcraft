@@ -31,7 +31,7 @@ import java.util.regex.Pattern;
 
 public abstract class AbstractVerilogExporter implements Exporter {
 
-    private final Queue<Pair<File, Circuit>> refinementCircuits = new LinkedList<>();
+    private final Queue<Pair<File, Circuit>> refinementCircuits = new ArrayDeque<>();
 
     @Override
     public abstract VerilogFormat getFormat();

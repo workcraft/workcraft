@@ -83,7 +83,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     @Override
     public void applyRandomLayout(Point2D start, Point2D range) {
         Random r = new Random();
-        Queue<Triple<Container, Point2D, Point2D>> queue = new LinkedList<>();
+        Queue<Triple<Container, Point2D, Point2D>> queue = new ArrayDeque<>();
         queue.add(Triple.of(getRoot(), start, range));
         while (!queue.isEmpty()) {
             Triple<Container, Point2D, Point2D> item = queue.remove();
@@ -124,7 +124,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     public void createDefaultStructure() {
         HashMap<MathNode, VisualComponent> createdNodes = new HashMap<>();
         // Create components
-        Queue<Pair<Container, Container>> containerQueue = new LinkedList<>();
+        Queue<Pair<Container, Container>> containerQueue = new ArrayDeque<>();
         containerQueue.add(new Pair<>(getMathModel().getRoot(), getRoot()));
         while (!containerQueue.isEmpty()) {
             Pair<Container, Container> container = containerQueue.remove();

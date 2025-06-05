@@ -18,10 +18,7 @@ import org.workcraft.gui.tools.Decorator;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class ModelUtils {
 
@@ -29,7 +26,7 @@ public class ModelUtils {
         N fromNode = (N) connection.getFirst();
         N toNode = (N) connection.getSecond();
 
-        Queue<N> nextNodes = new LinkedList<>();
+        Queue<N> nextNodes = new ArrayDeque<>();
         for (N succNode : model.getPostset(fromNode)) {
             if (succNode != toNode) {
                 nextNodes.add(succNode);
@@ -51,7 +48,7 @@ public class ModelUtils {
     }
 
     public static <N extends Node, C extends Connection> boolean hasPath(Model<N, C> model, N fromNode, N toNode) {
-        Queue<N> nextNodes = new LinkedList<>(model.getPostset(fromNode));
+        Queue<N> nextNodes = new ArrayDeque<>(model.getPostset(fromNode));
         Set<N> visitedNodes = new HashSet<>();
         while (!nextNodes.isEmpty()) {
             N node = nextNodes.poll();

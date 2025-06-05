@@ -155,7 +155,7 @@ public class CircuitSelectionTool extends SelectionTool {
                 result.addAll(getNodeWithAdjacentConnections(model, inputContact));
             }
         } else {
-            Queue<VisualNode> queue = new LinkedList<>(super.getNodeWithAdjacentConnections(model, node));
+            Queue<VisualNode> queue = new ArrayDeque<>(super.getNodeWithAdjacentConnections(model, node));
             while (!queue.isEmpty()) {
                 node = queue.remove();
                 if (result.contains(node)) {
