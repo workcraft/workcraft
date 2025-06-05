@@ -47,7 +47,7 @@ public class SyncSelectionTool extends SelectionTool {
     @Override
     public Collection<VisualNode> getNodeWithAdjacentConnections(VisualModel model, VisualNode node) {
         HashSet<VisualNode> result = new HashSet<>();
-        Queue<VisualNode> queue = new LinkedList<>();
+        Queue<VisualNode> queue = new ArrayDeque<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             node = queue.remove();

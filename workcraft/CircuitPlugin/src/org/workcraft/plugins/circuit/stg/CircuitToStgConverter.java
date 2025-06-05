@@ -163,7 +163,7 @@ public class CircuitToStgConverter {
             HashSet<VisualContact> driverContacts) {
 
         HashMap<VisualNode, Pair<VisualContact, Boolean>> result = new HashMap<>();
-        Queue<Triple<VisualNode, VisualContact, Boolean>> queue = new LinkedList<>();
+        Queue<Triple<VisualNode, VisualContact, Boolean>> queue = new ArrayDeque<>();
         for (VisualContact driverContact : driverContacts) {
             queue.add(Triple.of(driverContact, driverContact, false));
         }

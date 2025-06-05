@@ -360,7 +360,7 @@ public class WtgToStgConverter {
         if (srcModel.getPostset(fromTransition).size() <= 1) {
             return false;
         }
-        Queue<Event> toVisit = new LinkedList<>();
+        Queue<Event> toVisit = new ArrayDeque<>();
         // There should be no loops, so visitedEvents should not be necessary
         // Yet, using it prevents an infinite loop if something else fails
         Set<Event> visitedEvents = new HashSet<>();

@@ -78,7 +78,7 @@ public class Cycle implements Comparable<Cycle> {
     private Set<VisualPushRegister> getPushPreset(VisualNode node) {
         HashSet<VisualPushRegister> result = new HashSet<>();
         HashSet<VisualNode> visited = new HashSet<>();
-        Queue<VisualNode> queue = new LinkedList<>();
+        Queue<VisualNode> queue = new ArrayDeque<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             VisualNode cur = queue.remove();

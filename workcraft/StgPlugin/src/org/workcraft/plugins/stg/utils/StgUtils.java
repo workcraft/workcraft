@@ -296,7 +296,7 @@ public class StgUtils {
         stg = copyStgPreserveSignals(stg);
         Set<String> undefinedSignalRefs = stg.getSignalReferences();
         HashSet<HashMap<Place, Integer>> visitedMarkings = new HashSet<>();
-        Queue<HashMap<Place, Integer>> markingQueue = new LinkedList<>();
+        Queue<HashMap<Place, Integer>> markingQueue = new ArrayDeque<>();
         HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
         markingQueue.add(initialMarking);
         Set<Transition> conflictTransitions = getConflictTransitions(stg);

@@ -84,7 +84,7 @@ public class WtgUtils {
         int remainingSignals = wtg.getSignalNames().size();
         State initialState = wtg.getInitialState();
         Set<MathNode> visitedNodes = new HashSet<>();
-        Queue<MathNode> nodesToVisit = new LinkedList<>();
+        Queue<MathNode> nodesToVisit = new ArrayDeque<>();
         nodesToVisit.add(initialState);
         visitedNodes.add(initialState);
         //BFS main loop
@@ -117,7 +117,7 @@ public class WtgUtils {
         //The search is propagated backwards until the first instance of the signal is found
 
         Set<MathNode> visitedNodes = new HashSet<>();
-        Queue<MathNode> nodesToVisit = new LinkedList<>();
+        Queue<MathNode> nodesToVisit = new ArrayDeque<>();
         visitedNodes.add(node);
         nodesToVisit.add(node);
         while (!nodesToVisit.isEmpty()) {

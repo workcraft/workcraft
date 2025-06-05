@@ -5,10 +5,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.plugins.circuit.*;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public final class StructureUtils {
 
@@ -18,7 +15,7 @@ public final class StructureUtils {
     public static Set<FunctionComponent> getPresetComponents(final Circuit circuit, MathNode curNode) {
         Set<FunctionComponent> result = new HashSet<>();
         Set<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+        Queue<Node> queue = new ArrayDeque<>();
         if (curNode instanceof FunctionComponent) {
             FunctionComponent component = (FunctionComponent) curNode;
             queue.addAll(component.getInputs());
@@ -56,7 +53,7 @@ public final class StructureUtils {
     public static Set<FunctionComponent> getPostsetComponents(final Circuit circuit, MathNode curNode) {
         Set<FunctionComponent> result = new HashSet<>();
         Set<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+        Queue<Node> queue = new ArrayDeque<>();
         if (curNode instanceof FunctionComponent) {
             FunctionComponent component = (FunctionComponent) curNode;
             queue.addAll(component.getOutputs());
@@ -102,7 +99,7 @@ public final class StructureUtils {
     public static Set<FunctionContact> getPostsetPorts(final Circuit circuit, MathNode curNode) {
         Set<FunctionContact> result = new HashSet<>();
         Set<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
+        Queue<Node> queue = new ArrayDeque<>();
         if (curNode instanceof FunctionComponent) {
             FunctionComponent component = (FunctionComponent) curNode;
             queue.addAll(component.getOutputs());

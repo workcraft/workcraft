@@ -78,7 +78,7 @@ public class ReversibilityVerificationCommand
         Map<State, Set<Event>> stateSuccEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
         Set<State> visitedStates = new HashSet<>();
-        Queue<State> queueStates = new LinkedList<>();
+        Queue<State> queueStates = new ArrayDeque<>();
 
         if (initialState != null) {
             queueStates.add(initialState);
@@ -102,7 +102,7 @@ public class ReversibilityVerificationCommand
         Map<State, Set<Event>> statePrevEvents = FsmUtils.calcStateIncommingEventsMap(fsm);
 
         Set<State> visitedStates = new HashSet<>();
-        Queue<State> queueStates = new LinkedList<>();
+        Queue<State> queueStates = new ArrayDeque<>();
 
         if (initialState != null) {
             queueStates.add(initialState);

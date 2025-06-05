@@ -145,7 +145,7 @@ public abstract class AbstractModel<N extends Node, C extends Connection> implem
     public <T> Set<T> getPreset(N node, Class<T> type, Func<N, Boolean> through) {
         Set<T> result = new HashSet<>();
         Set<N> visited = new HashSet<>();
-        Queue<N> queue = new LinkedList<>();
+        Queue<N> queue = new ArrayDeque<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             N cur = queue.remove();
@@ -168,7 +168,7 @@ public abstract class AbstractModel<N extends Node, C extends Connection> implem
     public <T> Set<T> getPostset(N node, Class<T> type, Func<N, Boolean> through) {
         Set<T> result = new HashSet<>();
         Set<N> visited = new HashSet<>();
-        Queue<N> queue = new LinkedList<>();
+        Queue<N> queue = new ArrayDeque<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             N cur = queue.remove();

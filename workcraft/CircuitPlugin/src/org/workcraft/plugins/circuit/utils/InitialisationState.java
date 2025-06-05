@@ -39,7 +39,7 @@ public class InitialisationState {
         }
         SortUtils.sortNatural(driverPins, circuit::getNodeReference);
 
-        Queue<MathConnection> queue = new LinkedList<>();
+        Queue<MathConnection> queue = new ArrayDeque<>();
         for (FunctionContact contact : circuit.getFunctionContacts()) {
             if (contact.isDriver() && isForcedOrConstant(contact)) {
                 Set<MathNode> initSet = contact.getInitToOne() ? highSet : lowSet;

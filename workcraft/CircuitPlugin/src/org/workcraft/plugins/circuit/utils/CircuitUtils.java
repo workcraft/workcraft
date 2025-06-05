@@ -102,7 +102,7 @@ public final class CircuitUtils {
     public static Contact findDriver(Circuit circuit, MathNode curNode, boolean transparentZeroDelayComponents) {
         Contact result = null;
         HashSet<MathNode> visited = new HashSet<>();
-        Queue<MathNode> queue = new LinkedList<>();
+        Queue<MathNode> queue = new ArrayDeque<>();
         if (curNode instanceof MathConnection) {
             queue.add(((MathConnection) curNode).getFirst());
         } else if (curNode != null) {
@@ -167,7 +167,7 @@ public final class CircuitUtils {
     public static Collection<Contact> findDriven(Circuit circuit, MathNode curNode, boolean transparentZeroDelayComponents) {
         Set<Contact> result = new HashSet<>();
         HashSet<MathNode> visited = new HashSet<>();
-        Queue<MathNode> queue = new LinkedList<>();
+        Queue<MathNode> queue = new ArrayDeque<>();
         if (curNode instanceof MathConnection) {
             queue.add(((MathConnection) curNode).getSecond());
         } else if (curNode != null) {
@@ -208,7 +208,7 @@ public final class CircuitUtils {
     public static Pair<Integer, Boolean> calcFanout(Circuit circuit, MathNode curNode) {
         int fanoutCount = 0;
         boolean isPortDriver = false;
-        Queue<MathNode> queue = new LinkedList<>();
+        Queue<MathNode> queue = new ArrayDeque<>();
         if (curNode instanceof MathConnection) {
             queue.add(((MathConnection) curNode).getSecond());
         } else if (curNode != null) {

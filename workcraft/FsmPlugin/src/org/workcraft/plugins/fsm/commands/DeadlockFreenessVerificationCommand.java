@@ -83,7 +83,7 @@ public class DeadlockFreenessVerificationCommand
         Map<State, Set<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
         Set<State> visited = new HashSet<>();
-        Queue<State> queue = new LinkedList<>();
+        Queue<State> queue = new ArrayDeque<>();
 
         State initialState = fsm.getInitialState();
         if (initialState != null) {
