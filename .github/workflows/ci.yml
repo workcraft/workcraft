@@ -45,7 +45,7 @@ jobs:
   osx-build:
     strategy:
       matrix:
-        os: [macos-14, macos-13]
+        os: [macos-15, macos-14]
         java-distribution: [temurin]
         java-version: [21, 17]
 
@@ -81,7 +81,7 @@ jobs:
   windows-build:
     strategy:
       matrix:
-        os: [windows-2022, windows-2019]
+        os: [windows-2025, windows-2022]
         java-distribution: [temurin]
         java-version: [21, 17]
 
