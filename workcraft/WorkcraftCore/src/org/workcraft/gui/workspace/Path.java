@@ -28,7 +28,7 @@ public abstract class Path<T> {
         return new RootPath<>(root);
     }
 
-    public static <Node> Path<Node> append(Path<Node> path, Node suffix) {
+    public static <N> Path<N> append(Path<N> path, N suffix) {
         if (path.isEmpty()) {
             return root(suffix);
         } else {
@@ -119,7 +119,7 @@ public abstract class Path<T> {
         return parent + "/" + node;
     }
 
-    private static class EmptyPath<T> extends Path<T> {
+    private static final class EmptyPath<T> extends Path<T> {
         private static final EmptyPath<?> instance = new EmptyPath<>();
         @SuppressWarnings("unchecked")
         public static <T> EmptyPath<T> getInstance() {
