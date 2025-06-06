@@ -2,7 +2,7 @@ package org.workcraft.utils;
 
 import java.util.*;
 
-public class DirectedGraphUtils {
+public final class DirectedGraphUtils {
 
     private static class Block<T> {
         public final Set<T> set = new HashSet<>();

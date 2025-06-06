@@ -3,7 +3,7 @@ package org.workcraft.workspace;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-public class FileFilters {
+public final class FileFilters {
 
     public static final String DOCUMENT_EXTENSION = ".work";
     public static final String WORKSPACE_EXTENSION = ".works";
@@ -26,7 +26,7 @@ public class FileFilters {
         }
     }
 
-    private static class WorkspaceFilesFilter extends FileFilter {
+    private static final class WorkspaceFilesFilter extends FileFilter {
 
         @Override
         public boolean accept(File file) {

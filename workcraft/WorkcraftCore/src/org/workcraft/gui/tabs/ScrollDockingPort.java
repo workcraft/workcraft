@@ -15,7 +15,7 @@ import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 
-public class ScrollDockingPort extends DefaultDockingPort {
+public final class ScrollDockingPort extends DefaultDockingPort {
 
     private static final String FLEXDOCK_DOCKING_PORT = "defaultDockingPort";
 
@@ -54,7 +54,7 @@ public class ScrollDockingPort extends DefaultDockingPort {
         return tabbedPane;
     }
 
-    private static class DockingTabbedPaneUI extends BasicTabbedPaneUI {
+    private static final class DockingTabbedPaneUI extends BasicTabbedPaneUI {
 
         @Override
         protected JButton createScrollButton(int direction) {
