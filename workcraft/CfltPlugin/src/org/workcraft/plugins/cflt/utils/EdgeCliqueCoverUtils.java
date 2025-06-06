@@ -1,12 +1,15 @@
 package org.workcraft.plugins.cflt.utils;
 
-import org.workcraft.plugins.cflt.algorithms.*;
+import org.workcraft.plugins.cflt.algorithms.EdgeCliqueCoverHeuristic;
+import org.workcraft.plugins.cflt.algorithms.ExhaustiveSearch;
+import org.workcraft.plugins.cflt.algorithms.HeuristicType;
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Edge;
 import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class EdgeCliqueCoverUtils {
 
@@ -23,10 +26,10 @@ public final class EdgeCliqueCoverUtils {
                 : new ArrayList<>();
 
         if (mode == Mode.SLOW_EXACT) {
-            var exhaustiveSearch = new ExhaustiveSearch();
+            ExhaustiveSearch exhaustiveSearch = new ExhaustiveSearch();
             return exhaustiveSearch.getEdgeCliqueCover(initialGraph, optionalEdges);
         }
-        var heuristic = new EdgeCliqueCoverHeuristic();
+        EdgeCliqueCoverHeuristic heuristic = new EdgeCliqueCoverHeuristic();
         return switch (mode) {
         case FAST_SEQ -> heuristic.getEdgeCliqueCover(initialGraph, optionalEdges, HeuristicType.SEQUENCE);
         case FAST_MAX -> heuristic.getEdgeCliqueCover(initialGraph, optionalEdges, HeuristicType.MAXIMAL);

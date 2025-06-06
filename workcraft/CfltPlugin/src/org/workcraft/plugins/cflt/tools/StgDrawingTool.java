@@ -7,6 +7,7 @@ import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.node.NodeDetails;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
+import org.workcraft.plugins.cflt.utils.GraphUtils;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -32,7 +33,8 @@ public class StgDrawingTool implements VisualModelDrawingTool {
     @Override
     public void drawVisualObjects(Graph inputGraph, Graph outputGraph,
             boolean isSequence, boolean isRoot, Mode mode, WorkspaceEntry we) {
-        var edgeCliqueCover = getEdgeCliqueCover(inputGraph, outputGraph, isSequence, mode);
+
+        List<Clique> edgeCliqueCover = getEdgeCliqueCover(inputGraph, outputGraph, isSequence, mode);
         List<String> vertexNames = isSequence
                 ? inputGraph.getVertexNames()
                 : new ArrayList<>();
@@ -60,7 +62,7 @@ public class StgDrawingTool implements VisualModelDrawingTool {
             VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, isRoot, Positioning.LEFT);
 
             for (String vertexName : clique.getVertexNames()) {
-                var getCleanVertexNameResponse = getCleanVertexName(vertexName);
+                GraphUtils.GetCleanVertexNameResponse getCleanVertexNameResponse = getCleanVertexName(vertexName);
                 String cleanVertexName = getCleanVertexNameResponse.vertexName();
                 boolean isClone = getCleanVertexNameResponse.isClone();
                 boolean isTransitionPresent = transitionNameToVisualTransition.containsKey(cleanVertexName);

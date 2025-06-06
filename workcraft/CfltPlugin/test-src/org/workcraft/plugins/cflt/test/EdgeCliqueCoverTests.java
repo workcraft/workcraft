@@ -18,8 +18,8 @@ class EdgeCliqueCoverTests {
 
     @Test
     void doesCliqueCoverGraph() {
-        var heuristic = new EdgeCliqueCoverHeuristic();
-        var exhaustiveSearch = new ExhaustiveSearch();
+        EdgeCliqueCoverHeuristic heuristic = new EdgeCliqueCoverHeuristic();
+        ExhaustiveSearch exhaustiveSearch = new ExhaustiveSearch();
         Graph graph = getGraph();
 
         List<Clique> seqEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.SEQUENCE);
@@ -35,8 +35,8 @@ class EdgeCliqueCoverTests {
 
     @Test
     void areCliquesMaximal() {
-        var heuristic = new EdgeCliqueCoverHeuristic();
-        var exhaustiveSearch = new ExhaustiveSearch();
+        EdgeCliqueCoverHeuristic heuristic = new EdgeCliqueCoverHeuristic();
+        ExhaustiveSearch exhaustiveSearch = new ExhaustiveSearch();
         Graph graph = getGraph();
 
         List<Clique> seqEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.SEQUENCE);

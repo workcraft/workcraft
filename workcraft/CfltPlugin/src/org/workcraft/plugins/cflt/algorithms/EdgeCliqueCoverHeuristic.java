@@ -147,7 +147,7 @@ public class EdgeCliqueCoverHeuristic {
         return finalCliques
                 .stream()
                 .map(finalClique -> {
-                    var edgeNames = finalClique.getEdgeNames();
+                    List<String> edgeNames = finalClique.getEdgeNames();
                     boolean containsOnlyOptionalEdges = optionalEdgeNames.containsAll(edgeNames);
                     return containsOnlyOptionalEdges
                             ? new Clique()
@@ -161,22 +161,22 @@ public class EdgeCliqueCoverHeuristic {
 
         for (Clique clique : finalCliques) {
             if (clique.getVertexNames().size() < maxCliqueSize && !clique.getVertexNames().isEmpty()) {
-                var firstClique = clique.getVertexNames().get(0);
-                var firstCliqueNeighbours = vertexNameToAllNeighbours.get(firstClique);
+                String firstClique = clique.getVertexNames().get(0);
+                Set<String> firstCliqueNeighbours = vertexNameToAllNeighbours.get(firstClique);
 
                 Set<String> neighboursOfFirstVertex = new HashSet<>(firstCliqueNeighbours);
                 List<String> verticesToBeAdded = new ArrayList<>(neighboursOfFirstVertex);
 
                 for (int x = 1; x < clique.getVertexNames().size(); x++) {
-                    var currentClique = clique.getVertexNames().get(x);
-                    var currentCliqueNeighbours = vertexNameToAllNeighbours.get(currentClique);
+                    String currentClique = clique.getVertexNames().get(x);
+                    Set<String> currentCliqueNeighbours = vertexNameToAllNeighbours.get(currentClique);
                     verticesToBeAdded.retainAll(currentCliqueNeighbours);
                 }
 
                 while (!verticesToBeAdded.isEmpty()) {
                     String i = verticesToBeAdded.get(0);
                     clique.addVertexName(i);
-                    var neighboursOfi = vertexNameToAllNeighbours.get(i);
+                    Set<String> neighboursOfi = vertexNameToAllNeighbours.get(i);
                     verticesToBeAdded.retainAll(neighboursOfi);
 
                     for (String s : clique.getVertexNames()) {

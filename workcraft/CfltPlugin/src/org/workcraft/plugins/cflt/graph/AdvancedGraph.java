@@ -96,7 +96,7 @@ public class AdvancedGraph extends Graph {
             cliques.add(clique);
         } else {
             for (Clique maxClique : allMaxCliques) {
-                var vertexNames = maxClique.getVertexNames();
+                List<String> vertexNames = maxClique.getVertexNames();
                 boolean hasFirstVertex = vertexNames.contains(edge.firstVertexName());
                 boolean hasSecondVertex = vertexNames.contains(edge.secondVertexName());
 
@@ -134,10 +134,10 @@ public class AdvancedGraph extends Graph {
                         coveredEdges.add(allEdgeNames.get(edgeName2));
                     }
 
-                    var v1UncoveredNeighbours = vertexNameToUncoveredNeighbours.get(firstVertex);
+                    HashSet<String> v1UncoveredNeighbours = vertexNameToUncoveredNeighbours.get(firstVertex);
                     if (v1UncoveredNeighbours != null) v1UncoveredNeighbours.remove(secondVertex);
 
-                    var v2UncoveredNeighbours = vertexNameToUncoveredNeighbours.get(secondVertex);
+                    HashSet<String> v2UncoveredNeighbours = vertexNameToUncoveredNeighbours.get(secondVertex);
                     if (v2UncoveredNeighbours != null) v2UncoveredNeighbours.remove(firstVertex);
                 }
             }

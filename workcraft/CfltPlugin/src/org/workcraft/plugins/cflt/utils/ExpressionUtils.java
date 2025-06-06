@@ -73,13 +73,13 @@ public final class ExpressionUtils {
     }
 
     public static boolean insertInterpretedGraph(String expressionText, Mode mode, Model model, WorkspaceEntry we) {
-        var response = getParseExpressionResponse(expressionText, model);
-        var errorMessage = response.errorText;
+        ParseExpressionResponse response = getParseExpressionResponse(expressionText, model);
+        String errorMessage = response.errorText;
         if (errorMessage != null) {
             DialogUtils.showError(errorMessage);
             return false;
         }
-        var nodeCollection = response.nodeCollection;
+        NodeCollection nodeCollection = response.nodeCollection;
         checkMode(mode);
         checkIteration(mode, nodeCollection);
         NodeTraversalTool nodeTraversalTool = new NodeTraversalTool(nodeCollection, model);
