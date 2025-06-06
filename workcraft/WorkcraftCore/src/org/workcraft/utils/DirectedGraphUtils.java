@@ -41,7 +41,6 @@ public final class DirectedGraphUtils {
     /**
      * Implementation of Johnson algorithm for finding all simple cycles in
      * a directed graph specified by its adjacency list.
-     *
      * Time complexity: O(V+E)*(C+1), where C is number of cycles.
      * Space complexity: O(V+E+S), where S is the sum of all cycles' lengths.
      **/
@@ -149,7 +148,6 @@ public final class DirectedGraphUtils {
     /**
      * Implementation of Kosaraju algorithm for finding strongly connected components
      * in a directed graph specified by its adjacency list.
-     *
      * Time complexity: O(V+E)
      * Space complexity: O(V)
      */
