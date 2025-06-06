@@ -34,7 +34,7 @@ public class SolvableGame {
      * @param game    game to be copied
      */
     SolvableGame(SolvableGame game) {
-        this.vertex = (Boolean[]) game.vertex.clone();
+        this.vertex = game.vertex.clone();
         this.ownedBy = new Boolean[game.ownedBy.length][game.ownedBy[0].length];
         for (int outer = 0; outer < game.ownedBy.length; ++outer) {
             for (int inner = 0; inner < game.ownedBy[outer].length; ++inner) {
@@ -47,14 +47,13 @@ public class SolvableGame {
                 this.adjMatrix[outer][inner] = game.adjMatrix[outer][inner];
             }
         }
-        this.priority = (Integer[]) game.priority.clone();
+        this.priority = game.priority.clone();
     }
 
     /**
      * Print function to ensure game has been built correctly
      */
     void printSolvableGame() {
-
         System.out.print("VERTICES: ");
         for (int i = 0; i < vertex.length; ++i) {
             System.out.print(vertex[i] ? i + " " : "");

@@ -269,7 +269,7 @@ public class Grid implements ViewportListener {
      * @return snapped coordinate value
      */
     public double snapCoordinate(double value, int subdivideCount) {
-        double m = majorInterval * MINOR_INTERVAL_FACTOR / (double) subdivideCount;
+        double m = majorInterval * MINOR_INTERVAL_FACTOR / subdivideCount;
         return Math.floor(value / m + 0.5) * m;
     }
 
