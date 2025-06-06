@@ -49,10 +49,9 @@ public abstract class Path<T> {
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof Path<?>)) {
+        if (!(obj instanceof Path<?> other)) {
             return false;
         }
-        Path<?> other = (Path<?>) obj;
         if (isEmpty()) {
             return other.isEmpty();
         }
@@ -80,7 +79,7 @@ public abstract class Path<T> {
     }
 
     public static Path<String> fromString(String relative) {
-        if (relative.length() == 0) {
+        if (relative.isEmpty()) {
             return empty();
         }
         return create(relative.split("/"));

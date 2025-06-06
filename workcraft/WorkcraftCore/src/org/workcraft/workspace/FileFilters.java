@@ -14,10 +14,7 @@ public final class FileFilters {
             if (file.isDirectory()) {
                 return true;
             }
-            if (isWorkFile(file)) {
-                return true;
-            }
-            return false;
+            return isWorkFile(file);
         }
 
         @Override
@@ -33,10 +30,7 @@ public final class FileFilters {
             if (file.isDirectory()) {
                 return true;
             }
-            if (isWorkspaceFile(file)) {
-                return true;
-            }
-            return false;
+            return isWorkspaceFile(file);
         }
 
         @Override
