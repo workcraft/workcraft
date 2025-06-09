@@ -1,11 +1,10 @@
 pluginManagement {
     plugins {
         // Plugin for JavaCC parser generator (https://plugins.gradle.org/plugin/org.javacc.javacc)
-        id 'org.javacc.javacc' version '3.0.3'
+        id 'org.javacc.javacc' version '4.0.1'
         // Plugin for sending Jacoco coverage reports to coveralls.io (https://plugins.gradle.org/plugin/com.github.kt3k.coveralls)
         id 'com.github.kt3k.coveralls' version '2.12.2'
         // Plugin for PMD-based Copy-Paste Detection (https://plugins.gradle.org/plugin/de.aaschmid.cpd)
-        // (v3.4 requires PMD >=v7.0.0, v3.5 requires PMD >=v7.4.0; however PMD >=v7.0.0 requires update of rules)
         id 'de.aaschmid.cpd' version '3.5'
         // Plugin for analysing licenses of dependencies (https://plugins.gradle.org/plugin/com.github.jk1.dependency-license-report)
         id 'com.github.jk1.dependency-license-report' version '2.9'
@@ -23,11 +22,11 @@ gradle.ext.javaTargetVersion = JavaVersion.VERSION_17
 gradle.ext.javaReleaseVersion = 17  /* Must be integer, e.g. 11 for JDK11*/
 
 // Checkstyle code linter (https://checkstyle.sourceforge.io/) 
-gradle.ext.checkstyleVersion = '10.20.2'
+gradle.ext.checkstyleVersion = '10.25.0'
 // PMD code analyser (https://pmd.github.io/) - v7.x.x requires update of rules
-gradle.ext.pmdVersion = '7.8.0'
+gradle.ext.pmdVersion = '7.14.0'
 // Jacoco code coverage (https://www.eclemma.org/jacoco/)
-gradle.ext.jacocoVersion = '0.8.12'
+gradle.ext.jacocoVersion = '0.8.13'
 
 
 /*
@@ -35,7 +34,7 @@ gradle.ext.jacocoVersion = '0.8.12'
  */
 
 // Unit testing (https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter)
-gradle.ext.junit = 'org.junit.jupiter:junit-jupiter:5.11.3'
+gradle.ext.junit = 'org.junit.jupiter:junit-jupiter:5.13.0'
 gradle.ext.junitPlatformLauncher = 'org.junit.platform:junit-platform-launcher'
 
 // JavaCC parser generator (https://mvnrepository.com/artifact/net.java.dev.javacc/javacc)
