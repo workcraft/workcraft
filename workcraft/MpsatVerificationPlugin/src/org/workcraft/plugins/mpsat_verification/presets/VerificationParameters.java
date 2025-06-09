@@ -116,19 +116,16 @@ public class VerificationParameters {
 
         // Solution mode
         switch (getSolutionMode()) {
-        case FIRST:
-            break;
-        case MINIMUM_COST:
-            args.add("-f");
-            break;
-        case ALL:
-            int solutionNumberLimit = getSolutionNumberLimit();
-            if (solutionNumberLimit > 0) {
-                args.add("-a" + solutionNumberLimit);
-            } else {
-                args.add("-a");
+            case FIRST -> { }
+            case MINIMUM_COST -> args.add("-f");
+            case ALL -> {
+                int solutionNumberLimit = getSolutionNumberLimit();
+                if (solutionNumberLimit > 0) {
+                    args.add("-a" + solutionNumberLimit);
+                } else {
+                    args.add("-a");
+                }
             }
-            break;
         }
 
         return args;

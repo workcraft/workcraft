@@ -46,15 +46,15 @@ public class PetriToCpogParameters {
 
     public void setSignificance(SignificanceCheckType type) {
         switch (type) {
-        case EXHAUSTIVE:
-            significance = 0;
-            break;
-        case HASHMAP_BASED:
-            significance = 1;
-            break;
-        case TREE_OF_RUNS:
-            significance = 2;
-            break;
+            case EXHAUSTIVE:
+                significance = 0;
+                break;
+            case HASHMAP_BASED:
+                significance = 1;
+                break;
+            case TREE_OF_RUNS:
+                significance = 2;
+                break;
         }
     }
 

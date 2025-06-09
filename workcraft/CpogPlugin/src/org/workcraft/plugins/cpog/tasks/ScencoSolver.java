@@ -237,56 +237,50 @@ public class ScencoSolver {
             customPath = encodingFile.getAbsolutePath();
         }
         switch (settings.getGenMode()) {
-        case OPTIMAL_ENCODING:
-            genMode = "-top";
-            numSol = String.valueOf(settings.getSolutionNumber());
-            break;
-        case RECURSIVE:
-            if (settings.isCustomEncMode()) {
-                modBitFlag = "-bit";
-                modBit = String.valueOf(settings.getBits());
+            case OPTIMAL_ENCODING -> {
+                genMode = "-top";
+                numSol = String.valueOf(settings.getSolutionNumber());
             }
-            break;
-        case RANDOM:
-            genMode = "-r";
-            if (settings.isCustomEncMode()) {
+            case RECURSIVE -> {
+                if (settings.isCustomEncMode()) {
+                    modBitFlag = "-bit";
+                    modBit = String.valueOf(settings.getBits());
+                }
+            }
+            case RANDOM -> {
+                genMode = "-r";
+                if (settings.isCustomEncMode()) {
+                    customFlag = "-set";
+                    customPath = encodingFile.getAbsolutePath();
+                    modBitFlag = "-bit";
+                    modBit = String.valueOf(settings.getBits());
+                }
+                numSol = String.valueOf(settings.getSolutionNumber());
+            }
+            case SCENCO -> {
+                customFlag = "-set";
+                genMode = "-top";
+                numSol = "1";
+            }
+            case OLD_SYNT -> {
                 customFlag = "-set";
                 customPath = encodingFile.getAbsolutePath();
-                modBitFlag = "-bit";
-                modBit = String.valueOf(settings.getBits());
+                oldSynt = "-old";
+                genMode = "-top";
+                numSol = "1";
             }
-            numSol = String.valueOf(settings.getSolutionNumber());
-            break;
-        case SCENCO:
-            customFlag = "-set";
-            genMode = "-top";
-            numSol = "1";
-            break;
-        case OLD_SYNT:
-            customFlag = "-set";
-            customPath = encodingFile.getAbsolutePath();
-            oldSynt = "-old";
-            genMode = "-top";
-            numSol = "1";
-            break;
-        case SEQUENTIAL:
-            customFlag = "-set";
-            customPath = encodingFile.getAbsolutePath();
-            genMode = "-top";
-            numSol = "1";
-            break;
-        default:
-            FileUtils.deleteOnExitRecursively(directory);
-            args.add("ERROR");
-            args.add(MSG_SELECTION_MODE_UNDEFINED);
-            args.add(ACCESS_SCENCO_ERROR);
-            return args;
+            case SEQUENTIAL -> {
+                customFlag = "-set";
+                customPath = encodingFile.getAbsolutePath();
+                genMode = "-top";
+                numSol = "1";
+            }
         }
 
         //Adding arguments to list
         scencoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         if (scencoCommand != null && !scencoCommand.isEmpty()) args.add(scencoCommand);
-        if (scenarioFile.getAbsolutePath() != null && !scenarioFile.getAbsolutePath().isEmpty()) args.add(scenarioFile.getAbsolutePath());
+        if (!scenarioFile.getAbsolutePath().isEmpty()) args.add(scenarioFile.getAbsolutePath());
         args.add("-m");
         if (effort != null && !effort.isEmpty()) args.add(effort);
         if (genMode != null && !genMode.isEmpty()) args.add(genMode);
@@ -304,7 +298,7 @@ public class ScencoSolver {
         if (gateLibFlag != null && !gateLibFlag.isEmpty()) args.add(gateLibFlag);
         if (gatesLibrary != null && !gatesLibrary.isEmpty()) args.add(gatesLibrary);
         args.add("-res");
-        if ((resultDirectory.getAbsolutePath() != null) && !resultDirectory.getAbsolutePath().isEmpty()) args.add(resultDirectory.getAbsolutePath());
+        if (!resultDirectory.getAbsolutePath().isEmpty()) args.add(resultDirectory.getAbsolutePath());
         if (modBitFlag != null && !modBitFlag.isEmpty()) args.add(modBitFlag);
         if (modBit != null && !modBit.isEmpty()) args.add(modBit);
         if (verilogFlag != null && !verilogFlag.isEmpty()) {

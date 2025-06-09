@@ -25,23 +25,15 @@ public class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualFs
 
     @Override
     public void copyStyle(Stylable srcStylable, Stylable dstStylable) {
-        if ((srcStylable instanceof VisualSignalEvent) && (dstStylable instanceof VisualEvent)) {
-            VisualSignalEvent srcSignalEvent = (VisualSignalEvent) srcStylable;
-            VisualEvent dstEvent = (VisualEvent) dstStylable;
+        if ((srcStylable instanceof VisualSignalEvent srcSignalEvent) && (dstStylable instanceof VisualEvent dstEvent)) {
             Signal srcSignal = srcSignalEvent.getReferencedConnection().getSymbol();
             String directionSuffix = "";
             if (srcSignal.hasDirection()) {
-                switch (srcSignalEvent.getReferencedConnection().getDirection()) {
-                case PLUS:
-                    directionSuffix = "_PLUS";
-                    break;
-                case MINUS:
-                    directionSuffix = "_MINUS";
-                    break;
-                case TOGGLE:
-                    directionSuffix = "_TOGGLE";
-                    break;
-                }
+                directionSuffix = switch (srcSignalEvent.getReferencedConnection().getDirection()) {
+                    case PLUS -> "_PLUS";
+                    case MINUS -> "_MINUS";
+                    case TOGGLE -> "_TOGGLE";
+                };
             }
             String signalName = getSrcModel().getMathName(srcSignal) + directionSuffix;
             Symbol symbol = getDstModel().getMathModel().getOrCreateSymbol(signalName);

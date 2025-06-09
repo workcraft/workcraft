@@ -24,42 +24,24 @@ class GraphEditorPanelKeyListener implements KeyListener {
     public void keyPressed(KeyEvent e) {
         if (DesktopApi.isMenuKeyDown(e)) {
             switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-                editor.panLeft(e.isShiftDown());
-                break;
-            case KeyEvent.VK_UP:
-                editor.panUp(e.isShiftDown());
-                break;
-            case KeyEvent.VK_RIGHT:
-                editor.panRight(e.isShiftDown());
-                break;
-            case KeyEvent.VK_DOWN:
-                editor.panDown(e.isShiftDown());
-                break;
-            case KeyEvent.VK_TAB:
-                MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                DockableWindow editorWindow = mainWindow.getDockableWindow(editor);
-                DockingUtils.activateNextTab(editorWindow, e.isShiftDown() ? -1 : 1);
-                break;
+                case KeyEvent.VK_LEFT -> editor.panLeft(e.isShiftDown());
+                case KeyEvent.VK_UP -> editor.panUp(e.isShiftDown());
+                case KeyEvent.VK_RIGHT -> editor.panRight(e.isShiftDown());
+                case KeyEvent.VK_DOWN -> editor.panDown(e.isShiftDown());
+                case KeyEvent.VK_TAB -> {
+                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                    DockableWindow editorWindow = mainWindow.getDockableWindow(editor);
+                    DockingUtils.activateNextTab(editorWindow, e.isShiftDown() ? -1 : 1);
+                }
+                default -> { }
             }
         } else {
             switch (e.getKeyCode()) {
-            case KeyEvent.VK_EQUALS:
-            case KeyEvent.VK_PLUS:
-            case KeyEvent.VK_ADD:
-                editor.zoomIn();
-                break;
-            case KeyEvent.VK_MINUS:
-            case KeyEvent.VK_UNDERSCORE:
-            case KeyEvent.VK_SUBTRACT:
-                editor.zoomOut();
-                break;
-            case KeyEvent.VK_MULTIPLY:
-                editor.zoomFit();
-                break;
-            case KeyEvent.VK_DIVIDE:
-                editor.panCenter();
-                break;
+                case KeyEvent.VK_EQUALS, KeyEvent.VK_PLUS, KeyEvent.VK_ADD -> editor.zoomIn();
+                case KeyEvent.VK_MINUS, KeyEvent.VK_UNDERSCORE, KeyEvent.VK_SUBTRACT -> editor.zoomOut();
+                case KeyEvent.VK_MULTIPLY -> editor.zoomFit();
+                case KeyEvent.VK_DIVIDE -> editor.panCenter();
+                default -> { }
             }
         }
         GraphEditorKeyEvent geke = new GraphEditorKeyEvent(editor, e);

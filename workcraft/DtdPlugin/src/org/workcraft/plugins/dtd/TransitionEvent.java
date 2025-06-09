@@ -46,13 +46,12 @@ public class TransitionEvent extends Event {
         }
 
         public Direction reverse() {
-            switch (this) {
-            case RISE: return FALL;
-            case FALL: return RISE;
-            case DESTABILISE: return STABILISE;
-            case STABILISE: return DESTABILISE;
-            default: return this;
-            }
+            return switch (this) {
+                case RISE -> FALL;
+                case FALL -> RISE;
+                case DESTABILISE -> STABILISE;
+                case STABILISE -> DESTABILISE;
+            };
         }
     }
 

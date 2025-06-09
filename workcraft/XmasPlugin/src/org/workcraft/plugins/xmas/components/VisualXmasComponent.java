@@ -51,39 +51,37 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         }
 
         public Orientation rotateClockwise() {
-            switch (this) {
-            case ORIENTATION_0: return ORIENTATION_90;
-            case ORIENTATION_90: return ORIENTATION_180;
-            case ORIENTATION_180: return ORIENTATION_270;
-            case ORIENTATION_270: return ORIENTATION_0;
-            default: return this;
-            }
+            return switch (this) {
+                case ORIENTATION_0 -> ORIENTATION_90;
+                case ORIENTATION_90 -> ORIENTATION_180;
+                case ORIENTATION_180 -> ORIENTATION_270;
+                case ORIENTATION_270 -> ORIENTATION_0;
+            };
         }
 
         public Orientation rotateCounterclockwise() {
-            switch (this) {
-            case ORIENTATION_0: return ORIENTATION_270;
-            case ORIENTATION_90: return ORIENTATION_0;
-            case ORIENTATION_180: return ORIENTATION_90;
-            case ORIENTATION_270: return ORIENTATION_180;
-            default: return this;
-            }
+            return switch (this) {
+                case ORIENTATION_0 -> ORIENTATION_270;
+                case ORIENTATION_90 -> ORIENTATION_0;
+                case ORIENTATION_180 -> ORIENTATION_90;
+                case ORIENTATION_270 -> ORIENTATION_180;
+            };
         }
 
         public Orientation flipHorizontal() {
-            switch (this) {
-            case ORIENTATION_0: return ORIENTATION_180;
-            case ORIENTATION_180: return ORIENTATION_0;
-            default: return this;
-            }
+            return switch (this) {
+                case ORIENTATION_0 -> ORIENTATION_180;
+                case ORIENTATION_180 -> ORIENTATION_0;
+                default -> this;
+            };
         }
 
         public Orientation flipVertical() {
-            switch (this) {
-            case ORIENTATION_90: return ORIENTATION_270;
-            case ORIENTATION_270: return ORIENTATION_90;
-            default: return this;
-            }
+            return switch (this) {
+                case ORIENTATION_90 -> ORIENTATION_270;
+                case ORIENTATION_270 -> ORIENTATION_90;
+                default -> this;
+            };
         }
 
     }
@@ -267,8 +265,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualXmasComponent) {
-            VisualXmasComponent srcComponent = (VisualXmasComponent) src;
+        if (src instanceof VisualXmasComponent srcComponent) {
             setOrientation(srcComponent.getOrientation());
         }
     }

@@ -44,82 +44,79 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         public AffineTransform getTransform() {
             AffineTransform result = new AffineTransform();
             switch (this) {
-            case WEST:
-                result.quadrantRotate(2);
-                break;
-            case NORTH:
-                result.quadrantRotate(3);
-                break;
-            case EAST:
-                result.setToIdentity();
-                break;
-            case SOUTH:
-                result.quadrantRotate(1);
-                break;
+                case WEST:
+                    result.quadrantRotate(2);
+                    break;
+                case NORTH:
+                    result.quadrantRotate(3);
+                    break;
+                case EAST:
+                    result.setToIdentity();
+                    break;
+                case SOUTH:
+                    result.quadrantRotate(1);
+                    break;
             }
             return result;
         }
 
         public Direction rotateClockwise() {
-            switch (this) {
-            case WEST: return NORTH;
-            case NORTH: return EAST;
-            case EAST: return SOUTH;
-            case SOUTH: return WEST;
-            default: return this;
-            }
+            return switch (this) {
+                case WEST -> NORTH;
+                case NORTH -> EAST;
+                case EAST -> SOUTH;
+                case SOUTH -> WEST;
+            };
         }
 
         public Direction rotateCounterclockwise() {
-            switch (this) {
-            case WEST: return SOUTH;
-            case NORTH: return WEST;
-            case EAST: return NORTH;
-            case SOUTH: return EAST;
-            default: return this;
-            }
+            return switch (this) {
+                case WEST -> SOUTH;
+                case NORTH -> WEST;
+                case EAST -> NORTH;
+                case SOUTH -> EAST;
+            };
         }
 
         public Direction flipHorizontal() {
-            switch (this) {
-            case WEST: return EAST;
-            case EAST: return WEST;
-            default: return this;
-            }
+            return switch (this) {
+                case WEST -> EAST;
+                case EAST -> WEST;
+                default -> this;
+            };
         }
 
         public Direction flipVertical() {
-            switch (this) {
-            case NORTH: return SOUTH;
-            case SOUTH: return NORTH;
-            default: return this;
-            }
+            return switch (this) {
+                case NORTH -> SOUTH;
+                case SOUTH -> NORTH;
+                default -> this;
+            };
         }
 
         public Direction flip() {
-            switch (this) {
-            case WEST: return EAST;
-            case NORTH: return SOUTH;
-            case EAST: return WEST;
-            case SOUTH: return NORTH;
-            default: return this;
-            }
+            return switch (this) {
+                case WEST -> EAST;
+                case NORTH -> SOUTH;
+                case EAST -> WEST;
+                case SOUTH -> NORTH;
+            };
         }
 
         public int getGradientX() {
-            switch (this) {
-            case WEST: return -1;
-            case EAST: return 1;
-            default: return 0;
-            }
+            return switch (this) {
+                case WEST -> -1;
+                case EAST -> 1;
+                default -> 0;
+            };
         }
 
         public int getGradientY() {
-            switch (this) {
-            case NORTH: return -1;
-            case SOUTH: return 1;
-            default: return 0;
-            }
+            return switch (this) {
+                case NORTH -> -1;
+                case SOUTH -> 1;
+                default -> 0;
+            };
         }
     }
 
@@ -488,8 +485,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     @Override
     public void rotateClockwise() {
-        if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) getParent();
+        if (getParent() instanceof VisualFunctionComponent component) {
             if (component.getRenderType() == RenderType.BOX) {
                 AffineTransform rotateTransform = new AffineTransform();
                 rotateTransform.quadrantRotate(1);
@@ -503,8 +499,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     @Override
     public void rotateCounterclockwise() {
-        if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) getParent();
+        if (getParent() instanceof VisualFunctionComponent component) {
             if (component.getRenderType() == RenderType.BOX) {
                 AffineTransform rotateTransform = new AffineTransform();
                 rotateTransform.quadrantRotate(-1);
@@ -518,8 +513,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     @Override
     public void flipHorizontal() {
-        if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) getParent();
+        if (getParent() instanceof VisualFunctionComponent component) {
             if (component.getRenderType() == RenderType.BOX) {
                 setX(-getX());
             }
@@ -530,8 +524,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     @Override
     public void flipVertical() {
-        if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) getParent();
+        if (getParent() instanceof VisualFunctionComponent component) {
             if (component.getRenderType() == RenderType.BOX) {
                 setY(-getY());
             }
@@ -543,8 +536,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualContact) {
-            VisualContact srcComponent = (VisualContact) src;
+        if (src instanceof VisualContact srcComponent) {
             getReferencedComponent().setInitToOne(srcComponent.getReferencedComponent().getInitToOne());
             getReferencedComponent().setForcedInit(srcComponent.getReferencedComponent().getForcedInit());
             getReferencedComponent().setPathBreaker(srcComponent.getReferencedComponent().getPathBreaker());

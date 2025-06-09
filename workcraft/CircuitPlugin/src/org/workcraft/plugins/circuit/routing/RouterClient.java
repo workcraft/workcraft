@@ -68,21 +68,10 @@ public class RouterClient {
         VisualContact.Direction direction = contact.getDirection();
         PortDirection converted = null;
         switch (direction) {
-        case EAST:
-            converted = PortDirection.EAST;
-            break;
-        case WEST:
-            converted = PortDirection.WEST;
-            break;
-        case NORTH:
-            converted = PortDirection.NORTH;
-            break;
-        case SOUTH:
-            converted = PortDirection.SOUTH;
-            break;
-        default:
-            assert false : "unsupported visual contact direction";
-            break;
+            case EAST -> converted = PortDirection.EAST;
+            case WEST -> converted = PortDirection.WEST;
+            case NORTH -> converted = PortDirection.NORTH;
+            case SOUTH -> converted = PortDirection.SOUTH;
         }
 
         if (contact.isPort()) {

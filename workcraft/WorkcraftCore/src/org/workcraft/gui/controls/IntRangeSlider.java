@@ -55,14 +55,15 @@ public class IntRangeSlider extends JPanel {
         public void mouseClicked(MouseEvent e) {
             if (isEnabled()) {
                 switch (cursorType) {
-                case Cursor.W_RESIZE_CURSOR:
-                    setValue(startValue - 1);
-                    repaint();
-                    break;
-                case Cursor.E_RESIZE_CURSOR:
-                    setSecondValue(startValue + startExtent + 1);
-                    repaint();
-                    break;
+                    case Cursor.W_RESIZE_CURSOR -> {
+                        setValue(startValue - 1);
+                        repaint();
+                    }
+                    case Cursor.E_RESIZE_CURSOR -> {
+                        setSecondValue(startValue + startExtent + 1);
+                        repaint();
+                    }
+                    default -> { }
                 }
             }
         }
@@ -72,20 +73,21 @@ public class IntRangeSlider extends JPanel {
             if (isEnabled()) {
                 int offset = Math.round((e.getX() - startPos) * scale);
                 switch (cursorType) {
-                case Cursor.W_RESIZE_CURSOR:
-                    setValue(startValue + offset);
-                    repaint();
-                    break;
-                case Cursor.E_RESIZE_CURSOR:
-                    int secondValue = startValue + startExtent + offset;
-                    setSecondValue(secondValue);
-                    repaint();
-                    break;
-                case Cursor.MOVE_CURSOR:
-                    setValue(startValue + offset);
-                    setSecondValue(startValue + startExtent + offset);
-                    repaint();
-                    break;
+                    case Cursor.W_RESIZE_CURSOR -> {
+                        setValue(startValue + offset);
+                        repaint();
+                    }
+                    case Cursor.E_RESIZE_CURSOR -> {
+                        int secondValue = startValue + startExtent + offset;
+                        setSecondValue(secondValue);
+                        repaint();
+                    }
+                    case Cursor.MOVE_CURSOR -> {
+                        setValue(startValue + offset);
+                        setSecondValue(startValue + startExtent + offset);
+                        repaint();
+                    }
+                    default -> { }
                 }
             }
         }

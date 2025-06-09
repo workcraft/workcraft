@@ -113,12 +113,9 @@ public class StgSimulationTool extends PetriSimulationTool {
                 Object value = cellEditor.getCellEditorValue();
                 if ((signalData != null) && (value != null)) {
                     switch (editingColumn) {
-                    case COLUMN_VISIBLE:
-                        signalData.visible = (Boolean) value;
-                        break;
-                    case COLUMN_COLOR:
-                        signalData.color = (Color) value;
-                        break;
+                        case COLUMN_VISIBLE -> signalData.visible = (Boolean) value;
+                        case COLUMN_COLOR -> signalData.color = (Color) value;
+                        default -> { }
                     }
                     setValueAt(value, editingRow, editingColumn);
                     removeEditor();
@@ -136,33 +133,23 @@ public class StgSimulationTool extends PetriSimulationTool {
 
         @Override
         public String getColumnName(int column) {
-            switch (column) {
-            case COLUMN_SIGNAL:
-                return "Signal";
-            case COLUMN_STATE:
-                return "State";
-            case COLUMN_VISIBLE:
-                return "Visible";
-            case COLUMN_COLOR:
-                return "Color";
-            default:
-                return null;
-            }
+            return switch (column) {
+                case COLUMN_SIGNAL -> "Signal";
+                case COLUMN_STATE -> "State";
+                case COLUMN_VISIBLE -> "Visible";
+                case COLUMN_COLOR -> "Color";
+                default -> null;
+            };
         }
 
         @Override
         public Class<?> getColumnClass(int col) {
-            switch (col) {
-            case COLUMN_SIGNAL:
-            case COLUMN_STATE:
-                return SignalData.class;
-            case COLUMN_VISIBLE:
-                return Boolean.class;
-            case COLUMN_COLOR:
-                return Color.class;
-            default:
-                return null;
-            }
+            return switch (col) {
+                case COLUMN_SIGNAL, COLUMN_STATE -> SignalData.class;
+                case COLUMN_VISIBLE -> Boolean.class;
+                case COLUMN_COLOR -> Color.class;
+                default -> null;
+            };
         }
 
         @Override
@@ -176,17 +163,12 @@ public class StgSimulationTool extends PetriSimulationTool {
                 String signalName = signals.get(row);
                 SignalData signalData = signalDataMap.get(signalName);
                 if (signalData != null) {
-                    switch (col) {
-                    case COLUMN_SIGNAL:
-                    case COLUMN_STATE:
-                        return signalData;
-                    case COLUMN_VISIBLE:
-                        return signalData.visible;
-                    case COLUMN_COLOR:
-                        return signalData.color;
-                    default:
-                        return null;
-                    }
+                    return switch (col) {
+                        case COLUMN_SIGNAL, COLUMN_STATE -> signalData;
+                        case COLUMN_VISIBLE -> signalData.visible;
+                        case COLUMN_COLOR -> signalData.color;
+                        default -> null;
+                    };
                 }
             }
             return null;
@@ -194,13 +176,10 @@ public class StgSimulationTool extends PetriSimulationTool {
 
         @Override
         public boolean isCellEditable(int row, int col) {
-            switch (col) {
-            case COLUMN_VISIBLE:
-            case COLUMN_COLOR:
-                return true;
-            default:
-                return false;
-            }
+            return switch (col) {
+                case COLUMN_VISIBLE, COLUMN_COLOR -> true;
+                default -> false;
+            };
         }
 
         public void reorderRows(int from, int to) {
@@ -232,21 +211,20 @@ public class StgSimulationTool extends PetriSimulationTool {
             label.setForeground(table.getForeground());
             label.setBackground(table.getBackground());
             label.setFont(table.getFont().deriveFont(Font.PLAIN));
-            if (isActivated() && (value instanceof SignalData)) {
-                SignalData signalData = (SignalData) value;
+            if (isActivated() && (value instanceof SignalData signalData)) {
                 switch (col) {
-                case COLUMN_SIGNAL:
-                    label.setText(signalData.name);
-                    label.setForeground(getTypeColor(signalData.type));
-                    break;
-                case COLUMN_STATE:
-                    label.setText(signalData.value.toString());
-                    if (signalData.excited) {
-                        label.setFont(table.getFont().deriveFont(Font.BOLD));
+                    case COLUMN_SIGNAL -> {
+                        label.setText(signalData.name);
+                        label.setForeground(getTypeColor(signalData.type));
                     }
-                    break;
-                default:
-                    break;
+                    case COLUMN_STATE -> {
+                        label.setText(signalData.value.toString());
+                        if (signalData.excited) {
+                            label.setFont(table.getFont().deriveFont(Font.BOLD));
+                        }
+                    }
+                    default -> {
+                    }
                 }
             }
 
@@ -273,7 +251,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         @Override
-        public boolean canImport(TransferHandler.TransferSupport info) {
+        public boolean canImport(TransferSupport info) {
             boolean result = (info.getComponent() == table) && info.isDrop() && info.isDataFlavorSupported(localObjectFlavor);
             table.setCursor(result ? DragSource.DefaultMoveDrop : DragSource.DefaultMoveNoDrop);
             return result;
@@ -285,7 +263,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         @Override
-        public boolean importData(TransferHandler.TransferSupport info) {
+        public boolean importData(TransferSupport info) {
             JTable target = (JTable) info.getComponent();
             JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
             int toRow = dl.getRow();
@@ -352,8 +330,7 @@ public class StgSimulationTool extends PetriSimulationTool {
 
             JLabel result = null;
             label.setBorder(GuiUtils.getTableCellBorder());
-            if (isActivated() && (value instanceof String)) {
-                String text = (String) value;
+            if (isActivated() && (value instanceof String text)) {
                 Pair<String, String> pair = TraceUtils.splitLoopDecoration(text);
                 String prefix = pair.getFirst();
                 String ref = pair.getSecond();
@@ -420,23 +397,14 @@ public class StgSimulationTool extends PetriSimulationTool {
 
         for (String ref : combinedTrace) {
             MathNode node = getUnderlyingNode(ref);
-            if (node instanceof SignalTransition) {
-                SignalTransition transition = (SignalTransition) node;
+            if (node instanceof SignalTransition transition) {
                 String signalReference = getUnderlyingModel().getSignalReference(transition);
                 SignalData signalState = signalDataMap.get(signalReference);
                 if (signalState != null) {
                     switch (transition.getDirection()) {
-                    case MINUS:
-                        signalState.value = Signal.State.LOW;
-                        break;
-                    case PLUS:
-                        signalState.value = Signal.State.HIGH;
-                        break;
-                    case TOGGLE:
-                        signalState.value = signalState.value.toggle();
-                        break;
-                    default:
-                        break;
+                        case MINUS -> signalState.value = Signal.State.LOW;
+                        case PLUS -> signalState.value = Signal.State.HIGH;
+                        case TOGGLE -> signalState.value = signalState.value.toggle();
                     }
                 }
             }
@@ -547,12 +515,11 @@ public class StgSimulationTool extends PetriSimulationTool {
         if (type == null) {
             return SignalCommonSettings.getDummyColor();
         }
-        switch (type) {
-        case INPUT:    return SignalCommonSettings.getInputColor();
-        case OUTPUT:   return SignalCommonSettings.getOutputColor();
-        case INTERNAL: return SignalCommonSettings.getInternalColor();
-        default:       return SignalCommonSettings.getDummyColor();
-        }
+        return switch (type) {
+            case INPUT -> SignalCommonSettings.getInputColor();
+            case OUTPUT -> SignalCommonSettings.getOutputColor();
+            case INTERNAL -> SignalCommonSettings.getInternalColor();
+        };
     }
 
     @Override
@@ -577,11 +544,9 @@ public class StgSimulationTool extends PetriSimulationTool {
             // Combine preset token colours
             for (VisualConnection vc : stg.getConnections(vt)) {
                 if ((vc.getSecond() == vt) && vc.isTokenColorPropagator()) {
-                    if (vc.getFirst() instanceof VisualPlace) {
-                        VisualPlace vp = (VisualPlace) vc.getFirst();
+                    if (vc.getFirst() instanceof VisualPlace vp) {
                         tokenColor = ColorUtils.colorise(tokenColor, vp.getTokenColor());
-                    } else if (vc instanceof VisualImplicitPlaceArc) {
-                        VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc) vc;
+                    } else if (vc instanceof VisualImplicitPlaceArc vipa) {
                         tokenColor = ColorUtils.colorise(tokenColor, vipa.getTokenColor());
                     }
                 }
@@ -590,11 +555,9 @@ public class StgSimulationTool extends PetriSimulationTool {
         // Propagate the colour to postset tokens
         for (VisualConnection vc : stg.getConnections(vt)) {
             if ((vc.getFirst() == vt) && vc.isTokenColorPropagator()) {
-                if (vc.getSecond() instanceof VisualPlace) {
-                    VisualPlace vp = (VisualPlace) vc.getSecond();
+                if (vc.getSecond() instanceof VisualPlace vp) {
                     vp.setTokenColor(tokenColor);
-                } else if (vc instanceof VisualImplicitPlaceArc) {
-                    VisualImplicitPlaceArc vipa = (VisualImplicitPlaceArc) vc;
+                } else if (vc instanceof VisualImplicitPlaceArc vipa) {
                     vipa.setTokenColor(tokenColor);
                 }
             }

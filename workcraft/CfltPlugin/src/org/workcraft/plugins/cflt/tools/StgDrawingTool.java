@@ -132,8 +132,8 @@ public class StgDrawingTool implements VisualModelDrawingTool {
             ConnectionDirection connectionDirection) {
         try {
             switch (connectionDirection) {
-            case PLACE_TO_TRANSITION -> visualStg.connect(visualStgPlace, visualSignalTransition);
-            case TRANSITION_TO_PLACE -> visualStg.connect(visualSignalTransition, visualStgPlace);
+                case PLACE_TO_TRANSITION -> visualStg.connect(visualStgPlace, visualSignalTransition);
+                case TRANSITION_TO_PLACE -> visualStg.connect(visualSignalTransition, visualStgPlace);
             }
         } catch (InvalidConnectionException e) {
             LogUtils.logError("Invalid connection of VisualStgPlace and VisualSignalTransition");

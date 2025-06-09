@@ -13,7 +13,7 @@ import java.util.List;
 
 public class ColorLegendTable extends JTable {
 
-    private final class TableModel extends AbstractTableModel {
+    private static final class TableModel extends AbstractTableModel {
 
         private static final int LEGEND_COLUMN_COLOR = 0;
         private static final int LEGEND_COLUMN_DESCRIPTION = 1;
@@ -31,14 +31,11 @@ public class ColorLegendTable extends JTable {
 
         @Override
         public Class<?> getColumnClass(final int col) {
-            switch (col) {
-            case LEGEND_COLUMN_COLOR:
-                return Color.class;
-            case LEGEND_COLUMN_DESCRIPTION:
-                return String.class;
-            default:
-                return null;
-            }
+            return switch (col) {
+                case LEGEND_COLUMN_COLOR -> Color.class;
+                case LEGEND_COLUMN_DESCRIPTION -> String.class;
+                default -> null;
+            };
         }
 
         @Override

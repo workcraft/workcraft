@@ -32,12 +32,12 @@ public class WaggingGenerator {
     private final HashMap<VisualComponent, VisualComponent> replicaToOriginalMap = new HashMap<>();
     private final ArrayList<WaggingData> wagging = new ArrayList<>();
 
-    private class WaggingData {
-        public HashSet<VisualComponent> dataComponents = new HashSet<>();
-        public HashSet<VisualPushRegister> pushRegisters = new HashSet<>();
-        public HashSet<VisualControlRegister> pushControls = new HashSet<>();
-        public HashSet<VisualPopRegister> popRegisters = new HashSet<>();
-        public HashSet<VisualControlRegister> popControls = new HashSet<>();
+    private static final class WaggingData {
+        public final HashSet<VisualComponent> dataComponents = new HashSet<>();
+        public final HashSet<VisualPushRegister> pushRegisters = new HashSet<>();
+        public final HashSet<VisualControlRegister> pushControls = new HashSet<>();
+        public final HashSet<VisualPopRegister> popRegisters = new HashSet<>();
+        public final HashSet<VisualControlRegister> popControls = new HashSet<>();
     }
 
     public WaggingGenerator(VisualDfs dfs, int count) {

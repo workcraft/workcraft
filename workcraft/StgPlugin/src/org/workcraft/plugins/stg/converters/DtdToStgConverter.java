@@ -41,29 +41,21 @@ public class DtdToStgConverter extends DefaultModelConverter<VisualDtd, VisualSt
     @Override
     public void copyStyle(Stylable srcStylable, Stylable dstStylable) {
         super.copyStyle(srcStylable, dstStylable);
-        if (dstStylable instanceof VisualConnection) {
-            VisualConnection dstConnection = (VisualConnection) dstStylable;
+        if (dstStylable instanceof VisualConnection dstConnection) {
             ConnectionUtils.setDefaultStyle(dstConnection);
         }
-        if ((srcStylable instanceof VisualTransitionEvent) && (dstStylable instanceof VisualSignalTransition)) {
-            VisualTransitionEvent srcTransition = (VisualTransitionEvent) srcStylable;
-            VisualSignalTransition dstTransition = (VisualSignalTransition) dstStylable;
+        if ((srcStylable instanceof VisualTransitionEvent srcTransition) && (dstStylable instanceof VisualSignalTransition dstTransition)) {
             Signal.Type type = convertSignalType(srcTransition.getVisualSignal().getType());
             dstTransition.getReferencedComponent().setSignalType(type);
         }
     }
 
     private Signal.Type convertSignalType(org.workcraft.plugins.dtd.Signal.Type type) {
-        switch (type) {
-        case INPUT:
-            return Signal.Type.INPUT;
-        case OUTPUT:
-            return Signal.Type.OUTPUT;
-        case INTERNAL:
-            return Signal.Type.INTERNAL;
-        default:
-            return null;
-        }
+        return switch (type) {
+            case INPUT -> Signal.Type.INPUT;
+            case OUTPUT -> Signal.Type.OUTPUT;
+            case INTERNAL -> Signal.Type.INTERNAL;
+        };
     }
 
     @Override
@@ -79,14 +71,11 @@ public class DtdToStgConverter extends DefaultModelConverter<VisualDtd, VisualSt
     }
 
     private SignalTransition.Direction convertDirection(TransitionEvent.Direction direction) {
-        switch (direction) {
-        case FALL:
-            return SignalTransition.Direction.MINUS;
-        case RISE:
-            return SignalTransition.Direction.PLUS;
-        default:
-            return SignalTransition.Direction.TOGGLE;
-        }
+        return switch (direction) {
+            case FALL -> SignalTransition.Direction.MINUS;
+            case RISE -> SignalTransition.Direction.PLUS;
+            default -> SignalTransition.Direction.TOGGLE;
+        };
     }
 
     @Override

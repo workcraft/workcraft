@@ -100,15 +100,9 @@ class TransformationCommandTests {
         int srcToggleCount = 0;
         for (SignalTransition srcTransition : stg.getSignalTransitions()) {
             switch (srcTransition.getDirection()) {
-            case MINUS:
-                srcMinusCount++;
-                break;
-            case PLUS:
-                srcPlusCount++;
-                break;
-            case TOGGLE:
-                srcToggleCount++;
-                break;
+                case MINUS -> srcMinusCount++;
+                case PLUS -> srcPlusCount++;
+                case TOGGLE -> srcToggleCount++;
             }
         }
 
@@ -119,15 +113,9 @@ class TransformationCommandTests {
         int dstToggleCount = 0;
         for (SignalTransition dstTransition : stg.getSignalTransitions()) {
             switch (dstTransition.getDirection()) {
-            case MINUS:
-                dstMinusCount++;
-                break;
-            case PLUS:
-                dstPlusCount++;
-                break;
-            case TOGGLE:
-                dstToggleCount++;
-                break;
+                case MINUS -> dstMinusCount++;
+                case PLUS -> dstPlusCount++;
+                case TOGGLE -> dstToggleCount++;
             }
         }
 

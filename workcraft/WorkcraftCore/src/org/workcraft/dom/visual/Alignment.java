@@ -19,18 +19,10 @@ public enum Alignment {
     }
 
     public int toStyleConstant() {
-        int result = StyleConstants.ALIGN_CENTER;
-        switch (this) {
-        case LEFT:
-            result = StyleConstants.ALIGN_LEFT;
-            break;
-        case CENTER:
-            result = StyleConstants.ALIGN_CENTER;
-            break;
-        case RIGHT:
-            result = StyleConstants.ALIGN_RIGHT;
-            break;
-        }
-        return result;
+        return switch (this) {
+            case LEFT -> StyleConstants.ALIGN_LEFT;
+            case CENTER -> StyleConstants.ALIGN_CENTER;
+            case RIGHT -> StyleConstants.ALIGN_RIGHT;
+        };
     }
 }

@@ -61,15 +61,10 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-        case ENTER_TAG:
-            enterAction();
-            break;
-        case CHOOSE_TAG:
-            chooseAction();
-            break;
-        case CLEAR_TAG:
-            clearAction();
-            break;
+            case ENTER_TAG -> enterAction();
+            case CHOOSE_TAG -> chooseAction();
+            case CLEAR_TAG -> clearAction();
+            default -> { }
         }
     }
 

@@ -22,8 +22,8 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.*;
 import java.text.DecimalFormat;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
@@ -214,10 +214,6 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                         public Color getColorisation() {
                             return fgColor;
                         }
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
                     };
                 } else if (selectedCycle.components.contains(node)) {
                     double delay = selectedCycle.getEffectiveDelay((VisualDelayComponent) node);
@@ -275,7 +271,6 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         editor.repaint();
     }
 
-    @SuppressWarnings("serial")
     private final class CycleTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
@@ -284,25 +279,13 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
         @Override
         public String getColumnName(int column) {
-            String result;
-            switch (column) {
-            case CYCLE_COLUMN:
-                result = "Cycle";
-                break;
-            case TOKEN_COLUMN:
-                result = "Spread tokens";
-                break;
-            case DELAY_COLUMN:
-                result = "Delay";
-                break;
-            case THROUGHPUT_COLUMN:
-                result = "Throughput";
-                break;
-            default:
-                result = "";
-                break;
-            }
-            return result;
+            return switch (column) {
+                case CYCLE_COLUMN -> "Cycle";
+                case TOKEN_COLUMN -> "Spread tokens";
+                case DELAY_COLUMN -> "Delay";
+                case THROUGHPUT_COLUMN -> "Throughput";
+                default -> "";
+            };
         }
 
         @Override
@@ -319,32 +302,30 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             Cycle cycle = cycles.get(row);
             if (cycle != null) {
                 switch (col) {
-                case THROUGHPUT_COLUMN:
-                    if (cycle.totalDelay == 0) {
-                        result = INFINITY_SYMBOL;
-                    } else {
-                        result = new DecimalFormat("#.###").format(cycle.throughput);
-                    }
-                    break;
-                case TOKEN_COLUMN:
-                    result = cycle.tokenCount;
-                    break;
-                case DELAY_COLUMN:
-                    result = new DecimalFormat("#.###").format(cycle.totalDelay);
-                    break;
-                case CYCLE_COLUMN:
-                    result = cycle.toString();
-                    break;
-                default:
-                    result = null;
-                    break;
+                    case THROUGHPUT_COLUMN:
+                        if (cycle.totalDelay == 0) {
+                            result = INFINITY_SYMBOL;
+                        } else {
+                            result = new DecimalFormat("#.###").format(cycle.throughput);
+                        }
+                        break;
+                    case TOKEN_COLUMN:
+                        result = cycle.tokenCount;
+                        break;
+                    case DELAY_COLUMN:
+                        result = new DecimalFormat("#.###").format(cycle.totalDelay);
+                        break;
+                    case CYCLE_COLUMN:
+                        result = cycle.toString();
+                        break;
+                    default:
+                        break;
                 }
             }
             return result;
         }
     }
 
-    @SuppressWarnings("serial")
     private final class CycleTableCellRenderer implements TableCellRenderer {
         private final JLabel label = new JLabel() {
             @Override

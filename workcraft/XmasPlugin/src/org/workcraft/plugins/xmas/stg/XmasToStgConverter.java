@@ -253,34 +253,30 @@ public class XmasToStgConverter extends AbstractToStgConverter {
         SignalLayoutType layoutType;
         Signal.Type type;
         switch (xmasSignalType) {
-        case IDN:
-            layoutType = SignalLayoutType.LEFT_TO_RIGHT_INVERTED;
-            type = Signal.Type.OUTPUT;
-            break;
-        case IORACLE:
-            layoutType = SignalLayoutType.LEFT_TO_RIGHT;
-            type = Signal.Type.INPUT;
-            break;
-        case IRDY:
-            layoutType = SignalLayoutType.LEFT_TO_RIGHT;
-            type = Signal.Type.INTERNAL;
-            break;
-        case TDN:
-            layoutType = SignalLayoutType.RIGHT_TO_LEFT;
-            type = Signal.Type.OUTPUT;
-            break;
-        case TORACLE:
-            layoutType = SignalLayoutType.RIGHT_TO_LEFT_INVERTED;
-            type = Signal.Type.INPUT;
-            break;
-        case TRDY:
-            layoutType = SignalLayoutType.RIGHT_TO_LEFT_INVERTED;
-            type = Signal.Type.INTERNAL;
-            break;
-        default:
-            layoutType = SignalLayoutType.LEFT_TO_RIGHT;
-            type = Signal.Type.INTERNAL;
-            break;
+            case IDN -> {
+                layoutType = SignalLayoutType.LEFT_TO_RIGHT_INVERTED;
+                type = Signal.Type.OUTPUT;
+            }
+            case IORACLE -> {
+                layoutType = SignalLayoutType.LEFT_TO_RIGHT;
+                type = Signal.Type.INPUT;
+            }
+            case TDN -> {
+                layoutType = SignalLayoutType.RIGHT_TO_LEFT;
+                type = Signal.Type.OUTPUT;
+            }
+            case TORACLE -> {
+                layoutType = SignalLayoutType.RIGHT_TO_LEFT_INVERTED;
+                type = Signal.Type.INPUT;
+            }
+            case TRDY -> {
+                layoutType = SignalLayoutType.RIGHT_TO_LEFT_INVERTED;
+                type = Signal.Type.INTERNAL;
+            }
+            default -> {
+                layoutType = SignalLayoutType.LEFT_TO_RIGHT;
+                type = Signal.Type.INTERNAL;
+            }
         }
         return generateSignalStg(layoutType, signalName, pos, type, fallCount, riseCount);
     }

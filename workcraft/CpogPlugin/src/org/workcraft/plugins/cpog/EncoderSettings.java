@@ -102,27 +102,27 @@ public class EncoderSettings {
 
     public void setGenerationModeInt(int index) {
         switch (index) {
-        case 0:
-            genMode = GenerationMode.OPTIMAL_ENCODING;
-            break;
-        case 1:
-            genMode = GenerationMode.RECURSIVE;
-            break;
-        case 2:
-            genMode = GenerationMode.RANDOM;
-            break;
-        case 3:
-            genMode = GenerationMode.SCENCO;
-            break;
-        case 4:
-            genMode = GenerationMode.OLD_SYNT;
-            break;
-        case 5:
-            genMode = GenerationMode.SEQUENTIAL;
-            break;
-        default:
-            System.out.println("Error.");
-            break;
+            case 0:
+                genMode = GenerationMode.OPTIMAL_ENCODING;
+                break;
+            case 1:
+                genMode = GenerationMode.RECURSIVE;
+                break;
+            case 2:
+                genMode = GenerationMode.RANDOM;
+                break;
+            case 3:
+                genMode = GenerationMode.SCENCO;
+                break;
+            case 4:
+                genMode = GenerationMode.OLD_SYNT;
+                break;
+            case 5:
+                genMode = GenerationMode.SEQUENTIAL;
+                break;
+            default:
+                System.out.println("Error.");
+                break;
         }
     }
 

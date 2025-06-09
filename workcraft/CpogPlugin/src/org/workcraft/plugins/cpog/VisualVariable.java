@@ -81,17 +81,9 @@ public class VisualVariable extends VisualComponent {
         g.draw(shape);
 
         switch (getState()) {
-        case FALSE:
-            valueFalseRenderedFormula.draw(g);
-            break;
-        case TRUE:
-            valueTrueRenderedFormula.draw(g);
-            break;
-        case UNDEFINED:
-            valueUndefinedRenderedFormula.draw(g);
-            break;
-        default:
-            break;
+            case FALSE -> valueFalseRenderedFormula.draw(g);
+            case TRUE -> valueTrueRenderedFormula.draw(g);
+            case UNDEFINED -> valueUndefinedRenderedFormula.draw(g);
         }
         drawVariableInLocalSpace(r);
     }

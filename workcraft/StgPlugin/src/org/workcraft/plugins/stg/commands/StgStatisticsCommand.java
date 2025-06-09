@@ -55,29 +55,16 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
         int maxTransitionFanout = 0;
         int selfLoopCount = 0;
         for (Transition transition: transitions) {
-            if (transition instanceof SignalTransition) {
-                SignalTransition signalTransition = (SignalTransition) transition;
+            if (transition instanceof SignalTransition signalTransition) {
                 switch (signalTransition.getSignalType()) {
-                case INPUT:
-                    inputTransitionCount++;
-                    break;
-                case OUTPUT:
-                    outputTransitionCount++;
-                    break;
-                case INTERNAL:
-                    internalTransitionCount++;
-                    break;
+                    case INPUT -> inputTransitionCount++;
+                    case OUTPUT -> outputTransitionCount++;
+                    case INTERNAL -> internalTransitionCount++;
                 }
                 switch (signalTransition.getDirection()) {
-                case PLUS:
-                    plusTransitionCount++;
-                    break;
-                case MINUS:
-                    minusTransitionCount++;
-                    break;
-                case TOGGLE:
-                    toggleTransitionCount++;
-                    break;
+                    case PLUS -> plusTransitionCount++;
+                    case MINUS -> minusTransitionCount++;
+                    case TOGGLE -> toggleTransitionCount++;
                 }
             }
             if (transition instanceof DummyTransition) {

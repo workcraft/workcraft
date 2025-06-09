@@ -31,9 +31,9 @@ public class NodeDetails {
 
     private static SignalTransition.Direction getDirection(char dir) {
         return switch (dir) {
-        case PLUS_DIR -> SignalTransition.Direction.PLUS;
-        case MINUS_DIR -> SignalTransition.Direction.MINUS;
-        default -> SignalTransition.Direction.TOGGLE;
+            case PLUS_DIR -> SignalTransition.Direction.PLUS;
+            case MINUS_DIR -> SignalTransition.Direction.MINUS;
+            default -> SignalTransition.Direction.TOGGLE;
         };
     }
 }

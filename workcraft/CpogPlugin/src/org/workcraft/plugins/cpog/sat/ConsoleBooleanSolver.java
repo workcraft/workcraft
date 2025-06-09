@@ -11,13 +11,9 @@ public class ConsoleBooleanSolver {
     }
 
     private String solve(String cnf) {
-        switch (CpogSettings.getSatSolver()) {
-        case CLASP:
-            return ProcessIO.runViaStreams(new String[]{CpogSettings.getClaspCommand()}, cnf);
-        case MINISAT:
-            return ProcessIO.runViaStreams(CpogSettings.getMinisatCommand(), cnf);
-        default :
-            throw new RuntimeException("Unknown SAT Solver: " + CpogSettings.getSatSolver());
-        }
+        return switch (CpogSettings.getSatSolver()) {
+            case CLASP -> ProcessIO.runViaStreams(new String[]{CpogSettings.getClaspCommand()}, cnf);
+            case MINISAT -> ProcessIO.runViaStreams(CpogSettings.getMinisatCommand(), cnf);
+        };
     }
 }

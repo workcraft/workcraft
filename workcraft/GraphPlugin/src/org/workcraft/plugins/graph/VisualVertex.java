@@ -74,18 +74,9 @@ public class VisualVertex extends VisualComponent {
         Shape shape = new Ellipse2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {
             switch (getRenderType()) {
-            case CIRCLE:
-                shape = new Ellipse2D.Double(pos, pos, size, size);
-                break;
-            case SQUARE:
-                shape = new Rectangle2D.Double(pos, pos, size, size);
-                break;
-            case LABEL:
-                shape = new Path2D.Double();
-                break;
-            default:
-                shape = new Ellipse2D.Double(pos, pos, size, size);
-                break;
+                case SQUARE -> shape = new Rectangle2D.Double(pos, pos, size, size);
+                case LABEL -> shape = new Path2D.Double();
+                default -> shape = new Ellipse2D.Double(pos, pos, size, size);
             }
         }
         return shape;
@@ -135,8 +126,7 @@ public class VisualVertex extends VisualComponent {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualVertex) {
-            VisualVertex srcComponent = (VisualVertex) src;
+        if (src instanceof VisualVertex srcComponent) {
             setRenderType(srcComponent.getRenderType());
         }
     }

@@ -33,64 +33,58 @@ public class VerificationOutputInterpreter extends AbstractOutputInterpreter<Mps
         // One of the MPSat tasks returned a solution trace
         VerificationMode verificationMode = verificationParameters.getMode();
         switch (verificationMode) {
-        case UNDEFINED:
-            String message = chainMessage;
-            if ((message == null) && (verificationParameters.getDescription() != null)) {
-                message = verificationParameters.getDescription();
+            case UNDEFINED -> {
+                String message = chainMessage;
+                if ((message == null) && (verificationParameters.getDescription() != null)) {
+                    message = verificationParameters.getDescription();
+                }
+                boolean propertyHolds = verificationParameters.isInversePredicate();
+                OutcomeUtils.showOutcome(propertyHolds, message, isInteractive());
+                return propertyHolds;
             }
-            boolean propertyHolds = verificationParameters.isInversePredicate();
-            OutcomeUtils.showOutcome(propertyHolds, message, isInteractive());
-            return propertyHolds;
-
-        case NORMALCY:
-        case ASSERTION:
-        case REACHABILITY:
-        case STG_REACHABILITY:
-        case STG_REACHABILITY_CONSISTENCY:
-            return new ReachabilityOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case REACHABILITY_REDUNDANCY:
-            return new RedundancyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case DEADLOCK:
-            return new DeadlockFreenessOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case STG_REACHABILITY_OUTPUT_PERSISTENCY:
-            return new OutputPersistencyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case STG_REACHABILITY_LOCAL_SELF_TRIGGERING:
-            return new LocalSelfTriggeringInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case STG_REACHABILITY_DI_INTERFACE:
-            return new DiInterfaceInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case STG_REACHABILITY_OUTPUT_DETERMINACY:
-            return new OutputDeterminacyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case STG_REACHABILITY_REFINEMENT:
-            return new RefinementOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case STG_REACHABILITY_CONFORMATION:
-            return new ConformationOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
-                    getOutput(), isInteractive()).interpret();
-
-        case USC_CONFLICT_DETECTION:
-        case CSC_CONFLICT_DETECTION:
-            return new EncodingConflictOutputHandler(getWorkspaceEntry(), getOutput(),
-                    isInteractive()).interpret();
-
-        default:
-            DialogUtils.showError(verificationMode.name() + " is not supported by MPSat verification.");
-            return null;
+            case NORMALCY, ASSERTION, REACHABILITY, STG_REACHABILITY, STG_REACHABILITY_CONSISTENCY -> {
+                return new ReachabilityOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                        getOutput(), isInteractive()).interpret();
+            }
+            case REACHABILITY_REDUNDANCY -> {
+                return new RedundancyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                        getOutput(), isInteractive()).interpret();
+            }
+            case DEADLOCK -> {
+                return new DeadlockFreenessOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                        getOutput(), isInteractive()).interpret();
+            }
+            case STG_REACHABILITY_OUTPUT_PERSISTENCY -> {
+                return new OutputPersistencyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                        getOutput(), isInteractive()).interpret();
+            }
+            case STG_REACHABILITY_LOCAL_SELF_TRIGGERING -> {
+                return new LocalSelfTriggeringInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                        getOutput(), isInteractive()).interpret();
+            }
+            case STG_REACHABILITY_DI_INTERFACE -> {
+                return new DiInterfaceInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                        getOutput(), isInteractive()).interpret();
+            }
+            case STG_REACHABILITY_OUTPUT_DETERMINACY -> {
+                return new OutputDeterminacyOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                        getOutput(), isInteractive()).interpret();
+            }
+            case STG_REACHABILITY_REFINEMENT -> {
+                return new RefinementOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                        getOutput(), isInteractive()).interpret();
+            }
+            case STG_REACHABILITY_CONFORMATION -> {
+                return new ConformationOutputInterpreter(getWorkspaceEntry(), exportOutput, pcompOutput,
+                        getOutput(), isInteractive()).interpret();
+            }
+            case USC_CONFLICT_DETECTION, CSC_CONFLICT_DETECTION -> {
+                return new EncodingConflictOutputHandler(getWorkspaceEntry(), getOutput(),
+                        isInteractive()).interpret();
+            }
         }
+        DialogUtils.showError(verificationMode.name() + " is not supported by MPSat verification.");
+        return null;
     }
 
 }

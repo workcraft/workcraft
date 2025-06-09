@@ -149,15 +149,12 @@ public class WorkspaceWindow extends JPanel {
             MainWindow mainWindow = framework.getMainWindow();
             String message = "Current workspace is not saved.\n" + "Save before opening another workspace?";
             switch (DialogUtils.showYesNoCancelWarning(message, DIALOG_OPEN_WORKSPACE)) {
-            case JOptionPane.YES_OPTION:
-                mainWindow.closeEditorWindows();
-                saveWorkspace();
-                break;
-            case JOptionPane.NO_OPTION:
-                mainWindow.closeEditorWindows();
-                break;
-            default:
-                throw new OperationCancelledException();
+                case JOptionPane.YES_OPTION -> {
+                    mainWindow.closeEditorWindows();
+                    saveWorkspace();
+                }
+                case JOptionPane.NO_OPTION -> mainWindow.closeEditorWindows();
+                default -> throw new OperationCancelledException();
             }
         }
     }

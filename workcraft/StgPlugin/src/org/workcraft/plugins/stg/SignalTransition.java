@@ -33,20 +33,19 @@ public class SignalTransition extends NamedTransition {
         }
 
         public Direction mirror() {
-            switch (this) {
-            case PLUS: return MINUS;
-            case MINUS: return PLUS;
-            default: return this;
-            }
+            return switch (this) {
+                case PLUS -> MINUS;
+                case MINUS -> PLUS;
+                default -> this;
+            };
         }
 
         public Direction toggle() {
-            switch (this) {
-            case PLUS: return TOGGLE;
-            case MINUS: return PLUS;
-            case TOGGLE: return MINUS;
-            default: return this;
-            }
+            return switch (this) {
+                case PLUS -> TOGGLE;
+                case MINUS -> PLUS;
+                case TOGGLE -> MINUS;
+            };
         }
     }
 

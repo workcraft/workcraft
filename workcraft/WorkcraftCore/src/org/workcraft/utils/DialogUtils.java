@@ -29,18 +29,10 @@ public class DialogUtils {
     private static void logMessage(String message, int messageType) {
         if ((message != null) && !message.isEmpty()) {
             switch (messageType) {
-            case JOptionPane.INFORMATION_MESSAGE:
-                LogUtils.logInfo(message);
-                break;
-            case JOptionPane.WARNING_MESSAGE:
-                LogUtils.logWarning(message);
-                break;
-            case JOptionPane.ERROR_MESSAGE:
-                LogUtils.logError(message);
-                break;
-            default:
-                LogUtils.logMessage(message);
-                break;
+                case JOptionPane.INFORMATION_MESSAGE -> LogUtils.logInfo(message);
+                case JOptionPane.WARNING_MESSAGE -> LogUtils.logWarning(message);
+                case JOptionPane.ERROR_MESSAGE -> LogUtils.logError(message);
+                default -> LogUtils.logMessage(message);
             }
         }
     }

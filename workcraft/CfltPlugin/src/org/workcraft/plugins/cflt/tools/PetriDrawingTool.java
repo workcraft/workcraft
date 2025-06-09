@@ -127,8 +127,8 @@ public class PetriDrawingTool implements VisualModelDrawingTool {
             ConnectionDirection connectionDirection) {
         try {
             switch (connectionDirection) {
-            case PLACE_TO_TRANSITION -> visualPetri.connect(visualPlace, visualTransition);
-            case TRANSITION_TO_PLACE -> visualPetri.connect(visualTransition, visualPlace);
+                case PLACE_TO_TRANSITION -> visualPetri.connect(visualPlace, visualTransition);
+                case TRANSITION_TO_PLACE -> visualPetri.connect(visualTransition, visualPlace);
             }
         } catch (InvalidConnectionException e) {
             LogUtils.logError("Invalid connection of VisualPlace and VisualTransition");

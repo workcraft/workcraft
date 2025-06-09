@@ -79,20 +79,11 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         double pos = -0.5 * size;
         Shape shape = new Ellipse2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {
-            switch (getRenderType()) {
-            case CIRCLE:
-                shape = new Ellipse2D.Double(pos, pos, size, size);
-                break;
-            case SQUARE:
-                shape = new Rectangle2D.Double(pos, pos, size, size);
-                break;
-            case LABEL:
-                shape = new Path2D.Double();
-                break;
-            default:
-                shape = new Ellipse2D.Double(pos, pos, size, size);
-                break;
-            }
+            shape = switch (getRenderType()) {
+                case CIRCLE -> new Ellipse2D.Double(pos, pos, size, size);
+                case SQUARE -> new Rectangle2D.Double(pos, pos, size, size);
+                case LABEL -> new Path2D.Double();
+            };
         }
         return shape;
     }
@@ -222,8 +213,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualVertex) {
-            VisualVertex srcComponent = (VisualVertex) src;
+        if (src instanceof VisualVertex srcComponent) {
             setRenderType(srcComponent.getRenderType());
         }
     }

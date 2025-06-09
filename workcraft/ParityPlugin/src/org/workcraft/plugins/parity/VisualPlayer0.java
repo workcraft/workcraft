@@ -24,8 +24,7 @@ import java.awt.geom.Rectangle2D;
 @SVGIcon("images/parity-node-player0.svg")
 
 /**
- * Visual component subclass that represents the visual portion of vertices
- * owned by Player 0.
+ * Visual component subclass that represents the visual portion of vertices owned by Player 0.
  */
 public class VisualPlayer0 extends VisualComponent {
 
@@ -49,15 +48,7 @@ public class VisualPlayer0 extends VisualComponent {
         }
     }
 
-    /**
-     * Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly
-     * in the source code).
-     */
-    public static final String EPSILON_SYMBOL = Character.toString((char) 0x03B5);
-
     public static final String PROPERTY_RENDER_TYPE = "Render type";
-    public static final String PROPERTY_SYMBOL_POSITIONING = "Symbol positioning";
-    public static final String PROPERTY_SYMBOL_COLOR = "Symbol color";
 
     // Player 0 vertices will all be circles.
     private RenderType renderType = RenderType.CIRCLE;
@@ -109,20 +100,11 @@ public class VisualPlayer0 extends VisualComponent {
         double pos = -0.5 * size;
         Shape shape = new Ellipse2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {
-            switch (getRenderType()) {
-            case CIRCLE:
-                shape = new Ellipse2D.Double(pos, pos, size, size);
-                break;
-            case SQUARE:
-                shape = new Rectangle2D.Double(pos, pos, size, size);
-                break;
-            case LABEL:
-                shape = new Path2D.Double();
-                break;
-            default:
-                shape = new Ellipse2D.Double(pos, pos, size, size);
-                break;
-            }
+            shape = switch (getRenderType()) {
+                case CIRCLE -> new Ellipse2D.Double(pos, pos, size, size);
+                case SQUARE -> new Rectangle2D.Double(pos, pos, size, size);
+                case LABEL -> new Path2D.Double();
+            };
         }
         return shape;
     }
@@ -210,8 +192,7 @@ public class VisualPlayer0 extends VisualComponent {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualPlayer0) {
-            VisualPlayer0 srcComponent = (VisualPlayer0) src;
+        if (src instanceof VisualPlayer0 srcComponent) {
             setRenderType(srcComponent.getRenderType());
         }
     }

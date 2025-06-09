@@ -357,13 +357,9 @@ public class MainWindow extends JFrame {
             requestFocus(we);
             String message = "Document '" + we.getTitle() + "' has unsaved changes.\n" + "Save before closing?";
             switch (DialogUtils.showYesNoCancel(message, TITLE_CLOSE_WORK)) {
-            case JOptionPane.YES_OPTION:
-                saveWorkOrCancel(we);
-                break;
-            case JOptionPane.NO_OPTION:
-                break;
-            default:
-                throw new OperationCancelledException();
+                case JOptionPane.YES_OPTION -> saveWorkOrCancel(we);
+                case JOptionPane.NO_OPTION -> { }
+                default -> throw new OperationCancelledException();
             }
         }
     }
@@ -481,13 +477,9 @@ public class MainWindow extends JFrame {
         if (workspace.isChanged() && !workspace.isTemporary()) {
             String message = "Current workspace has unsaved changes.\n" + "Save before closing?";
             switch (DialogUtils.showYesNoCancel(message, TITLE_CLOSE_WORK)) {
-            case JOptionPane.YES_OPTION:
-                workspaceWindow.saveWorkspace();
-                break;
-            case JOptionPane.NO_OPTION:
-                break;
-            default:
-                throw new OperationCancelledException();
+                case JOptionPane.YES_OPTION -> workspaceWindow.saveWorkspace();
+                case JOptionPane.NO_OPTION -> { }
+                default -> throw new OperationCancelledException();
             }
         }
         saveWindowGeometryToConfig();
@@ -625,11 +617,9 @@ public class MainWindow extends JFrame {
     public void requestFocus(DockableWindow window) {
         ContentPanel component = window.getComponent();
         Container parent = component.getParent();
-        if (parent instanceof JTabbedPane) {
-            JTabbedPane tabbedPane = (JTabbedPane) parent;
+        if (parent instanceof JTabbedPane tabbedPane) {
             tabbedPane.setSelectedComponent(component);
-        } else if (parent instanceof ScrollDockingPort) {
-            ScrollDockingPort dockingPort = (ScrollDockingPort) parent;
+        } else if (parent instanceof ScrollDockingPort dockingPort) {
             dockingPort.getRootPane().requestFocus();
         }
         GraphEditor editor = getEditor(window);

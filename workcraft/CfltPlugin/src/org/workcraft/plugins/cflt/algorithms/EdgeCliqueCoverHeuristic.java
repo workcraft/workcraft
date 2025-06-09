@@ -227,9 +227,9 @@ public class EdgeCliqueCoverHeuristic {
 
     private String selectVertex(HeuristicType heuristicType) {
         return switch (heuristicType) {
-        case MAXIMAL -> argMax(vertexNameToUncoveredDegree, uncoveredVertexNames);
-        case MINIMAL -> argMin(vertexNameToUncoveredDegree, uncoveredVertexNames);
-        case SEQUENCE -> uncoveredVertexNames.iterator().next();
+            case MAXIMAL -> argMax(vertexNameToUncoveredDegree, uncoveredVertexNames);
+            case MINIMAL -> argMin(vertexNameToUncoveredDegree, uncoveredVertexNames);
+            case SEQUENCE -> uncoveredVertexNames.iterator().next();
         };
     }
 }
