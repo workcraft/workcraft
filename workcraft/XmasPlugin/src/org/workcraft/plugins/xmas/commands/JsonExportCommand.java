@@ -35,24 +35,15 @@ public class JsonExportCommand implements Command {
         return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
-    public Collection<VisualSourceComponent> srcNodes;
-
     public void syncReset() {
         File syncFile = XmasSettings.getTempVxmSyncFile();
-        PrintWriter writerS = null;
-        try {
-            writerS = new PrintWriter(syncFile);
+        try (PrintWriter writerS = new PrintWriter(syncFile)) {
             writerS.println("empty");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } finally {
-            if (writerS != null) {
-                writerS.close();
-            }
         }
     }
 
-    @SuppressWarnings("PMD.EmptyControlStatement")
     @Override
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
@@ -122,31 +113,13 @@ public class JsonExportCommand implements Command {
             srcNode = node;
         }
         //System.out.println("Name_ =" + cnet.getName(srcNode));
-        XmasContact contactNode = null;
         //Collection<Contact> contacts = srcNode.getContacts();
         Collection<XmasContact> contacts = srcNode.getOutputs();
         Collection<XmasContact> contacts2 = srcNode.getOutputs();
-        for (XmasContact node : contacts) {
-            //System.out.println("OutputContact =" + cnet.getName(node));
-            contactNode = node;
-        }
-        //All contacts
-        //System.out.println("Name_ =" + cnet.getName(contactNode));
-        for (Connection c : cnet.getConnections(contactNode)) {
-            //System.out.println("OutputConnection =" + cnet.getName(c));
-            //if (c.getFirst() instanceof Contact) System.out.println("Found First Contact");
-            if (c.getSecond() instanceof XmasContact) {
-                //System.out.println("Found Output Contact" + cnet.getName(c.getSecond()));
-                //Node cpNode = c.getSecond().getParent();
-                //System.out.println("Found Output Component" + cnet.getName(cpNode));
-            }
-        }
         int numNodes = cnet.getNodes().size();
         //GEN JSON
         File file = XmasSettings.getTempVxmJsonFile();
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(file);
+        try (PrintWriter writer = new PrintWriter(file)) {
             int countNodes = 0;
             int numOutputs = 0;
             System.out.println("Generate Json");
@@ -412,10 +385,6 @@ public class JsonExportCommand implements Command {
             System.out.println("Output written to JsonFile");
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
         }
     }
 

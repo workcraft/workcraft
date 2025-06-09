@@ -148,9 +148,7 @@ public class SynchronisationCommand implements Command {
 
     public void writesynclist() {
         File syncFile = XmasSettings.getTempVxmSyncFile();
-        PrintWriter writerS = null;
-        try {
-            writerS = new PrintWriter(syncFile);
+        try (PrintWriter writerS = new PrintWriter(syncFile)) {
             for (Sync s : synclist) {
                 String str;
                 str = s.name1.replace("Sync", "Qs");
@@ -168,10 +166,6 @@ public class SynchronisationCommand implements Command {
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } finally {
-            if (writerS != null) {
-                writerS.close();
-            }
         }
     }
 
@@ -432,76 +426,65 @@ public class SynchronisationCommand implements Command {
 
     private void writeJson(final VisualXmas vnet) {
         //GEN JSON
-        File jsonFile = XmasSettings.getTempVxmJsonFile();
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(jsonFile);
-            List<VisualComponent> vcomps = new ArrayList<>();
-            List<VisualSyncComponent> vscomps = new ArrayList<>();
+        List<VisualComponent> vcomps = new ArrayList<>();
+        List<VisualSyncComponent> vscomps = new ArrayList<>();
 
-            for (Node node : vnet.getNodes()) {
-                if (node instanceof VisualSyncComponent) {
-                    cntSyncnodes++;
-                    vscomps.add((VisualSyncComponent) node);
-                    if (loaded == 0) grnums1.add(0);
-                    if (loaded == 0) grnums2.add(0);
-                }
+        for (Node node : vnet.getNodes()) {
+            if (node instanceof VisualSyncComponent) {
+                cntSyncnodes++;
+                vscomps.add((VisualSyncComponent) node);
+                if (loaded == 0) grnums1.add(0);
+                if (loaded == 0) grnums2.add(0);
             }
+        }
 
-            //Finds all components inside groups
-            int grnum = 1;
-            for (VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
-                for (VisualComponent vp: vg.getComponents()) {
-                    vcomps.add(vp);
-                    if (loaded == 0) grnums.add(grnum);
-                }
-                grnum++;
+        //Finds all components inside groups
+        int grnum = 1;
+        for (VisualGroup vg : Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
+            for (VisualComponent vp : vg.getComponents()) {
+                vcomps.add(vp);
+                if (loaded == 0) grnums.add(grnum);
             }
+            grnum++;
+        }
 
-            synclist.clear();
-            //Finds all sync connections + groups
-            Collection<VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
-            for (VisualConnection vc: lvc) {
-                VisualNode vc1 = vc.getFirst();
-                VisualNode vc2 = vc.getSecond();
-                Node vn1 = vc1.getParent();
-                Node vn2 = vc2.getParent();
+        synclist.clear();
+        //Finds all sync connections + groups
+        Collection<VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
+        for (VisualConnection vc : lvc) {
+            VisualNode vc1 = vc.getFirst();
+            VisualNode vc2 = vc.getSecond();
+            Node vn1 = vc1.getParent();
+            Node vn2 = vc2.getParent();
 
-                if (vn2 instanceof VisualSyncComponent) {   //vn2
-                    if (vn1 instanceof VisualFunctionComponent) {
-                        writeJsonInFunction(vnet, (VisualFunctionComponent) vn1);
-                    } else if (vn1 instanceof VisualQueueComponent) {
-                        writeJsonInQueue(vnet, (VisualQueueComponent) vn1);
-                    } else if (vn1 instanceof VisualSwitchComponent) {
-                        writeJsonInSwitch(vnet, (VisualSwitchComponent) vn1);
-                    } else if (vn1 instanceof VisualMergeComponent) {
-                        writeJsonInMerge(vnet, (VisualMergeComponent) vn1);
-                    } else if (vn1 instanceof VisualForkComponent) {
-                        writeJsonInFork(vnet, (VisualForkComponent) vn1);
-                    } else if (vn1 instanceof VisualJoinComponent) {
-                        writeJsonInJoin(vnet, (VisualJoinComponent) vn1);
-                    }
-                } else if (vn1 instanceof VisualSyncComponent) {    //vn1
-                    if (vn2 instanceof VisualFunctionComponent) {
-                        writeJsonOutFunction(vnet, (VisualFunctionComponent) vn2);
-                    } else if (vn2 instanceof VisualQueueComponent) {
-                        writeJsonOutQueue(vnet, (VisualQueueComponent) vn2);
-                    } else if (vn2 instanceof VisualSwitchComponent) {
-                        writeJsonOutSwitch(vnet, (VisualSwitchComponent) vn2);
-                    } else if (vn2 instanceof VisualMergeComponent) {
-                        writeJsonOutMerge(vnet, (VisualMergeComponent) vn2);
-                    } else if (vn2 instanceof VisualForkComponent) {
-                        writeJsonOutFork(vnet, (VisualForkComponent) vn2);
-                    } else if (vn2 instanceof VisualJoinComponent) {
-                        writeJsonOutJoin(vnet, (VisualJoinComponent) vn2);
-                    }
+            if (vn2 instanceof VisualSyncComponent) {   //vn2
+                if (vn1 instanceof VisualFunctionComponent) {
+                    writeJsonInFunction(vnet, (VisualFunctionComponent) vn1);
+                } else if (vn1 instanceof VisualQueueComponent) {
+                    writeJsonInQueue(vnet, (VisualQueueComponent) vn1);
+                } else if (vn1 instanceof VisualSwitchComponent) {
+                    writeJsonInSwitch(vnet, (VisualSwitchComponent) vn1);
+                } else if (vn1 instanceof VisualMergeComponent) {
+                    writeJsonInMerge(vnet, (VisualMergeComponent) vn1);
+                } else if (vn1 instanceof VisualForkComponent) {
+                    writeJsonInFork(vnet, (VisualForkComponent) vn1);
+                } else if (vn1 instanceof VisualJoinComponent) {
+                    writeJsonInJoin(vnet, (VisualJoinComponent) vn1);
                 }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                writer.close();
+            } else if (vn1 instanceof VisualSyncComponent) {    //vn1
+                if (vn2 instanceof VisualFunctionComponent) {
+                    writeJsonOutFunction(vnet, (VisualFunctionComponent) vn2);
+                } else if (vn2 instanceof VisualQueueComponent) {
+                    writeJsonOutQueue(vnet, (VisualQueueComponent) vn2);
+                } else if (vn2 instanceof VisualSwitchComponent) {
+                    writeJsonOutSwitch(vnet, (VisualSwitchComponent) vn2);
+                } else if (vn2 instanceof VisualMergeComponent) {
+                    writeJsonOutMerge(vnet, (VisualMergeComponent) vn2);
+                } else if (vn2 instanceof VisualForkComponent) {
+                    writeJsonOutFork(vnet, (VisualForkComponent) vn2);
+                } else if (vn2 instanceof VisualJoinComponent) {
+                    writeJsonOutJoin(vnet, (VisualJoinComponent) vn2);
+                }
             }
         }
     }

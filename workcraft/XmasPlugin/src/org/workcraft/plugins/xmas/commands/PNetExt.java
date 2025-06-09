@@ -147,18 +147,12 @@ public class PNetExt {
 
         initlist();
         File pncFile = XmasSettings.getTempVxmPncFile();
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(pncFile);
+        try (PrintWriter writer = new PrintWriter(pncFile)) {
             File cpnFile = XmasSettings.getTempVxmCpnFile();
             readFile(cpnFile.getAbsolutePath());
             writeNet(writer, srcNodes, funNodes, swNodes);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
         }
         System.out.println();
     }
