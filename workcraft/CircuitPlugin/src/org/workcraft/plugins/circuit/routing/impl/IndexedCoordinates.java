@@ -124,10 +124,11 @@ public class IndexedCoordinates {
      */
     public void addCoordinate(Coordinate coordinate, int times) {
         for (int i = 0; i < times; i++) {
-            boolean doHigher = coordinate.getOrientation() == CoordinateOrientation.ORIENT_HIGHER
-                    || coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH;
-            boolean doLower = coordinate.getOrientation() == CoordinateOrientation.ORIENT_HIGHER
-                    || coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH;
+            boolean doHigher = (coordinate.getOrientation() == CoordinateOrientation.ORIENT_HIGHER)
+                    || (coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH);
+
+            boolean doLower = (coordinate.getOrientation() == CoordinateOrientation.ORIENT_LOWER)
+                    || (coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH);
 
             double snapMinor = CircuitLayoutSettings.getSnappingMinor();
             if (doHigher) {
