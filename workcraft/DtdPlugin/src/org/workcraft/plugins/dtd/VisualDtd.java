@@ -316,7 +316,7 @@ public class VisualDtd extends AbstractVisualModel {
         try {
             VisualConnection connection = connect(entry, exit);
             connection.setColor(color);
-        } catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException ignored) {
         }
     }
 
@@ -377,13 +377,13 @@ public class VisualDtd extends AbstractVisualModel {
         try {
             afterLevel = connect(edge, exit);
             afterLevel.setColor(color);
-        } catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException ignored) {
         }
         VisualConnection beforeLevel = null;
         try {
             beforeLevel = connect(event, edge);
             beforeLevel.setColor(color);
-        } catch (InvalidConnectionException e) {
+        } catch (InvalidConnectionException ignored) {
         }
         return new SignalEvent(beforeLevel, edge, afterLevel);
     }

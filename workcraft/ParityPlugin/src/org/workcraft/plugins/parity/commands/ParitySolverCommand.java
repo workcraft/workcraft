@@ -3,19 +3,11 @@ package org.workcraft.plugins.parity.commands;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.parity.InputNode;
-import org.workcraft.plugins.parity.OutputNode;
-import org.workcraft.plugins.parity.Parity;
-import org.workcraft.plugins.parity.VisualParity;
-import org.workcraft.plugins.parity.Player0;
-import org.workcraft.plugins.parity.Player1;
-import org.workcraft.plugins.parity.VisualPlayer0;
-import org.workcraft.plugins.parity.VisualPlayer1;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.plugins.parity.*;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.*;
-import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -251,24 +243,24 @@ public class ParitySolverCommand extends AbstractGameSolverCommand {
 
         if (!pg.isNonNegative()) {
             return "Parity games do not allow negative priorities.\n"
-                + "Please ensure all vertex priorities are non-negative.\n";
+                    + "Please ensure all vertex priorities are non-negative.\n";
         }
 
         ArrayList<InputNode> inputList = pg.buildInputNodes();
         if (!pg.isInfinite(inputList)) {
             return "Zielonka will only solve parity games that are infinitely looping\n"
-                + "(every vertex has at least one outgoing edge).\n"
-                + "Please ensure all vertices have at least one outgoing edge.\n";
+                    + "(every vertex has at least one outgoing edge).\n"
+                    + "Please ensure all vertices have at least one outgoing edge.\n";
         }
 
         ArrayList<OutputNode> outputList = pg.solveGame(inputList);
         VisualParity vpg = WorkspaceUtils.getAs(we, VisualParity.class);
         colorWinningRegions(outputList, pg, vpg);
         return "Game has been solved.\n"
-            + "Winning regions are coloured blue if Player 0 wins at that vertex\n"
-            + "Winning regions are coloured red if Player 1 wins at that vertex\n"
-            + "Winning strategies for the corresponding players are also coloured\n"
-            + "where appropriate.\n\n";
+                + "Winning regions are coloured blue if Player 0 wins at that vertex\n"
+                + "Winning regions are coloured red if Player 1 wins at that vertex\n"
+                + "Winning strategies for the corresponding players are also coloured\n"
+                + "where appropriate.\n\n";
     }
 
 }

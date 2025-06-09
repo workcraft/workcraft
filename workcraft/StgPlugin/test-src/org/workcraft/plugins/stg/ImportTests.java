@@ -41,7 +41,7 @@ class ImportTests {
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         String resourceName = PackageUtils.getPackagePath(getClass(), workName);
         final InputStream stream = classLoader.getResourceAsStream(resourceName);
-        StgModel stg = new StgImporter().deserialiseStg(stream);
+        StgModel stg = StgImporter.deserialiseStg(stream);
 
         Assertions.assertEquals(transitionCount, stg.getTransitions().size());
         Assertions.assertEquals(dummyCount, stg.getDummyTransitions().size());

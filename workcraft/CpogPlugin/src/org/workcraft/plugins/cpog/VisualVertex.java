@@ -46,7 +46,6 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         }
     }
 
-    public static final String PROPERTY_CONDITION = "Condition";
     public static final String PROPERTY_RENDER_TYPE = "Render type";
     public static Font conditionFont;
     private RenderedFormula conditionRenderedFormula = new RenderedFormula("", One.getInstance(), conditionFont, getLabelPositioning(), getLabelOffset());

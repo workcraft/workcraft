@@ -345,9 +345,7 @@ public class WtgToStgConverter {
             return true;
         }
         if ((fromNode instanceof TransitionEvent) && (toNode instanceof TransitionEvent)) {
-            if (isThereAlternativePath((TransitionEvent) fromNode, (TransitionEvent) toNode)) {
-                return true;
-            }
+            return isThereAlternativePath((TransitionEvent) fromNode, (TransitionEvent) toNode);
         }
 
         return false;

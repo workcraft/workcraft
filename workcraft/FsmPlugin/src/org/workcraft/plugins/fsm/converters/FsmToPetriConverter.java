@@ -65,7 +65,7 @@ public class FsmToPetriConverter {
 
     private Map<VisualEvent, VisualTransition> convertEvents() {
         Map<VisualEvent, VisualTransition> result = new HashMap<>();
-        HierarchyReferenceManager refManager = (HierarchyReferenceManager) dstModel.getMathModel().getReferenceManager();
+        HierarchyReferenceManager refManager = dstModel.getMathModel().getReferenceManager();
         NameManager nameManager = refManager.getNameManager(null);
         for (VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
             Symbol symbol = event.getReferencedConnection().getSymbol();

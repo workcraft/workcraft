@@ -98,7 +98,7 @@ public class VisualCondition extends VisualPlaceNode {
     }
 
     protected void drawStartTimeInLocalSpace(DrawRequest r) {
-        if (isInitial() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getStartTime().isSpecified()) {
+        if (isInitial() && SONSettings.getTimeVisibility() && getReferencedComponent().getStartTime().isSpecified()) {
             cahceStartTimeRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
@@ -119,7 +119,7 @@ public class VisualCondition extends VisualPlaceNode {
     }
 
     protected void drawEndTimeInLocalSpace(DrawRequest r) {
-        if (isFinal() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getEndTime().isSpecified()) {
+        if (isFinal() && SONSettings.getTimeVisibility() && getReferencedComponent().getEndTime().isSpecified()) {
             cahceEndTimeRenderedText();
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
@@ -139,11 +139,11 @@ public class VisualCondition extends VisualPlaceNode {
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 
-        if (isInitial() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getStartTime().isSpecified()) {
+        if (isInitial() && SONSettings.getTimeVisibility() && getReferencedComponent().getStartTime().isSpecified()) {
             bb = BoundingBoxHelper.union(bb, startTimeRenderedText.getBoundingBox());
         }
 
-        if (isFinal() && SONSettings.getTimeVisibility() && ((Condition) getReferencedComponent()).getEndTime().isSpecified()) {
+        if (isFinal() && SONSettings.getTimeVisibility() && getReferencedComponent().getEndTime().isSpecified()) {
             bb = BoundingBoxHelper.union(bb, endTimeRenderedText.getBoundingBox());
         }
         return bb;

@@ -22,14 +22,6 @@ public class DtdSelectionTool extends SelectionTool {
     }
 
     @Override
-    public void setPermissions(final GraphEditor editor) {
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setCanModify(true);
-        we.setCanSelect(true);
-        we.setCanCopy(true);
-    }
-
-    @Override
     public void mouseClicked(GraphEditorMouseEvent e) {
         boolean processed = false;
         WorkspaceEntry we = e.getEditor().getWorkspaceEntry();

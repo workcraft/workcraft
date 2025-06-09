@@ -60,7 +60,7 @@ class VisualComponentGroupTests {
 
         Assertions.assertEquals(sq1, HitMan.hitDeepest(new Point2D.Double(1.5, 1.5), root, VisualComponent.class));
         Assertions.assertEquals(sq2, HitMan.hitDeepest(new Point2D.Double(7.5, 2.5), root, VisualComponent.class));
-        Assertions.assertEquals(null, HitMan.hitDeepest(new Point2D.Double(2.5, 2.5), root, VisualComponent.class));
+        Assertions.assertNull(HitMan.hitDeepest(new Point2D.Double(2.5, 2.5), root, VisualComponent.class));
     }
 
     @Disabled
@@ -167,7 +167,7 @@ class VisualComponentGroupTests {
 
         Assertions.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(10.5, 15.5), root));
         Assertions.assertEquals(node1, HitMan.hitFirstChild(new Point2D.Double(11.5, 16.5), root));
-        Assertions.assertEquals(null, HitMan.hitFirstChild(new Point2D.Double(13.5, 15.5), root));
+        Assertions.assertNull(HitMan.hitFirstChild(new Point2D.Double(13.5, 15.5), root));
 
         Iterable<VisualNode> unGroup = node1.unGroup();
         ArrayList<Node> list = new ArrayList<>();

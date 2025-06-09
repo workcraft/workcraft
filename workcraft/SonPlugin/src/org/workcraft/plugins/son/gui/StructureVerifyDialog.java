@@ -178,7 +178,7 @@ public class StructureVerifyDialog extends JDialog {
                     }
                     list.repaint(list.getCellBounds(index, index));
 
-                } catch (ArrayIndexOutOfBoundsException e) { }
+                } catch (ArrayIndexOutOfBoundsException ignored) { }
             }
         });
 

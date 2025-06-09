@@ -58,7 +58,7 @@ public class HighlightUtils {
                         Math.max(fromPos, 0),
                         Math.min(toPos, textComponent.getText().length()),
                         painter);
-            } catch (BadLocationException e) {
+            } catch (BadLocationException ignored) {
             }
         }
         return null;

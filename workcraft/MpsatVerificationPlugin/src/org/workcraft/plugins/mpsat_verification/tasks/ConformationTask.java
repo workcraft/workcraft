@@ -116,7 +116,6 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         }
 
         // Export environment STG (convert internal signals to dummies and keep track of renaming)
-        @SuppressWarnings("PMD.PrematureDeclaration")
         Map<String, String> envSubstitutions = StgUtils.convertInternalSignalsToDummies(envStg);
         File envStgFile = new File(directory, ENV_STG_FILE_NAME);
         Result<? extends ExportOutput> envExportResult = StgUtils.exportStg(envStg, envStgFile, monitor);
@@ -125,7 +124,6 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         }
 
         // Export device STG (convert internal signals to dummies and keep track of renaming)
-        @SuppressWarnings("PMD.PrematureDeclaration")
         Map<String, String> devSubstitutions = StgUtils.convertInternalSignalsToDummies(devStg);
         File devStgFile = new File(directory, DEV_STG_FILE_NAME);
         Result<? extends ExportOutput> devExportResult = StgUtils.exportStg(devStg, devStgFile, monitor);

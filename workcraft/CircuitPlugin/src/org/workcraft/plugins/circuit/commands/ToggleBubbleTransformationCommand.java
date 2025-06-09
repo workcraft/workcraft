@@ -53,9 +53,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
         }
         if (node instanceof VisualFunctionContact) {
             FunctionContact contact = ((VisualFunctionContact) node).getReferencedComponent();
-            if (checkSetResetFunctions(getDependantContacts(contact))) {
-                return true;
-            }
+            return checkSetResetFunctions(getDependantContacts(contact));
         }
         return false;
     }

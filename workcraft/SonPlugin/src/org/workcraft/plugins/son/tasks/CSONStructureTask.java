@@ -62,7 +62,7 @@ public class CSONStructureTask extends AbstractStructuralVerification {
         relationErrors.addAll(task1);
         relationErrors.addAll(task2);
 
-        if (relationErrors.isEmpty() && relationErrors.isEmpty()) {
+        if (relationErrors.isEmpty()) {
             infoMsg("Valid channel place relation.");
         } else {
             errNumber += relationErrors.size();

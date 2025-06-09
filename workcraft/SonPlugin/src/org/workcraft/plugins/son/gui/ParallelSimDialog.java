@@ -18,24 +18,23 @@ import java.util.List;
 
 @SuppressWarnings("rawtypes")
 public class ParallelSimDialog extends JDialog {
-    private static final long serialVersionUID = 1L;
-
     private static final Color selectedColor = new Color(255, 228, 181);
-
     private final SON net;
     private final boolean isRev;
     private final Step possibleFire;
     private final Step minFire;
     private final TransitionNode clickedEvent;
-    private JPanel eventPanel;
-    private JPanel buttonsPanel;
-    private JPanel eventInfoPanel;
+
     private final Collection<Path> sync;
     private final Dimension buttonSize = new Dimension(80, 25);
     private final HashSet<TransitionNode> selectedEvents = new HashSet<>();
     private int modalResult = 0;
 
-    class EventItem {
+    private JPanel eventPanel;
+    private JPanel buttonsPanel;
+    private JPanel eventInfoPanel;
+
+    static class EventItem {
         private final String label;
         private boolean selected = false;
         private final TransitionNode event;
@@ -71,9 +70,7 @@ public class ParallelSimDialog extends JDialog {
         }
     }
 
-    class CheckListRenderer extends JCheckBox implements ListCellRenderer {
-
-        private static final long serialVersionUID = 1L;
+    static class CheckListRenderer extends JCheckBox implements ListCellRenderer {
 
         @Override
         public Component getListCellRendererComponent(
@@ -93,17 +90,14 @@ public class ParallelSimDialog extends JDialog {
 
     @SuppressWarnings("unchecked")
     private void createEventItemsPanel() {
-
         eventPanel = new JPanel();
-
-        DefaultListModel listModel = new DefaultListModel();
-
+        DefaultListModel listModel = new DefaultListModel<>();
         for (TransitionNode event : this.possibleFire) {
             EventItem item = new EventItem(net.getNodeReference(event) + "  " + event.getLabel(), event);
             listModel.addElement(item);
         }
 
-        JList eventList = new JList(listModel);
+        JList eventList = new JList<>(listModel);
         eventList.setCellRenderer(new CheckListRenderer());
         eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -122,49 +116,48 @@ public class ParallelSimDialog extends JDialog {
                         itemList.add((EventItem) list.getModel().getElementAt(i));
                     }
 
-                    if (item instanceof EventItem) {
-                        SimulationAlg simuAlg = new SimulationAlg(net);
-                        if (item.isSelected()) {
-                            selectedEvents.add(item.getEvent());
+                    SimulationAlg simuAlg = new SimulationAlg(net);
+                    if (item.isSelected()) {
+                        selectedEvents.add(item.getEvent());
 
-                            Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, isRev);
+                        Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, isRev);
 
-                            for (TransitionNode e : minFire) {
-                                for (EventItem eventItem : itemList) {
-                                    if (e == eventItem.getEvent()) {
-                                        selectedEvents.add(e);
-                                        eventItem.setSelected(true);
-                                        eventItem.setFillColor(selectedColor);
-                                    }
+                        for (TransitionNode e : minFire) {
+                            for (EventItem eventItem : itemList) {
+                                if (e == eventItem.getEvent()) {
+                                    selectedEvents.add(e);
+                                    eventItem.setSelected(true);
+                                    eventItem.setFillColor(selectedColor);
                                 }
                             }
-                            item.setFillColor(selectedColor);
                         }
-
-                        if (!item.isSelected()) {
-                            selectedEvents.remove(item.getEvent());
-
-                            Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, !isRev);
-
-                            //unselected related synchronous events.
-                            for (TransitionNode e : minFire) {
-                                for (EventItem eventItem : itemList) {
-                                    if (e == eventItem.getEvent()) {
-                                        selectedEvents.remove(e);
-                                        eventItem.setSelected(false);
-                                        eventItem.setFillColor(Color.WHITE);
-                                    }
-                                }
-                            }
-
-                            item.setFillColor(Color.WHITE);
-                        }
-
-                        for (int i = 0; i < list.getModel().getSize(); i++) {
-                            list.repaint(list.getCellBounds(i, i));
-                        }
+                        item.setFillColor(selectedColor);
                     }
-                } catch (ArrayIndexOutOfBoundsException e) { }
+
+                    if (!item.isSelected()) {
+                        selectedEvents.remove(item.getEvent());
+
+                        Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, !isRev);
+
+                        //unselected related synchronous events.
+                        for (TransitionNode e : minFire) {
+                            for (EventItem eventItem : itemList) {
+                                if (e == eventItem.getEvent()) {
+                                    selectedEvents.remove(e);
+                                    eventItem.setSelected(false);
+                                    eventItem.setFillColor(Color.WHITE);
+                                }
+                            }
+                        }
+
+                        item.setFillColor(Color.WHITE);
+                    }
+
+                    for (int i = 0; i < list.getModel().getSize(); i++) {
+                        list.repaint(list.getCellBounds(i, i));
+                    }
+                } catch (ArrayIndexOutOfBoundsException ignored) {
+                }
             }
         });
 

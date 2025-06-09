@@ -6,8 +6,8 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 public class VisualLocality extends VisualGroup {
     private Locality refLocality;
@@ -26,7 +26,7 @@ public class VisualLocality extends VisualGroup {
         }
         if (mathNode != null) {
             Locality oldLocality = (Locality) mathNode.getParent();
-            oldLocality.reparent(Arrays.asList(mathNode), refLocality);
+            oldLocality.reparent(List.of(mathNode), refLocality);
         }
         super.add(node);
     }

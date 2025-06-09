@@ -5,7 +5,6 @@ import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-@SuppressWarnings("serial")
 public class ToolControlsWindow extends JPanel {
 
     private final JPanel disabledPanel = new DisabledPanel();

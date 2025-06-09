@@ -9,7 +9,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-@SuppressWarnings("serial")
 public class IncludesDialog extends JDialog {
 
     private final JPanel content;

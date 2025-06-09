@@ -523,7 +523,7 @@ public class VisualSON extends AbstractVisualModel {
         if (result.size() == 1) {
             JOptionPane.showMessageDialog(mainWindow,
                     "A single component cannot be set as a block", group, JOptionPane.WARNING_MESSAGE);
-            result.removeAll(result);
+            result.clear();
             return result;
         }
 

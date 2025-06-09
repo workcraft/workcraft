@@ -101,14 +101,6 @@ public class PolicySimulationTool extends PetriSimulationTool {
                 final boolean ret = isContainerExcited(model, (Container) node);
                 return new ContainerDecoration() {
                     @Override
-                    public Color getColorisation() {
-                        return null;
-                    }
-                    @Override
-                    public Color getBackground() {
-                        return null;
-                    }
-                    @Override
                     public boolean isContainerExcited() {
                         return ret;
                     }
@@ -134,14 +126,6 @@ public class PolicySimulationTool extends PetriSimulationTool {
             if (node instanceof VisualPlace) {
                 final VisualPlace p = converter.getRelatedPlace((VisualPlace) node);
                 return new PlaceDecoration() {
-                    @Override
-                    public Color getColorisation() {
-                        return null;
-                    }
-                    @Override
-                    public Color getBackground() {
-                        return null;
-                    }
                     @Override
                     public int getTokens() {
                         return p == null ? 0 : p.getReferencedComponent().getTokens();

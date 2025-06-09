@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+@SuppressWarnings("unchecked")
 public class ConfigurationCommand implements Command {
 
     //private final Framework framework;
@@ -47,29 +48,29 @@ public class ConfigurationCommand implements Command {
     private JComboBox dycombob = null;
     private JComboBox slcombob = null;
 
-    private final String[] trchoices = {
+    private static final String[] trchoices = {
         "q1",
         "q2",
         "a1",
         "a2",
     };
 
-    private final String[] lvlchoices = {
+    private static final String[] lvlchoices = {
         "normal",
         "advanced",
     };
 
-    private final String[] hlchoices = {
+    private static final String[] hlchoices = {
         "none",
         "sel",
     };
 
-    private final String[] solchoices = {
+    private static final String[] solchoices = {
         "text",
         "popup",
     };
 
-    private final String[] solno = {
+    private static final String[] solno = {
         "1",
         "2",
         "3",
@@ -159,15 +160,15 @@ public class ConfigurationCommand implements Command {
         for (int no = 0; no < cntSyncNodes; no++) {
             panellist.add(new JPanel());
             panellist.get(panellist.size() - 1).add(new JLabel(" Trace "));
-            panellist.get(panellist.size() - 1).add(trcombob = new JComboBox(trchoices));
+            panellist.get(panellist.size() - 1).add(trcombob = new JComboBox<>(trchoices));
             panellist.get(panellist.size() - 1).add(new JLabel(" Level "));
-            panellist.get(panellist.size() - 1).add(lvcombob = new JComboBox(lvlchoices));
+            panellist.get(panellist.size() - 1).add(lvcombob = new JComboBox<>(lvlchoices));
             panellist.get(panellist.size() - 1).add(new JLabel(" Display "));
-            panellist.get(panellist.size() - 1).add(dycombob = new JComboBox(solchoices));
+            panellist.get(panellist.size() - 1).add(dycombob = new JComboBox<>(solchoices));
             panellist.get(panellist.size() - 1).add(new JLabel(" Highlight "));
-            panellist.get(panellist.size() - 1).add(hlcombob = new JComboBox(hlchoices));
+            panellist.get(panellist.size() - 1).add(hlcombob = new JComboBox<>(hlchoices));
             panellist.get(panellist.size() - 1).add(new JLabel(" Soln "));
-            panellist.get(panellist.size() - 1).add(slcombob = new JComboBox(solno));
+            panellist.get(panellist.size() - 1).add(slcombob = new JComboBox<>(solno));
             //panellist.get(panellist.size()-1).add(new JLabel(" Soln "));
             //panellist.get(panellist.size()-1).add(new JTextField("1", 1));
         }

@@ -850,8 +850,8 @@ public class CpogSelectionTool extends SelectionTool {
     private void correctConnectionLengths(VisualVertex vertex) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
-        ArrayList<VisualNode> cons = parsingTool.getChildren(visualCpog, vertex);
-        cons.addAll(parsingTool.getParents(visualCpog, vertex));
+        ArrayList<VisualNode> cons = CpogParsingTool.getChildren(visualCpog, vertex);
+        cons.addAll(CpogParsingTool.getParents(visualCpog, vertex));
         for (VisualNode n : cons) {
             VisualNode f;
             VisualNode s;

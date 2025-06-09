@@ -105,7 +105,6 @@ public class CheckTask implements Task<VerificationChainOutput> {
             // Generating system .g for conformation check (only if needed)
             if ((envStg != null) && checkConformation) {
                 // Export environment STG (convert internal signals to dummies and keep track of renaming)
-                @SuppressWarnings("PMD.PrematureDeclaration")
                 Map<String, String> envSubstitutions = StgUtils.convertInternalSignalsToDummies(envStg);
                 File modEnvStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
                 Result<? extends ExportOutput> modEnvExportResult = StgUtils.exportStg(envStg, modEnvStgFile, monitor);
@@ -160,7 +159,6 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
                 // Fill verification parameters with the inserted shadow transitions
                 Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(modSysStg, shadowTransitions);
-                @SuppressWarnings("PMD.PrematureDeclaration")
                 VerificationParameters conformationParameters = ReachUtils.getConformationParameters(shadowTransitionRefs);
 
                 modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + "-shadow" + stgFileExtension);
@@ -168,7 +166,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
                 MpsatTask conformationMpsatTask = new MpsatTask(modSysStgFile, conformationParameters, directory);
                 Result<? extends MpsatOutput>  conformationMpsatResult = manager.execute(
-                        conformationMpsatTask, "Running conformation check [MPSat]", new SubtaskMonitor<Object>(monitor));
+                        conformationMpsatTask, "Running conformation check [MPSat]", new SubtaskMonitor<>(monitor));
 
                 Result<CompositionExportOutput> compositionExportResult = Result.success(new CompositionExportOutput(modSysStgFile, compositionData));
 

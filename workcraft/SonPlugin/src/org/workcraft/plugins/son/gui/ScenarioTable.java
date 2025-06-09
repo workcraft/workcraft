@@ -52,7 +52,6 @@ public class ScenarioTable extends JTable {
         this.scenarioRef = scenarioRef;
     }
 
-    @SuppressWarnings("serial")
     protected class ScenarioTableCellRendererImplementation implements TableCellRenderer {
 
         private final JLabel label = new JLabel() {
@@ -122,11 +121,7 @@ public class ScenarioTable extends JTable {
     }
 
     public ArrayList<String> getScenarioNodeRef() {
-        ArrayList<String> result = new ArrayList<>();
-        for (String str : scenarioRef.getNodeRefs(net)) {
-            result.add(str);
-        }
-        return result;
+        return new ArrayList<>(scenarioRef.getNodeRefs(net));
     }
 
     public boolean isCellColor() {

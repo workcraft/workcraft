@@ -24,7 +24,7 @@ public final class StructureUtils {
 
         while (!queue.isEmpty()) {
             Node node = queue.remove();
-            if ((node == null) || visited.contains(node)) {
+            if (visited.contains(node)) {
                 continue;
             }
             visited.add(node);
@@ -57,7 +57,7 @@ public final class StructureUtils {
 
         while (!queue.isEmpty()) {
             Node node = queue.remove();
-            if ((node == null) || visited.contains(node)) {
+            if (visited.contains(node)) {
                 continue;
             }
             visited.add(node);
@@ -98,7 +98,7 @@ public final class StructureUtils {
 
         while (!queue.isEmpty()) {
             Node node = queue.remove();
-            if ((node == null) || visited.contains(node)) {
+            if (visited.contains(node)) {
                 continue;
             }
             visited.add(node);

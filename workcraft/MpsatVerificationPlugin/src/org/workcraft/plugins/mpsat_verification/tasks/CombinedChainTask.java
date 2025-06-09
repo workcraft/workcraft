@@ -117,7 +117,7 @@ public class CombinedChainTask implements Task<CombinedChainOutput> {
         // Only proceed with the extra task if the main tasks have no solutions
         if ((extraTask != null) && (CombinedChainResultHandlingMonitor.getViolationMpsatOutput(payload) == null)) {
             Result<? extends VerificationChainOutput> taskResult = Framework.getInstance().getTaskManager().execute(
-                    extraTask, MpsatUtils.getToolchainDescription(we.getTitle()), new SubtaskMonitor<Object>(monitor));
+                    extraTask, MpsatUtils.getToolchainDescription(we.getTitle()), new SubtaskMonitor<>(monitor));
 
             VerificationChainOutput extraPayload = taskResult.getPayload();
             payload.getMpsatResultList().add(extraPayload.getMpsatResult());

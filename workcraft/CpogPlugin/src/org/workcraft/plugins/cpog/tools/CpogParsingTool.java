@@ -92,7 +92,7 @@ public class CpogParsingTool {
         while (it.hasNext()) {
             ArrayList<VisualNode> inner = it.next();
             if (inner.size() > 1) {
-                y = centre.getY() - (inner.size() / 2);
+                y = centre.getY() - (inner.size() / 2.0);
             } else {
                 y = centre.getY();
             }
@@ -184,7 +184,7 @@ public class CpogParsingTool {
         ArrayList<VisualTransformableNode> groups = getScenarios(visualCpog);
         ArrayList<VisualNode> vertices = new ArrayList<>();
         ArrayList<String> expression = new ArrayList<>();
-        String total = "";
+        StringBuilder total = new StringBuilder();
 
         // Add vertices from group
         if (!groups.isEmpty()) {
@@ -302,29 +302,34 @@ public class CpogParsingTool {
 
         for (String ex : expression) {
             if (ex.contains("=")) {
-                total += ex;
+                total.append(ex);
             } else if ("\n".equals(ex)) {
-                while (total.endsWith(" ") || total.endsWith("+")) {
-                    total = total.substring(0, total.length() - 1);
+                while (total.toString().endsWith(" ") || total.toString().endsWith("+")) {
+                    total = new StringBuilder(total.substring(0, total.length() - 1));
                 }
-                total += ex;
-            } else if ((ex.contains(" ") || "+".equals(ex)) || (!total.contains(" " + ex + " ") && !total.startsWith(ex + " ") && !total.endsWith(" " + ex))) {
-                if (!("+".equals(ex) && total.endsWith("+"))) {
-                    if (total.endsWith("\n") || total.isEmpty()) {
-                        total += ex;
+                total.append(ex);
+            } else if ((ex.contains(" ") || "+".equals(ex))
+                    || (!total.toString().contains(" " + ex + " ")
+                    && !total.toString().startsWith(ex + " ")
+                    && !total.toString().endsWith(" " + ex))) {
+
+                if (!("+".equals(ex) && total.toString().endsWith("+"))) {
+                    if (total.toString().endsWith("\n") || total.isEmpty()) {
+                        total.append(ex);
                     } else {
-                        total += ' ' + ex;
+                        total.append(' ');
+                        total.append(ex);
                     }
                 }
             }
         }
 
-        if (total.endsWith("+")) {
-            total = total.substring(0, total.length() - 1);
+        if (total.toString().endsWith("+")) {
+            total = new StringBuilder(total.substring(0, total.length() - 1));
         }
-        total = total.trim();
+        total = new StringBuilder(total.toString().trim());
 
-        return total;
+        return total.toString();
 
     }
 

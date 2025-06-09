@@ -80,7 +80,7 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
                 nodes.add(component.getReferencedComponent());
             }
             if (!components.isEmpty()) {
-                Container vContainer = Hierarchy.getNearestContainer(new ArrayList<Node>(components));
+                Container vContainer = Hierarchy.getNearestContainer(new ArrayList<>(components));
                 Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
                 VisualComponent component = components.iterator().next();
                 Class<? extends MathNode> mathNodeClass = component.getReferencedComponent().getClass();

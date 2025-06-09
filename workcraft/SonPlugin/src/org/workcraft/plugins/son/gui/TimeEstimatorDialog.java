@@ -8,7 +8,6 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
 import org.workcraft.plugins.son.algorithm.BFSEntireEstimationAlg;
 import org.workcraft.plugins.son.algorithm.DFSEstimationAlg;
-import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.exception.*;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
@@ -244,31 +243,25 @@ public class TimeEstimatorDialog extends JDialog {
                         alg.prepare();
 
                         try {
-                            alg.estimateEndTime((Time) selection);
-                        } catch (TimeOutOfBoundsException e13) {
-                            errMsg(e13.getMessage());
-                        } catch (TimeEstimationException e14) {
-                            errMsg(e14.getMessage());
+                            alg.estimateEndTime(selection);
+                        } catch (TimeOutOfBoundsException | TimeEstimationException e) {
+                            errMsg(e.getMessage());
                         }
                         try {
-                            alg.estimateStartTime((Time) selection);
-                        } catch (TimeOutOfBoundsException e15) {
-                            errMsg(e15.getMessage());
-                        } catch (TimeEstimationException e16) {
-                            errMsg(e16.getMessage());
+                            alg.estimateStartTime(selection);
+                        } catch (TimeOutOfBoundsException | TimeEstimationException e) {
+                            errMsg(e.getMessage());
                         }
                         try {
-                            alg.estimatDuration((Time) selection);
-                        } catch (TimeInconsistencyException e17) {
-                            errMsg(e17.getMessage());
-                        } catch (TimeOutOfBoundsException e18) {
-                            errMsg(e18.getMessage());
+                            alg.estimatDuration(selection);
+                        } catch (TimeInconsistencyException | TimeOutOfBoundsException e) {
+                            errMsg(e.getMessage());
                         }
 
                         alg.complete(selection);
 
-                    } catch (AlternativeStructureException e22) {
-                        errMsg(e22.getMessage());
+                    } catch (AlternativeStructureException e) {
+                        errMsg(e.getMessage());
                     }
                 }
             } else {
@@ -289,7 +282,6 @@ public class TimeEstimatorDialog extends JDialog {
         buttonsPanel.add(runButton);
     }
 
-    @SuppressWarnings("serial")
     protected class ScenarioListTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {

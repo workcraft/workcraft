@@ -31,15 +31,10 @@ public class PetriToCpogConverter {
         this.xRightmostVertex = -1;
     }
 
-    /** function which performs the conversion
-     * @param settings **/
+    /** function which performs the conversion **/
     public VisualCpog run(PetriToCpogParameters settings) {
 
         Untanglings untangling = new Untanglings(settings);
-
-        /*****************************************************
-         * Unpack Petri net and stream it into the converter *
-         *****************************************************/
 
         // insert places
         for (Place p : pn.getPlaces()) {
@@ -85,10 +80,6 @@ public class PetriToCpogConverter {
             }
         }
 
-        /*****************************************************
-         * Convert the Petri net into a Cpog                 *
-         *****************************************************/
-
         // start conversion from Petri net to Cpog
         if (!untangling.startConversion()) {
             return null;
@@ -105,7 +96,6 @@ public class PetriToCpogConverter {
     }
 
     /** building the cpog model from the string partial orders **/
-    @SuppressWarnings("deprecation")
     private void buildCpog(ArrayList<PartialOrder> partialOrders) {
 
         // Positions inside the workspace

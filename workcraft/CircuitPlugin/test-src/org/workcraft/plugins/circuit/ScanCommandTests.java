@@ -101,7 +101,7 @@ class ScanCommandTests {
         expectedInputSignals.addAll(Arrays.asList("scanin", "scanen", "scanck"));
         Assertions.assertEquals(expectedInputSignals, RefinementUtils.getInputSignals(circuit));
 
-        expectedOutputSignals.addAll(Collections.singletonList("scanout"));
+        expectedOutputSignals.add("scanout");
         Assertions.assertEquals(expectedOutputSignals, RefinementUtils.getOutputSignals(circuit));
 
         expectedModuleInstanceCount.remove("FF");

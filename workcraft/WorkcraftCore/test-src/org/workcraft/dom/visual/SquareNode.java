@@ -4,8 +4,8 @@ import org.workcraft.dom.math.MathNode;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 class SquareNode extends VisualComponent {
 
@@ -39,7 +39,7 @@ class SquareNode extends VisualComponent {
 
     @Override
     public Collection<MathNode> getMathReferences() {
-        return Arrays.asList(new MathNode[]{});
+        return List.of();
     }
 
     @Override

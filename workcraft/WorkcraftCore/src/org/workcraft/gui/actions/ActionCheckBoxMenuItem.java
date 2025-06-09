@@ -2,7 +2,6 @@ package org.workcraft.gui.actions;
 
 import javax.swing.*;
 
-@SuppressWarnings("serial")
 public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
 
     public ActionCheckBoxMenuItem(Action action) {

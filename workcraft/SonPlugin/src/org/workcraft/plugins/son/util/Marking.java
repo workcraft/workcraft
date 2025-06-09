@@ -11,9 +11,8 @@ public class Marking extends ArrayList<PlaceNode> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Marking)) return false;
+        if (!(o instanceof Marking marking)) return false;
 
-        Marking marking = (Marking) o;
         if (marking.size() != size()) return false;
 
         for (Node node : marking) {

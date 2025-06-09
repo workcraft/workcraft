@@ -204,8 +204,8 @@ public class DFSEstimationAlg extends TimeAlg {
         }
         b = new boolean[3];
 
-        for (Node node : duration) {
-            ((Time) node).setDuration(new Interval());
+        for (Time node : duration) {
+            node.setDuration(new Interval());
         }
 
         super.complete();

@@ -4,7 +4,6 @@ import org.workcraft.dom.visual.SizeHelper;
 
 import javax.swing.*;
 
-@SuppressWarnings("serial")
 public class SolutionPanel extends JPanel {
 
     public SolutionPanel(final String str) {

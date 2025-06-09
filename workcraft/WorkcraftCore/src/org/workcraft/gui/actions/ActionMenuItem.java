@@ -2,7 +2,6 @@ package org.workcraft.gui.actions;
 
 import javax.swing.*;
 
-@SuppressWarnings("serial")
 public class ActionMenuItem extends JMenuItem implements Actor {
 
     public ActionMenuItem(Action action) {

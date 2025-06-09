@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 
+@SuppressWarnings("PMD.GuardLogStatement")
 public class SONMainTask implements Task<VerificationResult> {
 
     private final WorkspaceEntry we;

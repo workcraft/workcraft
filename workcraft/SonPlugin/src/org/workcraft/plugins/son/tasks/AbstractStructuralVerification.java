@@ -10,6 +10,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 
+@SuppressWarnings("PMD.GuardLogStatement")
 abstract class AbstractStructuralVerification implements StructuralVerification {
 
     private final SON net;

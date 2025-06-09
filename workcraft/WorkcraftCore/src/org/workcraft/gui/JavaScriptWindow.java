@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-@SuppressWarnings("serial")
 public class JavaScriptWindow extends JPanel {
     private static final String SCRIPT_SUBMIT = "script-submit";
     private static final KeyStroke ctrlEnter = KeyStroke.getKeyStroke("ctrl ENTER");
@@ -19,7 +18,6 @@ public class JavaScriptWindow extends JPanel {
     private final JTextPane txtScript;
     private boolean isInitState;
 
-    @SuppressWarnings("serial")
     private final class ScriptSubmitAction extends AbstractAction {
         private final class ThreadExtension extends Thread {
             @Override
@@ -45,7 +43,7 @@ public class JavaScriptWindow extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent action) {
-            if (txtScript.getText().length() > 0) {
+            if (!txtScript.getText().isEmpty()) {
                 new ThreadExtension().start();
             }
         }

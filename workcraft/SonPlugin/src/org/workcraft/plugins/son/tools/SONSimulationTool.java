@@ -9,7 +9,10 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.gui.tools.*;
+import org.workcraft.gui.tools.AbstractGraphEditorTool;
+import org.workcraft.gui.tools.ContainerDecoration;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
@@ -27,8 +30,8 @@ import org.workcraft.plugins.son.util.Trace;
 import org.workcraft.utils.GuiUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.Timer;
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -397,7 +400,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         return (int) (BASE_SPEED * Math.pow(INCREMENT_SPEED, power));
     }
 
-    @SuppressWarnings("serial")
     protected class TraceTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
@@ -469,7 +471,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         if (step != null) {
             try {
                 simuAlg.setMarking(step, phases, isRev);
-            } catch (UnboundedException e) {
+            } catch (UnboundedException ignored) {
             }
             setErrNum(step, isRev);
             mainTrace.incPosition(mainInc);
@@ -559,7 +561,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             try {
                 str = (String) contents.getTransferData(DataFlavor.stringFlavor);
             } catch (UnsupportedFlavorException | IOException ex) {
-                System.out.println(ex);
                 ex.printStackTrace();
             }
         }
@@ -647,11 +648,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         final VisualSON visualNet = (VisualSON) editor.getModel();
         final SON net = visualNet.getMathModel();
         SONCycleAlg cycle = new SONCycleAlg(net, phases);
-        if (!cycle.cycleTask(net.getComponents()).isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return cycle.cycleTask(net.getComponents()).isEmpty();
     }
 
     protected void autoSimulationTask(final GraphEditor editor) {
@@ -781,8 +778,8 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         Step result = new Step();
         final VisualSON visualNet = (VisualSON) editor.getModel();
         final SON net = visualNet.getMathModel();
-        for (int i = 0; i < stepRef.size(); i++) {
-            final Node node = net.getNodeByReference(stepRef.get(i));
+        for (String s : stepRef) {
+            final Node node = net.getNodeByReference(s);
             if (node instanceof TransitionNode) {
                 result.add((TransitionNode) node);
             }
@@ -790,7 +787,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         return result;
     }
 
-    @SuppressWarnings("serial")
     protected final class TraceTableCellRendererImplementation implements TableCellRenderer {
         private final JLabel label = new JLabel() {
             @Override
@@ -863,10 +859,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     }
 
     private boolean isEnabled(Node e, Step step) {
-        if (step.contains(e)) {
-            return true;
-        }
-        return false;
+        return step.contains(e);
     }
 
     @Override
@@ -886,7 +879,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         final MainWindow mainWindow = framework.getMainWindow();
 
         if (deepestNode instanceof VisualTransitionNode) {
-
             Step enabled = null;
             TransitionNode select = ((VisualTransitionNode) deepestNode).getMathTransitionNode();
 
@@ -960,44 +952,26 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     }
 
     public void setReverse(final GraphEditor editor, StepRef stepRef) {
-
-        if (stepRef.contains(">")) {
-            this.setReverse(editor, false);
-        } else {
-            this.setReverse(editor, true);
-        }
+        this.setReverse(editor, !stepRef.contains(">"));
     }
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
 
-        return new Decorator() {
-            @Override
-            public Decoration getDecoration(Node node) {
-                if ((node instanceof VisualPage && !(node instanceof VisualBlock)) || node instanceof VisualGroup) {
-                    final boolean ret = isContainerExcited((Container) node);
+        return node -> {
+            if ((node instanceof VisualPage && !(node instanceof VisualBlock)) || node instanceof VisualGroup) {
+                final boolean ret = isContainerExcited((Container) node);
 
-                    return new ContainerDecoration() {
+                return new ContainerDecoration() {
 
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-
-                        @Override
-                        public boolean isContainerExcited() {
-                            return ret;
-                        }
-                    };
-                }
-
-                return null;
+                    @Override
+                    public boolean isContainerExcited() {
+                        return ret;
+                    }
+                };
             }
+
+            return null;
         };
     }
 

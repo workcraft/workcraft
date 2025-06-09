@@ -28,7 +28,7 @@ class XMLSerialisationTestingUtils {
             Initialiser<Object>[] legacy = getLegacyPlugins(interfaceType);
             ArrayList<PluginInfo<? extends T>> result = new ArrayList<>();
             for (Initialiser<Object> l : legacy) {
-                result.add(new PluginInfo<T>((Initialiser<? extends T>) l, true));
+                result.add(new PluginInfo<>((Initialiser<? extends T>) l, true));
             }
             return result;
         }

@@ -1,19 +1,10 @@
 package org.workcraft.dom.visual;
 
+import org.workcraft.dom.Node;
+import org.workcraft.observation.*;
+
 import java.util.HashMap;
 import java.util.LinkedList;
-
-import org.workcraft.dom.Node;
-import org.workcraft.observation.HierarchyEvent;
-import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.observation.NodesDeletedEvent;
-import org.workcraft.observation.NodesReparentedEvent;
-import org.workcraft.observation.ObservableState;
-import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
-import org.workcraft.observation.TransformEvent;
-import org.workcraft.observation.TransformObserver;
 
 public class TransformEventPropagator extends HierarchySupervisor implements StateObserver, TransformDispatcher {
 
@@ -21,12 +12,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
     private final HashMap<TransformObserver, LinkedList<Node>> observerToNodes = new HashMap<>();
 
     private void addObserver(Node node, TransformObserver to) {
-        LinkedList<TransformObserver> list = nodeToObservers.get(node);
-        if (list == null) {
-            list = new LinkedList<>();
-            nodeToObservers.put(node, list);
-        }
-        list.add(to);
+        nodeToObservers.computeIfAbsent(node, k -> new LinkedList<>()).add(to);
     }
 
     private void removeObserver(Node node, TransformObserver to) {
@@ -38,18 +24,12 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
     }
 
     private void addObservedNode(TransformObserver to, Node node) {
-        LinkedList<Node> list = observerToNodes.get(to);
-        if (list == null) {
-            list = new LinkedList<>();
-            observerToNodes.put(to, list);
-        }
-        list.add(node);
+        observerToNodes.computeIfAbsent(to, k -> new LinkedList<>()).add(node);
     }
 
     private void removeObservedNode(TransformObserver to, Node node) {
         LinkedList<Node> list = observerToNodes.get(to);
         list.remove(node);
-
         if (list.isEmpty()) {
             observerToNodes.remove(to);
         }

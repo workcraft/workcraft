@@ -8,7 +8,6 @@ import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 
-@SuppressWarnings("serial")
 public class ToolBar extends JToolBar {
 
     private ActionToggle gridToggle;

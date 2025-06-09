@@ -9,6 +9,7 @@ public class CpogFormulaToString implements CpogVisitor<String> {
     }
 
     public static class PrinterSuite {
+        @SuppressWarnings("PMD.AvoidStringBufferField")
         public StringBuilder builder;
         public OverlayPrinter overlay;
         public SequencePrinter sequence;
@@ -43,8 +44,9 @@ public class CpogFormulaToString implements CpogVisitor<String> {
     }
 
     public static class DelegatingPrinter implements CpogVisitor<Void> {
-        public DelegatingPrinter next;
+        @SuppressWarnings("PMD.AvoidStringBufferField")
         public StringBuilder builder;
+        public DelegatingPrinter next;
         public boolean unicodeAllowed = false;
 
         public void setNext(DelegatingPrinter next) {

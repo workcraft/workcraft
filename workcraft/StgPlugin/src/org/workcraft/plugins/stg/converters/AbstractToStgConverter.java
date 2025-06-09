@@ -1,7 +1,6 @@
 package org.workcraft.plugins.stg.converters;
 
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.*;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -156,7 +155,7 @@ public abstract class AbstractToStgConverter {
             VisualReplicaPlace replicaPlace = null;
             for (VisualSignalTransition t: ts) {
                 if (replicaPlace == null) {
-                    Container container = Hierarchy.getNearestContainer(new HashSet<Node>(ts));
+                    Container container = Hierarchy.getNearestContainer(new HashSet<>(ts));
                     replicaPlace = stg.createVisualReplica(p, VisualReplicaPlace.class, container);
                     Point2D pos = new Point2D.Double(t.getRootSpaceX() + xOffset, t.getRootSpaceY() + yOffset);
                     replicaPlace.setRootSpacePosition(pos);
@@ -170,7 +169,7 @@ public abstract class AbstractToStgConverter {
             throws InvalidConnectionException {
 
         if ((p != null) && (ts != null)) {
-            Container container = Hierarchy.getNearestContainer(new HashSet<Node>(ts));
+            Container container = Hierarchy.getNearestContainer(new HashSet<>(ts));
             VisualReplicaPlace replicaPlace = stg.createVisualReplica(p, VisualReplicaPlace.class, container);
             if (replicaPosition != null) {
                 replicaPlace.setRootSpacePosition(replicaPosition);

@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 
 public class SimpleFlowLayout implements LayoutManager {
-    @SuppressWarnings("serial")
+
     public static class LineBreak extends JLabel {
         public int gap;
         public LineBreak(int gap) {

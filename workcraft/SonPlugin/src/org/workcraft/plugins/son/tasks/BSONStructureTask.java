@@ -108,7 +108,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         Collection<ONGroup> upperGroups = getBSONAlg().getUpperGroups(groups);
 
         Map<Condition, String> phaseResult = phaseMainTask(upperGroups);
-        if (!phaseResult.keySet().isEmpty()) {
+        if (!phaseResult.isEmpty()) {
             for (Condition c : phaseResult.keySet()) {
                 errMsg(phaseResult.get(c));
                 relationErrors.add(c);

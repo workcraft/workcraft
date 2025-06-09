@@ -30,7 +30,7 @@ public class PlatoSettings extends AbstractToolSettings {
                 PlatoSettings::getPlatoFolderLocation));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                "Folders to always include (separate with \';\')",
+                "Folders to always include (separate with ';')",
                 PlatoSettings::setPlatoIncludesList,
                 PlatoSettings::getPlatoIncludesList));
     }

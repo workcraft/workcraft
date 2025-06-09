@@ -9,7 +9,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
-@SuppressWarnings("serial")
 public class AlgebraExportDialog extends JDialog {
 
     private final JTextField filePath;

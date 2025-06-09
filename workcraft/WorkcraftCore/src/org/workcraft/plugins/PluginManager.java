@@ -73,7 +73,7 @@ public class PluginManager implements PluginProvider {
             LogUtils.logMessage("  Processing class path entry: " + s);
             classes.addAll(PluginFinder.search(s, requiredPrefix));
         }
-        LogUtils.logMessage("" + classes.size() + " plugin(s) found.");
+        LogUtils.logMessage(classes.size() + " plugin(s) found.");
         return classes;
     }
 

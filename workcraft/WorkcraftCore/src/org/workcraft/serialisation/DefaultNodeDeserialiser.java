@@ -74,8 +74,8 @@ class DefaultNodeDeserialiser {
             throws DeserialisationException {
 
         String className = element.getAttribute("class");
-        if (className == null || className.isEmpty()) {
-            throw new DeserialisationException("Class name attribute is not set\n" + element.toString());
+        if (className.isEmpty()) {
+            throw new DeserialisationException("Class name attribute is not set\n" + element);
         }
 
         try {

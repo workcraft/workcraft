@@ -14,7 +14,7 @@ public class HourMins extends AbstractTimeGranularity {
         hour %= 24;
         mins = addMins % 60;
 
-        String merge = hour.toString() + autoComplete(mins);
+        String merge = hour + autoComplete(mins);
         int result = Integer.parseInt(merge);
 
         if (result == 0) {
@@ -42,7 +42,7 @@ public class HourMins extends AbstractTimeGranularity {
             hour = (24 + hour % 24) % 24;
         }
 
-        String merge = hour.toString() + autoComplete(mins);
+        String merge = hour + autoComplete(mins);
         int result = Integer.parseInt(merge);
 
         if (result == 0) {
@@ -76,7 +76,7 @@ public class HourMins extends AbstractTimeGranularity {
             hour -= 1;
         }
 
-        String merge = hour.toString() + autoComplete(mins);
+        String merge = hour + autoComplete(mins);
         int result = Integer.parseInt(merge);
 
         if (end >= start) {
@@ -106,7 +106,7 @@ public class HourMins extends AbstractTimeGranularity {
 
         if (hour > 23 || mins > 60 || hour < 0 || mins < 0) {
             if (time != 2400 && time != 9999) {
-                throw new TimeOutOfBoundsException("Time value out of bounds " + time.toString());
+                throw new TimeOutOfBoundsException("Time value out of bounds " + time);
             }
         }
     }
@@ -144,7 +144,7 @@ public class HourMins extends AbstractTimeGranularity {
 
         if (mins > 60 || mins < 0) {
             if (time != 2400 && time != 9999) {
-                throw new TimeOutOfBoundsException("Time value out of bounds " + time.toString());
+                throw new TimeOutOfBoundsException("Time value out of bounds " + time);
             }
         }
 
@@ -152,16 +152,16 @@ public class HourMins extends AbstractTimeGranularity {
     }
 
     private String autoComplete(Integer value) {
-        String text = value.toString();
+        StringBuilder text = new StringBuilder(value.toString());
         int length = text.length();
 
         if (length < 2) {
             while (length < 2) {
-                text = "0" + text;
+                text.insert(0, "0");
                 length = text.length();
             }
         }
-        return text;
+        return text.toString();
     }
 
     private static int floorDiv(int x, int y) {

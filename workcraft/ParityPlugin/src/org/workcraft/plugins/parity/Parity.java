@@ -4,20 +4,15 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchyReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.plugins.parity.observers.SymbolConsistencySupervisor;
 import org.workcraft.serialisation.References;
 import org.workcraft.utils.Hierarchy;
 
-import java.io.*;
-import java.util.Collection;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 
 /**
@@ -329,8 +324,7 @@ public class Parity extends AbstractMathModel {
         HierarchyReferenceManager refManager = getReferenceManager();
         NameManager nameManager = refManager.getNameManager(null);
         for (MathNode srcNode: srcChildren) {
-            if (srcNode instanceof Player0) {
-                Player0 srcPlayer0 = (Player0) srcNode;
+            if (srcNode instanceof Player0 srcPlayer0) {
                 Symbol dstSymbol = null;
                 Symbol srcSymbol = srcPlayer0.getSymbol();
                 if (srcSymbol != null) {
@@ -346,8 +340,7 @@ public class Parity extends AbstractMathModel {
                     }
                 }
                 srcPlayer0.setSymbol(dstSymbol);
-            } else if (srcNode instanceof Player1) {
-                Player1 srcPlayer1 = (Player1) srcNode;
+            } else if (srcNode instanceof Player1 srcPlayer1) {
                 Symbol dstSymbol = null;
                 Symbol srcSymbol = srcPlayer1.getSymbol();
                 if (srcSymbol != null) {

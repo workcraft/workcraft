@@ -100,7 +100,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
                     }
                     setScenarioFromList(index);
                     updateScenarioColor();
-                } catch (ArrayIndexOutOfBoundsException e) {
+                } catch (ArrayIndexOutOfBoundsException ignored) {
                 }
             }
         });
@@ -162,7 +162,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
                     }
                     list.repaint(list.getCellBounds(index, index));
 
-                } catch (ArrayIndexOutOfBoundsException e) {
+                } catch (ArrayIndexOutOfBoundsException ignored) {
                 }
             }
         });

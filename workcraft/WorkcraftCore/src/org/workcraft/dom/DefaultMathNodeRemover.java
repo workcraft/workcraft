@@ -16,11 +16,7 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
 
     private void addReference(MathNode mathNode, Dependent dependentNode) {
         if (mathNode != null) {
-            HashSet<Dependent> refs = referenceTracker.get(mathNode);
-            if (refs == null) {
-                refs = new HashSet<>();
-                referenceTracker.put(mathNode, refs);
-            }
+            HashSet<Dependent> refs = referenceTracker.computeIfAbsent(mathNode, k -> new HashSet<>());
             refs.add(dependentNode);
         }
     }

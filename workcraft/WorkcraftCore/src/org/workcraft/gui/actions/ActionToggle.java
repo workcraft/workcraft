@@ -4,7 +4,6 @@ import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 
-@SuppressWarnings("serial")
 public class ActionToggle extends JToggleButton implements Actor {
 
     public ActionToggle(Icon icon, Action action) {

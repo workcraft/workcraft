@@ -68,7 +68,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
 
     @Override
     public void setContactPosition(VisualXmasContact vc, Positioning positioning) {
-        double factor2 = (double) getReferencedComponent().getCapacity() / 2.0;
+        double factor2 = getReferencedComponent().getCapacity() / 2.0;
         double offset = factor2 * (SIZE / 2 - CONTACT_LENGTH) + CONTACT_LENGTH;
         double x = positioning.xSign * offset;
         double y = positioning.ySign * offset;

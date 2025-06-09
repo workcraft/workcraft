@@ -2,9 +2,9 @@ package org.workcraft.plugins.cpog.sat;
 
 import org.workcraft.formula.*;
 import org.workcraft.formula.workers.BooleanWorker;
+import org.workcraft.plugins.cpog.encoding.NumberProvider;
 import org.workcraft.plugins.cpog.formula.MemoryConservingBooleanWorker;
 import org.workcraft.plugins.cpog.formula.PrettifyBooleanWorker;
-import org.workcraft.plugins.cpog.encoding.NumberProvider;
 
 import java.util.*;
 
@@ -51,8 +51,7 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
     }
 
     /**
-     * @param levels
-     * Specifies the number of gates to be found on each depth level. Null means no limit.
+     * @param levels Specifies the number of gates to be found on each depth level. Null means no limit.
      */
     public Optimiser(NumberProvider<T> numberProvider, int[] levels) {
         this(numberProvider);
@@ -69,7 +68,7 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
             String s = scenarios[i];
             parsedMatrix[i] = new BooleanFormula[s.length()];
             for (int j = 0; j < s.length(); j++) {
-                Character c = s.charAt(j);
+                char c = s.charAt(j);
                 BooleanFormula cell;
                 if (c == '1') {
                     cell = One.getInstance();
@@ -89,7 +88,7 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
                             if (c >= 'a' && c <= 'z') {
                                 cell = forcedVariables.get(c);
                                 if (cell == null) {
-                                    BooleanVariable var = new FreeVariable(c.toString());
+                                    BooleanVariable var = new FreeVariable(Character.toString(c));
                                     forcedVariables.put(c, var);
                                     cell = var;
                                 }
@@ -106,7 +105,8 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
             }
         }
 
-        OptimisationTask<BooleanFormula> preResult = getFormula(parsedMatrix, new ArrayList<BooleanVariable>(forcedVariables.values()), variables, derivedVariables);
+        OptimisationTask<BooleanFormula> preResult
+                = getFormula(parsedMatrix, new ArrayList<>(forcedVariables.values()), variables, derivedVariables);
 
         BooleanFormula[][] vars = preResult.getEncodingVars();
         BooleanFormula[] funcs = preResult.getFunctionVars();
@@ -116,12 +116,11 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
             result = eliminateUnrestrictableVar(result, v);
         }
 
-        return new OptimisationTask<BooleanFormula>(funcs, vars, result);
+        return new OptimisationTask<>(funcs, vars, result);
     }
 
     private BooleanFormula eliminateUnrestrictableVar(BooleanFormula result, BooleanVariable v) {
         //System.out.println("original: " + FormulaToString.toString(result));
-
         BooleanFormula one = replace(result, v, One.getInstance());
         BooleanFormula zero = replace(result, v, Zero.getInstance());
         //System.out.println("one: " + FormulaToString.toString(one));
@@ -135,15 +134,11 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
 
     /**
      * Produces the SAT problem for finding the optimal encoding given the scenarios.
-     * @param scenarios
-     * @param forcedParams
-     * List of forced input signals.
-     * @param variables
-     * Number of input signals used to encode scenarios
-     * @param derivedVariables
-     * Number of gates in the decoder. Ignored if levels != null. :(
-     * @return
-     * Boolean formula to satisfy along with the formulas for all output signals.
+     * @param scenarios Scenarios
+     * @param forcedParams List of forced input signals.
+     * @param variables Number of input signals used to encode scenarios
+     * @param derivedVariables Number of gates in the decoder. Ignored if levels != null. :(
+     * @return Boolean formula to satisfy along with the formulas for all output signals.
      */
     public OptimisationTask<BooleanFormula> getFormula(BooleanFormula[][] scenarios, List<? extends BooleanFormula> forcedParams, BooleanVariable[] variables, int derivedVariables) {
         // Generate function parameters
@@ -177,9 +172,6 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
                 for (int j = 0; j < variables.length; j++) {
                     encodings[i][j] = Zero.getInstance();
                 }
-                for (int j = 0; j < 0 && j < variables.length; j++) {
-                    encodings[i][j] = new FreeVariable("x" + j + "_s" + i);
-                }
             } else {
                 for (int j = 0; j < variables.length; j++) {
                     encodings[i][j] = new FreeVariable("x" + j + "_s" + i);
@@ -203,15 +195,12 @@ public class Optimiser<T> implements SatProblemGenerator<BooleanFormula> {
 
         tableConditions.add(numberProvider.getConstraints());
 
-        return new OptimisationTask<BooleanFormula>(functions, encodings, FormulaUtils.createAnd(tableConditions, WORKER));
+        return new OptimisationTask<>(functions, encodings, FormulaUtils.createAnd(tableConditions, WORKER));
     }
 
     /**
-     *
-     * @param parameters
-     * @param functionCount
-     * Specifies the number of gates to look for. Ignored if levels != null. Bad design, sure.
-     * @return
+     * @param parameters Parameters
+     * @param functionCount Specifies the number of gates to look for. Ignored if levels != null. Bad design, sure.
      */
     private List<BooleanFormula> generateFunctions(List<BooleanFormula> parameters, int functionCount) {
         List<BooleanFormula> allVariables = new ArrayList<>(parameters);

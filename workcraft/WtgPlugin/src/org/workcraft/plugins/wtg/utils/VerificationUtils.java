@@ -147,10 +147,7 @@ public class VerificationUtils {
             return false;
         }
         //Checks that stabilise/destabilise transitions never trigger an output
-        if (!checkUnstableSignalTriggers(wtg)) {
-            return false;
-        }
-        return true;
+        return checkUnstableSignalTriggers(wtg);
     }
 
     public static boolean checkInitialState(Wtg wtg) {
@@ -483,7 +480,7 @@ public class VerificationUtils {
                 signalValues.add(guard.get(signalName));
             }
             if (guardConditions.contains(signalValues)) {
-                DialogUtils.showError("The guard '" + guard.toString() + "' is repeated at state '"
+                DialogUtils.showError("The guard '" + guard + "' is repeated at state '"
                         + wtg.getName(state) + "'.");
                 return false;
             }
@@ -571,10 +568,7 @@ public class VerificationUtils {
     public static boolean checkTransitionReachability(Wtg wtg, Waveform waveform) {
         Set<Event> reachableTransitions = new HashSet<>();
         int nonReachableTransitions = wtg.getTransitions(waveform).size();
-        Queue<Event> eventsToVisit = new ArrayDeque<>();
-        for (Event entryEvent : wtg.getEntries(waveform)) {
-            eventsToVisit.add(entryEvent);
-        }
+        Queue<Event> eventsToVisit = new ArrayDeque<>(wtg.getEntries(waveform));
         //BFS
         while (!eventsToVisit.isEmpty()) {
             Event event = eventsToVisit.poll();
@@ -660,8 +654,7 @@ public class VerificationUtils {
     public static boolean checkValidInitialSignalStates(Wtg wtg) {
         for (Signal.State signalState : getInitialSignalStates(wtg).values()) {
             if (signalState == Signal.State.STABLE || signalState == Signal.State.UNSTABLE) {
-                DialogUtils.showError("The initial state for a signal in a WTG can not be " +
-                        signalState.toString() + ".");
+                DialogUtils.showError("The initial state for a signal in a WTG can not be " + signalState + ".");
                 return false;
             }
         }
@@ -722,15 +715,16 @@ public class VerificationUtils {
                 if (successorNode instanceof State) {
                     if (signalStates.containsKey(successorNode)) {
                         if (!signalStates.get(successorNode).equals(finalWaveformSignalState)) {
-                            String msg = "In waveform '" + wtg.getName(waveform) +
-                                    "' the following signals have an inconsistent exit state with respect to the exit state of other waveforms:";
+                            StringBuilder msg = new StringBuilder("In waveform '" + wtg.getName(waveform) +
+                                    "' the following signals have an inconsistent exit state with respect to the exit state of other waveforms:");
                             for (Map.Entry<String, Signal.State> signal : signalStates.get(successorNode).entrySet()) {
                                 if ((finalWaveformSignalState.containsKey(signal.getKey())) &&
                                         (!finalWaveformSignalState.get(signal.getKey()).equals(signal.getValue()))) {
-                                    msg += ' ' + signal.getKey();
+                                    msg.append(' ');
+                                    msg.append(signal.getKey());
                                 }
                             }
-                            DialogUtils.showError(msg);
+                            DialogUtils.showError(msg.toString());
                             return false;
                         }
                     } else {

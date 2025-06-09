@@ -6,7 +6,6 @@ import org.workcraft.gui.properties.PropertyEditorTable;
 import javax.swing.*;
 import java.awt.*;
 
-@SuppressWarnings("serial")
 public class PropertyEditorWindow extends JPanel {
 
     private final DisabledPanel disabledPanel = new DisabledPanel();
@@ -27,7 +26,7 @@ public class PropertyEditorWindow extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
         validate();
         repaint();
-        empty = properties.getDescriptors().size() == 0;
+        empty = properties.getDescriptors().isEmpty();
     }
 
     public void clear() {

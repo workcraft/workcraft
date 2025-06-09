@@ -125,7 +125,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                         succConnection.copyShape(connection);
                     }
                 }
-            } catch (InvalidConnectionException e) {
+            } catch (InvalidConnectionException ignored) {
             }
             model.addToSelection(reqTransition);
             model.addToSelection(ackTransition);

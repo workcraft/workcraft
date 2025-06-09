@@ -42,10 +42,8 @@ public class Interval {
         if (value.length() != 9) {
             return null;
         }
-        Integer result = 0;
-
+        int result = 0;
         String first = value.substring(0, 4);
-
         try {
             // return decimal number
             result = Integer.parseInt(first);
@@ -60,10 +58,8 @@ public class Interval {
         if (value.length() != 9) {
             return null;
         }
-        Integer result = 9999;
-
+        int result = 9999;
         String last = value.substring(5, 9);
-
         try {
             // return decimal number
             result = Integer.parseInt(last);
@@ -77,9 +73,7 @@ public class Interval {
         if (value.length() != 4) {
             return null;
         }
-
-        Integer result = 0;
-
+        int result = 0;
         try {
             // return decimal number
             result = Integer.parseInt(value);
@@ -90,10 +84,7 @@ public class Interval {
     }
 
     public boolean isSpecified() {
-        if ((getMin() != 0) || (getMax() != 9999)) {
-            return true;
-        }
-        return false;
+        return (getMin() != 0) || (getMax() != 9999);
     }
 
     public boolean isOverlapping(Interval other) {
@@ -103,8 +94,8 @@ public class Interval {
         }
         // overlap happens ONLY when this's max is on the right of other's min
         // AND this's min is on the left of other's max.
-        return ((this.max == null) || (other.min == null) || (this.max.intValue() >= other.min.intValue()))
-                && ((this.min == null) || (other.max == null) || (this.min.intValue() <= other.max.intValue()));
+        return ((this.max == null) || (other.min == null) || (this.max >= other.min))
+                && ((this.min == null) || (other.max == null) || (this.min <= other.max));
     }
 
     public static Interval getOverlapping(Collection<Interval> intervals) {
@@ -136,10 +127,10 @@ public class Interval {
     public boolean isInInterval(Integer number, Interval other) {
         if (number != null && other != null) {
             if (other.getMin() == null && other.getMax() != null) {
-                return number.intValue() <= other.getMax().intValue();
+                return number <= other.getMax();
             }
             if (other.getMin() != null && other.getMax() == null) {
-                return number.intValue() >= other.getMax().intValue();
+                return number >= other.getMax();
             }
             if (other.getMin() == null && other.getMax() == null) {
                 return true;
@@ -174,18 +165,15 @@ public class Interval {
     }
 
     private String autoComplete(Integer value) {
-        String text = value.toString();
+        StringBuilder text = new StringBuilder(value.toString());
         int length = text.length();
-
         if (length < 4) {
             while (length < 4) {
-                StringBuffer sb = new StringBuffer();
-                sb.append("0").append(text);
-                text = sb.toString();
+                text.insert(0, "0");
                 length = text.length();
             }
         }
-        return text;
+        return text.toString();
     }
 
     @Override
@@ -195,11 +183,8 @@ public class Interval {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Interval) {
-            Interval interval = (Interval) obj;
-            if (this.getMin().equals(interval.getMin()) && this.getMax().equals(interval.getMax())) {
-                return true;
-            }
+        if (obj instanceof Interval interval) {
+            return this.getMin().equals(interval.getMin()) && this.getMax().equals(interval.getMax());
         }
         return false;
     }

@@ -4,7 +4,6 @@ import org.workcraft.utils.TraceUtils;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("serial")
 public class Trace extends ArrayList<String> {
 
     private static final String EMPTY_TEXT = "[empty trace]";

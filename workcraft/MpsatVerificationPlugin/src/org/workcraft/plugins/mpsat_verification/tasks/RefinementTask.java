@@ -206,7 +206,6 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         }
 
         // Export specification STG (convert internal signals to dummies and keep track of renaming)
-        @SuppressWarnings("PMD.PrematureDeclaration")
         Map<String, String> specificationSubstitutions = StgUtils.convertInternalSignalsToDummies(specificationStg);
         File specificationStgFile = new File(directory, SPECIFICATION_STG_FILE_NAME);
         Result<? extends ExportOutput> specificationExportResult = StgUtils.exportStg(specificationStg, specificationStgFile, monitor);
@@ -215,7 +214,6 @@ public class RefinementTask implements Task<VerificationChainOutput> {
         }
 
         // Export implementation STG (convert internal signals to dummies and keep track of renaming)
-        @SuppressWarnings("PMD.PrematureDeclaration")
         Map<String, String> implementationSubstitutions = allowConcurrencyReduction ? Collections.emptyMap()
                 : StgUtils.convertInternalSignalsToDummies(implementationStg);
 

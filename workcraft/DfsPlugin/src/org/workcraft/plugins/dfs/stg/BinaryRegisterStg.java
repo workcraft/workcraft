@@ -1,16 +1,11 @@
 package org.workcraft.plugins.dfs.stg;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.NodeStg;
+
+import java.util.*;
 
 public class BinaryRegisterStg extends NodeStg {
     public final VisualPlace m0;                // M=0
@@ -44,13 +39,13 @@ public class BinaryRegisterStg extends NodeStg {
     public List<VisualSignalTransition> getTrueTransitions() {
         Set<VisualSignalTransition> tmp = new HashSet<>(tMRs.values());
         tmp.add(tMF);
-        return new ArrayList<VisualSignalTransition>(tmp);
+        return new ArrayList<>(tmp);
     }
 
     public List<VisualSignalTransition> getFalseTransitions() {
         Set<VisualSignalTransition> tmp = new HashSet<>(fMRs.values());
         tmp.add(fMF);
-        return new ArrayList<VisualSignalTransition>(tmp);
+        return new ArrayList<>(tmp);
     }
 
     @Override
@@ -60,7 +55,7 @@ public class BinaryRegisterStg extends NodeStg {
         tmp.add(tMF);
         tmp.addAll(fMRs.values());
         tmp.add(fMF);
-        return new ArrayList<VisualSignalTransition>(tmp);
+        return new ArrayList<>(tmp);
     }
 
     @Override

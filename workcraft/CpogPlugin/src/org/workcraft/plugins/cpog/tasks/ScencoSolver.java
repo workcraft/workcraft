@@ -30,13 +30,14 @@ public class ScencoSolver {
     public static final String ACCESS_SCENCO_ERROR = "SCENCO error";
     public static final String MSG_NOT_ENOUGH_SCENARIOS = "Not enough scenarios. Select at least two scenarios.";
     public static final String MSG_TOO_MANY_SCENARIOS = "Too many scenarios selected.";
-    public static final String MSG_SELECTION_MODE_UNDEFINED = "Selection mode undefined.";
     public static final String MSG_SAT_BASED_ERROR = "SAT-Based encoding cannot handle the graphs selected";
     public static final String MSG_GATE_LIB_NOT_PRESENT = "Gate library not present. Please insert this " +
                                                           "(genlib format) inside ABC folder.";
+
     public static final String MSG_ABC_NOT_PRESENT = "Find out more information on " +
                                                      "\"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
                                                      "set Abc path in Workcraft settings.";
+
     private static final String VERILOG_TMP_NAME = "micro.v";
 
     private final EncoderSettings settings;
@@ -348,7 +349,7 @@ public class ScencoSolver {
                         String el = (String) st2.nextElement();
                         if ("V".equals(el)) { //formula of a vertex
                             String vertexName = (String) st2.nextElement();
-                            if (!settings.GO_SIGNAL.equals(vertexName) && !settings.DONE_SIGNAL.equals(vertexName)) {
+                            if (!EncoderSettings.GO_SIGNAL.equals(vertexName) && !EncoderSettings.DONE_SIGNAL.equals(vertexName)) {
                                 optVertices[v] = vertexName;
                                 st2.nextElement();
                                 optFormulaeVertices[v++] = (String) st2.nextElement();
@@ -425,8 +426,7 @@ public class ScencoSolver {
             for (int i = 0; i < m; i++) {
                 optEncoding[i] = new boolean[freeVariables + pr];
                 for (int j = 0; j < freeVariables; j++) {
-                    if (optEnc[i].charAt(j) == '0' || optEnc[i].charAt(j) == '-') optEncoding[i][j] = false;
-                    else    optEncoding[i][j] = true;
+                    optEncoding[i][j] = (optEnc[i].charAt(j) != '0') && (optEnc[i].charAt(j) != '-');
                 }
                 for (int j = freeVariables; j < freeVariables + pr; j++) {
                     optEncoding[i][j] = false;

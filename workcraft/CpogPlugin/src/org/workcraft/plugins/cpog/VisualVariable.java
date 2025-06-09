@@ -62,13 +62,6 @@ public class VisualVariable extends VisualComponent {
     }
 
     @Override
-    public Shape getShape() {
-        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
-        double pos = -0.5 * size;
-        return new Rectangle2D.Double(pos, pos, size, size);
-    }
-
-    @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();

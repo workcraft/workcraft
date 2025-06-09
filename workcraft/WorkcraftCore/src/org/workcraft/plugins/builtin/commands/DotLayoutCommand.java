@@ -108,8 +108,7 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
 
     private void straightenConnections(VisualModel model) {
         for (VisualConnection connection : Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class)) {
-            connection.setConnectionType(VisualConnection.ConnectionType.BEZIER);
-            connection.setConnectionType(VisualConnection.ConnectionType.POLYLINE);
+            ConnectionHelper.straightenConnection(connection);
         }
     }
 

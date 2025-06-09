@@ -76,7 +76,7 @@ public class OutputNode {
     //TEST FUNCTION: Return a string of all the attributes
     @Override
     public String toString() {
-        return "ID: " + id + " Won by Player 1? " + wonByPlayer1 + " Strategy: "
-            + strategy;
+        return "ID: " + id + " Won by Player 1? " + wonByPlayer1 + " Strategy: " + strategy;
     }
+
 }

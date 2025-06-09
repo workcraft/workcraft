@@ -36,11 +36,6 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
     }
 
     @Override
-    public Position getPosition() {
-        return Position.TOP;
-    }
-
-    @Override
     public void beforeContraction(VisualModel visualModel, VisualTransition visualTransition) {
         super.beforeContraction(visualModel, visualTransition);
         convertedImplicitPlaces.clear();
