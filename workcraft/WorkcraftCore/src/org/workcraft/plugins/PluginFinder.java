@@ -15,21 +15,18 @@ import java.util.jar.JarFile;
 
 public class PluginFinder {
 
-    private static class ClassFileFilter implements FilenameFilter {
+    private static final class ClassFileFilter implements FilenameFilter {
         @Override
         public boolean accept(File dir, String name) {
             File f = new File(dir.getPath() + File.separator + name);
             if (f.isDirectory()) {
                 return true;
             }
-            if (f.getPath().endsWith(".class")) {
-                return true;
-            }
-            return false;
+            return f.getPath().endsWith(".class");
         }
     }
 
-    private static ClassFileFilter classFilter = new ClassFileFilter();
+    private static final ClassFileFilter classFilter = new ClassFileFilter();
 
     public static List<Class<?>> search(String filePath, String requiredPrefix)
             throws PluginInstantiationException {

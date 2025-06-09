@@ -12,7 +12,7 @@ import java.util.Collections;
 
 class HitmanTests {
 
-    class DummyNode implements Node {
+    static class DummyNode implements Node {
         private final Collection<Node> children;
 
         DummyNode() {
@@ -43,7 +43,7 @@ class HitmanTests {
         }
     }
 
-    class HitableNode extends DummyNode implements Touchable {
+    static class HitableNode extends DummyNode implements Touchable {
 
         @Override
         public Rectangle2D getBoundingBox() {
@@ -66,7 +66,7 @@ class HitmanTests {
         final HitableNode toHit = new HitableNode();
         Node node = new DummyNode(
                 new Node[]{
-                        new DummyNode(new Node[]{toHit }),
+                        new DummyNode(new Node[]{toHit}),
                         new DummyNode(),
                 }
         );

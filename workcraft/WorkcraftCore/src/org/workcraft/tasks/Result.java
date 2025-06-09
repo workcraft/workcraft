@@ -2,7 +2,7 @@ package org.workcraft.tasks;
 
 public class Result<T> {
 
-    enum Outcome {
+    public enum Outcome {
         SUCCESS,
         CANCEL,
         FAILURE

@@ -16,7 +16,8 @@ import java.util.Collection;
 import java.util.Collections;
 
 class VisualComponentGroupTests {
-    class MockTransformObservingNode implements Node, TransformObserver {
+
+    static class MockTransformObservingNode implements Node, TransformObserver {
         private Node parent = null;
 
         public boolean notified = false;
@@ -208,7 +209,7 @@ class VisualComponentGroupTests {
         Assertions.assertTrue(node1.notified, "not hit");
     }
 
-    class DummyNode extends VisualComponent {
+    static class DummyNode extends VisualComponent {
         DummyNode(VisualGroup parent) {
             super(null);
             parent.add(this);

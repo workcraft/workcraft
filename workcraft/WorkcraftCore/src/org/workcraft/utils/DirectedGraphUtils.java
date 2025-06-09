@@ -4,7 +4,7 @@ import java.util.*;
 
 public final class DirectedGraphUtils {
 
-    private static class Block<T> {
+    private static final class Block<T> {
         public final Set<T> set = new HashSet<>();
         public final Map<T, Set<T>> map = new HashMap<>();
     }

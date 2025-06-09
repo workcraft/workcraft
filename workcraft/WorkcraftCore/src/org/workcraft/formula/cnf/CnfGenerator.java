@@ -5,7 +5,7 @@ import org.workcraft.formula.visitors.BooleanVisitor;
 
 public class CnfGenerator {
 
-    private static class CnfVisitor implements BooleanVisitor<Cnf> {
+    private static final class CnfVisitor implements BooleanVisitor<Cnf> {
 
         private boolean negation = false;
 

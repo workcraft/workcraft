@@ -592,7 +592,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         }
     }
 
-    private class TraceTableModel extends AbstractTableModel {
+    private final class TraceTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
             return 2;

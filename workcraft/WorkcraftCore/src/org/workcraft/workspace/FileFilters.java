@@ -8,7 +8,7 @@ public final class FileFilters {
     public static final String DOCUMENT_EXTENSION = ".work";
     public static final String WORKSPACE_EXTENSION = ".works";
 
-    private static class DocumentFilesFilter extends FileFilter {
+    private static final class DocumentFilesFilter extends FileFilter {
         @Override
         public boolean accept(File file) {
             if (file.isDirectory()) {

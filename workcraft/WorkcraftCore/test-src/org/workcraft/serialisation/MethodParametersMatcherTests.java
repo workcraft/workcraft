@@ -12,19 +12,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 class MethodParametersMatcherTests {
-    class A {
+    static class A {
     }
 
-    class AB extends A {
+    static class AB extends A {
     }
 
-    class AC extends A {
+    static class AC extends A {
     }
 
-    class ABq extends AB {
+    static class ABq extends AB {
     }
 
-    class ABp extends AB {
+    static class ABp extends AB {
     }
 
     private int match(Class<?> type, Class<?>... parameters) throws InvocationTargetException, IllegalAccessException {
@@ -97,7 +97,7 @@ class MethodParametersMatcherTests {
         Assertions.assertEquals(-2, match(Ambiguous.class, ABq.class, AC.class));
     }
 
-    class MethodInfoImplementation implements MethodInfo {
+    static class MethodInfoImplementation implements MethodInfo {
         private final Method method;
 
         MethodInfoImplementation(Method method) {

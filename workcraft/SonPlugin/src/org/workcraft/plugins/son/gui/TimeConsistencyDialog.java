@@ -52,7 +52,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     }
 
     @SuppressWarnings("rawtypes")
-    class ScenarioListRenderer extends JRadioButton implements ListCellRenderer {
+    static class ScenarioListRenderer extends JRadioButton implements ListCellRenderer {
 
         private static final long serialVersionUID = 1L;
 

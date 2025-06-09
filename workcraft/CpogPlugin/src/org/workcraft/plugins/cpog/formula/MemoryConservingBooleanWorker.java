@@ -33,7 +33,7 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
         return code;
     }
 
-    class IntPair {
+    static class IntPair {
         private final Integer x;
         private final Integer y;
 

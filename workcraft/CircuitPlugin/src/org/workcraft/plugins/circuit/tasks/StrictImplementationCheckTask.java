@@ -57,7 +57,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
 
     private final WorkspaceEntry we;
 
-    private class SignalInfo {
+    private static class SignalInfo {
         public final String name;
         public final String setExpr;
         public final String resetExpr;
