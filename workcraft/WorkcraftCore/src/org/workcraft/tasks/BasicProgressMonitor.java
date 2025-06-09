@@ -31,6 +31,7 @@ public class BasicProgressMonitor<T> implements ProgressMonitor<T> {
         finished = true;
     }
 
+    @SuppressWarnings("BusyWait")
     @Override
     public final Result<? extends T> waitResult() {
         while (!finished) {

@@ -64,6 +64,7 @@ final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<
         finished = true;
     }
 
+    @SuppressWarnings("BusyWait")
     @Override
     public Result<? extends T> waitResult() {
         while (!finished) {
