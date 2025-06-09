@@ -54,8 +54,9 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> components = new HashSet<>();
-        components.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitComponent.class));
+        Collection<VisualNode> components = new HashSet<>(
+                Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitComponent.class));
+
         components.retainAll(model.getSelection());
         return components;
     }

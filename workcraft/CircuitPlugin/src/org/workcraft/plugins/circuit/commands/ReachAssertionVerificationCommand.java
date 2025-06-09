@@ -67,9 +67,9 @@ public class ReachAssertionVerificationCommand extends org.workcraft.commands.Ab
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
         return isApplicableTo(we)
-            && VerificationUtils.checkCircuitHasComponents(we)
-            && VerificationUtils.checkInterfaceInitialState(we)
-            && VerificationUtils.checkInterfaceConstrains(we);
+                && VerificationUtils.checkCircuitHasComponents(we)
+                && VerificationUtils.checkInterfaceInitialState(we)
+                && VerificationUtils.checkInterfaceConstrains(we);
     }
 
     @Override

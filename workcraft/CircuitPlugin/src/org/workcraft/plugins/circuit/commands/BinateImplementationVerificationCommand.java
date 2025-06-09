@@ -104,9 +104,9 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
         return isApplicableTo(we)
-            && VerificationUtils.checkCircuitHasComponents(we)
-            && VerificationUtils.checkInterfaceInitialState(we)
-            && VerificationUtils.checkInterfaceConstrains(we, true);
+                && VerificationUtils.checkCircuitHasComponents(we)
+                && VerificationUtils.checkInterfaceInitialState(we)
+                && VerificationUtils.checkInterfaceConstrains(we, true);
     }
 
     private Collection<BinateData> getBinateData(Circuit circuit) {

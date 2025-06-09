@@ -10,8 +10,8 @@ public class WtgConnectionTool extends DtdConnectionTool {
     @Override
     public boolean isConnectable(Node node) {
         return super.isConnectable(node)
-              || (node instanceof VisualState)
-              || (node instanceof VisualWaveform);
+                || (node instanceof VisualState)
+                || (node instanceof VisualWaveform);
     }
 
 }

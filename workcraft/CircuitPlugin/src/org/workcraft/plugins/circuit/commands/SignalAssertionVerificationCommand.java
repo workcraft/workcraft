@@ -83,9 +83,9 @@ public class SignalAssertionVerificationCommand extends org.workcraft.commands.A
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
         return isApplicableTo(we)
-            && VerificationUtils.checkCircuitHasComponents(we)
-            && VerificationUtils.checkInterfaceInitialState(we)
-            && VerificationUtils.checkInterfaceConstrains(we);
+                && VerificationUtils.checkCircuitHasComponents(we)
+                && VerificationUtils.checkInterfaceInitialState(we)
+                && VerificationUtils.checkInterfaceConstrains(we);
     }
 
     private VerificationParameters convertDataToVerificationParameters(String data) {
