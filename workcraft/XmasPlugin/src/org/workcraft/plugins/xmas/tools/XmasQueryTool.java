@@ -568,7 +568,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                     Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 
                     String s;
-                    String str = "";
+                    StringBuilder str = new StringBuilder();
                     String str2 = "";
                     InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
                     BufferedReader stdInput = new BufferedReader(inputStreamReader);
@@ -577,7 +577,10 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                     initHighlight(xnet, vnet);
                     while ((s = stdInput.readLine()) != null) {
                         if (test == -1) test = checkType(s);
-                        if (n > 0) str += s + '\n';
+                        if (n > 0) {
+                            str.append(s);
+                            str.append('\n');
+                        }
                         n++;
                         System.out.println(s);
                     }
@@ -587,34 +590,34 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                         processQsl(qslFile.getAbsolutePath());
 
                         File equFile1 = XmasSettings.getTempVxmEquFile();
-                        str = processEq(equFile1.getAbsolutePath());
+                        str = new StringBuilder(processEq(equFile1.getAbsolutePath()));
 
                         File queFile = XmasSettings.getTempVxmQueFile();
                         str2 = processQue(queFile.getAbsolutePath());
                     } else if ("advanced".equals(level) && (q3flag == 1)) {
                         System.out.println("LEVEL IS ADVANCED ");
                         File equFile2 = XmasSettings.getTempVxmEquFile();
-                        str = processEq(equFile2.getAbsolutePath());
+                        str = new StringBuilder(processEq(equFile2.getAbsolutePath()));
                     } else if ("normal".equals(level) && test == 2) {
                         System.out.println("LEVEL IS NORMAL ");
                         File locFile = XmasSettings.getTempVxmLocFile();
-                        str = processLoc(locFile.getAbsolutePath());
+                        str = new StringBuilder(processLoc(locFile.getAbsolutePath()));
                     }
                     if (test > 0) {
                         if ("popup".equals(display)) {
                             if (!"advanced".equals(level) && (q3flag == 0)) {
                                 new SolutionsDialog1(test, str2);
                             } else if ("advanced".equals(level) && (q3flag == 1)) {
-                                new SolutionsDialog2(test, str);
+                                new SolutionsDialog2(test, str.toString());
                             } else {
                                 new SolutionsDialog2(test, str2);
                             }
                         }
                         if (test == 2) {
                             if ("local".equals(highlight)) {
-                                localHighlight(str, xnet, vnet);
+                                localHighlight(str.toString(), xnet, vnet);
                             } else if ("rel".equals(highlight)) {
-                                relHighlight(str, xnet, vnet);
+                                relHighlight(str.toString(), xnet, vnet);
                                 activeHighlight(xnet, vnet);
                             }
                         }

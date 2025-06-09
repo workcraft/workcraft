@@ -291,34 +291,33 @@ public class ScencoExecutionSupport {
 
                             // Format output by substituting ' with !
                             String cond = StringGenerator.toString(condition).replace("'", "!");
-                            String result = "";
-                            String tmp = "";
+                            StringBuilder result = new StringBuilder();
                             for (int i = 0; i < cond.length(); i++) {
                                 if (SPECIAL_SYMBOLS.indexOf(cond.charAt(i)) < 0) {
-                                    tmp = "";
+                                    StringBuilder tmp = new StringBuilder();
                                     while ((i < cond.length()) && (SPECIAL_SYMBOLS.indexOf(cond.charAt(i)) < 0)) {
-                                        tmp += cond.charAt(i);
+                                        tmp.append(cond.charAt(i));
                                         i++;
                                     }
                                     for (int j = tmp.length() - 1; j >= 0; j--) {
-                                        result += tmp.charAt(j);
+                                        result.append(tmp.charAt(j));
                                     }
                                     if (i < cond.length()) {
-                                        result += cond.charAt(i);
+                                        result.append(cond.charAt(i));
                                     }
                                 } else {
-                                    result += cond.charAt(i);
+                                    result.append(cond.charAt(i));
                                 }
                             }
 
-                            String end = "";
+                            StringBuilder end = new StringBuilder();
                             for (int i = 0; i < result.length(); i++) {
                                 if (result.charAt(i) == '(') {
-                                    end += ')';
+                                    end.append(')');
                                 } else if (result.charAt(i) == ')') {
-                                    end += '(';
+                                    end.append('(');
                                 } else {
-                                    end += result.charAt(i);
+                                    end.append(result.charAt(i));
                                 }
                             }
 

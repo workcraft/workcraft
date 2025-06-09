@@ -112,14 +112,14 @@ public class Policy extends Petri implements PolicyModel {
     }
 
     public String getTransitionsOfBundleAsString(Bundle b) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (BundledTransition t : b.getTransitions()) {
             if (!result.isEmpty()) {
-                result += ", ";
+                result.append(", ");
             }
-            result += getName(t);
+            result.append(getName(t));
         }
-        return result;
+        return result.toString();
     }
 
 }
