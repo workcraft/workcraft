@@ -12,19 +12,15 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Vector;
-import java.util.stream.Collectors;
 
 public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<String>>> {
 
     private ItemList itemList;
 
     class ItemList extends JList<String> {
-        ItemList(Collection<String> items) {
-            super(new Vector<>(items.stream()
-                    .sorted(SortUtils::compareNatural)
-                    .collect(Collectors.toList())));
 
+        ItemList(Collection<String> items) {
+            super(SortUtils.getSortedNatural(items).toArray(new String[0]));
             setBorder(GuiUtils.getEmptyBorder());
             setSelectionModel(new MultipleListSelectionModel());
             setCellRenderer(getItemListCellRenderer());

@@ -31,10 +31,7 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
     static class InputSignalList extends JList<String> {
 
         InputSignalList(Set<String> signals) {
-            super(new Vector<>(signals.stream()
-                    .sorted(SortUtils::compareNatural)
-                    .collect(Collectors.toList())));
-
+            super(SortUtils.getSortedNatural(signals).toArray(new String[0]));
             setBorder(GuiUtils.getEmptyBorder());
             setSelectionModel(new MultipleListSelectionModel());
             setCellRenderer(new ColorListCellRenderer(signal -> SignalCommonSettings.getInputColor()));
