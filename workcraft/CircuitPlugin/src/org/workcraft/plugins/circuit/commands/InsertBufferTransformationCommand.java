@@ -50,8 +50,9 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> result = new HashSet<>();
-        result.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitConnection.class));
+        Collection<VisualNode> result = new HashSet<>(
+                Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitConnection.class));
+
         result.retainAll(model.getSelection());
         return result;
     }

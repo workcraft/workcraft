@@ -31,10 +31,8 @@ public class PluginFinder {
     public static List<Class<?>> search(String filePath, String requiredPrefix)
             throws PluginInstantiationException {
 
-        List<Class<?>> result = new ArrayList<>();
         File file = new File(filePath);
-        result.addAll(search(file, file, requiredPrefix));
-        return result;
+        return new ArrayList<>(search(file, file, requiredPrefix));
     }
 
 

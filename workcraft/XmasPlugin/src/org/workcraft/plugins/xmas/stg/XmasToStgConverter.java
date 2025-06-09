@@ -74,8 +74,9 @@ public class XmasToStgConverter extends AbstractToStgConverter {
 
     @Override
     public void convert() {
-        HashSet<VisualXmasComponent> remainingComponents = new HashSet<>();
-        remainingComponents.addAll(Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualXmasComponent.class));
+        HashSet<VisualXmasComponent> remainingComponents = new HashSet<>(
+                Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualXmasComponent.class));
+
         try {
             clockStg = generateClockStg();
             clockControlSignals = new HashSet<>();
@@ -1123,10 +1124,10 @@ public class XmasToStgConverter extends AbstractToStgConverter {
             createReplicaReadArc(i.rdy.zero, slot.tl.dn.fallList.get(2), +6.0, -1.0);
             createReplicaReadArcs(slot.mem.one, Arrays.asList(i.rdy.fallList.get(0), i.dn.riseList.get(0)), +6.0, -idx);
             createReplicaReadArcs(slot.mem.zero, Arrays.asList(i.rdy.riseList.get(idx), i.dn.riseList.get(capacity - idx)), +6.0, 0.0);
-            createReplicaReadArcs(slot.hd.dn.zero, i.dn.fallList, -6.0, +1.0 + idx);
-            createReplicaReadArcs(slot.hd.dn.one, i.dn.riseList, -6.0, +1.0 - idx);
-            createReplicaReadArcs(slot.tl.dn.zero, i.dn.fallList, +6.0, +1.0 + idx);
-            createReplicaReadArcs(slot.tl.dn.one, i.dn.riseList, +6.0, +1.0 - idx);
+            createReplicaReadArcs(slot.hd.dn.zero, i.dn.fallList, -6.0, 1.0 + idx);
+            createReplicaReadArcs(slot.hd.dn.one, i.dn.riseList, -6.0, 1.0 - idx);
+            createReplicaReadArcs(slot.tl.dn.zero, i.dn.fallList, +6.0, 1.0 + idx);
+            createReplicaReadArcs(slot.tl.dn.one, i.dn.riseList, +6.0, 1.0 - idx);
             // Connections with output port
             createReplicaReadArc(o.rdy.one, slot.mem.fallList.get(0), +6.0, +1.0);
             createReplicaReadArc(o.rdy.one, slot.hd.dn.fallList.get(1), +6.0, 0.0);

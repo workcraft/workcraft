@@ -61,8 +61,9 @@ public class StraightenConnectionTransformationCommand extends AbstractTransform
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> connections = new HashSet<>();
-        connections.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class));
+        Collection<VisualNode> connections = new HashSet<>(
+                Hierarchy.getDescendantsOfType(model.getRoot(), VisualConnection.class));
+
         Collection<? extends VisualNode> selection = model.getSelection();
         if (!selection.isEmpty()) {
             HashSet<Node> selectedConnections = new HashSet<>(selection);
