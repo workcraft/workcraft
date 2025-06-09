@@ -54,8 +54,8 @@ class ImportTests {
         Assertions.assertEquals(explicitPlaceCount, count);
 
         for (Transition t : stg.getTransitions()) {
-            Assertions.assertTrue(stg.getPreset(t).size() > 0);
-            Assertions.assertTrue(stg.getPostset(t).size() > 0);
+            Assertions.assertFalse(stg.getPreset(t).isEmpty());
+            Assertions.assertFalse(stg.getPostset(t).isEmpty());
         }
     }
 

@@ -170,7 +170,7 @@ public class VisualPolicy extends VisualPetri {
     public String getBundlesOfTransitionAsString(VisualBundledTransition t) {
         StringBuilder result = new StringBuilder();
         for (VisualBundle b: getBundlesOfTransition(t)) {
-            if (result.length() > 0) {
+            if (!result.isEmpty()) {
                 result.append(", ");
             }
             result.append(getMathModel().getName(b.getReferencedBundle()));
@@ -201,7 +201,7 @@ public class VisualPolicy extends VisualPetri {
     public String getTransitionsOfBundleAsString(VisualBundle b) {
         StringBuilder result = new StringBuilder();
         for (VisualBundledTransition t: getTransitionsOfBundle(b)) {
-            if (result.length() > 0) {
+            if (!result.isEmpty()) {
                 result.append(", ");
             }
             result.append(getMathModel().getName(t.getReferencedComponent()));

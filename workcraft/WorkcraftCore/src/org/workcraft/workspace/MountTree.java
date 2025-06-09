@@ -71,7 +71,7 @@ public class MountTree {
     public final Path<String> path;
 
     public MountTree getSubtree(String name) {
-        if (name.length() == 0) {
+        if (name.isEmpty()) {
             return this;
         }
 

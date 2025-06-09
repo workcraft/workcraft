@@ -59,7 +59,7 @@ public class TextUtils {
         StringBuilder result = new StringBuilder();
         for (String word : splitWords(line)) {
             int spaceCount = 1;
-            if (result.length() == 0) {
+            if (result.isEmpty()) {
                 spaceCount = countLeadingSpaces(line);
             }
             if (result.length() + spaceCount < length) {
@@ -240,7 +240,7 @@ public class TextUtils {
         String foregroundAttribute = getHtmlColorAttribute("color", foregroundColor);
         String backgroundAttribute = getHtmlColorAttribute("background-color", backgroundColor);
         String attributes = Stream.of(foregroundAttribute, backgroundAttribute)
-                .filter(item -> (item != null) && !item.isEmpty())
+                .filter(item -> !item.isEmpty())
                 .collect(Collectors.joining("; "));
 
         return "<span style=\"" + attributes + "\">" + text + "</span>";
