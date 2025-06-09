@@ -26,8 +26,7 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     public void activated(final GraphEditor editor) {
         setPermissions(editor);
         // Set mouse cursor
-        if (editor instanceof GraphEditorPanel) {
-            GraphEditorPanel panel = (GraphEditorPanel) editor;
+        if (editor instanceof GraphEditorPanel panel) {
             panel.setCursor(getCursor(false, false, false));
         }
         WorkspaceEntry we = editor.getWorkspaceEntry();

@@ -20,8 +20,7 @@ public class CompositionUtils {
 
     public static void applyExportSubstitutions(CompositionData compositionData, ExportOutput exportOutput) {
 
-        if (exportOutput instanceof ExtendedExportOutput) {
-            ExtendedExportOutput extendedExportOutput = (ExtendedExportOutput) exportOutput;
+        if (exportOutput instanceof ExtendedExportOutput extendedExportOutput) {
             for (File file : extendedExportOutput.getFiles()) {
                 Map<String, String> substitutions = extendedExportOutput.getSubstitutions(file);
                 applyComponentSubstitutions(compositionData, file, substitutions);

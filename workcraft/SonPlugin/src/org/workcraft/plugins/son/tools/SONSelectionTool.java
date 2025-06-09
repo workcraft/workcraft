@@ -136,18 +136,15 @@ public class SONSelectionTool extends SelectionTool {
                     return;
                 }
 
-                if (selectedNode instanceof VisualCondition) {
-                    VisualCondition vc = (VisualCondition) selectedNode;
+                if (selectedNode instanceof VisualCondition vc) {
                     vc.setMarked(!vc.isMarked());
                 }
 
-                if (selectedNode instanceof VisualEvent) {
-                    VisualEvent ve = (VisualEvent) selectedNode;
+                if (selectedNode instanceof VisualEvent ve) {
                     ve.setFaulty(!ve.isFaulty());
                 }
 
-                if (selectedNode instanceof VisualChannelPlace) {
-                    VisualChannelPlace cPlace = (VisualChannelPlace) selectedNode;
+                if (selectedNode instanceof VisualChannelPlace cPlace) {
                     for (VisualConnection con : model.getConnections(cPlace)) {
 
                         if (((VisualSONConnection) con).getSemantics() == Semantics.ASYNLINE) {
@@ -184,8 +181,7 @@ public class SONSelectionTool extends SelectionTool {
     @Override
     public boolean keyPressed(GraphEditorKeyEvent e) {
         if (e.isAltKeyDown() && !e.isMenuKeyDown() && !e.isShiftKeyDown()) {
-            switch (e.getKeyCode()) {
-            case KeyEvent.VK_B:
+            if (e.getKeyCode() == KeyEvent.VK_B) {
                 selectionBlock(e.getEditor());
                 return true;
             }
@@ -235,7 +231,7 @@ public class SONSelectionTool extends SelectionTool {
 
     private void setChannelPlaceToolState(final GraphEditor editor, boolean state) {
         if (editor instanceof GraphEditorPanel) {
-            Toolbox toolbox = ((GraphEditorPanel) editor).getToolBox();
+            Toolbox toolbox = editor.getToolBox();
             toolbox.setToolButtonEnableness(channelPlaceTool, state);
         }
     }

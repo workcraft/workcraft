@@ -72,8 +72,7 @@ public final class CircuitUtils {
             return null;
         }
         Node parent = driver.getParent();
-        if (parent instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent) parent;
+        if (parent instanceof FunctionComponent component) {
             if (component.getIsZeroDelay() && (component.isInverter() || component.isBuffer())) {
                 Contact input = component.getFirstInput();
                 Contact zeroDelayDriver = CircuitUtils.findDriver(circuit, input, false);
@@ -120,8 +119,7 @@ public final class CircuitUtils {
             visited.add(node);
             if (node instanceof Joint) {
                 queue.addAll(circuit.getPreset(node));
-            } else if (node instanceof Contact) {
-                Contact contact = (Contact) node;
+            } else if (node instanceof Contact contact) {
                 if (contact.isDriven()) {
                     // Is it necessary to check that (node == curNode) before adding preset to queue?
                     queue.addAll(circuit.getPreset(contact));
@@ -146,8 +144,7 @@ public final class CircuitUtils {
     private static Contact findZeroDelayInput(Contact contact) {
         Contact zeroDelayInput = null;
         Node parent = contact.getParent();
-        if (contact.isOutput() && (parent instanceof FunctionComponent)) {
-            FunctionComponent component = (FunctionComponent) parent;
+        if (contact.isOutput() && (parent instanceof FunctionComponent component)) {
             if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
                 zeroDelayInput = component.getFirstInput();
             }
@@ -181,8 +178,7 @@ public final class CircuitUtils {
             visited.add(node);
             if (node instanceof Joint) {
                 queue.addAll(circuit.getPostset(node));
-            } else if (node instanceof Contact) {
-                Contact contact = (Contact) node;
+            } else if (node instanceof Contact contact) {
                 // Support for zero delay buffers and inverters.
                 Contact zeroDelayOutput = transparentZeroDelayComponents ? findZeroDelayOutput(contact) : null;
                 if (zeroDelayOutput != null) {
@@ -218,8 +214,7 @@ public final class CircuitUtils {
             MathNode node = queue.remove();
             if (node instanceof Joint) {
                 queue.addAll(circuit.getPostset(node));
-            } else if (node instanceof Contact) {
-                Contact contact = (Contact) node;
+            } else if (node instanceof Contact contact) {
                 if (contact.isDriven()) {
                     fanoutCount++;
                 }
@@ -256,8 +251,7 @@ public final class CircuitUtils {
     private static Contact findZeroDelayOutput(Contact contact) {
         Contact zeroDelayOutput = null;
         Node parent = contact.getParent();
-        if (contact.isInput() && (parent instanceof FunctionComponent)) {
-            FunctionComponent component = (FunctionComponent) parent;
+        if (contact.isInput() && (parent instanceof FunctionComponent component)) {
             if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
                 zeroDelayOutput = component.getFirstOutput();
             }
@@ -297,8 +291,7 @@ public final class CircuitUtils {
     private static String getOutputContactReference(Circuit circuit, Contact contact) {
         String result = null;
         Node parent = contact.getParent();
-        if (parent instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent) parent;
+        if (parent instanceof FunctionComponent component) {
 
             Contact outputPort = getDrivenOutputPort(circuit, contact);
             if (outputPort != null) {
@@ -369,8 +362,7 @@ public final class CircuitUtils {
             String function) throws ParseException {
 
         Node parent = contact.getParent();
-        if (parent instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) parent;
+        if (parent instanceof VisualFunctionComponent component) {
             return parsePinFunction(circuit, component, function);
         } else {
             return parsePortFunction(circuit, function);
@@ -518,8 +510,7 @@ public final class CircuitUtils {
             }
             Set<BooleanVariable> bubbleLiterals = FormulaUtils.extractNegatedVariables(setFunction);
             for (BooleanVariable literal: bubbleLiterals) {
-                if (literal instanceof FunctionContact) {
-                    FunctionContact inputContact = (FunctionContact) literal;
+                if (literal instanceof FunctionContact inputContact) {
                     result.add(inputContact);
                 }
             }

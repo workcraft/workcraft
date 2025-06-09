@@ -293,8 +293,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             result.add(polyline.getNextAnchorPointLocation(cp));
         }
         Node parent = graphics.getParent();
-        if (parent instanceof VisualConnection) {
-            VisualConnection vc = (VisualConnection) parent;
+        if (parent instanceof VisualConnection vc) {
             result.addAll(calcConnectionSnaps(vc));
         }
         return result;

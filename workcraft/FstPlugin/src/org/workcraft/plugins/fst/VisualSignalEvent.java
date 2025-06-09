@@ -50,8 +50,7 @@ public class VisualSignalEvent extends VisualEvent {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualSignalEvent) {
-            VisualSignalEvent srcSignalEvent = (VisualSignalEvent) src;
+        if (src instanceof VisualSignalEvent srcSignalEvent) {
             getReferencedConnection().setDirection(srcSignalEvent.getReferencedConnection().getDirection());
         }
     }

@@ -89,8 +89,7 @@ public class Version implements Comparable<Version> {
     @Override
     public boolean equals(Object o) {
         boolean result = false;
-        if (o instanceof Version) {
-            Version v = (Version) o;
+        if (o instanceof Version v) {
             result = compareTo(v) == 0;
         }
         return result;

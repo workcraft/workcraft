@@ -15,7 +15,6 @@ import org.workcraft.interop.Format;
 import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.SdcFormat;
-import org.workcraft.plugins.circuit.utils.PathbreakSerialiserUtils;
 import org.workcraft.plugins.circuit.utils.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
@@ -378,7 +377,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    private class DriverPinTableModel extends AbstractTableModel {
+    private final class DriverPinTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
             return 1;
@@ -435,7 +434,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    private class DrivenPinTableModel extends AbstractTableModel {
+    private final class DrivenPinTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
             return 1;
@@ -452,7 +451,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    private class PinTableCellRenderer implements TableCellRenderer {
+    private final class PinTableCellRenderer implements TableCellRenderer {
 
         private final JLabel label = new JLabel() {
             @Override
@@ -468,8 +467,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 boolean isSelected, boolean hasFocus, int row, int col) {
 
             JLabel result = null;
-            if (value instanceof FunctionContact) {
-                FunctionContact contact = (FunctionContact) value;
+            if (value instanceof FunctionContact contact) {
                 Color color = ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), getCycleStatusColor(contact));
                 label.setBackground(color);
 

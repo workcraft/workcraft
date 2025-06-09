@@ -25,8 +25,7 @@ public class CircuitSelectionTool extends SelectionTool {
     @Override
     public JPopupMenu createPopupMenu(VisualNode node, final GraphEditor editor) {
         JPopupMenu popup = super.createPopupMenu(node, editor);
-        if (node instanceof VisualFunctionComponent) {
-            final VisualFunctionComponent component = (VisualFunctionComponent) node;
+        if (node instanceof VisualFunctionComponent component) {
             if (popup != null) {
                 popup.addSeparator();
             } else {
@@ -113,8 +112,7 @@ public class CircuitSelectionTool extends SelectionTool {
             GraphEditor editor = e.getEditor();
             final VisualModel model = editor.getModel();
             VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
-            if (node instanceof VisualContact) {
-                final VisualContact contact = (VisualContact) node;
+            if (node instanceof VisualContact contact) {
                 if (contact.isPort()) {
                     AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, contact, true);
                     textEditor.edit(contact.getName(), contact.getNameFont(),
@@ -122,8 +120,7 @@ public class CircuitSelectionTool extends SelectionTool {
 
                     processed = true;
                 }
-            } else if (node instanceof VisualCircuitComponent) {
-                VisualCircuitComponent component = (VisualCircuitComponent) node;
+            } else if (node instanceof VisualCircuitComponent component) {
                 if (e.isCtrlKeyDown()) {
                     RefinementUtils.openRefinementCircuit(component);
                 } else {

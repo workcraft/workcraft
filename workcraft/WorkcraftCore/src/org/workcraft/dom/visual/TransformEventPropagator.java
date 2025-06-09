@@ -83,8 +83,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
             nodeToObservers.remove(node);
         }
 
-        if (node instanceof TransformObserver) {
-            TransformObserver to = (TransformObserver) node;
+        if (node instanceof TransformObserver to) {
             LinkedList<Node> nodes = observerToNodes.get(to);
             if (nodes != null) {
                 for (Node n : nodes) {
@@ -103,8 +102,7 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
             ((ObservableState) node).addObserver(this);
         }
 
-        if (node instanceof TransformObserver) {
-            TransformObserver to = (TransformObserver) node;
+        if (node instanceof TransformObserver to) {
             to.subscribe(this);
         }
 

@@ -53,8 +53,7 @@ public class SgExporter implements Exporter {
 
     private String getSerialisedEventName(Fsm fsm, Event event) {
         String result = null;
-        if (event instanceof SignalEvent) {
-            SignalEvent signalEvent = (SignalEvent) event;
+        if (event instanceof SignalEvent signalEvent) {
             Signal signal = signalEvent.getSymbol();
             result = fsm.getNodeReference(signal);
             if (signal.hasDirection()) {
@@ -79,18 +78,10 @@ public class SgExporter implements Exporter {
         }
         if (!names.isEmpty()) {
             switch (type) {
-            case INPUT:
-                out.write(".inputs");
-                break;
-            case OUTPUT:
-                out.write(".outputs");
-                break;
-            case INTERNAL:
-                out.write(".internal");
-                break;
-            case DUMMY:
-                out.write(".dummy");
-                break;
+                case INPUT -> out.write(".inputs");
+                case OUTPUT -> out.write(".outputs");
+                case INTERNAL -> out.write(".internal");
+                case DUMMY -> out.write(".dummy");
             }
             for (String name: names) {
                 out.write(' ' + name);
@@ -135,8 +126,7 @@ public class SgExporter implements Exporter {
     }
 
     private void writeFsm(PrintWriter out, Fsm fsm) {
-        if (fsm instanceof Fst) {
-            Fst fst = (Fst) fsm;
+        if (fsm instanceof Fst fst) {
             writeSignalHeader(out, fst, Signal.Type.INPUT);
             writeSignalHeader(out, fst, Signal.Type.OUTPUT);
             writeSignalHeader(out, fst, Signal.Type.INTERNAL);

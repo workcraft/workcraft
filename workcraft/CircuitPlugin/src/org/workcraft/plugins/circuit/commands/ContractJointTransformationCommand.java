@@ -78,9 +78,7 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualJoint)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualJoint joint = (VisualJoint) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualJoint joint)) {
             Set<VisualConnection> connections = model.getConnections(node);
             VisualCircuitConnection predConnection = null;
             VisualCircuitConnection succConnection = null;

@@ -48,8 +48,7 @@ public class VisualState extends VisualComponent {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
-        if (d instanceof StateDecoration) {
-            StateDecoration sd = (StateDecoration) d;
+        if (d instanceof StateDecoration sd) {
             if (sd.isMarked()) {
                 g.fill(getInitialMarkerShape());
             }

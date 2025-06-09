@@ -23,8 +23,7 @@ public class SyncSelectionTool extends SelectionTool {
     @Override
     public JPopupMenu createPopupMenu(VisualNode node, final GraphEditor editor) {
         JPopupMenu popup = super.createPopupMenu(node, editor);
-        if (node instanceof VisualSyncComponent) {
-            final VisualSyncComponent component = (VisualSyncComponent) node;
+        if (node instanceof VisualSyncComponent component) {
             if (popup != null) {
                 popup.addSeparator();
             } else {
@@ -55,8 +54,7 @@ public class SyncSelectionTool extends SelectionTool {
                 continue;
             }
             result.add(node);
-            if (node instanceof VisualXmasComponent) {
-                VisualXmasComponent component = (VisualXmasComponent) node;
+            if (node instanceof VisualXmasComponent component) {
                 queue.addAll(component.getContacts());
             }
         }

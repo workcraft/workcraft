@@ -36,8 +36,7 @@ public class BufferHighFanoutTransformationCommand extends AbstractTransformatio
     public Collection<VisualContact> collectNodes(VisualModel model) {
         Collection<VisualContact> result = new HashSet<>();
         int forkHighFanout = CircuitSettings.getForkHighFanout();
-        if (model instanceof VisualCircuit) {
-            VisualCircuit circuit = (VisualCircuit) model;
+        if (model instanceof VisualCircuit circuit) {
             for (VisualContact driver : circuit.getVisualDrivers()) {
                 Set<VisualContact> driven = CircuitUtils.findDriven(circuit, driver, false);
                 if (driven.size() >= forkHighFanout) {
@@ -57,9 +56,7 @@ public class BufferHighFanoutTransformationCommand extends AbstractTransformatio
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualContact)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualContact contact = (VisualContact) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualContact contact)) {
             VisualFunctionComponent buffer = GateUtils.insertOrReuseBuffer(circuit, contact);
             // Name gate according to its fanout and report buffering of the high fanout fork
             VisualFunctionContact bufferOutput = buffer.getGateOutput();

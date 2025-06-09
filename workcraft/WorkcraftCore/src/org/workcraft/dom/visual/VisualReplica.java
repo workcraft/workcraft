@@ -107,8 +107,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualReplica) {
-            VisualReplica srcReplica = (VisualReplica) src;
+        if (src instanceof VisualReplica srcReplica) {
             setNameColor(srcReplica.getNameColor());
         }
     }

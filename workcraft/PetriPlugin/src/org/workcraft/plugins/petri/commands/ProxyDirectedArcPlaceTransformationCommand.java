@@ -38,8 +38,7 @@ public class ProxyDirectedArcPlaceTransformationCommand extends AbstractTransfor
     @Override
     public boolean isApplicableTo(VisualNode node) {
         boolean result = false;
-        if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) node;
+        if (node instanceof VisualConnection connection) {
             Node place = null;
             if (ConnectionUtils.isVisualConsumingArc(connection)) {
                 place = connection.getFirst();

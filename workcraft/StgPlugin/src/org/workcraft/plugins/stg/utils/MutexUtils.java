@@ -136,8 +136,7 @@ public class MutexUtils {
     }
 
     public static void factoroutMutexes(StgModel model, Collection<Mutex> mutexes) {
-        if ((model instanceof Stg) && (mutexes != null)) {
-            Stg stg = (Stg) model;
+        if ((model instanceof Stg stg) && (mutexes != null)) {
             for (Mutex mutex: mutexes) {
                 LogUtils.logInfo("Factoring out " + mutex);
                 factoroutMutexRequest(stg, mutex.r1);
@@ -159,8 +158,7 @@ public class MutexUtils {
     }
 
     public static void restoreMutexSignals(StgModel model, Collection<Mutex> mutexes) {
-        if ((model instanceof Stg) && (mutexes != null)) {
-            Stg stg = (Stg) model;
+        if ((model instanceof Stg stg) && (mutexes != null)) {
             for (Mutex mutex : mutexes) {
                 stg.setSignalType(mutex.r1.name, mutex.r1.type);
                 stg.setSignalType(mutex.g1.name, mutex.g1.type);
@@ -174,8 +172,7 @@ public class MutexUtils {
         if ((model != null) && (mutexes != null)) {
             for (Mutex mutex : mutexes) {
                 Node node = model.getNodeByReference(mutex.name);
-                if (node instanceof StgPlace) {
-                    StgPlace place = (StgPlace) node;
+                if (node instanceof StgPlace place) {
                     place.setMutex(true);
                 }
             }
@@ -183,8 +180,7 @@ public class MutexUtils {
     }
 
     public static void restoreMutexPlacesByContext(StgModel model, Collection<Mutex> mutexes) {
-        if ((model instanceof Stg) && (mutexes != null)) {
-            Stg stg = (Stg) model;
+        if ((model instanceof Stg stg) && (mutexes != null)) {
             for (Mutex mutex : mutexes) {
                 restoreMutexPlaceByContext(stg, mutex);
             }

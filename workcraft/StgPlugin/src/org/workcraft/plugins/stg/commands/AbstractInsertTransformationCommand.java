@@ -60,8 +60,7 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> arcs = new HashSet<>();
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
+        if (model instanceof VisualStg stg) {
             arcs.addAll(stg.getVisualImplicitPlaceArcs());
             arcs.addAll(ConnectionUtils.getVisualConsumingArcs(stg));
             arcs.addAll(ConnectionUtils.getVisualProducingArcs(stg));
@@ -72,9 +71,7 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualStg) && (node instanceof VisualConnection)) {
-            VisualStg stg = (VisualStg) model;
-            VisualConnection connection = (VisualConnection) node;
+        if ((model instanceof VisualStg stg) && (node instanceof VisualConnection connection)) {
             VisualTransition transition = insertTransitionIntoConnection(stg, connection);
             model.addToSelection(transition);
         }

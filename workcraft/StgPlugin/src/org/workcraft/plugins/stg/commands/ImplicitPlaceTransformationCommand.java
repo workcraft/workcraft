@@ -45,9 +45,8 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
 
     @Override
     public boolean isEnabled(ModelEntry me, VisualNode node) {
-        if (node instanceof VisualStgPlace) {
+        if (node instanceof VisualStgPlace place) {
             VisualModel model = me.getVisualModel();
-            VisualStgPlace place = (VisualStgPlace) node;
             Collection<VisualNode> preset = model.getPreset(place);
             Collection<VisualNode> postset = model.getPostset(place);
             Collection<Replica> replicas = place.getReplicas();
@@ -63,8 +62,7 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> places = new HashSet<>();
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
+        if (model instanceof VisualStg stg) {
             places.addAll(stg.getVisualPlaces());
             Collection<VisualNode> selection = stg.getSelection();
             if (!selection.isEmpty()) {
@@ -76,9 +74,7 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualStg) && (node instanceof VisualStgPlace)) {
-            VisualStg stg = (VisualStg) model;
-            VisualStgPlace place = (VisualStgPlace) node;
+        if ((model instanceof VisualStg stg) && (node instanceof VisualStgPlace place)) {
             VisualImplicitPlaceArc connection = stg.makeImplicitIfPossible(place, true);
             if (connection != null) {
                 model.addToSelection(connection);

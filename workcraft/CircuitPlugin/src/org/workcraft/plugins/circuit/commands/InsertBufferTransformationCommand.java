@@ -58,9 +58,7 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualCircuitConnection)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualCircuitConnection connection = (VisualCircuitConnection) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualCircuitConnection connection)) {
             VisualFunctionComponent buffer = GateUtils.createBufferGate(circuit);
             GateUtils.insertGateWithin(circuit, buffer, connection);
             GateUtils.propagateInitialState(circuit, buffer);

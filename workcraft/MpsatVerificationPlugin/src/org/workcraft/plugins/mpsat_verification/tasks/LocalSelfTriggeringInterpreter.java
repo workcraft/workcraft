@@ -92,8 +92,7 @@ class LocalSelfTriggeringInterpreter extends ReachabilityOutputInterpreter {
                 String ref = stg.getNodeReference(transition);
                 throw new RuntimeException("Dummies are not supported in local self-triggering check: " + ref);
             }
-            if ((transition instanceof SignalTransition) && stg.isEnabled(transition)) {
-                SignalTransition signalTransition = (SignalTransition) transition;
+            if ((transition instanceof SignalTransition signalTransition) && stg.isEnabled(transition)) {
                 Signal.Type signalType = signalTransition.getSignalType();
                 if ((signalType == Signal.Type.INTERNAL) || (signalType == Signal.Type.OUTPUT)) {
                     result.add(signalTransition);

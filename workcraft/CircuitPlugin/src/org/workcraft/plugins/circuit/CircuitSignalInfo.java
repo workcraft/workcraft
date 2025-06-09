@@ -63,8 +63,7 @@ public class CircuitSignalInfo {
 
         Node parent = driver.getParent();
         boolean isAssignOutput = false;
-        if (parent instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent) parent;
+        if (parent instanceof FunctionComponent component) {
             isAssignOutput = driver.isOutput() && !component.isMapped();
         }
         if (isAssignOutput) {

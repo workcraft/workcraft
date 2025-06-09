@@ -125,8 +125,7 @@ public class WtgToStgConverter {
         // Waveform entry
         DummyTransition entryTransition = null;
         MathNode entryNode = preset.iterator().next();
-        if (entryNode instanceof State) {
-            State entryState = (State) entryNode;
+        if (entryNode instanceof State entryState) {
             StgPlace entryPlace = stateToPlaceMap.get(entryState);
             entryTransition = dstModel.createDummyTransition(getEntryEventName(waveformName), null);
             try {
@@ -138,8 +137,7 @@ public class WtgToStgConverter {
         // Waveform exit
         DummyTransition exitTransition = null;
         MathNode exitNode = postset.iterator().next();
-        if (exitNode instanceof State) {
-            State exitState = (State) exitNode;
+        if (exitNode instanceof State exitState) {
             StgPlace exitPlace = stateToPlaceMap.get(exitState);
             exitTransition = dstModel.createDummyTransition(getExitEventName(waveformName), null);
             try {
@@ -294,20 +292,19 @@ public class WtgToStgConverter {
     }
 
     private SignalTransition.Direction convertWtgToStgDirection(TransitionEvent.Direction direction) {
-        switch (direction) {
-        case RISE: return SignalTransition.Direction.PLUS;
-        case FALL: return SignalTransition.Direction.MINUS;
-        default: return SignalTransition.Direction.TOGGLE;
-        }
+        return switch (direction) {
+            case RISE -> SignalTransition.Direction.PLUS;
+            case FALL -> SignalTransition.Direction.MINUS;
+            default -> SignalTransition.Direction.TOGGLE;
+        };
     }
 
     private org.workcraft.plugins.stg.Signal.Type convertWtgToStgType(Signal.Type type) {
-        switch (type) {
-        case INPUT: return org.workcraft.plugins.stg.Signal.Type.INPUT;
-        case OUTPUT: return org.workcraft.plugins.stg.Signal.Type.OUTPUT;
-        case INTERNAL: return org.workcraft.plugins.stg.Signal.Type.INTERNAL;
-        default: return null;
-        }
+        return switch (type) {
+            case INPUT -> org.workcraft.plugins.stg.Signal.Type.INPUT;
+            case OUTPUT -> org.workcraft.plugins.stg.Signal.Type.OUTPUT;
+            case INTERNAL -> org.workcraft.plugins.stg.Signal.Type.INTERNAL;
+        };
     }
 
     private void convertConnections() {

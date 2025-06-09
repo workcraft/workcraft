@@ -292,8 +292,7 @@ public class VisualPlaceNode extends VisualComponent {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualPlaceNode) {
-            VisualPlaceNode srcComponent = (VisualPlaceNode) src;
+        if (src instanceof VisualPlaceNode srcComponent) {
             setMarked(srcComponent.isMarked());
         }
     }

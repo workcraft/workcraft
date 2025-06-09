@@ -173,8 +173,7 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
     @Override
     public void draw(DrawRequest r) {
         Decoration d = r.getDecoration();
-        if (d instanceof ContainerDecoration) {
-            ContainerDecoration containerDecoration = (ContainerDecoration) d;
+        if (d instanceof ContainerDecoration containerDecoration) {
             boolean shouldBeExcited = containerDecoration.isContainerExcited();
             if (getIsCollapsed() == shouldBeExcited) {
                 setIsExcited(shouldBeExcited);

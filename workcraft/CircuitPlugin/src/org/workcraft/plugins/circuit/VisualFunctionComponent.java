@@ -182,8 +182,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     public VisualFunctionContact getVisualContact(Contact contact) {
         for (Node node: getChildren()) {
-            if (!(node instanceof VisualFunctionContact)) continue;
-            VisualFunctionContact visualContact = (VisualFunctionContact) node;
+            if (!(node instanceof VisualFunctionContact visualContact)) continue;
             if (visualContact.getReferencedComponent() == contact) {
                 return visualContact;
             }
@@ -277,17 +276,17 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         VisualContact contact = getMainVisualOutput();
         if (contact != null) {
             switch (contact.getDirection()) {
-            case NORTH:
-                at.quadrantRotate(reverse ? 1 : 3);
-                break;
-            case SOUTH:
-                at.quadrantRotate(reverse ? 3 : 1);
-                break;
-            case WEST:
-                at.quadrantRotate(2);
-                break;
-            case EAST:
-                break;
+                case NORTH:
+                    at.quadrantRotate(reverse ? 1 : 3);
+                    break;
+                case SOUTH:
+                    at.quadrantRotate(reverse ? 3 : 1);
+                    break;
+                case WEST:
+                    at.quadrantRotate(2);
+                    break;
+                case EAST:
+                    break;
             }
         }
         return at;
@@ -329,8 +328,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                     : TransformHelper.snapP5(boxMaxX + GateRenderer.contactMargin);
 
             for (Node node: this.getChildren()) {
-                if (node instanceof VisualFunctionContact) {
-                    VisualFunctionContact contact = (VisualFunctionContact) node;
+                if (node instanceof VisualFunctionContact contact) {
                     bt.setTransform(at);
                     if (contact.isInput()) {
                         String vcName = contact.getName();
@@ -369,8 +367,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     public void notify(StateEvent e) {
         super.notify(e);
 
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pc = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pc) {
             String propertyName = pc.getPropertyName();
             if (propertyName.equals(Contact.PROPERTY_NAME)) {
                 // This is needed to recalculate the map of contact name to position.
@@ -385,8 +382,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             if (propertyName.equals(FunctionContact.PROPERTY_FUNCTION)) {
                 setContactsDefaultPosition();
                 for (Node node : getChildren()) {
-                    if (node instanceof VisualFunctionContact) {
-                        VisualFunctionContact vc = (VisualFunctionContact) node;
+                    if (node instanceof VisualFunctionContact vc) {
                         vc.invalidateRenderedFormula();
                     }
                 }
@@ -414,8 +410,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         g.setColor(GateRenderer.foregroundColor);
         Map<String, List<Point2D>> contactToPositions = rr.getContactPositions();
         for (Node node : this.getChildren()) {
-            if (node instanceof VisualFunctionContact) {
-                VisualFunctionContact contact = (VisualFunctionContact) node;
+            if (node instanceof VisualFunctionContact contact) {
                 Point2D contactPosition = contact.getPosition();
                 String literal = contact.getName();
                 List<Point2D> positions = contact.isInput() ? contactToPositions.getOrDefault(literal, Collections.emptyList())
@@ -476,8 +471,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         Point2D inputPos = null;
         Point2D outputPos = null;
         for (Node node: this.getChildren()) {
-            if (node instanceof VisualFunctionContact) {
-                VisualFunctionContact vc = (VisualFunctionContact) node;
+            if (node instanceof VisualFunctionContact vc) {
                 if (vc.isInput()) {
                     inputPos = getContactLinePositionInLocalSpace(vc, rr);
                 } else {
@@ -591,8 +585,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualFunctionComponent) {
-            VisualFunctionComponent srcComponent = (VisualFunctionComponent) src;
+        if (src instanceof VisualFunctionComponent srcComponent) {
             setIsZeroDelay(srcComponent.getIsZeroDelay());
             setAvoidInit(srcComponent.getAvoidInit());
         }

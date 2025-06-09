@@ -58,8 +58,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     @NoAutoSerialisation
     public void setSetFunction(BooleanFormula setFunction) {
-        if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent p = (VisualFunctionComponent) getParent();
+        if (getParent() instanceof VisualFunctionComponent p) {
             p.invalidateRenderingResult();
         }
         renderedSetFunction = null;
@@ -73,8 +72,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     @NoAutoSerialisation
     public void setResetFunction(BooleanFormula resetFunction) {
-        if (getParent() instanceof VisualFunctionComponent) {
-            VisualFunctionComponent p = (VisualFunctionComponent) getParent();
+        if (getParent() instanceof VisualFunctionComponent p) {
             p.invalidateRenderingResult();
         }
         renderedResetFunction = null;
@@ -193,6 +191,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         return bb;
     }
 
+    @SuppressWarnings("PMD.SwitchDensity")
     private void drawArrow(Graphics2D g, ArrowType arrowType, Point2D offset) {
         double s = CircuitSettings.getContactFontSize();
         float lineStrokeWidth = 0.08f * (float) s;
@@ -203,28 +202,28 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         double headHeight = 0.3 * s;
         double headWidth = 0.15 * s;
         switch (arrowType) {
-        case UP:
-            double upLineY = offset.getY() - 0.5 * lineStrokeWidth;
-            double upHeadY = upLineY - lineHeight;
-            Path2D upHeadPath = new Path2D.Double();
-            upHeadPath.moveTo(middleX - headWidth, upHeadY);
-            upHeadPath.lineTo(middleX + headWidth, upHeadY);
-            upHeadPath.lineTo(middleX, upHeadY - headHeight);
-            upHeadPath.closePath();
-            g.fill(upHeadPath);
-            g.draw(new Line2D.Double(middleX, upLineY, middleX, upHeadY));
-            break;
-        case DOWN:
-            double downHeadY = offset.getY() - headHeight;
-            double downLineY = downHeadY - lineHeight;
-            Path2D downHeadPath = new Path2D.Double();
-            downHeadPath.moveTo(middleX - headWidth, downHeadY);
-            downHeadPath.lineTo(middleX + headWidth, downHeadY);
-            downHeadPath.lineTo(middleX, downHeadY + headHeight);
-            downHeadPath.closePath();
-            g.fill(downHeadPath);
-            g.draw(new Line2D.Double(middleX, downLineY, middleX, downHeadY));
-            break;
+            case UP:
+                double upLineY = offset.getY() - 0.5 * lineStrokeWidth;
+                double upHeadY = upLineY - lineHeight;
+                Path2D upHeadPath = new Path2D.Double();
+                upHeadPath.moveTo(middleX - headWidth, upHeadY);
+                upHeadPath.lineTo(middleX + headWidth, upHeadY);
+                upHeadPath.lineTo(middleX, upHeadY - headHeight);
+                upHeadPath.closePath();
+                g.fill(upHeadPath);
+                g.draw(new Line2D.Double(middleX, upLineY, middleX, upHeadY));
+                break;
+            case DOWN:
+                double downHeadY = offset.getY() - headHeight;
+                double downLineY = downHeadY - lineHeight;
+                Path2D downHeadPath = new Path2D.Double();
+                downHeadPath.moveTo(middleX - headWidth, downHeadY);
+                downHeadPath.lineTo(middleX + headWidth, downHeadY);
+                downHeadPath.lineTo(middleX, downHeadY + headHeight);
+                downHeadPath.closePath();
+                g.fill(downHeadPath);
+                g.draw(new Line2D.Double(middleX, downLineY, middleX, downHeadY));
+                break;
         }
         float columnStrokeWidth = 1.25f * lineStrokeWidth;
         g.setStroke(new BasicStroke(columnStrokeWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_MITER));
@@ -285,8 +284,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
                 result = true;
             }
             // Output port of a BOX-rendered component
-            if ((parent instanceof VisualFunctionComponent) && isOutput()) {
-                VisualFunctionComponent component = (VisualFunctionComponent) parent;
+            if ((parent instanceof VisualFunctionComponent component) && isOutput()) {
                 if (component.getRenderingResult() == null) {
                     result = true;
                 }
@@ -316,8 +314,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     @Override
     public void notify(StateEvent e) {
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pc = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pc) {
             String propertyName = pc.getPropertyName();
             if (propertyName.equals(FunctionContact.PROPERTY_FUNCTION)) {
                 invalidateRenderedFormula();

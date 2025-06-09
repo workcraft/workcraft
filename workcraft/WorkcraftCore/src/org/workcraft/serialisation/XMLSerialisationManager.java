@@ -46,8 +46,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
 
         nodeSerialiser.serialise(element, object, state.internalReferences, state.externalReferences);
 
-        if (object instanceof Container) {
-            Container container = (Container) object;
+        if (object instanceof Container container) {
             ArrayList<Node> children = new ArrayList<>(container.getChildren());
             for (Node child : children) {
                 Element childElement = XmlUtils.createChildElement(XMLCommonAttributes.NODE_ATTRIBUTE, element);

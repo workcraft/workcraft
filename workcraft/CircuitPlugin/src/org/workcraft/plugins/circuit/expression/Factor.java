@@ -35,8 +35,7 @@ public class Factor implements Expression {
     @Override
     public Expression eval(Map<String, Boolean> assignments) {
         Expression evalExpression = expression.eval(assignments);
-        if (evalExpression instanceof Constant) {
-            Constant constant = (Constant) evalExpression;
+        if (evalExpression instanceof Constant constant) {
             return new Constant(constant.value);
         }
         return evalExpression;

@@ -51,8 +51,7 @@ public class FlatComboBox extends JComboBox<Object> {
         setMaximumRowCount(25);
         for (int i = 0; i < getComponentCount(); i++) {
             Component component = getComponent(i);
-            if (component instanceof AbstractButton) {
-                AbstractButton button = (AbstractButton) component;
+            if (component instanceof AbstractButton button) {
                 button.setBorderPainted(false);
                 button.setBorder(new EmptyBorder(0, 0, 0, 0));
             }

@@ -56,8 +56,7 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
     }
 
     private void nodeAdded(Node node) {
-        if (node instanceof Dependent) {
-            Dependent dependentNode = (Dependent) node;
+        if (node instanceof Dependent dependentNode) {
             for (MathNode mathNode : dependentNode.getMathReferences()) {
                 addReference(mathNode, dependentNode);
             }
@@ -70,8 +69,7 @@ public class DefaultMathNodeRemover extends HierarchySupervisor {
     }
 
     private void nodeRemoved(Node node) {
-        if (node instanceof Dependent) {
-            Dependent dependentNode = (Dependent) node;
+        if (node instanceof Dependent dependentNode) {
             for (MathNode mathNode : dependentNode.getMathReferences()) {
                 removeReference(mathNode, dependentNode);
             }

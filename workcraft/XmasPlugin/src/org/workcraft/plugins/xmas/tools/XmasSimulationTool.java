@@ -119,8 +119,7 @@ public class XmasSimulationTool extends StgSimulationTool {
         } else if (node instanceof VisualSwitchComponent) {
             SwitchStg switchStg = converter.getSwitchStg((VisualSwitchComponent) node);
             result = getExcitedTransition(switchStg.oracle.getAllTransitions());
-        } else if (node instanceof VisualQueueComponent) {
-            VisualQueueComponent queue = (VisualQueueComponent) node;
+        } else if (node instanceof VisualQueueComponent queue) {
             QueueStg queueStg = converter.getQueueStg(queue);
             int capacity = queue.getReferencedComponent().getCapacity();
             int idx = (int) Math.floor(0.5 * capacity + nodespacePosition.getX() * queue.SLOT_WIDTH);

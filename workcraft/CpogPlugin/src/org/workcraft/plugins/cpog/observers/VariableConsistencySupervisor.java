@@ -26,14 +26,12 @@ public class VariableConsistencySupervisor extends HierarchySupervisor {
 
     private void createDefaultLabels(HierarchyEvent e) {
         for (Node node : e.getAffectedNodes()) {
-            if (node instanceof VisualVertex) {
-                VisualVertex vertex = (VisualVertex) node;
+            if (node instanceof VisualVertex vertex) {
                 if (vertex.getLabel().isEmpty()) {
                     vertex.setLabel("v_" + vertexCount++);
                 }
             }
-            if (node instanceof VisualVariable) {
-                VisualVariable variable = (VisualVariable) node;
+            if (node instanceof VisualVariable variable) {
                 if (variable.getLabel().isEmpty()) {
                     variable.setLabel("x_" + variableCount++);
                 }

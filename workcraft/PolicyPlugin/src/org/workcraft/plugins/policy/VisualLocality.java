@@ -69,8 +69,7 @@ public class VisualLocality extends VisualGroup {
 
     @Override
     public void reparent(Collection<? extends Node> nodes, Container newParent) {
-        if (newParent instanceof VisualLocality) {
-            VisualLocality newLocality = (VisualLocality) newParent;
+        if (newParent instanceof VisualLocality newLocality) {
             refLocality.reparent(filterRefNodesByLocality(nodes, refLocality), newLocality.getLocality());
         }
         super.reparent(nodes, newParent);

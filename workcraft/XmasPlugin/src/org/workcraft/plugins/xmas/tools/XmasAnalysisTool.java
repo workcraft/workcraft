@@ -348,8 +348,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
-    private static List<JCheckBox> jcbn = new ArrayList<>();
-    private JCheckBox jcb;
+    private static final List<JCheckBox> jcbn = new ArrayList<>();
     private JCheckBox jcblast;
 
     private void createPanel(List<JPanel> panellist, String file) {
@@ -360,6 +359,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
         }
+        JCheckBox jcb;
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             Scanner lineSc = new Scanner(line);
@@ -369,8 +369,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                     ItemListener itemListener = new ItemListener() {
                         @Override
                         public void itemStateChanged(ItemEvent e) {
-                            if (e.getSource() instanceof JCheckBox) {
-                                JCheckBox sjcb = (JCheckBox) e.getSource();
+                            if (e.getSource() instanceof JCheckBox sjcb) {
                                 if (sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
                                 if (sjcb.isSelected()) System.out.println("indexa==" + index);
                                 if (jcblast != null) jcblast.setSelected(false);
@@ -400,8 +399,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         ItemListener itemListener = new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() instanceof JCheckBox) {
-                    JCheckBox sjcb = (JCheckBox) e.getSource();
+                if (e.getSource() instanceof JCheckBox sjcb) {
                     if (sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
                     //if (sjcb.isSelected()) System.out.println("indexb==" + index);
                     if (jcblast != null) jcblast.setSelected(false);

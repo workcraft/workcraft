@@ -29,7 +29,7 @@ import java.util.*;
 @DisplayName("Digital Timing Diagram")
 public class VisualDtd extends AbstractVisualModel {
 
-    public class SignalEvent {
+    public static class SignalEvent {
         public final VisualConnection beforeLevel;
         public final VisualTransitionEvent edge;
         public final VisualConnection afterLevel;
@@ -89,16 +89,12 @@ public class VisualDtd extends AbstractVisualModel {
         if ((first instanceof VisualSignal) || (second instanceof VisualSignal)) {
             throw new InvalidConnectionException("Invalid connection.");
         }
-        if ((first instanceof VisualEvent) && (second instanceof VisualEvent)) {
-            VisualEvent firstEvent = (VisualEvent) first;
-            VisualEvent secondEvent = (VisualEvent) second;
+        if ((first instanceof VisualEvent firstEvent) && (second instanceof VisualEvent secondEvent)) {
             if (ModelUtils.hasPath(this, secondEvent, firstEvent)) {
                 throw new InvalidConnectionException("Loops are not allowed.");
             }
         }
-        if ((first instanceof VisualTransitionEvent) && (second instanceof VisualTransitionEvent)) {
-            VisualTransitionEvent firstTransition = (VisualTransitionEvent) first;
-            VisualTransitionEvent secondTransition = (VisualTransitionEvent) second;
+        if ((first instanceof VisualTransitionEvent firstTransition) && (second instanceof VisualTransitionEvent secondTransition)) {
             if (firstTransition.getParent() == secondTransition.getParent()) {
                 if ((firstTransition.getDirection() == TransitionEvent.Direction.STABILISE)
                         && (secondTransition.getDirection() != TransitionEvent.Direction.DESTABILISE)) {
@@ -114,20 +110,16 @@ public class VisualDtd extends AbstractVisualModel {
             }
         }
 
-        if ((first instanceof VisualEntryEvent) && (second instanceof VisualExitEvent)) {
-            VisualEntryEvent firstEntry = (VisualEntryEvent) first;
+        if ((first instanceof VisualEntryEvent firstEntry) && (second instanceof VisualExitEvent secondExit)) {
             VisualSignal firstSignal = firstEntry.getVisualSignal();
-            VisualExitEvent secondExit = (VisualExitEvent) second;
             VisualSignal secondSignal = secondExit.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and exit of different signals.");
             }
         }
 
-        if ((first instanceof VisualEntryEvent) && (second instanceof VisualTransitionEvent)) {
-            VisualEntryEvent firstEntry = (VisualEntryEvent) first;
+        if ((first instanceof VisualEntryEvent firstEntry) && (second instanceof VisualTransitionEvent secondTransition)) {
             VisualSignal firstSignal = firstEntry.getVisualSignal();
-            VisualTransitionEvent secondTransition = (VisualTransitionEvent) second;
             VisualSignal secondSignal = secondTransition.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and transition of different signals.");
@@ -150,10 +142,8 @@ public class VisualDtd extends AbstractVisualModel {
             }
         }
 
-        if ((first instanceof VisualTransitionEvent) && (second instanceof VisualExitEvent)) {
-            VisualTransitionEvent firstTransition = (VisualTransitionEvent) first;
+        if ((first instanceof VisualTransitionEvent firstTransition) && (second instanceof VisualExitEvent secondExit)) {
             VisualSignal firstSignal = firstTransition.getVisualSignal();
-            VisualExitEvent secondExit = (VisualExitEvent) second;
             VisualSignal secondSignal = secondExit.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate transition and exit of different signals.");
@@ -209,8 +199,7 @@ public class VisualDtd extends AbstractVisualModel {
             VisualEvent visitingEvent = toVisit.poll();
             if (!(visitingEvent instanceof VisualExitEvent)) {
                 for (Node node : getPostset(visitingEvent))  {
-                    if (node instanceof VisualEvent) {
-                        VisualEvent nextEvent = (VisualEvent) node;
+                    if (node instanceof VisualEvent nextEvent) {
                         if (nodeDependencies.containsKey(nextEvent)) {
                             nodeDependencies.computeIfPresent(nextEvent, (k, v) -> v + 1);
                         } else {
@@ -416,8 +405,7 @@ public class VisualDtd extends AbstractVisualModel {
         super.afterPaste();
         Collection<VisualNode> selection = new ArrayList<>(getSelection());
         for (VisualNode node : selection) {
-            if (node instanceof VisualConnection) {
-                VisualConnection connection = (VisualConnection) node;
+            if (node instanceof VisualConnection connection) {
                 if (DtdUtils.isEventConnection(connection.getReferencedConnection())) {
                     DtdUtils.decorateVisualEventConnection(connection);
                 }

@@ -68,9 +68,8 @@ public class FsmSimulationTool extends PetriSimulationTool {
             return;
         }
         MathModel model = editor.getModel().getMathModel();
-        if (model instanceof Fsm) {
+        if (model instanceof Fsm fsm) {
             editor.getWorkspaceEntry().saveMemento();
-            Fsm fsm = (Fsm) model;
             for (State state: fsm.getStates()) {
                 String ref = fsm.getNodeReference(state);
                 Node underlyingNode = getUnderlyingModel().getNodeByReference(ref);
@@ -176,8 +175,8 @@ public class FsmSimulationTool extends PetriSimulationTool {
     }
 
     private Transition getExcitedTransitionOfNode(Node node) {
-        if ((node != null) && (node instanceof VisualEvent)) {
-            VisualTransition vTransition = converter.getRelatedTransition((VisualEvent) node);
+        if (node instanceof VisualEvent event) {
+            VisualTransition vTransition = converter.getRelatedTransition(event);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedComponent();
                 if (isEnabledUnderlyingNode(transition)) {

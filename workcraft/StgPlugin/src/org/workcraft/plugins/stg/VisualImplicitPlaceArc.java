@@ -63,7 +63,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
     }
 
     private void addPlaceObserver(Place implicitPlace) {
-        implicitPlace.addObserver(e -> observableStateImpl.sendNotification(e));
+        implicitPlace.addObserver(observableStateImpl::sendNotification);
     }
 
     public void setImplicitPlaceArcDependencies(MathConnection refCon1, MathConnection refCon2, StgPlace implicitPlace) {
@@ -127,8 +127,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualImplicitPlaceArc) {
-            VisualImplicitPlaceArc srcImplicitPlaceArc = (VisualImplicitPlaceArc) src;
+        if (src instanceof VisualImplicitPlaceArc srcImplicitPlaceArc) {
             setTokenColor(srcImplicitPlaceArc.getTokenColor());
             StgPlace srcPlace = srcImplicitPlaceArc.getImplicitPlace();
             getImplicitPlace().setTokens(srcPlace.getTokens());

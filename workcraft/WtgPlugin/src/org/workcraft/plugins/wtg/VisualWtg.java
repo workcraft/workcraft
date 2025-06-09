@@ -61,8 +61,7 @@ public class VisualWtg extends VisualDtd {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
             Container container = getCurrentLevel();
-            if (container instanceof VisualWaveform) {
-                VisualWaveform waveform = (VisualWaveform) container;
+            if (container instanceof VisualWaveform waveform) {
                 properties.addAll(WtgPropertyHelper.getSignalDeclarationProperties(this, waveform));
                 properties.removeByName(AbstractVisualModel.PROPERTY_TITLE);
             } else {

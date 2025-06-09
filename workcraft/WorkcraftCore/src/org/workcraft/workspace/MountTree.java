@@ -14,10 +14,9 @@ public class MountTree {
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof MountTree)) {
+        if (!(obj instanceof MountTree other)) {
             return false;
         }
-        MountTree other = (MountTree) obj;
         return other.mountTo.equals(mountTo);
     }
 

@@ -326,8 +326,7 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public String getNodeReference(NamespaceProvider provider, Node node) {
-        if (node instanceof StgPlace) {
-            StgPlace place = (StgPlace) node;
+        if (node instanceof StgPlace place) {
             if (place.isImplicit()) {
                 Set<MathNode> preset = getPreset(place);
                 Set<MathNode> postset = getPostset(place);
@@ -382,8 +381,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public <T extends MathNode> T createMergedNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
         T result = super.createMergedNode(srcNodes, container, type);
-        if (result instanceof SignalTransition) {
-            SignalTransition signalTransition = (SignalTransition) result;
+        if (result instanceof SignalTransition signalTransition) {
             // Type priority: OUTPUT > INPUT > INTERNAL
             boolean foundOutput = false;
             boolean foundInput = false;
@@ -393,8 +391,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             boolean foundPlus = false;
             boolean foundMinus = false;
             for (MathNode srcNode: srcNodes) {
-                if (srcNode instanceof SignalTransition) {
-                    SignalTransition srcSignalTransition = (SignalTransition) srcNode;
+                if (srcNode instanceof SignalTransition srcSignalTransition) {
                     if (srcSignalTransition.getSignalType() == Signal.Type.OUTPUT) {
                         foundOutput = true;
                     }
@@ -447,8 +444,7 @@ public class Stg extends AbstractMathModel implements StgModel {
 
         NameManager dstNameManager = getReferenceManager().getNameManager(dstProvider);
         for (MathNode srcChild : srcChildren) {
-            if (srcChild instanceof SignalTransition) {
-                SignalTransition srcTransition = (SignalTransition) srcChild;
+            if (srcChild instanceof SignalTransition srcTransition) {
                 String signalName = srcTransition.getSignalName();
                 if (dstNameManager.isUnusedName(signalName)) continue;
                 // Check for name clash with non-signal nodes.

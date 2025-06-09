@@ -19,7 +19,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public abstract class AbstractInsertTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -64,7 +63,7 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
 
         Collection<VisualConnection> invalidConnections = result.stream()
                 .filter(connection -> !isValidInsertion(model, connection))
-                .collect(Collectors.toList());
+                .toList();
 
         result.removeAll(invalidConnections);
         if (!invalidConnections.isEmpty()) {
@@ -94,8 +93,7 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) node;
+        if (node instanceof VisualConnection connection) {
             insertWithinConnection(model, connection);
         }
     }

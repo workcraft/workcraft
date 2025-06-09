@@ -51,8 +51,7 @@ public class DefaultHangingConnectionRemover extends HierarchySupervisor {
 
         // need only to remove those connections that are not already being deleted
         for (Object object : nct.getConnections(node)) {
-            if (object instanceof Connection) {
-                Connection connection = (Connection) object;
+            if (object instanceof Connection connection) {
                 if (hanging.apply(connection)) {
                     hangingConnections.add(connection);
                 }

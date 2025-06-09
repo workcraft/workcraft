@@ -64,8 +64,7 @@ public class NodeContextTracker<N extends Node, C extends Connection> extends Hi
         }
         removeHashes(node);
 
-        if (node instanceof Connection) {
-            Connection connection = (Connection) node;
+        if (node instanceof Connection connection) {
             Node first = connection.getFirst();
             Node second = connection.getSecond();
 

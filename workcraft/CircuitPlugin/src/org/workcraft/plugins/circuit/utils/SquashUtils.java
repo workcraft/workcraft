@@ -111,14 +111,12 @@ public final class SquashUtils {
             VisualFunctionContact drivenContact, VisualFunctionContact driverContact) {
 
         for (VisualNode predNode : new ArrayList<>(circuit.getPreset(drivenContact))) {
-            if (predNode instanceof VisualReplicaContact) {
-                VisualReplicaContact predReplicaContact = (VisualReplicaContact) predNode;
+            if (predNode instanceof VisualReplicaContact predReplicaContact) {
                 ConversionUtils.collapseReplicaContact(circuit, predReplicaContact);
             }
         }
         for (Replica replica : new ArrayList<>(driverContact.getReplicas())) {
-            if (replica instanceof VisualReplicaContact) {
-                VisualReplicaContact replicaContact = (VisualReplicaContact) replica;
+            if (replica instanceof VisualReplicaContact replicaContact) {
                 ConversionUtils.collapseReplicaContact(circuit, replicaContact);
             }
         }

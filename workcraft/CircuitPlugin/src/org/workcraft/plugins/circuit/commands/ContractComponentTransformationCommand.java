@@ -41,8 +41,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
     @Override
     public boolean isEnabled(ModelEntry me, VisualNode node) {
         boolean result = false;
-        if (node instanceof VisualCircuitComponent) {
-            VisualCircuitComponent component = (VisualCircuitComponent) node;
+        if (node instanceof VisualCircuitComponent component) {
             result = component.getReferencedComponent().isSingleInputSingleOutput();
         }
         return result;
@@ -63,9 +62,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualCircuitComponent)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualCircuitComponent component = (VisualCircuitComponent) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualCircuitComponent component)) {
             if (isValidContraction(circuit, component)) {
                 VisualContact inputContact = component.getFirstVisualInput();
                 for (VisualContact outputContact: component.getVisualOutputs()) {
@@ -115,8 +112,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
         // Handle zero delay components
         Contact directDriver = CircuitUtils.findDriver(mathCircuit, inputContact.getReferencedComponent(), false);
         Node directDriverParent = directDriver == null ? null : directDriver.getParent();
-        if (directDriverParent instanceof FunctionComponent) {
-            FunctionComponent directDriverComponent = (FunctionComponent) directDriverParent;
+        if (directDriverParent instanceof FunctionComponent directDriverComponent) {
             if (directDriverComponent.getIsZeroDelay()) {
                 Collection<Contact> directDrivenSet = CircuitUtils.findDriven(mathCircuit, outputContact.getReferencedComponent(), false);
                 for (Contact directDriven: directDrivenSet) {
@@ -125,8 +121,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
                         return false;
                     }
                     Node directDrivenParent = directDriven.getParent();
-                    if (directDrivenParent instanceof FunctionComponent) {
-                        FunctionComponent directDrivenComponent = (FunctionComponent) directDrivenParent;
+                    if (directDrivenParent instanceof FunctionComponent directDrivenComponent) {
                         if (directDrivenComponent.getIsZeroDelay()) {
                             LogUtils.logError("Cannot contract component '" + componentName + "' as it leads to connection between zero delay components.");
                             return false;

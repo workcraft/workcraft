@@ -55,8 +55,7 @@ public class PetriToCpogConverter {
         for (Place p : pn.getPlaces()) {
 
             for (Node n : pn.getPostset(p)) {
-                if (n instanceof Transition) {
-                    Transition t = (Transition) n;
+                if (n instanceof Transition t) {
 
                     untangling.placeToTransition(pn.getNodeReference(p), pn.getNodeReference(t));
                     // debug printing
@@ -67,8 +66,7 @@ public class PetriToCpogConverter {
 
         for (Transition t : pn.getTransitions()) {
             for (Node n : pn.getPostset(t)) {
-                if (n instanceof Place) {
-                    Place p = (Place) n;
+                if (n instanceof Place p) {
 
                     untangling.transitionToPlace(pn.getNodeReference(t), pn.getNodeReference(p));
                     // debug printing

@@ -31,8 +31,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        if (node instanceof VisualSignalTransition) {
-            VisualSignalTransition signalTransition = (VisualSignalTransition) node;
+        if (node instanceof VisualSignalTransition signalTransition) {
             Signal.Type signalType = signalTransition.getSignalType();
             return (signalType == Signal.Type.INPUT) || (signalType == Signal.Type.OUTPUT);
         }
@@ -52,8 +51,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> signalTransitions = new HashSet<>();
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
+        if (model instanceof VisualStg stg) {
             signalTransitions.addAll(stg.getVisualSignalTransitions());
             Collection<VisualNode> selection = stg.getSelection();
             if (!selection.isEmpty()) {
@@ -65,13 +63,11 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
 
     @Override
     public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
-        if (model instanceof VisualStg) {
-            VisualStg visualStg = (VisualStg) model;
+        if (model instanceof VisualStg visualStg) {
             HashSet<String> processedSignals = new HashSet<>();
             Stg stg = visualStg.getMathModel();
             for (VisualNode node: nodes) {
-                if (node instanceof VisualSignalTransition) {
-                    VisualSignalTransition visualTransition = (VisualSignalTransition) node;
+                if (node instanceof VisualSignalTransition visualTransition) {
                     SignalTransition transition = visualTransition.getReferencedComponent();
                     String signalRef = stg.getSignalReference(transition);
                     if (!processedSignals.contains(signalRef)) {

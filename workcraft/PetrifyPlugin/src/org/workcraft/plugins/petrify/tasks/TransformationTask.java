@@ -76,8 +76,7 @@ public class TransformationTask implements Task<TransformationOutput>, ExternalP
             MathModel model = we.getModelEntry().getMathModel();
 
             // Check for isolated marked places and temporary remove them is requested
-            if (model instanceof PetriModel) {
-                PetriModel petri = (PetriModel) model;
+            if (model instanceof PetriModel petri) {
                 HashSet<Place> isolatedPlaces = PetriUtils.getIsolatedMarkedPlaces(petri);
                 if (!isolatedPlaces.isEmpty()) {
                     String refStr = ReferenceHelper.getNodesAsWrapString(petri, isolatedPlaces);

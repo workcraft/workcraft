@@ -60,8 +60,7 @@ public class SelectAllSignalTransitionsTransformationCommand extends AbstractTra
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> signalTransitions = new HashSet<>();
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
+        if (model instanceof VisualStg stg) {
             signalTransitions.addAll(stg.getVisualSignalTransitions());
             signalTransitions.retainAll(stg.getSelection());
         }
@@ -70,12 +69,10 @@ public class SelectAllSignalTransitionsTransformationCommand extends AbstractTra
 
     @Override
     public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
+        if (model instanceof VisualStg stg) {
             HashSet<String> signals = new HashSet<>();
             for (VisualNode node: nodes) {
-                if (node instanceof VisualSignalTransition) {
-                    VisualSignalTransition st = (VisualSignalTransition) node;
+                if (node instanceof VisualSignalTransition st) {
                     signals.add(stg.getSignalReference(st));
                 }
             }

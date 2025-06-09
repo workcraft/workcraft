@@ -50,8 +50,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     @Override
     public Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown) {
         Icon icon = getIcon();
-        if (icon instanceof ImageIcon) {
-            ImageIcon imageIcon = (ImageIcon) icon;
+        if (icon instanceof ImageIcon imageIcon) {
             return GuiUtils.createCursorFromIcon(imageIcon, getClass().getName());
         }
         return null;
@@ -167,8 +166,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     @Override
     public boolean keyPressed(GraphEditorKeyEvent event) {
         GraphEditor editor = event.getEditor();
-        if (editor instanceof GraphEditorPanel) {
-            GraphEditorPanel editorPanel = (GraphEditorPanel) editor;
+        if (editor instanceof GraphEditorPanel editorPanel) {
             editorPanel.setCursor(getCursor(event));
         }
         return false;
@@ -177,8 +175,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     @Override
     public boolean keyReleased(GraphEditorKeyEvent event) {
         GraphEditor editor = event.getEditor();
-        if (editor instanceof GraphEditorPanel) {
-            GraphEditorPanel editorPanel = (GraphEditorPanel) editor;
+        if (editor instanceof GraphEditorPanel editorPanel) {
             editorPanel.setCursor(getCursor(event));
         }
         return false;

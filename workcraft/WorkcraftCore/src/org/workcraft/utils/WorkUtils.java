@@ -487,8 +487,7 @@ public final class WorkUtils {
 
     private static void adjustPropertyFilePath(PropertyDescriptor property, String base, boolean absolute) {
         Object value = property.getValue();
-        if (value instanceof FileReference) {
-            FileReference fileReference = (FileReference) value;
+        if (value instanceof FileReference fileReference) {
             fileReference.setBase(base);
             if (absolute) {
                 fileReference.setBase(null);

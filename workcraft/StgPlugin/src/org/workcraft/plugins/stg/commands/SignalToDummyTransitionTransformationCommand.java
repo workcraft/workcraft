@@ -55,8 +55,7 @@ public class SignalToDummyTransitionTransformationCommand extends AbstractTransf
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> signalTransitions = new HashSet<>();
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
+        if (model instanceof VisualStg stg) {
             signalTransitions.addAll(stg.getVisualSignalTransitions());
             signalTransitions.retainAll(stg.getSelection());
         }
@@ -65,9 +64,7 @@ public class SignalToDummyTransitionTransformationCommand extends AbstractTransf
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
-            VisualStg stg = (VisualStg) model;
-            VisualSignalTransition signalTransition = (VisualSignalTransition) node;
+        if ((model instanceof VisualStg stg) && (node instanceof VisualSignalTransition signalTransition)) {
             VisualDummyTransition dummyTransition = StgUtils.convertSignalToDummyTransition(stg, signalTransition);
             model.addToSelection(dummyTransition);
         }

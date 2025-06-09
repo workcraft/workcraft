@@ -39,8 +39,7 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
         chooseButton.setText(null);
         chooseButton.setToolTipText(null);
 
-        if (value instanceof File) {
-            File file = (File) value;
+        if (value instanceof File file) {
             if (file.exists()) {
                 chooseButton.setForeground(Color.BLACK);
             } else {

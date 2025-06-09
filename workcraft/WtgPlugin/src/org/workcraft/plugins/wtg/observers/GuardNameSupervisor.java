@@ -20,11 +20,9 @@ public class GuardNameSupervisor extends StateSupervisor {
 
     @Override
     public void handleEvent(StateEvent e) {
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pce) {
             Object sender = e.getSender();
-            if ((sender instanceof Waveform) && pce.getPropertyName().equals(Waveform.PROPERTY_GUARD)) {
-                Waveform waveform = (Waveform) sender;
+            if ((sender instanceof Waveform waveform) && pce.getPropertyName().equals(Waveform.PROPERTY_GUARD)) {
                 if (!guardedSignalExist(waveform.getGuard())) {
                     DialogUtils.showWarning("Guard set for an unknown signal.");
                 }

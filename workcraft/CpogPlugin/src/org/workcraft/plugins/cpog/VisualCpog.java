@@ -73,9 +73,7 @@ public class VisualCpog extends AbstractVisualModel {
     public VisualConnection connect(VisualNode first, VisualNode second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
         VisualConnection ret = null;
-        if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) {
-            VisualVertex v = (VisualVertex) first;
-            VisualVertex u = (VisualVertex) second;
+        if ((first instanceof VisualVertex v) && (second instanceof VisualVertex u)) {
             ret = connect(v, u);
         } else {
             VisualVertex v;

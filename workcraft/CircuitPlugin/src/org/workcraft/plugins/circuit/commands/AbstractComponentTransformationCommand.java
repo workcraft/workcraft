@@ -49,8 +49,7 @@ public abstract class AbstractComponentTransformationCommand extends AbstractTra
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> components = new HashSet<>();
-        if (model instanceof VisualCircuit) {
-            VisualCircuit circuit = (VisualCircuit) model;
+        if (model instanceof VisualCircuit circuit) {
             components.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(),
                     VisualFunctionComponent.class, this::isApplicableTo));
 
@@ -64,9 +63,7 @@ public abstract class AbstractComponentTransformationCommand extends AbstractTra
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionComponent)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualFunctionComponent component = (VisualFunctionComponent) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualFunctionComponent component)) {
             transformComponent(circuit, component);
         }
     }

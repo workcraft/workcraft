@@ -61,8 +61,7 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
         // Check that the arc was not removed because of a dual arc
-        if ((node instanceof VisualConnection) && (node.getParent() != null)) {
-            VisualConnection connection = (VisualConnection) node;
+        if ((node instanceof VisualConnection connection) && (node.getParent() != null)) {
             VisualReadArc readArc = ConversionUtils.convertDirectedArcToReadArc(model, connection);
             model.addToSelection(readArc);
         }

@@ -36,8 +36,7 @@ public class DtdSelectionTool extends SelectionTool {
         VisualDtd dtd = (VisualDtd) e.getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), dtd);
-            if (node instanceof VisualSignal) {
-                VisualSignal signal = (VisualSignal) node;
+            if (node instanceof VisualSignal signal) {
                 Signal.State state = getLastState(dtd, signal);
                 TransitionEvent.Direction direction = getDesiredDirection(state, e.getKeyModifiers());
                 if (direction != null) {
@@ -74,8 +73,7 @@ public class DtdSelectionTool extends SelectionTool {
         if (swappingSignal != null) {
             if ((e.isExtendKeyDown()) && (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK)) {
                 Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
-                if (node instanceof VisualSignal) {
-                    VisualSignal visualSignal = (VisualSignal) node;
+                if (node instanceof VisualSignal visualSignal) {
                     double y = visualSignal.getY();
                     visualSignal.setY(swappingSignal.getY());
                     swappingSignal.setY(y);
@@ -94,30 +92,23 @@ public class DtdSelectionTool extends SelectionTool {
 
     private TransitionEvent.Direction getDesiredDirection(Signal.State state, int mask) {
         if (state == Signal.State.UNSTABLE) {
-            switch (mask) {
-            case MouseEvent.SHIFT_DOWN_MASK:
-                return TransitionEvent.Direction.RISE;
-            case MouseEvent.CTRL_DOWN_MASK:
-                return TransitionEvent.Direction.FALL;
-            default:
-                return TransitionEvent.Direction.STABILISE;
-            }
+            return switch (mask) {
+                case MouseEvent.SHIFT_DOWN_MASK -> TransitionEvent.Direction.RISE;
+                case MouseEvent.CTRL_DOWN_MASK -> TransitionEvent.Direction.FALL;
+                default -> TransitionEvent.Direction.STABILISE;
+            };
         }
         if (state == Signal.State.HIGH) {
-            switch (mask) {
-            case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
+            if (mask == (MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK)) {
                 return TransitionEvent.Direction.DESTABILISE;
-            default:
-                return TransitionEvent.Direction.FALL;
             }
+            return TransitionEvent.Direction.FALL;
         }
         if (state == Signal.State.LOW) {
-            switch (mask) {
-            case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
+            if (mask == (MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK)) {
                 return TransitionEvent.Direction.DESTABILISE;
-            default:
-                return TransitionEvent.Direction.RISE;
             }
+            return TransitionEvent.Direction.RISE;
         }
         if (state == Signal.State.STABLE) {
             return TransitionEvent.Direction.DESTABILISE;

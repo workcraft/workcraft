@@ -26,8 +26,7 @@ public class CircuitConnectionTool extends ConnectionTool {
 
     @Override
     public boolean isConnectable(Node node) {
-        if (node instanceof VisualContact) {
-            VisualContact contact = (VisualContact) node;
+        if (node instanceof VisualContact contact) {
             return (firstNode == null) == contact.isDriver();
         }
         return ((node instanceof VisualReplicaContact) && (firstNode == null))
@@ -74,8 +73,7 @@ public class CircuitConnectionTool extends ConnectionTool {
             if (e.isExtendKeyDown()) {
                 VisualCircuit circuit = (VisualCircuit) e.getEditor().getModel();
                 VisualNode toNode = connection.getSecond();
-                if (toNode instanceof VisualContact) {
-                    VisualContact drivenContact = (VisualContact) toNode;
+                if (toNode instanceof VisualContact drivenContact) {
                     connection = ConversionUtils.replicateDriverContact(circuit, drivenContact);
                 }
             }

@@ -166,8 +166,7 @@ public class PolicyToPetriConverter {
             }
         }
 
-        if (srcNode instanceof VisualBundledTransition) {
-            VisualBundledTransition stcTransition = (VisualBundledTransition) srcNode;
+        if (srcNode instanceof VisualBundledTransition stcTransition) {
             Collection<VisualBundle> srcBundles = policyNet.getBundlesOfTransition(stcTransition);
             for (VisualBundle srcBundle :srcBundles) {
                 VisualTransition dstTransition = bundleMap.get(srcBundle);

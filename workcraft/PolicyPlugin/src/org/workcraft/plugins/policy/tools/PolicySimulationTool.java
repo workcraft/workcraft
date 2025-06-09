@@ -184,8 +184,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
         if (ref != null) {
             Policy policy = converter.getPolicyNet().getMathModel();
             Node node = policy.getNodeByReference(ref);
-            if (node instanceof Bundle) {
-                Bundle bundle = (Bundle) node;
+            if (node instanceof Bundle bundle) {
                 label = policy.getTransitionsOfBundleAsString(bundle);
             } else {
                 label = ref;

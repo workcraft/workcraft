@@ -21,8 +21,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor {
 
     @Override
     public void handleEvent(StateEvent e) {
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pce) {
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
             if ((sender instanceof FunctionComponent)

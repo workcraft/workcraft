@@ -1,8 +1,5 @@
 package org.workcraft.plugins.son.algorithm;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
@@ -18,6 +15,9 @@ import org.workcraft.plugins.son.granularity.YearYear;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 public class TimeAlg extends RelationAlgorithm {
 
@@ -132,19 +132,14 @@ public class TimeAlg extends RelationAlgorithm {
 
     public void setDefaultTime(Node node) {
         Interval input = new Interval(0, 9999);
-        if (node instanceof Condition) {
-            Condition c = (Condition) node;
+        if (node instanceof Condition c) {
             if (c.isInitial() && !c.isFinal()) {
                 c.setEndTime(input);
-                return;
             } else if (c.isFinal() && !c.isInitial()) {
                 c.setStartTime(input);
-                return;
             } else if (!c.isFinal() && !c.isInitial()) {
                 c.setStartTime(input);
                 c.setEndTime(input);
-            } else {
-                return;
             }
         } else if (node instanceof Time) {
             ((Time) node).setStartTime(input);

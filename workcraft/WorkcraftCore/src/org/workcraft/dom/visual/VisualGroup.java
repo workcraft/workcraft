@@ -81,8 +81,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
     @Override
     public void draw(DrawRequest r) {
         Decoration d = r.getDecoration();
-        if (d instanceof ContainerDecoration) {
-            ContainerDecoration containerDecoration = (ContainerDecoration) d;
+        if (d instanceof ContainerDecoration containerDecoration) {
             boolean shouldBeExcited = containerDecoration.isContainerExcited();
             if (getIsCollapsed() == shouldBeExcited) {
                 setIsExcited(shouldBeExcited);
@@ -225,8 +224,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualGroup) {
-            VisualGroup srcGroup = (VisualGroup) src;
+        if (src instanceof VisualGroup srcGroup) {
             setIsCollapsed(srcGroup.getIsCollapsed());
         }
     }

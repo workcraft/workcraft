@@ -13,12 +13,10 @@ public class InitialStateSupervisor extends StateSupervisor {
 
     @Override
     public void handleEvent(StateEvent e) {
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pce) {
             Object sender = e.getSender();
-            if ((sender instanceof State) && pce.getPropertyName().equals(State.PROPERTY_INITIAL)) {
+            if ((sender instanceof State state) && pce.getPropertyName().equals(State.PROPERTY_INITIAL)) {
                 // Update all the states on a change of the initial property
-                State state = (State) sender;
                 if (state.isInitial()) {
                     for (State s: Hierarchy.getChildrenOfType(state.getParent(), State.class)) {
                         if (s == state) continue;

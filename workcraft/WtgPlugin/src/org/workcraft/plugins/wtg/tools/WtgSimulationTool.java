@@ -74,8 +74,7 @@ public class WtgSimulationTool extends StgSimulationTool {
             Transition transition = null;
             if (deepestNode instanceof VisualSignal) {
                 transition = getExcitedTransitionOfSignal(model, (VisualSignal) deepestNode);
-            } else if (deepestNode instanceof VisualEvent) {
-                VisualEvent event = (VisualEvent) deepestNode;
+            } else if (deepestNode instanceof VisualEvent event) {
                 transition = getExcitedTransitionOfEvent(event);
                 if (transition == null) {
                     transition = getExcitedTransitionOfSignal(model, event.getVisualSignal());
@@ -103,9 +102,8 @@ public class WtgSimulationTool extends StgSimulationTool {
             return;
         }
         MathModel model = editor.getModel().getMathModel();
-        if (model instanceof Wtg) {
+        if (model instanceof Wtg wtg) {
             editor.getWorkspaceEntry().saveMemento();
-            Wtg wtg = (Wtg) model;
             for (State state : wtg.getStates()) {
                 String ref = wtg.getNodeReference(state);
                 Node underlyingNode = getUnderlyingModel().getNodeByReference(ref);

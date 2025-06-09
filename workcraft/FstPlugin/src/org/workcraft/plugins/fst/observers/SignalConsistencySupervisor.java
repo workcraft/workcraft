@@ -17,8 +17,7 @@ public class SignalConsistencySupervisor extends StateSupervisor {
 
     @Override
     public void handleEvent(StateEvent e) {
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pce) {
             Object sender = e.getSender();
             if ((sender instanceof Signal) && pce.getPropertyName().equals(Signal.PROPERTY_TYPE)) {
                 for (Event event: fst.getEvents((Signal) sender)) {

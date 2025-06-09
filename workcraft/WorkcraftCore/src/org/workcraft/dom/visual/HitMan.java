@@ -186,8 +186,7 @@ public class HitMan {
     }
 
     private static Point2D transformToChildSpace(Point2D point, Node node) {
-        if (node instanceof Movable) {
-            Movable movable = (Movable) node;
+        if (node instanceof Movable movable) {
             AffineTransform at = Geometry.optimisticInverse(movable.getTransform());
             return at.transform(point, null);
         }
@@ -195,8 +194,7 @@ public class HitMan {
     }
 
     private static List<Node> getHittableChildrenInReverseOrder(Node parentNode) {
-        if (parentNode instanceof Collapsible) {
-            Collapsible collapsible = (Collapsible) parentNode;
+        if (parentNode instanceof Collapsible collapsible) {
             if (collapsible.getIsCollapsed() && !collapsible.isCurrentLevelInside()) {
                 return Collections.emptyList();
             }

@@ -39,8 +39,7 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        if (node instanceof VisualReadArc) {
-            VisualReadArc readArc = (VisualReadArc) node;
+        if (node instanceof VisualReadArc readArc) {
             return readArc.getFirst() instanceof VisualPlace;
         }
         return false;

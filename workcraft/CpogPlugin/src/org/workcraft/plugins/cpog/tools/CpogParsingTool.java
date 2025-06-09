@@ -97,10 +97,8 @@ public class CpogParsingTool {
                 y = centre.getY();
             }
             for (VisualNode n : inner) {
-                if (n instanceof VisualVertex) {
-                    VisualVertex v = (VisualVertex) n;
-                    if ((v.getParent() instanceof VisualPage) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
-                        VisualPage p = (VisualPage) v.getParent();
+                if (n instanceof VisualVertex v) {
+                    if ((v.getParent() instanceof VisualPage p) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
                         Point2D.Double newPosition = new
                                 Point2D.Double(refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getX(),
                                         refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getY());
@@ -250,8 +248,7 @@ public class CpogParsingTool {
             for (VisualNode n : originalSelection) {
                 if (n instanceof VisualVertex) {
                     vertices.add(n);
-                } else if ((n instanceof VisualScenarioPage) || (n instanceof VisualPage)) {
-                    VisualPage p = (VisualPage) n;
+                } else if ((n instanceof VisualPage p)) {
                     for (Node child : p.getChildren()) {
                         if (child instanceof VisualVertex) {
                             vertices.add((VisualVertex) child);
@@ -794,10 +791,7 @@ public class CpogParsingTool {
         Collection<VisualVertex> vertices = visualCpog.getVertices(visualCpog.getCurrentLevel());
         vertices.removeAll(visualCpog.getSelection());
 
-        ArrayList<VisualNode> prevSelection = new ArrayList<>();
-        for (VisualNode n : visualCpog.getSelection()) {
-            prevSelection.add(n);
-        }
+        ArrayList<VisualNode> prevSelection = copySelected(visualCpog);
 
         ArrayList<VisualScenarioPage> pages = new ArrayList<>();
         visualCpog.selectAll();

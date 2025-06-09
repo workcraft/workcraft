@@ -1,11 +1,6 @@
 package org.workcraft.types;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Set;
+import java.util.*;
 
 public class MultiSet<T> implements Set<T> {
 
@@ -32,8 +27,8 @@ public class MultiSet<T> implements Set<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<T>() {
-            private Iterator<T> cursor = map.keySet().iterator();
+        return new Iterator<>() {
+            private final Iterator<T> cursor = map.keySet().iterator();
             private T current = null;
             private int currentIdx = 0;
 
@@ -48,7 +43,7 @@ public class MultiSet<T> implements Set<T> {
 
             @Override
             public T next() {
-                if (currentIdx  >= count(current)) {
+                if (currentIdx >= count(current)) {
                     current = cursor.next();
                     currentIdx = 0;
                 }
@@ -65,23 +60,22 @@ public class MultiSet<T> implements Set<T> {
 
     @Override
     public Object[] toArray() {
-        ArrayList<T> result = new ArrayList<>();
+        List<T> result = new ArrayList<>();
         for (T o: map.keySet()) {
             for (int i = 0; i < count(o); i++) {
                 result.add(o);
             }
         }
-        return result.toArray(new Object[result.size()]);
+        return result.toArray(new Object[0]);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <R> R[] toArray(R[] a) {
-        int idx = 0;
-        for (T o: map.keySet()) {
+        for (T o : map.keySet()) {
             for (int i = 0; i < count(o); i++) {
-                if (idx > a.length) {
-                    a[idx] = (R) o;
+                if (i < a.length) {
+                    a[i] = (R) o;
                 }
             }
         }
@@ -188,8 +182,7 @@ public class MultiSet<T> implements Set<T> {
     @Override
     public boolean removeAll(Collection<?> c) {
         boolean result = false;
-        if (c instanceof MultiSet<?>) {
-            MultiSet<?> otherMultiSet = (MultiSet<?>) c;
+        if (c instanceof MultiSet<?> otherMultiSet) {
             for (Object o: otherMultiSet.map.keySet()) {
                 result |= remove(o, otherMultiSet.count(o));
             }

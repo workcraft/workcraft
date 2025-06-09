@@ -119,8 +119,7 @@ public class ConversionUtils {
     public static void updateReplicas(VisualCircuit circuit, VisualContact oldContact, VisualContact newContact) {
         ArrayList<Replica> oldReplicas = new ArrayList<>(oldContact.getReplicas());
         for (Replica oldReplica : oldReplicas) {
-            if (oldReplica instanceof VisualReplicaContact) {
-                VisualReplicaContact oldReplicaContact = (VisualReplicaContact) oldReplica;
+            if (oldReplica instanceof VisualReplicaContact oldReplicaContact) {
                 Container container = (Container) oldReplicaContact.getParent();
                 VisualReplicaContact newReplicaContact
                         = circuit.createVisualReplica(newContact, VisualReplicaContact.class, container);

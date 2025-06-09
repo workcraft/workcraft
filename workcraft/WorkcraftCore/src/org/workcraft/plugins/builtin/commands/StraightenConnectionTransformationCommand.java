@@ -43,13 +43,11 @@ public class StraightenConnectionTransformationCommand extends AbstractTransform
     @Override
     public boolean isEnabled(ModelEntry me, VisualNode node) {
         boolean result = false;
-        if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) node;
+        if (node instanceof VisualConnection connection) {
             ConnectionGraphic graphic = connection.getGraphic();
             if (graphic instanceof Bezier) {
                 result = true;
-            } else if (graphic instanceof Polyline) {
-                Polyline polyline = (Polyline) graphic;
+            } else if (graphic instanceof Polyline polyline) {
                 result = polyline.getControlPointCount() > 0;
             }
         }
@@ -78,8 +76,7 @@ public class StraightenConnectionTransformationCommand extends AbstractTransform
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) node;
+        if (node instanceof VisualConnection connection) {
             ConnectionHelper.straightenConnection(connection);
         }
     }

@@ -36,8 +36,7 @@ public class SilverOceanTheme extends OceanTheme {
             ButtonModel buttonModel = abstractButton.getModel();
             int w = getIconWidth();
             int h = getIconHeight();
-            if (g instanceof Graphics2D) {
-                Graphics2D g2 = (Graphics2D) g;
+            if (g instanceof Graphics2D g2) {
                 RenderingHints rh = new RenderingHints(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -79,8 +78,7 @@ public class SilverOceanTheme extends OceanTheme {
             ButtonModel buttonModel = abstractButton.getModel();
             int w = getIconWidth();
             int h = getIconHeight();
-            if (g instanceof Graphics2D) {
-                Graphics2D g2 = (Graphics2D) g;
+            if (g instanceof Graphics2D g2) {
                 RenderingHints rh = new RenderingHints(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
@@ -277,7 +275,7 @@ public class SilverOceanTheme extends OceanTheme {
                 int w = icon.getIconWidth();
                 BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
                 icon.paintIcon(new JButton(), image.getGraphics(), 0, 0);
-                double ratio = (h == 0) ? 0.0 : (double) w / (double) h;
+                double ratio = (h == 0) ? 0.0 :  (double) w / h;
                 int width = (int) Math.round(ratio * size);
                 Image scaleImage = image.getScaledInstance(width, size, Image.SCALE_SMOOTH);
                 result = new ImageIcon(scaleImage);

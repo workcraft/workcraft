@@ -93,8 +93,7 @@ public class VisualFsm extends AbstractVisualModel {
         if (node == null) {
             properties.add(PropertyHelper.createSeparatorProperty("Symbols"));
             properties.addAll(FsmPropertyHelper.getSymbolProperties(this));
-        } else if (node instanceof VisualEvent) {
-            VisualEvent event = (VisualEvent) node;
+        } else if (node instanceof VisualEvent event) {
             properties.add(FsmPropertyHelper.getEventSymbolProperty(getMathModel(), event.getReferencedConnection()));
         }
         return properties;

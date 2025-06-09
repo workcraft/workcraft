@@ -139,10 +139,9 @@ public class VisualState extends VisualComponent {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualState) {
-            VisualState srcComponent = (VisualState) src;
+        if (src instanceof VisualState srcComponent) {
             getReferencedComponent().setFinal(srcComponent.getReferencedComponent().isFinal());
-            setInitialMarkerPositioning(((VisualState) src).getInitialMarkerPositioning());
+            setInitialMarkerPositioning(srcComponent.getInitialMarkerPositioning());
         }
     }
 
@@ -153,8 +152,7 @@ public class VisualState extends VisualComponent {
         boolean isInitial = false;
         LinkedList<Positioning> initialMarkerPositioning = new LinkedList<>();
         for (Stylable src: srcs) {
-            if (src instanceof VisualState) {
-                VisualState srcState = (VisualState) src;
+            if (src instanceof VisualState srcState) {
                 if (srcState.getReferencedComponent().isFinal()) {
                     isFinal = true;
                 }

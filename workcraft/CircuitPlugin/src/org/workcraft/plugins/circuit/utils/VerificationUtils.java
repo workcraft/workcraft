@@ -183,8 +183,7 @@ public final class VerificationUtils {
     private static Set<String> getUnconstrainedInputSignals(Stg envStg, Circuit circuit) {
         Set<String> result = new HashSet<>();
         for (Contact contact : circuit.getInputPorts()) {
-            if (!(contact instanceof FunctionContact)) continue;
-            FunctionContact inputPort = (FunctionContact) contact;
+            if (!(contact instanceof FunctionContact inputPort)) continue;
             BooleanFormula setFunction = inputPort.getSetFunction();
             if (setFunction == null) {
                 String inputSignal = circuit.getNodeReference(inputPort);

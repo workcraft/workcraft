@@ -20,8 +20,8 @@ import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
-import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.elements.*;
+import org.workcraft.plugins.son.elements.Event;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.plugins.son.gui.GranularityPanel;
@@ -105,8 +105,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             Interval interval = new Interval();
             if (visualSelection != null) {
                 if (visualSelection instanceof VisualComponent) {
-                    if ((selection instanceof Time) && !(selection instanceof Event)) {
-                        Time time = (Time) selection;
+                    if ((selection instanceof Time time) && !(selection instanceof Event)) {
                         time.setDuration(interval);
                         time.setStartTime(interval);
                         time.setEndTime(interval);
@@ -277,8 +276,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
     private void setDurationLabel(Node node, JTextField field, boolean isMin) {
         Interval value;
-        if (node instanceof VisualPlaceNode) {
-            VisualPlaceNode vc = (VisualPlaceNode) node;
+        if (node instanceof VisualPlaceNode vc) {
             PlaceNode c = vc.getReferencedComponent();
 
             value = c.getDuration();
@@ -299,8 +297,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
                     field.setText(value.maxToString());
                 }
             }
-        } else if (node instanceof VisualBlock) {
-            VisualBlock vb = (VisualBlock) node;
+        } else if (node instanceof VisualBlock vb) {
             Block b = vb.getReferencedComponent();
             value = b.getDuration();
 
@@ -330,9 +327,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
         if (length < 4) {
             while (length < 4) {
-                StringBuffer sb = new StringBuffer();
-                sb.append("0").append(text);
-                text = sb.toString();
+                text = "0" + text;
                 field.setText(text);
                 length = text.length();
             }
@@ -343,10 +338,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         int start = value.getMin();
         int end = value.getMax();
 
-        if (start <= end) {
-            return true;
-        }
-        return false;
+        return start <= end;
     }
 
     private void updateTimePanel(final GraphEditor editor, Node node) {
@@ -355,20 +347,16 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         timePropertyPanel.repaint();
 
         Interval value;
-        if (node instanceof VisualSONConnection) {
-            VisualSONConnection vcon = (VisualSONConnection) node;
+        if (node instanceof VisualSONConnection vcon) {
             SONConnection con = vcon.getReferencedSONConnection();
 
             if (con.getSemantics() == Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE) {
                 value = con.getTime();
                 timePropertyPanel.add(createTimeInputPanel(editor, timeLabel, value, node));
             }
-        } else if (node instanceof VisualPlaceNode) {
-
-            if (node instanceof VisualCondition) {
-                VisualCondition vc2 = (VisualCondition) node;
+        } else if (node instanceof VisualPlaceNode vc) {
+            if (node instanceof VisualCondition vc2) {
                 Condition c2 = (Condition) vc2.getReferencedComponent();
-
                 if (c2.isInitial()) {
                     value = c2.getStartTime();
                     timePropertyPanel.add(createTimeInputPanel(editor, startLabel, value, node));
@@ -379,13 +367,10 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
                 }
             }
 
-            VisualPlaceNode vc = (VisualPlaceNode) node;
-            PlaceNode c = (PlaceNode) vc.getReferencedComponent();
-
+            PlaceNode c = vc.getReferencedComponent();
             value = c.getDuration();
             timePropertyPanel.add(createTimeInputPanel(editor, durationLabel, value, node));
-        } else if (node instanceof VisualBlock) {
-            VisualBlock vb = (VisualBlock) node;
+        } else if (node instanceof VisualBlock vb) {
             Block b = vb.getReferencedComponent();
 
             value = b.getDuration();
@@ -556,13 +541,12 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         }
 
         Node node1 = HitMan.hitDeepest(position, root, VisualSONConnection.class);
-        if (node1 instanceof VisualSONConnection) {
+        if (node1 instanceof VisualSONConnection con) {
             estimatorButton.setEnabled(false);
-            VisualSONConnection con = (VisualSONConnection) node1;
             selection = con.getReferencedConnection();
             visualSelection = node1;
             if (con.getSemantics() == Semantics.PNLINE) {
-                ((VisualSONConnection) node1).setColor(selectedColor);
+                con.setColor(selectedColor);
                 updateTimePanel(e.getEditor(), node1);
                 net.setTimeColor(selection, Color.BLACK);
                 return;
@@ -570,15 +554,14 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         }
 
         Node node2 = HitMan.hitFirstChild(position, root, VisualBlock.class);
-        if (node2 instanceof VisualBlock) {
-            selection = ((VisualBlock) node2).getReferencedComponent();
+        if (node2 instanceof VisualBlock visualBlock) {
+            selection = visualBlock.getReferencedComponent();
             visualSelection = node2;
-            if (((VisualBlock) node2).getIsCollapsed()) {
+            if (visualBlock.getIsCollapsed()) {
                 estimatorButton.setEnabled(true);
-                ((VisualBlock) node2).setForegroundColor(selectedColor);
+                visualBlock.setForegroundColor(selectedColor);
                 updateTimePanel(e.getEditor(), node2);
                 net.setTimeColor(selection, Color.BLACK);
-                return;
             }
         }
     }

@@ -44,8 +44,7 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
     public void beforeContraction(VisualModel visualModel, VisualTransition visualTransition) {
         super.beforeContraction(visualModel, visualTransition);
         convertedImplicitPlaces.clear();
-        if (visualModel instanceof VisualStg) {
-            VisualStg visualStg = (VisualStg) visualModel;
+        if (visualModel instanceof VisualStg visualStg) {
             Set<Connection> adjacentConnections = new HashSet<>(visualModel.getConnections(visualTransition));
             for (Connection connection : adjacentConnections) {
                 if (connection instanceof VisualImplicitPlaceArc) {

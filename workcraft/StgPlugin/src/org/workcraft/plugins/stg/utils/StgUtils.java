@@ -269,9 +269,7 @@ public class StgUtils {
     private static Boolean guessInitialStateFromSignalPlaces(Stg stg, String signalRef) {
         Node zeroNode = stg.getNodeByReference(SignalStg.appendLowSuffix(signalRef));
         Node oneNode = stg.getNodeByReference(SignalStg.appendHighSuffix(signalRef));
-        if (zeroNode instanceof StgPlace && oneNode instanceof StgPlace) {
-            StgPlace zeroPlace = (StgPlace) zeroNode;
-            StgPlace onePlace = (StgPlace) oneNode;
+        if (zeroNode instanceof StgPlace zeroPlace && oneNode instanceof StgPlace onePlace) {
             if (zeroPlace.getTokens() + onePlace.getTokens() == 1) {
                 Collection<SignalTransition> signalTransitions = stg.getSignalTransitions(signalRef);
 
@@ -314,8 +312,7 @@ public class StgUtils {
             // Derive state of signals from enabled transitions
             Set<Transition> enabledTransitions = PetriUtils.getEnabledTransitions(stg);
             for (Transition transition : enabledTransitions) {
-                if (transition instanceof SignalTransition) {
-                    SignalTransition signalTransition = (SignalTransition) transition;
+                if (transition instanceof SignalTransition signalTransition) {
                     String signalRef = stg.getSignalReference(signalTransition);
                     Boolean signalState = getPrecedingState(signalTransition);
                     if ((signalState != null) && undefinedSignalRefs.remove(signalRef)) {
@@ -378,11 +375,11 @@ public class StgUtils {
     }
 
     private static Boolean getPrecedingState(SignalTransition signalTransition) {
-        switch (signalTransition.getDirection()) {
-        case PLUS: return false;
-        case MINUS: return true;
-        default: return null;
-        }
+        return switch (signalTransition.getDirection()) {
+            case PLUS -> false;
+            case MINUS -> true;
+            default -> null;
+        };
     }
 
     /**
@@ -448,14 +445,11 @@ public class StgUtils {
 
     public static Color getTypeColor(Signal.Type type) {
         if (type != null) {
-            switch (type) {
-            case INPUT:
-                return SignalCommonSettings.getInputColor();
-            case OUTPUT:
-                return SignalCommonSettings.getOutputColor();
-            case INTERNAL:
-                return SignalCommonSettings.getInternalColor();
-            }
+            return switch (type) {
+                case INPUT -> SignalCommonSettings.getInputColor();
+                case OUTPUT -> SignalCommonSettings.getOutputColor();
+                case INTERNAL -> SignalCommonSettings.getInternalColor();
+            };
         }
         return SignalCommonSettings.getDummyColor();
     }

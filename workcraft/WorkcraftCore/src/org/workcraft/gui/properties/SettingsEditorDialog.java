@@ -162,8 +162,7 @@ public class SettingsEditorDialog extends JDialog {
         sectionTree.addTreeSelectionListener(e -> {
             DefaultMutableTreeNode pathComponent = (DefaultMutableTreeNode) e.getPath().getLastPathComponent();
             Object userObject = pathComponent.getUserObject();
-            if (userObject instanceof SettingsPageNode) {
-                SettingsPageNode pageNode = (SettingsPageNode) userObject;
+            if (userObject instanceof SettingsPageNode pageNode) {
                 Settings page = pageNode.getPage();
                 setObject(page);
             } else {

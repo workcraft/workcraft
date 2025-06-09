@@ -44,8 +44,7 @@ public final class PetriUtils {
         for (String ref: trace) {
             if (ref != null) {
                 Node node = net.getNodeByReference(ref);
-                if (node instanceof Transition) {
-                    Transition transition = (Transition) node;
+                if (node instanceof Transition transition) {
                     if (net.isEnabled(transition)) {
                         net.fire(transition);
                     } else {

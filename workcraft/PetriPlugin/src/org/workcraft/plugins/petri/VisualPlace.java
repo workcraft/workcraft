@@ -142,8 +142,7 @@ public class VisualPlace extends VisualComponent {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualPlace) {
-            VisualPlace srcPlace = (VisualPlace) src;
+        if (src instanceof VisualPlace srcPlace) {
             getReferencedComponent().setCapacity(srcPlace.getReferencedComponent().getCapacity());
             getReferencedComponent().setTokens(srcPlace.getReferencedComponent().getTokens());
             setTokenColor(srcPlace.getTokenColor());
@@ -157,8 +156,7 @@ public class VisualPlace extends VisualComponent {
         int capacity = 0;
         LinkedList<Color> tokenColors = new LinkedList<>();
         for (Stylable src: srcs) {
-            if (src instanceof VisualPlace) {
-                VisualPlace srcPlace = (VisualPlace) src;
+            if (src instanceof VisualPlace srcPlace) {
                 int tmpTokens = srcPlace.getReferencedComponent().getTokens();
                 if (tokens < tmpTokens) {
                     tokens = tmpTokens;

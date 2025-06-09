@@ -105,8 +105,7 @@ public class VisualPolicy extends VisualPetri {
             ArrayList<VisualNode> toSelect = new ArrayList<>();
             Collection<MathNode> mathNodes = new ArrayList<>();
             for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
-                if (node instanceof VisualLocality) {
-                    VisualLocality locality = (VisualLocality) node;
+                if (node instanceof VisualLocality locality) {
                     toSelect.addAll(locality.unGroup());
                     for (Node child : locality.getLocality().getChildren()) {
                         mathNodes.add((MathNode) child);
@@ -254,8 +253,7 @@ public class VisualPolicy extends VisualPetri {
                 properties.add(getBundleColorProperty(bundle));
                 properties.add(getTransitionsOfBundleProperty(bundle));
             }
-        } else if (node instanceof VisualBundledTransition) {
-            VisualBundledTransition transition = (VisualBundledTransition) node;
+        } else if (node instanceof VisualBundledTransition transition) {
             properties.add(getBundlesOfTransitionProperty(transition));
         }
         return properties;

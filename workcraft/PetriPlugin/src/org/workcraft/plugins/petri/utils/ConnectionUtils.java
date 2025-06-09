@@ -22,8 +22,7 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
             return false;
         }
         for (Replica replica : place.getReplicas()) {
-            if (replica instanceof VisualReplicaPlace) {
-                VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
+            if (replica instanceof VisualReplicaPlace replicaPlace) {
                 VisualConnection connection = visualModel.getConnection(replicaPlace, transition);
                 if (connection instanceof VisualReadArc) {
                     return true;
@@ -41,8 +40,7 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
             return false;
         }
         for (Replica replica : place.getReplicas()) {
-            if (replica instanceof VisualReplicaPlace) {
-                VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
+            if (replica instanceof VisualReplicaPlace replicaPlace) {
                 VisualConnection connection = visualModel.getConnection(transition, replicaPlace);
                 if ((connection != null) && !(connection instanceof VisualReadArc)) {
                     return true;
@@ -60,8 +58,7 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
             return false;
         }
         for (Replica replica : place.getReplicas()) {
-            if (replica instanceof VisualReplicaPlace) {
-                VisualReplicaPlace replicaPlace = (VisualReplicaPlace) replica;
+            if (replica instanceof VisualReplicaPlace replicaPlace) {
                 VisualConnection connection = visualModel.getConnection(replicaPlace, transition);
                 if ((connection != null) && !(connection instanceof VisualReadArc)) {
                     return true;
@@ -75,8 +72,7 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
     private static VisualPlace getVisualPlaceOrNull(VisualNode node) {
         if (node instanceof VisualPlace) {
             return (VisualPlace) node;
-        } else if (node instanceof VisualReplicaPlace) {
-            VisualReplicaPlace r = (VisualReplicaPlace) node;
+        } else if (node instanceof VisualReplicaPlace r) {
             return  (VisualPlace) r.getMaster();
         }
         return null;
@@ -131,8 +127,7 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
     }
 
     public static boolean isVisualProducingArc(VisualNode node) {
-        if ((node instanceof VisualConnection) && !(node instanceof VisualReadArc)) {
-            VisualConnection connection = (VisualConnection) node;
+        if ((node instanceof VisualConnection connection) && !(node instanceof VisualReadArc)) {
             return (connection.getFirst() instanceof VisualTransition)
                     && ((connection.getSecond() instanceof VisualPlace)
                     || (connection.getSecond() instanceof VisualReplicaPlace));
@@ -141,8 +136,7 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
     }
 
     public static boolean isVisualConsumingArc(VisualNode node) {
-        if ((node instanceof VisualConnection) && !(node instanceof VisualReadArc)) {
-            VisualConnection connection = (VisualConnection) node;
+        if ((node instanceof VisualConnection connection) && !(node instanceof VisualReadArc)) {
             return ((connection.getFirst() instanceof VisualPlace)
                     || (connection.getFirst() instanceof VisualReplicaPlace))
                     && (connection.getSecond() instanceof VisualTransition);

@@ -85,36 +85,28 @@ public class JsonExportCommand implements Command {
         }
         for (VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
             for (VisualComponent vp: vg.getComponents()) {
-                if (vp instanceof VisualSourceComponent) {
-                    VisualSourceComponent vsc = (VisualSourceComponent) vp;
+                if (vp instanceof VisualSourceComponent vsc) {
                     SourceComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
-                } else if (vp instanceof VisualSinkComponent) {
-                    VisualSinkComponent vsc = (VisualSinkComponent) vp;
+                } else if (vp instanceof VisualSinkComponent vsc) {
                     SinkComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
-                } else if (vp instanceof VisualFunctionComponent) {
-                    VisualFunctionComponent vsc = (VisualFunctionComponent) vp;
+                } else if (vp instanceof VisualFunctionComponent vsc) {
                     FunctionComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
-                } else if (vp instanceof VisualQueueComponent) {
-                    VisualQueueComponent vsc = (VisualQueueComponent) vp;
+                } else if (vp instanceof VisualQueueComponent vsc) {
                     QueueComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
-                } else if (vp instanceof VisualForkComponent) {
-                    VisualForkComponent vsc = (VisualForkComponent) vp;
+                } else if (vp instanceof VisualForkComponent vsc) {
                     ForkComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
-                } else if (vp instanceof VisualJoinComponent) {
-                    VisualJoinComponent vsc = (VisualJoinComponent) vp;
+                } else if (vp instanceof VisualJoinComponent vsc) {
                     JoinComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
-                } else if (vp instanceof VisualSwitchComponent) {
-                    VisualSwitchComponent vsc = (VisualSwitchComponent) vp;
+                } else if (vp instanceof VisualSwitchComponent vsc) {
                     SwitchComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
-                } else if (vp instanceof VisualMergeComponent) {
-                    VisualMergeComponent vsc = (VisualMergeComponent) vp;
+                } else if (vp instanceof VisualMergeComponent vsc) {
                     MergeComponent sc = vsc.getReferencedComponent();
                     sc.setGr(no);
                 }
@@ -232,8 +224,7 @@ public class JsonExportCommand implements Command {
                             Node cpNode = c.getSecond().getParent();
                             int contactCount = 1;
                             int contactNo = 1;
-                            if (cpNode instanceof JoinComponent) {
-                                JoinComponent jnNode2 = (JoinComponent) cpNode;
+                            if (cpNode instanceof JoinComponent jnNode2) {
                                 contacts2 = jnNode2.getInputs();
                                 for (XmasContact jncntNode : contacts2) {
                                     if (jncntNode == c.getSecond()) {
@@ -242,8 +233,7 @@ public class JsonExportCommand implements Command {
                                     }
                                     contactCount++;
                                 }
-                            } else if (cpNode instanceof MergeComponent) {
-                                MergeComponent mrgNode2 = (MergeComponent) cpNode;
+                            } else if (cpNode instanceof MergeComponent mrgNode2) {
                                 contacts2 = mrgNode2.getInputs();
                                 for (XmasContact mrgcntNode : contacts2) {
                                     if (mrgcntNode == c.getSecond()) {

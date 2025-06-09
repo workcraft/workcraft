@@ -126,15 +126,13 @@ public class NamespaceHelper {
 
         HashMap<Container, Container> toProcess = new HashMap<>();
         for (Node srcNode: srcContainer.getChildren()) {
-            if (srcNode instanceof VisualPage) {
-                VisualPage srcPage = (VisualPage) srcNode;
+            if (srcNode instanceof VisualPage srcPage) {
                 VisualPage dstPage = dstModel.createVisualPage(dstContainer);
                 dstModel.setMathName(dstPage, srcModel.getMathName(srcPage));
                 dstPage.copyPosition(srcPage);
                 dstPage.copyStyle(srcPage);
                 toProcess.put(srcPage, dstPage);
-            } else if (srcNode instanceof VisualGroup) {
-                VisualGroup srcGroup = (VisualGroup) srcNode;
+            } else if (srcNode instanceof VisualGroup srcGroup) {
                 toProcess.put(srcGroup, dstContainer);
             }
         }

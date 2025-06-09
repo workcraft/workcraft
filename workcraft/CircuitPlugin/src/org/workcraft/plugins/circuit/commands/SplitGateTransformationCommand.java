@@ -189,8 +189,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         BooleanFormula setFunction = component.getGateOutput().getSetFunction();
         List<BooleanVariable> orderedVariables = setFunction.accept(new OrderedVariableExtractor());
         for (BooleanVariable variable : orderedVariables) {
-            if (variable instanceof FunctionContact) {
-                FunctionContact inputContact = (FunctionContact) variable;
+            if (variable instanceof FunctionContact inputContact) {
                 VisualFunctionContact visualContact = component.getVisualContact(inputContact);
                 if (visualContact != null) {
                     result.add(visualContact);

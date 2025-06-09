@@ -70,9 +70,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
             return;
         }
         MathModel model = editor.getModel().getMathModel();
-        if (model instanceof Circuit) {
+        if (model instanceof Circuit circuit) {
             editor.getWorkspaceEntry().saveMemento();
-            Circuit circuit = (Circuit) model;
             for (FunctionContact contact: circuit.getFunctionContacts()) {
                 String contactName = CircuitUtils.getSignalReference(circuit, contact);
                 String oneName = SignalStg.appendHighSuffix(contactName);
@@ -125,8 +124,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
             VisualContact contact = null;
             if (deepestNode instanceof VisualContact) {
                 contact = (VisualContact) deepestNode;
-            } else if (deepestNode instanceof VisualFunctionComponent) {
-                VisualFunctionComponent component = (VisualFunctionComponent) deepestNode;
+            } else if (deepestNode instanceof VisualFunctionComponent component) {
                 Collection<VisualContact> excitedOutputs = getExcitedOutputs(component);
                 if (excitedOutputs.size() == 1) {
                     contact = excitedOutputs.iterator().next();
@@ -159,8 +157,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
         }
         boolean result = false;
         for (Node node : container.getChildren()) {
-            if (node instanceof VisualContact) {
-                VisualContact contact = (VisualContact) node;
+            if (node instanceof VisualContact contact) {
                 HashSet<SignalTransition> transitions = getContactExcitedTransitions(contact);
                 result = !transitions.isEmpty();
             } else if (node instanceof Container) {

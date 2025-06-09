@@ -105,16 +105,14 @@ public class VisualStg extends AbstractVisualModel {
         if (first instanceof VisualNamedTransition) {
             if (second instanceof VisualNamedTransition) {
                 connection = createImplicitPlaceConnection((VisualNamedTransition) first, (VisualNamedTransition) second);
-            } else if (second instanceof VisualImplicitPlaceArc) {
-                VisualImplicitPlaceArc con = (VisualImplicitPlaceArc) second;
+            } else if (second instanceof VisualImplicitPlaceArc con) {
                 VisualStgPlace place = makeExplicit(con);
                 connection = connect(first, place);
             } else if ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace)) {
                 connection = createSimpleConnection(first, second, mConnection);
             }
-        } else if (first instanceof VisualImplicitPlaceArc) {
+        } else if (first instanceof VisualImplicitPlaceArc con) {
             if (second instanceof VisualNamedTransition) {
-                VisualImplicitPlaceArc con = (VisualImplicitPlaceArc) first;
                 VisualStgPlace place = makeExplicit(con);
                 connection = connect(place, second);
             }
@@ -381,8 +379,7 @@ public class VisualStg extends AbstractVisualModel {
 
     @Override
     public String getMathReference(Node node) {
-        if (node instanceof VisualImplicitPlaceArc) {
-            VisualImplicitPlaceArc connection = (VisualImplicitPlaceArc) node;
+        if (node instanceof VisualImplicitPlaceArc connection) {
             node = connection.getImplicitPlace();
         }
         return super.getMathReference(node);

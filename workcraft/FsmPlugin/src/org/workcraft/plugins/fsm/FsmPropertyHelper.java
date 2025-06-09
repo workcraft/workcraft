@@ -43,8 +43,7 @@ public class FsmPropertyHelper {
                     Collection<Event> events = mathFsm.getEvents(symbol);
                     if (node == null) {
                         fsm.setMathName(symbol, newName);
-                    } else if (node instanceof Symbol) {
-                        Symbol existingSymbol = (Symbol) node;
+                    } else if (node instanceof Symbol existingSymbol) {
                         for (Event event : events) {
                             event.setSymbol(existingSymbol);
                         }

@@ -50,8 +50,7 @@ class DefaultNodeDeserialiser {
                         // No basic deserialiser, try to use the special case enum deserialiser
                         deserialiser = fac.getDeserialiserFor(Enum.class.getName());
                     }
-                    if (deserialiser instanceof BasicXMLDeserialiser) {
-                        BasicXMLDeserialiser basicDeserialiser = (BasicXMLDeserialiser) deserialiser;
+                    if (deserialiser instanceof BasicXMLDeserialiser basicDeserialiser) {
                         Element element = nameMap.get(desc.getName());
                         Object value = basicDeserialiser.deserialise(element);
                         desc.getWriteMethod().invoke(instance, value);
@@ -88,11 +87,9 @@ class DefaultNodeDeserialiser {
             // Check for a custom deserialiser first
             XMLDeserialiser deserialiser = fac.getDeserialiserFor(className);
 
-            if (deserialiser instanceof CustomXMLDeserialiser) {
-                CustomXMLDeserialiser customDeserialiser = (CustomXMLDeserialiser) deserialiser;
+            if (deserialiser instanceof CustomXMLDeserialiser customDeserialiser) {
                 instance = customDeserialiser.createInstance(currentLevelElement, externalReferenceResolver, constructorParameters);
-            } else if (deserialiser instanceof BasicXMLDeserialiser) {
-                BasicXMLDeserialiser basicDeserialiser = (BasicXMLDeserialiser) deserialiser;
+            } else if (deserialiser instanceof BasicXMLDeserialiser basicDeserialiser) {
                 instance = basicDeserialiser.deserialise(currentLevelElement);
             } else {
                 // Check for incoming parameters - these may be supplied when a custom deserialiser requests
@@ -147,8 +144,7 @@ class DefaultNodeDeserialiser {
         try {
             XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
 
-            if (deserialiser instanceof CustomXMLDeserialiser) {
-                CustomXMLDeserialiser customDeserialiser = (CustomXMLDeserialiser) deserialiser;
+            if (deserialiser instanceof CustomXMLDeserialiser customDeserialiser) {
                 customDeserialiser.initInstance(currentLevelElement, instance, externalReferenceResolver, initialiser);
             }
         } catch (InstantiationException | IllegalAccessException e) {
@@ -168,8 +164,7 @@ class DefaultNodeDeserialiser {
         if (currentLevelElement != null) {
             try {
                 XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
-                if (deserialiser instanceof CustomXMLDeserialiser) {
-                    CustomXMLDeserialiser customDeserialiser = (CustomXMLDeserialiser) deserialiser;
+                if (deserialiser instanceof CustomXMLDeserialiser customDeserialiser) {
                     customDeserialiser.finaliseInstance(currentLevelElement, instance,
                             internalReferenceResolver, externalReferenceResolver, finaliser);
                 }

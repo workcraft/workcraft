@@ -156,7 +156,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
             children.add(graphic);
         }
         if (refConnection != null) {
-            refConnection.addObserver(e -> observableStateImpl.sendNotification(e));
+            refConnection.addObserver(observableStateImpl::sendNotification);
         }
     }
 
@@ -468,16 +468,14 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     }
 
     public void inverseShape() {
-        if (getGraphic() instanceof Polyline) {
-            Polyline polyline = (Polyline) getGraphic();
+        if (getGraphic() instanceof Polyline polyline) {
             LinkedList<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
             Collections.reverse(controlPoints);
             polyline.resetControlPoints();
             for (ControlPoint cp: controlPoints) {
                 polyline.addControlPoint(cp);
             }
-        } else if (getGraphic() instanceof Bezier) {
-            Bezier bezier = (Bezier) getGraphic();
+        } else if (getGraphic() instanceof Bezier bezier) {
             BezierControlPoint[] controlPoints = bezier.getBezierControlPoints();
             Point2D tmpPoint = controlPoints[0].getPosition();
             controlPoints[0].setPosition(controlPoints[1].getPosition());
@@ -488,8 +486,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualConnection) {
-            VisualConnection srcConnection = (VisualConnection) src;
+        if (src instanceof VisualConnection srcConnection) {
             setConnectionType(srcConnection.getConnectionType());
             setColor(srcConnection.getColor());
             setLineWidth(srcConnection.getLineWidth());
@@ -515,8 +512,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         boolean dstHasBubble = false;
         LinkedList<Double> bubbleSizes = new LinkedList<>();
         for (Stylable src: srcs) {
-            if (src instanceof VisualConnection) {
-                VisualConnection srcConnection = (VisualConnection) src;
+            if (src instanceof VisualConnection srcConnection) {
                 connectionTypes.add(srcConnection.getConnectionType());
                 colors.add(srcConnection.getColor());
                 lineWidths.add(srcConnection.getLineWidth());
@@ -541,8 +537,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     @Override
     public void copyShape(Shapable src) {
-        if (src instanceof VisualConnection) {
-            VisualConnection srcConnection = (VisualConnection) src;
+        if (src instanceof VisualConnection srcConnection) {
             ConnectionUtils.copyShape(srcConnection, this);
         }
     }

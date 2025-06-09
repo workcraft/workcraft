@@ -18,8 +18,7 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
     @Override
     public void mouseReleased(GraphEditorMouseEvent e) {
         VisualNode generatedNode = getGeneratedNode();
-        if (generatedNode instanceof VisualComment) {
-            VisualComment comment = (VisualComment) generatedNode;
+        if (generatedNode instanceof VisualComment comment) {
             Toolbox toolbox = e.getEditor().getToolBox();
             toolbox.selectDefaultTool();
             if (toolbox.getSelectedTool() instanceof SelectionTool) {

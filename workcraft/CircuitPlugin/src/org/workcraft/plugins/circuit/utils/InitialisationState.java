@@ -60,8 +60,7 @@ public class InitialisationState {
                 MathNode toNode = connection.getSecond();
                 if (nodeInitLevelSet.add(toNode)) {
                     Node parent = toNode.getParent();
-                    if (parent instanceof FunctionComponent) {
-                        FunctionComponent component = (FunctionComponent) parent;
+                    if (parent instanceof FunctionComponent component) {
                         propagateValuesToOutputs(circuit, component, queue);
                     } else {
                         Set<MathConnection> connections = circuit.getConnections(toNode);

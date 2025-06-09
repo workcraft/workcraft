@@ -29,8 +29,7 @@ public class Fst extends Fsm {
     @Override
     public boolean isDeterministicSymbol(Symbol symbol) {
         boolean result = false;
-        if (symbol instanceof Signal) {
-            Signal signal = (Signal) symbol;
+        if (symbol instanceof Signal signal) {
             result = signal.getType() != Signal.Type.DUMMY;
         } else {
             result = super.isDeterministicSymbol(symbol);
@@ -53,7 +52,7 @@ public class Fst extends Fsm {
             signal = (Signal) node;
             if (signal.getType() != type) {
                 throw new ArgumentException("Signal '" + name + "' already exists and its type '"
-                        + signal.getType() + "' is different from the required \'" + type + "' type.");
+                        + signal.getType() + "' is different from the required '" + type + "' type.");
             }
         } else {
             throw new ArgumentException("Node '" + name + "' already exists and it is not a signal.");
@@ -88,8 +87,7 @@ public class Fst extends Fsm {
     @Override
     public void reparentDependencies(Model srcModel, Collection<? extends MathNode> srcChildren) {
         for (MathNode srcNode: srcChildren) {
-            if (srcNode instanceof SignalEvent) {
-                SignalEvent srcSignalEvent = (SignalEvent) srcNode;
+            if (srcNode instanceof SignalEvent srcSignalEvent) {
                 Signal dstSignal = reparentSignal(srcModel, srcSignalEvent.getSymbol());
                 srcSignalEvent.setSymbol(dstSignal);
             }

@@ -37,15 +37,13 @@ public class SerialiserUtils {
     public enum Style { STG, LPN }
 
     public static void writeModel(Model model, OutputStream out, File file, Style style, boolean needsInitialState) {
-        if (!(model instanceof PetriModel)) {
+        if (!(model instanceof PetriModel petri)) {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
-        PetriModel petri = (PetriModel) model;
 
         PrintWriter writer = new PrintWriter(out);
         writeIntro(writer, petri, file, style);
-        if (petri instanceof StgModel) {
-            StgModel stg = (StgModel) petri;
+        if (petri instanceof StgModel stg) {
             writeSignalDeclarations(writer, stg);
             if (needsInitialState) {
                 writeInitialState(writer, stg, style);
@@ -72,12 +70,8 @@ public class SerialiserUtils {
         Map<String, Boolean> initialState = StgUtils.getInitialState(stg, 1000);
         if (!initialState.isEmpty()) {
             switch (style) {
-            case STG:
-                writeInitialStateStg(writer, stg, initialState);
-                break;
-            case LPN:
-                writeInitialStateLpn(writer, stg, initialState);
-                break;
+                case STG -> writeInitialStateStg(writer, stg, initialState);
+                case LPN -> writeInitialStateLpn(writer, stg, initialState);
             }
         }
     }
@@ -113,8 +107,7 @@ public class SerialiserUtils {
     }
 
     private static boolean hasInstanceNumbers(PetriModel petri) {
-        if (petri instanceof StgModel) {
-            StgModel stg = (StgModel) petri;
+        if (petri instanceof StgModel stg) {
             for (SignalTransition st : stg.getSignalTransitions()) {
                 if (stg.getInstanceNumber(st) != 0) {
                     return true;
@@ -126,9 +119,7 @@ public class SerialiserUtils {
 
     private static String getReference(PetriModel petri, Node node, boolean needInstanceNumbers) {
         String result = petri.getNodeReference(node);
-        if (needInstanceNumbers && (petri instanceof StgModel) && (node instanceof NamedTransition)) {
-            NamedTransition nt = (NamedTransition) node;
-            StgModel stg = (StgModel) petri;
+        if (needInstanceNumbers && (petri instanceof StgModel stg) && (node instanceof NamedTransition nt)) {
             if (stg.getInstanceNumber(nt) == 0) {
                 result += "/0";
             }
@@ -162,8 +153,7 @@ public class SerialiserUtils {
         Set<MathNode> postset = petri.getPostset(node);
         for (MathNode succNode : sortNodes(postset, petri)) {
             String succNodeRef = getReference(petri, succNode, needInstanceNumbers);
-            if (succNode instanceof StgPlace) {
-                StgPlace succPlace = (StgPlace) succNode;
+            if (succNode instanceof StgPlace succPlace) {
                 if (succPlace.isImplicit()) {
                     Collection<MathNode> succPostset = petri.getPostset(succNode);
                     if (succPostset.size() > 1) {
@@ -227,8 +217,7 @@ public class SerialiserUtils {
         ArrayList<String> markingEntries = new ArrayList<>();
         for (Place place : places) {
             final String reference;
-            if (place instanceof StgPlace) {
-                StgPlace stgPlace = (StgPlace) place;
+            if (place instanceof StgPlace stgPlace) {
                 if (stgPlace.isImplicit()) {
                     MathNode predNode = petri.getPreset(place).iterator().next();
                     String predRef = getReference(petri, predNode, needInstanceNumbers);

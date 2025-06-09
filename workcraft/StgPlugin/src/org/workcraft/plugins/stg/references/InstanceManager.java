@@ -127,11 +127,9 @@ public class InstanceManager {
     }
 
     public String getLabel(Node node) {
-        if (node instanceof SignalTransition) {
-            SignalTransition st = (SignalTransition) node;
+        if (node instanceof SignalTransition st) {
             return st.getSignalName() + st.getDirection();
-        } else if (node instanceof DummyTransition) {
-            DummyTransition dum = (DummyTransition) node;
+        } else if (node instanceof DummyTransition dum) {
             return dum.getName();
         } else {
             throw new RuntimeException("Unexpected class " + node.getClass().getName());

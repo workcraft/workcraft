@@ -10,8 +10,7 @@ public class LegendListCellEditor extends AbstractCellEditor implements TableCel
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         JPanel result = new JPanel(new GridLayout());
         result.setFocusable(false);
-        if (value instanceof LegendList) {
-            LegendList legendList = (LegendList) value;
+        if (value instanceof LegendList legendList) {
             for (Legend legend : legendList) {
                 JButton button = new JButton(legend.getTitle());
                 button.setToolTipText(legend.getTooltip());

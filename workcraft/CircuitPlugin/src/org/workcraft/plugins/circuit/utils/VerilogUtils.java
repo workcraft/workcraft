@@ -327,8 +327,7 @@ public final class VerilogUtils {
 
     public static String getContactNameWithSubstitutions(Contact contact) {
         Node parent = contact.getParent();
-        if (parent instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent) parent;
+        if (parent instanceof CircuitComponent component) {
             return getPortNameWithSubstitutions(component.getModule(), contact.getName());
         } else {
             return contact.getName();
@@ -337,8 +336,7 @@ public final class VerilogUtils {
 
     public static String getContactFullNameWithSubstitutions(Circuit circuit, Contact contact) {
         Node parent = contact.getParent();
-        if (parent instanceof CircuitComponent) {
-            CircuitComponent component = (CircuitComponent) parent;
+        if (parent instanceof CircuitComponent component) {
             String instanceRef = circuit.getComponentReference(component);
             String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
             String contactName = getPortNameWithSubstitutions(component.getModule(), contact.getName());
