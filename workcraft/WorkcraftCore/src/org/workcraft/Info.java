@@ -37,13 +37,13 @@ public class Info {
     }
 
     public static String getSubtitle() {
-        switch (VERSION.major) {
-        case 1: return SUBTITLE_1;
-        case 2: return SUBTITLE_2;
-        case 3: return SUBTITLE_3;
-        case 4: return SUBTITLE_4;
-        default: return "";
-        }
+        return switch (VERSION.major) {
+            case 1 -> SUBTITLE_1;
+            case 2 -> SUBTITLE_2;
+            case 3 -> SUBTITLE_3;
+            case 4 -> SUBTITLE_4;
+            default -> "";
+        };
     }
 
     public static boolean isReleaseMode() {

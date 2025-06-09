@@ -42,19 +42,12 @@ public enum PortDirection {
      * @return the opposite direction
      */
     public PortDirection flip() {
-        switch (this) {
-        case NORTH:
-            return SOUTH;
-        case SOUTH:
-            return NORTH;
-        case WEST:
-            return EAST;
-        case EAST:
-            return WEST;
-        default:
-            assert false : "unexpected direction value";
-            return null;
-        }
+        return switch (this) {
+            case NORTH -> SOUTH;
+            case SOUTH -> NORTH;
+            case WEST -> EAST;
+            case EAST -> WEST;
+        };
     }
 
     /**

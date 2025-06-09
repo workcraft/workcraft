@@ -14,7 +14,7 @@ public class BddManager {
     private final Map<BooleanVariable, Integer> varToBddMap = new HashMap<>();
     private final Map<Integer, BooleanFormula> bddToDistinctFormulaMap = new HashMap<>();
 
-    private class BddGenerator implements BooleanVisitor<Integer> {
+    private final class BddGenerator implements BooleanVisitor<Integer> {
 
         @Override
         public Integer visit(Zero node) {

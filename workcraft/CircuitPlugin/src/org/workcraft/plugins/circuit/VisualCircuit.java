@@ -62,14 +62,12 @@ public class VisualCircuit extends AbstractVisualModel {
     public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
         // Automatic addition of pins to blackbox components
         if ((first instanceof VisualFunctionComponent) || (second instanceof VisualFunctionComponent)) {
-            if (first instanceof VisualFunctionComponent) {
-                VisualFunctionComponent firstComponent = (VisualFunctionComponent) first;
+            if (first instanceof VisualFunctionComponent firstComponent) {
                 if (!firstComponent.isBlackbox()) {
                     throw new InvalidConnectionException("Cannot add output pin to component with set/reset functions.");
                 }
             }
-            if (second instanceof VisualFunctionComponent) {
-                VisualFunctionComponent secondComponent = (VisualFunctionComponent) second;
+            if (second instanceof VisualFunctionComponent secondComponent) {
                 if (!secondComponent.isBlackbox()) {
                     throw new InvalidConnectionException("Cannot add input pin to component with set/reset functions.");
                 }
@@ -93,8 +91,7 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
 
-        if (first instanceof VisualContact) {
-            VisualContact secondContact = (VisualContact) first;
+        if (first instanceof VisualContact secondContact) {
             if (secondContact.isInput() && !secondContact.isPort()) {
                 throw new InvalidConnectionException("Input pin of a component cannot be a driver.");
             }
@@ -103,8 +100,7 @@ public class VisualCircuit extends AbstractVisualModel {
             }
         }
 
-        if (second instanceof VisualContact) {
-            VisualContact secondContact = (VisualContact) second;
+        if (second instanceof VisualContact secondContact) {
             if (secondContact.isOutput() && !secondContact.isPort()) {
                 throw new InvalidConnectionException("Output pin of a component cannot be driven.");
             }
@@ -187,8 +183,7 @@ public class VisualCircuit extends AbstractVisualModel {
         Set<FunctionComponent> drivenHierarchicalComponents = new HashSet<>();
         for (Contact driven : combinedDrivenSet) {
             Node drivenParent = driven.getParent();
-            if (drivenParent instanceof FunctionComponent) {
-                FunctionComponent drivenComponent = (FunctionComponent) drivenParent;
+            if (drivenParent instanceof FunctionComponent drivenComponent) {
                 if (!drivenComponent.isCell()) {
                     if (drivenHierarchicalComponents.contains(drivenComponent)) {
                         throw new InvalidConnectionException("Fusing inputs of hierarchical component is not allowed.");
@@ -206,8 +201,7 @@ public class VisualCircuit extends AbstractVisualModel {
 
         validateConnection(first, second);
 
-        if (first instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) first;
+        if (first instanceof VisualConnection connection) {
             Point2D splitPoint = connection.getSplitPoint();
             LinkedList<Point2D> prefixLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(connection, splitPoint);
             LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPoint);
@@ -395,12 +389,10 @@ public class VisualCircuit extends AbstractVisualModel {
         if (node == null) {
             properties.add(CircuitPropertyHelper.getEnvironmentProperty(this));
             properties.addAll(CircuitPropertyHelper.getComponentProperties(this));
-        } else if (node instanceof VisualFunctionContact) {
-            VisualFunctionContact contact = (VisualFunctionContact) node;
+        } else if (node instanceof VisualFunctionContact contact) {
             properties.add(CircuitPropertyHelper.getSetFunctionProperty(this, contact));
             properties.add(CircuitPropertyHelper.getResetFunctionProperty(this, contact));
-        } else if (node instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) node;
+        } else if (node instanceof VisualFunctionComponent component) {
             properties.add(CircuitPropertyHelper.getRefinementProperty(this, component));
             VisualFunctionContact mainOutput = component.getMainVisualOutput();
             if (mainOutput != null) {

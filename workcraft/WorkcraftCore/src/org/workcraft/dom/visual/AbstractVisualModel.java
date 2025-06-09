@@ -93,8 +93,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
             for (Node node : container.getChildren()) {
                 double x = start.getX() + r.nextDouble() * range.getX();
                 double y = start.getY() + r.nextDouble() * range.getY();
-                if (node instanceof VisualTransformableNode) {
-                    VisualTransformableNode transformableNode = (VisualTransformableNode) node;
+                if (node instanceof VisualTransformableNode transformableNode) {
                     transformableNode.setRootSpacePosition(new Point2D.Double(x, y));
                 }
                 if (node instanceof Container) {
@@ -132,8 +131,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
             Container visualContainer = container.getSecond();
             for (Node node : mathContainer.getChildren()) {
                 if (node instanceof MathConnection) continue;
-                if (node instanceof MathNode) {
-                    MathNode mathNode = (MathNode) node;
+                if (node instanceof MathNode mathNode) {
                     VisualComponent visualComponent = null;
                     try {
                         visualComponent = NodeFactory.createVisualComponent(mathNode);
@@ -156,8 +154,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
             Pair<Container, Container> container = containerQueue.remove();
             Container mathContainer = container.getFirst();
             for (Node node : mathContainer.getChildren()) {
-                if (node instanceof MathConnection) {
-                    MathConnection mathConnection = (MathConnection) node;
+                if (node instanceof MathConnection mathConnection) {
                     VisualComponent firstComponent = createdNodes.get(mathConnection.getFirst());
                     VisualComponent secondComponent = createdNodes.get(mathConnection.getSecond());
                     try {
@@ -165,8 +162,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
                     } catch (InvalidConnectionException e) {
                         throw new RuntimeException(e);
                     }
-                } else if (node instanceof MathNode) {
-                    MathNode mathNode = (MathNode) node;
+                } else if (node instanceof MathNode mathNode) {
                     VisualComponent visualComponent = createdNodes.get(mathNode);
                     if ((mathNode instanceof Container) && (visualComponent instanceof Container)) {
                         containerQueue.add(new Pair<>((Container) mathNode, (Container) visualComponent));
@@ -240,8 +236,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
             mathModel.getRoot().add(mathNode);
         }
         Container container = getRoot();
-        if (mathParent instanceof PageNode) {
-            PageNode mathPage = (PageNode) mathParent;
+        if (mathParent instanceof PageNode mathPage) {
             container = getVisualComponent(mathPage, VisualPage.class);
         }
         try {
@@ -482,11 +477,9 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
     @Override
     public String getMathReference(Node node) {
-        if (node instanceof VisualComponent) {
-            VisualComponent component = (VisualComponent) node;
+        if (node instanceof VisualComponent component) {
             node = component.getReferencedComponent();
-        } else if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) node;
+        } else if (node instanceof VisualConnection connection) {
             node = connection.getReferencedConnection();
         }
         return node == null ? null : getMathModel().getNodeReference(node);
@@ -494,11 +487,9 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
     @Override
     public String getMathName(Node node) {
-        if (node instanceof VisualComponent) {
-            VisualComponent component = (VisualComponent) node;
+        if (node instanceof VisualComponent component) {
             node = component.getReferencedComponent();
-        } else if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) node;
+        } else if (node instanceof VisualConnection connection) {
             node = connection.getReferencedConnection();
         }
         return node == null ? null : getMathModel().getName(node);
@@ -506,8 +497,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
     @Override
     public void setMathName(Node node, String name) {
-        if (node instanceof VisualComponent) {
-            VisualComponent component = (VisualComponent) node;
+        if (node instanceof VisualComponent component) {
             node = component.getReferencedComponent();
         }
         getMathModel().setName(node, name);
@@ -597,15 +587,13 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     public void ungroupSelection() {
         ArrayList<VisualNode> toSelect = new ArrayList<>();
         for (VisualNode node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
-            if (node instanceof VisualGroup) {
-                VisualGroup group = (VisualGroup) node;
+            if (node instanceof VisualGroup group) {
                 Collection<VisualNode> nodesToReparent = NodeHelper.filterByType(group.getChildren(), VisualNode.class);
                 toSelect.addAll(nodesToReparent);
                 if (reparent(getCurrentLevel(), this, group, nodesToReparent)) {
                     getCurrentLevel().remove(group);
                 }
-            } else if (node instanceof VisualPage) {
-                VisualPage page = (VisualPage) node;
+            } else if (node instanceof VisualPage page) {
                 Collection<VisualNode> nodesToReparent = NodeHelper.filterByType(page.getChildren(), VisualNode.class);
                 toSelect.addAll(nodesToReparent);
                 if (reparent(getCurrentLevel(), this, page, nodesToReparent)) {
@@ -634,8 +622,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     private void deleteSelection(final Func<Node, Boolean> filter) {
         HashMap<Container, LinkedList<Node>> batches = new HashMap<>();
         for (Node node : selection) {
-            if (node.getParent() instanceof Container) {
-                Container container = (Container) node.getParent();
+            if (node.getParent() instanceof Container container) {
                 if (filter.eval(node)) {
                     List<Node> batch = batches.computeIfAbsent(container, k -> new LinkedList<>());
                     batch.add(node);
@@ -801,8 +788,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         return new PropertyDeclaration<>(String.class, Model.PROPERTY_NAME,
                 value -> {
                     Identifier.validate(value);
-                    if (node instanceof VisualComponent) {
-                        VisualComponent component = (VisualComponent) node;
+                    if (node instanceof VisualComponent component) {
                         if (component.getReferencedComponent() instanceof NamespaceProvider) {
                             value = Identifier.appendNamespaceSeparator(value);
                         }

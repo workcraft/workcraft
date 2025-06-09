@@ -46,10 +46,10 @@ public class NodeTraversalTool {
             ensureGraphContainsVertex(exitGraph, rightChildName);
 
             switch (operator) {
-            case CONCURRENCY -> this.handleConcurrency(leftChildName, rightChildName);
-            case CHOICE -> this.handleChoice(leftChildName, rightChildName);
-            case SEQUENCE -> this.handleSequence(leftChildName, rightChildName, mode, we);
-            case ITERATION -> this.handleIteration(leftChildName, nodeIterator.getCurrentPosition());
+                case CONCURRENCY -> this.handleConcurrency(leftChildName, rightChildName);
+                case CHOICE -> this.handleChoice(leftChildName, rightChildName);
+                case SEQUENCE -> this.handleSequence(leftChildName, rightChildName, mode, we);
+                case ITERATION -> this.handleIteration(leftChildName, nodeIterator.getCurrentPosition());
             }
 
             if (nodeIterator.isLastNode()) {

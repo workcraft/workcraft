@@ -5,7 +5,7 @@ import org.workcraft.formula.visitors.BooleanVisitor;
 
 public class DnfGenerator {
 
-    private static class DnfVisitor implements BooleanVisitor<Dnf> {
+    private static final class DnfVisitor implements BooleanVisitor<Dnf> {
 
         private boolean negation = false;
 

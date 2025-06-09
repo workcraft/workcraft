@@ -32,8 +32,7 @@ import java.util.HashSet;
 
 public class ScenarioGeneratorTool extends SONSimulationTool {
 
-    @SuppressWarnings("serial")
-    private class ScenarioTableModel extends AbstractTableModel {
+    private final class ScenarioTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
             return 2;

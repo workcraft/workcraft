@@ -47,8 +47,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
 
     @Override
     public void layout(VisualModel model) {
-        if (model instanceof VisualCircuit) {
-            VisualCircuit circuit = (VisualCircuit) model;
+        if (model instanceof VisualCircuit circuit) {
             if (!skipLayoutPlacement()) {
                 setContactOrientation(circuit);
                 setComponentPositions(circuit);
@@ -200,8 +199,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
             for (VisualComponent component: layer) {
                 if (component instanceof VisualContact) {
                     filteredLayer.add(component);
-                } else if (component instanceof VisualCircuitComponent) {
-                    VisualCircuitComponent circuitComponent = (VisualCircuitComponent) component;
+                } else if (component instanceof VisualCircuitComponent circuitComponent) {
                     if (!isBasicGate(circuitComponent)) {
                         filteredLayer.add(component);
                     } else {
@@ -242,17 +240,14 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         for (VisualConnection connection: Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class)) {
             VisualNode firstNode = connection.getFirst();
             VisualNode secondNode = connection.getSecond();
-            if ((firstNode instanceof VisualContact) && (secondNode instanceof VisualContact)) {
-                VisualContact firstContact = (VisualContact) firstNode;
-                VisualContact secondContact = (VisualContact) secondNode;
+            if ((firstNode instanceof VisualContact firstContact) && (secondNode instanceof VisualContact secondContact)) {
                 if (!firstContact.isPort() && !secondContact.isPort()
                             && (firstContact.getParent() == secondContact.getParent())) {
                     Point2D firstPos = firstContact.getRootSpacePosition();
                     Point2D secondPos = secondContact.getRootSpacePosition();
                     Node parent = firstContact.getParent();
                     double h = 2.0;
-                    if (parent instanceof VisualCircuitComponent) {
-                        VisualCircuitComponent component = (VisualCircuitComponent) parent;
+                    if (parent instanceof VisualCircuitComponent component) {
                         Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
                         h = bb.getHeight();
                     }
@@ -261,8 +256,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                     if (dx < 0.0) dx = 0.0;
                     double dy = (d > 0) ? h - d : -h - d;
                     ConnectionGraphic graphic = connection.getGraphic();
-                    if (graphic instanceof Polyline) {
-                        Polyline polyline = (Polyline) graphic;
+                    if (graphic instanceof Polyline polyline) {
                         polyline.addControlPoint(new Point2D.Double(firstPos.getX(), firstPos.getY() - dy));
                         polyline.addControlPoint(new Point2D.Double(secondPos.getX() - dx, firstPos.getY() - dy));
                         polyline.addControlPoint(new Point2D.Double(secondPos.getX() - dx, secondPos.getY()));
@@ -285,13 +279,6 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                     VisualContact driven = drivens.iterator().next();
                     double x = driven.getRootSpaceX();
                     double y = driven.getRootSpaceY();
-//                    if (driven.isPort()) {
-//                        VisualContact input = component.getFirstVisualInput();
-//                        VisualContact driver = CircuitUtils.findDriver(circuit, input);
-//                        if (driven != null) {
-//                            y = driver.getRootSpaceY();
-//                        }
-//                    }
                     component.setRootSpacePosition(new Point2D.Double(x - xOffset, y));
                 }
             }
@@ -304,8 +291,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
             double y = 0.0;
             int count = 0;
             for (VisualNode drivenNode : circuit.getPostset(replicaContact)) {
-                if (drivenNode instanceof VisualTransformableNode) {
-                    VisualTransformableNode drivenTransformableNode = (VisualTransformableNode) drivenNode;
+                if (drivenNode instanceof VisualTransformableNode drivenTransformableNode) {
                     double drivenX = drivenTransformableNode.getRootSpaceX();
                     x = count > 0 ? Math.min(x, drivenX) : drivenX;
                     y += drivenTransformableNode.getRootSpaceY();
@@ -314,7 +300,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
             }
             if (count > 0) {
                 double xOffset =  0.5 + 0.5 * replicaContact.getBoundingBoxInLocalSpace().getWidth();
-                replicaContact.setRootSpacePosition(new Point2D.Double(x - xOffset, y / (double) count));
+                replicaContact.setRootSpacePosition(new Point2D.Double(x - xOffset, y / count));
             }
         }
     }
@@ -336,7 +322,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                     count++;
                 }
                 if (count > 0) {
-                    contact.setRootSpaceY(y / (double) count);
+                    contact.setRootSpaceY(y / count);
                 }
             }
         }
@@ -451,8 +437,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     }
 
     private VisualJoint getCommonJoint(VisualConnection connection, Point2D commonPos) {
-        if (connection.getSecond() instanceof VisualJoint) {
-            VisualJoint joint = (VisualJoint) connection.getSecond();
+        if (connection.getSecond() instanceof VisualJoint joint) {
             if (commonPos.distance(joint.getRootSpacePosition()) < SAME_POINT_DISTANCE_THRESHOLD) {
                 return joint;
             }
@@ -467,9 +452,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         Point2D pos = ((VisualTransformableNode) c1.getFirst()).getRootSpacePosition();
         ConnectionGraphic g1 = c1.getGraphic();
         ConnectionGraphic g2 = c2.getGraphic();
-        if ((g1 instanceof Polyline) && (g2 instanceof Polyline)) {
-            Polyline poly1 = (Polyline) g1;
-            Polyline poly2 = (Polyline) g2;
+        if ((g1 instanceof Polyline poly1) && (g2 instanceof Polyline poly2)) {
             int count = Math.min(poly1.getControlPointCount(), poly2.getControlPointCount());
             for (int i = 0; i <= count; i++) {
                 Point2D pos1 = (i < poly1.getControlPointCount()) ? poly1.getControlPoint(i).getRootSpacePosition()
@@ -556,8 +539,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     private void alignControlPoints(VisualCircuit circuit) {
         for (VisualConnection connection: Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class)) {
             ConnectionGraphic graphic = connection.getGraphic();
-            if (graphic instanceof Polyline) {
-                Polyline polyline = (Polyline) graphic;
+            if (graphic instanceof Polyline polyline) {
                 AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
 
                 ControlPoint firstControlPoint = polyline.getFirstControlPoint();

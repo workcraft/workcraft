@@ -76,9 +76,8 @@ public class FstSimulationTool extends StgSimulationTool {
             return;
         }
         MathModel model = editor.getModel().getMathModel();
-        if (model instanceof Fst) {
+        if (model instanceof Fst fst) {
             editor.getWorkspaceEntry().saveMemento();
-            Fst fst = (Fst) model;
             for (State state: fst.getStates()) {
                 String ref = fst.getNodeReference(state);
                 Node underlyingNode = getUnderlyingModel().getNodeByReference(ref);
@@ -184,8 +183,8 @@ public class FstSimulationTool extends StgSimulationTool {
     }
 
     private Transition getExcitedTransitionOfNode(Node node) {
-        if ((node != null) && (node instanceof VisualEvent)) {
-            VisualTransition vTransition = converter.getRelatedTransition((VisualEvent) node);
+        if (node instanceof VisualEvent event) {
+            VisualTransition vTransition = converter.getRelatedTransition(event);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedComponent();
                 if (isEnabledUnderlyingNode(transition)) {

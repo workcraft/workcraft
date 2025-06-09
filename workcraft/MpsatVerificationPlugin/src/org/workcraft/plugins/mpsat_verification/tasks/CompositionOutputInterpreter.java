@@ -175,13 +175,13 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
             String tagLabel = convertTagToString(tag);
             String tagDescription = tag.toString();
             if ((tagLabel != null) && (tagDescription != null)) {
-                if (msg.length() > 0) {
+                if (!msg.isEmpty()) {
                     msg.append("; ");
                 }
                 msg.append(tagLabel).append(" - ").append(tagDescription);
             }
         }
-        if (msg.length() > 0) {
+        if (!msg.isEmpty()) {
             LogUtils.logMessage(indent + "Legend: " + msg);
         }
     }
@@ -241,7 +241,7 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
     }
 
     private String getSuggestedEventRef(ProjectionSlice projectionSlice) {
-        String violationEventRef = null;
+        String badEventRef = null;
         String outputEventRef = null;
         String inputEventRef = null;
         String internalEventRef = null;
@@ -252,31 +252,21 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
                 WorkspaceEntry we = projectionEntry.getKey();
                 String projectionEventRef = getProjectionEventReference(we, projectionEvent.ref);
                 switch (projectionEvent.tag) {
-                case VIOLATION:
-                    violationEventRef = violationEventRef == null ? projectionEventRef : violationEventRef;
-                    break;
-                case OUTPUT:
-                    outputEventRef = outputEventRef == null ? projectionEventRef : outputEventRef;
-                    break;
-                case INTERNAL:
-                    internalEventRef = projectionEventRef;
-                    break;
-                case DUMMY:
-                    dummyEventRef = projectionEventRef;
-                    break;
-                case INPUT:
-                    inputEventRef = projectionEventRef;
-                    break;
+                    case VIOLATION -> badEventRef = (badEventRef == null) ? projectionEventRef : badEventRef;
+                    case OUTPUT -> outputEventRef = (outputEventRef == null) ? projectionEventRef : outputEventRef;
+                    case INTERNAL -> internalEventRef = projectionEventRef;
+                    case DUMMY -> dummyEventRef = projectionEventRef;
+                    case INPUT -> inputEventRef = projectionEventRef;
+                    default -> { }
                 }
             }
         }
 
-        return violationEventRef != null ? violationEventRef
+        return badEventRef != null ? badEventRef
                 : outputEventRef != null ? outputEventRef
                 : internalEventRef != null ? internalEventRef
                 : dummyEventRef != null ? dummyEventRef
-                : inputEventRef != null ? inputEventRef
-                : null;
+                : inputEventRef;
     }
 
     public String getProjectionEventReference(WorkspaceEntry we, String projectionEvent) {
@@ -284,15 +274,14 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
     }
 
     private String convertTagToString(ProjectionEvent.Tag tag) {
-        switch (tag) {
-        case INPUT: return "i";
-        case OUTPUT: return "o";
-        case INTERNAL: return "x";
-        case DUMMY: return "d";
-        case VIOLATION: return "!";
-        case NONE: return ".";
-        }
-        return null;
+        return switch (tag) {
+            case INPUT -> "i";
+            case OUTPUT -> "o";
+            case INTERNAL -> "x";
+            case DUMMY -> "d";
+            case VIOLATION -> "!";
+            case NONE -> ".";
+        };
     }
 
     @Override

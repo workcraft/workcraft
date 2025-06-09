@@ -43,14 +43,13 @@ public class SynchronisationCommand implements Command {
 
     private int cntSyncnodes = 0;
     private JFrame mainFrame = null;
-    private JComboBox combob = null;
 
     public void dispose() {
         mainFrame.setVisible(false);
     }
 
     private static class Sync {
-        public String name1;
+        public final String name1;
         public String name2;
         public String name3;
         public String l1;
@@ -149,9 +148,7 @@ public class SynchronisationCommand implements Command {
 
     public void writesynclist() {
         File syncFile = XmasSettings.getTempVxmSyncFile();
-        PrintWriter writerS = null;
-        try {
-            writerS = new PrintWriter(syncFile);
+        try (PrintWriter writerS = new PrintWriter(syncFile)) {
             for (Sync s : synclist) {
                 String str;
                 str = s.name1.replace("Sync", "Qs");
@@ -169,10 +166,6 @@ public class SynchronisationCommand implements Command {
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } finally {
-            if (writerS != null) {
-                writerS.close();
-            }
         }
     }
 
@@ -181,13 +174,11 @@ public class SynchronisationCommand implements Command {
 
         slist.clear();
         for (Component con : mainFrame.getContentPane().getComponents()) {
-            if (con instanceof JPanel) {
-                JPanel jp = (JPanel) con;
+            if (con instanceof JPanel jp) {
                 for (Component cn : jp.getComponents()) {
                     JPanel jp2 = (JPanel) cn;
                     for (Component cn2 : jp2.getComponents()) {
-                        if (cn2 instanceof JComboBox) {
-                            JComboBox cb = (JComboBox) cn2;
+                        if (cn2 instanceof JComboBox cb) {
                             String str = cb.getSelectedItem().toString();
                             //System.out.println("Found " + str);
                             if ("asynchronous".equals(str)) {
@@ -208,14 +199,12 @@ public class SynchronisationCommand implements Command {
         slist1.clear();
         slist2.clear();
         for (Component con : mainFrame.getContentPane().getComponents()) {
-            if (con instanceof JPanel) {
-                JPanel jp = (JPanel) con;
+            if (con instanceof JPanel jp) {
                 for (Component cn : jp.getComponents()) {
                     JPanel jp2 = (JPanel) cn;
                     int n = 1;
                     for (Component cn2 : jp2.getComponents()) {
-                        if (cn2 instanceof JTextField) {
-                            JTextField tf = (JTextField) cn2;
+                        if (cn2 instanceof JTextField tf) {
                             String str = tf.getText();
                             if (n == 2) {
                                 slist1.add(str);
@@ -232,18 +221,15 @@ public class SynchronisationCommand implements Command {
 
     public void setFields() {
         for (Component con : mainFrame.getContentPane().getComponents()) {
-            if (con instanceof JPanel) {
-                JPanel jp = (JPanel) con;
+            if (con instanceof JPanel jp) {
                 for (Component cn : jp.getComponents()) {
                     JPanel jp2 = (JPanel) cn;
                     int n = 1;
                     String sel = "";
                     for (Component cn2 : jp2.getComponents()) {
-                        if (cn2 instanceof JComboBox) {
-                            JComboBox cb = (JComboBox) cn2;
+                        if (cn2 instanceof JComboBox cb) {
                             sel = (String) cb.getSelectedItem();
-                        } else if (cn2 instanceof JTextField) {
-                            JTextField tf = (JTextField) cn2;
+                        } else if (cn2 instanceof JTextField tf) {
                             if ("mesochronous".equals(sel)) {
                                 if (n == 2) {
                                     tf.setEnabled(false);
@@ -319,7 +305,8 @@ public class SynchronisationCommand implements Command {
             panellist.get(panellist.size() - 1).add(new JLabel(" Name" + no));
             panellist.get(panellist.size() - 1).add(new JTextField("Sync" + no));
             panellist.get(panellist.size() - 1).add(new JLabel(" Type "));
-            panellist.get(panellist.size() - 1).add(combob = new JComboBox(choices));
+            JComboBox combob = null;
+            panellist.get(panellist.size() - 1).add(combob = new JComboBox<>(choices));
             combob.addActionListener(event -> {
                 JComboBox comboBox = (JComboBox) event.getSource();
                 Object selected = comboBox.getSelectedItem();
@@ -366,8 +353,7 @@ public class SynchronisationCommand implements Command {
             }
             no = 0;
             for (Node node : vnet.getNodes()) {
-                if (node instanceof VisualSyncComponent) {   //won't work for sync
-                    VisualSyncComponent vsc1 = (VisualSyncComponent) node;
+                if (node instanceof VisualSyncComponent vsc1) {   //won't work for sync
                     SyncComponent sc1 = vsc1.getReferencedComponent();
                     System.out.println("Sync component Sync" + no + " = " + slist.get(no));
                     System.out.println("group1 = " + grnums1.get(no) + " group2 = " + grnums2.get(no));
@@ -379,8 +365,7 @@ public class SynchronisationCommand implements Command {
                     String typ = slist.get(no);
                     sc1.setTyp(typ);
                     no++;  //shifted
-                } else if (node instanceof VisualSourceComponent) {
-                    VisualSourceComponent vsc2 = (VisualSourceComponent) node;
+                } else if (node instanceof VisualSourceComponent vsc2) {
                     SourceComponent sc2 = vsc2.getReferencedComponent();
                     int sno = sc2.getGr();
                     for (int i1 = 0; i1 < grnums1.size(); i1++) {
@@ -388,8 +373,7 @@ public class SynchronisationCommand implements Command {
                         if (grnums2.get(i1) == sno) gp = slist2.get(i1);
                     }
                     sc2.setGp(gp);
-                } else if (node instanceof VisualQueueComponent) {
-                    VisualQueueComponent vsc3 = (VisualQueueComponent) node;
+                } else if (node instanceof VisualQueueComponent vsc3) {
                     QueueComponent sc3 = vsc3.getReferencedComponent();
                     int qno = sc3.getGr();
                     for (int i2 = 0; i2 < grnums1.size(); i2++) {
@@ -408,38 +392,30 @@ public class SynchronisationCommand implements Command {
         int gno = 1;
         for (VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
             for (VisualComponent vp: vg.getComponents()) {
-                if (vp instanceof VisualSourceComponent) {
-                    VisualSourceComponent vsc = (VisualSourceComponent) vp;
+                if (vp instanceof VisualSourceComponent vsc) {
                     SourceComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
-                } else if (vp instanceof VisualSinkComponent) {
-                    VisualSinkComponent vsc = (VisualSinkComponent) vp;
+                } else if (vp instanceof VisualSinkComponent vsc) {
                     SinkComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
-                } else if (vp instanceof VisualFunctionComponent) {
-                    VisualFunctionComponent vsc = (VisualFunctionComponent) vp;
+                } else if (vp instanceof VisualFunctionComponent vsc) {
                     FunctionComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
-                } else if (vp instanceof VisualQueueComponent) {
-                    VisualQueueComponent vsc = (VisualQueueComponent) vp;
+                } else if (vp instanceof VisualQueueComponent vsc) {
                     QueueComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
-                } else if (vp instanceof VisualForkComponent) {
-                    VisualForkComponent vsc = (VisualForkComponent) vp;
+                } else if (vp instanceof VisualForkComponent vsc) {
                     ForkComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                     //System.out.println("Fork no = " + gno + ' ' + sc.getGr());
-                } else if (vp instanceof VisualJoinComponent) {
-                    VisualJoinComponent vsc = (VisualJoinComponent) vp;
+                } else if (vp instanceof VisualJoinComponent vsc) {
                     JoinComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                     //System.out.println("Join no = " + gno + ' ' + sc.getGr());
-                } else if (vp instanceof VisualSwitchComponent) {
-                    VisualSwitchComponent vsc = (VisualSwitchComponent) vp;
+                } else if (vp instanceof VisualSwitchComponent vsc) {
                     SwitchComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
-                } else if (vp instanceof VisualMergeComponent) {
-                    VisualMergeComponent vsc = (VisualMergeComponent) vp;
+                } else if (vp instanceof VisualMergeComponent vsc) {
                     MergeComponent sc = vsc.getReferencedComponent();
                     sc.setGr(gno);
                 }
@@ -450,76 +426,65 @@ public class SynchronisationCommand implements Command {
 
     private void writeJson(final VisualXmas vnet) {
         //GEN JSON
-        File jsonFile = XmasSettings.getTempVxmJsonFile();
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(jsonFile);
-            List<VisualComponent> vcomps = new ArrayList<>();
-            List<VisualSyncComponent> vscomps = new ArrayList<>();
+        List<VisualComponent> vcomps = new ArrayList<>();
+        List<VisualSyncComponent> vscomps = new ArrayList<>();
 
-            for (Node node : vnet.getNodes()) {
-                if (node instanceof VisualSyncComponent) {
-                    cntSyncnodes++;
-                    vscomps.add((VisualSyncComponent) node);
-                    if (loaded == 0) grnums1.add(0);
-                    if (loaded == 0) grnums2.add(0);
-                }
+        for (Node node : vnet.getNodes()) {
+            if (node instanceof VisualSyncComponent) {
+                cntSyncnodes++;
+                vscomps.add((VisualSyncComponent) node);
+                if (loaded == 0) grnums1.add(0);
+                if (loaded == 0) grnums2.add(0);
             }
+        }
 
-            //Finds all components inside groups
-            int grnum = 1;
-            for (VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
-                for (VisualComponent vp: vg.getComponents()) {
-                    vcomps.add(vp);
-                    if (loaded == 0) grnums.add(grnum);
-                }
-                grnum++;
+        //Finds all components inside groups
+        int grnum = 1;
+        for (VisualGroup vg : Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
+            for (VisualComponent vp : vg.getComponents()) {
+                vcomps.add(vp);
+                if (loaded == 0) grnums.add(grnum);
             }
+            grnum++;
+        }
 
-            synclist.clear();
-            //Finds all sync connections + groups
-            Collection<VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
-            for (VisualConnection vc: lvc) {
-                VisualNode vc1 = vc.getFirst();
-                VisualNode vc2 = vc.getSecond();
-                Node vn1 = vc1.getParent();
-                Node vn2 = vc2.getParent();
+        synclist.clear();
+        //Finds all sync connections + groups
+        Collection<VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
+        for (VisualConnection vc : lvc) {
+            VisualNode vc1 = vc.getFirst();
+            VisualNode vc2 = vc.getSecond();
+            Node vn1 = vc1.getParent();
+            Node vn2 = vc2.getParent();
 
-                if (vn2 instanceof VisualSyncComponent) {   //vn2
-                    if (vn1 instanceof VisualFunctionComponent) {
-                        writeJsonInFunction(vnet, (VisualFunctionComponent) vn1);
-                    } else if (vn1 instanceof VisualQueueComponent) {
-                        writeJsonInQueue(vnet, (VisualQueueComponent) vn1);
-                    } else if (vn1 instanceof VisualSwitchComponent) {
-                        writeJsonInSwitch(vnet, (VisualSwitchComponent) vn1);
-                    } else if (vn1 instanceof VisualMergeComponent) {
-                        writeJsonInMerge(vnet, (VisualMergeComponent) vn1);
-                    } else if (vn1 instanceof VisualForkComponent) {
-                        writeJsonInFork(vnet, (VisualForkComponent) vn1);
-                    } else if (vn1 instanceof VisualJoinComponent) {
-                        writeJsonInJoin(vnet, (VisualJoinComponent) vn1);
-                    }
-                } else if (vn1 instanceof VisualSyncComponent) {    //vn1
-                    if (vn2 instanceof VisualFunctionComponent) {
-                        writeJsonOutFunction(vnet, (VisualFunctionComponent) vn2);
-                    } else if (vn2 instanceof VisualQueueComponent) {
-                        writeJsonOutQueue(vnet, (VisualQueueComponent) vn2);
-                    } else if (vn2 instanceof VisualSwitchComponent) {
-                        writeJsonOutSwitch(vnet, (VisualSwitchComponent) vn2);
-                    } else if (vn2 instanceof VisualMergeComponent) {
-                        writeJsonOutMerge(vnet, (VisualMergeComponent) vn2);
-                    } else if (vn2 instanceof VisualForkComponent) {
-                        writeJsonOutFork(vnet, (VisualForkComponent) vn2);
-                    } else if (vn2 instanceof VisualJoinComponent) {
-                        writeJsonOutJoin(vnet, (VisualJoinComponent) vn2);
-                    }
+            if (vn2 instanceof VisualSyncComponent) {   //vn2
+                if (vn1 instanceof VisualFunctionComponent) {
+                    writeJsonInFunction(vnet, (VisualFunctionComponent) vn1);
+                } else if (vn1 instanceof VisualQueueComponent) {
+                    writeJsonInQueue(vnet, (VisualQueueComponent) vn1);
+                } else if (vn1 instanceof VisualSwitchComponent) {
+                    writeJsonInSwitch(vnet, (VisualSwitchComponent) vn1);
+                } else if (vn1 instanceof VisualMergeComponent) {
+                    writeJsonInMerge(vnet, (VisualMergeComponent) vn1);
+                } else if (vn1 instanceof VisualForkComponent) {
+                    writeJsonInFork(vnet, (VisualForkComponent) vn1);
+                } else if (vn1 instanceof VisualJoinComponent) {
+                    writeJsonInJoin(vnet, (VisualJoinComponent) vn1);
                 }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                writer.close();
+            } else if (vn1 instanceof VisualSyncComponent) {    //vn1
+                if (vn2 instanceof VisualFunctionComponent) {
+                    writeJsonOutFunction(vnet, (VisualFunctionComponent) vn2);
+                } else if (vn2 instanceof VisualQueueComponent) {
+                    writeJsonOutQueue(vnet, (VisualQueueComponent) vn2);
+                } else if (vn2 instanceof VisualSwitchComponent) {
+                    writeJsonOutSwitch(vnet, (VisualSwitchComponent) vn2);
+                } else if (vn2 instanceof VisualMergeComponent) {
+                    writeJsonOutMerge(vnet, (VisualMergeComponent) vn2);
+                } else if (vn2 instanceof VisualForkComponent) {
+                    writeJsonOutFork(vnet, (VisualForkComponent) vn2);
+                } else if (vn2 instanceof VisualJoinComponent) {
+                    writeJsonOutJoin(vnet, (VisualJoinComponent) vn2);
+                }
             }
         }
     }

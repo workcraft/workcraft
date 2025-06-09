@@ -112,21 +112,11 @@ public class PNetExt {
         writer.println("TS");
         int no = 0;
         for (SourceComponent srcNode : srcNodes) {
-            String ls = "";
-            switch (srcNode.getMode()) {
-            case MODE_0:
-                ls = "d";
-                //writer.println("d");
-                break;
-            case MODE_1:
-                ls = "t";
-                //writer.println("t");
-                break;
-            case MODE_2:
-                ls = "n";
-                //writer.println("n");
-                break;
-            }
+            String ls = switch (srcNode.getMode()) {
+                case MODE_0 -> "d";
+                case MODE_1 -> "t";
+                case MODE_2 -> "n";
+            };
             writer.println(sourcelist.get(no).name1 + "\"" + srcNode.getType() + "\"" + ls);
             no++;
         }
@@ -157,20 +147,14 @@ public class PNetExt {
 
         initlist();
         File pncFile = XmasSettings.getTempVxmPncFile();
-        PrintWriter writer = null;
-        try {
-            writer = new PrintWriter(pncFile);
+        try (PrintWriter writer = new PrintWriter(pncFile)) {
             File cpnFile = XmasSettings.getTempVxmCpnFile();
             readFile(cpnFile.getAbsolutePath());
             writeNet(writer, srcNodes, funNodes, swNodes);
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
         }
-        System.out.println("");
+        System.out.println();
     }
 
 }

@@ -17,8 +17,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
 
     @Override
     public void handleEvent(StateEvent e) {
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pce) {
             Object sender = e.getSender();
             if ((sender instanceof Vertex) && pce.getPropertyName().equals(Vertex.PROPERTY_SYMBOL)) {
                 // Update the collection of symbols on a change of vertex symbol property

@@ -71,8 +71,7 @@ public class VisualStgPlace extends VisualPlace {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualStgPlace) {
-            VisualStgPlace srcPlace = (VisualStgPlace) src;
+        if (src instanceof VisualStgPlace srcPlace) {
             getReferencedComponent().setMutex(srcPlace.getReferencedComponent().isMutex());
         }
     }

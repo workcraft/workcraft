@@ -23,18 +23,18 @@ public class ConstructorParametersMatcher {
     public <T> Constructor<? extends T> match(Class<? extends T> c, Class<?>... parameters) throws NoSuchMethodException {
         ArrayList<ConstructorInfo<T>> constructors = new ArrayList<>();
         for (Constructor<?> constructor : c.getConstructors()) {
-            constructors.add(new ConstructorInfo<T>((Constructor<? extends T>) constructor));
+            constructors.add(new ConstructorInfo<>((Constructor<? extends T>) constructor));
         }
 
         try {
             return MethodParametersMatcher.match(constructors, parameters).constructor;
         } catch (NoSuchMethodException e) {
-            String s = "";
+            StringBuilder s = new StringBuilder();
             for (Class<?> parameter : parameters) {
-                if (s.length() > 0) {
-                    s += ", ";
+                if (!s.isEmpty()) {
+                    s.append(", ");
                 }
-                s += parameter.getCanonicalName();
+                s.append(parameter.getCanonicalName());
             }
             throw new NoSuchMethodException("Unable to find a constructor for class " + c.getCanonicalName() + " with parameters (" + s + ")");
         }

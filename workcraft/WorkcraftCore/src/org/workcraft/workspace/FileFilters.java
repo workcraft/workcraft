@@ -3,21 +3,18 @@ package org.workcraft.workspace;
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
-public class FileFilters {
+public final class FileFilters {
 
     public static final String DOCUMENT_EXTENSION = ".work";
     public static final String WORKSPACE_EXTENSION = ".works";
 
-    private static class DocumentFilesFilter extends FileFilter {
+    private static final class DocumentFilesFilter extends FileFilter {
         @Override
         public boolean accept(File file) {
             if (file.isDirectory()) {
                 return true;
             }
-            if (isWorkFile(file)) {
-                return true;
-            }
-            return false;
+            return isWorkFile(file);
         }
 
         @Override
@@ -26,17 +23,14 @@ public class FileFilters {
         }
     }
 
-    private static class WorkspaceFilesFilter extends FileFilter {
+    private static final class WorkspaceFilesFilter extends FileFilter {
 
         @Override
         public boolean accept(File file) {
             if (file.isDirectory()) {
                 return true;
             }
-            if (isWorkspaceFile(file)) {
-                return true;
-            }
-            return false;
+            return isWorkspaceFile(file);
         }
 
         @Override

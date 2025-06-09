@@ -119,16 +119,15 @@ public class XmasSimulationTool extends StgSimulationTool {
         } else if (node instanceof VisualSwitchComponent) {
             SwitchStg switchStg = converter.getSwitchStg((VisualSwitchComponent) node);
             result = getExcitedTransition(switchStg.oracle.getAllTransitions());
-        } else if (node instanceof VisualQueueComponent) {
-            VisualQueueComponent queue = (VisualQueueComponent) node;
+        } else if (node instanceof VisualQueueComponent queue) {
             QueueStg queueStg = converter.getQueueStg(queue);
             int capacity = queue.getReferencedComponent().getCapacity();
-            int idx = (int) Math.floor(0.5 * capacity + nodespacePosition.getX() * queue.SLOT_WIDTH);
+            int idx = (int) Math.floor(0.5 * capacity + nodespacePosition.getX() * VisualQueueComponent.SLOT_WIDTH);
             if (idx >= capacity) idx = capacity - 1;
             if (idx < 0) idx = 0;
             SlotStg slot = queueStg.slotList.get(idx);
-            double headThreshold = 0.5 * queue.SLOT_HEIGHT - queue.HEAD_SIZE;
-            double tailThreshold = 0.5 * queue.SLOT_HEIGHT - queue.TAIL_SIZE;
+            double headThreshold = 0.5 * VisualQueueComponent.SLOT_HEIGHT - VisualQueueComponent.HEAD_SIZE;
+            double tailThreshold = 0.5 * VisualQueueComponent.SLOT_HEIGHT - VisualQueueComponent.TAIL_SIZE;
             if (nodespacePosition.getY() < -headThreshold) {
                 result = getExcitedTransition(slot.hd.rdy.getAllTransitions());
             } else if (nodespacePosition.getY() > tailThreshold) {
@@ -305,14 +304,6 @@ public class XmasSimulationTool extends StgSimulationTool {
                 }
                 return result;
             }
-            @Override
-            public Color getColorisation() {
-                return null;
-            }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
         };
     }
 
@@ -330,8 +321,7 @@ public class XmasSimulationTool extends StgSimulationTool {
     }
 
     private HashSet<VisualSignalTransition> getSkipTransitions(VisualXmas xmas) {
-        HashSet<VisualSignalTransition> result = new HashSet<>();
-        result.addAll(converter.getClockStg().riseList);
+        HashSet<VisualSignalTransition> result = new HashSet<>(converter.getClockStg().riseList);
         for (VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
             SourceStg sourceStg = converter.getSourceStg(component);
             if (sourceStg != null) {

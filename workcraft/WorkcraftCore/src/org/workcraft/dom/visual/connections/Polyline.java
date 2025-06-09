@@ -366,16 +366,14 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     public void notify(HierarchyEvent e) {
         if (e instanceof NodesDeletingEvent) {
             for (Node n : e.getAffectedNodes()) {
-                if (n instanceof ControlPoint) {
-                    ControlPoint cp = (ControlPoint) n;
+                if (n instanceof ControlPoint cp) {
                     cp.removeObserver(this);
                 }
             }
         }
         if (e instanceof NodesAddedEvent) {
             for (Node n : e.getAffectedNodes()) {
-                if (n instanceof ControlPoint) {
-                    ControlPoint cp = (ControlPoint) n;
+                if (n instanceof ControlPoint cp) {
                     cp.addObserver(this);
                 }
             }

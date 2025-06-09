@@ -11,7 +11,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-@SuppressWarnings("serial")
 public class SatBasedScencoDialog extends AbstractScencoDialog {
 
     private JCheckBox verboseModeCheck;
@@ -143,7 +142,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         settings.setBits(Integer.parseInt(bitsText.getText()));
 
         // circuit size selection
-        settings.setCircuitSize(Integer.valueOf(circuitSizeText.getText()));
+        settings.setCircuitSize(Integer.parseInt(circuitSizeText.getText()));
 
         // optimise for option
         settings.setCpogSize(optimiseBox.getSelectedIndex() != 0);

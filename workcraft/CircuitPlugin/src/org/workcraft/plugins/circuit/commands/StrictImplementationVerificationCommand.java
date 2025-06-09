@@ -73,11 +73,11 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
 
     private boolean checkPrerequisites(WorkspaceEntry we) {
         return isApplicableTo(we)
-            && VerificationUtils.checkCircuitHasComponents(we)
-            && VerificationUtils.checkInterfaceInitialState(we)
-            && checkCircuitHasEnvironmentStrict(we)
-            && checkCircuitInterfaceSignals(we)
-            && checkCircuitLocalSignals(we);
+                && VerificationUtils.checkCircuitHasComponents(we)
+                && VerificationUtils.checkInterfaceInitialState(we)
+                && checkCircuitHasEnvironmentStrict(we)
+                && checkCircuitInterfaceSignals(we)
+                && checkCircuitLocalSignals(we);
     }
 
     private boolean checkCircuitHasEnvironmentStrict(WorkspaceEntry we) {

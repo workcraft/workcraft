@@ -110,7 +110,7 @@ public class VisualScenario extends VisualGroup {
 
         Rectangle2D bb = getContentsBoundingBox();
 
-        if (bb != null && getParent() != null) {
+        if (getParent() != null) {
             g.setColor(ColorUtils.colorise(Color.BLACK, colorisation));
             g.setStroke(new BasicStroke(strokeWidth));
             g.draw(bb);
@@ -231,10 +231,9 @@ public class VisualScenario extends VisualGroup {
 
     @Override
     public boolean hitTestInLocalSpace(Point2D p) {
-        return
-            getContentsBoundingBox().contains(p) ||
-            getLabelBB().contains(p) ||
-            ((encodingBB != null) && encodingBB.contains(p));
+        return getContentsBoundingBox().contains(p) ||
+                getLabelBB().contains(p) ||
+                ((encodingBB != null) && encodingBB.contains(p));
     }
 
     private Rectangle2D getLabelBB() {

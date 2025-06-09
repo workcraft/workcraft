@@ -1,14 +1,15 @@
 package org.workcraft.dom;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.Replicable;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.utils.Hierarchy;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class DefaultReplicaRemover extends HierarchySupervisor {
     private final NodeContext nct;
@@ -17,7 +18,6 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
         this.nct = nct;
     }
 
-    @SuppressWarnings("serial")
     @Override
     public void handleEvent(final HierarchyEvent e) {
         if (e instanceof NodesDeletedEvent) {
@@ -40,8 +40,7 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
             }
             for (Node node : affectedNodes) {
                 // Remove a replica if all its connections have been removed
-                if (node instanceof Connection) {
-                    Connection connection = (Connection) node;
+                if (node instanceof Connection connection) {
                     Node replica = null;
                     if (connection.getFirst() instanceof Replica) {
                         replica = connection.getFirst();
@@ -50,15 +49,15 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
                         replica = connection.getSecond();
                     }
                     if (replica instanceof Replica) {
-                        HashSet<Connection> connections = new HashSet<>(nct.getConnections(replica));
+                        Set<Connection> connections = new HashSet<>(nct.getConnections(replica));
                         connections.removeAll(affectedNodes);
                         if (connections.isEmpty()) {
                             removeReplica((Replica) replica);
                         }
                     }
                 }
-                if (node instanceof Replicable) {
-                    removeReplicas((Replicable) node);
+                if (node instanceof Replicable replicable) {
+                    removeReplicas(replicable);
                 }
             }
         }
@@ -71,8 +70,7 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
     }
 
     private void removeReplica(Replica replica) {
-        if (replica instanceof Node) {
-            Node replicaNode = (Node) replica;
+        if (replica instanceof Node replicaNode) {
             Node parent = replicaNode.getParent();
             if (parent instanceof Container) {
                 ((Container) parent).remove(replicaNode);

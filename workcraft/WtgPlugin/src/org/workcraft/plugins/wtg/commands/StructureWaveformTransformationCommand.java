@@ -45,8 +45,7 @@ public class StructureWaveformTransformationCommand extends AbstractTransformati
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> waveforms = new HashSet<>();
-        if (model instanceof VisualWtg) {
-            VisualWtg wtg = (VisualWtg) model;
+        if (model instanceof VisualWtg wtg) {
             Container currentLevel = wtg.getCurrentLevel();
             if (currentLevel instanceof VisualWaveform) {
                 waveforms.add((VisualWaveform) currentLevel);

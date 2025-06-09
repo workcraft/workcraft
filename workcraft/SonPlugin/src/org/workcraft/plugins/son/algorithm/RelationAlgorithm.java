@@ -163,9 +163,9 @@ public class RelationAlgorithm {
         Collection<Condition> result = new ArrayList<>();
         for (MathNode pre : net.getPreset(c)) {
             if (pre instanceof TransitionNode) {
-                if (net.getSONConnectionType(c, (MathNode) pre) == Semantics.PNLINE) {
-                    for (MathNode n2 : net.getPreset((MathNode) pre)) {
-                        if ((n2 instanceof Condition) && net.getSONConnectionType((MathNode) pre, n2) == Semantics.PNLINE) {
+                if (net.getSONConnectionType(c, pre) == Semantics.PNLINE) {
+                    for (MathNode n2 : net.getPreset(pre)) {
+                        if ((n2 instanceof Condition) && net.getSONConnectionType(pre, n2) == Semantics.PNLINE) {
                             result.add((Condition) n2);
                         }
                     }
@@ -204,9 +204,8 @@ public class RelationAlgorithm {
         Collection<TransitionNode> result = new ArrayList<>();
         for (MathNode pre : net.getPreset((MathNode) e)) {
             if ((pre instanceof ChannelPlace) && net.getSONConnectionType(pre, (MathNode) e) == Semantics.ASYNLINE) {
-                Iterator<MathNode> it = net.getPreset(pre).iterator();
-                while (it.hasNext()) {
-                    result.add((TransitionNode) it.next());
+                for (MathNode mathNode : net.getPreset(pre)) {
+                    result.add((TransitionNode) mathNode);
                 }
             }
         }
@@ -221,9 +220,8 @@ public class RelationAlgorithm {
         Collection<TransitionNode> result = new ArrayList<>();
         for (MathNode post : net.getPostset((MathNode) e)) {
             if ((post instanceof ChannelPlace) && net.getSONConnectionType(post, (MathNode) e) == Semantics.ASYNLINE) {
-                Iterator<MathNode> it = net.getPostset(post).iterator();
-                while (it.hasNext()) {
-                    result.add((TransitionNode) it.next());
+                for (MathNode mathNode : net.getPostset(post)) {
+                    result.add((TransitionNode) mathNode);
                 }
             }
         }
@@ -239,17 +237,15 @@ public class RelationAlgorithm {
 
         for (MathNode pre : net.getPreset((MathNode) e)) {
             if (pre instanceof ChannelPlace) {
-                Iterator<MathNode> it = net.getPreset(pre).iterator();
-                while (it.hasNext()) {
-                    result.add((TransitionNode) it.next());
+                for (MathNode mathNode : net.getPreset(pre)) {
+                    result.add((TransitionNode) mathNode);
                 }
             }
         }
         for (MathNode post : net.getPostset((MathNode) e)) {
             if ((post instanceof ChannelPlace) && net.getSONConnectionType(post, (MathNode) e) == Semantics.SYNCLINE) {
-                Iterator<MathNode> it = net.getPostset(post).iterator();
-                while (it.hasNext()) {
-                    result.add((TransitionNode) it.next());
+                for (MathNode mathNode : net.getPostset(post)) {
+                    result.add((TransitionNode) mathNode);
                 }
             }
         }
@@ -264,17 +260,15 @@ public class RelationAlgorithm {
         Collection<TransitionNode> result = new ArrayList<>();
         for (MathNode post : net.getPostset((MathNode) e)) {
             if (post instanceof ChannelPlace) {
-                Iterator<MathNode> it = net.getPostset(post).iterator();
-                while (it.hasNext()) {
-                    result.add((TransitionNode) it.next());
+                for (MathNode mathNode : net.getPostset(post)) {
+                    result.add((TransitionNode) mathNode);
                 }
             }
         }
         for (MathNode pre : net.getPreset((MathNode) e)) {
             if (pre instanceof ChannelPlace && net.getSONConnectionType(pre, (MathNode) e) == Semantics.SYNCLINE) {
-                Iterator<MathNode> it = net.getPreset(pre).iterator();
-                while (it.hasNext()) {
-                    result.add((TransitionNode) it.next());
+                for (MathNode mathNode : net.getPreset(pre)) {
+                    result.add((TransitionNode) mathNode);
                 }
             }
         }

@@ -42,8 +42,7 @@ public class Dtd extends AbstractMathModel {
     public Signal.State getPreviousState(Event event) {
         Signal signal = event.getSignal();
         for (Node node: getPreset(event)) {
-            if (node instanceof TransitionEvent) {
-                TransitionEvent transition = (TransitionEvent) node;
+            if (node instanceof TransitionEvent transition) {
                 if (transition.getSignal() == signal) {
                     TransitionEvent.Direction direction = transition.getDirection();
                     return DtdUtils.getNextState(direction);

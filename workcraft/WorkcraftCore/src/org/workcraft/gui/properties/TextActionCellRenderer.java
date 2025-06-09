@@ -37,8 +37,7 @@ public class TextActionCellRenderer extends JPanel implements TableCellRenderer 
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if (value instanceof TextAction) {
-            TextAction textAction = (TextAction) value;
+        if (value instanceof TextAction textAction) {
 
             Action leftAction = textAction.getLeftAction();
             if (leftAction != null) {

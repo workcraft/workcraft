@@ -152,8 +152,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         SwingUtilities.invokeLater(() -> {
             Container component = getParent().getParent();
             Container parent = component.getParent();
-            if (parent instanceof JTabbedPane) {
-                JTabbedPane tab = (JTabbedPane) parent;
+            if (parent instanceof JTabbedPane tab) {
                 for (int i = 0; i < tab.getTabCount(); i++) {
                     if (tab.getComponentAt(i) != component) continue;
 

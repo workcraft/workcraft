@@ -50,6 +50,7 @@ public class StringGenerator implements BooleanVisitor<String> {
             printer.style = style;
         }
 
+        @SuppressWarnings("PMD.AvoidStringBufferField")
         public StringBuilder builder;
         public IffPrinter iff;
         public ImplyPrinter imply;
@@ -63,8 +64,9 @@ public class StringGenerator implements BooleanVisitor<String> {
     }
 
     public static class DelegatingPrinter implements BooleanVisitor<Void> {
-        public DelegatingPrinter next;
+        @SuppressWarnings("PMD.AvoidStringBufferField")
         public StringBuilder builder;
+        public DelegatingPrinter next;
         public Style style = Style.DEFAULT;
 
         public void setNext(DelegatingPrinter next) {
@@ -137,22 +139,18 @@ public class StringGenerator implements BooleanVisitor<String> {
         @Override
         public Void visit(Imply node) {
             switch (style) {
-            case UNICODE:
-                visitBinary(next, " \u21d2 ", node);
-                break;
-            case VERILOG:
-                new Not(node.getX()).accept(this);
-                append(" | ");
-                node.getY().accept(this);
-                break;
-            case C:
-                new Not(node.getX()).accept(this);
-                append(" || ");
-                node.getY().accept(this);
-                break;
-            default:
-                visitBinary(next, " => ", node);
-                break;
+                case UNICODE -> visitBinary(next, " \u21d2 ", node);
+                case VERILOG -> {
+                    new Not(node.getX()).accept(this);
+                    append(" | ");
+                    node.getY().accept(this);
+                }
+                case C -> {
+                    new Not(node.getX()).accept(this);
+                    append(" || ");
+                    node.getY().accept(this);
+                }
+                default -> visitBinary(next, " => ", node);
             }
             return null;
         }
@@ -162,24 +160,18 @@ public class StringGenerator implements BooleanVisitor<String> {
         @Override
         public Void visit(Iff node) {
             switch (style) {
-            case REACH:
-                visitBinary(this, " <-> ", node);
-                break;
-            case VERILOG:
-                new Or(
+                case REACH -> visitBinary(this, " <-> ", node);
+                case VERILOG -> new Or(
                         new And(node.getX(), node.getY()),
                         new And(new Not(node.getX()), new Not(node.getY()))
                 ).accept(this);
-                break;
-            case C:
-                // Negation of both operands is intentional to convert them into Booleans
-                new Not(node.getX()).accept(this);
-                append(" == ");
-                new Not(node.getY()).accept(this);
-                break;
-            default:
-                visitBinary(this, " = ", node);
-                break;
+                case C -> {
+                    // Negation of both operands is intentional to convert them into Booleans
+                    new Not(node.getX()).accept(this);
+                    append(" == ");
+                    new Not(node.getY()).accept(this);
+                }
+                default -> visitBinary(this, " = ", node);
             }
             return null;
         }
@@ -189,16 +181,9 @@ public class StringGenerator implements BooleanVisitor<String> {
         @Override
         public Void visit(Or node) {
             switch (style) {
-            case VERILOG:
-            case REACH:
-                visitBinary(this, " | ", node);
-                break;
-            case C:
-                visitBinary(this, " || ", node);
-                break;
-            default:
-                visitBinary(this, " + ", node);
-                break;
+                case VERILOG, REACH -> visitBinary(this, " | ", node);
+                case C -> visitBinary(this, " || ", node);
+                default -> visitBinary(this, " + ", node);
             }
             return null;
         }
@@ -208,24 +193,18 @@ public class StringGenerator implements BooleanVisitor<String> {
         @Override
         public Void visit(Xor node) {
             switch (style) {
-            case UNICODE:
-                visitBinary(this, " \u2295 ", node);
-                break;
-            case VERILOG:
-                new Not(new Or(
+                case UNICODE -> visitBinary(this, " \u2295 ", node);
+                case VERILOG -> new Not(new Or(
                         new And(node.getX(), node.getY()),
                         new And(new Not(node.getX()), new Not(node.getY()))
                 )).accept(this);
-                break;
-            case C:
-                // Negation of both operands is intentional to convert them into Booleans
-                new Not(node.getX()).accept(this);
-                append(" != ");
-                new Not(node.getY()).accept(this);
-                break;
-            default:
-                visitBinary(this, " ^ ", node);
-                break;
+                case C -> {
+                    // Negation of both operands is intentional to convert them into Booleans
+                    new Not(node.getX()).accept(this);
+                    append(" != ");
+                    new Not(node.getY()).accept(this);
+                }
+                default -> visitBinary(this, " ^ ", node);
             }
             return null;
         }
@@ -235,19 +214,10 @@ public class StringGenerator implements BooleanVisitor<String> {
         @Override
         public Void visit(And node) {
             switch (style) {
-            case UNICODE:
-                visitBinary(this, " \u00b7 ", node);
-                break;
-            case VERILOG:
-            case REACH:
-                visitBinary(this, " & ", node);
-                break;
-            case C:
-                visitBinary(this, " && ", node);
-                break;
-            default:
-                visitBinary(this, " * ", node);
-                break;
+                case UNICODE -> visitBinary(this, " \u00b7 ", node);
+                case VERILOG, REACH -> visitBinary(this, " & ", node);
+                case C -> visitBinary(this, " && ", node);
+                default -> visitBinary(this, " * ", node);
             }
             return null;
         }
@@ -262,24 +232,22 @@ public class StringGenerator implements BooleanVisitor<String> {
                 ((Not) x).getX().accept(this);
             } else {
                 switch (style) {
-                case UNICODE:
-                    append("\u00ac");
-                    x.accept(this);
-                    break;
-                case VERILOG:
-                case REACH:
-                    append("~");
-                    x.accept(this);
-                    break;
-                case GENLIB:
-                case C:
-                    append("!");
-                    x.accept(this);
-                    break;
-                default:
-                    x.accept(this);
-                    append("'");
-                    break;
+                    case UNICODE -> {
+                        append("\u00ac");
+                        x.accept(this);
+                    }
+                    case VERILOG, REACH -> {
+                        append("~");
+                        x.accept(this);
+                    }
+                    case GENLIB, C -> {
+                        append("!");
+                        x.accept(this);
+                    }
+                    default -> {
+                        x.accept(this);
+                        append("'");
+                    }
                 }
             }
             return null;
@@ -290,15 +258,9 @@ public class StringGenerator implements BooleanVisitor<String> {
         @Override
         public Void visit(One one) {
             switch (style) {
-            case REACH:
-                append("true");
-                break;
-            case GENLIB:
-                append("CONST1");
-                break;
-            default:
-                append("1");
-                break;
+                case REACH -> append("true");
+                case GENLIB -> append("CONST1");
+                default -> append("1");
             }
             return null;
         }
@@ -306,15 +268,9 @@ public class StringGenerator implements BooleanVisitor<String> {
         @Override
         public Void visit(Zero zero) {
             switch (style) {
-            case REACH:
-                append("false");
-                break;
-            case GENLIB:
-                append("CONST0");
-                break;
-            default:
-                append("0");
-                break;
+                case REACH -> append("false");
+                case GENLIB -> append("CONST0");
+                default -> append("0");
             }
             return null;
         }
@@ -335,12 +291,8 @@ public class StringGenerator implements BooleanVisitor<String> {
                 }
             }
             switch (style) {
-            case REACH:
-                append("$S\"" + label + "\"");
-                break;
-            default:
-                append(label);
-                break;
+                case REACH -> append("$S\"" + label + "\"");
+                default -> append(label);
             }
             return null;
         }

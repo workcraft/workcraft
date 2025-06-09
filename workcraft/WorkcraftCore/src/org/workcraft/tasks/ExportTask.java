@@ -36,8 +36,7 @@ public class ExportTask implements Task<ExportOutput> {
         try {
             // For incompatible visual model try exporting its underlying math model.
             Model exportModel = model;
-            if ((exportModel instanceof VisualModel) && !exporter.isCompatible(exportModel)) {
-                VisualModel visualModel = (VisualModel) exportModel;
+            if ((exportModel instanceof VisualModel visualModel) && !exporter.isCompatible(exportModel)) {
                 MathModel mathModel = visualModel.getMathModel();
                 if (exporter.isCompatible(mathModel)) {
                     exportModel = mathModel;

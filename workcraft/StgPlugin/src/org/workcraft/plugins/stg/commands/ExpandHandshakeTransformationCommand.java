@@ -65,8 +65,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> signalTransitions = new HashSet<>();
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
+        if (model instanceof VisualStg stg) {
             signalTransitions.addAll(stg.getVisualSignalTransitions());
             signalTransitions.retainAll(stg.getSelection());
         }
@@ -88,9 +87,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
-            VisualStg stg = (VisualStg) model;
-            VisualSignalTransition transition = (VisualSignalTransition) node;
+        if ((model instanceof VisualStg stg) && (node instanceof VisualSignalTransition transition)) {
             String ref = stg.getSignalReference(transition);
             SignalTransition.Direction direction = transition.getDirection();
             Container container = Hierarchy.getNearestContainer(transition);
@@ -128,7 +125,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                         succConnection.copyShape(connection);
                     }
                 }
-            } catch (InvalidConnectionException e) {
+            } catch (InvalidConnectionException ignored) {
             }
             model.addToSelection(reqTransition);
             model.addToSelection(ackTransition);

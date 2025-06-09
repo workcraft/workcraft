@@ -1,13 +1,13 @@
 package org.workcraft.dom.math;
 
-import java.util.Collection;
-import java.util.HashSet;
-
 import org.workcraft.dom.Node;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Base type for mathematical objects -- components (graph nodes)
@@ -20,7 +20,7 @@ public abstract class MathNode implements Node, ObservableState {
 
     @Override
     public Collection<Node> getChildren() {
-        return new HashSet<Node>();
+        return new HashSet<>();
     }
 
     @Override

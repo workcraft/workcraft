@@ -3,7 +3,6 @@ package org.workcraft.plugins.xmas.gui;
 import javax.swing.*;
 import java.awt.*;
 
-@SuppressWarnings("serial")
 public class SolutionsDialog1 extends JDialog {
 
     public SolutionsDialog1(int n, String str) {

@@ -94,8 +94,7 @@ public class Policy extends Petri implements PolicyModel {
     private void splitBundlesByLocalities(ArrayList<? extends MathNode> nodes) {
         HashMap<Bundle, HashSet<BundledTransition>> subBundles = new HashMap<>();
         for (Node node: nodes) {
-            if (node instanceof BundledTransition) {
-                BundledTransition t = (BundledTransition) node;
+            if (node instanceof BundledTransition t) {
                 for (Bundle b: getBundlesOfTransition(t)) {
                     HashSet<BundledTransition> transitions = subBundles.computeIfAbsent(b, s -> new HashSet<>());
                     transitions.add(t);
@@ -113,14 +112,14 @@ public class Policy extends Petri implements PolicyModel {
     }
 
     public String getTransitionsOfBundleAsString(Bundle b) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         for (BundledTransition t : b.getTransitions()) {
             if (!result.isEmpty()) {
-                result += ", ";
+                result.append(", ");
             }
-            result += getName(t);
+            result.append(getName(t));
         }
-        return result;
+        return result.toString();
     }
 
 }

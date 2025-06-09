@@ -59,7 +59,7 @@ public class TextUtils {
         StringBuilder result = new StringBuilder();
         for (String word : splitWords(line)) {
             int spaceCount = 1;
-            if (result.length() == 0) {
+            if (result.isEmpty()) {
                 spaceCount = countLeadingSpaces(line);
             }
             if (result.length() + spaceCount < length) {
@@ -218,21 +218,11 @@ public class TextUtils {
         for (int i = 0; i < str.length(); i++) {
             c = str.charAt(i);
             switch (c) {
-            case '<':
-                sb.append("&lt;");
-                break;
-            case '>':
-                sb.append("&gt;");
-                break;
-            case '&':
-                sb.append("&amp;");
-                break;
-            case '"':
-                sb.append("&quot;");
-                break;
-            default:
-                sb.append(c);
-                break;
+                case '<' -> sb.append("&lt;");
+                case '>' -> sb.append("&gt;");
+                case '&' -> sb.append("&amp;");
+                case '"' -> sb.append("&quot;");
+                default -> sb.append(c);
             }
         }
         return sb.toString();
@@ -250,7 +240,7 @@ public class TextUtils {
         String foregroundAttribute = getHtmlColorAttribute("color", foregroundColor);
         String backgroundAttribute = getHtmlColorAttribute("background-color", backgroundColor);
         String attributes = Stream.of(foregroundAttribute, backgroundAttribute)
-                .filter(item -> (item != null) && !item.isEmpty())
+                .filter(item -> !item.isEmpty())
                 .collect(Collectors.joining("; "));
 
         return "<span style=\"" + attributes + "\">" + text + "</span>";

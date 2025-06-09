@@ -66,10 +66,10 @@ public abstract class AbstractVerilogImporter implements Importer {
         }
     }
 
-    private static class Net {
-        public Set<FunctionContact> sources = new HashSet<>();
-        public Set<FunctionContact> sinks = new HashSet<>();
-        public Set<FunctionContact> undefined = new HashSet<>();
+    private static final class Net {
+        public final Set<FunctionContact> sources = new HashSet<>();
+        public final Set<FunctionContact> sinks = new HashSet<>();
+        public final Set<FunctionContact> undefined = new HashSet<>();
     }
 
     public AbstractVerilogImporter(boolean celementAssign, boolean sequentialAssign) {
@@ -797,8 +797,7 @@ public abstract class AbstractVerilogImporter implements Importer {
                     : SubstitutionUtils.getContactSubstitutionName(verilogConnection.name, substitutionRule, msg);
 
             Node node = pinName == null ? orderedContacts.get(index) : circuit.getNodeByReference(component, pinName);
-            if (node instanceof FunctionContact) {
-                FunctionContact contact = (FunctionContact) node;
+            if (node instanceof FunctionContact contact) {
                 if (contact.isInput()) {
                     net.sinks.add(contact);
                 } else {
@@ -972,8 +971,7 @@ public abstract class AbstractVerilogImporter implements Importer {
     private void removeTemporaryOutput(Circuit circuit, HashMap<String, Net> nets, Signal signal) {
         if (signal.type == Signal.Type.INTERNAL) {
             Node node = circuit.getNodeByReference(signal.name);
-            if (node instanceof FunctionContact) {
-                FunctionContact contact = (FunctionContact) node;
+            if (node instanceof FunctionContact contact) {
                 if (contact.isPort() && contact.isOutput()) {
                     if (DebugCommonSettings.getVerboseImport()) {
                         LogUtils.logMessage("Signal '" + signal.name + "' is restored as internal.");
@@ -983,8 +981,7 @@ public abstract class AbstractVerilogImporter implements Importer {
                     if (net != null) {
                         net.sinks.remove(contact);
                         for (FunctionContact source : net.sources) {
-                            if (source.getParent() instanceof FunctionComponent) {
-                                FunctionComponent component = (FunctionComponent) source.getParent();
+                            if (source.getParent() instanceof FunctionComponent component) {
                                 reparentAndRenameComponent(circuit, component, signal.name);
                             }
                         }
@@ -1068,16 +1065,10 @@ public abstract class AbstractVerilogImporter implements Importer {
 
     private void setMutexGrant(Circuit circuit, Signal signal, HashMap<String, Net> signalToNetMap) {
         Node node = (signal == null) || (signal.name == null) ? null : circuit.getNodeByReference(signal.name);
-        if (node instanceof FunctionContact) {
-            FunctionContact port = (FunctionContact) node;
+        if (node instanceof FunctionContact port) {
             switch (signal.type) {
-            case INPUT:
-                port.setIOType(IOType.INPUT);
-                break;
-            case INTERNAL:
-            case OUTPUT:
-                port.setIOType(IOType.OUTPUT);
-                break;
+                case INPUT -> port.setIOType(IOType.INPUT);
+                case INTERNAL, OUTPUT -> port.setIOType(IOType.OUTPUT);
             }
             Net net = getOrCreateNet(signal.name, signalToNetMap);
             net.sinks.add(port);

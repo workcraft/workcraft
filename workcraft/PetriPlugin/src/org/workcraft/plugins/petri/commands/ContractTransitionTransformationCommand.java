@@ -90,8 +90,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if (node instanceof VisualTransition) {
-            VisualTransition transition = (VisualTransition) node;
+        if (node instanceof VisualTransition transition) {
             try {
                 validateContraction(model, transition);
                 removeOrContractTransition(model, transition);
@@ -398,16 +397,12 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             ProductPlacePositioning productPlacePositioning, VisualPlace predPlace, VisualPlace succPlace) {
 
         switch (productPlacePositioning) {
-        case PRED_PLACE:
-            ModelUtils.renameNode(model, productPlace, model.getMathName(predPlace));
-            break;
-        case SUCC_PLACE:
-            ModelUtils.renameNode(model, productPlace, model.getMathName(succPlace));
-            break;
-        default:
-            String mixName = model.getMathName(predPlace) + model.getMathName(succPlace);
-            ModelUtils.renameNode(model, productPlace, mixName);
-            break;
+            case PRED_PLACE -> ModelUtils.renameNode(model, productPlace, model.getMathName(predPlace));
+            case SUCC_PLACE -> ModelUtils.renameNode(model, productPlace, model.getMathName(succPlace));
+            default -> {
+                String mixName = model.getMathName(predPlace) + model.getMathName(succPlace);
+                ModelUtils.renameNode(model, productPlace, mixName);
+            }
         }
     }
 
@@ -415,18 +410,9 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             VisualPlace predPlace, VisualPlace succPlace) {
 
         switch (productPlacePositioning) {
-        case PRED_PLACE:
-            productPlace.copyStyle(predPlace);
-            break;
-        case TRANSITION:
-            productPlace.mixStyle(predPlace, succPlace);
-            break;
-        case SUCC_PLACE:
-            productPlace.copyStyle(succPlace);
-            break;
-        default:
-            productPlace.mixStyle(predPlace, succPlace);
-            break;
+            case PRED_PLACE -> productPlace.copyStyle(predPlace);
+            case SUCC_PLACE -> productPlace.copyStyle(succPlace);
+            default -> productPlace.mixStyle(predPlace, succPlace);
         }
         // Correct the token count and capacity of the new place
         Place mathPredPlace = predPlace.getReferencedComponent();
@@ -449,19 +435,13 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             VisualPlace predPlace, VisualTransition transition, VisualPlace succPlace) {
 
         switch (productPlacePositioning) {
-        case PRED_PLACE:
-            productPlace.copyPosition(predPlace);
-            break;
-        case TRANSITION:
-            productPlace.copyPosition(transition);
-            break;
-        case SUCC_PLACE:
-            productPlace.copyPosition(succPlace);
-            break;
-        default:
-            Point2D mixPosition = Geometry.middle(predPlace.getRootSpacePosition(), succPlace.getRootSpacePosition());
-            productPlace.setRootSpacePosition(mixPosition);
-            break;
+            case PRED_PLACE -> productPlace.copyPosition(predPlace);
+            case TRANSITION -> productPlace.copyPosition(transition);
+            case SUCC_PLACE -> productPlace.copyPosition(succPlace);
+            default -> {
+                Point2D mixPosition = Geometry.middle(predPlace.getRootSpacePosition(), succPlace.getRootSpacePosition());
+                productPlace.setRootSpacePosition(mixPosition);
+            }
         }
     }
 
@@ -511,11 +491,9 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         Set<Place> affectedPlaces = new HashSet<>();
         for (VisualConnection connection : visualModel.getConnections(visualTransition)) {
             VisualNode otherNode = connection.getFirst() == visualTransition ? connection.getSecond() : connection.getFirst();
-            if (otherNode instanceof VisualReplicaPlace) {
-                VisualReplicaPlace visualReplicaPlace = (VisualReplicaPlace) otherNode;
+            if (otherNode instanceof VisualReplicaPlace visualReplicaPlace) {
                 affectedPlaces.add(visualReplicaPlace.getReferencedComponent());
-            } else if (otherNode instanceof VisualPlace) {
-                VisualPlace visualPlace = (VisualPlace) otherNode;
+            } else if (otherNode instanceof VisualPlace visualPlace) {
                 affectedPlaces.add(visualPlace.getReferencedComponent());
             }
         }
@@ -539,13 +517,11 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             for (VisualConnection productConnection : model.getConnections(productPlace)) {
                 Connection predPlaceConnection = null;
                 Connection succPlaceConnection = null;
-                if (productConnection.getFirst() instanceof VisualTransition) {
-                    VisualTransition productPredTransition = (VisualTransition) productConnection.getFirst();
+                if (productConnection.getFirst() instanceof VisualTransition productPredTransition) {
                     predPlaceConnection = model.getConnection(productPredTransition, predPlace);
                     succPlaceConnection = model.getConnection(productPredTransition, succPlace);
                 }
-                if (productConnection.getSecond() instanceof VisualTransition) {
-                    VisualTransition productSuccTransition = (VisualTransition) productConnection.getSecond();
+                if (productConnection.getSecond() instanceof VisualTransition productSuccTransition) {
                     predPlaceConnection = model.getConnection(predPlace, productSuccTransition);
                     succPlaceConnection = model.getConnection(succPlace, productSuccTransition);
                 }

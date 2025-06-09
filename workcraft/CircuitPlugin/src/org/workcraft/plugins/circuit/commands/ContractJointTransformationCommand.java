@@ -63,8 +63,7 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> joints = new HashSet<>();
-        joints.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualJoint.class));
+        Collection<VisualNode> joints = new HashSet<>(Hierarchy.getDescendantsOfType(model.getRoot(), VisualJoint.class));
         Collection<VisualNode> selection = model.getSelection();
         if (!selection.isEmpty()) {
             HashSet<VisualNode> selectedConnections = new HashSet<>(selection);
@@ -78,9 +77,7 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualJoint)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualJoint joint = (VisualJoint) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualJoint joint)) {
             Set<VisualConnection> connections = model.getConnections(node);
             VisualCircuitConnection predConnection = null;
             VisualCircuitConnection succConnection = null;
@@ -105,8 +102,8 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
             if (isRemovableJoint) {
                 LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(joint, predConnection, succConnection);
                 circuit.remove(joint);
-                VisualNode fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
-                VisualNode toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
+                VisualNode fromNode = (predConnection != null) ? predConnection.getFirst() : null;
+                VisualNode toNode = (succConnection != null) ? succConnection.getSecond() : null;
                 try {
                     VisualConnection newConnection = circuit.connect(fromNode, toNode);
                     newConnection.mixStyle(predConnection, succConnection);

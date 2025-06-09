@@ -29,9 +29,9 @@ public class VisualPlaceNode extends VisualComponent {
 
     private String value = "";
 
-    private static double size = VisualCommonSettings.getNodeSize();
-    private static double strokeWidth = VisualCommonSettings.getStrokeWidth();
-    private static double singleTokenSize = VisualCommonSettings.getNodeSize() / 1.9;
+    private static final double size = VisualCommonSettings.getNodeSize();
+    private static final double strokeWidth = VisualCommonSettings.getStrokeWidth();
+    private static final double singleTokenSize = VisualCommonSettings.getNodeSize() / 1.9;
     protected static double labelOffset = 0.5;
 
     public VisualPlaceNode(PlaceNode refNode) {
@@ -99,7 +99,7 @@ public class VisualPlaceNode extends VisualComponent {
     }
 
     private void cahceErrorRenderedText() {
-        String error = "Err = " + ((Integer) getErrors()).toString();
+        String error = "Err = " + ((Integer) getErrors());
 
         Point2D offset = getOffset(errLabelPositioning);
         if (errLabelPositioning.ySign < 0) {
@@ -292,8 +292,7 @@ public class VisualPlaceNode extends VisualComponent {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualPlaceNode) {
-            VisualPlaceNode srcComponent = (VisualPlaceNode) src;
+        if (src instanceof VisualPlaceNode srcComponent) {
             setMarked(srcComponent.isMarked());
         }
     }

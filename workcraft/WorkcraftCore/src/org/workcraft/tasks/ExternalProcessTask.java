@@ -36,6 +36,7 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
         this.printStderr = printStderr;
     }
 
+    @SuppressWarnings("BusyWait")
     @Override
     public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         this.monitor = monitor;

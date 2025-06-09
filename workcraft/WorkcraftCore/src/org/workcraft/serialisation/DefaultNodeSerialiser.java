@@ -59,8 +59,7 @@ public class DefaultNodeSerialiser {
                 // No basic serialiser, try to use the special case enum serialiser
                 serialiser = fac.getSerialiserFor(Enum.class);
             }
-            if (serialiser instanceof BasicXMLSerialiser) {
-                BasicXMLSerialiser basicSerialiser = (BasicXMLSerialiser) serialiser;
+            if (serialiser instanceof BasicXMLSerialiser basicSerialiser) {
                 Element propertyElement = XmlUtils.createChildElement("property", element);
                 propertyElement.setAttribute("class", desc.getPropertyType().getName());
                 propertyElement.setAttribute("name", desc.getName());

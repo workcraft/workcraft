@@ -25,63 +25,39 @@ public class DtdUtils {
     private static final double CAUSALITY_ARC_OFFSET = 1.0;
 
     public static TransitionEvent.Direction getNextDirection(Signal.State state) {
-        switch (state) {
-        case HIGH:
-            return TransitionEvent.Direction.FALL;
-        case LOW:
-            return TransitionEvent.Direction.RISE;
-        case UNSTABLE:
-            return TransitionEvent.Direction.STABILISE;
-        case STABLE:
-            return TransitionEvent.Direction.DESTABILISE;
-        default:
-            return null;
-        }
+        return switch (state) {
+            case HIGH -> TransitionEvent.Direction.FALL;
+            case LOW -> TransitionEvent.Direction.RISE;
+            case UNSTABLE -> TransitionEvent.Direction.STABILISE;
+            case STABLE -> TransitionEvent.Direction.DESTABILISE;
+        };
     }
 
     public static TransitionEvent.Direction getPreviousDirection(Signal.State state) {
-        switch (state) {
-        case HIGH:
-            return TransitionEvent.Direction.RISE;
-        case LOW:
-            return TransitionEvent.Direction.FALL;
-        case UNSTABLE:
-            return TransitionEvent.Direction.DESTABILISE;
-        case STABLE:
-            return TransitionEvent.Direction.STABILISE;
-        default:
-            return null;
-        }
+        return switch (state) {
+            case HIGH -> TransitionEvent.Direction.RISE;
+            case LOW -> TransitionEvent.Direction.FALL;
+            case UNSTABLE -> TransitionEvent.Direction.DESTABILISE;
+            case STABLE -> TransitionEvent.Direction.STABILISE;
+        };
     }
 
     public static Signal.State getNextState(TransitionEvent.Direction direction) {
-        switch (direction) {
-        case RISE:
-            return Signal.State.HIGH;
-        case FALL:
-            return Signal.State.LOW;
-        case DESTABILISE:
-            return Signal.State.UNSTABLE;
-        case STABILISE:
-            return Signal.State.STABLE;
-        default:
-            return null;
-        }
+        return switch (direction) {
+            case RISE -> Signal.State.HIGH;
+            case FALL -> Signal.State.LOW;
+            case DESTABILISE -> Signal.State.UNSTABLE;
+            case STABILISE -> Signal.State.STABLE;
+        };
     }
 
     public static Signal.State getPreviousState(TransitionEvent.Direction direction) {
-        switch (direction) {
-        case RISE:
-            return Signal.State.LOW;
-        case FALL:
-            return Signal.State.HIGH;
-        case DESTABILISE:
-            return Signal.State.STABLE;
-        case STABILISE:
-            return Signal.State.UNSTABLE;
-        default:
-            return null;
-        }
+        return switch (direction) {
+            case RISE -> Signal.State.LOW;
+            case FALL -> Signal.State.HIGH;
+            case DESTABILISE -> Signal.State.STABLE;
+            case STABILISE -> Signal.State.UNSTABLE;
+        };
     }
 
     public static Signal.State getNextState(Event event) {
@@ -89,8 +65,7 @@ public class DtdUtils {
             Signal signal = event.getSignal();
             return signal.getInitialState();
         }
-        if (event instanceof TransitionEvent) {
-            TransitionEvent transition = (TransitionEvent) event;
+        if (event instanceof TransitionEvent transition) {
             return getNextState(transition.getDirection());
         }
         return null;
@@ -136,8 +111,7 @@ public class DtdUtils {
         if (v1 instanceof VisualEvent) {
             VisualSignal s1 = ((VisualEvent) v1).getVisualSignal();
             state = s1.getInitialState();
-            if (v1 instanceof VisualTransitionEvent) {
-                VisualTransitionEvent t1 = (VisualTransitionEvent) v1;
+            if (v1 instanceof VisualTransitionEvent t1) {
                 TransitionEvent.Direction direction = t1.getReferencedComponent().getDirection();
                 state = getNextState(direction);
             }
@@ -231,8 +205,7 @@ public class DtdUtils {
     public static VisualConnection dissolvePrefixTransitionEvents(VisualDtd dtd, VisualEvent endEvent, TransitionEvent.Direction stopDirection) {
         boolean removed = false;
         VisualEvent event = getPrevVisualEvent(dtd, endEvent);
-        while (event instanceof VisualTransitionEvent) {
-            VisualTransitionEvent transition = (VisualTransitionEvent) event;
+        while (event instanceof VisualTransitionEvent transition) {
             if (transition.getDirection() == stopDirection) break;
             VisualEvent prevEvent = getPrevVisualEvent(dtd, event);
             dtd.removeFromSelection(event);
@@ -277,14 +250,11 @@ public class DtdUtils {
 
     public static Color getTypeColor(Signal.Type type) {
         if (type != null) {
-            switch (type) {
-            case INPUT:
-                return SignalCommonSettings.getInputColor();
-            case OUTPUT:
-                return SignalCommonSettings.getOutputColor();
-            case INTERNAL:
-                return SignalCommonSettings.getInternalColor();
-            }
+            return switch (type) {
+                case INPUT -> SignalCommonSettings.getInputColor();
+                case OUTPUT -> SignalCommonSettings.getOutputColor();
+                case INTERNAL -> SignalCommonSettings.getInternalColor();
+            };
         }
         return SignalCommonSettings.getDummyColor();
     }

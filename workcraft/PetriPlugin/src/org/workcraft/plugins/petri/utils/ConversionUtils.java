@@ -230,8 +230,7 @@ public class ConversionUtils {
     public static Set<VisualConnection> collapseReplicaPlace(VisualModel visualModel, VisualReplicaPlace replica) {
         Set<VisualConnection> result = new HashSet<>();
         for (Connection connection : new HashSet<Connection>(visualModel.getConnections(replica))) {
-            if (connection instanceof VisualConnection) {
-                VisualConnection oldConnection = (VisualConnection) connection;
+            if (connection instanceof VisualConnection oldConnection) {
                 VisualNode first = oldConnection.getFirst();
                 VisualNode second = oldConnection.getSecond();
                 LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getControlPoints(oldConnection);

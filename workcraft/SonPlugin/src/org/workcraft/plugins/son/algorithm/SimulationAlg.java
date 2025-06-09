@@ -271,16 +271,16 @@ public class SimulationAlg extends RelationAlgorithm {
                     if (pre instanceof ChannelPlace) {
                         if (!((ChannelPlace) pre).isMarked()) {
                             for (MathNode pre2 : net.getPreset(pre)) {
-                                if (visit.contains(pre2)) {
-                                    continue;
-                                } else if (!result.contains(pre2) || del.contains(pre2)) {
-                                    visit.add(e2);
-                                    del.addAll(visit);
-                                    visit.removeLast();
-                                    break;
-                                } else if (!visit.contains(pre2)) {
-                                    e2 = (TransitionNode) pre2;
-                                    stack.push(e2);
+                                if (!visit.contains(pre2)) {
+                                    if (!result.contains(pre2) || del.contains(pre2)) {
+                                        visit.add(e2);
+                                        del.addAll(visit);
+                                        visit.removeLast();
+                                        break;
+                                    } else if (!visit.contains(pre2)) {
+                                        e2 = (TransitionNode) pre2;
+                                        stack.push(e2);
+                                    }
                                 }
                             }
                         }
@@ -388,16 +388,16 @@ public class SimulationAlg extends RelationAlgorithm {
                     if (post instanceof ChannelPlace) {
                         if (!((ChannelPlace) post).isMarked()) {
                             for (MathNode post2 : net.getPostset(post)) {
-                                if (visit.contains(post2)) {
-                                    continue;
-                                } else if (!result.contains(post2) || del.contains(post2)) {
-                                    visit.add(e2);
-                                    del.addAll(visit);
-                                    visit.removeLast();
-                                    break;
-                                } else if (!visit.contains(post2)) {
-                                    e2 = (TransitionNode) post2;
-                                    stack.push(e2);
+                                if (!visit.contains(post2)) {
+                                    if (!result.contains(post2) || del.contains(post2)) {
+                                        visit.add(e2);
+                                        del.addAll(visit);
+                                        visit.removeLast();
+                                        break;
+                                    } else if (!visit.contains(post2)) {
+                                        e2 = (TransitionNode) post2;
+                                        stack.push(e2);
+                                    }
                                 }
                             }
                         }

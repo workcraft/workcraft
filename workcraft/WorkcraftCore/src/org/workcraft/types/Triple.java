@@ -58,13 +58,8 @@ public class Triple<R, S, T> {
             return false;
         }
         if (third == null) {
-            if (other.third != null) {
-                return false;
-            }
-        } else if (!third.equals(other.third)) {
-            return false;
-        }
-        return true;
+            return other.third == null;
+        } else return third.equals(other.third);
     }
 
     @Override
@@ -72,7 +67,7 @@ public class Triple<R, S, T> {
         return "<" + first.toString() + ", " + second.toString() + ", " + third.toString() + ">";
     }
 
-    public static <T1, T2, T3> Triple<T1, T2, T3> of(T1 first, T2 second, T3 third) {
-        return new Triple<T1, T2, T3>(first, second, third);
+    public static <R, S, T> Triple<R, S, T> of(R first, S second, T third) {
+        return new Triple<>(first, second, third);
     }
 }

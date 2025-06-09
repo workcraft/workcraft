@@ -20,8 +20,7 @@ public final class ConnectionUtils {
     }
 
     public static void adjustInsideComponentContactPositions(VisualConnection connection) {
-        if ((connection != null) && (connection.getGraphic() instanceof Polyline)) {
-            Polyline polyline = (Polyline) connection.getGraphic();
+        if ((connection != null) && (connection.getGraphic() instanceof Polyline polyline)) {
             VisualNode first = connection.getFirst();
             VisualNode second = connection.getSecond();
             if (polyline.getControlPointCount() > 0) {
@@ -38,14 +37,12 @@ public final class ConnectionUtils {
         Point2D firstPos = firstControlPoint.getRootSpacePosition();
         ControlPoint lastControlPoint = polyline.getLastControlPoint();
         Point2D lastPos = lastControlPoint.getRootSpacePosition();
-        if (first instanceof VisualContact) {
-            VisualContact firstContact = (VisualContact) first;
+        if (first instanceof VisualContact firstContact) {
             if (moveContactIfInsideComponent(firstContact, firstPos)) {
                 polyline.remove(firstControlPoint);
             }
         }
-        if (second instanceof VisualContact) {
-            VisualContact secondContact = (VisualContact) second;
+        if (second instanceof VisualContact secondContact) {
             if (moveContactIfInsideComponent(secondContact, lastPos)) {
                 polyline.remove(lastControlPoint);
             }
@@ -54,8 +51,7 @@ public final class ConnectionUtils {
 
     private static boolean moveContactIfInsideComponent(VisualContact contact, Point2D pos) {
         Node parent = contact.getParent();
-        if (parent instanceof VisualCircuitComponent) {
-            VisualCircuitComponent component = (VisualCircuitComponent) parent;
+        if (parent instanceof VisualCircuitComponent component) {
             Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
             if (bb.contains(contact.getPosition())) {
                 contact.setRootSpacePosition(pos);
@@ -85,12 +81,10 @@ public final class ConnectionUtils {
     private static void moveInsideComponentContactsByGradient(VisualNode first, VisualNode second) {
         Point2D gradient = getGradient(first, second);
         if (gradient != null) {
-            if (first instanceof VisualContact) {
-                VisualContact firstContact = (VisualContact) first;
+            if (first instanceof VisualContact firstContact) {
                 moveContactOutsideComponent(firstContact, gradient.getX(), gradient.getY());
             }
-            if (second instanceof VisualContact) {
-                VisualContact secondContact = (VisualContact) second;
+            if (second instanceof VisualContact secondContact) {
                 moveContactOutsideComponent(secondContact, -gradient.getX(), -gradient.getY());
             }
         }
@@ -109,8 +103,7 @@ public final class ConnectionUtils {
 
     private static void moveContactOutsideComponent(VisualContact contact, double dx, double dy) {
         Node parent = contact.getParent();
-        if (parent instanceof VisualCircuitComponent) {
-            VisualCircuitComponent component = (VisualCircuitComponent) parent;
+        if (parent instanceof VisualCircuitComponent component) {
             Rectangle2D bb = component.getInternalBoundingBoxInLocalSpace();
             if (bb.contains(contact.getPosition())) {
                 if (Math.abs(dy) > Math.abs(dx)) {

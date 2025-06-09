@@ -20,9 +20,9 @@ public class Negation implements Expression {
     @Override
     public String toString() {
         if (expression.isAtomic()) {
-            return "!" + expression.toString();
+            return "!" + expression;
         } else {
-            return "!(" + expression.toString() + ")";
+            return "!(" + expression + ")";
         }
     }
 
@@ -39,8 +39,7 @@ public class Negation implements Expression {
     @Override
     public Expression eval(Map<String, Boolean> assignments) {
         Expression evalExpression = expression.eval(assignments);
-        if (evalExpression instanceof Constant) {
-            Constant constant = (Constant) evalExpression;
+        if (evalExpression instanceof Constant constant) {
             return new Constant(!constant.value);
         } else {
             return new Negation(evalExpression);

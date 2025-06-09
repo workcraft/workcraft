@@ -15,8 +15,8 @@ public class PetriConnectionTool extends ConnectionTool {
     @Override
     public boolean isConnectable(Node node) {
         return (node instanceof VisualPlace)
-              || (node instanceof VisualReplicaPlace)
-              || (node instanceof VisualTransition);
+                || (node instanceof VisualReplicaPlace)
+                || (node instanceof VisualTransition);
     }
 
     @Override

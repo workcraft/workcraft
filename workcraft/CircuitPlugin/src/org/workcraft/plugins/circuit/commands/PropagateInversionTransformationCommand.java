@@ -56,8 +56,7 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> components = new HashSet<>();
-        if (model instanceof VisualCircuit) {
-            VisualCircuit circuit = (VisualCircuit) model;
+        if (model instanceof VisualCircuit circuit) {
             components.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualFunctionComponent.class));
             Collection<VisualNode> selection = circuit.getSelection();
             if (!selection.isEmpty()) {
@@ -69,9 +68,7 @@ public class PropagateInversionTransformationCommand extends AbstractTransformat
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionComponent)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualFunctionComponent component = (VisualFunctionComponent) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualFunctionComponent component)) {
             if (component.isGate()) {
                 transformGate(circuit, component);
             }

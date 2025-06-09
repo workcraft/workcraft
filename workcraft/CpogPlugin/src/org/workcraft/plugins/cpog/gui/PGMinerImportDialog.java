@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 
-@SuppressWarnings("serial")
 public class PGMinerImportDialog extends JDialog {
 
     private final JTextField filePath;

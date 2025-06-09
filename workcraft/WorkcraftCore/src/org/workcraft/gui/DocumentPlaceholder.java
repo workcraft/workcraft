@@ -7,7 +7,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-@SuppressWarnings("serial")
 public class DocumentPlaceholder extends JPanel {
 
     private final BufferedImage logoImage;
@@ -37,7 +36,7 @@ public class DocumentPlaceholder extends JPanel {
     private BufferedImage getImage() {
         try {
             return GuiUtils.loadImageFromResource("images/logo.png");
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         return null;
     }

@@ -15,8 +15,7 @@ public class DefaultAnchorGenerator implements GraphEditorMouseListener {
         if (e.getClickCount() == 2) {
             VisualModel model = e.getModel();
             Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
-            if (node instanceof VisualConnection) {
-                VisualConnection connection = (VisualConnection) node;
+            if (node instanceof VisualConnection connection) {
                 WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
                 we.captureMemento();
                 ControlPoint cp = ConnectionHelper.createControlPoint(connection, e.getPosition());

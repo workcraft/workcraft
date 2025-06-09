@@ -100,8 +100,7 @@ public class DockingUtils {
     public static void closeTab(JTabbedPane tabbedPane, int tabIndex) {
         if ((tabIndex >= 0) && (tabIndex < tabbedPane.getTabCount())) {
             Component component = tabbedPane.getComponentAt(tabIndex);
-            if (component instanceof ContentPanel) {
-                ContentPanel contentPanel = (ContentPanel) component;
+            if (component instanceof ContentPanel contentPanel) {
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 mainWindow.closeDockableWindow(contentPanel.getDockableWindow());
             }
@@ -120,8 +119,7 @@ public class DockingUtils {
     public static void activateNextTab(DockableWindow dockableWindow, int step) {
         if (dockableWindow != null) {
             Container parent = dockableWindow.getComponent().getParent();
-            if (parent instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) parent;
+            if (parent instanceof JTabbedPane tabbedPane) {
                 int index = tabbedPane.getSelectedIndex();
                 if (index >= 0) {
                     int nextIndex = Math.floorMod(index + step, tabbedPane.getTabCount());

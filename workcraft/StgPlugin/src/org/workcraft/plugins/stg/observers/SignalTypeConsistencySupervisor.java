@@ -20,8 +20,7 @@ public class SignalTypeConsistencySupervisor extends StateSupervisor {
 
     @Override
     public void handleEvent(StateEvent e) {
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pce) {
             String propertyName = pce.getPropertyName();
             if (propertyName.equals(SignalTransition.PROPERTY_SIGNAL_TYPE) ||
                     propertyName.equals(SignalTransition.PROPERTY_SIGNAL_NAME)) {

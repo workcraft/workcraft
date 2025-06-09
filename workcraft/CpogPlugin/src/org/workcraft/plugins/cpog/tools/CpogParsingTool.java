@@ -92,15 +92,13 @@ public class CpogParsingTool {
         while (it.hasNext()) {
             ArrayList<VisualNode> inner = it.next();
             if (inner.size() > 1) {
-                y = centre.getY() - (inner.size() / 2);
+                y = centre.getY() - (inner.size() / 2.0);
             } else {
                 y = centre.getY();
             }
             for (VisualNode n : inner) {
-                if (n instanceof VisualVertex) {
-                    VisualVertex v = (VisualVertex) n;
-                    if ((v.getParent() instanceof VisualPage) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
-                        VisualPage p = (VisualPage) v.getParent();
+                if (n instanceof VisualVertex v) {
+                    if ((v.getParent() instanceof VisualPage p) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
                         Point2D.Double newPosition = new
                                 Point2D.Double(refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getX(),
                                         refMap.get(p.getLabel()).getVertMap().get(v.getLabel()).getY());
@@ -186,7 +184,7 @@ public class CpogParsingTool {
         ArrayList<VisualTransformableNode> groups = getScenarios(visualCpog);
         ArrayList<VisualNode> vertices = new ArrayList<>();
         ArrayList<String> expression = new ArrayList<>();
-        String total = "";
+        StringBuilder total = new StringBuilder();
 
         // Add vertices from group
         if (!groups.isEmpty()) {
@@ -250,8 +248,7 @@ public class CpogParsingTool {
             for (VisualNode n : originalSelection) {
                 if (n instanceof VisualVertex) {
                     vertices.add(n);
-                } else if ((n instanceof VisualScenarioPage) || (n instanceof VisualPage)) {
-                    VisualPage p = (VisualPage) n;
+                } else if ((n instanceof VisualPage p)) {
                     for (Node child : p.getChildren()) {
                         if (child instanceof VisualVertex) {
                             vertices.add((VisualVertex) child);
@@ -305,29 +302,34 @@ public class CpogParsingTool {
 
         for (String ex : expression) {
             if (ex.contains("=")) {
-                total += ex;
+                total.append(ex);
             } else if ("\n".equals(ex)) {
-                while (total.endsWith(" ") || total.endsWith("+")) {
-                    total = total.substring(0, total.length() - 1);
+                while (total.toString().endsWith(" ") || total.toString().endsWith("+")) {
+                    total = new StringBuilder(total.substring(0, total.length() - 1));
                 }
-                total += ex;
-            } else if ((ex.contains(" ") || "+".equals(ex)) || (!total.contains(" " + ex + " ") && !total.startsWith(ex + " ") && !total.endsWith(" " + ex))) {
-                if (!("+".equals(ex) && total.endsWith("+"))) {
-                    if (total.endsWith("\n") || total.isEmpty()) {
-                        total += ex;
+                total.append(ex);
+            } else if ((ex.contains(" ") || "+".equals(ex))
+                    || (!total.toString().contains(" " + ex + " ")
+                    && !total.toString().startsWith(ex + " ")
+                    && !total.toString().endsWith(" " + ex))) {
+
+                if (!("+".equals(ex) && total.toString().endsWith("+"))) {
+                    if (total.toString().endsWith("\n") || total.isEmpty()) {
+                        total.append(ex);
                     } else {
-                        total += ' ' + ex;
+                        total.append(' ');
+                        total.append(ex);
                     }
                 }
             }
         }
 
-        if (total.endsWith("+")) {
-            total = total.substring(0, total.length() - 1);
+        if (total.toString().endsWith("+")) {
+            total = new StringBuilder(total.substring(0, total.length() - 1));
         }
-        total = total.trim();
+        total = new StringBuilder(total.toString().trim());
 
-        return total;
+        return total.toString();
 
     }
 
@@ -794,10 +796,7 @@ public class CpogParsingTool {
         Collection<VisualVertex> vertices = visualCpog.getVertices(visualCpog.getCurrentLevel());
         vertices.removeAll(visualCpog.getSelection());
 
-        ArrayList<VisualNode> prevSelection = new ArrayList<>();
-        for (VisualNode n : visualCpog.getSelection()) {
-            prevSelection.add(n);
-        }
+        ArrayList<VisualNode> prevSelection = copySelected(visualCpog);
 
         ArrayList<VisualScenarioPage> pages = new ArrayList<>();
         visualCpog.selectAll();

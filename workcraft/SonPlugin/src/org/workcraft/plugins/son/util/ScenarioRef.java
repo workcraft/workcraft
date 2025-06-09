@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-@SuppressWarnings("serial")
 public class ScenarioRef extends ArrayList<String> {
 
     public Collection<Node> getNodes(SON net) {

@@ -109,20 +109,11 @@ public class VisualPlayer1 extends VisualComponent {
         double pos = -0.5 * size;
         Shape shape = new Rectangle2D.Double(pos, pos, size, size);
         if (getRenderType() != null) {
-            switch (getRenderType()) {
-            case CIRCLE:
-                shape = new Ellipse2D.Double(pos, pos, size, size);
-                break;
-            case SQUARE:
-                shape = new Rectangle2D.Double(pos, pos, size, size);
-                break;
-            case LABEL:
-                shape = new Path2D.Double();
-                break;
-            default:
-                shape = new Ellipse2D.Double(pos, pos, size, size);
-                break;
-            }
+            shape = switch (getRenderType()) {
+                case CIRCLE -> new Ellipse2D.Double(pos, pos, size, size);
+                case SQUARE -> new Rectangle2D.Double(pos, pos, size, size);
+                case LABEL -> new Path2D.Double();
+            };
         }
         return shape;
     }
@@ -210,8 +201,7 @@ public class VisualPlayer1 extends VisualComponent {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualPlayer1) {
-            VisualPlayer1 srcComponent = (VisualPlayer1) src;
+        if (src instanceof VisualPlayer1 srcComponent) {
             setRenderType(srcComponent.getRenderType());
         }
     }

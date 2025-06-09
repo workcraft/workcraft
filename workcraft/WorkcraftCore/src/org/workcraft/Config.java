@@ -170,20 +170,18 @@ public class Config {
         Element root = doc.getDocumentElement();
         NodeList nodes = root.getChildNodes();
         for (int i = 0; i < nodes.getLength(); i++) {
-            if (!(nodes.item(i) instanceof Element)) {
+            if (!(nodes.item(i) instanceof Element element)) {
                 continue;
             }
-            Element element = (Element) nodes.item(i);
             if (!GROUP_ELEMENT_NAME.equals(element.getTagName())) {
                 loadVarElement(element, null);
             } else {
                 String groupName = element.getAttribute(NAME_ATTRIBUTE_NAME);
                 NodeList groupNodes = element.getChildNodes();
                 for (int j = 0; j < groupNodes.getLength(); j++) {
-                    if (!(groupNodes.item(j) instanceof Element)) {
+                    if (!(groupNodes.item(j) instanceof Element childElement)) {
                         continue;
                     }
-                    Element childElement = (Element) groupNodes.item(j);
                     loadVarElement(childElement, groupName);
                 }
             }

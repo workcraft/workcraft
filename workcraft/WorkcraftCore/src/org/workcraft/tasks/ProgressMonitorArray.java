@@ -54,6 +54,7 @@ public class ProgressMonitorArray<T> extends ArrayList<ProgressMonitor<? super T
         finished = true;
     }
 
+    @SuppressWarnings("BusyWait")
     @Override
     public Result<? extends T> waitResult() {
         while (!finished) {

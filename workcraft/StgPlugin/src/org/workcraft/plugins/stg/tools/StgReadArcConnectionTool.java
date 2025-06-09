@@ -12,9 +12,9 @@ public class StgReadArcConnectionTool extends PetriReadArcConnectionTool {
     @Override
     public boolean isConnectable(Node node) {
         return (node instanceof VisualPlace)
-              || (node instanceof VisualReplicaPlace)
-              || (node instanceof VisualTransition)
-              || (node instanceof VisualImplicitPlaceArc);
+                || (node instanceof VisualReplicaPlace)
+                || (node instanceof VisualTransition)
+                || (node instanceof VisualImplicitPlaceArc);
     }
 
 }

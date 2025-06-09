@@ -240,8 +240,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             VisualContact contact = null;
             if (deepestNode instanceof VisualFunctionContact) {
                 contact = (VisualFunctionContact) deepestNode;
-            } else if (deepestNode instanceof VisualFunctionComponent) {
-                VisualFunctionComponent component = (VisualFunctionComponent) deepestNode;
+            } else if (deepestNode instanceof VisualFunctionComponent component) {
                 contact = component.getMainVisualOutput();
             }
 
@@ -385,11 +384,6 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             }
 
             @Override
-            public Color getBackground() {
-                return null;
-            }
-
-            @Override
             public boolean showForcedInit() {
                 return true;
             }
@@ -436,7 +430,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    private class PortTableCellRenderer implements TableCellRenderer {
+    private final class PortTableCellRenderer implements TableCellRenderer {
 
         private final JLabel label = new JLabel() {
             @Override
@@ -452,8 +446,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 boolean isSelected, boolean hasFocus, int row, int col) {
 
             JLabel result = null;
-            if (value instanceof Contact) {
-                Contact contact = (Contact) value;
+            if (value instanceof Contact contact) {
                 String ref = initState.getContactReference(contact);
                 label.setText(ref);
 
@@ -469,7 +462,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    private class PortTableModel extends AbstractTableModel {
+    private final class PortTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
             return 1;
@@ -486,7 +479,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    private class PinTable extends JTable {
+    private final class PinTable extends JTable {
 
         PinTable() {
             setModel(new PinTableModel());
@@ -532,7 +525,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    private class PinTableCellRenderer implements TableCellRenderer {
+    private final class PinTableCellRenderer implements TableCellRenderer {
 
         private final JLabel label = new JLabel() {
             @Override
@@ -548,8 +541,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 boolean isSelected, boolean hasFocus, int row, int col) {
 
             JLabel result = null;
-            if (value instanceof FunctionContact) {
-                FunctionContact contact = (FunctionContact) value;
+            if (value instanceof FunctionContact contact) {
                 String ref = initState.getContactReference(contact);
                 String text = initState.isRedundantForcedInit(contact) ? WARNING_PREFIX + ref : ref;
                 label.setText(text);
@@ -571,7 +563,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         }
     }
 
-    private class PinTableModel extends AbstractTableModel {
+    private final class PinTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
             return 1;

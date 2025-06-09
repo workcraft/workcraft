@@ -272,11 +272,11 @@ public class ProjectionBuilder {
             if (node instanceof DummyTransition) {
                 return ProjectionEvent.Tag.DUMMY;
             } else if (node instanceof SignalTransition) {
-                switch (((SignalTransition) node).getSignalType()) {
-                case INPUT: return ProjectionEvent.Tag.INPUT;
-                case OUTPUT: return ProjectionEvent.Tag.OUTPUT;
-                case INTERNAL: return ProjectionEvent.Tag.INTERNAL;
-                }
+                return switch (((SignalTransition) node).getSignalType()) {
+                    case INPUT -> ProjectionEvent.Tag.INPUT;
+                    case OUTPUT -> ProjectionEvent.Tag.OUTPUT;
+                    case INTERNAL -> ProjectionEvent.Tag.INTERNAL;
+                };
             }
         }
         return ProjectionEvent.Tag.NONE;
@@ -288,8 +288,7 @@ public class ProjectionBuilder {
         StgModel cloneStg = WorkspaceUtils.getAs(WorkUtils.cloneModel(we.getModelEntry()), StgModel.class);
         if (PetriUtils.fireTrace(cloneStg, componentTrace)) {
             for (Transition t : PetriUtils.getEnabledTransitions(cloneStg)) {
-                if (t instanceof SignalTransition) {
-                    SignalTransition st = (SignalTransition) t;
+                if (t instanceof SignalTransition st) {
                     if (signal.equals(st.getSignalName()) && (st.getDirection() == direction)) {
                         return ProjectionEvent.Tag.INPUT;
                     }

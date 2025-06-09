@@ -96,22 +96,22 @@ public class ReachAssertionDialog extends PresetDialog<VerificationParameters> {
                 modeCombo.setSelectedItem(data.getMode());
 
                 switch (data.getSolutionMode()) {
-                case MINIMUM_COST:
-                    cheapestSolutionRadioButton.setSelected(true);
-                    solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
-                    solutionLimitText.setEnabled(false);
-                    break;
-                case FIRST:
-                    firstSolutionRadioButton.setSelected(true);
-                    solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
-                    solutionLimitText.setEnabled(false);
-                    break;
-                case ALL:
-                    allSolutionsRadioButton.setSelected(true);
-                    int n = data.getSolutionNumberLimit();
-                    solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
-                    solutionLimitText.setEnabled(true);
-                    break;
+                    case MINIMUM_COST -> {
+                        cheapestSolutionRadioButton.setSelected(true);
+                        solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
+                        solutionLimitText.setEnabled(false);
+                    }
+                    case FIRST -> {
+                        firstSolutionRadioButton.setSelected(true);
+                        solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
+                        solutionLimitText.setEnabled(false);
+                    }
+                    case ALL -> {
+                        allSolutionsRadioButton.setSelected(true);
+                        int n = data.getSolutionNumberLimit();
+                        solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
+                        solutionLimitText.setEnabled(true);
+                    }
                 }
 
                 if (data.isInversePredicate()) {

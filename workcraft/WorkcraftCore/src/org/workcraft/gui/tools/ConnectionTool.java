@@ -107,10 +107,10 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     public boolean isConnectable(Node node) {
         return (node != null)
-              && !(node instanceof VisualGroup)
-              && !(node instanceof VisualPage)
-              && !(node instanceof VisualConnection)
-              && !(node instanceof VisualComment);
+                && !(node instanceof VisualGroup)
+                && !(node instanceof VisualPage)
+                && !(node instanceof VisualConnection)
+                && !(node instanceof VisualComment);
     }
 
     @Override
@@ -237,8 +237,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
             firstNode = currentNode;
         }
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
-        if (firstNode instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) firstNode;
+        if (firstNode instanceof VisualConnection connection) {
             AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
             Point2D currentPointInLocalSpace = rootToLocalTransform.transform(currentPoint, null);
             Point2D nearestPointInLocalSpace = connection.getNearestPointOnConnection(currentPointInLocalSpace);
@@ -258,13 +257,11 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     public VisualConnection finishConnection(GraphEditorMouseEvent e) {
         VisualConnection connection = null;
         try {
-            if (firstNode instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection) firstNode;
+            if (firstNode instanceof VisualConnection vc) {
                 AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
                 vc.setSplitPoint(rootToLocalTransform.transform(firstPoint, null));
             }
-            if (currentNode instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection) currentNode;
+            if (currentNode instanceof VisualConnection vc) {
                 AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(vc);
                 vc.setSplitPoint(rootToLocalTransform.transform(currentPoint, null));
             }
@@ -296,8 +293,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     public static void snapControlPoints(GraphEditor editor, VisualConnection connection) {
         ConnectionGraphic graphic = connection.getGraphic();
-        if (graphic instanceof Polyline) {
-            Polyline polyline = (Polyline) graphic;
+        if (graphic instanceof Polyline polyline) {
             int count = polyline.getControlPointCount();
 
             Point2D headSnapPoint = connection.getFirstCenter();

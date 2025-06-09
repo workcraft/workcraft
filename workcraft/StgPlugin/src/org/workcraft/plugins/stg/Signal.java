@@ -19,20 +19,19 @@ public class Signal {
         }
 
         public Type mirror() {
-            switch (this) {
-            case INPUT: return OUTPUT;
-            case OUTPUT: return INPUT;
-            default: return this;
-            }
+            return switch (this) {
+                case INPUT -> OUTPUT;
+                case OUTPUT -> INPUT;
+                default -> this;
+            };
         }
 
         public Type toggle() {
-            switch (this) {
-            case INPUT: return OUTPUT;
-            case OUTPUT: return INTERNAL;
-            case INTERNAL: return INPUT;
-            default: return this;
-            }
+            return switch (this) {
+                case INPUT -> OUTPUT;
+                case OUTPUT -> INTERNAL;
+                case INTERNAL -> INPUT;
+            };
         }
     }
 
@@ -53,14 +52,11 @@ public class Signal {
         }
 
         public State toggle() {
-            switch (this) {
-            case HIGH:
-                return LOW;
-            case LOW:
-                return HIGH;
-            default:
-                return this;
-            }
+            return switch (this) {
+                case HIGH -> LOW;
+                case LOW -> HIGH;
+                default -> this;
+            };
         }
     }
 
@@ -80,8 +76,7 @@ public class Signal {
     @Override
     public boolean equals(Object o) {
         boolean result = false;
-        if (o instanceof Signal) {
-            Signal s = (Signal) o;
+        if (o instanceof Signal s) {
             result = name.equals(s.name) && type.equals(s.type);
         }
         return result;

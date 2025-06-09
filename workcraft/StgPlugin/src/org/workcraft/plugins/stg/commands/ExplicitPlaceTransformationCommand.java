@@ -49,8 +49,7 @@ public class ExplicitPlaceTransformationCommand extends AbstractTransformationCo
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> connections = new HashSet<>();
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
+        if (model instanceof VisualStg stg) {
             connections.addAll(stg.getVisualImplicitPlaceArcs());
             Collection<VisualNode> selection = stg.getSelection();
             if (!selection.isEmpty()) {
@@ -62,9 +61,7 @@ public class ExplicitPlaceTransformationCommand extends AbstractTransformationCo
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualStg) && (node instanceof VisualImplicitPlaceArc)) {
-            VisualStg stg = (VisualStg) model;
-            VisualImplicitPlaceArc implicitArc = (VisualImplicitPlaceArc) node;
+        if ((model instanceof VisualStg stg) && (node instanceof VisualImplicitPlaceArc implicitArc)) {
             VisualStgPlace place = stg.makeExplicit(implicitArc);
             if (place != null) {
                 model.addToSelection(place);

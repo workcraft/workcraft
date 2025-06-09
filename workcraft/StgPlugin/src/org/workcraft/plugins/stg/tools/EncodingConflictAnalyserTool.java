@@ -284,14 +284,11 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
         @Override
         public String getColumnName(int column) {
-            switch (column) {
-            case COLUMN_COLOR:
-                return "Color";
-            case COLUMN_CORE:
-                return "Core";
-            default:
-                return  "";
-            }
+            return switch (column) {
+                case COLUMN_COLOR -> "Color";
+                case COLUMN_CORE -> "Core";
+                default -> "";
+            };
         }
 
         @Override
@@ -308,14 +305,9 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             EncodingConflict encodingConflict = encodingConflicts.get(row);
             if (encodingConflict != null) {
                 switch (col) {
-                case COLUMN_CORE:
-                    result = encodingConflict.getCoreAsString();
-                    break;
-                case COLUMN_COLOR:
-                    result = "";
-                    break;
-                default:
-                    break;
+                    case COLUMN_CORE -> result = encodingConflict.getCoreAsString();
+                    case COLUMN_COLOR -> result = "";
+                    default -> { }
                 }
             }
             return result;

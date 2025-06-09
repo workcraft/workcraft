@@ -13,7 +13,6 @@ import java.awt.event.KeyListener;
 import java.io.*;
 import java.util.Scanner;
 
-@SuppressWarnings("serial")
 public class WriterDialog extends JDialog {
 
     private static final DefaultListModel<String> includeList = new DefaultListModel<>();
@@ -159,7 +158,7 @@ public class WriterDialog extends JDialog {
                 lastFileUsed = file;
                 changed = false;
                 updateLastDirUsed();
-            } catch (FileNotFoundException ex) {
+            } catch (FileNotFoundException ignored) {
             }
         }
     }
@@ -225,18 +224,18 @@ public class WriterDialog extends JDialog {
 
     private String readFile(File file) throws FileNotFoundException {
         Scanner scanner = new Scanner(file);
-        String fileText = new String();
+        StringBuilder fileText = new StringBuilder();
         if (scanner.hasNextLine()) {
             do {
-                fileText += scanner.nextLine() + '\n';
+                fileText.append(scanner.nextLine()).append('\n');
             } while (scanner.hasNextLine());
             scanner.close();
-            conceptsText.setText(fileText);
+            conceptsText.setText(fileText.toString());
 
             lastFileUsed = file;
             changed = false;
         }
-        return fileText;
+        return fileText.toString();
     }
 
     public File getFile() {
@@ -249,7 +248,7 @@ public class WriterDialog extends JDialog {
                 PrintWriter writer = new PrintWriter(lastFileUsed);
                 writer.print(conceptsText.getText());
                 writer.close();
-            } catch (IOException e) {
+            } catch (IOException ignored) {
             }
         }
         return lastFileUsed;
@@ -268,10 +267,7 @@ public class WriterDialog extends JDialog {
     }
 
     public Boolean isSystem() {
-        if (conceptsText.getText().contains("system = ")) {
-            return true;
-        }
-        return false;
+        return conceptsText.getText().contains("system = ");
     }
 
     public boolean reveal() {

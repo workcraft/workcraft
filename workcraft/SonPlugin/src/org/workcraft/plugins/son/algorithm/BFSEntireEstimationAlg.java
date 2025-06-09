@@ -37,9 +37,9 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
 
     public void estimateEntire() throws TimeEstimationException, TimeOutOfBoundsException {
         addSuperNodes();
-        forwardBFSsonTimes((Time) superIni);
+        forwardBFSsonTimes(superIni);
         if (twoDir) {
-            backwardBFSsonTimes((Time) superFinal);
+            backwardBFSsonTimes(superFinal);
         }
 
     }
@@ -144,7 +144,6 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
             } catch (TimeOutOfBoundsException e) {
                 net.remove(superFinal);
                 e.printStackTrace();
-                return;
             }
         }
     }

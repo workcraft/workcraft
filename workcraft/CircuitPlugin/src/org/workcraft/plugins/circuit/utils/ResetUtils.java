@@ -155,8 +155,7 @@ public final class ResetUtils {
         for (Contact contact : contacts) {
             int tierIndex = tierCount - 1;
             Node parent = contact.getParent();
-            if (parent instanceof FunctionComponent) {
-                FunctionComponent component = (FunctionComponent) parent;
+            if (parent instanceof FunctionComponent component) {
                 if (component.isSequentialGate()) {
                     tierIndex = 0;
                 } else if (component.getIsArbitrationPrimitive()) {

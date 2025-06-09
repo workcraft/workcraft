@@ -49,47 +49,47 @@ public class WtgSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 "Suffix for signal low state (STG conversion)",
                 value -> setSuffixIfValid(value, WtgSettings::setLowStateSuffix),
-                () -> getLowStateSuffix()));
+                WtgSettings::getLowStateSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "Suffix for signal high state (STG conversion)",
                 value -> setSuffixIfValid(value, WtgSettings::setHighStateSuffix),
-                () -> getHighStateSuffix()));
+                WtgSettings::getHighStateSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for signal stable state",
                 value -> setSuffixIfValid(value, WtgSettings::setStableStateSuffix),
-                () -> getStableStateSuffix()));
+                WtgSettings::getStableStateSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for signal unstable state",
                 value -> setSuffixIfValid(value, WtgSettings::setUnstableStateSuffix),
-                () -> getUnstableStateSuffix()));
+                WtgSettings::getUnstableStateSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for signal stabilise event",
                 value -> setSuffixIfValid(value, WtgSettings::setStabiliseEventSuffix),
-                () -> getStabiliseEventSuffix()));
+                WtgSettings::getStabiliseEventSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for signal destabilise event",
                 value -> setSuffixIfValid(value, WtgSettings::setDestabiliseEventSuffix),
-                () -> getDestabiliseEventSuffix()));
+                WtgSettings::getDestabiliseEventSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for waveform entry event",
                 value -> setSuffixIfValid(value, WtgSettings::setEntryEventSuffix),
-                () -> getEntryEventSuffix()));
+                WtgSettings::getEntryEventSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for waveform exit event",
                 value -> setSuffixIfValid(value, WtgSettings::setExitEventSuffix),
-                () -> getExitEventSuffix()));
+                WtgSettings::getExitEventSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 "STG conversion suffix for waveform inactive place",
                 value -> setSuffixIfValid(value, WtgSettings::setInactivePlaceSuffix),
-                () -> getInactivePlaceSuffix()));
+                WtgSettings::getInactivePlaceSuffix));
     }
 
     private static void setSuffixIfValid(String value, Consumer<String> setter) {
@@ -147,7 +147,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     public static void setLowStateSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             lowStateSuffix = value;
         }
     }
@@ -157,7 +157,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     public static void setHighStateSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             highStateSuffix = value;
         }
     }
@@ -167,7 +167,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     public static void setStableStateSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             stableStateSuffix = value;
         }
     }
@@ -177,7 +177,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     public static void setUnstableStateSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             unstableStateSuffix = value;
         }
     }
@@ -187,7 +187,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     public static void setStabiliseEventSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             stabiliseEventSuffix = value;
         }
     }
@@ -197,7 +197,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     public static void setDestabiliseEventSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             destabiliseEventSuffix = value;
         }
     }
@@ -207,7 +207,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     public static void setEntryEventSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             entryEventSuffix = value;
         }
     }
@@ -217,7 +217,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     public static void setExitEventSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             exitEventSuffix = value;
         }
     }
@@ -227,7 +227,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     public static void setInactivePlaceSuffix(String value) {
-        if (value.length() > 0) {
+        if (!value.isEmpty()) {
             inactivePlaceSuffix = value;
         }
     }

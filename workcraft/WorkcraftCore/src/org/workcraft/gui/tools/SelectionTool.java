@@ -232,8 +232,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             VisualNode node = HitMan.hitFirstInCurrentLevel(position, model);
             if (node == null) {
                 if (e.getClickCount() > 1) {
-                    if (model.getCurrentLevel() instanceof VisualGroup) {
-                        VisualGroup currentGroup = (VisualGroup) model.getCurrentLevel();
+                    if (model.getCurrentLevel() instanceof VisualGroup currentGroup) {
                         Rectangle2D bbInLocalSpace = currentGroup.getBoundingBoxInLocalSpace();
                         Point2D posInRootSpace = currentGroup.getRootSpacePosition();
                         Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bbInLocalSpace, posInRootSpace);
@@ -242,8 +241,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                             return;
                         }
                     }
-                    if (model.getCurrentLevel() instanceof VisualPage) {
-                        VisualPage currentPage = (VisualPage) model.getCurrentLevel();
+                    if (model.getCurrentLevel() instanceof VisualPage currentPage) {
                         Rectangle2D bbInLocalSpace = currentPage.getBoundingBoxInLocalSpace();
                         Point2D posInRootSpace = currentPage.getRootSpacePosition();
                         Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bbInLocalSpace, posInRootSpace);
@@ -264,8 +262,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                         changeLevelDown(editor);
                         return;
 
-                    } else if (node instanceof VisualComment) {
-                        final VisualComment comment = (VisualComment) node;
+                    } else if (node instanceof VisualComment comment) {
                         AbstractInplaceEditor textEditor = new LabelInplaceEditor(editor, comment);
                         textEditor.edit(comment.getLabel(), comment.getLabelFont(),
                                 comment.getLabelOffset(), comment.getLabelAlignment(), true);
@@ -294,11 +291,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
         VisualNode masterNode = (node instanceof Replica) ? ((Replica) node).getMaster() : node;
         result.add(masterNode);
         result.addAll(model.getConnections(masterNode));
-        if (masterNode instanceof Replicable) {
-            Replicable replicable = (Replicable) masterNode;
+        if (masterNode instanceof Replicable replicable) {
             replicable.getReplicas().forEach(replica -> {
-                if (replica instanceof VisualNode) {
-                    VisualNode visualNode = (VisualNode) replica;
+                if (replica instanceof VisualNode visualNode) {
                     result.add(visualNode);
                     result.addAll(model.getConnections(visualNode));
                 }
@@ -478,39 +473,47 @@ public class SelectionTool extends AbstractGraphEditorTool {
         editor.repaint();
     }
 
+    @SuppressWarnings("PMD.NonExhaustiveSwitch")
     @Override
     public boolean keyPressed(GraphEditorKeyEvent e) {
         GraphEditor editor = e.getEditor();
         switch (e.getKeyCode()) {
-        case KeyEvent.VK_ESCAPE:
-            if (isDragging()) {
-                cancelDrag(editor);
-            } else {
-                cancelSelection(editor);
+            case KeyEvent.VK_ESCAPE -> {
+                if (isDragging()) {
+                    cancelDrag(editor);
+                } else {
+                    cancelSelection(editor);
+                }
+                return true;
             }
-            return true;
-        case KeyEvent.VK_PAGE_UP:
-            changeLevelUp(editor);
-            return true;
-        case KeyEvent.VK_PAGE_DOWN:
-            changeLevelDown(editor);
-            return true;
+            case KeyEvent.VK_PAGE_UP -> {
+                changeLevelUp(editor);
+                return true;
+            }
+            case KeyEvent.VK_PAGE_DOWN -> {
+                changeLevelDown(editor);
+                return true;
+            }
         }
 
         if (!e.isMenuKeyDown() && !e.isShiftKeyDown()) {
             switch (e.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-                offsetSelection(editor, -1, 0);
-                return true;
-            case KeyEvent.VK_RIGHT:
-                offsetSelection(editor, 1, 0);
-                return true;
-            case KeyEvent.VK_UP:
-                offsetSelection(editor, 0, -1);
-                return true;
-            case KeyEvent.VK_DOWN:
-                offsetSelection(editor, 0, 1);
-                return true;
+                case KeyEvent.VK_LEFT -> {
+                    offsetSelection(editor, -1, 0);
+                    return true;
+                }
+                case KeyEvent.VK_RIGHT -> {
+                    offsetSelection(editor, 1, 0);
+                    return true;
+                }
+                case KeyEvent.VK_UP -> {
+                    offsetSelection(editor, 0, -1);
+                    return true;
+                }
+                case KeyEvent.VK_DOWN -> {
+                    offsetSelection(editor, 0, 1);
+                    return true;
+                }
             }
         }
 

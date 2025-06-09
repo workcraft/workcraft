@@ -131,9 +131,7 @@ public class DefaultDurationPanel extends JPanel {
 
         if (length < 4) {
             while (length < 4) {
-                StringBuffer sb = new StringBuffer();
-                sb.append("0").append(text);
-                text = sb.toString();
+                text = "0" + text;
                 field.setText(text);
                 length = text.length();
             }

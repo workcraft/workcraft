@@ -53,20 +53,19 @@ public class StgToDtdConverter {
     }
 
     private Signal.Type convertSignalType(org.workcraft.plugins.stg.Signal.Type type) {
-        switch (type) {
-        case INPUT:    return Signal.Type.INPUT;
-        case OUTPUT:   return Signal.Type.OUTPUT;
-        case INTERNAL: return Signal.Type.INTERNAL;
-        default:       return null;
-        }
+        return switch (type) {
+            case INPUT -> Signal.Type.INPUT;
+            case OUTPUT -> Signal.Type.OUTPUT;
+            case INTERNAL -> Signal.Type.INTERNAL;
+        };
     }
 
     private TransitionEvent.Direction getDirection(SignalTransition.Direction direction) {
-        switch (direction) {
-        case PLUS:  return TransitionEvent.Direction.RISE;
-        case MINUS: return TransitionEvent.Direction.FALL;
-        default:    return null;
-        }
+        return switch (direction) {
+            case PLUS -> TransitionEvent.Direction.RISE;
+            case MINUS -> TransitionEvent.Direction.FALL;
+            default -> null;
+        };
     }
 
     private Map<String, VisualSignal> createSignals(LinkedList<Pair<String, Color>> signals) {
@@ -99,8 +98,7 @@ public class StgToDtdConverter {
         Set<String> visitedSignals = new HashSet<>();
         for (String transitionRef : trace) {
             MathNode node = stg.getNodeByReference(transitionRef);
-            if (node instanceof SignalTransition) {
-                SignalTransition transition = (SignalTransition) node;
+            if (node instanceof SignalTransition transition) {
                 String signalRef = stg.getSignalReference(transition);
                 if (visitedSignals.contains(signalRef)) continue;
                 visitedSignals.add(signalRef);
@@ -119,8 +117,7 @@ public class StgToDtdConverter {
         for (String transitionRef : trace) {
             MathNode node = stg.getNodeByReference(transitionRef);
             boolean processed = false;
-            if (node instanceof SignalTransition) {
-                SignalTransition transition = (SignalTransition) node;
+            if (node instanceof SignalTransition transition) {
                 String signalRef = stg.getSignalReference(transition);
                 if (refToSignalMap.containsKey(signalRef)) {
                     VisualSignal signal = refToSignalMap.get(signalRef);

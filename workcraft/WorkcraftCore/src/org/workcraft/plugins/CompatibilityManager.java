@@ -19,23 +19,23 @@ import java.util.zip.ZipOutputStream;
 
 public class CompatibilityManager {
 
-    private static class Replacement extends HashMap<String, String> {
+    private static final class Replacement extends HashMap<String, String> {
     }
 
-    private static class ContextualReplacement extends HashMap<String, Replacement> {
+    private static final class ContextualReplacement extends HashMap<String, Replacement> {
     }
 
-    private static class NestedContextualReplacement extends HashMap<String, ContextualReplacement> {
+    private static final class NestedContextualReplacement extends HashMap<String, ContextualReplacement> {
     }
 
-    private static class ReplacementData {
+    private static final class ReplacementData {
         private final Replacement meta = new Replacement();
         private final Replacement model = new Replacement();
         private final ContextualReplacement global = new ContextualReplacement();
         private final NestedContextualReplacement local = new NestedContextualReplacement();
     }
 
-    private static class VersionedReplacementData extends TreeMap<Version, ReplacementData> {
+    private static final class VersionedReplacementData extends TreeMap<Version, ReplacementData> {
     }
 
     private final VersionedReplacementData versionedReplacementData = new VersionedReplacementData();

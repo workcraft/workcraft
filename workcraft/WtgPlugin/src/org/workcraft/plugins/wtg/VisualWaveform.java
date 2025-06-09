@@ -51,8 +51,7 @@ public class VisualWaveform extends VisualPage {
     @Override
     public void draw(DrawRequest r) {
         Decoration d = r.getDecoration();
-        if (d instanceof WaveformDecoration) {
-            WaveformDecoration wd = (WaveformDecoration) d;
+        if (d instanceof WaveformDecoration wd) {
             setIsExcited(wd.isActive());
         }
         // This is to update the rendered text for names (and labels) of group children,
@@ -82,8 +81,7 @@ public class VisualWaveform extends VisualPage {
             } else {
                 float[] pattern = {0.05f, 0.05f};
                 BasicStroke stroke = new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);
-                if (d instanceof WaveformDecoration) {
-                    WaveformDecoration wd = (WaveformDecoration) d;
+                if (d instanceof WaveformDecoration wd) {
                     if (wd.isActive()) {
                         stroke = new BasicStroke(0.05f);
                     }

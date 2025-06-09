@@ -19,8 +19,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.*;
+import java.util.Set;
 
 public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
 
@@ -51,8 +53,9 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     private JCheckBox allowInversionCheckbox;
 
     static class SignalList extends JList<String> {
+
         SignalList(Collection<String> signals, Color color) {
-            super(new Vector<>(signals));
+            super(SortUtils.getSortedNatural(signals).toArray(new String[0]));
             setBorder(GuiUtils.getEmptyBorder());
             setSelectionModel(new MultipleListSelectionModel());
             setCellRenderer(new ColorListCellRenderer(item -> color));
@@ -180,32 +183,22 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     }
 
     private String getStateLabel(HandshakeParameters.State state) {
-        switch (state) {
-        case REQ0ACK0:
-            return LABEL_PREFIX + REQ_LABEL + ASSERTED_LABEL;
-        case REQ1ACK0:
-            return LABEL_PREFIX + ACK_LABEL + ASSERTED_LABEL;
-        case REQ1ACK1:
-            return LABEL_PREFIX + REQ_LABEL + WITHDRAWN_LABEL;
-        case REQ0ACK1:
-            return LABEL_PREFIX + ACK_LABEL + WITHDRAWN_LABEL;
-        }
-        return "";
+        return switch (state) {
+            case REQ0ACK0 -> LABEL_PREFIX + REQ_LABEL + ASSERTED_LABEL;
+            case REQ1ACK0 -> LABEL_PREFIX + ACK_LABEL + ASSERTED_LABEL;
+            case REQ1ACK1 -> LABEL_PREFIX + REQ_LABEL + WITHDRAWN_LABEL;
+            case REQ0ACK1 -> LABEL_PREFIX + ACK_LABEL + WITHDRAWN_LABEL;
+        };
     }
 
 
     private String getStateTooltip(HandshakeParameters.State state) {
-        switch (state) {
-        case REQ0ACK0:
-            return TOOLTIP_PREFIX + REQ_LABEL + ASSERTED_SUFFIX;
-        case REQ1ACK0:
-            return TOOLTIP_PREFIX + ACK_LABEL + ASSERTED_SUFFIX;
-        case REQ1ACK1:
-            return TOOLTIP_PREFIX + REQ_LABEL + WITHDRAWN_SUFFIX;
-        case REQ0ACK1:
-            return TOOLTIP_PREFIX + ACK_LABEL + WITHDRAWN_SUFFIX;
-        }
-        return "";
+        return switch (state) {
+            case REQ0ACK0 -> TOOLTIP_PREFIX + REQ_LABEL + ASSERTED_SUFFIX;
+            case REQ1ACK0 -> TOOLTIP_PREFIX + ACK_LABEL + ASSERTED_SUFFIX;
+            case REQ1ACK1 -> TOOLTIP_PREFIX + REQ_LABEL + WITHDRAWN_SUFFIX;
+            case REQ0ACK1 -> TOOLTIP_PREFIX + ACK_LABEL + WITHDRAWN_SUFFIX;
+        };
     }
 
     private PresetManagerPanel<HandshakeParameters> createPresetPanel() {

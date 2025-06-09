@@ -16,9 +16,7 @@ public class ContentPanel extends JPanel {
 
     class DockableViewHeader extends JPanel {
         private ActionButton btnMax = null;
-        private ActionButton btnClose = null;
-        private JLabel titleLabel = null;
-        private JPanel buttonPanel = null;
+        private final JLabel titleLabel;
         private boolean maximized = false;
 
         private ActionButton createHeaderButton(Icon icon, Action action) {
@@ -37,6 +35,7 @@ public class ContentPanel extends JPanel {
             Color color = getTitleBackgroundColor();
             setBackground(color);
 
+            JPanel buttonPanel = null;
             if  (options != 0) {
                 buttonPanel = new JPanel();
                 buttonPanel.setBackground(color);
@@ -59,7 +58,7 @@ public class ContentPanel extends JPanel {
 
             Icon closeIcon = UIManager.getIcon("InternalFrame.closeIcon");
             if ((options & CLOSE_BUTTON) != 0) {
-                btnClose = createHeaderButton(closeIcon,
+                ActionButton btnClose = createHeaderButton(closeIcon,
                         new Action(null, () -> mainWindow.closeDockableWindow(dockableWindow),
                                 "Close window"));
 

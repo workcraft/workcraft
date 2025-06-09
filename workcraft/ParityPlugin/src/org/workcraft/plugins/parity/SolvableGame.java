@@ -34,27 +34,22 @@ public class SolvableGame {
      * @param game    game to be copied
      */
     SolvableGame(SolvableGame game) {
-        this.vertex = (Boolean[]) game.vertex.clone();
+        this.vertex = game.vertex.clone();
         this.ownedBy = new Boolean[game.ownedBy.length][game.ownedBy[0].length];
         for (int outer = 0; outer < game.ownedBy.length; ++outer) {
-            for (int inner = 0; inner < game.ownedBy[outer].length; ++inner) {
-                this.ownedBy[outer][inner] = game.ownedBy[outer][inner];
-            }
+            System.arraycopy(game.ownedBy[outer], 0, this.ownedBy[outer], 0, game.ownedBy[outer].length);
         }
         this.adjMatrix = new Boolean[game.adjMatrix.length][game.adjMatrix[0].length];
         for (int outer = 0; outer < game.adjMatrix.length; ++outer) {
-            for (int inner = 0; inner < game.adjMatrix[outer].length; ++inner) {
-                this.adjMatrix[outer][inner] = game.adjMatrix[outer][inner];
-            }
+            System.arraycopy(game.adjMatrix[outer], 0, this.adjMatrix[outer], 0, game.adjMatrix[outer].length);
         }
-        this.priority = (Integer[]) game.priority.clone();
+        this.priority = game.priority.clone();
     }
 
     /**
      * Print function to ensure game has been built correctly
      */
     void printSolvableGame() {
-
         System.out.print("VERTICES: ");
         for (int i = 0; i < vertex.length; ++i) {
             System.out.print(vertex[i] ? i + " " : "");
@@ -68,15 +63,15 @@ public class SolvableGame {
             System.out.print(ownedBy[1][i] ? i + " " : "");
         }
         System.out.println("\n\nADJ MATRIX:");
-        for (int i = 0; i < adjMatrix.length; ++i) {
+        for (Boolean[] matrix : adjMatrix) {
             for (int j = 0; j < adjMatrix.length; ++j) {
-                System.out.print(adjMatrix[i][j] ? "1 " : "0 ");
+                System.out.print(matrix[j] ? "1 " : "0 ");
             }
-            System.out.println("");
+            System.out.println();
         }
         System.out.print("\nPRIORITIES: ");
-        for (int i = 0; i < priority.length; ++i) {
-            System.out.print(priority[i] + " ");
+        for (Integer integer : priority) {
+            System.out.print(integer + " ");
         }
         System.out.print("\n\n");
     }

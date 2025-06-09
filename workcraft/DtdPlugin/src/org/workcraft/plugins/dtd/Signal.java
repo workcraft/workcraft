@@ -56,13 +56,12 @@ public class Signal extends MathNode implements ObservableHierarchy, Container {
         }
 
         public State reverse() {
-            switch (this) {
-            case HIGH: return LOW;
-            case LOW: return HIGH;
-            case UNSTABLE: return STABLE;
-            case STABLE: return UNSTABLE;
-            default: return this;
-            }
+            return switch (this) {
+                case HIGH -> LOW;
+                case LOW -> HIGH;
+                case UNSTABLE -> STABLE;
+                case STABLE -> UNSTABLE;
+            };
         }
     }
 
@@ -83,12 +82,11 @@ public class Signal extends MathNode implements ObservableHierarchy, Container {
         }
 
         public Type toggle() {
-            switch (this) {
-            case INPUT: return OUTPUT;
-            case OUTPUT: return INTERNAL;
-            case INTERNAL: return INPUT;
-            default: return this;
-            }
+            return switch (this) {
+                case INPUT -> OUTPUT;
+                case OUTPUT -> INTERNAL;
+                case INTERNAL -> INPUT;
+            };
         }
     }
 

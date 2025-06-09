@@ -34,11 +34,11 @@ public enum VariableState {
     }
 
     public VariableState toggle() {
-        switch (this) {
-        case TRUE: return VariableState.FALSE;
-        case FALSE: return VariableState.UNDEFINED;
-        default: return VariableState.TRUE;
-        }
+        return switch (this) {
+            case TRUE -> VariableState.FALSE;
+            case FALSE -> VariableState.UNDEFINED;
+            default -> VariableState.TRUE;
+        };
     }
 
     public static VariableState fromBoolean(boolean b) {

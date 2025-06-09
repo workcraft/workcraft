@@ -30,22 +30,21 @@ public class Signal extends Symbol {
         }
 
         public Type toggle() {
-            switch (this) {
-            case INPUT: return OUTPUT;
-            case OUTPUT: return INTERNAL;
-            case INTERNAL: return INPUT;
-            case DUMMY: return DUMMY;
-            default: return this;
-            }
+            return switch (this) {
+                case INPUT -> OUTPUT;
+                case OUTPUT -> INTERNAL;
+                case INTERNAL -> INPUT;
+                case DUMMY -> DUMMY;
+            };
         }
 
         public Color getColor() {
-            switch (this) {
-            case INPUT:    return SignalCommonSettings.getInputColor();
-            case OUTPUT:   return SignalCommonSettings.getOutputColor();
-            case INTERNAL: return SignalCommonSettings.getInternalColor();
-            default:       return SignalCommonSettings.getDummyColor();
-            }
+            return switch (this) {
+                case INPUT -> SignalCommonSettings.getInputColor();
+                case OUTPUT -> SignalCommonSettings.getOutputColor();
+                case INTERNAL -> SignalCommonSettings.getInternalColor();
+                default -> SignalCommonSettings.getDummyColor();
+            };
         }
     }
 

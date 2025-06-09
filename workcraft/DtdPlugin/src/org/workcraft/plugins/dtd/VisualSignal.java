@@ -207,8 +207,7 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     public Node hitCustom(Point2D point) {
         Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
         for (Node node : getChildren()) {
-            if (node instanceof VisualEvent) {
-                VisualEvent event = (VisualEvent) node;
+            if (node instanceof VisualEvent event) {
                 double threshold = Math.min(0.1, event.getShape().getBounds2D().getWidth());
                 if (event.hitTest(pointInLocalSpace)
                         || event.hitTest(new Point2D.Double(pointInLocalSpace.getX() - threshold, pointInLocalSpace.getY()))

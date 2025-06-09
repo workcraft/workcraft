@@ -158,22 +158,15 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     private String getModelTypeSuffix() {
-        String suffix = "";
         VisualModel model = getModelEntry().getVisualModel();
-        if (model != null) {
-            switch (EditorCommonSettings.getTitleStyle()) {
-            case LONG:
-                suffix = " - " + model.getDisplayName();
-                break;
-            case SHORT:
-                suffix = " [" + model.getShortName() + "]";
-                break;
-            default:
-                suffix = "";
-                break;
-            }
+        if (model == null) {
+            return "";
         }
-        return suffix;
+        return switch (EditorCommonSettings.getTitleStyle()) {
+            case LONG -> " - " + model.getDisplayName();
+            case SHORT -> " [" + model.getShortName() + "]";
+            default -> "";
+        };
     }
 
     public String getFileName() {
@@ -324,7 +317,7 @@ public class WorkspaceEntry implements ObservableState {
 
     public void copy() {
         VisualModel model = modelEntry.getVisualModel();
-        if (model.getSelection().size() > 0) {
+        if (!model.getSelection().isEmpty()) {
             captureMemento();
             // Remember the current level, selected nodes, and then jump to the root level.
             Container currentLevel = model.getCurrentLevel();
@@ -410,7 +403,7 @@ public class WorkspaceEntry implements ObservableState {
 
     public void delete() {
         VisualModel model = modelEntry.getVisualModel();
-        if (model.getSelection().size() > 0) {
+        if (!model.getSelection().isEmpty()) {
             saveMemento();
             model.deleteSelection();
             setChanged(true);

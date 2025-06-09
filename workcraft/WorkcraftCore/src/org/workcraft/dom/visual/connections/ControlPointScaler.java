@@ -56,16 +56,12 @@ public class ControlPointScaler {
     }
 
     private Point2D getUpVector(VisualConnection.ScaleMode mode, Point2D v0) {
-        switch (mode) {
-        case SCALE:
-            return rotate90CCW(v0);
-        case STRETCH:
-            return normalize(rotate90CCW(v0));
-        case ADAPTIVE:
-            return reduce(rotate90CCW(v0));
-        default:
-            throw new RuntimeException("Unexpected value of scale mode");
-        }
+        return switch (mode) {
+            case SCALE -> rotate90CCW(v0);
+            case STRETCH -> normalize(rotate90CCW(v0));
+            case ADAPTIVE -> reduce(rotate90CCW(v0));
+            default -> throw new RuntimeException("Unexpected value of scale mode");
+        };
     }
 
 }

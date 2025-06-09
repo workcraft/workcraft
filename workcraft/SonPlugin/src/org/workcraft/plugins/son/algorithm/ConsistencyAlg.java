@@ -343,8 +343,7 @@ public class ConsistencyAlg extends TimeAlg {
 
     public ArrayList<String> granularityHourMinsTask(Node node) {
         ArrayList<String> result = new ArrayList<>();
-        if (node instanceof Time) {
-            Time t = (Time) node;
+        if (node instanceof Time t) {
             Integer value = null;
             try {
                 value = t.getStartTime().getMin();

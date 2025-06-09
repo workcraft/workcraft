@@ -21,9 +21,9 @@ import org.workcraft.utils.SortUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
+import java.util.*;
 import java.util.List;
 import java.util.Queue;
-import java.util.*;
 
 import static org.workcraft.plugins.wtg.utils.WtgUtils.getFinalSignalStatesFromWaveform;
 
@@ -120,9 +120,8 @@ public class WtgPropertyHelper {
 
     private static void insertNewSignal(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
         for (GraphEditorTool tool : visualWtg.getGraphEditorTools()) {
-            if (tool instanceof SignalGeneratorTool) {
+            if (tool instanceof SignalGeneratorTool signalGeneratorTool) {
                 Point2D position = newSignalPosition(visualWaveform);
-                SignalGeneratorTool signalGeneratorTool = (SignalGeneratorTool) tool;
                 VisualSignal newSignal = signalGeneratorTool.generateNode(visualWtg, position);
                 Signal signal = newSignal.getReferencedComponent();
                 visualWtg.getMathModel().setName(signal, signalName);
@@ -150,8 +149,7 @@ public class WtgPropertyHelper {
     private static Point2D newSignalPosition(VisualWaveform visualWaveform) {
         Point2D result = null;
         for (VisualComponent visualComponent : visualWaveform.getComponents()) {
-            if (visualComponent instanceof VisualSignal) {
-                VisualSignal visualSignal = (VisualSignal) visualComponent;
+            if (visualComponent instanceof VisualSignal visualSignal) {
                 if (result == null) {
                     result = new Point2D.Double(visualSignal.getX(), visualSignal.getY());
                 } else if (visualSignal.getY() > result.getY()) {
@@ -172,7 +170,7 @@ public class WtgPropertyHelper {
     private static Signal.State findPreviousSignalState(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
         Wtg wtg = visualWtg.getMathModel();
         Waveform waveform = visualWaveform.getReferencedComponent();
-        if (wtg.getPreset(waveform).size() == 0) {
+        if (wtg.getPreset(waveform).isEmpty()) {
             return null;
         }
         Signal.State result = null;

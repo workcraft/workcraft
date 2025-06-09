@@ -24,7 +24,7 @@ public class GateRenderer {
     public static Color foregroundColor = Color.BLACK;
     public static Color backgroundColor = Color.WHITE;
 
-    private static class NaryBooleanFormulaRenderer implements NaryBooleanFormulaVisitor<ComponentRenderingResult> {
+    private static final class NaryBooleanFormulaRenderer implements NaryBooleanFormulaVisitor<ComponentRenderingResult> {
 
         private boolean isBuffer = true;
 

@@ -41,6 +41,7 @@ class StgReparentTests {
         Assertions.assertEquals("ABCc", stg.getNodeReference(dummy2));
     }
 
+    @SuppressWarnings("PMD.JUnitUseExpected")
     @Test
     void testPlaceReparent() {
         Stg stg = new Stg();
@@ -53,7 +54,7 @@ class StgReparentTests {
         try {
             transition = stg.createSignalTransition("ABC", stg.getRoot());
             Assertions.fail("Unexpected assignment of name 'ABC' that is already taken.");
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         Assertions.assertNull(transition);
 
@@ -80,6 +81,7 @@ class StgReparentTests {
         Assertions.assertEquals("ABCb", stg.getNodeReference(place2));
     }
 
+    @SuppressWarnings("PMD.JUnitUseExpected")
     @Test
     void testTransitionReparent() {
         Stg stg = new Stg();
@@ -92,7 +94,7 @@ class StgReparentTests {
         try {
             place = stg.createPlace("ABC", stg.getRoot());
             Assertions.fail("Unexpected assignment of name 'ABC' that is already taken.");
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         Assertions.assertNull(place);
 

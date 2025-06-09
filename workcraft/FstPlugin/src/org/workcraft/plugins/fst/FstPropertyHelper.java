@@ -69,8 +69,7 @@ public class FstPropertyHelper {
                     Collection<SignalEvent> events = mathFst.getSignalEvents(signal);
                     if (node == null) {
                         fst.setMathName(signal, newName);
-                    } else if (node instanceof Signal) {
-                        Signal existingSignal = (Signal) node;
+                    } else if (node instanceof Signal existingSignal) {
                         for (SignalEvent event : events) {
                             event.setSymbol(existingSignal);
                         }

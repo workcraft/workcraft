@@ -11,17 +11,17 @@ class NfConverterTests {
 
     private static final DumbBooleanWorker WORKER = DumbBooleanWorker.getInstance();
 
-    private static BooleanVariable a = new FreeVariable("a");
-    private static BooleanVariable b = new FreeVariable("b");
-    private static BooleanVariable c = new FreeVariable("c");
+    private static final BooleanVariable a = new FreeVariable("a");
+    private static final BooleanVariable b = new FreeVariable("b");
+    private static final BooleanVariable c = new FreeVariable("c");
     // a * b + b * a + a * b
-    private static BooleanFormula f1 = WORKER.or(WORKER.or(WORKER.and(a, b), WORKER.and(b, a)), WORKER.and(a, b));
+    private static final BooleanFormula f1 = WORKER.or(WORKER.or(WORKER.and(a, b), WORKER.and(b, a)), WORKER.and(a, b));
     // a * (b + c)
-    private static BooleanFormula f2 = WORKER.and(a, WORKER.or(b, c));
+    private static final BooleanFormula f2 = WORKER.and(a, WORKER.or(b, c));
     // a + b * c
-    private static BooleanFormula f3 = WORKER.or(a, WORKER.and(b, c));
+    private static final BooleanFormula f3 = WORKER.or(a, WORKER.and(b, c));
     // a * b + b' * c
-    private static BooleanFormula f4 = WORKER.or(WORKER.and(a, b), WORKER.and(WORKER.not(b), c));
+    private static final BooleanFormula f4 = WORKER.or(WORKER.and(a, b), WORKER.and(WORKER.not(b), c));
 
     @Test
     void testDnfConverter() {

@@ -169,7 +169,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double x = pos.getX();
         double y = pos.getY();
         Signal.Type type = Signal.Type.INTERNAL;
-        ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
+        ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(node).isEmpty());
 
         VisualPlace c0 = stg.createVisualPlace(getLogicStgNodeReference(nodeName, false), container);
         c0.setLabel(C_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
@@ -283,12 +283,12 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double x = pos.getX();
         double y = pos.getY();
         Signal.Type type = Signal.Type.INTERNAL;
-        if (dfs.getPreset(node).size() == 0) {
+        if (dfs.getPreset(node).isEmpty()) {
             type = Signal.Type.INPUT;
-        } else if (dfs.getPostset(node).size() == 0) {
+        } else if (dfs.getPostset(node).isEmpty()) {
             type = Signal.Type.OUTPUT;
         }
-        ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
+        ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(node).isEmpty());
 
         VisualPlace m0 = stg.createVisualPlace(getRegisterStgNodeReference(nodeName, false), container);
         m0.setLabel(M_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
@@ -415,8 +415,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double x = pos.getX();
         double y = pos.getY();
         Signal.Type type = Signal.Type.INTERNAL;
-        ColorGenerator presetTokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
-        ColorGenerator postsetTokenColorGenerator = createColorGenerator(dfs.getPostset(node).size() == 0);
+        ColorGenerator presetTokenColorGenerator = createColorGenerator(dfs.getPreset(node).isEmpty());
+        ColorGenerator postsetTokenColorGenerator = createColorGenerator(dfs.getPostset(node).isEmpty());
 
         String fwC0Name = getCounterflowLogicStgNodeReference(nodeName, true, false);
         VisualPlace fwC0 = stg.createVisualPlace(fwC0Name, container);
@@ -581,11 +581,11 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double x = pos.getX();
         double y = pos.getY();
         Signal.Type type = Signal.Type.INTERNAL;
-        if (dfs.getPreset(node).size() == 0 || dfs.getPostset(node).size() == 0) {
+        if (dfs.getPreset(node).isEmpty() || dfs.getPostset(node).isEmpty()) {
             type = Signal.Type.INPUT;
         }
-        ColorGenerator presetTokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
-        ColorGenerator postsetTokenColorGenerator = createColorGenerator(dfs.getPostset(node).size() == 0);
+        ColorGenerator presetTokenColorGenerator = createColorGenerator(dfs.getPreset(node).isEmpty());
+        ColorGenerator postsetTokenColorGenerator = createColorGenerator(dfs.getPostset(node).isEmpty());
 
         VisualPlace orM0 = stg.createVisualPlace(getCounterflowRegisterStgNodeReference(nodeName, true, false), container);
         orM0.setLabel(OR_M_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);
@@ -750,12 +750,12 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double x = pos.getX();
         double y = pos.getY();
         Signal.Type type = Signal.Type.INTERNAL;
-        if (dfs.getPreset(node, VisualControlRegister.class).size() == 0) {
+        if (dfs.getPreset(node, VisualControlRegister.class).isEmpty()) {
             type = Signal.Type.INPUT;
-        } else if (dfs.getPostset(node).size() == 0) {
+        } else if (dfs.getPostset(node).isEmpty()) {
             type = Signal.Type.OUTPUT;
         }
-        ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(node).size() == 0);
+        ColorGenerator tokenColorGenerator = createColorGenerator(dfs.getPreset(node).isEmpty());
 
         VisualPlace m0 = stg.createVisualPlace(getBinaryRegisterStgNodeReference(nodeName, null, false), container);
         m0.setLabel(M_LABEL_PREFIX + nodeName + LOW_LEVEL_LABEL_SUFFIX);

@@ -39,8 +39,7 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        if (node instanceof VisualReadArc) {
-            VisualReadArc readArc = (VisualReadArc) node;
+        if (node instanceof VisualReadArc readArc) {
             return readArc.getFirst() instanceof VisualPlace;
         }
         return false;
@@ -58,8 +57,7 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> readArcs = new HashSet<>();
-        readArcs.addAll(ConnectionUtils.getVisualReadArcs(model));
+        Collection<VisualNode> readArcs = new HashSet<>(ConnectionUtils.getVisualReadArcs(model));
         Collection<VisualNode> selection = model.getSelection();
         if (!selection.isEmpty()) {
             readArcs.retainAll(selection);

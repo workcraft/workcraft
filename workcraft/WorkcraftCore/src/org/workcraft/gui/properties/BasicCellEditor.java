@@ -54,7 +54,7 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
             FlatComboBox comboBox = (FlatComboBox) component;
             comboBox.setEditable(true);
 
-            for (Map.Entry<? extends Object, String> entry : predefinedValues.entrySet()) {
+            for (Map.Entry<?, String> entry : predefinedValues.entrySet()) {
                 comboBox.addItem(new ChoiceWrapper(entry.getKey(), entry.getValue()));
             }
 
@@ -74,8 +74,7 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
         }
         if (component instanceof FlatComboBox) {
             Object item = ((FlatComboBox) component).getSelectedItem();
-            if (item instanceof ChoiceWrapper) {
-                ChoiceWrapper wrapper = (ChoiceWrapper) item;
+            if (item instanceof ChoiceWrapper wrapper) {
                 return wrapper.object.toString();
             } else {
                 return item;

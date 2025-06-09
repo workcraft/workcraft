@@ -109,8 +109,7 @@ public class Fsm extends AbstractMathModel {
 
     public void reparentDependencies(Model srcModel, Collection<? extends MathNode> srcChildren) {
         for (MathNode srcNode: srcChildren) {
-            if (srcNode instanceof Event) {
-                Event srcEvent = (Event) srcNode;
+            if (srcNode instanceof Event srcEvent) {
                 Symbol dstSymbol = reparentSymbol(srcModel, srcEvent.getSymbol());
                 srcEvent.setSymbol(dstSymbol);
             }

@@ -531,14 +531,13 @@ public class SON extends AbstractMathModel {
     }
 
     public String toString(Collection<? extends Node> nodes) {
-
-        StringBuffer result = new StringBuffer("");
-
+        StringBuilder result = new StringBuilder();
         boolean first = true;
         for (Node node : nodes) {
             if (!first) {
                 result.append(',');
-                result.append(' ' + getNodeReference(node));
+                result.append(' ');
+                result.append(getNodeReference(node));
             } else {
                 result.append(' ');
                 result.append('[');

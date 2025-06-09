@@ -52,7 +52,7 @@ public class Pair<S, T> {
         }
     }
 
-    public static <T1, T2> Pair<T1, T2> of(T1 o1, T2 o2) {
+    public static <S, T> Pair<S, T> of(S o1, T o2) {
         return new Pair<>(o1, o2);
     }
 

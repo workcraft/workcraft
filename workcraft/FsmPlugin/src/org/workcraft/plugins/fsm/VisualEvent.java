@@ -157,8 +157,7 @@ public class VisualEvent extends VisualConnection {
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualEvent) {
-            VisualEvent srcEvent = (VisualEvent) src;
+        if (src instanceof VisualEvent srcEvent) {
             setLabelColor(srcEvent.getLabelColor());
             // Note: symbol should not be copied as it may break compatibility for derived types
         }

@@ -34,27 +34,21 @@ public class BackendUtils {
     }
 
     public static String getTemplateLibraryPath(String fileName) {
-        switch (DesktopApi.getOs()) {
-        case LINUX:
-            return LINUX_TEMPLATE_PATH + getLibraryPath(fileName);
-        case MACOS:
-            return MACOS_TEMPLATE_PATH + getLibraryPath(fileName);
-        case WINDOWS:
-            return WINDOWS_TEMPLATE_PATH + getLibraryPath(fileName);
-        }
-        return getLibraryPath(fileName);
+        return switch (DesktopApi.getOs()) {
+            case LINUX -> LINUX_TEMPLATE_PATH + getLibraryPath(fileName);
+            case MACOS -> MACOS_TEMPLATE_PATH + getLibraryPath(fileName);
+            case WINDOWS -> WINDOWS_TEMPLATE_PATH + getLibraryPath(fileName);
+            default -> getLibraryPath(fileName);
+        };
     }
 
     public static String getTemplateToolPath(String dirName, String fileName) {
-        switch (DesktopApi.getOs()) {
-        case LINUX:
-            return LINUX_TEMPLATE_PATH + getToolPath(dirName, fileName);
-        case MACOS:
-            return MACOS_TEMPLATE_PATH + getToolPath(dirName, fileName);
-        case WINDOWS:
-            return WINDOWS_TEMPLATE_PATH + getToolPath(dirName, fileName);
-        }
-        return getToolPath(dirName, fileName);
+        return switch (DesktopApi.getOs()) {
+            case LINUX -> LINUX_TEMPLATE_PATH + getToolPath(dirName, fileName);
+            case MACOS -> MACOS_TEMPLATE_PATH + getToolPath(dirName, fileName);
+            case WINDOWS -> WINDOWS_TEMPLATE_PATH + getToolPath(dirName, fileName);
+            default -> getToolPath(dirName, fileName);
+        };
     }
 
     public static String getComponentPath(String dirName, String fileName) {

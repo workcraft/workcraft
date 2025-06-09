@@ -65,7 +65,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
     @Override
     public List<ControlPoint> getControlPoints() {
-        return Arrays.asList(new ControlPoint[] {cp1, cp2 });
+        return Arrays.asList(cp1, cp2);
     }
 
     public BezierControlPoint[] getBezierControlPoints() {
@@ -156,7 +156,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
 
     @Override
     public Collection<Node> getChildren() {
-        return Arrays.asList(new Node[] {cp1, cp2 });
+        return Arrays.asList(cp1, cp2);
     }
 
     @Override
@@ -223,7 +223,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
     @Override
     public void componentsTransformChanged() {
         if (scaler != null) {
-            List<ControlPoint> controlPoints = Arrays.asList(new ControlPoint[] {cp1, cp2});
+            List<ControlPoint> controlPoints = Arrays.asList(cp1, cp2);
             scaler.scale(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(),
                     controlPoints, connectionInfo.getScaleMode());
         }

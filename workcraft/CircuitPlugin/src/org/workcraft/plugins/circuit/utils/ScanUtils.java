@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 public final class ScanUtils {
 
-    private static class ScanData {
+    private static final class ScanData {
         public final String scaninPortPrefix = CircuitSettings.getScaninPort();
         public final String scanenPortPrefix = CircuitSettings.getScanenPort();
         public final String scanoutPortPrefix = CircuitSettings.getScanoutPort();
@@ -91,8 +91,7 @@ public final class ScanUtils {
 
     private static VisualFunctionComponent getAdjacentBufferOrInverter(VisualCircuit circuit, VisualContact contact) {
         Node parent = contact.getParent();
-        if (parent instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) parent;
+        if (parent instanceof VisualFunctionComponent component) {
             if (component.isBuffer() || component.isInverter()) {
                 return component;
             }
@@ -538,9 +537,9 @@ public final class ScanUtils {
 
     public static boolean isScanInputPortName(String portName) {
         return MatchingUtils.isMatchingExactOrBus(portName, CircuitSettings.getScaninPort())
-               || MatchingUtils.isMatchingExactOrBus(portName, CircuitSettings.getScanenPort())
-               || MatchingUtils.isMatchingExact(portName, CircuitSettings.getScanckPort())
-               || MatchingUtils.isMatchingExact(portName, CircuitSettings.getScantmPort());
+                || MatchingUtils.isMatchingExactOrBus(portName, CircuitSettings.getScanenPort())
+                || MatchingUtils.isMatchingExact(portName, CircuitSettings.getScanckPort())
+                || MatchingUtils.isMatchingExact(portName, CircuitSettings.getScantmPort());
     }
 
     public static boolean isScanOutputPortName(String portName) {

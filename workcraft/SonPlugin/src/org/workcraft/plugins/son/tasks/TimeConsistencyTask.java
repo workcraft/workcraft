@@ -24,6 +24,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.awt.*;
 import java.util.*;
 
+@SuppressWarnings("PMD.GuardLogStatement")
 public class TimeConsistencyTask implements Task<VerificationResult> {
 
     private final SON net;

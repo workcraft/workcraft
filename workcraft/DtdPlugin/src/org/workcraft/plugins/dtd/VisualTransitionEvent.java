@@ -51,10 +51,10 @@ public class VisualTransitionEvent extends VisualEvent {
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
         shape.moveTo(0.0, -s2);
-        shape.lineTo(0.0, +s2 - h);
-        shape.moveTo(0.0, +s2 - sw2);
-        shape.lineTo(-w2, +s2 - h);
-        shape.lineTo(+w2, +s2 - h);
+        shape.lineTo(0.0, s2 - h);
+        shape.moveTo(0.0, s2 - sw2);
+        shape.lineTo(-w2, s2 - h);
+        shape.lineTo(+w2, s2 - h);
         shape.closePath();
         return shape;
     }
@@ -64,7 +64,7 @@ public class VisualTransitionEvent extends VisualEvent {
         double sw2 = 0.5 * VisualCommonSettings.getStrokeWidth();
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
-        shape.moveTo(0.0, +s2 - sw2);
+        shape.moveTo(0.0, s2 - sw2);
         shape.lineTo(0.0, +h);
         shape.moveTo(0.0, +sw2);
         shape.lineTo(+w2, +h);
@@ -91,10 +91,10 @@ public class VisualTransitionEvent extends VisualEvent {
         shape.lineTo(-w2, -s2 + h);
         shape.closePath();
         shape.moveTo(0.0, -0.0);
-        shape.lineTo(0.0, +s2 - h);
-        shape.moveTo(0.0, +s2 - sw2);
-        shape.lineTo(-w2, +s2 - h);
-        shape.lineTo(+w2, +s2 - h);
+        shape.lineTo(0.0, s2 - h);
+        shape.moveTo(0.0, s2 - sw2);
+        shape.lineTo(-w2, s2 - h);
+        shape.lineTo(+w2, s2 - h);
         shape.closePath();
         return shape;
     }
@@ -108,13 +108,12 @@ public class VisualTransitionEvent extends VisualEvent {
         double w = 0.08 * size;
         double h = 0.1 * size;
         double s = 0.5 * size;
-        switch (getReferencedComponent().getDirection()) {
-        case RISE: return getShapeRise(w, h, s);
-        case FALL: return getShapeFall(w, h, s);
-        case DESTABILISE: return getShapeDestabilise(w, h, s);
-        case STABILISE: return getShapeStabilise(w, h, s);
-        default: return getShapeEmpty();
-        }
+        return switch (getReferencedComponent().getDirection()) {
+            case RISE -> getShapeRise(w, h, s);
+            case FALL -> getShapeFall(w, h, s);
+            case DESTABILISE -> getShapeDestabilise(w, h, s);
+            case STABILISE -> getShapeStabilise(w, h, s);
+        };
     }
 
     @Override
@@ -135,16 +134,6 @@ public class VisualTransitionEvent extends VisualEvent {
     @NoAutoSerialisation
     public TransitionEvent.Direction getDirection() {
         return getReferencedComponent().getDirection();
-    }
-
-    @Override
-    public boolean getLabelVisibility() {
-        return false;
-    }
-
-    @Override
-    public boolean getNameVisibility() {
-        return false;
     }
 
 }

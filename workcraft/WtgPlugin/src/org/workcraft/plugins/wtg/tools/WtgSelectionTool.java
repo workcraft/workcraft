@@ -19,8 +19,7 @@ public class WtgSelectionTool extends DtdSelectionTool {
     @Override
     public JPopupMenu createPopupMenu(VisualNode node, final GraphEditor editor) {
         JPopupMenu popup = super.createPopupMenu(node, editor);
-        if (node instanceof VisualWaveform) {
-            final VisualWaveform waveform = (VisualWaveform) node;
+        if (node instanceof VisualWaveform waveform) {
             if (popup != null) {
                 popup.addSeparator();
             } else {
@@ -44,9 +43,8 @@ public class WtgSelectionTool extends DtdSelectionTool {
         VisualWtg model = (VisualWtg) e.getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
-            if (node instanceof VisualState) {
+            if (node instanceof VisualState state) {
                 we.saveMemento();
-                VisualState state = (VisualState) node;
                 boolean isInitial = state.getReferencedComponent().isInitial();
                 state.getReferencedComponent().setInitial(!isInitial);
                 processed = true;

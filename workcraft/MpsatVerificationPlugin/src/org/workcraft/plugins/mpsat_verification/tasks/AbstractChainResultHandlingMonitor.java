@@ -54,8 +54,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
         Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
         Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
         Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
-        if ((mpsatResult == null) && (chainOutput instanceof VerificationChainOutput)) {
-            VerificationChainOutput verificationChainOutput = (VerificationChainOutput) chainOutput;
+        if ((mpsatResult == null) && (chainOutput instanceof VerificationChainOutput verificationChainOutput)) {
             mpsatResult = verificationChainOutput.getMpsatResult();
         }
         // Handle partial failure while building unfolding prefix (e.g. consistency and safeness violations)
@@ -88,19 +87,22 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
                     }
                     String message = "Cannot build unfolding prefix";
                     switch (cause) {
-                    case INCONSISTENT:
-                        message += " for the inconsistent STG.\n\n";
-                        showSolutionMessage(solution, message, "");
-                        return null;
-                    case NOT_SAFE:
-                        message += " for the unsafe net.\n\n";
-                        showSolutionMessage(solution, message, " after trace");
-                        return null;
-                    case EMPTY_PRESET:
-                        message += " for the malformed net.\n\n";
-                        message += solution.getComment();
-                        DialogUtils.showError(message);
-                        return null;
+                        case INCONSISTENT -> {
+                            message += " for the inconsistent STG.\n\n";
+                            showSolutionMessage(solution, message, "");
+                            return null;
+                        }
+                        case NOT_SAFE -> {
+                            message += " for the unsafe net.\n\n";
+                            showSolutionMessage(solution, message, " after trace");
+                            return null;
+                        }
+                        case EMPTY_PRESET -> {
+                            message += " for the malformed net.\n\n";
+                            message += solution.getComment();
+                            DialogUtils.showError(message);
+                            return null;
+                        }
                     }
                 }
             }

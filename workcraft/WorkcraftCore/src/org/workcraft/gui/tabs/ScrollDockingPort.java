@@ -15,11 +15,11 @@ import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 
-public class ScrollDockingPort extends DefaultDockingPort {
+public final class ScrollDockingPort extends DefaultDockingPort {
 
     private static final String FLEXDOCK_DOCKING_PORT = "defaultDockingPort";
 
-    private static class ScrollDockingStrategy extends DefaultDockingStrategy {
+    private static final class ScrollDockingStrategy extends DefaultDockingStrategy {
         @Override
         protected ScrollDockingPort createDockingPortImpl(DockingPort base) {
             return new ScrollDockingPort();
@@ -44,17 +44,13 @@ public class ScrollDockingPort extends DefaultDockingPort {
         JTabbedPane tabbedPane = super.createTabbedPane();
         tabbedPane.setUI(new DockingTabbedPaneUI());
         switch (EditorCommonSettings.getTabStyle()) {
-        case WRAP:
-            tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
-            break;
-        case SCROLL:
-            tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-            break;
+            case WRAP -> tabbedPane.setTabLayoutPolicy(JTabbedPane.WRAP_TAB_LAYOUT);
+            case SCROLL -> tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
         }
         return tabbedPane;
     }
 
-    private static class DockingTabbedPaneUI extends BasicTabbedPaneUI {
+    private static final class DockingTabbedPaneUI extends BasicTabbedPaneUI {
 
         @Override
         protected JButton createScrollButton(int direction) {

@@ -12,7 +12,7 @@ public class ClauseUtils {
 
         Map<T, HashSet<String>> clauseToLiteralsMap = new HashMap<>();
         for (T clause : nf.getClauses()) {
-            if (clause.getLiterals().size() == 0) {
+            if (clause.getLiterals().isEmpty()) {
                 result.add(clause);
                 return result;
             }

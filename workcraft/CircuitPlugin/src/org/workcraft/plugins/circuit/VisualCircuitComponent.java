@@ -125,22 +125,22 @@ public class VisualCircuitComponent extends VisualComponent
         double southPosition = -contactStep * (southCount - 1) / 2;
         for (VisualContact contact : Hierarchy.getChildrenOfType(this, VisualContact.class)) {
             switch (contact.getDirection()) {
-            case WEST:
-                contact.setY(westPosition);
-                westPosition += contactStep;
-                break;
-            case NORTH:
-                contact.setX(northPosition);
-                northPosition += contactStep;
-                break;
-            case EAST:
-                contact.setY(eastPosition);
-                eastPosition += contactStep;
-                break;
-            case SOUTH:
-                contact.setX(southPosition);
-                southPosition += contactStep;
-                break;
+                case WEST -> {
+                    contact.setY(westPosition);
+                    westPosition += contactStep;
+                }
+                case NORTH -> {
+                    contact.setX(northPosition);
+                    northPosition += contactStep;
+                }
+                case EAST -> {
+                    contact.setY(eastPosition);
+                    eastPosition += contactStep;
+                }
+                case SOUTH -> {
+                    contact.setX(southPosition);
+                    southPosition += contactStep;
+                }
             }
         }
         invalidateBoundingBox();
@@ -154,18 +154,10 @@ public class VisualCircuitComponent extends VisualComponent
         Collection<VisualContact> contacts = getVisualContacts();
         for (VisualContact contact : contacts) {
             switch (contact.getDirection()) {
-            case WEST:
-                contact.setX(bb.getMinX() - contactLength);
-                break;
-            case NORTH:
-                contact.setY(bb.getMinY() - contactLength);
-                break;
-            case EAST:
-                contact.setX(bb.getMaxX() + contactLength);
-                break;
-            case SOUTH:
-                contact.setY(bb.getMaxY() + contactLength);
-                break;
+                case WEST -> contact.setX(bb.getMinX() - contactLength);
+                case NORTH -> contact.setY(bb.getMinY() - contactLength);
+                case EAST -> contact.setX(bb.getMaxX() + contactLength);
+                case SOUTH -> contact.setY(bb.getMaxY() + contactLength);
             }
         }
         invalidateBoundingBox();
@@ -179,16 +171,14 @@ public class VisualCircuitComponent extends VisualComponent
         double southStart = 0.0;
         for (VisualContact contact : contacts) {
             switch (contact.getDirection()) {
-            case NORTH:
-            case SOUTH:
-                eastStart = Math.max(eastStart, contact.getX());
-                westStart = Math.min(westStart, contact.getX());
-                break;
-            case WEST:
-            case EAST:
-                northStart = Math.min(northStart, contact.getY());
-                southStart = Math.max(southStart, contact.getY());
-                break;
+                case NORTH, SOUTH -> {
+                    eastStart = Math.max(eastStart, contact.getX());
+                    westStart = Math.min(westStart, contact.getX());
+                }
+                case WEST, EAST -> {
+                    northStart = Math.min(northStart, contact.getY());
+                    southStart = Math.max(southStart, contact.getY());
+                }
             }
         }
         double westPosition = -contactMinOffset;
@@ -200,34 +190,18 @@ public class VisualCircuitComponent extends VisualComponent
             double textWidth = gv.getVisualBounds().getWidth();
             double contactBestPosition = textWidth + contactMargin + contactLength;
             switch (contact.getDirection()) {
-            case WEST:
-                westPosition = Math.min(westPosition, -contactBestPosition);
-                break;
-            case NORTH:
-                northPosition = Math.min(northPosition, -contactBestPosition);
-                break;
-            case EAST:
-                eastPosition = Math.max(eastPosition, contactBestPosition);
-                break;
-            case SOUTH:
-                southPosition = Math.max(southPosition, contactBestPosition);
-                break;
+                case WEST -> westPosition = Math.min(westPosition, -contactBestPosition);
+                case NORTH -> northPosition = Math.min(northPosition, -contactBestPosition);
+                case EAST -> eastPosition = Math.max(eastPosition, contactBestPosition);
+                case SOUTH -> southPosition = Math.max(southPosition, contactBestPosition);
             }
         }
         for (VisualContact contact : contacts) {
             switch (contact.getDirection()) {
-            case WEST:
-                contact.setX(TransformHelper.snapP5(westStart + westPosition));
-                break;
-            case NORTH:
-                contact.setY(TransformHelper.snapP5(northStart + northPosition));
-                break;
-            case EAST:
-                contact.setX(TransformHelper.snapP5(eastStart + eastPosition));
-                break;
-            case SOUTH:
-                contact.setY(TransformHelper.snapP5(southStart + southPosition));
-                break;
+                case WEST -> contact.setX(TransformHelper.snapP5(westStart + westPosition));
+                case NORTH -> contact.setY(TransformHelper.snapP5(northStart + northPosition));
+                case EAST -> contact.setX(TransformHelper.snapP5(eastStart + eastPosition));
+                case SOUTH -> contact.setY(TransformHelper.snapP5(southStart + southPosition));
             }
         }
         invalidateBoundingBox();
@@ -258,16 +232,14 @@ public class VisualCircuitComponent extends VisualComponent
         contacts.remove(contact);
         double contactOffset = getContactBestOffset(contacts, direction);
         switch (direction) {
-        case WEST:
-        case EAST:
-            contact.setX(contactOffset);
-            positionVertical(contact, reverseProgression);
-            break;
-        case NORTH:
-        case SOUTH:
-            contact.setY(contactOffset);
-            positionHorizontal(contact, reverseProgression);
-            break;
+            case WEST, EAST -> {
+                contact.setX(contactOffset);
+                positionVertical(contact, reverseProgression);
+            }
+            case NORTH, SOUTH -> {
+                contact.setY(contactOffset);
+                positionHorizontal(contact, reverseProgression);
+            }
         }
         invalidateBoundingBox();
     }
@@ -279,21 +251,24 @@ public class VisualCircuitComponent extends VisualComponent
                 .collect(Collectors.toSet());
 
         switch (direction) {
-        case WEST:
-            double westOffset = contacts.stream().mapToDouble(VisualContact::getX).max().orElse(-contactMinOffset);
-            return Math.min(TransformHelper.snapP5(bb.getMinX() - contactLength), westOffset);
-        case NORTH:
-            double northOffset = contacts.stream().mapToDouble(VisualContact::getY).max().orElse(-contactMinOffset);
-            return Math.min(TransformHelper.snapP5(bb.getMinY() - contactLength), northOffset);
-        case EAST:
-            double eastOffset = contacts.stream().mapToDouble(VisualContact::getX).min().orElse(contactMinOffset);
-            return Math.max(TransformHelper.snapP5(bb.getMaxX() + contactLength), eastOffset);
-        case SOUTH:
-            double southOffset = contacts.stream().mapToDouble(VisualContact::getY).min().orElse(contactMinOffset);
-            return Math.max(TransformHelper.snapP5(bb.getMaxY() + contactLength), southOffset);
-        default:
-            return 0.0;
+            case WEST -> {
+                double westOffset = contacts.stream().mapToDouble(VisualContact::getX).max().orElse(-contactMinOffset);
+                return Math.min(TransformHelper.snapP5(bb.getMinX() - contactLength), westOffset);
+            }
+            case NORTH -> {
+                double northOffset = contacts.stream().mapToDouble(VisualContact::getY).max().orElse(-contactMinOffset);
+                return Math.min(TransformHelper.snapP5(bb.getMinY() - contactLength), northOffset);
+            }
+            case EAST -> {
+                double eastOffset = contacts.stream().mapToDouble(VisualContact::getX).min().orElse(contactMinOffset);
+                return Math.max(TransformHelper.snapP5(bb.getMaxX() + contactLength), eastOffset);
+            }
+            case SOUTH -> {
+                double southOffset = contacts.stream().mapToDouble(VisualContact::getY).min().orElse(contactMinOffset);
+                return Math.max(TransformHelper.snapP5(bb.getMaxY() + contactLength), southOffset);
+            }
         }
+        return 0.0;
     }
 
     private void positionHorizontal(VisualContact vc, boolean reverseProgression) {
@@ -356,30 +331,30 @@ public class VisualCircuitComponent extends VisualComponent
         double yMax = size / 2;
         for (VisualContact contact : contacts) {
             switch (contact.getDirection()) {
-            case WEST:
-                double xWest = contact.getX() + contactLength;
-                if ((xWest < -size / 2) && (xWest > xMin)) {
-                    xMin = xWest;
+                case WEST -> {
+                    double xWest = contact.getX() + contactLength;
+                    if ((xWest < -size / 2) && (xWest > xMin)) {
+                        xMin = xWest;
+                    }
                 }
-                break;
-            case NORTH:
-                double yNorth = contact.getY() + contactLength;
-                if ((yNorth < -size / 2) && (yNorth > yMin)) {
-                    yMin = yNorth;
+                case NORTH -> {
+                    double yNorth = contact.getY() + contactLength;
+                    if ((yNorth < -size / 2) && (yNorth > yMin)) {
+                        yMin = yNorth;
+                    }
                 }
-                break;
-            case EAST:
-                double xEast = contact.getX() - contactLength;
-                if ((xEast > size / 2) && (xEast < xMax)) {
-                    xMax = xEast;
+                case EAST -> {
+                    double xEast = contact.getX() - contactLength;
+                    if ((xEast > size / 2) && (xEast < xMax)) {
+                        xMax = xEast;
+                    }
                 }
-                break;
-            case SOUTH:
-                double ySouth = contact.getY() - contactLength;
-                if ((ySouth > size / 2) && (ySouth < yMax)) {
-                    yMax = ySouth;
+                case SOUTH -> {
+                    double ySouth = contact.getY() - contactLength;
+                    if ((ySouth > size / 2) && (ySouth < yMax)) {
+                        yMax = ySouth;
+                    }
                 }
-                break;
             }
         }
         return new Rectangle2D.Double(xMin, yMin, xMax - xMin, yMax - yMin);
@@ -395,30 +370,30 @@ public class VisualCircuitComponent extends VisualComponent
             double x = contact.getX();
             double y = contact.getY();
             switch (contact.getDirection()) {
-            case WEST:
-                if (contact.getX() < minBox.getMinX()) {
-                    y1 = Math.min(y1, y - contactMargin);
-                    y2 = Math.max(y2, y + contactMargin);
+                case WEST -> {
+                    if (contact.getX() < minBox.getMinX()) {
+                        y1 = Math.min(y1, y - contactMargin);
+                        y2 = Math.max(y2, y + contactMargin);
+                    }
                 }
-                break;
-            case NORTH:
-                if (contact.getY() < minBox.getMinY()) {
-                    x1 = Math.min(x1, x - contactMargin);
-                    x2 = Math.max(x2, x + contactMargin);
+                case NORTH -> {
+                    if (contact.getY() < minBox.getMinY()) {
+                        x1 = Math.min(x1, x - contactMargin);
+                        x2 = Math.max(x2, x + contactMargin);
+                    }
                 }
-                break;
-            case EAST:
-                if (contact.getX() > minBox.getMaxX()) {
-                    y1 = Math.min(y1, y - contactMargin);
-                    y2 = Math.max(y2, y + contactMargin);
+                case EAST -> {
+                    if (contact.getX() > minBox.getMaxX()) {
+                        y1 = Math.min(y1, y - contactMargin);
+                        y2 = Math.max(y2, y + contactMargin);
+                    }
                 }
-                break;
-            case SOUTH:
-                if (contact.getY() > minBox.getMaxY()) {
-                    x1 = Math.min(x1, x - contactMargin);
-                    x2 = Math.max(x2, x + contactMargin);
+                case SOUTH -> {
+                    if (contact.getY() > minBox.getMaxY()) {
+                        x1 = Math.min(x1, x - contactMargin);
+                        x2 = Math.max(x2, x + contactMargin);
+                    }
                 }
-                break;
             }
         }
         return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
@@ -441,38 +416,38 @@ public class VisualCircuitComponent extends VisualComponent
             double x = contact.getX();
             double y = contact.getY();
             switch (contact.getDirection()) {
-            case WEST:
-                if (westFirst) {
-                    x1 = x + contactLength;
-                } else {
-                    x1 = Math.max(x1, x + contactLength);
+                case WEST -> {
+                    if (westFirst) {
+                        x1 = x + contactLength;
+                    } else {
+                        x1 = Math.max(x1, x + contactLength);
+                    }
+                    westFirst = false;
                 }
-                westFirst = false;
-                break;
-            case NORTH:
-                if (northFirst) {
-                    y1 = y + contactLength;
-                } else {
-                    y1 = Math.max(y1, y + contactLength);
+                case NORTH -> {
+                    if (northFirst) {
+                        y1 = y + contactLength;
+                    } else {
+                        y1 = Math.max(y1, y + contactLength);
+                    }
+                    northFirst = false;
                 }
-                northFirst = false;
-                break;
-            case EAST:
-                if (eastFirst) {
-                    x2 = x - contactLength;
-                } else {
-                    x2 = Math.min(x2, x - contactLength);
+                case EAST -> {
+                    if (eastFirst) {
+                        x2 = x - contactLength;
+                    } else {
+                        x2 = Math.min(x2, x - contactLength);
+                    }
+                    eastFirst = false;
                 }
-                eastFirst = false;
-                break;
-            case SOUTH:
-                if (southFirst) {
-                    y2 = y - contactLength;
-                } else {
-                    y2 = Math.min(y2, y - contactLength);
+                case SOUTH -> {
+                    if (southFirst) {
+                        y2 = y - contactLength;
+                    } else {
+                        y2 = Math.min(y2, y - contactLength);
+                    }
+                    southFirst = false;
                 }
-                southFirst = false;
-                break;
             }
         }
 
@@ -487,38 +462,26 @@ public class VisualCircuitComponent extends VisualComponent
     }
 
     private Point2D getContactLinePosition(VisualContact vc) {
-        Point2D result = null;
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        switch (vc.getDirection()) {
-        case NORTH:
-            result = new Point2D.Double(vc.getX(), bb.getMinY());
-            break;
-        case EAST:
-            result = new Point2D.Double(bb.getMaxX(), vc.getY());
-            break;
-        case SOUTH:
-            result = new Point2D.Double(vc.getX(), bb.getMaxY());
-            break;
-        case WEST:
-            result = new Point2D.Double(bb.getMinX(), vc.getY());
-            break;
-        }
-        return result;
+        return switch (vc.getDirection()) {
+            case NORTH -> new Point2D.Double(vc.getX(), bb.getMinY());
+            case EAST -> new Point2D.Double(bb.getMaxX(), vc.getY());
+            case SOUTH -> new Point2D.Double(vc.getX(), bb.getMaxY());
+            case WEST -> new Point2D.Double(bb.getMinX(), vc.getY());
+        };
     }
 
     private void drawContactLines(DrawRequest r) {
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
             Point2D p1 = vc.getPosition();
             Point2D p2 = getContactLinePosition(vc);
-            if (p2 != null) {
-                Graphics2D g = r.getGraphics();
-                Decoration d = r.getDecoration();
-                Color colorisation = d.getColorisation();
-                g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
-                g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
-                Line2D line = new Line2D.Double(p1, p2);
-                g.draw(line);
-            }
+            Graphics2D g = r.getGraphics();
+            Decoration d = r.getDecoration();
+            Color colorisation = d.getColorisation();
+            g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
+            g.setColor(ColorUtils.colorise(getForegroundColor(), colorisation));
+            Line2D line = new Line2D.Double(p1, p2);
+            g.draw(line);
         }
     }
 
@@ -555,22 +518,22 @@ public class VisualCircuitComponent extends VisualComponent
         float x = 0.0f;
         float y = 0.0f;
         switch (vc.getDirection()) {
-        case NORTH:
-            x = (float) (-bb.getMinY() - labelMargin - textWidth);
-            y = (float) (vc.getX() + yCenterOffset);
-            break;
-        case EAST:
-            x = (float) (bb.getMaxX() - labelMargin - textWidth);
-            y = (float) (vc.getY() + yCenterOffset);
-            break;
-        case SOUTH:
-            x = (float) (-bb.getMaxY() + labelMargin);
-            y = (float) (vc.getX() + yCenterOffset);
-            break;
-        case WEST:
-            x = (float) (bb.getMinX() + labelMargin);
-            y = (float) (vc.getY() + yCenterOffset);
-            break;
+            case NORTH -> {
+                x = (float) (-bb.getMinY() - labelMargin - textWidth);
+                y = (float) (vc.getX() + yCenterOffset);
+            }
+            case EAST -> {
+                x = (float) (bb.getMaxX() - labelMargin - textWidth);
+                y = (float) (vc.getY() + yCenterOffset);
+            }
+            case SOUTH -> {
+                x = (float) (-bb.getMaxY() + labelMargin);
+                y = (float) (vc.getX() + yCenterOffset);
+            }
+            case WEST -> {
+                x = (float) (bb.getMinX() + labelMargin);
+                y = (float) (vc.getY() + yCenterOffset);
+            }
         }
         g.drawGlyphVector(gv, x, y);
     }
@@ -750,8 +713,7 @@ public class VisualCircuitComponent extends VisualComponent
     public Node hitCustom(Point2D point) {
         Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
         for (Node node : getChildren()) {
-            if (node instanceof VisualNode) {
-                VisualNode vn = (VisualNode) node;
+            if (node instanceof VisualNode vn) {
                 if (vn.hitTest(pointInLocalSpace)) {
                     return vn;
                 }
@@ -762,10 +724,8 @@ public class VisualCircuitComponent extends VisualComponent
 
     @Override
     public void notify(StateEvent e) {
-        if (e instanceof TransformChangedEvent) {
-            TransformChangedEvent t = (TransformChangedEvent) e;
-            if (t.sender instanceof VisualContact) {
-                VisualContact vc = (VisualContact) t.sender;
+        if (e instanceof TransformChangedEvent t) {
+            if (t.sender instanceof VisualContact vc) {
 
                 AffineTransform at = t.sender.getTransform();
                 double x = at.getTranslateX();
@@ -788,8 +748,7 @@ public class VisualCircuitComponent extends VisualComponent
             }
         }
 
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pc = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pc) {
             String propertyName = pc.getPropertyName();
             if (propertyName.equals(Contact.PROPERTY_NAME)
                     || propertyName.equals(Contact.PROPERTY_IO_TYPE)
@@ -819,8 +778,7 @@ public class VisualCircuitComponent extends VisualComponent
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualCircuitComponent) {
-            VisualCircuitComponent srcComponent = (VisualCircuitComponent) src;
+        if (src instanceof VisualCircuitComponent srcComponent) {
             setIsEnvironment(srcComponent.getIsEnvironment());
         }
     }

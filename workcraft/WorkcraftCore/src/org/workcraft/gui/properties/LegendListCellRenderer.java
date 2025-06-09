@@ -20,8 +20,7 @@ public class LegendListCellRenderer extends JPanel implements TableCellRenderer 
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if (value instanceof LegendList) {
-            LegendList legendList = (LegendList) value;
+        if (value instanceof LegendList legendList) {
             for (Legend legend : legendList) {
                 if (!legendButtonMap.containsKey(legend)) {
                     JButton button = new JButton();

@@ -17,8 +17,7 @@ public class VisualModelTransformer {
         // Control points may move while the nodes are repositioned, therefore this two-step transformation.
         HashMap<ControlPoint, Point2D> controlPointPositions = new HashMap<>();
         for (VisualNode node: nodes) {
-            if (node instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection) node;
+            if (node instanceof VisualConnection vc) {
                 for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
                     controlPointPositions.put(cp, cp.getPosition());
                 }
@@ -26,8 +25,7 @@ public class VisualModelTransformer {
         }
         // First reposition vertices.
         for (VisualNode node: nodes) {
-            if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode vn = (VisualTransformableNode) node;
+            if (node instanceof VisualTransformableNode vn) {
                 Point2D pos = vn.getPosition();
                 if ((node instanceof VisualGroup) || (node instanceof VisualPage)) {
                     AffineTransform t2 = new AffineTransform();
@@ -50,8 +48,7 @@ public class VisualModelTransformer {
         }
         // Then reposition control points, using their stored initial positions.
         for (VisualNode node: nodes) {
-            if (node instanceof VisualConnection) {
-                VisualConnection vc = (VisualConnection) node;
+            if (node instanceof VisualConnection vc) {
                 for (ControlPoint cp: vc.getGraphic().getControlPoints()) {
                     Point2D pos = controlPointPositions.get(cp);
                     t.transform(pos, pos);
@@ -124,12 +121,10 @@ public class VisualModelTransformer {
     public static HashMap<VisualTransformableNode, Point2D> getRootSpacePositions(Collection<? extends VisualNode> nodes) {
         HashMap<VisualTransformableNode, Point2D> componentToPositionMap = new HashMap<>();
         for (VisualNode node: nodes) {
-            if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode component = (VisualTransformableNode) node;
+            if (node instanceof VisualTransformableNode component) {
                 Point2D position = component.getRootSpacePosition();
                 componentToPositionMap.put(component, position);
-            } else if (node instanceof VisualConnection) {
-                VisualConnection connection = (VisualConnection) node;
+            } else if (node instanceof VisualConnection connection) {
                 for (ControlPoint cp: connection.getGraphic().getControlPoints()) {
                     Point2D position = cp.getRootSpacePosition();
                     componentToPositionMap.put(cp, position);

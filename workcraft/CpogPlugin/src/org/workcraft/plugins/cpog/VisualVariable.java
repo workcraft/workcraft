@@ -62,13 +62,6 @@ public class VisualVariable extends VisualComponent {
     }
 
     @Override
-    public Shape getShape() {
-        double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();
-        double pos = -0.5 * size;
-        return new Rectangle2D.Double(pos, pos, size, size);
-    }
-
-    @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
@@ -81,17 +74,9 @@ public class VisualVariable extends VisualComponent {
         g.draw(shape);
 
         switch (getState()) {
-        case FALSE:
-            valueFalseRenderedFormula.draw(g);
-            break;
-        case TRUE:
-            valueTrueRenderedFormula.draw(g);
-            break;
-        case UNDEFINED:
-            valueUndefinedRenderedFormula.draw(g);
-            break;
-        default:
-            break;
+            case FALSE -> valueFalseRenderedFormula.draw(g);
+            case TRUE -> valueTrueRenderedFormula.draw(g);
+            case UNDEFINED -> valueUndefinedRenderedFormula.draw(g);
         }
         drawVariableInLocalSpace(r);
     }

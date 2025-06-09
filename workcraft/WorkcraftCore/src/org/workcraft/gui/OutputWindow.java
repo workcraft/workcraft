@@ -11,7 +11,6 @@ import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-@SuppressWarnings("serial")
 public class OutputWindow extends LogPanel {
 
     class OutputStreamView extends FilterOutputStream {

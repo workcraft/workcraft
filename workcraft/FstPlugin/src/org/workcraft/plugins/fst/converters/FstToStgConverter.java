@@ -77,22 +77,20 @@ public class FstToStgConverter {
     }
 
     private org.workcraft.plugins.stg.Signal.Type convertFstToStgType(Signal.Type type) {
-        switch (type) {
-        case INPUT: return org.workcraft.plugins.stg.Signal.Type.INPUT;
-        case OUTPUT: return org.workcraft.plugins.stg.Signal.Type.OUTPUT;
-        case INTERNAL: return org.workcraft.plugins.stg.Signal.Type.INTERNAL;
-        case DUMMY: return null;
-        }
-        return null;
+        return switch (type) {
+            case INPUT -> org.workcraft.plugins.stg.Signal.Type.INPUT;
+            case OUTPUT -> org.workcraft.plugins.stg.Signal.Type.OUTPUT;
+            case INTERNAL -> org.workcraft.plugins.stg.Signal.Type.INTERNAL;
+            case DUMMY -> null;
+        };
     }
 
     private org.workcraft.plugins.stg.SignalTransition.Direction convertFstToStgDirection(Direction direction) {
-        switch (direction) {
-        case PLUS: return org.workcraft.plugins.stg.SignalTransition.Direction.PLUS;
-        case MINUS: return org.workcraft.plugins.stg.SignalTransition.Direction.MINUS;
-        case TOGGLE: return org.workcraft.plugins.stg.SignalTransition.Direction.TOGGLE;
-        }
-        return null;
+        return switch (direction) {
+            case PLUS -> org.workcraft.plugins.stg.SignalTransition.Direction.PLUS;
+            case MINUS -> org.workcraft.plugins.stg.SignalTransition.Direction.MINUS;
+            case TOGGLE -> org.workcraft.plugins.stg.SignalTransition.Direction.TOGGLE;
+        };
     }
 
     private Map<VisualSignalEvent, VisualNamedTransition> convertEvents() {

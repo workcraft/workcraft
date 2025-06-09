@@ -170,8 +170,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
     @Override
     public Collection<VisualFunctionComponent> collectNodes(VisualModel model) {
         List<VisualFunctionComponent> result = new ArrayList<>();
-        if (model instanceof VisualCircuit) {
-            VisualCircuit circuit = (VisualCircuit) model;
+        if (model instanceof VisualCircuit circuit) {
             result.addAll(Hierarchy.getDescendantsOfType(model.getRoot(),
                     VisualFunctionComponent.class, VisualFunctionComponent::getIsZeroDelay));
 

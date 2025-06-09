@@ -21,14 +21,11 @@ public class CpogBooleanReplacer extends BooleanReplacer {
 
     @Override
     public BooleanFormula visit(BooleanVariable node) {
-        switch (((Variable) node).getState()) {
-        case TRUE:
-            return One.getInstance();
-        case FALSE:
-            return Zero.getInstance();
-        default:
-            return node;
-        }
+        return switch (((Variable) node).getState()) {
+            case TRUE -> One.getInstance();
+            case FALSE -> Zero.getInstance();
+            default -> node;
+        };
     }
 
 }

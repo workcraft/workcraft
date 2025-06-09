@@ -53,7 +53,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         this.refNode = refNode;
 
         if (refNode != null) {
-            refNode.addObserver(e -> observableStateImpl.sendNotification(e));
+            refNode.addObserver(observableStateImpl::sendNotification);
         }
         if (hasColorProperties) {
             addColorPropertyDeclarations();
@@ -204,8 +204,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
             setY(getY() + bb.getCenterY());
         }
         for (Node node: getChildren()) {
-            if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode vc = (VisualTransformableNode) node;
+            if (node instanceof VisualTransformableNode vc) {
                 if (horizontal) {
                     vc.setX(vc.getX() - bb.getCenterX());
                 }
@@ -232,22 +231,11 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     }
 
     public Alignment getLabelAlignment() {
-        switch (getLabelPositioning()) {
-        case TOP_LEFT:
-        case LEFT:
-        case BOTTOM_LEFT:
-            return Alignment.LEFT;
-        case TOP:
-        case CENTER:
-        case BOTTOM:
-            return Alignment.CENTER;
-        case TOP_RIGHT:
-        case RIGHT:
-        case BOTTOM_RIGHT:
-            return Alignment.RIGHT;
-        default:
-            return Alignment.LEFT;
-        }
+        return switch (getLabelPositioning()) {
+            case TOP_LEFT, LEFT, BOTTOM_LEFT -> Alignment.LEFT;
+            case TOP, CENTER, BOTTOM -> Alignment.CENTER;
+            case TOP_RIGHT, RIGHT, BOTTOM_RIGHT -> Alignment.RIGHT;
+        };
     }
 
     protected void cacheLabelRenderedText(DrawRequest r) {
@@ -438,8 +426,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualComponent) {
-            VisualComponent srcComponent = (VisualComponent) src;
+        if (src instanceof VisualComponent srcComponent) {
             setForegroundColor(srcComponent.getForegroundColor());
             setFillColor(srcComponent.getFillColor());
             setLabel(srcComponent.getLabel());
@@ -460,8 +447,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         LinkedList<Positioning> namePositioning = new LinkedList<>();
         LinkedList<Positioning> labelPositioning = new LinkedList<>();
         for (Stylable src: srcs) {
-            if (src instanceof VisualComponent) {
-                VisualComponent srcComponent = (VisualComponent) src;
+            if (src instanceof VisualComponent srcComponent) {
                 foregroundColors.add(srcComponent.getForegroundColor());
                 fillColors.add(srcComponent.getFillColor());
                 nameColors.add(srcComponent.getNameColor());

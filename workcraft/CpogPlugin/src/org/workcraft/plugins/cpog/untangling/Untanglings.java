@@ -35,25 +35,24 @@ public class Untanglings {
         this.setup.ISOMORPHISM_REDUCTION = settings.isIsomorphism();
         this.setup.REDUCE = settings.isReduce();
         switch (settings.getSignificance()) {
-        case 0 :
-            this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.EXHAUSTIVE;
-            break;
-        case 1 :
-            this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.HASHMAP_BASED;
-            break;
-        case 2 :
-            this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.TREE_OF_RUNS;
-            break;
+            case 0 :
+                this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.EXHAUSTIVE;
+                break;
+            case 1 :
+                this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.HASHMAP_BASED;
+                break;
+            case 2 :
+                this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.TREE_OF_RUNS;
+                break;
+            default:
+                break;
         }
 
     }
 
     /** adds place inside the conversion system **/
     public boolean addPlace(String placeName) {
-        if (p.add(new Place(placeName))) {
-            return true;
-        }
-        return false;
+        return p.add(new Place(placeName));
     }
 
     /** adds token inside a place inside the conversion system **/
@@ -75,35 +74,24 @@ public class Untanglings {
 
     /** adds transition inside the conversion system **/
     public boolean addTransition(String transitionName) {
-        if (t.add(new Transition(transitionName))) {
-            return true;
-        }
-        return false;
+        return t.add(new Transition(transitionName));
     }
 
     /** adds a connection from a place to a transition **/
     public boolean placeToTransition(String node1, String node2) {
-
         for (Place place : p) {
-
             // checking existence of the place
             if (!place.getName().equals(node1)) continue;
-
             // checking existence of the transition
             for (Transition transition : t) {
-
                 if (!transition.getName().equals(node2)) continue;
-
                 // adding arc to the system
                 sys.addFlow(place, transition);
-
                 // debug: printing connection added
                 // System.out.println(place.getName() + " -> " + transition.getName());
-
                 return true;
             }
         }
-
         // if the two nodes are not present the connection
         // is not inserted
         return false;
@@ -111,27 +99,19 @@ public class Untanglings {
 
     /** adds a connection from a transition to a place  **/
     public boolean transitionToPlace(String node1, String node2) {
-
         for (Transition transition : t) {
-
             // checking existence of the place
             if (!transition.getName().equals(node1)) continue;
-
             // checking existence of the transition
             for (Place place : p) {
                 if (!place.getName().equals(node2)) continue;
-
                 // adding arc to the system
                 sys.addFlow(transition, place);
-
                 // debug: printing connection added
                 // System.out.println(transition.getName() + " -> " + place.getName());
-
                 return true;
-
             }
         }
-
         // if the two nodes are not present the connection
         // is not inserted
         return false;

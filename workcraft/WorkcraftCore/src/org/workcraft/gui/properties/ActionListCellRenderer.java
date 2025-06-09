@@ -23,8 +23,7 @@ public class ActionListCellRenderer extends JPanel implements TableCellRenderer 
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if (value instanceof ActionList) {
-            ActionList actions = (ActionList) value;
+        if (value instanceof ActionList actions) {
             for (Action action : actions) {
                 if (!actionButtonMap.containsKey(action)) {
                     JButton button = new JButton();

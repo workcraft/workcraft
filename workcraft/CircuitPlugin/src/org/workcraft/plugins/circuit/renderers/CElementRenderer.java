@@ -24,8 +24,7 @@ public class CElementRenderer extends GateRenderer {
     private static boolean isFirstNode;
     private static boolean isGlobalNegation;
 
-    private static final BooleanVisitor<LinkedList<Pair<String, Boolean>>> defaultVisitor = new BooleanVisitor<
-            LinkedList<Pair<String, Boolean>>>() {
+    private static final BooleanVisitor<LinkedList<Pair<String, Boolean>>> defaultVisitor = new BooleanVisitor<>() {
 
         private LinkedList<Pair<String, Boolean>> visitBinary(BinaryBooleanFormula node) {
             LinkedList<Pair<String, Boolean>> x = node.getX().accept(this);

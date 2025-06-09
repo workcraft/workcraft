@@ -79,8 +79,7 @@ public class VisualFst extends VisualFsm {
             }
             properties.add(PropertyHelper.getSignalSectionProperty(this));
             properties.addAll(FstPropertyHelper.getSignalProperties(this));
-        } else if (node instanceof VisualSignalEvent) {
-            VisualSignalEvent signalEvent = (VisualSignalEvent) node;
+        } else if (node instanceof VisualSignalEvent signalEvent) {
             properties.add(FstPropertyHelper.getEventSignalProperty(getMathModel(), signalEvent.getReferencedConnection()));
 
             Signal signal = signalEvent.getReferencedConnection().getSymbol();

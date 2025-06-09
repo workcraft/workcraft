@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-@SuppressWarnings("serial")
 public class PetriToCpogDialog extends JDialog {
 
     // check boxes
@@ -57,7 +56,7 @@ public class PetriToCpogDialog extends JDialog {
         reduceLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                reduceCheck.setSelected(reduceCheck.isSelected() ? false : true);
+                reduceCheck.setSelected(!reduceCheck.isSelected());
             }
         });
 
@@ -67,7 +66,7 @@ public class PetriToCpogDialog extends JDialog {
         isomorphismLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                isomorphismCheck.setSelected(isomorphismCheck.isSelected() ? false : true);
+                isomorphismCheck.setSelected(!isomorphismCheck.isSelected());
             }
         });
 

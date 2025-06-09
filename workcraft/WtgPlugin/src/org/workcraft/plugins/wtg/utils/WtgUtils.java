@@ -91,8 +91,7 @@ public class WtgUtils {
         while ((!nodesToVisit.isEmpty()) && (remainingSignals > 0)) {
             MathNode node = nodesToVisit.poll();
 
-            if (node instanceof Waveform) {
-                Waveform waveform = (Waveform) node;
+            if (node instanceof Waveform waveform) {
                 for (Signal signal : wtg.getSignals(waveform)) {
                     String signalName = wtg.getName(signal);
                     if (!result.containsKey(signalName)) {
@@ -122,8 +121,7 @@ public class WtgUtils {
         nodesToVisit.add(node);
         while (!nodesToVisit.isEmpty()) {
             MathNode visitingNode = nodesToVisit.poll();
-            if (visitingNode instanceof Waveform) {
-                Waveform predecesorWaveform = (Waveform) visitingNode;
+            if (visitingNode instanceof Waveform predecesorWaveform) {
                 Map<String, Signal.State> finalSignalStates = getFinalSignalStatesFromWaveform(wtg, predecesorWaveform);
                 if (finalSignalStates.containsKey(signalName)) {
                     return finalSignalStates.get(signalName);

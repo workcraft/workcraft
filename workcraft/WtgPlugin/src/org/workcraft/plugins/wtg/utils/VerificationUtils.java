@@ -147,10 +147,7 @@ public class VerificationUtils {
             return false;
         }
         //Checks that stabilise/destabilise transitions never trigger an output
-        if (!checkUnstableSignalTriggers(wtg)) {
-            return false;
-        }
-        return true;
+        return checkUnstableSignalTriggers(wtg);
     }
 
     public static boolean checkInitialState(Wtg wtg) {
@@ -395,8 +392,7 @@ public class VerificationUtils {
     public static boolean checkInitialStateHasNoGuard(Wtg wtg) {
         State initialState = wtg.getInitialState();
         for (MathNode node : wtg.getPostset(initialState)) {
-            if (node instanceof Waveform) {
-                Waveform waveform = (Waveform) node;
+            if (node instanceof Waveform waveform) {
                 if (!waveform.getGuard().isEmpty()) {
                     DialogUtils.showError("The initial state cannot be succeeded by guards.");
                     return false;
@@ -484,7 +480,7 @@ public class VerificationUtils {
                 signalValues.add(guard.get(signalName));
             }
             if (guardConditions.contains(signalValues)) {
-                DialogUtils.showError("The guard '" + guard.toString() + "' is repeated at state '"
+                DialogUtils.showError("The guard '" + guard + "' is repeated at state '"
                         + wtg.getName(state) + "'.");
                 return false;
             }
@@ -572,16 +568,12 @@ public class VerificationUtils {
     public static boolean checkTransitionReachability(Wtg wtg, Waveform waveform) {
         Set<Event> reachableTransitions = new HashSet<>();
         int nonReachableTransitions = wtg.getTransitions(waveform).size();
-        Queue<Event> eventsToVisit = new ArrayDeque<>();
-        for (Event entryEvent : wtg.getEntries(waveform)) {
-            eventsToVisit.add(entryEvent);
-        }
+        Queue<Event> eventsToVisit = new ArrayDeque<>(wtg.getEntries(waveform));
         //BFS
         while (!eventsToVisit.isEmpty()) {
             Event event = eventsToVisit.poll();
             for (MathNode e : wtg.getPostset(event)) {
-                if ((!reachableTransitions.contains(e)) && (e instanceof TransitionEvent)) {
-                    TransitionEvent transition = (TransitionEvent) e;
+                if ((!reachableTransitions.contains(e)) && (e instanceof TransitionEvent transition)) {
                     reachableTransitions.add(transition);
                     eventsToVisit.add(transition);
                     nonReachableTransitions -= 1;
@@ -662,8 +654,7 @@ public class VerificationUtils {
     public static boolean checkValidInitialSignalStates(Wtg wtg) {
         for (Signal.State signalState : getInitialSignalStates(wtg).values()) {
             if (signalState == Signal.State.STABLE || signalState == Signal.State.UNSTABLE) {
-                DialogUtils.showError("The initial state for a signal in a WTG can not be " +
-                        signalState.toString() + ".");
+                DialogUtils.showError("The initial state for a signal in a WTG can not be " + signalState + ".");
                 return false;
             }
         }
@@ -677,8 +668,7 @@ public class VerificationUtils {
                 if ((wtg.getPreviousState(transition) == Signal.State.UNSTABLE) ||
                         (direction == TransitionEvent.Direction.DESTABILISE)) {
                     for (MathNode node : wtg.getPostset(transition)) {
-                        if (node instanceof TransitionEvent) {
-                            TransitionEvent dstTransition = (TransitionEvent) node;
+                        if (node instanceof TransitionEvent dstTransition) {
                             Signal signal = dstTransition.getSignal();
                             if (signal.getType() != Signal.Type.INPUT) {
                                 String transitionName = wtg.getName(transition.getSignal()) + direction.getSymbol();
@@ -708,8 +698,7 @@ public class VerificationUtils {
 
             if (node instanceof State) {
                 nodesToVisit.addAll(wtg.getPostset(node));
-            } else if (node instanceof Waveform) {
-                Waveform waveform = (Waveform) node;
+            } else if (node instanceof Waveform waveform) {
                 MathNode predecessorNode = wtg.getPreset(waveform).iterator().next();
                 if (predecessorNode instanceof State) {
                     if ((!checkConsistency(wtg, waveform)) ||
@@ -726,15 +715,16 @@ public class VerificationUtils {
                 if (successorNode instanceof State) {
                     if (signalStates.containsKey(successorNode)) {
                         if (!signalStates.get(successorNode).equals(finalWaveformSignalState)) {
-                            String msg = "In waveform '" + wtg.getName(waveform) +
-                                    "' the following signals have an inconsistent exit state with respect to the exit state of other waveforms:";
+                            StringBuilder msg = new StringBuilder("In waveform '" + wtg.getName(waveform) +
+                                    "' the following signals have an inconsistent exit state with respect to the exit state of other waveforms:");
                             for (Map.Entry<String, Signal.State> signal : signalStates.get(successorNode).entrySet()) {
                                 if ((finalWaveformSignalState.containsKey(signal.getKey())) &&
                                         (!finalWaveformSignalState.get(signal.getKey()).equals(signal.getValue()))) {
-                                    msg += ' ' + signal.getKey();
+                                    msg.append(' ');
+                                    msg.append(signal.getKey());
                                 }
                             }
-                            DialogUtils.showError(msg);
+                            DialogUtils.showError(msg.toString());
                             return false;
                         }
                     } else {
@@ -809,8 +799,7 @@ public class VerificationUtils {
             for (TransitionEvent transition : wtg.getTransitions(waveform)) {
                 if (transition.getSignal().getType() == Signal.Type.INTERNAL) {
                     for (MathNode node : wtg.getPostset(transition)) {
-                        if (node instanceof TransitionEvent) {
-                            TransitionEvent dstTransition = (TransitionEvent) node;
+                        if (node instanceof TransitionEvent dstTransition) {
                             if (dstTransition.getSignal().getType() == Signal.Type.INPUT) {
                                 String msg = "Internal signal '" + wtg.getName(transition.getSignal())
                                         + "' triggers input signal '"
@@ -931,10 +920,9 @@ public class VerificationUtils {
             }
 
             for (MathNode node : wtg.getPostset(followingState)) {
-                if (!(node instanceof Waveform)) {
+                if (!(node instanceof Waveform nextWaveform)) {
                     continue;
                 }
-                Waveform nextWaveform = (Waveform) node;
 
                 if (firedBeforeOut.get(nextWaveform).contains(signal)) {
                     DialogUtils.showError("Input signal '" + signal + "' can fire before reaching waveform '" +
@@ -1109,8 +1097,7 @@ public class VerificationUtils {
 
         for (EntryEvent entry : wtg.getEntries(waveform)) {
             for (MathNode node : wtg.getPostset(entry)) {
-                if (node instanceof TransitionEvent) {
-                    TransitionEvent transition = (TransitionEvent) node;
+                if (node instanceof TransitionEvent transition) {
                     Integer dependencies = transitionDependencies.computeIfPresent(transition, (k, v) -> v - 1);
                     if (dependencies == 0) {
                         toVisit.add(transition);
@@ -1142,8 +1129,7 @@ public class VerificationUtils {
                     event = finalEvent; //we set the event to the "ghost" final event
                 }
 
-                if (event instanceof TransitionEvent) {
-                    TransitionEvent nextEvent = (TransitionEvent) event;
+                if (event instanceof TransitionEvent nextEvent) {
                     if (outputHasFired.contains(visitingTransition)) {
                         //an output has fired in this or in past transitions
                         outputHasFired.add(nextEvent);

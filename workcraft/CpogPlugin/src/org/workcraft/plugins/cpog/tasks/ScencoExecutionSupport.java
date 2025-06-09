@@ -130,9 +130,8 @@ public class ScencoExecutionSupport {
 
             // Scan every elements of each scenario
             for (VisualComponent component : scenarios.get(k).getComponents()) {
-                if (component instanceof VisualVertex) {
+                if (component instanceof VisualVertex vertex) {
                     // If element is a vertex
-                    VisualVertex vertex = (VisualVertex) component;
 
                     if (!events.containsKey(vertex.getLabel())) { // Check if a condition is present on vertex
                         events.put(vertex.getLabel(), n);
@@ -169,8 +168,7 @@ public class ScencoExecutionSupport {
             }
 
             for (VisualComponent component : scenarios.get(k).getComponents()) {
-                if (component instanceof VisualVertex) {
-                    VisualVertex vertex = (VisualVertex) component;
+                if (component instanceof VisualVertex vertex) {
                     int id = events.get(vertex.getLabel());
                     constraints[k][id][id] = '1';
                 }
@@ -183,8 +181,7 @@ public class ScencoExecutionSupport {
             }
 
             for (VisualConnection c : scenarios.get(k).getConnections()) {
-                if (c instanceof VisualArc) {
-                    VisualArc arc = (VisualArc) c;
+                if (c instanceof VisualArc arc) {
                     VisualNode c1 = arc.getFirst();
                     VisualNode c2 = arc.getSecond();
                     if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
@@ -266,8 +263,7 @@ public class ScencoExecutionSupport {
                 // Print GO-DONE signals
                 if (!settings.isCpogSize()) {
                     for (VisualComponent component : scenarios.get(k).getComponents()) {
-                        if (component instanceof VisualVertex) {
-                            VisualVertex vertex = (VisualVertex) component;
+                        if (component instanceof VisualVertex vertex) {
                             output.println(settings.GO_SIGNAL + ' ' + vertex.getLabel());
                             output.println(vertex.getLabel() + ' ' + settings.DONE_SIGNAL);
                         }
@@ -276,8 +272,7 @@ public class ScencoExecutionSupport {
 
                 // Print arcs
                 for (VisualConnection c : scenarios.get(k).getConnections()) {
-                    if (c instanceof VisualArc) {
-                        VisualArc arc = (VisualArc) c;
+                    if (c instanceof VisualArc arc) {
                         VisualNode c1 = arc.getFirst();
                         VisualNode c2 = arc.getSecond();
                         if (c1 instanceof VisualVertex && c2 instanceof VisualVertex) {
@@ -290,41 +285,39 @@ public class ScencoExecutionSupport {
 
                 // Print conditions on vertices
                 for (VisualComponent component : scenarios.get(k).getComponents()) {
-                    if (component instanceof VisualVertex) {
-                        VisualVertex vertex = (VisualVertex) component;
+                    if (component instanceof VisualVertex vertex) {
                         BooleanFormula condition = vertex.getCondition();
                         if (condition != One.getInstance() && condition != Zero.getInstance()) {
 
                             // Format output by substituting ' with !
                             String cond = StringGenerator.toString(condition).replace("'", "!");
-                            String result = "";
-                            String tmp = "";
+                            StringBuilder result = new StringBuilder();
                             for (int i = 0; i < cond.length(); i++) {
                                 if (SPECIAL_SYMBOLS.indexOf(cond.charAt(i)) < 0) {
-                                    tmp = "";
+                                    StringBuilder tmp = new StringBuilder();
                                     while ((i < cond.length()) && (SPECIAL_SYMBOLS.indexOf(cond.charAt(i)) < 0)) {
-                                        tmp += cond.charAt(i);
+                                        tmp.append(cond.charAt(i));
                                         i++;
                                     }
                                     for (int j = tmp.length() - 1; j >= 0; j--) {
-                                        result += tmp.charAt(j);
+                                        result.append(tmp.charAt(j));
                                     }
                                     if (i < cond.length()) {
-                                        result += cond.charAt(i);
+                                        result.append(cond.charAt(i));
                                     }
                                 } else {
-                                    result += cond.charAt(i);
+                                    result.append(cond.charAt(i));
                                 }
                             }
 
-                            String end = "";
+                            StringBuilder end = new StringBuilder();
                             for (int i = 0; i < result.length(); i++) {
                                 if (result.charAt(i) == '(') {
-                                    end += ')';
+                                    end.append(')');
                                 } else if (result.charAt(i) == ')') {
-                                    end += '(';
+                                    end.append('(');
                                 } else {
-                                    end += result.charAt(i);
+                                    end.append(result.charAt(i));
                                 }
                             }
 
@@ -425,20 +418,16 @@ public class ScencoExecutionSupport {
             HashMap<String, BooleanFormula> formulaeName) {
         for (int k = 0; k < m; k++) {
             for (int i = 0; i < freeVariables; i++) {
-                if (scenarios.get(k) instanceof VisualScenario) {
-                    VisualScenario scenario = (VisualScenario) scenarios.get(k);
+                if (scenarios.get(k) instanceof VisualScenario scenario) {
                     scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
-                } else if (scenarios.get(k) instanceof VisualScenarioPage) {
-                    VisualScenarioPage scenario = (VisualScenarioPage) scenarios.get(k);
+                } else if (scenarios.get(k) instanceof VisualScenarioPage scenario) {
                     scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
                 }
             }
             for (int i = freeVariables; i < freeVariables + pr; i++) {
-                if (scenarios.get(k) instanceof  VisualScenario) {
-                    VisualScenario scenario = (VisualScenario) scenarios.get(k);
+                if (scenarios.get(k) instanceof VisualScenario scenario) {
                     scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
-                } else if (scenarios.get(k) instanceof VisualScenarioPage) {
-                    VisualScenarioPage scenario = (VisualScenarioPage) scenarios.get(k);
+                } else if (scenarios.get(k) instanceof VisualScenarioPage scenario) {
                     scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
                 }
             }

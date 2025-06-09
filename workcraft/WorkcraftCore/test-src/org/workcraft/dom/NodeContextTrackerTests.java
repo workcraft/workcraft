@@ -8,9 +8,10 @@ import org.workcraft.dom.math.MathNode;
 
 import java.util.Set;
 
+@SuppressWarnings("unchecked")
 class NodeContextTrackerTests {
 
-    class MockNode extends MathNode {
+    static class MockNode extends MathNode {
 
     }
 
@@ -36,7 +37,7 @@ class NodeContextTrackerTests {
         group.add(n3);
         group.add(n4);
 
-        NodeContextTracker nct = new NodeContextTracker();
+        NodeContextTracker nct = new NodeContextTracker<>();
         nct.attach(group);
 
         Set<Node> n4pre = nct.getPreset(n4);
@@ -63,7 +64,7 @@ class NodeContextTrackerTests {
     void testAddRemove1() {
         MathGroup group = new MathGroup();
 
-        NodeContextTracker nct = new NodeContextTracker();
+        NodeContextTracker nct = new NodeContextTracker<>();
         nct.attach(group);
 
         MockNode n1 = new MockNode();

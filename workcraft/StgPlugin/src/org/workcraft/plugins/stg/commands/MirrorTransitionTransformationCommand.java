@@ -34,8 +34,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        if (node instanceof VisualSignalTransition) {
-            VisualSignalTransition signalTransition = (VisualSignalTransition) node;
+        if (node instanceof VisualSignalTransition signalTransition) {
             SignalTransition.Direction direction = signalTransition.getDirection();
             return (direction == SignalTransition.Direction.PLUS) || (direction == SignalTransition.Direction.MINUS);
         }
@@ -55,8 +54,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> signalTransitions = new HashSet<>();
-        if (model instanceof VisualStg) {
-            VisualStg stg = (VisualStg) model;
+        if (model instanceof VisualStg stg) {
             signalTransitions.addAll(stg.getVisualSignalTransitions());
             Collection<VisualNode> selection = stg.getSelection();
             if (!selection.isEmpty()) {
@@ -68,10 +66,8 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
-            VisualStg visualStg = (VisualStg) model;
+        if ((model instanceof VisualStg visualStg) && (node instanceof VisualSignalTransition visualTransition)) {
             Stg stg = visualStg.getMathModel();
-            VisualSignalTransition visualTransition = (VisualSignalTransition) node;
             SignalTransition transition = visualTransition.getReferencedComponent();
             SignalTransition.Direction direction = visualTransition.getDirection();
             stg.setDirection(transition, direction.mirror());

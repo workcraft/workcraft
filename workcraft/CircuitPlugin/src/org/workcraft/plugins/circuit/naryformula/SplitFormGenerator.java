@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class SplitFormGenerator {
 
-    private static class DelegatingPrinter implements NaryBooleanFormulaVisitor<SplitForm> {
+    private static final class DelegatingPrinter implements NaryBooleanFormulaVisitor<SplitForm> {
 
         private boolean negated = false;
 

@@ -28,7 +28,7 @@ public abstract class Path<T> {
         return new RootPath<>(root);
     }
 
-    public static <Node> Path<Node> append(Path<Node> path, Node suffix) {
+    public static <N> Path<N> append(Path<N> path, N suffix) {
         if (path.isEmpty()) {
             return root(suffix);
         } else {
@@ -49,10 +49,9 @@ public abstract class Path<T> {
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof Path<?>)) {
+        if (!(obj instanceof Path<?> other)) {
             return false;
         }
-        Path<?> other = (Path<?>) obj;
         if (isEmpty()) {
             return other.isEmpty();
         }
@@ -80,7 +79,7 @@ public abstract class Path<T> {
     }
 
     public static Path<String> fromString(String relative) {
-        if (relative.length() == 0) {
+        if (relative.isEmpty()) {
             return empty();
         }
         return create(relative.split("/"));
@@ -119,7 +118,7 @@ public abstract class Path<T> {
         return parent + "/" + node;
     }
 
-    private static class EmptyPath<T> extends Path<T> {
+    private static final class EmptyPath<T> extends Path<T> {
         private static final EmptyPath<?> instance = new EmptyPath<>();
         @SuppressWarnings("unchecked")
         public static <T> EmptyPath<T> getInstance() {

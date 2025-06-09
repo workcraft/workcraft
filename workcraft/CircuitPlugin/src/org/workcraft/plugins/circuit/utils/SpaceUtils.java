@@ -72,8 +72,7 @@ public final class SpaceUtils {
         connectedNodes.addAll(circuit.getPreset(contact));
         connectedNodes.addAll(circuit.getPostset(contact));
         for (Node connectedNode : connectedNodes) {
-            if (connectedNode instanceof VisualTransformableNode) {
-                VisualTransformableNode transformableNode = (VisualTransformableNode) connectedNode;
+            if (connectedNode instanceof VisualTransformableNode transformableNode) {
                 Rectangle2D bb = getBoundingBox(transformableNode);
                 double x = transformableNode.getRootSpaceX();
                 double xBorder = x + bb.getX() + ((dx < 0) ? bb.getWidth() : 0.0);

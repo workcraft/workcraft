@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+@SuppressWarnings("unchecked")
 public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
 
     @Override
@@ -44,8 +45,8 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
     }
 
     private static class Qslist {
-        public String name;
-        public int chk;
+        public final String name;
+        public final int chk;
 
         Qslist(String s1, int n) {
             name = s1;
@@ -396,8 +397,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
-    private static List<JCheckBox> jcbn = new ArrayList<>();
-    private JCheckBox jcb;
+    private static final List<JCheckBox> jcbn = new ArrayList<>();
     private JCheckBox jcblast;
 
     private void populateMd(int grnum) {
@@ -446,38 +446,34 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
     private void createPanel(List<JPanel> panellist, Xmas cnet, VisualXmas vnet, int grnum) {
         panellist.add(new JPanel());
         panellist.get(panellist.size() - 1).add(new JLabel(" Sources" + ": "));
-        panellist.get(panellist.size() - 1).add(mdcombob = new JComboBox());
+        panellist.get(panellist.size() - 1).add(mdcombob = new JComboBox<>());
+        JCheckBox jcb;
         panellist.get(panellist.size() - 1).add(jcb = new JCheckBox(""));
         populateMd(grnum);
-        ItemListener itemListener1 = new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() instanceof JCheckBox) {
-                    JCheckBox sjcb = (JCheckBox) e.getSource();
-                    if (sjcb.isSelected()) {
-                        index = jcbn.indexOf(sjcb) + 1;
-                        //System.out.println("indexb==" + index);
-                    }
-                    if (jcblast != null) jcblast.setSelected(false);
-                    jcblast = sjcb;
-                    //String name = sjcb.getName();
-                    //System.out.println(name);
+        ItemListener itemListener1 = e -> {
+            if (e.getSource() instanceof JCheckBox sjcb) {
+                if (sjcb.isSelected()) {
+                    index = jcbn.indexOf(sjcb) + 1;
+                    //System.out.println("indexb==" + index);
                 }
+                if (jcblast != null) jcblast.setSelected(false);
+                jcblast = sjcb;
+                //String name = sjcb.getName();
+                //System.out.println(name);
             }
         };
         jcb.addItemListener(itemListener1);
         jcbn.add(jcb);
         panellist.add(new JPanel());
         panellist.get(panellist.size() - 1).add(new JLabel(" Pt-to-pt" + ": "));
-        panellist.get(panellist.size() - 1).add(q1combob = new JComboBox());
-        panellist.get(panellist.size() - 1).add(q2combob = new JComboBox());
+        panellist.get(panellist.size() - 1).add(q1combob = new JComboBox<>());
+        panellist.get(panellist.size() - 1).add(q2combob = new JComboBox<>());
         populateQlists(cnet);
         panellist.get(panellist.size() - 1).add(jcb = new JCheckBox(""));
         ItemListener itemListener2 = new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() instanceof JCheckBox) {
-                    JCheckBox sjcb = (JCheckBox) e.getSource();
+                if (e.getSource() instanceof JCheckBox sjcb) {
                     if (sjcb.isSelected()) {
                         index = jcbn.indexOf(sjcb) + 1;
                         //System.out.println("indexb==" + index);
@@ -493,14 +489,13 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         jcbn.add(jcb);
         panellist.add(new JPanel());
         panellist.get(panellist.size() - 1).add(new JLabel(" Synchroniser" + ": "));
-        panellist.get(panellist.size() - 1).add(qscombob = new JComboBox());
+        panellist.get(panellist.size() - 1).add(qscombob = new JComboBox<>());
         populateQslists(vnet, cnet);
         panellist.get(panellist.size() - 1).add(jcb = new JCheckBox(""));
         ItemListener itemListener = new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() instanceof JCheckBox) {
-                    JCheckBox sjcb = (JCheckBox) e.getSource();
+                if (e.getSource() instanceof JCheckBox sjcb) {
                     if (sjcb.isSelected()) {
                         index = jcbn.indexOf(sjcb) + 1;
                         //System.out.println("indexb==" + index);
@@ -573,7 +568,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                     Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 
                     String s;
-                    String str = "";
+                    StringBuilder str = new StringBuilder();
                     String str2 = "";
                     InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
                     BufferedReader stdInput = new BufferedReader(inputStreamReader);
@@ -582,7 +577,10 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                     initHighlight(xnet, vnet);
                     while ((s = stdInput.readLine()) != null) {
                         if (test == -1) test = checkType(s);
-                        if (n > 0) str += s + '\n';
+                        if (n > 0) {
+                            str.append(s);
+                            str.append('\n');
+                        }
                         n++;
                         System.out.println(s);
                     }
@@ -592,34 +590,34 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                         processQsl(qslFile.getAbsolutePath());
 
                         File equFile1 = XmasSettings.getTempVxmEquFile();
-                        str = processEq(equFile1.getAbsolutePath());
+                        str = new StringBuilder(processEq(equFile1.getAbsolutePath()));
 
                         File queFile = XmasSettings.getTempVxmQueFile();
                         str2 = processQue(queFile.getAbsolutePath());
                     } else if ("advanced".equals(level) && (q3flag == 1)) {
                         System.out.println("LEVEL IS ADVANCED ");
                         File equFile2 = XmasSettings.getTempVxmEquFile();
-                        str = processEq(equFile2.getAbsolutePath());
+                        str = new StringBuilder(processEq(equFile2.getAbsolutePath()));
                     } else if ("normal".equals(level) && test == 2) {
                         System.out.println("LEVEL IS NORMAL ");
                         File locFile = XmasSettings.getTempVxmLocFile();
-                        str = processLoc(locFile.getAbsolutePath());
+                        str = new StringBuilder(processLoc(locFile.getAbsolutePath()));
                     }
                     if (test > 0) {
                         if ("popup".equals(display)) {
                             if (!"advanced".equals(level) && (q3flag == 0)) {
                                 new SolutionsDialog1(test, str2);
                             } else if ("advanced".equals(level) && (q3flag == 1)) {
-                                new SolutionsDialog2(test, str);
+                                new SolutionsDialog2(test, str.toString());
                             } else {
                                 new SolutionsDialog2(test, str2);
                             }
                         }
                         if (test == 2) {
                             if ("local".equals(highlight)) {
-                                localHighlight(str, xnet, vnet);
+                                localHighlight(str.toString(), xnet, vnet);
                             } else if ("rel".equals(highlight)) {
-                                relHighlight(str, xnet, vnet);
+                                relHighlight(str.toString(), xnet, vnet);
                                 activeHighlight(xnet, vnet);
                             }
                         }

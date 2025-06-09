@@ -70,15 +70,11 @@ public class VisualSONConnection extends VisualConnection {
 
     @Override
     public Stroke getStroke() {
-        switch (getSemantics()) {
-        case SYNCLINE:
-        case ASYNLINE:
-            return ASYNLINE_STROKE;
-        case BHVLINE:
-            return BHVLINE_STROKE;
-        default:
-            return super.getStroke();
-        }
+        return switch (getSemantics()) {
+            case SYNCLINE, ASYNLINE -> ASYNLINE_STROKE;
+            case BHVLINE -> BHVLINE_STROKE;
+            default -> super.getStroke();
+        };
     }
 
     @Override
@@ -110,7 +106,7 @@ public class VisualSONConnection extends VisualConnection {
     }
 
     protected void cacheLabelRenderedText(DrawRequest r) {
-        String time = "T: " + getTime().toString();
+        String time = "T: " + getTime();
 
         if (timeRenderedText.isDifferent(time, TIME_FONT, Positioning.CENTER, new Point2D.Double())) {
             timeRenderedText = new RenderedText(time, TIME_FONT, Positioning.CENTER, new Point2D.Double());

@@ -32,7 +32,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 
 public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
@@ -80,7 +79,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     static class LibraryList extends JList<LibraryItem> {
 
         LibraryList(List<LibraryItem> items) {
-            super(new Vector<>(items));
+            super(items.toArray(new LibraryItem[0]));
             setBorder(GuiUtils.getEmptyBorder());
         }
     }

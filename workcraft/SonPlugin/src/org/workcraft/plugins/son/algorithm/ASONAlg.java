@@ -42,9 +42,9 @@ public class ASONAlg extends RelationAlgorithm {
             }
         }
 
-        for (Node n : marking) {
+        for (PlaceNode n : marking) {
             if (!getPrePNSet(t).contains(n)) {
-                result.add((PlaceNode) n);
+                result.add(n);
             }
         }
 

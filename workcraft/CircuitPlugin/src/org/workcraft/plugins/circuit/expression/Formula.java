@@ -53,8 +53,7 @@ public class Formula implements Expression {
         List<Expression> evalExpressions = new LinkedList<>();
         for (Expression expression: expressions) {
             Expression evalExpression = expression.eval(assignments);
-            if (evalExpression instanceof Constant) {
-                Constant constant = (Constant) evalExpression;
+            if (evalExpression instanceof Constant constant) {
                 if (constant.value) {
                     return new Constant(true);
                 }

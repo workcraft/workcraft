@@ -14,10 +14,9 @@ public class MountTree {
         if (obj == this) {
             return true;
         }
-        if (!(obj instanceof MountTree)) {
+        if (!(obj instanceof MountTree other)) {
             return false;
         }
-        MountTree other = (MountTree) obj;
         return other.mountTo.equals(mountTo);
     }
 
@@ -72,7 +71,7 @@ public class MountTree {
     public final Path<String> path;
 
     public MountTree getSubtree(String name) {
-        if (name.length() == 0) {
+        if (name.isEmpty()) {
             return this;
         }
 

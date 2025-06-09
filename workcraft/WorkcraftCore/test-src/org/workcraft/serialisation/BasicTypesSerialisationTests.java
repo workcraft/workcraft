@@ -51,8 +51,8 @@ class BasicTypesSerialisationTests {
             Element e2 = doc.createElement("property");
             s.serialise(e2, -500);
 
-            Assertions.assertEquals(Integer.valueOf(8), ds.deserialise(e));
-            Assertions.assertEquals(Integer.valueOf(-500), ds.deserialise(e2));
+            Assertions.assertEquals(8, ds.deserialise(e));
+            Assertions.assertEquals(-500, ds.deserialise(e2));
         } catch (SerialisationException  e) {
             throw new RuntimeException(e);
         }
@@ -75,9 +75,9 @@ class BasicTypesSerialisationTests {
             Element e3 = doc.createElement("property");
             s.serialise(e3, r);
 
-            Assertions.assertEquals(Double.valueOf(-1E8), ds.deserialise(e));
-            Assertions.assertEquals(Double.valueOf(123.456), ds.deserialise(e2));
-            Assertions.assertEquals(Double.valueOf(r), ds.deserialise(e3));
+            Assertions.assertEquals(-1E8, ds.deserialise(e));
+            Assertions.assertEquals(123.456, ds.deserialise(e2));
+            Assertions.assertEquals(r, ds.deserialise(e3));
         } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }

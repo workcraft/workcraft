@@ -36,13 +36,11 @@ public class ProxyContactTransformationCommand extends AbstractTransformationCom
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        if (node instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) node;
+        if (node instanceof VisualConnection connection) {
             return !(connection.getFirst() instanceof VisualReplicaContact)
                     && connection.getSecond() instanceof VisualContact;
         }
-        if (node instanceof VisualContact) {
-            VisualContact contact = (VisualContact) node;
+        if (node instanceof VisualContact contact) {
             return contact.isDriven();
         }
         return (node instanceof VisualCircuitComponent);
@@ -62,21 +60,18 @@ public class ProxyContactTransformationCommand extends AbstractTransformationCom
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> result = new HashSet<>();
         for (VisualNode node : model.getSelection()) {
-            if (node instanceof VisualContact) {
-                VisualContact contact = (VisualContact) node;
+            if (node instanceof VisualContact contact) {
                 if (contact.isDriven()) {
                     result.add(node);
                 }
             }
-            if (node instanceof VisualConnection) {
-                VisualConnection connection = (VisualConnection) node;
+            if (node instanceof VisualConnection connection) {
                 VisualNode secondNode = connection.getSecond();
                 if (secondNode instanceof VisualContact) {
                     result.add(secondNode);
                 }
             }
-            if (node instanceof VisualCircuitComponent) {
-                VisualCircuitComponent component = (VisualCircuitComponent) node;
+            if (node instanceof VisualCircuitComponent component) {
                 result.addAll(component.getVisualInputs());
             }
         }

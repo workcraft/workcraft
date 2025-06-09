@@ -49,8 +49,7 @@ public class PolicySelectionTool extends SelectionTool {
         VisualModel model = e.getEditor().getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
-            if (node instanceof VisualPlace) {
-                VisualPlace place = (VisualPlace) node;
+            if (node instanceof VisualPlace place) {
                 if (place.getReferencedComponent().getTokens() <= 1) {
                     e.getEditor().getWorkspaceEntry().saveMemento();
 
@@ -72,8 +71,7 @@ public class PolicySelectionTool extends SelectionTool {
     @Override
     public boolean keyPressed(GraphEditorKeyEvent e) {
         if (e.isMenuKeyDown()) {
-            switch (e.getKeyCode()) {
-            case KeyEvent.VK_B:
+            if (e.getKeyCode() == KeyEvent.VK_B) {
                 if (e.isShiftKeyDown()) {
                     selectionUnbundle(e.getEditor());
                 } else {

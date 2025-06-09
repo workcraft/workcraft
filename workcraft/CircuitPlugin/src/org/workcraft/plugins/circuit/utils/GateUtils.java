@@ -379,8 +379,7 @@ public final class GateUtils {
     public static Set<BooleanVariable> getUsedPortVariables(Circuit circuit) {
         Set<BooleanVariable> result = new HashSet<>();
         for (Contact contact : circuit.getInputPorts()) {
-            if (!(contact instanceof FunctionContact)) continue;
-            FunctionContact inputPort = (FunctionContact) contact;
+            if (!(contact instanceof FunctionContact inputPort)) continue;
             result.add(inputPort);
             result.addAll(getUsedVariables(inputPort));
         }
@@ -450,8 +449,7 @@ public final class GateUtils {
         VisualFunctionComponent result = null;
         // Try to reuse existing buffer or inverter
         Node parent = contact.getParent();
-        if (parent instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) parent;
+        if (parent instanceof VisualFunctionComponent component) {
             if (component.isBuffer()) {
                 result = component;
             }

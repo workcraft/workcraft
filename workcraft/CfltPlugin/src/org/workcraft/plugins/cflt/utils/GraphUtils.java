@@ -15,12 +15,13 @@ public final class GraphUtils {
     public static final String SPECIAL_CLONE_CHARACTER = "$";
 
     public static Graph disjointUnion(Graph firstGraph, Graph secondGraph) {
-        var es1 = firstGraph.getEdges().stream();
-        var es2 = secondGraph.getEdges().stream();
+        Stream<Edge> es1 = firstGraph.getEdges().stream();
+        Stream<Edge> es2;
+        es2 = secondGraph.getEdges().stream();
         List<Edge> newEdges = Stream.concat(es1, es2).collect(Collectors.toList());
 
-        var vs1 = firstGraph.getVertexNames().stream();
-        var vs2 = secondGraph.getVertexNames().stream();
+        Stream<String> vs1 = firstGraph.getVertexNames().stream();
+        Stream<String> vs2 = secondGraph.getVertexNames().stream();
         List<String> newVertices = Stream.concat(vs1, vs2).collect(Collectors.toList());
 
         return new Graph(newEdges, newVertices);

@@ -139,7 +139,7 @@ public class Cycle implements Comparable<Cycle> {
         for (VisualControlRegister control : controls) {
             probability *= control.getReferencedComponent().getProbability();
         }
-        double delay = ((MathDelayNode) component.getReferencedComponent()).getDelay();
+        double delay = component.getReferencedComponent().getDelay();
         return delay * probability;
     }
 

@@ -12,7 +12,6 @@ import java.awt.event.ComponentListener;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-@SuppressWarnings("serial")
 public class ErrorWindow extends LogPanel implements ComponentListener {
 
     class ErrorStreamView extends FilterOutputStream implements ChangeListener {
@@ -50,8 +49,7 @@ public class ErrorWindow extends LogPanel implements ComponentListener {
         private void highlightTab() {
             Container component = getParent().getParent();
             Container parent = component.getParent();
-            if (parent instanceof JTabbedPane) {
-                JTabbedPane tabbedPane = (JTabbedPane) parent;
+            if (parent instanceof JTabbedPane tabbedPane) {
                 for (int i = 0; i < tabbedPane.getTabCount(); i++) {
                     if (tabbedPane.getComponentAt(i) != component) continue;
 
@@ -73,8 +71,7 @@ public class ErrorWindow extends LogPanel implements ComponentListener {
             }
             Container component = getParent().getParent();
             Container parent = component.getParent();
-            if (parent instanceof JTabbedPane) {
-                JTabbedPane tab = (JTabbedPane) parent;
+            if (parent instanceof JTabbedPane tab) {
                 if (tab.getSelectedComponent() == component) {
                     int selectedIndex = tab.getSelectedIndex();
                     Component tabComponent = tab.getTabComponentAt(selectedIndex);
@@ -121,8 +118,7 @@ public class ErrorWindow extends LogPanel implements ComponentListener {
 
         Container component = getParent().getParent();
         Container parent = getParent();
-        if (parent instanceof JTabbedPane) {
-            JTabbedPane tab = (JTabbedPane) parent;
+        if (parent instanceof JTabbedPane tab) {
             for (int i = 0; i < tab.getComponentCount(); i++) {
                 if (tab.getComponentAt(i) == component) {
                     tab.setForegroundAt(i, colorBack);

@@ -16,7 +16,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.Serial;
 import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
@@ -25,7 +24,6 @@ public class TreeWindow<T> extends JPanel {
 
     public enum CheckBoxMode { NONE, LEAF, ALL }
 
-    @Serial
     private static final long serialVersionUID = 1L;
     public static final String TRICKY_PREFIX = "!";
 
@@ -150,7 +148,6 @@ public class TreeWindow<T> extends JPanel {
     private final class TreeCellRenderer extends DefaultTreeCellRenderer {
         private final TreeSource<T> source;
         private final TreeDecorator<T> decorator;
-        @Serial
         private static final long serialVersionUID = 1L;
 
         private final TableLayout layout = GuiUtils.createTableLayout(

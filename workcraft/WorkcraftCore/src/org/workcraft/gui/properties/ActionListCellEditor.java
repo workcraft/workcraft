@@ -13,8 +13,7 @@ public class ActionListCellEditor extends AbstractCellEditor implements TableCel
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         JPanel result = new JPanel(new GridLayout());
         result.setFocusable(false);
-        if (value instanceof ActionList) {
-            ActionList actions = (ActionList) value;
+        if (value instanceof ActionList actions) {
             for (Action action : actions) {
                 JButton button = new JButton(action.getTitle());
                 button.setToolTipText(ActionUtils.getActionTooltip(action));

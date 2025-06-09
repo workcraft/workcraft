@@ -16,8 +16,7 @@ public final class StructureUtils {
         Set<FunctionComponent> result = new HashSet<>();
         Set<Node> visited = new HashSet<>();
         Queue<Node> queue = new ArrayDeque<>();
-        if (curNode instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent) curNode;
+        if (curNode instanceof FunctionComponent component) {
             queue.addAll(component.getInputs());
         } else {
             queue.add(curNode);
@@ -25,25 +24,21 @@ public final class StructureUtils {
 
         while (!queue.isEmpty()) {
             Node node = queue.remove();
-            if ((node == null) || visited.contains(node)) {
+            if (visited.contains(node)) {
                 continue;
             }
             visited.add(node);
-            if (node instanceof FunctionComponent) {
-                FunctionComponent component = (FunctionComponent) node;
+            if (node instanceof FunctionComponent component) {
                 result.add(component);
-            } else if (node instanceof FunctionContact) {
-                FunctionContact contact = (FunctionContact) node;
+            } else if (node instanceof FunctionContact contact) {
                 if (contact.isPort() == contact.isOutput()) {
                     queue.addAll(circuit.getPreset(contact));
                 } else {
                     queue.add(contact.getParent());
                 }
-            } else if (node instanceof Joint) {
-                Joint joint = (Joint) node;
+            } else if (node instanceof Joint joint) {
                 queue.addAll(circuit.getPreset(joint));
-            } else if (node instanceof MathConnection) {
-                MathConnection connection = (MathConnection) node;
+            } else if (node instanceof MathConnection connection) {
                 queue.add(connection.getFirst());
             }
         }
@@ -54,8 +49,7 @@ public final class StructureUtils {
         Set<FunctionComponent> result = new HashSet<>();
         Set<Node> visited = new HashSet<>();
         Queue<Node> queue = new ArrayDeque<>();
-        if (curNode instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent) curNode;
+        if (curNode instanceof FunctionComponent component) {
             queue.addAll(component.getOutputs());
         } else {
             queue.add(curNode);
@@ -63,25 +57,21 @@ public final class StructureUtils {
 
         while (!queue.isEmpty()) {
             Node node = queue.remove();
-            if ((node == null) || visited.contains(node)) {
+            if (visited.contains(node)) {
                 continue;
             }
             visited.add(node);
-            if (node instanceof FunctionComponent) {
-                FunctionComponent component = (FunctionComponent) node;
+            if (node instanceof FunctionComponent component) {
                 result.add(component);
-            } else if (node instanceof FunctionContact) {
-                FunctionContact contact = (FunctionContact) node;
+            } else if (node instanceof FunctionContact contact) {
                 if (contact.isPort() == contact.isInput()) {
                     queue.addAll(circuit.getPostset(contact));
                 } else {
                     queue.add(contact.getParent());
                 }
-            } else if (node instanceof Joint) {
-                Joint joint = (Joint) node;
+            } else if (node instanceof Joint joint) {
                 queue.addAll(circuit.getPostset(joint));
-            } else if (node instanceof MathConnection) {
-                MathConnection connection = (MathConnection) node;
+            } else if (node instanceof MathConnection connection) {
                 queue.add(connection.getSecond());
             }
         }
@@ -100,8 +90,7 @@ public final class StructureUtils {
         Set<FunctionContact> result = new HashSet<>();
         Set<Node> visited = new HashSet<>();
         Queue<Node> queue = new ArrayDeque<>();
-        if (curNode instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent) curNode;
+        if (curNode instanceof FunctionComponent component) {
             queue.addAll(component.getOutputs());
         } else {
             queue.add(curNode);
@@ -109,22 +98,19 @@ public final class StructureUtils {
 
         while (!queue.isEmpty()) {
             Node node = queue.remove();
-            if ((node == null) || visited.contains(node)) {
+            if (visited.contains(node)) {
                 continue;
             }
             visited.add(node);
-            if (node instanceof FunctionContact) {
-                FunctionContact contact = (FunctionContact) node;
+            if (node instanceof FunctionContact contact) {
                 if (contact.isOutput() && contact.isPort()) {
                     result.add(contact);
                 } else {
                     queue.addAll(circuit.getPostset(contact));
                 }
-            } else if (node instanceof Joint) {
-                Joint joint = (Joint) node;
+            } else if (node instanceof Joint joint) {
                 queue.addAll(circuit.getPostset(joint));
-            } else if (node instanceof MathConnection) {
-                MathConnection connection = (MathConnection) node;
+            } else if (node instanceof MathConnection connection) {
                 queue.add(connection.getSecond());
             }
         }

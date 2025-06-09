@@ -124,8 +124,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         double x = pos.getX();
         double y = pos.getY();
         while (node != null) {
-            if (node instanceof VisualTransformableNode) {
-                VisualTransformableNode transferableNode = (VisualTransformableNode) node;
+            if (node instanceof VisualTransformableNode transferableNode) {
                 x -= transferableNode.getX();
                 y -= transferableNode.getY();
             }
@@ -243,8 +242,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
 
     @Override
     public void copyPosition(Movable src) {
-        if (src instanceof VisualTransformableNode) {
-            VisualTransformableNode srcNode = (VisualTransformableNode) src;
+        if (src instanceof VisualTransformableNode srcNode) {
             setRootSpacePosition(srcNode.getRootSpacePosition());
         }
     }

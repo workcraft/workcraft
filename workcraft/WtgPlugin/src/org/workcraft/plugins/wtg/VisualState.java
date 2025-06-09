@@ -22,7 +22,7 @@ import java.awt.geom.Rectangle2D;
 @DisplayName("State")
 @SVGIcon("images/wtg-node-state.svg")
 public class VisualState extends VisualComponent {
-    private static double tokenSize = VisualCommonSettings.getNodeSize() / 1.9;
+    private static final double tokenSize = VisualCommonSettings.getNodeSize() / 1.9;
 
     public VisualState(State state) {
         super(state);
@@ -48,8 +48,7 @@ public class VisualState extends VisualComponent {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         g.setColor(ColorUtils.colorise(getForegroundColor(), d.getColorisation()));
-        if (d instanceof StateDecoration) {
-            StateDecoration sd = (StateDecoration) d;
+        if (d instanceof StateDecoration sd) {
             if (sd.isMarked()) {
                 g.fill(getInitialMarkerShape());
             }

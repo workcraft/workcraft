@@ -31,7 +31,7 @@ public class NodesRef extends ArrayList<String> {
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer("");
+        StringBuilder result = new StringBuilder();
         // step
         for (int i = 0; i < this.size(); i++) {
             if (i == 0 || i == 1) {
@@ -71,9 +71,8 @@ public class NodesRef extends ArrayList<String> {
 
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof NodesRef)) return false;
+        if (!(o instanceof NodesRef ref)) return false;
 
-        NodesRef ref = (NodesRef) o;
         if (ref.size() != size()) return false;
 
         for (String str : ref) {

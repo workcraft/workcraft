@@ -6,7 +6,6 @@ import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
-@SuppressWarnings("serial")
 public class DisabledPanel extends JPanel {
 
     private final Font font = Font.getFont(Font.DIALOG);

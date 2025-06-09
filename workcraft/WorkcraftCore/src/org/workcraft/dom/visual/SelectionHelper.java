@@ -45,9 +45,8 @@ public class SelectionHelper {
         for (VisualNode node : currentLevelSelection) {
             if (node instanceof VisualConnection) continue;
             boolean b = true;
-            if (node instanceof VisualReplica) {
+            if (node instanceof VisualReplica replica) {
                 // Only add proxies whose master is also (transitively) selected
-                VisualReplica replica = (VisualReplica) node;
                 VisualComponent master = replica.getMaster();
                 b = recursivelyIncludedNodes.contains(master);
             }

@@ -20,7 +20,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.BufferedReader;
 import java.io.File;
@@ -47,7 +46,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
     private static String level = "";
     private static String display = "";
     private static String highlight = "";
-    private static List<Qslist> qslist = new ArrayList<>();
+    private static final List<Qslist> qslist = new ArrayList<>();
 
     @Override
     public String getDisplayName() {
@@ -130,13 +129,14 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
         }
-        String str = "";
+        StringBuilder str = new StringBuilder();
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str += line + '\n';
+            str.append(line);
+            str.append('\n');
         }
-        return str;
+        return str.toString();
     }
 
     private static void processQsl(String file) {
@@ -166,13 +166,14 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
         }
-        String str = "";
+        StringBuilder str = new StringBuilder();
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str += line + '\n';
+            str.append(line);
+            str.append('\n');
         }
-        return str;
+        return str.toString();
     }
 
     public int checkType(String s) {
@@ -348,8 +349,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
-    private static List<JCheckBox> jcbn = new ArrayList<>();
-    private JCheckBox jcb;
+    private static final List<JCheckBox> jcbn = new ArrayList<>();
     private JCheckBox jcblast;
 
     private void createPanel(List<JPanel> panellist, String file) {
@@ -360,24 +360,21 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
         }
+        JCheckBox jcb;
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             Scanner lineSc = new Scanner(line);
             if (line.contains("SOLUTION")) {
                 if (no > 1) {
                     panellist.get(panellist.size() - 1).add(jcb = new JCheckBox(""));
-                    ItemListener itemListener = new ItemListener() {
-                        @Override
-                        public void itemStateChanged(ItemEvent e) {
-                            if (e.getSource() instanceof JCheckBox) {
-                                JCheckBox sjcb = (JCheckBox) e.getSource();
-                                if (sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
-                                if (sjcb.isSelected()) System.out.println("indexa==" + index);
-                                if (jcblast != null) jcblast.setSelected(false);
-                                jcblast = sjcb;
-                                //String name = sjcb.getName();
-                                //System.out.println(name);
-                            }
+                    ItemListener itemListener = e -> {
+                        if (e.getSource() instanceof JCheckBox sjcb) {
+                            if (sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
+                            if (sjcb.isSelected()) System.out.println("indexa==" + index);
+                            if (jcblast != null) jcblast.setSelected(false);
+                            jcblast = sjcb;
+                            //String name = sjcb.getName();
+                            //System.out.println(name);
                         }
                     };
                     jcb.addItemListener(itemListener);
@@ -397,18 +394,14 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         }
         panellist.get(panellist.size() - 1).add(jcb = new JCheckBox(""));
 
-        ItemListener itemListener = new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() instanceof JCheckBox) {
-                    JCheckBox sjcb = (JCheckBox) e.getSource();
-                    if (sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
-                    //if (sjcb.isSelected()) System.out.println("indexb==" + index);
-                    if (jcblast != null) jcblast.setSelected(false);
-                    jcblast = sjcb;
-                    //String name = sjcb.getName();
-                    //System.out.println(name);
-                }
+        ItemListener itemListener = e -> {
+            if (e.getSource() instanceof JCheckBox sjcb) {
+                if (sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
+                //if (sjcb.isSelected()) System.out.println("indexb==" + index);
+                if (jcblast != null) jcblast.setSelected(false);
+                jcblast = sjcb;
+                //String name = sjcb.getName();
+                //System.out.println(name);
             }
         };
         jcb.addItemListener(itemListener);
@@ -467,11 +460,11 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                     vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
                     vxmCommand.addAll(processArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
                     ExternalProcess.printCommandLine(vxmCommand);
-                    String[] cmdArray = vxmCommand.toArray(new String[vxmCommand.size()]);
+                    String[] cmdArray = vxmCommand.toArray(new String[0]);
                     Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 
                     String s;
-                    String str = "";
+                    StringBuilder str = new StringBuilder();
                     InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
                     BufferedReader stdInput = new BufferedReader(inputStreamReader);
                     int n = 0;
@@ -480,7 +473,10 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                     while ((s = stdInput.readLine()) != null) {
                         //if (n == 1) test = checkType(s);
                         if (test == -1) test = checkType(s);
-                        if (n > 0) str += s + '\n';
+                        if (n > 0) {
+                            str.append(s);
+                            str.append('\n');
+                        }
                         n++;
                         System.out.println(s);
                     }
@@ -490,25 +486,25 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                         processQsl(qslFile.getAbsolutePath());
 
                         File equFile = XmasSettings.getTempVxmEquFile();
-                        str = processEq(equFile.getAbsolutePath()); //testing str assignment - fpb
+                        str = new StringBuilder(processEq(equFile.getAbsolutePath())); //testing str assignment - fpb
                     } else if ("normal".equals(level) && (test == 2)) {
                         System.out.println("LEVEL IS NORMAL ");
                         File locFile = XmasSettings.getTempVxmLocFile();
-                        str = processLoc(locFile.getAbsolutePath());
+                        str = new StringBuilder(processLoc(locFile.getAbsolutePath()));
                     }
                     if (test > 0) {
                         if ("popup".equals(display)) {
                             if (!"advanced".equals(level)) {
-                                new SolutionsDialog1(test, str);
+                                new SolutionsDialog1(test, str.toString());
                             } else {
-                                new SolutionsDialog2(test, str);
+                                new SolutionsDialog2(test, str.toString());
                             }
                         }
                         if (test == 2) {
                             if ("local".equals(highlight)) {
-                                localHighlight(str, xnet, vnet);
+                                localHighlight(str.toString(), xnet, vnet);
                             } else if ("rel".equals(highlight)) {
-                                relHighlight(str, xnet, vnet);
+                                relHighlight(str.toString(), xnet, vnet);
                                 activeHighlight(xnet, vnet);
                             }
                         }

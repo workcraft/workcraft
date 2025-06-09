@@ -30,8 +30,7 @@ public class FunctionConsistencySupervisor extends StateSupervisor {
 
     @Override
     public void handleEvent(StateEvent e) {
-        if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent) e;
+        if (e instanceof PropertyChangedEvent pce) {
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
             if ((sender instanceof FunctionContact)
@@ -40,12 +39,10 @@ public class FunctionConsistencySupervisor extends StateSupervisor {
                 handleFunctionChange((FunctionContact) sender);
             }
         }
-        if (e instanceof NodesDeletingEvent) {
-            NodesDeletingEvent nde = (NodesDeletingEvent) e;
+        if (e instanceof NodesDeletingEvent nde) {
             for (Node node : nde.getAffectedNodes()) {
-                if (node instanceof Contact) {
+                if (node instanceof Contact contact) {
                     // Update all set/reset functions when a contact is removed
-                    Contact contact = (Contact) node;
                     handleContactRemoval(contact);
                 }
             }
@@ -54,8 +51,7 @@ public class FunctionConsistencySupervisor extends StateSupervisor {
 
     private void handleFunctionChange(FunctionContact contact) {
         Node parent = contact.getParent();
-        if (parent instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent) parent;
+        if (parent instanceof FunctionComponent component) {
             component.setIsArbitrationPrimitive(false);
             if (!component.isBlackbox() && (component.getRefinement() != null)) {
                 component.setRefinement(null);

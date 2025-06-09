@@ -46,8 +46,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
             } else if (sender instanceof VisualExitEvent) {
                 handleSignalExitTransformation((VisualExitEvent) sender);
             }
-        } else if (e instanceof PropertyChangedEvent) {
-            PropertyChangedEvent pce = (PropertyChangedEvent) e;
+        } else if (e instanceof PropertyChangedEvent pce) {
             String propertyName = pce.getPropertyName();
             if ((sender instanceof Signal) && (propertyName.equals(Signal.PROPERTY_INITIAL_STATE))) {
                 VisualSignal signal = dtd.getVisualComponent((Signal) sender, VisualSignal.class);
@@ -157,8 +156,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
     private void handleSignalInitialStateChange(VisualSignal signal) {
         VisualEntryEvent entry = signal.getVisualSignalEntry();
         VisualEvent nextEvent = DtdUtils.getNextVisualEvent(dtd, entry);
-        if (nextEvent instanceof VisualTransitionEvent) {
-            VisualTransitionEvent nextTransition = (VisualTransitionEvent) nextEvent;
+        if (nextEvent instanceof VisualTransitionEvent nextTransition) {
             Signal.State state = signal.getInitialState();
             if (DtdUtils.getPreviousDirection(state) == nextTransition.getDirection()) {
                 DtdUtils.dissolveTransitionEvent(dtd, nextTransition);
@@ -180,8 +178,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
             nextDone = true;
         }
         VisualEvent nextEvent = DtdUtils.getNextVisualEvent(dtd, transition);
-        if (nextEvent instanceof VisualTransitionEvent) {
-            VisualTransitionEvent nextTransition = (VisualTransitionEvent) nextEvent;
+        if (nextEvent instanceof VisualTransitionEvent nextTransition) {
             if (transition.getDirection() == nextTransition.getDirection()) {
                 DtdUtils.dissolveTransitionEvent(dtd, nextTransition);
                 nextDone = true;
@@ -193,8 +190,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
 
         boolean prevDone = false;
         VisualEvent prevEvent = DtdUtils.getPrevVisualEvent(dtd, transition);
-        if (prevEvent instanceof VisualTransitionEvent) {
-            VisualTransitionEvent prevTransition = (VisualTransitionEvent) prevEvent;
+        if (prevEvent instanceof VisualTransitionEvent prevTransition) {
             if (prevTransition.getDirection() == transition.getDirection()) {
                 DtdUtils.dissolveTransitionEvent(dtd, transition);
                 prevDone = true;

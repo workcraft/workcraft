@@ -363,8 +363,7 @@ public class VisualSON extends AbstractVisualModel {
 
             // Reparenting at the level of the reference manager
             ReferenceManager refMan = getMathModel().getReferenceManager();
-            if (refMan instanceof HierarchyReferenceManager) {
-                HierarchyReferenceManager hierRefMan = (HierarchyReferenceManager) refMan;
+            if (refMan instanceof HierarchyReferenceManager hierRefMan) {
                 for (MathNode node: selectedMath) {
                     Container parent = (Container) node.getParent();
                     hierRefMan.setNamespaceProvider(Arrays.asList(node), mathGroup);
@@ -430,8 +429,7 @@ public class VisualSON extends AbstractVisualModel {
 
             // Reparenting at the level of the reference manager
             ReferenceManager refMan = getMathModel().getReferenceManager();
-            if (refMan instanceof HierarchyReferenceManager) {
-                HierarchyReferenceManager hierRefMan = (HierarchyReferenceManager) refMan;
+            if (refMan instanceof HierarchyReferenceManager hierRefMan) {
                 for (Node node: selectedMath) {
                     Container parent = (Container) node.getParent();
                     hierRefMan.setNamespaceProvider(Arrays.asList(node), mathBlock);
@@ -525,7 +523,7 @@ public class VisualSON extends AbstractVisualModel {
         if (result.size() == 1) {
             JOptionPane.showMessageDialog(mainWindow,
                     "A single component cannot be set as a block", group, JOptionPane.WARNING_MESSAGE);
-            result.removeAll(result);
+            result.clear();
             return result;
         }
 
@@ -614,16 +612,13 @@ public class VisualSON extends AbstractVisualModel {
     @Override
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
-        if (node instanceof VisualSONConnection) {
-            VisualSONConnection connection = (VisualSONConnection) node;
+        if (node instanceof VisualSONConnection connection) {
             if ((connection.getSemantics() == Semantics.PNLINE) || (connection.getSemantics() == Semantics.ASYNLINE)) {
                 properties.add(getConnectionTimeProperty(connection));
             }
         }
-        if (node instanceof VisualComponent) {
-            VisualComponent component = (VisualComponent) node;
-            if (component.getReferencedComponent() instanceof Time) {
-                Time time = (Time) component.getReferencedComponent();
+        if (node instanceof VisualComponent component) {
+            if (component.getReferencedComponent() instanceof Time time) {
                 properties.add(getStartTimeProperty(time));
                 properties.add(getEndTimeProperty(time));
                 properties.add(getDurationProperty(time));

@@ -111,12 +111,12 @@ public class BSONCycleAlg extends ONCycleAlg {
             int lower = 0;
 
             for (Node n : cycle) {
-                if (n instanceof ChannelPlace) {
-                    continue;
-                } else if (bsonAlg.isUpperNode(n)) {
-                    upper++;
-                } else {
-                    lower++;
+                if (!(n instanceof ChannelPlace)) {
+                    if (bsonAlg.isUpperNode(n)) {
+                        upper++;
+                    } else {
+                        lower++;
+                    }
                 }
             }
             //all cycle nodes are in the same level

@@ -22,7 +22,7 @@ class LabelParserTests {
 
         Assertions.assertEquals("a", result.getFirst());
         Assertions.assertEquals(SignalTransition.Direction.PLUS, result.getSecond());
-        Assertions.assertEquals(Integer.valueOf(4), result.getThird());
+        Assertions.assertEquals(4, result.getThird());
     }
 
     @Test

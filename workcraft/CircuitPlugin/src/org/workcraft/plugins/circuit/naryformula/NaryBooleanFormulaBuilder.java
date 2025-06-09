@@ -19,7 +19,7 @@ import org.workcraft.formula.Zero;
 
 public class NaryBooleanFormulaBuilder {
 
-    private static class NaryBooleanFormulaPrinter implements BooleanVisitor<NaryBooleanFormula> {
+    private static final class NaryBooleanFormulaPrinter implements BooleanVisitor<NaryBooleanFormula> {
 
         public List<NaryBooleanFormula> visitBinaryOp(BinaryBooleanFormula op, NaryBooleanFormulaVisitor<List<NaryBooleanFormula>> extractor) {
             NaryBooleanFormula x = op.getX().accept(this);

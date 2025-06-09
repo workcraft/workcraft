@@ -33,7 +33,6 @@ public class ReachabilityTask implements Task<VerificationResult> {
     private final ReachabilityAlg reachAlg;
 
     private final Collection<String> markingRefs;
-    private Collection<Node> causalPredecessors;
     private final Collection<String> causalPredecessorRefs;
 
     public ReachabilityTask(WorkspaceEntry we) {
@@ -44,7 +43,6 @@ public class ReachabilityTask implements Task<VerificationResult> {
         reachAlg = new ReachabilityAlg(net);
 
         markingRefs = new ArrayList<>();
-        causalPredecessors = new HashSet<>();
         causalPredecessorRefs = new HashSet<>();
 
         if (hasConflict(net)) {
@@ -140,7 +138,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
                 }
             }
         }
-        causalPredecessors = new HashSet<>();
+        Collection<Node> causalPredecessors = new HashSet<>();
 
         //get causalPredecessors for each marking
         for (String ref : markingRefs) {
@@ -154,9 +152,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
         for (Node t : causalPredecessors) {
             if (t instanceof TransitionNode) {
                 causalPredecessorRefs.add(net.getNodeReference(t));
-                for (Node pre : net.getPreset((MathNode) t)) {
-                    consume.add(pre);
-                }
+                consume.addAll(net.getPreset((MathNode) t));
             }
         }
 

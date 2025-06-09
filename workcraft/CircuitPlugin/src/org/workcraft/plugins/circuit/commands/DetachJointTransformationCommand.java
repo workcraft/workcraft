@@ -35,8 +35,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        if (node instanceof VisualContact) {
-            VisualContact contact = (VisualContact) node;
+        if (node instanceof VisualContact contact) {
             return contact.isDriver();
         }
         return false;
@@ -59,8 +58,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> drivers = new HashSet<>();
-        if (model instanceof VisualCircuit) {
-            VisualCircuit circuit = (VisualCircuit) model;
+        if (model instanceof VisualCircuit circuit) {
             for (VisualContact driver: circuit.getVisualDrivers()) {
                 if (circuit.getConnections(driver).size() > 1) {
                     drivers.add(driver);
@@ -70,8 +68,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
             if (!selection.isEmpty()) {
                 HashSet<VisualNode> selectedDrivers = new HashSet<>(selection);
                 for (VisualNode node: selection) {
-                    if (node instanceof VisualCircuitComponent) {
-                        VisualCircuitComponent component = (VisualCircuitComponent) node;
+                    if (node instanceof VisualCircuitComponent component) {
                         selectedDrivers.addAll(component.getVisualOutputs());
                     }
                 }
@@ -86,9 +83,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualContact)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualContact driver = (VisualContact) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualContact driver)) {
             VisualJoint joint = CircuitUtils.detachJoint(circuit, driver);
             if (joint != null) {
                 model.addToSelection(joint);

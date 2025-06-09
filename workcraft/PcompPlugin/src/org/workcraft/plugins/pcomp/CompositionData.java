@@ -45,8 +45,7 @@ public class CompositionData {
         NodeList components = root.getChildNodes();
         for (int i = 0; i < components.getLength(); i++) {
             Node item = components.item(i);
-            if (item instanceof Element) {
-                Element element = (Element) item;
+            if (item instanceof Element element) {
                 if (STG_ELEMENT_NAME.equals(element.getTagName())) {
                     Element fileElement = XmlUtils.getChildElement(FILE_ELEMENT_NAME, element);
                     Element signalsElement = XmlUtils.getChildElement(SIGNALS_ELEMENT_NAME, element);

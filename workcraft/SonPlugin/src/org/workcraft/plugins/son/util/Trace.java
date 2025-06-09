@@ -2,7 +2,6 @@ package org.workcraft.plugins.son.util;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("serial")
 public class Trace extends ArrayList<StepRef> {
 
     private int position = 0;
@@ -51,7 +50,7 @@ public class Trace extends ArrayList<StepRef> {
 
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer("");
+        StringBuilder result = new StringBuilder();
         // position
         result.append(String.valueOf(getPosition()));
         result.append(':');
@@ -76,9 +75,8 @@ public class Trace extends ArrayList<StepRef> {
             if (first) {
                 // position
                 try {
-                    tmpPosition = Integer.valueOf(s.trim());
-                } catch (Exception e) {
-
+                    tmpPosition = Integer.parseInt(s.trim());
+                } catch (Exception ignored) {
                 }
             } else {
                 // trace

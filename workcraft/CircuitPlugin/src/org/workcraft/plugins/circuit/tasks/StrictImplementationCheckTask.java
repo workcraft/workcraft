@@ -57,7 +57,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
 
     private final WorkspaceEntry we;
 
-    private class SignalInfo {
+    private static class SignalInfo {
         public final String name;
         public final String setExpr;
         public final String resetExpr;
@@ -154,7 +154,7 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
     }
 
     private VerificationParameters getVerificationParameters(Collection<SignalInfo> signalInfos) {
-        String reach = "// Checks the STG is strictly implemented by a circuit.\n";
+        StringBuilder reach = new StringBuilder("// Checks the STG is strictly implemented by a circuit.\n");
         boolean isFirstSignal = true;
         for (SignalInfo signalInfo: signalInfos) {
             boolean isComplexGate = (signalInfo.resetExpr == null) || signalInfo.resetExpr.isEmpty();
@@ -167,16 +167,16 @@ public class StrictImplementationCheckTask implements Task<VerificationChainOutp
                 signalReach = signalReach.replace(STRICT_IMPLEMENTATION_EXPR_RESET_REPLACEMENT, signalInfo.resetExpr);
             }
             if (!isFirstSignal) {
-                reach += "\n|\n";
+                reach.append("\n|\n");
             }
-            reach += signalReach;
+            reach.append(signalReach);
             isFirstSignal = false;
         }
         return new VerificationParameters("Strict implementation",
                 VerificationMode.STG_REACHABILITY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
-                reach, true);
+                reach.toString(), true);
     }
 
 }

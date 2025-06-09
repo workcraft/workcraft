@@ -100,8 +100,7 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
                 if (pageNode == null) {
                     pageNode = createNode(pageName, container, PageNode.class);
                 }
-                if (pageNode instanceof Container) {
-                    Container parentContainer = (Container) pageNode;
+                if (pageNode instanceof Container parentContainer) {
                     String tailRef = NamespaceHelper.getReferenceTail(ref);
                     return createNodeWithHierarchy(tailRef, parentContainer, type);
                 } else {
@@ -146,8 +145,7 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
         }
 
         for (Node node: nodes) {
-            if (node instanceof Container) {
-                Container container = (Container) node;
+            if (node instanceof Container container) {
                 setNamespaceRecursively(dstRefManager, container, srcModel, container, null);
             }
         }

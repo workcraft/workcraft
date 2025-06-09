@@ -30,13 +30,14 @@ public class ScencoSolver {
     public static final String ACCESS_SCENCO_ERROR = "SCENCO error";
     public static final String MSG_NOT_ENOUGH_SCENARIOS = "Not enough scenarios. Select at least two scenarios.";
     public static final String MSG_TOO_MANY_SCENARIOS = "Too many scenarios selected.";
-    public static final String MSG_SELECTION_MODE_UNDEFINED = "Selection mode undefined.";
     public static final String MSG_SAT_BASED_ERROR = "SAT-Based encoding cannot handle the graphs selected";
     public static final String MSG_GATE_LIB_NOT_PRESENT = "Gate library not present. Please insert this " +
                                                           "(genlib format) inside ABC folder.";
+
     public static final String MSG_ABC_NOT_PRESENT = "Find out more information on " +
                                                      "\"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
                                                      "set Abc path in Workcraft settings.";
+
     private static final String VERILOG_TMP_NAME = "micro.v";
 
     private final EncoderSettings settings;
@@ -237,56 +238,50 @@ public class ScencoSolver {
             customPath = encodingFile.getAbsolutePath();
         }
         switch (settings.getGenMode()) {
-        case OPTIMAL_ENCODING:
-            genMode = "-top";
-            numSol = String.valueOf(settings.getSolutionNumber());
-            break;
-        case RECURSIVE:
-            if (settings.isCustomEncMode()) {
-                modBitFlag = "-bit";
-                modBit = String.valueOf(settings.getBits());
+            case OPTIMAL_ENCODING -> {
+                genMode = "-top";
+                numSol = String.valueOf(settings.getSolutionNumber());
             }
-            break;
-        case RANDOM:
-            genMode = "-r";
-            if (settings.isCustomEncMode()) {
+            case RECURSIVE -> {
+                if (settings.isCustomEncMode()) {
+                    modBitFlag = "-bit";
+                    modBit = String.valueOf(settings.getBits());
+                }
+            }
+            case RANDOM -> {
+                genMode = "-r";
+                if (settings.isCustomEncMode()) {
+                    customFlag = "-set";
+                    customPath = encodingFile.getAbsolutePath();
+                    modBitFlag = "-bit";
+                    modBit = String.valueOf(settings.getBits());
+                }
+                numSol = String.valueOf(settings.getSolutionNumber());
+            }
+            case SCENCO -> {
+                customFlag = "-set";
+                genMode = "-top";
+                numSol = "1";
+            }
+            case OLD_SYNT -> {
                 customFlag = "-set";
                 customPath = encodingFile.getAbsolutePath();
-                modBitFlag = "-bit";
-                modBit = String.valueOf(settings.getBits());
+                oldSynt = "-old";
+                genMode = "-top";
+                numSol = "1";
             }
-            numSol = String.valueOf(settings.getSolutionNumber());
-            break;
-        case SCENCO:
-            customFlag = "-set";
-            genMode = "-top";
-            numSol = "1";
-            break;
-        case OLD_SYNT:
-            customFlag = "-set";
-            customPath = encodingFile.getAbsolutePath();
-            oldSynt = "-old";
-            genMode = "-top";
-            numSol = "1";
-            break;
-        case SEQUENTIAL:
-            customFlag = "-set";
-            customPath = encodingFile.getAbsolutePath();
-            genMode = "-top";
-            numSol = "1";
-            break;
-        default:
-            FileUtils.deleteOnExitRecursively(directory);
-            args.add("ERROR");
-            args.add(MSG_SELECTION_MODE_UNDEFINED);
-            args.add(ACCESS_SCENCO_ERROR);
-            return args;
+            case SEQUENTIAL -> {
+                customFlag = "-set";
+                customPath = encodingFile.getAbsolutePath();
+                genMode = "-top";
+                numSol = "1";
+            }
         }
 
         //Adding arguments to list
         scencoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         if (scencoCommand != null && !scencoCommand.isEmpty()) args.add(scencoCommand);
-        if (scenarioFile.getAbsolutePath() != null && !scenarioFile.getAbsolutePath().isEmpty()) args.add(scenarioFile.getAbsolutePath());
+        if (!scenarioFile.getAbsolutePath().isEmpty()) args.add(scenarioFile.getAbsolutePath());
         args.add("-m");
         if (effort != null && !effort.isEmpty()) args.add(effort);
         if (genMode != null && !genMode.isEmpty()) args.add(genMode);
@@ -304,7 +299,7 @@ public class ScencoSolver {
         if (gateLibFlag != null && !gateLibFlag.isEmpty()) args.add(gateLibFlag);
         if (gatesLibrary != null && !gatesLibrary.isEmpty()) args.add(gatesLibrary);
         args.add("-res");
-        if ((resultDirectory.getAbsolutePath() != null) && !resultDirectory.getAbsolutePath().isEmpty()) args.add(resultDirectory.getAbsolutePath());
+        if (!resultDirectory.getAbsolutePath().isEmpty()) args.add(resultDirectory.getAbsolutePath());
         if (modBitFlag != null && !modBitFlag.isEmpty()) args.add(modBitFlag);
         if (modBit != null && !modBit.isEmpty()) args.add(modBit);
         if (verilogFlag != null && !verilogFlag.isEmpty()) {
@@ -354,7 +349,7 @@ public class ScencoSolver {
                         String el = (String) st2.nextElement();
                         if ("V".equals(el)) { //formula of a vertex
                             String vertexName = (String) st2.nextElement();
-                            if (!settings.GO_SIGNAL.equals(vertexName) && !settings.DONE_SIGNAL.equals(vertexName)) {
+                            if (!EncoderSettings.GO_SIGNAL.equals(vertexName) && !EncoderSettings.DONE_SIGNAL.equals(vertexName)) {
                                 optVertices[v] = vertexName;
                                 st2.nextElement();
                                 optFormulaeVertices[v++] = (String) st2.nextElement();
@@ -431,8 +426,7 @@ public class ScencoSolver {
             for (int i = 0; i < m; i++) {
                 optEncoding[i] = new boolean[freeVariables + pr];
                 for (int j = 0; j < freeVariables; j++) {
-                    if (optEnc[i].charAt(j) == '0' || optEnc[i].charAt(j) == '-') optEncoding[i][j] = false;
-                    else    optEncoding[i][j] = true;
+                    optEncoding[i][j] = (optEnc[i].charAt(j) != '0') && (optEnc[i].charAt(j) != '-');
                 }
                 for (int j = freeVariables; j < freeVariables + pr; j++) {
                     optEncoding[i][j] = false;

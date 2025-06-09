@@ -4,7 +4,6 @@ import org.workcraft.utils.GuiUtils;
 
 import javax.swing.*;
 
-@SuppressWarnings("serial")
 public class ActionButton extends JButton implements Actor {
 
     public ActionButton(Icon icon, Action action) {

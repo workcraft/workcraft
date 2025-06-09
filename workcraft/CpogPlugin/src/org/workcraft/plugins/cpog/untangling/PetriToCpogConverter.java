@@ -31,15 +31,10 @@ public class PetriToCpogConverter {
         this.xRightmostVertex = -1;
     }
 
-    /** function which performs the conversion
-     * @param settings **/
+    /** function which performs the conversion **/
     public VisualCpog run(PetriToCpogParameters settings) {
 
         Untanglings untangling = new Untanglings(settings);
-
-        /*****************************************************
-         * Unpack Petri net and stream it into the converter *
-         *****************************************************/
 
         // insert places
         for (Place p : pn.getPlaces()) {
@@ -55,8 +50,7 @@ public class PetriToCpogConverter {
         for (Place p : pn.getPlaces()) {
 
             for (Node n : pn.getPostset(p)) {
-                if (n instanceof Transition) {
-                    Transition t = (Transition) n;
+                if (n instanceof Transition t) {
 
                     untangling.placeToTransition(pn.getNodeReference(p), pn.getNodeReference(t));
                     // debug printing
@@ -67,8 +61,7 @@ public class PetriToCpogConverter {
 
         for (Transition t : pn.getTransitions()) {
             for (Node n : pn.getPostset(t)) {
-                if (n instanceof Place) {
-                    Place p = (Place) n;
+                if (n instanceof Place p) {
 
                     untangling.transitionToPlace(pn.getNodeReference(t), pn.getNodeReference(p));
                     // debug printing
@@ -87,10 +80,6 @@ public class PetriToCpogConverter {
             }
         }
 
-        /*****************************************************
-         * Convert the Petri net into a Cpog                 *
-         *****************************************************/
-
         // start conversion from Petri net to Cpog
         if (!untangling.startConversion()) {
             return null;
@@ -107,7 +96,6 @@ public class PetriToCpogConverter {
     }
 
     /** building the cpog model from the string partial orders **/
-    @SuppressWarnings("deprecation")
     private void buildCpog(ArrayList<PartialOrder> partialOrders) {
 
         // Positions inside the workspace

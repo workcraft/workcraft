@@ -20,7 +20,7 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
     public enum Void {
     }
 
-    interface BinaryGateImplementer {
+    public interface BinaryGateImplementer {
         void implement(Literal res, Literal x, Literal y);
     }
 

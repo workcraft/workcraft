@@ -6,7 +6,7 @@ public abstract class AbstractTaskManager implements TaskManager {
 
     public final TaskObserverList taskObserverList = new TaskObserverList();
 
-    static class TaskObserverList extends ArrayList<TaskMonitor> implements TaskMonitor {
+    public static class TaskObserverList extends ArrayList<TaskMonitor> implements TaskMonitor {
         private static final long serialVersionUID = 1L;
 
         @Override

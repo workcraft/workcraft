@@ -11,8 +11,7 @@ public class ActionCellEditor extends AbstractCellEditor implements TableCellEdi
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         JButton actionButton = new JButton();
-        if (value instanceof Action) {
-            Action action = (Action) value;
+        if (value instanceof Action action) {
             actionButton.setText(action.getTitle());
             actionButton.addActionListener(e -> action.run());
         }

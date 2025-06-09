@@ -61,8 +61,7 @@ public class Graph extends AbstractMathModel {
         HierarchyReferenceManager refManager = getReferenceManager();
         NameManager nameManager = refManager.getNameManager(null);
         for (MathNode srcNode: srcChildren) {
-            if (srcNode instanceof Vertex) {
-                Vertex srcVertex = (Vertex) srcNode;
+            if (srcNode instanceof Vertex srcVertex) {
                 Symbol dstSymbol = null;
                 Symbol srcSymbol = srcVertex.getSymbol();
                 if (srcSymbol != null) {

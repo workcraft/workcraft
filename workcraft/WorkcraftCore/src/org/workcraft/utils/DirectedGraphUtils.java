@@ -2,9 +2,9 @@ package org.workcraft.utils;
 
 import java.util.*;
 
-public class DirectedGraphUtils {
+public final class DirectedGraphUtils {
 
-    private static class Block<T> {
+    private static final class Block<T> {
         public final Set<T> set = new HashSet<>();
         public final Map<T, Set<T>> map = new HashMap<>();
     }
@@ -41,7 +41,6 @@ public class DirectedGraphUtils {
     /**
      * Implementation of Johnson algorithm for finding all simple cycles in
      * a directed graph specified by its adjacency list.
-     *
      * Time complexity: O(V+E)*(C+1), where C is number of cycles.
      * Space complexity: O(V+E+S), where S is the sum of all cycles' lengths.
      **/
@@ -149,7 +148,6 @@ public class DirectedGraphUtils {
     /**
      * Implementation of Kosaraju algorithm for finding strongly connected components
      * in a directed graph specified by its adjacency list.
-     *
      * Time complexity: O(V+E)
      * Space complexity: O(V)
      */

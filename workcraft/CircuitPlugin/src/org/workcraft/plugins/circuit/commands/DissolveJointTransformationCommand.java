@@ -64,8 +64,7 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
         Collection<VisualNode> joints = new HashSet<>();
-        if (model instanceof VisualCircuit) {
-            VisualCircuit circuit = (VisualCircuit) model;
+        if (model instanceof VisualCircuit circuit) {
             joints.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualJoint.class));
             Collection<VisualNode> selection = circuit.getSelection();
             if (!selection.isEmpty()) {
@@ -81,9 +80,7 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualJoint)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualJoint joint = (VisualJoint) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualJoint joint)) {
             Set<VisualConnection> connections = new HashSet<>(model.getConnections(node));
             VisualCircuitConnection predConnection = null;
             for (VisualConnection connection: connections) {
@@ -94,9 +91,8 @@ public class DissolveJointTransformationCommand extends AbstractTransformationCo
             }
             if (predConnection != null) {
                 for (VisualConnection connection: connections) {
-                    if (!(connection instanceof VisualCircuitConnection)) continue;
+                    if (!(connection instanceof VisualCircuitConnection succConnection)) continue;
                     if (connection.getFirst() == node) {
-                        VisualCircuitConnection succConnection = (VisualCircuitConnection) connection;
                         LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(
                                 joint, predConnection, succConnection);
 

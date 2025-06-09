@@ -1,13 +1,7 @@
 package org.workcraft.plugins.plato.layout;
-import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
@@ -24,6 +18,12 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.utils.Hierarchy;
+
+import java.awt.geom.Point2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class ConceptsLayout {
 
@@ -63,17 +63,17 @@ public class ConceptsLayout {
     private static double arrangeNodes(VisualStg visualStg, HashMap<String, HashSet<VisualComponent>> nodeMap, double x, double y) {
         double leftmost = 0.0;
         double rightmost = 0.0;
-        int mapSize = nodeMap.values().size();
+        int mapSize = nodeMap.size();
 
-        if (x != 0 && nodeMap.values().size() > 1) {
-            x -= ((nodeMap.values().size() - 1) / 2) * centreXDiff;
+        if ((x != 0) && (nodeMap.size() > 1)) {
+            x -= ((nodeMap.size() - 1) / 2.0) * centreXDiff;
             if (prevSize != 0) {
                 if (mapSize % 2 == 0) {
                     x -= centreXDiff / 2;
                 }
             }
         }
-        prevSize = nodeMap.values().size();
+        prevSize = nodeMap.size();
 
         Point2D.Double centre = new Point2D.Double(x, y);
 
@@ -98,8 +98,7 @@ public class ConceptsLayout {
                     }
                 }
 
-                if (c instanceof VisualSignalTransition) {
-                    VisualSignalTransition t  = (VisualSignalTransition) c;
+                if (c instanceof VisualSignalTransition t) {
                     if (t.getDirection() == SignalTransition.Direction.PLUS) {
                         plus.add(t);
                     } else if (t.getDirection() == SignalTransition.Direction.MINUS) {
@@ -136,8 +135,7 @@ public class ConceptsLayout {
                 Bezier bezier = (Bezier) c.getGraphic();
                 BezierControlPoint[] points = bezier.getBezierControlPoints();
 
-                if (first instanceof VisualSignalTransition) {
-                    VisualSignalTransition f = (VisualSignalTransition) first;
+                if (first instanceof VisualSignalTransition f) {
                     if (f.getDirection() == SignalTransition.Direction.PLUS) {
                         points[0].setPosition(new Point2D.Double(f.getCenter().getX() + 1.5, f.getCenter().getY()));
                         points[1].setPosition(new Point2D.Double(second.getCenter().getX(), second.getCenter().getY() - 1.5));
@@ -221,7 +219,7 @@ public class ConceptsLayout {
 
     private static void addReplicaPlaces(VisualStg visualStg) {
         Collection<VisualSignalTransition> transitions = visualStg.getVisualSignalTransitions();
-        Container container = Hierarchy.getNearestContainer(new HashSet<Node>(transitions));
+        Container container = Hierarchy.getNearestContainer(new HashSet<>(transitions));
 
         for (VisualSignalTransition t : transitions) {
             HashSet<VisualReplicaPlace> replicas = new HashSet<>();
@@ -229,19 +227,17 @@ public class ConceptsLayout {
             ArrayList<VisualReplicaPlace> right = new ArrayList<>();
             boolean side = false;
             for (Connection c : visualStg.getConnections(t)) {
-                if (c instanceof VisualReadArc) {
-                    VisualReadArc a = (VisualReadArc) c;
+                if (c instanceof VisualReadArc a) {
                     VisualNode first = a.getFirst();
                     VisualReplicaPlace replicaPlace;
                     replicaPlace = visualStg.createVisualReplica((VisualPlace) first, VisualReplicaPlace.class, container);
                     replicas.add(replicaPlace);
                     if (side) {
                         right.add(replicaPlace);
-                        side = !side;
                     } else {
                         left.add(replicaPlace);
-                        side = !side;
                     }
+                    side = !side;
                 }
             }
             for (int i = 0; i < left.size(); i++) {
@@ -251,7 +247,7 @@ public class ConceptsLayout {
                 } else if (i < (left.size() / 2)) {
                     r.setRootSpacePosition(new Point2D.Double(t.getRootSpaceX() - replicaDiff, t.getRootSpaceY() + (0.5 * (i + 1))));
                 } else {
-                    r.setRootSpacePosition(new Point2D.Double(t.getRootSpaceX() - replicaDiff, t.getRootSpaceY() - (0.5 * ((i + 1) - (left.size() / 2)))));
+                    r.setRootSpacePosition(new Point2D.Double(t.getRootSpaceX() - replicaDiff, t.getRootSpaceY() - (0.5 * ((i + 1) - (left.size() / 2.0)))));
                 }
             }
 
@@ -262,7 +258,7 @@ public class ConceptsLayout {
                 } else if (i < (right.size() / 2)) {
                     r.setRootSpacePosition(new Point2D.Double(t.getRootSpaceX() + replicaDiff, t.getRootSpaceY() + (0.5 * (i + 1))));
                 } else {
-                    r.setRootSpacePosition(new Point2D.Double(t.getRootSpaceX() + replicaDiff, t.getRootSpaceY() - (0.5 * ((i + 1) - (right.size() / 2)))));
+                    r.setRootSpacePosition(new Point2D.Double(t.getRootSpaceX() + replicaDiff, t.getRootSpaceY() - (0.5 * ((i + 1) - (right.size() / 2.0)))));
                 }
             }
 

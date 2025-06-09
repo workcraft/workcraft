@@ -5,6 +5,7 @@ import org.workcraft.exceptions.NotSupportedException;
 import java.awt.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.function.Function;
 
@@ -25,6 +26,7 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
 
     private boolean applyLayout;
 
+    @Serial
     private static final long serialVersionUID = -7262534875583282631L;
 
     public SmartFlowLayout() {
@@ -49,15 +51,9 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
         this.newAlign = align;
 
         switch (align) {
-        case LEADING:
-            this.align = LEFT;
-            break;
-        case TRAILING:
-            this.align = RIGHT;
-            break;
-        default:
-            this.align = align;
-            break;
+            case LEADING -> this.align = LEFT;
+            case TRAILING -> this.align = RIGHT;
+            default -> this.align = align;
         }
     }
 
@@ -108,21 +104,13 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
 
     private void moveComponents(Container target, int x, int y, int remainingWidth, int height,
             int rowStart, int rowEnd, boolean ltr) {
+
         switch (newAlign) {
-        case LEFT:
-            x += ltr ? 0 : remainingWidth;
-            break;
-        case CENTER:
-            x += remainingWidth / 2;
-            break;
-        case RIGHT:
-            x += ltr ? remainingWidth : 0;
-            break;
-        case LEADING:
-            break;
-        case TRAILING:
-            x += remainingWidth;
-            break;
+            case LEFT -> x += ltr ? 0 : remainingWidth;
+            case CENTER -> x += remainingWidth / 2;
+            case RIGHT -> x += ltr ? remainingWidth : 0;
+            case TRAILING -> x += remainingWidth;
+            default -> { }
         }
         for (int i = rowStart; i < rowEnd; i++) {
             Component m = target.getComponent(i);
@@ -292,8 +280,10 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
      * objects written by older versions of the class that didn't contain
      * all the fields we use now.
      */
+    @Serial
     private void readObject(ObjectInputStream stream)
             throws IOException, ClassNotFoundException {
+
         stream.defaultReadObject();
 
         if (serialVersionOnStream < 1) {
@@ -312,21 +302,12 @@ public class SmartFlowLayout implements LayoutManager, Serializable {
     public String toString() {
         String str = "";
         switch (align) {
-        case LEFT:
-            str = ",align=left";
-            break;
-        case CENTER:
-            str = ",align=center";
-            break;
-        case RIGHT:
-            str = ",align=right";
-            break;
-        case LEADING:
-            str = ",align=leading";
-            break;
-        case TRAILING:
-            str = ",align=trailing";
-            break;
+            case LEFT -> str = ",align=left";
+            case CENTER -> str = ",align=center";
+            case RIGHT -> str = ",align=right";
+            case LEADING -> str = ",align=leading";
+            case TRAILING -> str = ",align=trailing";
+            default -> { }
         }
         return getClass().getName() + "[hgap=" + hgap + ",vgap=" + vgap + str + "]";
     }

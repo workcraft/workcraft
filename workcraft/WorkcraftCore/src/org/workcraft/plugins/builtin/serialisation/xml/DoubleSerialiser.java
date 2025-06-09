@@ -10,10 +10,6 @@ public class DoubleSerialiser implements BasicXMLSerialiser<Double> {
         return Double.toHexString(d);
     }
 
-    public static String doubleToString(Double d) {
-        return doubleToString(d.doubleValue());
-    }
-
     public static double doubleFromString(String s) {
         return Double.parseDouble(s);
     }

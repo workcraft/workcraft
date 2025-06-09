@@ -25,8 +25,7 @@ public final class ConditionConsistencySupervisor extends HierarchySupervisor {
         // Update all vertex conditions when a variable is removed
         if (e instanceof NodesDeletingEvent) {
             for (Node node: e.getAffectedNodes()) {
-                if (node instanceof Variable) {
-                    final Variable var = (Variable) node;
+                if (node instanceof Variable var) {
                     removeVariableFromConditions(var);
                 }
             }

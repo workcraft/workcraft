@@ -52,8 +52,7 @@ public class FileReferenceCellRenderer extends JPanel implements TableCellRender
         clearButton.setEnabled(false);
         chooseButton.setToolTipText(null);
 
-        if (value instanceof FileReference) {
-            FileReference fileReference = (FileReference) value;
+        if (value instanceof FileReference fileReference) {
             File file = fileReference.getFile();
             if (file != null) {
                 if (file.exists()) {

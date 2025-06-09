@@ -14,7 +14,7 @@ public class HourMins extends AbstractTimeGranularity {
         hour %= 24;
         mins = addMins % 60;
 
-        String merge = hour.toString() + autoComplete(mins);
+        String merge = hour + autoComplete(mins);
         int result = Integer.parseInt(merge);
 
         if (result == 0) {
@@ -42,7 +42,7 @@ public class HourMins extends AbstractTimeGranularity {
             hour = (24 + hour % 24) % 24;
         }
 
-        String merge = hour.toString() + autoComplete(mins);
+        String merge = hour + autoComplete(mins);
         int result = Integer.parseInt(merge);
 
         if (result == 0) {
@@ -76,7 +76,7 @@ public class HourMins extends AbstractTimeGranularity {
             hour -= 1;
         }
 
-        String merge = hour.toString() + autoComplete(mins);
+        String merge = hour + autoComplete(mins);
         int result = Integer.parseInt(merge);
 
         if (end >= start) {
@@ -92,23 +92,21 @@ public class HourMins extends AbstractTimeGranularity {
         Integer mins = 0;
 
         switch (str.length()) {
-        case 1:
-        case 2:
-            mins = time;
-            break;
-        case 3:
-            mins = Integer.valueOf(str.substring(1, 3));
-            hour = Integer.valueOf(str.substring(0, 1));
-            break;
-        case 4:
-            mins = Integer.valueOf(str.substring(2, 4));
-            hour = Integer.valueOf(str.substring(0, 2));
-            break;
+            case 1, 2 -> mins = time;
+            case 3 -> {
+                mins = Integer.valueOf(str.substring(1, 3));
+                hour = Integer.valueOf(str.substring(0, 1));
+            }
+            case 4 -> {
+                mins = Integer.valueOf(str.substring(2, 4));
+                hour = Integer.valueOf(str.substring(0, 2));
+            }
+            default -> { }
         }
 
         if (hour > 23 || mins > 60 || hour < 0 || mins < 0) {
             if (time != 2400 && time != 9999) {
-                throw new TimeOutOfBoundsException("Time value out of bounds " + time.toString());
+                throw new TimeOutOfBoundsException("Time value out of bounds " + time);
             }
         }
     }
@@ -118,17 +116,15 @@ public class HourMins extends AbstractTimeGranularity {
         Integer hour = 0;
 
         switch (str.length()) {
-        case 3:
-            hour = Integer.valueOf(str.substring(0, 1));
-            break;
-        case 4:
-            hour = Integer.valueOf(str.substring(0, 2));
-            break;
+            case 3 -> hour = Integer.valueOf(str.substring(0, 1));
+            case 4 -> hour = Integer.valueOf(str.substring(0, 2));
+            default -> {
+            }
         }
 
         if (hour > 23 || hour < 0) {
             if (time != 2400 && time != 9999) {
-                throw new TimeOutOfBoundsException("Time value out of bounds " + time.toString());
+                throw new TimeOutOfBoundsException("Time value out of bounds " + time);
             }
         }
 
@@ -140,21 +136,15 @@ public class HourMins extends AbstractTimeGranularity {
         Integer mins = 0;
 
         switch (str.length()) {
-        case 1:
-        case 2:
-            mins = time;
-            break;
-        case 3:
-            mins = Integer.valueOf(str.substring(1, 3));
-            break;
-        case 4:
-            mins = Integer.valueOf(str.substring(2, 4));
-            break;
+            case 1, 2 -> mins = time;
+            case 3 -> mins = Integer.valueOf(str.substring(1, 3));
+            case 4 -> mins = Integer.valueOf(str.substring(2, 4));
+            default -> { }
         }
 
         if (mins > 60 || mins < 0) {
             if (time != 2400 && time != 9999) {
-                throw new TimeOutOfBoundsException("Time value out of bounds " + time.toString());
+                throw new TimeOutOfBoundsException("Time value out of bounds " + time);
             }
         }
 
@@ -162,18 +152,16 @@ public class HourMins extends AbstractTimeGranularity {
     }
 
     private String autoComplete(Integer value) {
-        String text = value.toString();
+        StringBuilder text = new StringBuilder(value.toString());
         int length = text.length();
 
         if (length < 2) {
             while (length < 2) {
-                StringBuffer sb = new StringBuffer();
-                sb.append("0").append(text);
-                text = sb.toString();
+                text.insert(0, "0");
                 length = text.length();
             }
         }
-        return text;
+        return text.toString();
     }
 
     private static int floorDiv(int x, int y) {

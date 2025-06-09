@@ -49,16 +49,14 @@ public class ConnectionUtils {
         dstConnection.setConnectionType(srcConnection.getConnectionType());
         ConnectionGraphic srcGraphic = srcConnection.getGraphic();
         ConnectionGraphic dstGraphic = dstConnection.getGraphic();
-        if (dstGraphic instanceof Polyline) {
-            Polyline polyline = (Polyline) dstGraphic;
+        if (dstGraphic instanceof Polyline polyline) {
             polyline.resetControlPoints();
             for (ControlPoint srcControlPoint: srcGraphic.getControlPoints()) {
                 Point2D dstPosition = getScaledPosition(srcControlPoint, scale);
                 polyline.addControlPoint(dstPosition);
             }
-        } else if (dstGraphic instanceof Bezier) {
+        } else if (dstGraphic instanceof Bezier dstBezier) {
             Bezier srcBezier = (Bezier) srcGraphic;
-            Bezier dstBezier = (Bezier) dstGraphic;
             BezierControlPoint[] srcControlPoints = srcBezier.getBezierControlPoints();
             BezierControlPoint[] dstControlPoints = dstBezier.getBezierControlPoints();
 

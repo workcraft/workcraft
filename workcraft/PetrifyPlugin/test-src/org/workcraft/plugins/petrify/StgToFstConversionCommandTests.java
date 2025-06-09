@@ -82,17 +82,10 @@ class StgToFstConversionCommandTests {
         for (org.workcraft.plugins.fst.Signal signal: dstFst.getSignals()) {
             String signalName = dstFst.getNodeReference(signal);
             switch (signal.getType()) {
-            case INPUT:
-                dstInputs.add(signalName);
-                break;
-            case INTERNAL:
-                dstInternals.add(signalName);
-                break;
-            case OUTPUT:
-                dstOutputs.add(signalName);
-                break;
-            default:
-                break;
+                case INPUT -> dstInputs.add(signalName);
+                case INTERNAL -> dstInternals.add(signalName);
+                case OUTPUT -> dstOutputs.add(signalName);
+                default -> { }
             }
         }
 

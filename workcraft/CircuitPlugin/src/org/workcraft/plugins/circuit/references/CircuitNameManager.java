@@ -16,12 +16,11 @@ public class CircuitNameManager extends DefaultNameManager {
 
     @Override
     public String getPrefix(Node node) {
-        if (node instanceof Contact) {
-            Contact contact = (Contact) node;
-            switch (contact.getIOType()) {
-            case INPUT: return contact.isPort() ? "in" : "i";
-            case OUTPUT: return contact.isPort() ? "out" : "o";
-            }
+        if (node instanceof Contact contact) {
+            return switch (contact.getIOType()) {
+                case INPUT -> contact.isPort() ? "in" : "i";
+                case OUTPUT -> contact.isPort() ? "out" : "o";
+            };
         }
         return super.getPrefix(node);
     }
@@ -29,8 +28,7 @@ public class CircuitNameManager extends DefaultNameManager {
     @Override
     public void setName(Node node, String name, boolean force) {
         if (isSignalNode(node)) {
-            if (node instanceof Contact) {
-                Contact contact = (Contact) node;
+            if (node instanceof Contact contact) {
                 if (isUnusedName(name) || renameOccupantIfDifferent(contact, name)) {
                     setSignalName(contact, name);
                     contact.setName(name);

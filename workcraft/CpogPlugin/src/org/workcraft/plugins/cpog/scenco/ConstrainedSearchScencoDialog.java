@@ -20,7 +20,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-@SuppressWarnings("serial")
 public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
 
     private JLabel circuitSizeLabel;
@@ -185,11 +184,8 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             bitsText.setText(String.valueOf(bits + 1));
         }
         for (int i = 0; i < m; i++) {
-            String data = "";
-            for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
-                data += ScencoHelper.dontCareBit;
-            }
-            encodingTable.getModel().setValueAt(data, i, 1);
+            String value = ScencoHelper.dontCareBit.repeat(Math.max(0, Integer.parseInt(bitsText.getText())));
+            encodingTable.getModel().setValueAt(value, i, 1);
         }
     }
 

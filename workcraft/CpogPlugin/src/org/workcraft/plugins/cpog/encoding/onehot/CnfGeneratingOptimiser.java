@@ -7,10 +7,10 @@ import org.workcraft.formula.Literal;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.formula.cnf.CnfClause;
 import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.plugins.cpog.formula.MemoryConservingBooleanWorker;
-import org.workcraft.plugins.cpog.formula.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.encoding.twohot.TwoHotRange;
 import org.workcraft.plugins.cpog.encoding.twohot.TwoHotRangeProvider;
+import org.workcraft.plugins.cpog.formula.MemoryConservingBooleanWorker;
+import org.workcraft.plugins.cpog.formula.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.sat.OptimisationTask;
 import org.workcraft.plugins.cpog.sat.SatProblemGenerator;
 
@@ -156,7 +156,7 @@ public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
             }
         }
 
-        return new OptimisationTask<Cnf>(functionVars, enc, new Cnf(tableConditions));
+        return new OptimisationTask<>(functionVars, enc, new Cnf(tableConditions));
     }
 
     private void orderFunctions(TwoHotRange[] derivedFunctions) {

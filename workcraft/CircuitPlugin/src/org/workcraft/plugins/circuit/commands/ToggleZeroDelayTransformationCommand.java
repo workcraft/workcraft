@@ -1,7 +1,7 @@
 package org.workcraft.plugins.circuit.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
@@ -10,9 +10,9 @@ import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -42,8 +42,7 @@ public class ToggleZeroDelayTransformationCommand extends AbstractTransformation
     @Override
     public boolean isEnabled(ModelEntry me, VisualNode node) {
         boolean result = false;
-        if (node instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) node;
+        if (node instanceof VisualFunctionComponent component) {
             result = component.isBuffer() || component.isInverter();
         }
         return result;
@@ -59,10 +58,12 @@ public class ToggleZeroDelayTransformationCommand extends AbstractTransformation
         Collection<VisualNode> components = new HashSet<>();
         Container root = model.getRoot();
         Collection<VisualFunctionComponent> inverters = Hierarchy.getDescendantsOfType(
-                root, VisualFunctionComponent.class, component -> component.isInverter());
+                root, VisualFunctionComponent.class, VisualFunctionComponent::isInverter);
+
         components.addAll(inverters);
         Collection<VisualFunctionComponent> buffers = Hierarchy.getDescendantsOfType(
-                root, VisualFunctionComponent.class, component -> component.isBuffer());
+                root, VisualFunctionComponent.class, VisualFunctionComponent::isBuffer);
+
         components.addAll(buffers);
         components.retainAll(model.getSelection());
         return components;
@@ -70,8 +71,7 @@ public class ToggleZeroDelayTransformationCommand extends AbstractTransformation
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionComponent)) {
-            VisualFunctionComponent component = (VisualFunctionComponent) node;
+        if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionComponent component)) {
             try {
                 component.setIsZeroDelay(!component.getIsZeroDelay());
             } catch (RuntimeException e) {

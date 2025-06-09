@@ -50,17 +50,16 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> result = new HashSet<>();
-        result.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitConnection.class));
+        Collection<VisualNode> result = new HashSet<>(
+                Hierarchy.getDescendantsOfType(model.getRoot(), VisualCircuitConnection.class));
+
         result.retainAll(model.getSelection());
         return result;
     }
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualCircuitConnection)) {
-            VisualCircuit circuit = (VisualCircuit) model;
-            VisualCircuitConnection connection = (VisualCircuitConnection) node;
+        if ((model instanceof VisualCircuit circuit) && (node instanceof VisualCircuitConnection connection)) {
             VisualFunctionComponent buffer = GateUtils.createBufferGate(circuit);
             GateUtils.insertGateWithin(circuit, buffer, connection);
             GateUtils.propagateInitialState(circuit, buffer);

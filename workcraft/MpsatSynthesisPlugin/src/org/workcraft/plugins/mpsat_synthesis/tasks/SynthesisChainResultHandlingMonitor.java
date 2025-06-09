@@ -62,26 +62,18 @@ public class SynthesisChainResultHandlingMonitor extends AbstractResultHandlingM
         SynthesisChainOutput chainOutput = chainResult.getPayload();
         SynthesisMode mpsatMode = chainOutput.getSynthesisMode();
         MpsatOutput mpsatOutput = chainOutput.getMpsatResult().getPayload();
-        switch (mpsatMode) {
-        case RESOLVE_ENCODING_CONFLICTS:
-            return handleConflictResolutionOutput(mpsatOutput);
-
-        case COMPLEX_GATE_IMPLEMENTATION:
-            return handleSynthesisOutput(mpsatOutput, false, false, RenderType.GATE, false);
-
-        case GENERALISED_CELEMENT_IMPLEMENTATION:
-            return handleSynthesisOutput(mpsatOutput, false, true, RenderType.BOX, false);
-
-        case STANDARD_CELEMENT_IMPLEMENTATION:
-            return handleSynthesisOutput(mpsatOutput, true, false, RenderType.GATE, false);
-
-        case TECHNOLOGY_MAPPING:
-            return handleSynthesisOutput(mpsatOutput, false, false, RenderType.GATE, true);
-
-        default:
-            DialogUtils.showWarning(mpsatMode.name() + " is not supported by MPSat synthesis.");
-            return null;
-        }
+        return switch (mpsatMode) {
+            case RESOLVE_ENCODING_CONFLICTS ->
+                    handleConflictResolutionOutput(mpsatOutput);
+            case COMPLEX_GATE_IMPLEMENTATION ->
+                    handleSynthesisOutput(mpsatOutput, false, false, RenderType.GATE, false);
+            case GENERALISED_CELEMENT_IMPLEMENTATION ->
+                    handleSynthesisOutput(mpsatOutput, false, true, RenderType.BOX, false);
+            case STANDARD_CELEMENT_IMPLEMENTATION ->
+                    handleSynthesisOutput(mpsatOutput, true, false, RenderType.GATE, false);
+            case TECHNOLOGY_MAPPING ->
+                    handleSynthesisOutput(mpsatOutput, false, false, RenderType.GATE, true);
+        };
     }
 
     public WorkspaceEntry handleConflictResolutionOutput(MpsatOutput mpsatOutput) {

@@ -6,7 +6,6 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import javax.swing.*;
 import java.awt.*;
 
-@SuppressWarnings("serial")
 public abstract class AbstractScencoDialog extends JDialog {
 
     private final EncoderSettings settings;

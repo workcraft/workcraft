@@ -46,7 +46,7 @@ subprojects {
         arguments = [grammar_encoding: 'UTF-8', static: 'false']
     }
 
-    task cleanJavacc(type: Delete) {
+    tasks.register('cleanJavacc', Delete) {
         delete compileJavacc.outputDirectory
     }
 
@@ -71,7 +71,7 @@ subprojects {
         workingDir = rootDir
         testLogging {
             events "failed"
-            exceptionFormat "full"
+            exceptionFormat = "full"
             // Uncomment the next two lines to show stdout and stderr of tests
             /*  outputs.upToDateWhen {false} */
             /*  showStandardStreams = true */
@@ -89,7 +89,9 @@ subprojects {
 
     checkstyleMain.exclude gradle.javaccExclude
 
-    task checkstyle(dependsOn: tasks.withType(Checkstyle)*.name)
+    tasks.register('checkstyle') {
+        dependsOn tasks.withType(Checkstyle)*.name
+    }
 
 
     apply plugin: 'pmd'
@@ -104,7 +106,9 @@ subprojects {
 
     pmdMain.exclude gradle.javaccExclude
 
-    task pmd(dependsOn: tasks.withType(Pmd)*.name)
+    tasks.register('pmd') {
+        dependsOn tasks.withType(Pmd)*.name
+    }
 
 
     apply plugin: 'de.aaschmid.cpd'
@@ -135,7 +139,7 @@ subprojects {
     }
 
     afterEvaluate {project ->
-        task copyLibs(type: Copy) {
+        tasks.register('copyLibs', Copy) {
             from configurations.lib
             into "$buildDir/$gradle.libDir"
             include '*.jar'
@@ -177,11 +181,11 @@ subprojects {
         sourceDirs = [file('src'), file('javacc'), file('src-gen')]
         generatedSourceDirs = [file('src-gen')]
         resourceDirs = [file('res'), file('models')]
-        testSourceDirs = [file('test-src')]
-        testResourceDirs = [file('test-res')]
         excludeDirs = [file('.gradle'), file('.settings'), file('bin'), file('build'), file('gradle')]
         inheritOutputDirs = false
         outputDir = file('build/idea/')
+        testSources.setFrom(file('test-src'))
+        testResources.setFrom(file('test-res'))
     }
 
     ideaModule.dependsOn compileJavacc
@@ -255,10 +259,11 @@ tasks.coveralls {
 apply plugin: 'com.github.jk1.dependency-license-report'
 
 import com.github.jk1.license.filter.*
+import com.github.jk1.license.render.*
 
 licenseReport {
     configurations = ['runtimeClasspath', 'compileClasspath']
-    renderers = [new com.github.jk1.license.render.InventoryHtmlReportRenderer()]
+    renderers = [new InventoryHtmlReportRenderer()]
     allowedLicensesFile = new File("${project.rootDir}/config/license/allowed.json")
     filters = [new ReduceDuplicateLicensesFilter(), new LicenseBundleNormalizer()]
 }
@@ -295,15 +300,18 @@ idea.workspace.iws {
 }
 
 tasks.cleanIdea.doLast {
-    project.delete 'workcraft.iws'
+    delete 'workcraft.iws'
 }
 
-task cleanAll(dependsOn: 'cleanIdea')
+tasks.register('cleanAll') {
+    dependsOn 'cleanIdea'
+}
 
 allprojects {
 	javadoc.group = null  // Exclude javadoc from the list of tasks
 }
 
 tasks.cleanAll.doLast {
-    project.delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
+    delete 'workcraft.iws'
+    delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
 }

@@ -42,20 +42,17 @@ public class StgSelectionTool extends SelectionTool {
             GraphEditor editor = e.getEditor();
             VisualModel model = editor.getModel();
             Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
-            if (node instanceof VisualPlace) {
-                VisualPlace place = (VisualPlace) node;
+            if (node instanceof VisualPlace place) {
                 toggleToken(place.getReferencedComponent(), editor);
                 return;
             }
-            if (node instanceof VisualImplicitPlaceArc) {
+            if (node instanceof VisualImplicitPlaceArc implicitPlaceArc) {
                 if (e.isMenuKeyDown()) {
-                    VisualImplicitPlaceArc implicitPlaceArc = (VisualImplicitPlaceArc) node;
                     toggleToken(implicitPlaceArc.getImplicitPlace(), editor);
                     return;
                 }
             }
-            if (node instanceof VisualSignalTransition) {
-                VisualSignalTransition transition = (VisualSignalTransition) node;
+            if (node instanceof VisualSignalTransition transition) {
                 boolean processed = false;
                 if (e.isMenuKeyDown()) {
                     toggleSignalType(transition.getReferencedComponent(), editor);
@@ -69,8 +66,7 @@ public class StgSelectionTool extends SelectionTool {
                     return;
                 }
             }
-            if (node instanceof VisualNamedTransition) {
-                VisualNamedTransition transition = (VisualNamedTransition) node;
+            if (node instanceof VisualNamedTransition transition) {
                 AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, transition, false);
                 textEditor.edit(transition.getName(), transition.getNameFont(),
                         transition.getNameOffset(), Alignment.CENTER, false);
@@ -207,14 +203,11 @@ public class StgSelectionTool extends SelectionTool {
     private AbstractInsertTransformationCommand getInsertionCommand(VisualNamedTransition transition) {
         if (transition instanceof VisualSignalTransition) {
             Signal.Type signalType = ((VisualSignalTransition) transition).getSignalType();
-            switch (signalType) {
-            case INPUT:
-                return new InsertInputTransformationCommand();
-            case OUTPUT:
-                return new InsertOutputTransformationCommand();
-            case INTERNAL:
-                return new InsertInternalTransformationCommand();
-            }
+            return switch (signalType) {
+                case INPUT -> new InsertInputTransformationCommand();
+                case OUTPUT -> new InsertOutputTransformationCommand();
+                case INTERNAL -> new InsertInternalTransformationCommand();
+            };
         }
         return new InsertDummyTransformationCommand();
     }

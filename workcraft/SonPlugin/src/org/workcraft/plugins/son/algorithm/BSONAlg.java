@@ -89,7 +89,7 @@ public class BSONAlg extends RelationAlgorithm {
 
             if (!min.isEmpty() && !max.isEmpty()) {
                 //group does not have alternative behaviours
-                if (!allMarkings.keySet().contains(group)) {
+                if (!allMarkings.containsKey(group)) {
                     Phase phase = new Phase();
                     for (Node node : PathAlgorithm.dfs2(min, max, net)) {
                         if (node instanceof Condition) {
@@ -411,11 +411,11 @@ public class BSONAlg extends RelationAlgorithm {
         for (ONGroup group : groups) {
             boolean isInput = false;
             boolean isOutput = false;
-            for (Node node : group.getComponents()) {
-                if (net.getInputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
+            for (MathNode node : group.getComponents()) {
+                if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                     isInput = true;
                 }
-                if (net.getOutputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
+                if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                     isOutput = true;
                 }
             }
@@ -436,11 +436,11 @@ public class BSONAlg extends RelationAlgorithm {
             boolean isInput = false;
             boolean isOutput = false;
             if (this.isLineLikeGroup(group)) {
-                for (Node node : group.getComponents()) {
-                    if (net.getInputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
+                for (MathNode node : group.getComponents()) {
+                    if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                         isInput = true;
                     }
-                    if (net.getOutputSONConnectionTypes((MathNode) node).contains(Semantics.BHVLINE)) {
+                    if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                         isOutput = true;
                     }
                 }

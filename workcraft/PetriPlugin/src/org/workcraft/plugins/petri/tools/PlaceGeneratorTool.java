@@ -23,8 +23,7 @@ public class PlaceGeneratorTool extends NodeGeneratorTool {
     public void mousePressed(GraphEditorMouseEvent event) {
         WorkspaceEntry we = event.getEditor().getWorkspaceEntry();
         VisualNode node = we.getTemplateNode();
-        if (node instanceof VisualPlace) {
-            VisualPlace place = (VisualPlace) node;
+        if (node instanceof VisualPlace place) {
             place.getReferencedComponent().setTokens(event.isMenuKeyDown() ? 1 : 0);
         }
         super.mousePressed(event);

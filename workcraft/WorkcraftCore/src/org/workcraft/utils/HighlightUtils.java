@@ -25,8 +25,7 @@ public class HighlightUtils {
     public static Collection<HighlightData> getHighlights(JTextComponent textComponent) {
         Collection<HighlightData> result = new ArrayList<>();
         for (Highlighter.Highlight highlight : textComponent.getHighlighter().getHighlights()) {
-            if (highlight.getPainter() instanceof DefaultHighlighter.DefaultHighlightPainter) {
-                DefaultHighlighter.DefaultHighlightPainter painter = (DefaultHighlighter.DefaultHighlightPainter) highlight.getPainter();
+            if (highlight.getPainter() instanceof DefaultHighlighter.DefaultHighlightPainter painter) {
                 result.add(new HighlightData(highlight.getStartOffset(), highlight.getEndOffset(), painter.getColor()));
             }
         }
@@ -59,7 +58,7 @@ public class HighlightUtils {
                         Math.max(fromPos, 0),
                         Math.min(toPos, textComponent.getText().length()),
                         painter);
-            } catch (BadLocationException e) {
+            } catch (BadLocationException ignored) {
             }
         }
         return null;

@@ -28,17 +28,13 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
         }
         final StringBuilder result = new StringBuilder(signalName);
         switch (getReferencedComponent().getDirection()) {
-        case PLUS:
-            result.append("+");
-            break;
-        case MINUS:
-            result.append("-");
-            break;
-        case TOGGLE:
-            if (SignalCommonSettings.getShowToggle()) {
-                result.append("~");
+            case PLUS -> result.append("+");
+            case MINUS -> result.append("-");
+            case TOGGLE -> {
+                if (SignalCommonSettings.getShowToggle()) {
+                    result.append("~");
+                }
             }
-            break;
         }
         return result.toString();
     }

@@ -21,8 +21,7 @@ public class DockableWindow extends AbstractDockable {
     private static final MouseAdapter TAB_MOUSE_LISTENER = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
-            if ((e.getButton() == MouseEvent.BUTTON2) && (e.getSource() instanceof  JTabbedPane)) {
-                JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+            if ((e.getButton() == MouseEvent.BUTTON2) && (e.getSource() instanceof JTabbedPane tabbedPane)) {
                 TabbedPaneUI ui = tabbedPane.getUI();
                 int tabIndex = ui.tabForCoordinate(tabbedPane, e.getX(), e.getY());
                 DockingUtils.closeTab(tabbedPane, tabIndex);
@@ -35,8 +34,7 @@ public class DockableWindow extends AbstractDockable {
     private final List<Component> dragSources = new ArrayList<>();
 
     private final ChangeListener tabChangeListener = e -> {
-        if (e.getSource() instanceof JTabbedPane) {
-            JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+        if (e.getSource() instanceof JTabbedPane tabbedPane) {
             int tabIndex = DockingUtils.getTabIndex(tabbedPane, getComponent());
             for (DockableListener l : new ArrayList<>(dockableListeners)) {
                 if (tabbedPane.getSelectedIndex() == tabIndex) {
@@ -130,8 +128,7 @@ public class DockableWindow extends AbstractDockable {
 
     public void processTabEvents() {
         Container parent = contentPanel.getParent();
-        if (parent instanceof JTabbedPane) {
-            JTabbedPane tabbedPane = (JTabbedPane) parent;
+        if (parent instanceof JTabbedPane tabbedPane) {
             if (!inTab) {
                 inTab = true;
                 int tabIndex = DockingUtils.getTabIndex(tabbedPane, contentPanel);

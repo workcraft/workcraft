@@ -44,7 +44,7 @@ public class StructureVerifyDialog extends JDialog {
 
     protected boolean modalResult;
 
-    class TypeMode {
+    static class TypeMode {
         public int value;
         public String description;
 
@@ -59,7 +59,7 @@ public class StructureVerifyDialog extends JDialog {
         }
     }
 
-    class ListItem {
+    public class ListItem {
         private final String label;
         private boolean selected = true;
         private final Object obj;
@@ -126,7 +126,7 @@ public class StructureVerifyDialog extends JDialog {
 
     @SuppressWarnings("unchecked")
     protected void createTypePanel() {
-        typeCombo = new JComboBox();
+        typeCombo = new JComboBox<>();
         typeCombo.addItem(new TypeMode(0, "Structured Occurrence Nets"));
         typeCombo.addItem(new TypeMode(1, "Occurrence Net (Group)"));
         typeCombo.addItem(new TypeMode(2, "Communication Structured Occurrence Nets"));
@@ -142,7 +142,7 @@ public class StructureVerifyDialog extends JDialog {
     protected void createGroupItemsPanel() {
         selectedGroups = new ArrayList<>();
 
-        DefaultListModel listModel = new DefaultListModel();
+        DefaultListModel listModel = new DefaultListModel<>();
 
         for (ONGroup group : net.getGroups()) {
             group.setForegroundColor(Color.ORANGE);
@@ -154,7 +154,7 @@ public class StructureVerifyDialog extends JDialog {
             }
         }
 
-        groupList = new JList(listModel);
+        groupList = new JList<>(listModel);
         groupList.setCellRenderer(new ItemListRenderer());
         groupList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         groupList.addMouseListener(new MouseAdapter() {
@@ -178,7 +178,7 @@ public class StructureVerifyDialog extends JDialog {
                     }
                     list.repaint(list.getCellBounds(index, index));
 
-                } catch (ArrayIndexOutOfBoundsException e) { }
+                } catch (ArrayIndexOutOfBoundsException ignored) { }
             }
         });
 

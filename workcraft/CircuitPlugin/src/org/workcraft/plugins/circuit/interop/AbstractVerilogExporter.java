@@ -43,9 +43,8 @@ public abstract class AbstractVerilogExporter implements Exporter {
 
     @Override
     public void serialise(Model model, OutputStream out) {
-        if (model instanceof Circuit) {
+        if (model instanceof Circuit circuit) {
             VerilogWriter writer = new VerilogWriter(out);
-            Circuit circuit = (Circuit) model;
             String moduleName = ExportUtils.getTitleAsIdentifier(circuit.getTitle());
             File file = getCurrentFile();
             writer.write(ExportUtils.getExportHeader("Verilog netlist", "//", moduleName, file, getFormat()));
@@ -321,9 +320,9 @@ public abstract class AbstractVerilogExporter implements Exporter {
 
     private static String getMutexExpression(String g1, String g2, String r1, String r2) {
         String winner = switch (CircuitSettings.getMutexArbitrationWinner()) {
-        case RANDOM -> "$urandom_range(1, 2)";
-        case FIRST -> "2'b01";
-        case SECOND -> "2'b10";
+            case RANDOM -> "$urandom_range(1, 2)";
+            case FIRST -> "2'b01";
+            case SECOND -> "2'b10";
         };
 
         return "{%s, %s, %s, %s} == 4'b0011 ? %s : ".formatted(g1, g2, r1, r2, winner)
@@ -361,9 +360,9 @@ public abstract class AbstractVerilogExporter implements Exporter {
 
     private static String getWaitSigExpression(String sig) {
         String interpretation = switch (CircuitSettings.getWaitUndefinedInterpretation()) {
-        case RANDOM -> "$urandom_range(0, 1)";
-        case HIGH -> "1'b1";
-        case LOW -> "1'b0";
+            case RANDOM -> "$urandom_range(0, 1)";
+            case HIGH -> "1'b1";
+            case LOW -> "1'b0";
         };
 
         return "(%s !== 1'b0) && (%s !== 1'b1) ? %s : %s".formatted(sig, sig, interpretation, sig);

@@ -179,7 +179,7 @@ public class Attractor {
             for (Boolean vState : vertices) {
                 System.out.print(vState + " ");
             }
-            System.out.println("");
+            System.out.println();
             return;
         }
 
@@ -256,6 +256,6 @@ public class Attractor {
                 System.out.print(Integer.toString(i) + " ");
             }
         }
-        System.out.println("");
+        System.out.println();
     }
 }

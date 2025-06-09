@@ -10,12 +10,10 @@ import java.util.*;
 
 public class TransitionBundler {
 
-    @SuppressWarnings("serial")
-    private class Step extends HashSet<Transition> {
+    private static final class Step extends HashSet<Transition> {
     }
 
-    @SuppressWarnings("serial")
-    private class Marking extends HashMap<Place, Integer> {
+    private static final class Marking extends HashMap<Place, Integer> {
     }
 
     private final VisualPolicy policyNet;
@@ -81,7 +79,7 @@ public class TransitionBundler {
 
     private Collection<Step> resolveConflicts(Step enabled) {
         HashSet<Step> result = new HashSet<>();
-        if (enabled.size() > 0) {
+        if (!enabled.isEmpty()) {
             for (Transition t: enabled) {
                 Set<Transition> conflict = getConflict(t, enabled);
                 if (conflict.size() > 1) {
@@ -113,7 +111,7 @@ public class TransitionBundler {
     public void run() {
         for (Transition t: model.getTransitions()) {
             VisualBundledTransition vbt = t2vbt.get(t);
-            if (vbt != null && policyNet.getBundlesOfTransition(vbt).size() == 0) {
+            if ((vbt != null) && policyNet.getBundlesOfTransition(vbt).isEmpty()) {
                 unbundled.add(t);
             }
         }

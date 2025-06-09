@@ -25,11 +25,11 @@ public class StgNameManager extends DefaultNameManager {
     @Override
     public String getPrefix(Node node) {
         if (node instanceof SignalTransition) {
-            switch (((SignalTransition) node).getSignalType()) {
-            case INPUT: return INPUT_SIGNAL_PREFIX;
-            case OUTPUT: return OUTPUT_SIGNAL_PREFIX;
-            case INTERNAL: return INTERNAL_SIGNAL_PREFIX;
-            }
+            return switch (((SignalTransition) node).getSignalType()) {
+                case INPUT -> INPUT_SIGNAL_PREFIX;
+                case OUTPUT -> OUTPUT_SIGNAL_PREFIX;
+                case INTERNAL -> INTERNAL_SIGNAL_PREFIX;
+            };
         }
         return super.getPrefix(node);
     }
@@ -151,10 +151,10 @@ public class StgNameManager extends DefaultNameManager {
     @Override
     public boolean isUnusedName(String name) {
         return super.isUnusedName(name)
-            && !instancedNameManager.containsGenerator(name + "-")
-            && !instancedNameManager.containsGenerator(name + "+")
-            && !instancedNameManager.containsGenerator(name + "~")
-            && !instancedNameManager.containsGenerator(name);
+                && !instancedNameManager.containsGenerator(name + "-")
+                && !instancedNameManager.containsGenerator(name + "+")
+                && !instancedNameManager.containsGenerator(name + "~")
+                && !instancedNameManager.containsGenerator(name);
     }
 
     @Override

@@ -184,8 +184,7 @@ public class CircuitToStgConverter {
             VisualNode currentNode, VisualContact driverContact, Boolean isInverted) {
 
         Collection<Triple<VisualNode, VisualContact, Boolean>> result = new ArrayList<>();
-        if (currentNode instanceof VisualContact) {
-            VisualContact contact = (VisualContact) currentNode;
+        if (currentNode instanceof VisualContact contact) {
             Node parent = contact.getParent();
             // Support for zero delay buffers and inverters
             if (contact.isInput() && (parent instanceof VisualCircuitComponent)) {
@@ -197,15 +196,13 @@ public class CircuitToStgConverter {
             }
             // Support for replicas
             for (Replica replica : contact.getReplicas()) {
-                if (replica instanceof VisualReplicaContact) {
-                    VisualReplicaContact replicaContact = (VisualReplicaContact) replica;
+                if (replica instanceof VisualReplicaContact replicaContact) {
                     result.add(Triple.of(replicaContact, driverContact, isInverted));
                 }
             }
         }
         // Propagate through connections
-        if (currentNode instanceof VisualConnection) {
-            VisualConnection connection = (VisualConnection) currentNode;
+        if (currentNode instanceof VisualConnection connection) {
             result.add(Triple.of(connection.getSecond(), driverContact, isInverted));
         } else {
             for (VisualConnection connection : circuit.getConnections(currentNode)) {
@@ -410,8 +407,7 @@ public class CircuitToStgConverter {
                 }
                 if (zeroPlace == null) {
                     VisualConnection connection = stg.getConnection(minusTransition, plusTransition);
-                    if (connection instanceof VisualImplicitPlaceArc) {
-                        VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
+                    if (connection instanceof VisualImplicitPlaceArc implicitPlace) {
                         zeroPlace = stg.makeExplicit(implicitPlace);
                         String zeroName = NamespaceHelper.getReferenceName(zeroRef);
                         stg.setMathName(zeroPlace, zeroName);
@@ -419,8 +415,7 @@ public class CircuitToStgConverter {
                 }
                 if (onePlace == null) {
                     VisualConnection connection = stg.getConnection(plusTransition, minusTransition);
-                    if (connection instanceof VisualImplicitPlaceArc) {
-                        VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
+                    if (connection instanceof VisualImplicitPlaceArc implicitPlace) {
                         onePlace = stg.makeExplicit(implicitPlace);
                         String oneName = NamespaceHelper.getReferenceName(oneRef);
                         stg.setMathName(onePlace, oneName);
@@ -612,8 +607,7 @@ public class CircuitToStgConverter {
         double yPos = signal.getRootSpaceY();
         if (!signal.isPort()) {
             Node parent = signal.getParent();
-            if (parent instanceof VisualFunctionComponent) {
-                VisualFunctionComponent component = (VisualFunctionComponent) parent;
+            if (parent instanceof VisualFunctionComponent component) {
                 if (component.getVisualOutputs().size() == 1) {
                     xPos = component.getRootSpaceX();
                     yPos = component.getRootSpaceY();
@@ -628,16 +622,10 @@ public class CircuitToStgConverter {
         if (contact.isInput()) {
             direction = direction.flip();
         }
-        switch (direction) {
-        case WEST:
-        case NORTH:
-            return new Point2D.Double(6.0, 0.0);
-        case EAST:
-        case SOUTH:
-            return new Point2D.Double(-6.0, 0.0);
-        default:
-            return new Point2D.Double(0.0, 0.0);
-        }
+        return switch (direction) {
+            case WEST, NORTH -> new Point2D.Double(6.0, 0.0);
+            case EAST, SOUTH -> new Point2D.Double(-6.0, 0.0);
+        };
     }
 
     private void groupDriverStgs(HashSet<VisualContact> drivers) {

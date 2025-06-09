@@ -89,82 +89,80 @@ public class VisualEvent extends VisualComponent implements VisualTransitionNode
 
     @Override
     public Event getMathTransitionNode() {
-        return (Event) this.getReferencedComponent();
+        return this.getReferencedComponent();
     }
 
     @Override
     public void setLabel(String label) {
         super.setLabel(label);
-        ((Event) getReferencedComponent()).setLabel(label);
+        getReferencedComponent().setLabel(label);
     }
 
     @Override
     public String getLabel() {
-        super.getLabel();
-        return ((Event) getReferencedComponent()).getLabel();
+        return getReferencedComponent().getLabel();
     }
 
     public void setFaulty(Boolean fault) {
-        ((Event) getReferencedComponent()).setFaulty(fault);
+        getReferencedComponent().setFaulty(fault);
     }
 
     @Override
     public boolean isFaulty() {
-        return ((Event) getReferencedComponent()).isFaulty();
+        return getReferencedComponent().isFaulty();
     }
 
     @Override
     public Color getForegroundColor() {
-        return ((Event) getReferencedComponent()).getForegroundColor();
+        return getReferencedComponent().getForegroundColor();
     }
 
     @Override
     public void setForegroundColor(Color foregroundColor) {
-        ((Event) getReferencedComponent()).setForegroundColor(foregroundColor);
+        getReferencedComponent().setForegroundColor(foregroundColor);
     }
 
     @Override
     public void setFillColor(Color fillColor) {
-        ((Event) getReferencedComponent()).setFillColor(fillColor);
+        getReferencedComponent().setFillColor(fillColor);
     }
 
     @Override
     public Color getFillColor() {
-        return ((Event) getReferencedComponent()).getFillColor();
+        return getReferencedComponent().getFillColor();
     }
 
     public void setStartTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Event) getReferencedComponent()).setStartTime(input);
+        getReferencedComponent().setStartTime(input);
     }
 
     public String getStartTime() {
-        return ((Event) getReferencedComponent()).getStartTime().toString();
+        return getReferencedComponent().getStartTime().toString();
     }
 
     public void setEndTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Event) getReferencedComponent()).setEndTime(input);
+        getReferencedComponent().setEndTime(input);
     }
 
     public String getEndTime() {
-        return ((Event) getReferencedComponent()).getEndTime().toString();
+        return getReferencedComponent().getEndTime().toString();
     }
 
     public void setDuration(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Event) getReferencedComponent()).setDuration(input);
+        getReferencedComponent().setDuration(input);
     }
 
     public String getDuration() {
-        return ((Event) getReferencedComponent()).getDuration().toString();
+        return getReferencedComponent().getDuration().toString();
     }
 
     @Override
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
-        if (src instanceof VisualEvent) {
-            VisualEvent srcComponent = (VisualEvent) src;
+        if (src instanceof VisualEvent srcComponent) {
             setFaulty(srcComponent.isFaulty());
         }
     }

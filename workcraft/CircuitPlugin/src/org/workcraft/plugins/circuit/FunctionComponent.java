@@ -33,8 +33,7 @@ public class FunctionComponent extends CircuitComponent {
         public void handleEvent(HierarchyEvent e) {
             if (e instanceof NodesDeletingEvent) {
                 for (Node node: e.getAffectedNodes()) {
-                    if (node instanceof Contact) {
-                        final Contact contact = (Contact) node;
+                    if (node instanceof Contact contact) {
                         removeContactFromFunctions(contact);
                     }
                 }
@@ -200,8 +199,7 @@ public class FunctionComponent extends CircuitComponent {
     public FunctionContact getGateOutput() {
         FunctionContact gateOutput = null;
         for (Node node: getChildren()) {
-            if (!(node instanceof FunctionContact)) continue;
-            FunctionContact contact = (FunctionContact) node;
+            if (!(node instanceof FunctionContact contact)) continue;
             if (!contact.isOutput()) continue;
             if (gateOutput == null) {
                 gateOutput = contact;

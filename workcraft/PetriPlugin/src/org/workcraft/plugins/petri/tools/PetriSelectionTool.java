@@ -18,8 +18,7 @@ public class PetriSelectionTool extends SelectionTool {
         VisualModel model = e.getEditor().getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             VisualNode node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
-            if (node instanceof VisualPlace) {
-                VisualPlace place = (VisualPlace) node;
+            if (node instanceof VisualPlace place) {
                 if (place.getReferencedComponent().getTokens() <= 1) {
                     e.getEditor().getWorkspaceEntry().saveMemento();
 
