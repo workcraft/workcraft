@@ -50,7 +50,7 @@ public class PetriReadArcConnectionTool extends ConnectionTool {
 
     @Override
     public String getSecondHintMessage() {
-        return super.getSecondHintMessage() + " Hold Alt/AltGr to create a place proxy.";
+        return super.getSecondHintMessage() + " Hold Shift to create a place proxy.";
     }
 
     @Override
@@ -60,7 +60,7 @@ public class PetriReadArcConnectionTool extends ConnectionTool {
             if ((connection.getFirst() instanceof VisualPlace)
                     || (connection.getSecond() instanceof VisualPlace)) {
 
-                if (e.isExtendKeyDown()) {
+                if (e.isShiftKeyDown()) {
                     VisualModel visualModel = e.getEditor().getModel();
                     connection = ConversionUtils.replicateConnectedPlace(visualModel, connection);
                 }
