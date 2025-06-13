@@ -21,20 +21,18 @@ public class PetriConnectionTool extends ConnectionTool {
 
     @Override
     public String getSecondHintMessage() {
-        return super.getSecondHintMessage() + " Hold Alt/AltGr to create place proxy.";
+        return super.getSecondHintMessage() + " Hold Shift to create place proxy.";
     }
 
     @Override
     public VisualConnection finishConnection(GraphEditorMouseEvent e) {
         VisualConnection connection = super.finishConnection(e);
-        if (connection != null) {
-            if ((connection.getFirst() instanceof VisualPlace)
-                    || (connection.getSecond() instanceof VisualPlace)) {
+        if ((connection != null)
+                && ((connection.getFirst() instanceof VisualPlace) || (connection.getSecond() instanceof VisualPlace))) {
 
-                if (e.isExtendKeyDown()) {
-                    VisualModel visualModel = e.getEditor().getModel();
-                    connection = ConversionUtils.replicateConnectedPlace(visualModel, connection);
-                }
+            if (e.isShiftKeyDown()) {
+                VisualModel visualModel = e.getEditor().getModel();
+                connection = ConversionUtils.replicateConnectedPlace(visualModel, connection);
             }
         }
         return connection;

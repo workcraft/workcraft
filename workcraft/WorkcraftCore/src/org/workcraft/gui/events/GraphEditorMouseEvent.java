@@ -94,11 +94,7 @@ public class GraphEditorMouseEvent {
     }
 
     public boolean isAltKeyDown() {
-        return isMaskHit(MouseEvent.ALT_DOWN_MASK);
-    }
-
-    public boolean isAltGraphKeyDown() {
-        return isMaskHit(MouseEvent.ALT_GRAPH_DOWN_MASK);
+        return isMaskHit(MouseEvent.ALT_DOWN_MASK) || isMaskHit(MouseEvent.ALT_GRAPH_DOWN_MASK);
     }
 
     public boolean isMetaKeyDown() {
@@ -110,10 +106,6 @@ public class GraphEditorMouseEvent {
             return isMetaKeyDown();
         }
         return isCtrlKeyDown();
-    }
-
-    public boolean isExtendKeyDown() {
-        return isAltKeyDown() || isAltGraphKeyDown();
     }
 
 }

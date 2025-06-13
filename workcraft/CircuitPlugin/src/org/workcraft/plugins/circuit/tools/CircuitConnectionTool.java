@@ -37,7 +37,7 @@ public class CircuitConnectionTool extends ConnectionTool {
 
     @Override
     public String getSecondHintMessage() {
-        return super.getSecondHintMessage() + " Hold Alt/AltGr to create contact proxy.";
+        return super.getSecondHintMessage() + " Hold Shift to create contact proxy.";
     }
 
     @Override
@@ -70,7 +70,7 @@ public class CircuitConnectionTool extends ConnectionTool {
                     ((VisualJoint) fromNode).setRootSpacePosition(snapPos);
                 }
             }
-            if (e.isExtendKeyDown()) {
+            if (e.isShiftKeyDown()) {
                 VisualCircuit circuit = (VisualCircuit) e.getEditor().getModel();
                 VisualNode toNode = connection.getSecond();
                 if (toNode instanceof VisualContact drivenContact) {

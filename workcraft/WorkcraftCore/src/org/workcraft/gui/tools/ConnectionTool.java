@@ -39,7 +39,6 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     private Point2D firstPoint = null;
     private Point2D currentPoint = null;
-    private Point2D lastPoint = null;
     private LinkedList<Point2D> controlPoints = new LinkedList<>();
     private boolean mouseLeftFirstNode = false;
 
@@ -83,7 +82,6 @@ public class ConnectionTool extends AbstractGraphEditorTool {
         currentNode = null;
         firstPoint = null;
         firstNode = null;
-        lastPoint = null;
         mouseLeftFirstNode = false;
         editor.getModel().selectNone();
         setPermissions(editor);
@@ -172,34 +170,21 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     @Override
     public void mouseMoved(GraphEditorMouseEvent e) {
-        currentPoint = getCurrentPoint(e);
+        currentPoint = e.getPosition();
         GraphEditor editor = e.getEditor();
         updateCurrentNode(editor);
         editor.repaint();
     }
 
-    private Point2D getCurrentPoint(GraphEditorMouseEvent e) {
-        Point2D result = e.getPosition();
-        if (e.isShiftKeyDown() && (lastPoint != null)) {
-            if (Math.abs(result.getX() - lastPoint.getX()) > Math.abs(result.getY() - lastPoint.getY())) {
-                return new Point2D.Double(result.getX(), lastPoint.getY());
-            } else {
-                return new Point2D.Double(lastPoint.getX(), result.getY());
-            }
-        }
-        return result;
-    }
-
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
-        currentPoint = getCurrentPoint(e);
+        currentPoint = e.getPosition();
         GraphEditor editor = e.getEditor();
         updateCurrentNode(editor);
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (currentNode == null) {
                 if (firstNode != null) {
                     controlPoints.add(currentPoint);
-                    lastPoint = currentPoint;
                 }
             } else {
                 if (firstNode == null) {
@@ -245,7 +230,6 @@ public class ConnectionTool extends AbstractGraphEditorTool {
         } else {
             firstPoint = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
         }
-        lastPoint = firstPoint;
         currentNode = null;
         mouseLeftFirstNode = false;
         controlPoints = new LinkedList<>();
@@ -346,7 +330,6 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     public String getSecondHintMessage() {
         return "Click on second component or create polyline. " +
-                "Hold Shift to connect parallel to axes. " +
                 "Hold " + DesktopApi.getMenuKeyName() + " to connect continuously.";
     }
 

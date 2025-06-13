@@ -49,8 +49,9 @@ public class DtdSelectionTool extends SelectionTool {
         VisualModel model = editor.getModel();
         if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
             Node hitNode = HitMan.hitFirstInCurrentLevel(e.getStartPosition(), model);
-            if ((swappingSignal == null) && e.isExtendKeyDown() &&
-                    (hitNode instanceof VisualSignal) && (model instanceof VisualDtd)) {
+            if ((swappingSignal == null) && e.isAltKeyDown()
+                    && (hitNode instanceof VisualSignal) && (model instanceof VisualDtd)) {
+
                 swappingSignal = (VisualSignal) hitNode;
             }
         }
@@ -63,7 +64,7 @@ public class DtdSelectionTool extends SelectionTool {
         GraphEditor editor = e.getEditor();
         VisualModel model = editor.getModel();
         if (swappingSignal != null) {
-            if ((e.isExtendKeyDown()) && (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK)) {
+            if (e.isAltKeyDown() && (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK)) {
                 Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
                 if (node instanceof VisualSignal visualSignal) {
                     double y = visualSignal.getY();

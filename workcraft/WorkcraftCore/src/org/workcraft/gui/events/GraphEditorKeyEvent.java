@@ -1,12 +1,12 @@
 package org.workcraft.gui.events;
 
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.utils.DesktopApi;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-
-import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.utils.DesktopApi;
-import org.workcraft.gui.tools.GraphEditor;
 
 public class GraphEditorKeyEvent {
 
@@ -55,11 +55,7 @@ public class GraphEditorKeyEvent {
     }
 
     public boolean isAltKeyDown() {
-        return isMaskHit(InputEvent.ALT_DOWN_MASK);
-    }
-
-    public boolean isAltGraphKeyDown() {
-        return isMaskHit(InputEvent.ALT_GRAPH_DOWN_MASK);
+        return isMaskHit(InputEvent.ALT_DOWN_MASK) || isMaskHit(InputEvent.ALT_GRAPH_DOWN_MASK);
     }
 
     public boolean isMetaKeyDown() {
@@ -71,10 +67,6 @@ public class GraphEditorKeyEvent {
             return isMetaKeyDown();
         }
         return isCtrlKeyDown();
-    }
-
-    public boolean isExtendKeyDown() {
-        return isAltKeyDown() || isAltGraphKeyDown();
     }
 
 }
