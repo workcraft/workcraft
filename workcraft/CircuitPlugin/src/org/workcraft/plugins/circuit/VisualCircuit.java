@@ -389,6 +389,8 @@ public class VisualCircuit extends AbstractVisualModel {
         if (node == null) {
             properties.add(CircuitPropertyHelper.getEnvironmentProperty(this));
             properties.addAll(CircuitPropertyHelper.getComponentProperties(this));
+            properties.addAll(CircuitPropertyHelper.getPortProperties(this, Contact.IOType.INPUT));
+            properties.addAll(CircuitPropertyHelper.getPortProperties(this, Contact.IOType.OUTPUT));
         } else if (node instanceof VisualFunctionContact contact) {
             properties.add(CircuitPropertyHelper.getSetFunctionProperty(this, contact));
             properties.add(CircuitPropertyHelper.getResetFunctionProperty(this, contact));
