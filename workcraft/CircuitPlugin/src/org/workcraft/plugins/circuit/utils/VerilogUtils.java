@@ -6,10 +6,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitComponent;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
@@ -343,6 +340,20 @@ public final class VerilogUtils {
             return instanceFlatName + "/" + contactName;
         } else {
             return contact.getName();
+        }
+    }
+
+    public static String calcAttachedNetName(Circuit circuit, FunctionContact contact) {
+        Contact driver = CircuitUtils.findSignal(circuit, contact, false);
+        Node parent = driver.getParent();
+        boolean isAssignOutput = false;
+        if (parent instanceof FunctionComponent component) {
+            isAssignOutput = driver.isOutput() && !component.isMapped();
+        }
+        if (isAssignOutput) {
+            return NamespaceHelper.flattenReference(CircuitUtils.getSignalReference(circuit, driver));
+        } else {
+            return NamespaceHelper.flattenReference(CircuitUtils.getContactReference(circuit, driver));
         }
     }
 

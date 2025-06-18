@@ -21,86 +21,12 @@ import org.workcraft.workspace.ModelEntry;
 
 import java.awt.*;
 import java.io.File;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class CircuitPropertyHelper {
 
     private static final String PROPERTY_ENVIRONMENT = "Environment";
-
-    public static Collection<PropertyDescriptor> getComponentProperties(VisualCircuit circuit) {
-        List<VisualFunctionComponent> components = new ArrayList<>(Hierarchy.getChildrenOfType(
-                circuit.getCurrentLevel(), VisualFunctionComponent.class));
-
-        components.sort((component1, component2) -> SortUtils.compareNatural(
-                circuit.getMathName(component1), circuit.getMathName(component2)));
-
-        Collection<PropertyDescriptor> result = new ArrayList<>();
-        if (!components.isEmpty()) {
-            result.add(PropertyHelper.createSeparatorProperty("Components with color-coded refinement type"));
-            result.add(getRefinementLegendProperty());
-        }
-        for (VisualFunctionComponent component : components) {
-            result.add(getComponentProperty(circuit, component));
-        }
-        return result;
-    }
-
-    private static PropertyDescriptor getRefinementLegendProperty() {
-        Color cellColor = GuiUtils.getTableCellBackgroundColor();
-
-        return new LegendListDeclaration()
-                .addLegend("none", ColorUtils.colorise(cellColor, Color.WHITE))
-                .addLegend("STG", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getClearColor()))
-                .addLegend("circuit", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getFixerColor()))
-                .addLegend("error", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getProblemColor()))
-                .setReadonly();
-    }
-
-    private static PropertyDescriptor getComponentProperty(VisualCircuit circuit, VisualFunctionComponent component) {
-        String name = circuit.getMathModel().getComponentName(component.getReferencedComponent());
-
-        Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
-                () -> circuit.select(component),
-                "<html>Select component <i>" + name + "</i></html>");
-
-        Color backgroundColor = getComponentPropertyBackgroundColor(component);
-
-        return new PropertyDeclaration<>(TextAction.class, null,
-                value -> {
-                    String newName = value.getText();
-                    if (!name.equals(newName)) {
-                        circuit.setMathName(component, newName);
-                        component.sendNotification(new PropertyChangedEvent(component, Model.PROPERTY_NAME));
-                    }
-                },
-                () -> new TextAction(name)
-                        .setRightAction(rightAction, false)
-                        .setBackground(backgroundColor)
-            ).setSpan();
-    }
-
-    private static Color getComponentPropertyBackgroundColor(VisualFunctionComponent component) {
-        Color color = null;
-        File refinementFile = component == null ? null : component.getReferencedComponent().getRefinementFile();
-        if (refinementFile != null) {
-            ModelDescriptor modelDescriptor = null;
-            if (FileUtils.isReadableFile(refinementFile)) {
-                try {
-                    modelDescriptor = WorkUtils.extractModelDescriptor(refinementFile);
-                } catch (DeserialisationException ignored) {
-                }
-            }
-            if (modelDescriptor instanceof StgDescriptor) {
-                color = AnalysisDecorationSettings.getClearColor();
-            } else if (modelDescriptor instanceof CircuitDescriptor) {
-                color = AnalysisDecorationSettings.getFixerColor();
-            } else {
-                color = AnalysisDecorationSettings.getProblemColor();
-            }
-        }
-        return ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), color);
-    }
 
     public static PropertyDescriptor getEnvironmentProperty(VisualCircuit circuit) {
         return new PropertyDeclaration<>(FileReference.class, PROPERTY_ENVIRONMENT,
@@ -219,6 +145,116 @@ public class CircuitPropertyHelper {
         }
         component.getReferencedComponent().setIsArbitrationPrimitive(false);
         component.getReferencedComponent().setRefinement(value);
+    }
+
+    public static Collection<PropertyDescriptor> getComponentProperties(VisualCircuit circuit) {
+        List<VisualFunctionComponent> components = new ArrayList<>(Hierarchy.getChildrenOfType(
+                circuit.getCurrentLevel(), VisualFunctionComponent.class));
+
+        SortUtils.sortNatural(components, circuit::getMathName);
+        Collection<PropertyDescriptor> result = new ArrayList<>();
+        if (!components.isEmpty()) {
+            result.add(PropertyHelper.createSeparatorProperty("Components with color-coded refinement type"));
+            result.add(getRefinementLegendProperty());
+        }
+        for (VisualFunctionComponent component : components) {
+            result.add(getComponentProperty(circuit, component));
+        }
+        return result;
+    }
+
+    private static PropertyDescriptor getRefinementLegendProperty() {
+        Color cellColor = GuiUtils.getTableCellBackgroundColor();
+
+        return new LegendListDeclaration()
+                .addLegend("none", ColorUtils.colorise(cellColor, Color.WHITE))
+                .addLegend("STG", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getClearColor()))
+                .addLegend("circuit", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getFixerColor()))
+                .addLegend("error", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getProblemColor()))
+                .setReadonly();
+    }
+
+    private static PropertyDescriptor getComponentProperty(VisualCircuit circuit, VisualFunctionComponent component) {
+        String name = circuit.getMathModel().getComponentName(component.getReferencedComponent());
+
+        Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
+                () -> circuit.select(component),
+                "<html>Select component <i>" + name + "</i></html>");
+
+        Color backgroundColor = getComponentPropertyBackgroundColor(component);
+
+        return new PropertyDeclaration<>(TextAction.class, null,
+                value -> {
+                    String newName = value.getText();
+                    if (!name.equals(newName)) {
+                        circuit.setMathName(component, newName);
+                        component.sendNotification(new PropertyChangedEvent(component, Model.PROPERTY_NAME));
+                    }
+                },
+                () -> new TextAction(name)
+                        .setRightAction(rightAction, false)
+                        .setBackground(backgroundColor)
+            ).setSpan();
+    }
+
+    private static Color getComponentPropertyBackgroundColor(VisualFunctionComponent component) {
+        Color color = null;
+        File refinementFile = component == null ? null : component.getReferencedComponent().getRefinementFile();
+        if (refinementFile != null) {
+            ModelDescriptor modelDescriptor = null;
+            if (FileUtils.isReadableFile(refinementFile)) {
+                try {
+                    modelDescriptor = WorkUtils.extractModelDescriptor(refinementFile);
+                } catch (DeserialisationException ignored) {
+                }
+            }
+            if (modelDescriptor instanceof StgDescriptor) {
+                color = AnalysisDecorationSettings.getClearColor();
+            } else if (modelDescriptor instanceof CircuitDescriptor) {
+                color = AnalysisDecorationSettings.getFixerColor();
+            } else {
+                color = AnalysisDecorationSettings.getProblemColor();
+            }
+        }
+        return ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), color);
+    }
+
+    public static Collection<PropertyDescriptor> getPortProperties(VisualCircuit circuit, Contact.IOType type) {
+        List<VisualContact> inputPorts = new ArrayList<>(Hierarchy.getChildrenOfType(
+                circuit.getCurrentLevel(), VisualContact.class,
+                port -> port.isPort() && (port.getReferencedComponent().getIOType() == type)));
+
+        SortUtils.sortNatural(inputPorts, VisualContact::getName);
+
+        Collection<PropertyDescriptor> result = new ArrayList<>();
+        if (!inputPorts.isEmpty()) {
+            result.add(PropertyHelper.createSeparatorProperty(type + " ports"));
+        }
+        for (VisualContact inputPort : inputPorts) {
+            result.add(getPortProperty(circuit, inputPort));
+        }
+        return result;
+    }
+
+    private static PropertyDescriptor getPortProperty(VisualCircuit circuit, VisualContact port) {
+        String name = circuit.getMathReference(port);
+
+        Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
+                () -> circuit.select(port),
+                "<html>Select port <i>" + name + "</i></html>");
+
+        return new PropertyDeclaration<>(TextAction.class, null,
+                value -> {
+                    String newName = value.getText();
+                    if (!name.equals(newName)) {
+                        circuit.setMathName(port, newName);
+                        port.sendNotification(new PropertyChangedEvent(port, Model.PROPERTY_NAME));
+                    }
+                },
+                () -> new TextAction(name)
+                        .setRightAction(rightAction, false)
+                        .setForeground(port.getNameColor())
+        ).setSpan();
     }
 
     public static PropertyDescriptor getSetFunctionProperty(VisualCircuit circuit, VisualFunctionContact contact) {

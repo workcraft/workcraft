@@ -7,10 +7,7 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.FileReference;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.*;
-import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.FormulaUtils;
-import org.workcraft.formula.Not;
+import org.workcraft.formula.*;
 import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
@@ -320,9 +317,10 @@ public abstract class AbstractVerilogImporter implements Importer {
         insertMutexes(mutexes, circuit, signalToNetMap);
         createConnections(circuit, signalToNetMap);
         Map<String, Boolean> signalStates = getSignalState(verilogModule.initialState);
-        setInitialState(signalToNetMap, signalStates);
+        setInitialStateForPragmas(signalToNetMap, signalStates);
+        Set<String> constSignals = setInitialStateForConstants(circuit);
         setZeroDelayAttribute(instanceComponentMap);
-        checkImportResult(circuit, signalToNetMap, signalStates.keySet());
+        checkImportResult(circuit, signalToNetMap, signalStates.keySet(), constSignals);
         return circuit;
     }
 
@@ -339,7 +337,9 @@ public abstract class AbstractVerilogImporter implements Importer {
         return result;
     }
 
-    private void checkImportResult(Circuit circuit, Map<String, Net> signalToNetMap, Set<String> initialisedSignals) {
+    private void checkImportResult(Circuit circuit, Map<String, Net> signalToNetMap,
+            Set<String> initialisedSignals, Set<String> constSignals) {
+
         String longMessage = "";
         String shortMessage = "";
         // Check circuit for no components
@@ -373,6 +373,8 @@ public abstract class AbstractVerilogImporter implements Importer {
         Set<String> uninitialisedSignals = new HashSet<>(usedSignals);
         uninitialisedSignals.addAll(VerificationUtils.getHangingDriverSignals(circuit));
         uninitialisedSignals.removeAll(initialisedSignals);
+        uninitialisedSignals.removeAll(constSignals);
+
         if (!uninitialisedSignals.isEmpty()) {
             String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
                     "Missing initial state declaration (assuming low) for signal",
@@ -582,7 +584,7 @@ public abstract class AbstractVerilogImporter implements Importer {
         connections.put(outputName, netName);
         LinkedList<Literal> literals = new LinkedList<>(expression.getLiterals());
         Collections.reverse(literals);
-        for (Literal literal: literals) {
+        for (Literal literal : literals) {
             String literalName = literal.name;
             String name = VerilogUtils.getPrimitiveGatePinName(++index);
             literal.name = name;
@@ -619,7 +621,7 @@ public abstract class AbstractVerilogImporter implements Importer {
         Collections.reverse(literals);
         int index = 0;
         HashMap<String, String> netToPortMap = new HashMap<>();
-        for (Literal literal: literals) {
+        for (Literal literal : literals) {
             String literalName = literal.name;
             String name = netToPortMap.get(literalName);
             if (name == null) {
@@ -850,8 +852,8 @@ public abstract class AbstractVerilogImporter implements Importer {
             if (verilogConnection == null) {
                 continue;
             }
-            String instanceCreationError =  "Cannot create instance '" + verilogInstance.name
-                    + "' of module '"  + verilogInstance.moduleName + "'";
+            String instanceCreationError = "Cannot create instance '" + verilogInstance.name
+                    + "' of module '" + verilogInstance.moduleName + "'";
 
             VerilogPort verilogPort = getPortByNameOrPosition(verilogModule, verilogConnection.name, portIndex);
             if (verilogPort == null) {
@@ -1258,7 +1260,7 @@ public abstract class AbstractVerilogImporter implements Importer {
     }
 
     private void setZeroDelayAttribute(HashMap<VerilogInstance, FunctionComponent> instanceComponentMap) {
-        for (VerilogInstance verilogInstance: instanceComponentMap.keySet()) {
+        for (VerilogInstance verilogInstance : instanceComponentMap.keySet()) {
             FunctionComponent component = instanceComponentMap.get(verilogInstance);
             if ((component != null) && (verilogInstance.zeroDelay)) {
                 try {
@@ -1271,7 +1273,7 @@ public abstract class AbstractVerilogImporter implements Importer {
         }
     }
 
-    private void setInitialState(Map<String, Net> signalToNetMap, Map<String, Boolean> signalStates) {
+    private void setInitialStateForPragmas(Map<String, Net> signalToNetMap, Map<String, Boolean> signalStates) {
         // Set all signals first to 1 and then to 0, to make sure they switch and trigger the neighbours
         for (Net net : signalToNetMap.values()) {
             if (net != null) {
@@ -1295,6 +1297,25 @@ public abstract class AbstractVerilogImporter implements Importer {
                 net.sources.forEach(source -> source.setInitToOne(signalState));
             }
         }
+    }
+
+    private Set<String> setInitialStateForConstants(Circuit circuit) {
+        Set<String> result = new HashSet<>();
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            Collection<FunctionContact> contacts = component.getFunctionContacts();
+            FunctionContact onlyOutputPin = (contacts.size() != 1) ? null : contacts.iterator().next();
+            if ((onlyOutputPin != null) && onlyOutputPin.isOutput()) {
+                BooleanFormula setFunction = onlyOutputPin.getSetFunction();
+                if (Zero.getInstance().equals(setFunction)) {
+                    onlyOutputPin.setInitToOne(false);
+                    result.add(VerilogUtils.calcAttachedNetName(circuit, onlyOutputPin));
+                } else if (One.getInstance().equals(setFunction)) {
+                    onlyOutputPin.setInitToOne(true);
+                    result.add(VerilogUtils.calcAttachedNetName(circuit, onlyOutputPin));
+                }
+            }
+        }
+        return result;
     }
 
 }

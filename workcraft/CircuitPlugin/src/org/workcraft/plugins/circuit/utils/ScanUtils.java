@@ -202,6 +202,12 @@ public final class ScanUtils {
         } else {
             getOrCreateContact(circuit, component, CircuitSettings.getScanoutPin(), Contact.IOType.OUTPUT);
         }
+        // Clear force init if Scan is used for initialisation
+        if (CircuitSettings.getUseScanInitialisation()) {
+            for (VisualContact outputPin : component.getVisualOutputs()) {
+                outputPin.setForcedInit(false);
+            }
+        }
     }
 
     private static boolean insertScanChain(VisualCircuit circuit) {
