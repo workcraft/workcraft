@@ -139,6 +139,10 @@ public final class ConnectionUtils {
     }
 
     public static void shapeConnectionAsBridge(VisualConnection connection, double dx, double dy) {
+        shapeConnectionAsBridge(connection, dx, dy, 0.0);
+    }
+
+    public static void shapeConnectionAsBridge(VisualConnection connection, double dx1, double dy, double dx2) {
         if (connection != null) {
             Polyline polyline = (Polyline) connection.getGraphic();
             VisualTransformableNode firstNode = (VisualTransformableNode) connection.getFirst();
@@ -146,8 +150,18 @@ public final class ConnectionUtils {
             Point2D p1 = firstNode.getRootSpacePosition();
             Point2D p2 = secondNode.getRootSpacePosition();
             double y = dy + (dy > 0 ? Math.max(p1.getY(), p2.getY()) : Math.min(p1.getY(), p2.getY()));
-            polyline.addControlPoint(new Point2D.Double(p1.getX() + dx, y));
-            polyline.addControlPoint(new Point2D.Double(p2.getX(), y));
+
+            double x1 = p1.getX() + dx1;
+            if (!Geometry.isNegligible(dx1)) {
+                polyline.addControlPoint(new Point2D.Double(x1, p1.getY()));
+            }
+            polyline.addControlPoint(new Point2D.Double(x1, y));
+
+            double x2 = p2.getX() + dx2;
+            polyline.addControlPoint(new Point2D.Double(x2, y));
+            if (!Geometry.isNegligible(dx2)) {
+                polyline.addControlPoint(new Point2D.Double(x2, p2.getY()));
+            }
         }
     }
 
