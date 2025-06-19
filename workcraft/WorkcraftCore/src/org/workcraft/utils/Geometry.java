@@ -351,7 +351,11 @@ public class Geometry {
     }
 
     public static boolean isAligned(double v1, double v2) {
-        return Math.abs(v1 - v2) < EPSILON;
+        return isNegligible(v1 - v2);
+    }
+
+    public static boolean isNegligible(double v) {
+        return Math.abs(v) < EPSILON;
     }
 
 }

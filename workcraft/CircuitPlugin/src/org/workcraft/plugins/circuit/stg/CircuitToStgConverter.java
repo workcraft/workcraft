@@ -283,22 +283,24 @@ public class CircuitToStgConverter {
         VisualContact signal = findSignalSkipZeroDelay(circuit, driver);
         SignalStg driverStg = driverToStgMap.getValue(driver);
         if ((signal != null) && (driverStg != null)) {
+            Signal.Type signalType = CircuitUtils.getSignalType(circuit, driver);
             if (dnf.getClauses().isEmpty()) {
-                createSignalStgDeadTransition(signal, driverStg, direction);
+                createSignalStgDeadTransition(signal, driverStg, signalType, direction);
             } else {
-                createSignalStgTransitions(signal, driverStg, dnf, direction);
+                createSignalStgTransitions(signal, driverStg, dnf, signalType, direction);
             }
         }
     }
 
-    private void createSignalStgDeadTransition(VisualContact signal, SignalStg driverStg, SignalTransition.Direction direction) {
+    private void createSignalStgDeadTransition(VisualContact signal, SignalStg driverStg,
+            Signal.Type signalType, SignalTransition.Direction direction) {
+
         VisualPlace predPlace = direction == SignalTransition.Direction.PLUS ? driverStg.zero : driverStg.one;
         VisualPlace succPlace = direction == SignalTransition.Direction.PLUS ? driverStg.one : driverStg.zero;
         Collection<VisualSignalTransition> transitions = direction == SignalTransition.Direction.PLUS ? driverStg.riseList : driverStg.fallList;
 
         String signalRef = CircuitUtils.getSignalReference(circuit, signal);
         String signalName = NamespaceHelper.getReferenceName(signalRef);
-        Signal.Type signalType = CircuitUtils.getSignalType(circuit, signal);
         String containerRef = NamespaceHelper.getParentReference(signalRef);
         VisualPage container = stg.getVisualComponentByMathReference(containerRef, VisualPage.class);
 
@@ -313,7 +315,9 @@ public class CircuitToStgConverter {
         }
     }
 
-    private void createSignalStgTransitions(VisualContact signal, SignalStg driverStg, Dnf dnf, SignalTransition.Direction direction) {
+    private void createSignalStgTransitions(VisualContact signal, SignalStg driverStg, Dnf dnf,
+            Signal.Type signalType, SignalTransition.Direction direction) {
+
         VisualPlace predPlace = direction == SignalTransition.Direction.PLUS ? driverStg.zero : driverStg.one;
         VisualPlace succPlace = direction == SignalTransition.Direction.PLUS ? driverStg.one : driverStg.zero;
         Collection<VisualSignalTransition> transitions = direction == SignalTransition.Direction.PLUS ? driverStg.riseList : driverStg.fallList;
@@ -329,7 +333,6 @@ public class CircuitToStgConverter {
 
         String signalRef = CircuitUtils.getSignalReference(circuit, signal);
         String signalName = NamespaceHelper.getReferenceName(signalRef);
-        Signal.Type signalType = CircuitUtils.getSignalType(circuit, signal);
         String containerRef = NamespaceHelper.getParentReference(signalRef);
         VisualPage container = stg.getVisualComponentByMathReference(containerRef, VisualPage.class);
         for (DnfClause clause : clauses) {

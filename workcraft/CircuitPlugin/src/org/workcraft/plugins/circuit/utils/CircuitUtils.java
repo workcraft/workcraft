@@ -10,6 +10,8 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
@@ -23,10 +25,7 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.types.Pair;
-import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.TextUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -412,7 +411,16 @@ public final class CircuitUtils {
     public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver, double offset) {
         VisualJoint joint = detachJoint(circuit, driver);
         if (joint != null) {
-            joint.setRootSpacePosition(SpaceUtils.getOffsetContactPosition(driver, offset));
+            Point2D jointPos = SpaceUtils.getOffsetContactPosition(driver, offset);
+            joint.setRootSpacePosition(jointPos);
+            for (VisualConnection connection : circuit.getConnections(joint)) {
+                if ((connection.getFirst() == joint) && (connection.getGraphic() instanceof Polyline polyline)) {
+                    ControlPoint firstControlPoint = polyline.getFirstControlPoint();
+                    if ((firstControlPoint != null) && Geometry.isNegligible(jointPos.distance(firstControlPoint.getPosition()))) {
+                        polyline.remove(firstControlPoint);
+                    }
+                }
+            }
         }
         return joint;
     }
