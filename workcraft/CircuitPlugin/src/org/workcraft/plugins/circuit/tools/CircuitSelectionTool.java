@@ -151,7 +151,7 @@ public class CircuitSelectionTool extends SelectionTool {
             for (VisualContact inputContact : component.getVisualInputs()) {
                 result.addAll(getNodeWithAdjacentConnections(model, inputContact));
             }
-        } else {
+        } else if (node != null) {
             Queue<VisualNode> queue = new ArrayDeque<>(super.getNodeWithAdjacentConnections(model, node));
             while (!queue.isEmpty()) {
                 node = queue.remove();
