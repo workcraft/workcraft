@@ -27,6 +27,7 @@ public class TextUtils {
     private static final Pattern XML_ELEMENT_PATTERN = Pattern.compile(
             "^\\s*<([\\w-.]+).*(</\\1\\s*|/)>\\s*$", Pattern.DOTALL);
 
+
     public static String truncateLines(String text) {
         return truncateLines(text, DEFAULT_TRUNCATE_LENGTH);
     }
@@ -314,46 +315,54 @@ public class TextUtils {
     public static String codeToString(int code) {
         StringBuilder result = new StringBuilder();
         do {
-            result.append((char) ('a' + code % 26));
+            result.insert(0, (char) ('a' + code % 26));
             code /= 26;
         } while (code > 0);
         return result.toString();
     }
 
+    public static String getBullet(String text) {
+        return "  " + PropertyHelper.BULLET_SYMBOL + ' ' + (text == null ? "" : text);
+    }
+
+    public static String getBulletpoint(String text) {
+        return '\n' + getBullet(text);
+    }
+
     public static String getBulletpointPair(String key, String value) {
-        return "\n" + PropertyHelper.BULLET_PREFIX + key
-                + ((value == null) || value.isEmpty() ? " is empty" : (": " + value));
+        return getBulletpoint(key + ((value == null) || value.isEmpty() ? " is empty" : (": " + value)));
     }
 
     public static String getBulletpointPair(String key, Collection<String> values) {
         if (values.isEmpty()) {
             return "";
         }
-        return wrapMessageWithItems("\n" + PropertyHelper.BULLET_PREFIX + key, values);
+        if (values.size() > 1) {
+            key = makePlural(key);
+        }
+        return getBulletpoint(key + ": " + String.join(", ", values));
+    }
+
+    public static String mergeTextWithBulletpoints(String text, List<String> items) {
+        StringBuilder result = new StringBuilder(text == null ? "" : text);
+        if ((items != null) && !items.isEmpty()) {
+            if (items.size() == 1) {
+                result.append(' ');
+                result.append(items.iterator().next());
+            } else {
+                result.append(':');
+                for (String item : items) {
+                    result.append(getBulletpoint(item));
+                }
+            }
+        }
+        return result.toString();
     }
 
     public static String getCurrentTimestamp() {
         long currentTime = System.currentTimeMillis();
         ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), ZoneId.systemDefault());
         return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
-    }
-
-    public static String mergeTextWithBulletpoints(String text, List<String> bullets) {
-        StringBuilder result = new StringBuilder(text == null ? "" : text);
-        if ((bullets != null) && !bullets.isEmpty()) {
-            if (bullets.size() == 1) {
-                result.append(' ');
-                result.append(bullets.iterator().next());
-            } else {
-                result.append(':');
-                for (String bullet : bullets) {
-                    result.append('\n');
-                    result.append(PropertyHelper.BULLET_PREFIX);
-                    result.append(bullet);
-                }
-            }
-        }
-        return result.toString();
     }
 
 }

@@ -2,6 +2,7 @@ package org.workcraft.utils;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.workcraft.gui.properties.PropertyHelper;
 
 import java.awt.*;
 import java.util.Collections;
@@ -157,6 +158,7 @@ class TextUtilsTests {
 
     @Test
     void replaceLinebreaksTest() {
+        //noinspection ConstantValue
         Assertions.assertNull(TextUtils.replaceLinebreaks(null, " "));
         Assertions.assertEquals("aaa bbb ccc",
                 TextUtils.replaceLinebreaks("aaa\nbbb\r\nccc", " "));
@@ -164,6 +166,7 @@ class TextUtilsTests {
 
     @Test
     void removeLinebreaksTest() {
+        //noinspection ConstantValue
         Assertions.assertNull(TextUtils.removeLinebreaks(null));
         Assertions.assertEquals("aaabbbccc",
                 TextUtils.removeLinebreaks("aaa\nbbb\r\nccc"));
@@ -194,10 +197,52 @@ class TextUtilsTests {
     void codeToStringTest() {
         Assertions.assertEquals("a", TextUtils.codeToString(0));
         Assertions.assertEquals("b", TextUtils.codeToString(1));
+        Assertions.assertEquals("c", TextUtils.codeToString(2));
         Assertions.assertEquals("z", TextUtils.codeToString(25));
-        Assertions.assertEquals("ab", TextUtils.codeToString(25 + 1));
-        Assertions.assertEquals("by", TextUtils.codeToString(25 * 25));
+        Assertions.assertEquals("ba", TextUtils.codeToString(26)); // 26 = 1 * 26 + 0
+        Assertions.assertEquals("bb", TextUtils.codeToString(27)); // 27 = 1 * 26 + 1
+        Assertions.assertEquals("bc", TextUtils.codeToString(28)); // 28 = 1 * 26 + 2
+        Assertions.assertEquals("zz", TextUtils.codeToString(25 * 26 + 25));
         Assertions.assertEquals("`", TextUtils.codeToString(-1));
+    }
+
+    @Test
+    void getBulletTest() {
+        Assertions.assertEquals(PropertyHelper.BULLET_PREFIX,
+                TextUtils.getBullet(null));
+
+        Assertions.assertEquals(PropertyHelper.BULLET_PREFIX,
+                TextUtils.getBullet(""));
+
+        Assertions.assertEquals(PropertyHelper.BULLET_PREFIX + "item",
+                TextUtils.getBullet("item"));
+    }
+
+    @Test
+    void getBulletpointTest() {
+        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX,
+                TextUtils.getBulletpoint(null));
+
+        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX,
+                TextUtils.getBulletpoint(""));
+
+        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "item",
+                TextUtils.getBulletpoint("item"));
+    }
+
+    @Test
+    void getBulletpointPairTest() {
+        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "key is empty",
+                TextUtils.getBulletpointPair("key", ""));
+
+        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "key: value",
+                TextUtils.getBulletpointPair("key", "value"));
+
+        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "key: value",
+                TextUtils.getBulletpointPair("key", List.of("value")));
+
+        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "keys: value1, value2",
+                TextUtils.getBulletpointPair("key", List.of("value1", "value2")));
     }
 
     @Test
@@ -208,8 +253,8 @@ class TextUtilsTests {
         Assertions.assertEquals("text", TextUtils.mergeTextWithBulletpoints("text", Collections.emptyList()));
         Assertions.assertEquals("single item", TextUtils.mergeTextWithBulletpoints("single", List.of("item")));
         Assertions.assertEquals("intro:"
-                + "\n  " + (char) 0x2022 +  " item1"
-                + "\n  " + (char) 0x2022 +  " item2",
+                + '\n' + PropertyHelper.BULLET_PREFIX +  "item1"
+                + '\n' + PropertyHelper.BULLET_PREFIX +  "item2",
                 TextUtils.mergeTextWithBulletpoints("intro", List.of("item1", "item2")));
     }
 
