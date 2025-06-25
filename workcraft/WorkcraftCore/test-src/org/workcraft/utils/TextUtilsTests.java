@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 
 class TextUtilsTests {
@@ -187,6 +188,29 @@ class TextUtilsTests {
         Assertions.assertTrue(TextUtils.isXmlElement(" <tag attr=val> text </tag > "));
         Assertions.assertTrue(TextUtils.isXmlElement(" <t-a.g attr=val>\nline1\nline2\n</t-a.g > "));
         Assertions.assertTrue(TextUtils.isXmlElement("<tag attr=val/>"));
+    }
+
+    @Test
+    void codeToStringTest() {
+        Assertions.assertEquals("a", TextUtils.codeToString(0));
+        Assertions.assertEquals("b", TextUtils.codeToString(1));
+        Assertions.assertEquals("z", TextUtils.codeToString(25));
+        Assertions.assertEquals("ab", TextUtils.codeToString(25 + 1));
+        Assertions.assertEquals("by", TextUtils.codeToString(25 * 25));
+        Assertions.assertEquals("`", TextUtils.codeToString(-1));
+    }
+
+    @Test
+    void mergeTextWithBulletpointsTest() {
+        Assertions.assertEquals("", TextUtils.mergeTextWithBulletpoints(null, null));
+        Assertions.assertEquals("", TextUtils.mergeTextWithBulletpoints(null, Collections.emptyList()));
+        Assertions.assertEquals("", TextUtils.mergeTextWithBulletpoints("", Collections.emptyList()));
+        Assertions.assertEquals("text", TextUtils.mergeTextWithBulletpoints("text", Collections.emptyList()));
+        Assertions.assertEquals("single item", TextUtils.mergeTextWithBulletpoints("single", List.of("item")));
+        Assertions.assertEquals("intro:"
+                + "\n  " + (char) 0x2022 +  " item1"
+                + "\n  " + (char) 0x2022 +  " item2",
+                TextUtils.mergeTextWithBulletpoints("intro", List.of("item1", "item2")));
     }
 
 }

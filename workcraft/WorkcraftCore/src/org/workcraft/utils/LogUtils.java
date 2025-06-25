@@ -1,9 +1,5 @@
 package org.workcraft.utils;
 
-import org.workcraft.gui.properties.PropertyHelper;
-
-import java.util.List;
-
 public class LogUtils {
     private static final String PREFIX_INFO = "[INFO] ";
     private static final String WARNING_PREFIX = "[WARNING] ";
@@ -15,16 +11,8 @@ public class LogUtils {
         System.out.println(msg);
     }
 
-    public static void logMessage(String message, List<String> details) {
-        logMessage(message + mergeDetails(details));
-    }
-
     public static void logInfo(String msg) {
         System.out.println(PREFIX_INFO + msg);
-    }
-
-    public static void logInfo(String message, List<String> details) {
-        logInfo(message + mergeDetails(details));
     }
 
     public static boolean isInfoText(String text) {
@@ -35,20 +23,12 @@ public class LogUtils {
         System.out.println(WARNING_PREFIX + msg);
     }
 
-    public static void logWarning(String message, List<String> details) {
-        logWarning(message + mergeDetails(details));
-    }
-
     public static boolean isWarningText(String text) {
         return (text != null) && text.startsWith(WARNING_PREFIX);
     }
 
     public static void logError(String msg) {
         System.out.println(ERROR_PREFIX + msg);
-    }
-
-    public static void logError(String message, List<String> details) {
-        logError(message + mergeDetails(details));
     }
 
     public static boolean isErrorText(String text) {
@@ -92,21 +72,6 @@ public class LogUtils {
 
     public static String getTextWithoutPrefix(String text) {
         return text == null ? null : text.substring(getPrefix(text).length());
-    }
-
-    private static String mergeDetails(List<String> details) {
-        StringBuilder result = new StringBuilder();
-        if ((details != null) && !details.isEmpty()) {
-            if (details.size() == 1) {
-                result.append(' ').append(details.iterator().next());
-            } else {
-                result.append(':');
-                for (String detail : details) {
-                    result.append('\n').append(PropertyHelper.BULLET_PREFIX).append(detail);
-                }
-            }
-        }
-        return result.toString();
     }
 
 }

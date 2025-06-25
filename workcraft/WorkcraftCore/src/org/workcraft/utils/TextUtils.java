@@ -338,4 +338,22 @@ public class TextUtils {
         return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
     }
 
+    public static String mergeTextWithBulletpoints(String text, List<String> bullets) {
+        StringBuilder result = new StringBuilder(text == null ? "" : text);
+        if ((bullets != null) && !bullets.isEmpty()) {
+            if (bullets.size() == 1) {
+                result.append(' ');
+                result.append(bullets.iterator().next());
+            } else {
+                result.append(':');
+                for (String bullet : bullets) {
+                    result.append('\n');
+                    result.append(PropertyHelper.BULLET_PREFIX);
+                    result.append(bullet);
+                }
+            }
+        }
+        return result.toString();
+    }
+
 }
