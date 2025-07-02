@@ -157,16 +157,16 @@ public class Cycle implements Comparable<Cycle> {
 
     @Override
     public String toString() {
-        String result = "";
+        StringBuilder result = new StringBuilder();
         if ((components != null) && (dfs != null)) {
             for (VisualDelayComponent component : components) {
-                if (result.length() > 0) {
-                    result += RIGHT_ARROW_SYMBOL;
+                if (!result.isEmpty()) {
+                    result.append(RIGHT_ARROW_SYMBOL);
                 }
-                result += dfs.getMathModel().getNodeReference(component.getReferencedComponent());
+                result.append(dfs.getMathModel().getNodeReference(component.getReferencedComponent()));
             }
         }
-        return result;
+        return result.toString();
     }
 
 }

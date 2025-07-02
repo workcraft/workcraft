@@ -64,14 +64,10 @@ public class SolutionReader {
         final Map<BooleanVariable, Boolean> results = new HashMap<>();
         Map<Integer, String> cnfToOriginal = extractCnfMapping(task.getBody());
         Map<String, BooleanVariable> vars = task.getVars();
-        for (int i = 0; i < numbers.size(); i++) {
-            int cnfIndex = numbers.get(i);
-            boolean value = cnfIndex >= 0;
-            if (!value) {
-                cnfIndex = -cnfIndex;
-            }
-            String varName = cnfToOriginal.get(cnfIndex);
+        for (int number : numbers) {
+            String varName = cnfToOriginal.get(Math.abs(number));
             if (varName != null) {
+                boolean value = (number >= 0);
                 if ("0".equals(varName)) {
                     if (value) {
                         throw new RuntimeException("0");
@@ -106,11 +102,11 @@ public class SolutionReader {
             return parseIntArray(split[1].split(" "));
         } else { //clasp file
             boolean sat = false;
-            for (int i = 0; i < split.length; i++) {
-                if ("s UNSATISFIABLE".equals(split[i])) {
+            for (String s : split) {
+                if ("s UNSATISFIABLE".equals(s)) {
                     return null;
                 }
-                if ("s SATISFIABLE".equals(split[i])) {
+                if ("s SATISFIABLE".equals(s)) {
                     sat = true;
                     break;
                 }
@@ -122,7 +118,7 @@ public class SolutionReader {
 
             List<Integer> result = new ArrayList<>();
             for (int i = 1; i < split.length; i++) {
-                if (split[i].length() > 0 && split[i].charAt(0) == 'v') {
+                if (!split[i].isEmpty() && (split[i].charAt(0) == 'v')) {
                     String[] nums = split[i].split(" ");
 
                     for (int j = 1; j < nums.length; j++) {
@@ -136,9 +132,8 @@ public class SolutionReader {
 
     private static List<Integer> parseIntArray(String[] nums) {
         List<Integer> result = new ArrayList<>();
-
-        for (int i = 0; i < nums.length; i++) {
-            result.add(Integer.parseInt(nums[i]));
+        for (String num : nums) {
+            result.add(Integer.parseInt(num));
         }
 
         return result;

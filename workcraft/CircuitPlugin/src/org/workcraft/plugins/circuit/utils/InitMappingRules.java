@@ -36,7 +36,7 @@ public final class InitMappingRules {
             String originalGateName = entry.getKey();
             Pair<String, String> gatePinPair = entry.getValue();
             if (gatePinPair != null) {
-                if (result.length() > 0) {
+                if (!result.isEmpty()) {
                     result.append(RULE_SEPARATOR).append(' ');
                 }
                 String replacementGateName = gatePinPair.getFirst();

@@ -74,7 +74,7 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
                 // Add trivial mutex implementability result if no mutex places found
                 msg.append(TextUtils.getBulletpoint("Mutex implementability (vacuously)"));
             }
-            if (msg.length() == 0) {
+            if (msg.isEmpty()) {
                 msg.append("All checks passed.");
             } else {
                 msg.insert(0, "The following checks passed:");

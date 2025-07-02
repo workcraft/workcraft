@@ -194,7 +194,7 @@ public class StatisticsCommand extends AbstractStatisticsCommand {
         StringBuilder result = new StringBuilder();
         int max = getMaxValue(multiset);
         for (int i = 0; i <= Math.min(max, MAX_DISTRIBUTION); ++i) {
-            if (result.length() > 0) {
+            if (!result.isEmpty()) {
                 result.append(" / ");
             }
             result.append(multiset.count(i));

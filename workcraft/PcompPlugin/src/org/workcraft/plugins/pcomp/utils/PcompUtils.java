@@ -38,7 +38,7 @@ public class PcompUtils {
                 msg.append("\n  * ").append(word);
             }
         }
-        if (msg.length() > 0) {
+        if (!msg.isEmpty()) {
             wes.clear();
             LogUtils.logError("Could not load the following files:" + msg);
         }

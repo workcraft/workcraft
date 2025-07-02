@@ -99,7 +99,7 @@ public class FavoriteCommonSettings extends AbstractCommonSettings {
 
     public static boolean getIsFavorite(String name) {
         Boolean value = favoriteMap.get(name);
-        return (value == null) ? false : value;
+        return (value != null) && value;
     }
 
     public static void setIsFavorite(String name, boolean value) {
