@@ -12,7 +12,6 @@ import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
@@ -49,19 +48,14 @@ public abstract class AbstractVerilogImporter implements Importer {
     private Map<VerilogModule, String> moduleToFileNameMap = null;
     private boolean isFlatNetlist = false;
 
-    private static class AssignGate {
-        public final String outputName;
-        public final String setFunction;
-        public final String resetFunction;
-        public final HashMap<String, String> connections; // (portName -> netName)
-
-        AssignGate(String outputName, String setFunction, String resetFunction, HashMap<String, String> connections) {
-            this.outputName = outputName;
-            this.setFunction = setFunction;
-            this.resetFunction = resetFunction;
-            this.connections = connections;
-        }
-    }
+    /**
+     * @param connections (portName -> netName)
+     */
+    private record AssignGate(
+            String outputName,
+            String setFunction,
+            String resetFunction,
+            HashMap<String, String> connections) { }
 
     private static final class Net {
         public final Set<FunctionContact> sources = new HashSet<>();
@@ -90,10 +84,10 @@ public abstract class AbstractVerilogImporter implements Importer {
             String message = TextUtils.getHeadAndTail(prefix, 10, 0)
                     + "\n\nInstances of these modules may be interpreted incorrectly due to missing information about input/output pins."
                     + "\n\nPossible causes of the problem:"
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "incorrect path to gate library GenLib file"
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "incorrect setup for MUTEX and WAIT elements"
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "missing module definition in hierarchical Verilog netlist"
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "incorrect use of substitution rules for Verilog import";
+                    + TextUtils.getBulletpoint("incorrect path to gate library GenLib file")
+                    + TextUtils.getBulletpoint("incorrect setup for MUTEX and WAIT elements")
+                    + TextUtils.getBulletpoint("missing module definition in hierarchical Verilog netlist")
+                    + TextUtils.getBulletpoint("incorrect use of substitution rules for Verilog import");
 
             String question = "\n\nProceed with Verilog import anyway?";
             // Choose "Yes" as default response in no-GUI mode
@@ -155,20 +149,21 @@ public abstract class AbstractVerilogImporter implements Importer {
         moduleToFileNameMap = dialog.getModuleToFileNameMap();
         Collection<String> existingSaveFilePaths = getExistingSaveFilePaths(instantiatedModules, dir);
         if (!existingSaveFilePaths.isEmpty()) {
-            String delimiter = "\n" + PropertyHelper.BULLET_PREFIX;
             int existingSaveFileCount = existingSaveFilePaths.size();
-            String message = existingSaveFileCount > 1
+            StringBuilder message = new StringBuilder(existingSaveFileCount > 1
                     ? "The following " + existingSaveFileCount + " files already exist:"
-                    : "The following file already exists:";
+                    : "The following file already exists:");
 
-            message += delimiter + String.join(delimiter, existingSaveFilePaths);
-            LogUtils.logWarning(message);
+            for (String existingSaveFilePath : existingSaveFilePaths) {
+                message.append(TextUtils.getBulletpoint(existingSaveFilePath));
+            }
+            LogUtils.logWarning(message.toString());
 
             String question = existingSaveFileCount == 1
                     ? "\n\nOverwrite these files and proceed with import?"
                     : "\n\nOverwrite this file and proceed with import?";
 
-            String shortMessage = TextUtils.getHeadAndTail(message, 10, 0);
+            String shortMessage = TextUtils.getHeadAndTail(message.toString(), 10, 0);
             if (!DialogUtils.showConfirm(shortMessage, question, TITLE,
                     false, JOptionPane.WARNING_MESSAGE, false)) {
 
@@ -344,15 +339,15 @@ public abstract class AbstractVerilogImporter implements Importer {
         String shortMessage = "";
         // Check circuit for no components
         if (circuit.getFunctionComponents().isEmpty()) {
-            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + "No components";
+            String itemText = TextUtils.getBulletpoint("No components");
             longMessage += itemText;
             shortMessage += itemText;
         }
         // Check circuit for hanging contacts
         Set<String> hangingSignals = VerificationUtils.getHangingSignals(circuit);
         if (!hangingSignals.isEmpty()) {
-            String itemText = TextUtils.wrapMessageWithItems('\n' + PropertyHelper.BULLET_PREFIX
-                    + "Hanging contact", SortUtils.getSortedNatural(hangingSignals));
+            String itemText = TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
+                    "Hanging contact", SortUtils.getSortedNatural(hangingSignals)));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -376,9 +371,9 @@ public abstract class AbstractVerilogImporter implements Importer {
         uninitialisedSignals.removeAll(constSignals);
 
         if (!uninitialisedSignals.isEmpty()) {
-            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
+            String itemText = TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
                     "Missing initial state declaration (assuming low) for signal",
-                    SortUtils.getSortedNatural(uninitialisedSignals));
+                    SortUtils.getSortedNatural(uninitialisedSignals)));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -388,8 +383,8 @@ public abstract class AbstractVerilogImporter implements Importer {
         Set<String> unusedSignals = new HashSet<>(initialisedSignals);
         unusedSignals.removeAll(usedSignals);
         if (!unusedSignals.isEmpty()) {
-            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
-                    "Initial state declaration for unused signal", SortUtils.getSortedNatural(unusedSignals));
+            String itemText = TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
+                    "Initial state declaration for unused signal", SortUtils.getSortedNatural(unusedSignals)));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -397,8 +392,8 @@ public abstract class AbstractVerilogImporter implements Importer {
 
         // Check circuit for ignored signals (inout ports)
         if (!ignoredSignals.isEmpty()) {
-            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
-                    "Ignored inout port", SortUtils.getSortedNatural(ignoredSignals));
+            String itemText = TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
+                    "Ignored inout port", SortUtils.getSortedNatural(ignoredSignals)));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -608,8 +603,8 @@ public abstract class AbstractVerilogImporter implements Importer {
         Expression resetExpression = convertFormulaToExpression(resetFunction);
         if (DebugCommonSettings.getVerboseImport()) {
             LogUtils.logMessage("Extracting SET and RESET from assign " + netName + " = " + formula
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "Set function: " + setFunction
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "Reset function: " + resetFunction);
+                    + TextUtils.getBulletpoint("Set function: " + setFunction)
+                    + TextUtils.getBulletpoint("Reset function: " + resetFunction));
         }
         HashMap<String, String> connections = new HashMap<>();
         String outputName = VerilogUtils.getPrimitiveGatePinName(0);
@@ -1206,10 +1201,10 @@ public abstract class AbstractVerilogImporter implements Importer {
         String title = circuit.getTitle();
         String prefix = "In the imported module " + (title.isEmpty() ? "" : "'" + title + "' ");
         if (net.sources.size() != 1) {
-            String sinksString = net.sinks.isEmpty() ? "" : ('\n' + PropertyHelper.BULLET_PREFIX + "sinks: "
+            String sinksString = net.sinks.isEmpty() ? "" : TextUtils.getBulletpoint("sinks: "
                     + String.join(", ", ReferenceHelper.getReferenceSet(circuit, net.sinks)));
 
-            String undefinedString = net.undefined.isEmpty() ? "" : ('\n' + PropertyHelper.BULLET_PREFIX + "undefined: "
+            String undefinedString = net.undefined.isEmpty() ? "" : TextUtils.getBulletpoint("undefined: "
                     + String.join(", ", ReferenceHelper.getReferenceSet(circuit, net.undefined)));
 
             if (net.sources.isEmpty()) {
@@ -1218,8 +1213,8 @@ public abstract class AbstractVerilogImporter implements Importer {
                             + sinksString + undefinedString);
                 }
             } else {
-                String sourcesString = '\n' + PropertyHelper.BULLET_PREFIX + "sources: "
-                        + String.join(", ", ReferenceHelper.getReferenceSet(circuit, net.sources));
+                String sourcesString = TextUtils.getBulletpoint("sources: "
+                        + String.join(", ", ReferenceHelper.getReferenceSet(circuit, net.sources)));
 
                 LogUtils.logError(prefix + "net with multiple sources is removed"
                         + sourcesString + sinksString + undefinedString);

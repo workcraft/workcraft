@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitComponent;
 import org.workcraft.plugins.circuit.Contact;
@@ -146,8 +145,7 @@ public final class CycleUtils {
 
         Set<Contact> pathBreakerPins = getPathBreakerDrivers(circuit);
         List<String> pathBreakerPinRefs = ReferenceHelper.getReferenceList(circuit, pathBreakerPins);
-        String pathBreakerText = "\n\n" + PropertyHelper.BULLET_PREFIX + (pathBreakerPinRefs.isEmpty()
-                ? "No path breaker pins"
+        String pathBreakerText = '\n' + TextUtils.getBulletpoint(pathBreakerPinRefs.isEmpty() ? "No path breaker pins"
                 : TextUtils.wrapMessageWithItems("Path breaker pin", pathBreakerPinRefs));
 
         List<String> cycleComponentRefs = new ArrayList<>();
@@ -176,8 +174,8 @@ public final class CycleUtils {
         }
 
         SortUtils.sortNatural(cycleComponentRefs);
-        String cycleComponentText = "\n\n" + PropertyHelper.BULLET_PREFIX
-                + TextUtils.wrapMessageWithItems("Cycle component", cycleComponentRefs);
+        String cycleComponentText = '\n' + TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
+                "Cycle component", cycleComponentRefs));
 
         DialogUtils.showError("Circuit has unbroken cycles."
                 + pathBreakerText + cycleComponentText, VERIFICATION_RESULT_TITLE);

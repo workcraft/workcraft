@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractStatisticsCommand;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.refinement.RefinementDependencyGraph;
 import org.workcraft.utils.FileUtils;
@@ -79,23 +78,23 @@ public class RefinementStatisticsCommand extends AbstractStatisticsCommand {
     }
     private String getFileName(String title, File file) {
         if (file == null) {
-            return PropertyHelper.BULLET_PREFIX + "No " + title + '\n';
+            return TextUtils.getBullet("No " + title + '\n');
         }
-        return  PropertyHelper.BULLET_PREFIX + TextUtils.makeFirstCapital(title) + ":\n"
-                + FILE_INDENT + FileUtils.getFullPath(file) + '\n';
+        return TextUtils.getBullet(TextUtils.makeFirstCapital(title) + ":\n"
+                + FILE_INDENT + FileUtils.getFullPath(file) + '\n');
     }
 
     private String getFileNameList(String title, Collection<File> files) {
         if ((files == null) || files.isEmpty()) {
-            return PropertyHelper.BULLET_PREFIX + "No " + TextUtils.makePlural(title) + '\n';
+            return TextUtils.getBullet("No " + TextUtils.makePlural(title)) + '\n';
         }
         if (files.size() == 1) {
             File file = files.iterator().next();
-            return PropertyHelper.BULLET_PREFIX + TextUtils.makeFirstCapital(title) + ":\n"
-                    + FILE_INDENT + FileUtils.getFullPath(file) + '\n';
+            return TextUtils.getBullet(TextUtils.makeFirstCapital(title) + ':')
+                    + '\n' + FILE_INDENT + FileUtils.getFullPath(file) + '\n';
         }
-        return PropertyHelper.BULLET_PREFIX + files.size() + ' ' + TextUtils.makePlural(title) + ":\n"
-                + FILE_INDENT + files.stream()
+        return TextUtils.getBullet(Integer.toString(files.size()) + ' ' + TextUtils.makePlural(title) + ':')
+                + '\n' + FILE_INDENT + files.stream()
                 .map(FileUtils::getFullPath)
                 .sorted(SortUtils::compareNatural)
                 .collect(Collectors.joining('\n' + FILE_INDENT)) + '\n';

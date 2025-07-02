@@ -8,7 +8,6 @@ import org.workcraft.formula.*;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
@@ -443,8 +442,7 @@ public final class ResetUtils {
         Collection<Contact> forcedPorts = initState.getForcedPorts();
         List<String> forcedPortRefs = ReferenceHelper.getReferenceList(circuit, forcedPorts);
         SortUtils.sortNatural(forcedPortRefs);
-        String forcedPortText = "\n\n" + PropertyHelper.BULLET_PREFIX + (forcedPortRefs.isEmpty()
-                ? "No forced input ports"
+        String forcedPortText = '\n' + TextUtils.getBulletpoint(forcedPortRefs.isEmpty() ? "No forced input ports"
                 : TextUtils.wrapMessageWithItems("Forced input port", forcedPortRefs));
 
         List<String> uninitialisedPinRefs = new ArrayList<>();
@@ -474,8 +472,8 @@ public final class ResetUtils {
         }
 
         SortUtils.sortNatural(uninitialisedPinRefs);
-        String uninitialisedPinText = "\n\n" + PropertyHelper.BULLET_PREFIX +
-                TextUtils.wrapMessageWithItems("Uninitialised signal", uninitialisedPinRefs);
+        String uninitialisedPinText = '\n' + TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
+                "Uninitialised signal", uninitialisedPinRefs));
 
         DialogUtils.showError("Circuit is not fully initialised via forced input ports."
                 + forcedPortText + uninitialisedPinText, VERIFICATION_RESULT_TITLE);

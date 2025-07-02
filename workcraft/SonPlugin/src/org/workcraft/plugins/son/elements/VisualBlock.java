@@ -143,7 +143,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
 
     @Override
     public boolean getIsCollapsed() {
-        return  this.getReferencedComponent().getIsCollapsed();
+        return this.getReferencedComponent().getIsCollapsed();
     }
 
     public String getStartTime() {

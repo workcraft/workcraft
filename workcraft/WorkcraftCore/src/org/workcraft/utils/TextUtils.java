@@ -1,7 +1,5 @@
 package org.workcraft.utils;
 
-import org.workcraft.gui.properties.PropertyHelper;
-
 import java.awt.*;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -19,9 +17,14 @@ import java.util.stream.Stream;
 public class TextUtils {
 
     public static final int DEFAULT_WRAP_LENGTH = 120;
-    public static final int DEFAULT_TRUNCATE_LENGTH = 120;
+    private static final int DEFAULT_TRUNCATE_LENGTH = 120;
 
+    // Bullet symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+    private static final String BULLET_SYMBOL = Character.toString((char) 0x2022);
+
+    // Ellipsis symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     private static final String ELLIPSIS_SYMBOL = Character.toString((char) 0x2026);
+
     private static final String NEWLINE_REGEX = "\\r?\\n";
     private static final Pattern LEADING_SPACES_PATTERN = Pattern.compile("^\\s+");
     private static final Pattern XML_ELEMENT_PATTERN = Pattern.compile(
@@ -322,7 +325,7 @@ public class TextUtils {
     }
 
     public static String getBullet(String text) {
-        return "  " + PropertyHelper.BULLET_SYMBOL + ' ' + (text == null ? "" : text);
+        return "  " + BULLET_SYMBOL + ' ' + (text == null ? "" : text);
     }
 
     public static String getBulletpoint(String text) {
@@ -343,10 +346,14 @@ public class TextUtils {
         return getBulletpoint(key + ": " + String.join(", ", values));
     }
 
-    public static String mergeTextWithBulletpoints(String text, List<String> items) {
+    public static String getTextWithBulletpoints(String text, List<String> items) {
+        return getTextWithBulletpoints(text, items, false);
+    }
+
+    public static String getTextWithBulletpoints(String text, List<String> items, boolean mergeSingleItem) {
         StringBuilder result = new StringBuilder(text == null ? "" : text);
         if ((items != null) && !items.isEmpty()) {
-            if (items.size() == 1) {
+            if ((items.size() == 1) && mergeSingleItem) {
                 result.append(' ');
                 result.append(items.iterator().next());
             } else {
@@ -357,6 +364,10 @@ public class TextUtils {
             }
         }
         return result.toString();
+    }
+
+    public static String replaceBullets(String text, String replacement) {
+        return text.replace(BULLET_SYMBOL, replacement);
     }
 
     public static String getCurrentTimestamp() {

@@ -3,11 +3,11 @@ package org.workcraft.plugins.circuit.commands;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.GateUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -64,8 +64,9 @@ public class BufferHighFanoutTransformationCommand extends AbstractTransformatio
             int fanout = driven.size();
             circuit.setMathName(buffer, CircuitSettings.getForkBufferName(fanout));
             String contactRef = circuit.getMathReference(contact);
-            LogUtils.logMessage(PropertyHelper.BULLET_PREFIX + fanout + "-way fork at " + contactRef + ": "
-                    + (bufferOutput == contact ? "reusing buffer" : "inserting new buffer"));
+            String prefix = fanout + "-way fork at " + contactRef + ": ";
+            String suffix = bufferOutput == contact ? "reusing buffer" : "inserting new buffer";
+            LogUtils.logMessage(TextUtils.getBullet(prefix + suffix));
         }
     }
 

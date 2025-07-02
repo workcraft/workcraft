@@ -233,13 +233,13 @@ public final class CircuitUtils {
             return ((VisualContact) visualNode).getReferencedComponent();
         }
         if (visualNode instanceof VisualReplicaContact) {
-            return  ((VisualReplicaContact) visualNode).getReferencedComponent();
+            return ((VisualReplicaContact) visualNode).getReferencedComponent();
         }
         if (visualNode instanceof VisualJoint) {
-            return  ((VisualJoint) visualNode).getReferencedComponent();
+            return ((VisualJoint) visualNode).getReferencedComponent();
         }
         if (visualNode instanceof VisualConnection) {
-            return  ((VisualConnection) visualNode).getReferencedConnection();
+            return ((VisualConnection) visualNode).getReferencedConnection();
         }
         if (visualNode instanceof VisualCircuitComponent) {
             return ((VisualCircuitComponent) visualNode).getReferencedComponent();

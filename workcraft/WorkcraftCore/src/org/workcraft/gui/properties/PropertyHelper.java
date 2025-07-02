@@ -16,7 +16,6 @@ public class PropertyHelper {
 
     // Bullet symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final String BULLET_SYMBOL = Character.toString((char) 0x2022);
-    public static final String BULLET_PREFIX = "  " + BULLET_SYMBOL + ' ';
 
     // Magnifying glass symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     // Note: 0x26B2 (looks like a magnifying glass) is often missing, therefore use 0xA4 (looks like aim).

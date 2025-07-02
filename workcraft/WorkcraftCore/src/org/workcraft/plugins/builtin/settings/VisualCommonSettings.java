@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
+import org.workcraft.utils.TextUtils;
 
 import java.awt.*;
 import java.util.LinkedList;
@@ -142,93 +143,93 @@ public class VisualCommonSettings extends AbstractCommonSettings {
         properties.add(PropertyHelper.createSeparatorProperty("Node"));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Size (cm)",
+                TextUtils.getBullet("Size (cm)"),
                 VisualCommonSettings::setNodeSize,
                 VisualCommonSettings::getNodeSize));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Stroke width (cm)",
+                TextUtils.getBullet("Stroke width (cm)"),
                 VisualCommonSettings::setStrokeWidth,
                 VisualCommonSettings::getStrokeWidth));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                PropertyHelper.BULLET_PREFIX + "Border color",
+                TextUtils.getBullet("Border color"),
                 VisualCommonSettings::setBorderColor,
                 VisualCommonSettings::getBorderColor));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                PropertyHelper.BULLET_PREFIX + "Fill color",
+                TextUtils.getBullet("Fill color"),
                 VisualCommonSettings::setFillColor,
                 VisualCommonSettings::getFillColor));
 
         properties.add(PropertyHelper.createSeparatorProperty("Label"));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Visible",
+                TextUtils.getBullet("Visible"),
                 VisualCommonSettings::setLabelVisibility,
                 VisualCommonSettings::getLabelVisibility));
 
         properties.add(new PropertyDeclaration<>(Positioning.class,
-                PropertyHelper.BULLET_PREFIX + "Positioning",
+                TextUtils.getBullet("Positioning"),
                 VisualCommonSettings::setLabelPositioning,
                 VisualCommonSettings::getLabelPositioning));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                PropertyHelper.BULLET_PREFIX + "Color",
+                TextUtils.getBullet("Color"),
                 VisualCommonSettings::setLabelColor,
                 VisualCommonSettings::getLabelColor));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Font size (cm)",
+                TextUtils.getBullet("Font size (cm)"),
                 VisualCommonSettings::setLabelFontSize,
                 VisualCommonSettings::getLabelFontSize));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Line spacing in multi-line text (ratio)",
+                TextUtils.getBullet("Line spacing in multi-line text (ratio)"),
                 VisualCommonSettings::setLineSpacing,
                 VisualCommonSettings::getLineSpacing));
 
         properties.add(PropertyHelper.createSeparatorProperty("Name"));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Visible",
+                TextUtils.getBullet("Visible"),
                 VisualCommonSettings::setNameVisibility,
                 VisualCommonSettings::getNameVisibility));
 
         properties.add(new PropertyDeclaration<>(Positioning.class,
-                PropertyHelper.BULLET_PREFIX + "Positioning",
+                TextUtils.getBullet("Positioning"),
                 VisualCommonSettings::setNamePositioning,
                 VisualCommonSettings::getNamePositioning));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                PropertyHelper.BULLET_PREFIX + "Color",
+                TextUtils.getBullet("Color"),
                 VisualCommonSettings::setNameColor,
                 VisualCommonSettings::getNameColor));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Font size (cm)",
+                TextUtils.getBullet("Font size (cm)"),
                 VisualCommonSettings::setNameFontSize,
                 VisualCommonSettings::getNameFontSize));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Show hierarchy as absolute paths",
+                TextUtils.getBullet("Show hierarchy as absolute paths"),
                 VisualCommonSettings::setShowAbsolutePaths,
                 VisualCommonSettings::getShowAbsolutePaths));
 
         properties.add(PropertyHelper.createSeparatorProperty("Connection"));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Line width (cm)",
+                TextUtils.getBullet("Line width (cm)"),
                 VisualCommonSettings::setConnectionLineWidth,
                 VisualCommonSettings::getConnectionLineWidth));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Arrow width (cm)",
+                TextUtils.getBullet("Arrow width (cm)"),
                 VisualCommonSettings::setConnectionArrowWidth,
                 VisualCommonSettings::getConnectionArrowWidth));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Arrow length (cm)",
+                TextUtils.getBullet("Arrow length (cm)"),
                 VisualCommonSettings::setConnectionArrowLength,
                 VisualCommonSettings::getConnectionArrowLength) {
             @Override
@@ -238,68 +239,68 @@ public class VisualCommonSettings extends AbstractCommonSettings {
         });
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Bubble size (cm)",
+                TextUtils.getBullet("Bubble size (cm)"),
                 VisualCommonSettings::setConnectionBubbleSize,
                 VisualCommonSettings::getConnectionBubbleSize));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                PropertyHelper.BULLET_PREFIX + "Color",
+                TextUtils.getBullet("Color"),
                 VisualCommonSettings::setConnectionColor,
                 VisualCommonSettings::getConnectionColor));
 
         properties.add(PropertyHelper.createSeparatorProperty("Comment"));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Base size (cm)",
+                TextUtils.getBullet("Base size (cm)"),
                 VisualCommonSettings::setCommentBaseSize,
                 VisualCommonSettings::getCommentBaseSize));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Stroke width (cm)",
+                TextUtils.getBullet("Stroke width (cm)"),
                 VisualCommonSettings::setCommentStrokeWidth,
                 VisualCommonSettings::getCommentStrokeWidth));
 
         properties.add(new PropertyDeclaration<>(Alignment.class,
-                PropertyHelper.BULLET_PREFIX + "Text alignment",
+                TextUtils.getBullet("Text alignment"),
                 VisualCommonSettings::setCommentTextAlignment,
                 VisualCommonSettings::getCommentTextAlignment));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                PropertyHelper.BULLET_PREFIX + "Text color",
+                TextUtils.getBullet("Text color"),
                 VisualCommonSettings::setCommentTextColor,
                 VisualCommonSettings::getCommentTextColor));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                PropertyHelper.BULLET_PREFIX + "Border color",
+                TextUtils.getBullet("Border color"),
                 VisualCommonSettings::setCommentBorderColor,
                 VisualCommonSettings::getCommentBorderColor));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                PropertyHelper.BULLET_PREFIX + "Fill color",
+                TextUtils.getBullet("Fill color"),
                 VisualCommonSettings::setCommentFillColor,
                 VisualCommonSettings::getCommentFillColor));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Font size (cm)",
+                TextUtils.getBullet("Font size (cm)"),
                 VisualCommonSettings::setCommentFontSize,
                 VisualCommonSettings::getCommentFontSize));
 
         properties.add(PropertyHelper.createSeparatorProperty("Pivot"));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Size (cm)",
+                TextUtils.getBullet("Size (cm)"),
                 VisualCommonSettings::setPivotSize,
                 VisualCommonSettings::getPivotSize));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                PropertyHelper.BULLET_PREFIX + "Stroke width (cm)",
+                TextUtils.getBullet("Stroke width (cm)"),
                 VisualCommonSettings::setPivotWidth,
                 VisualCommonSettings::getPivotWidth));
 
         properties.add(PropertyHelper.createSeparatorProperty("Expression"));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.BULLET_PREFIX + "Render text after '_' as subscript",
+                TextUtils.getBullet("Render text after '_' as subscript"),
                 VisualCommonSettings::setUseSubscript,
                 VisualCommonSettings::getUseSubscript));
     }

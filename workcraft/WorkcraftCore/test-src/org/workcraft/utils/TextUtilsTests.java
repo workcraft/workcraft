@@ -2,13 +2,16 @@ package org.workcraft.utils;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.workcraft.gui.properties.PropertyHelper;
 
 import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
 class TextUtilsTests {
+
+    // Bullet symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
+    private static final String BULLET_SYMBOL = Character.toString((char) 0x2022);
+    private static final String BULLET_PREFIX = "  " + BULLET_SYMBOL + ' ';
 
     @Test
     void splitWordsTest() {
@@ -208,54 +211,60 @@ class TextUtilsTests {
 
     @Test
     void getBulletTest() {
-        Assertions.assertEquals(PropertyHelper.BULLET_PREFIX,
+        Assertions.assertEquals(BULLET_PREFIX,
                 TextUtils.getBullet(null));
 
-        Assertions.assertEquals(PropertyHelper.BULLET_PREFIX,
+        Assertions.assertEquals(BULLET_PREFIX,
                 TextUtils.getBullet(""));
 
-        Assertions.assertEquals(PropertyHelper.BULLET_PREFIX + "item",
+        Assertions.assertEquals(BULLET_PREFIX + "item",
                 TextUtils.getBullet("item"));
     }
 
     @Test
     void getBulletpointTest() {
-        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX,
+        Assertions.assertEquals('\n' + BULLET_PREFIX,
                 TextUtils.getBulletpoint(null));
 
-        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX,
+        Assertions.assertEquals('\n' + BULLET_PREFIX,
                 TextUtils.getBulletpoint(""));
 
-        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "item",
+        Assertions.assertEquals('\n' + BULLET_PREFIX + "item",
                 TextUtils.getBulletpoint("item"));
     }
 
     @Test
     void getBulletpointPairTest() {
-        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "key is empty",
+        Assertions.assertEquals('\n' + BULLET_PREFIX + "key is empty",
                 TextUtils.getBulletpointPair("key", ""));
 
-        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "key: value",
+        Assertions.assertEquals('\n' + BULLET_PREFIX + "key: value",
                 TextUtils.getBulletpointPair("key", "value"));
 
-        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "key: value",
+        Assertions.assertEquals('\n' + BULLET_PREFIX + "key: value",
                 TextUtils.getBulletpointPair("key", List.of("value")));
 
-        Assertions.assertEquals('\n' + PropertyHelper.BULLET_PREFIX + "keys: value1, value2",
+        Assertions.assertEquals('\n' + BULLET_PREFIX + "keys: value1, value2",
                 TextUtils.getBulletpointPair("key", List.of("value1", "value2")));
     }
 
     @Test
-    void mergeTextWithBulletpointsTest() {
-        Assertions.assertEquals("", TextUtils.mergeTextWithBulletpoints(null, null));
-        Assertions.assertEquals("", TextUtils.mergeTextWithBulletpoints(null, Collections.emptyList()));
-        Assertions.assertEquals("", TextUtils.mergeTextWithBulletpoints("", Collections.emptyList()));
-        Assertions.assertEquals("text", TextUtils.mergeTextWithBulletpoints("text", Collections.emptyList()));
-        Assertions.assertEquals("single item", TextUtils.mergeTextWithBulletpoints("single", List.of("item")));
+    void getTextWithBulletpointsTest() {
+        Assertions.assertEquals("", TextUtils.getTextWithBulletpoints(null, null));
+        Assertions.assertEquals("", TextUtils.getTextWithBulletpoints(null, Collections.emptyList()));
+        Assertions.assertEquals("", TextUtils.getTextWithBulletpoints("", Collections.emptyList()));
+        Assertions.assertEquals("text", TextUtils.getTextWithBulletpoints("text", Collections.emptyList()));
+        Assertions.assertEquals("single:"
+                + '\n' + BULLET_PREFIX + "item",
+                TextUtils.getTextWithBulletpoints("single", List.of("item")));
+
         Assertions.assertEquals("intro:"
-                + '\n' + PropertyHelper.BULLET_PREFIX +  "item1"
-                + '\n' + PropertyHelper.BULLET_PREFIX +  "item2",
-                TextUtils.mergeTextWithBulletpoints("intro", List.of("item1", "item2")));
+                + '\n' + BULLET_PREFIX +  "item1"
+                + '\n' + BULLET_PREFIX +  "item2",
+                TextUtils.getTextWithBulletpoints("intro", List.of("item1", "item2")));
+
+        Assertions.assertEquals("single item",
+                TextUtils.getTextWithBulletpoints("single", List.of("item"), true));
     }
 
 }

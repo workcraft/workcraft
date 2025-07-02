@@ -2,7 +2,6 @@ package org.workcraft.plugins.stg.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.LogUtils;
@@ -271,7 +270,7 @@ public class MutexUtils {
     public static String getMutexPlaceExtendedTitles(Collection<Mutex> mutexes) {
         StringBuilder result = new StringBuilder();
         for (Mutex mutex : mutexes) {
-            result.append('\n').append(PropertyHelper.BULLET_PREFIX).append(getMutexPlaceExtendedTitle(mutex));
+            result.append(TextUtils.getBulletpoint(getMutexPlaceExtendedTitle(mutex)));
         }
         return result.toString();
     }

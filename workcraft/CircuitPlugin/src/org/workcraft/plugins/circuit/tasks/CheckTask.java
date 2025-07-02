@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
@@ -367,7 +366,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
     private String getPropertyMessage(String message, boolean multiline) {
         if (multiline) {
-            return PropertyHelper.BULLET_PREFIX + message + '\n';
+            return TextUtils.getBullet(message + '\n');
         }
         return message;
     }

@@ -1,11 +1,11 @@
 package org.workcraft.plugins.mpsat_temporal.tasks;
 
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.mpsat_temporal.utils.SpotUtils;
 import org.workcraft.tasks.AbstractOutputInterpreter;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.IOException;
@@ -26,8 +26,8 @@ public class Ltl2tgbaOutputInterpreter extends AbstractOutputInterpreter<Ltl2tgb
             }
         } else {
             String message = "The property is stutter-sensitive as shown by the following stutter-equivalent words:"
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "Accepted word: " + example.getFirst()
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "Rejected word: " + example.getSecond();
+                    + TextUtils.getBulletpoint("Accepted word: " + example.getFirst())
+                    + TextUtils.getBulletpoint("Rejected word: " + example.getSecond());
 
             if (isInteractive()) {
                 DialogUtils.showError(message);

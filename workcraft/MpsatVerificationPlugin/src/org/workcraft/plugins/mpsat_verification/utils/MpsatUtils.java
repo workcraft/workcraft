@@ -3,7 +3,6 @@ package org.workcraft.plugins.mpsat_verification.utils;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.controls.CodePanel;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.MpsatSyntaxCheckTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -45,12 +44,9 @@ public class MpsatUtils {
         }
         if (!problematicPlaces.isEmpty()) {
             Collection<String> problematicPlacesRefs = ReferenceHelper.getReferenceList(stg, problematicPlaces);
-            String msg = TextUtils.wrapMessageWithItems("Failed to determine requests or grants for mutex place",
-                    problematicPlacesRefs)
-                    + '\n' + PropertyHelper.BULLET_PREFIX
-                    + "postset of mutex place must comprise rising transitions of 2 distinct output or internal signals (grants)"
-                    + '\n' + PropertyHelper.BULLET_PREFIX
-                    + "rising transitions of each grant must be triggered by rising transitions of the same signal (request)";
+            String msg = TextUtils.wrapMessageWithItems("Failed to determine requests or grants for mutex place", problematicPlacesRefs)
+                    + TextUtils.getBulletpoint("postset of mutex place must comprise rising transitions of 2 distinct output or internal signals (grants)")
+                    + TextUtils.getBulletpoint("rising transitions of each grant must be triggered by rising transitions of the same signal (request)");
 
             DialogUtils.showError(msg, "Model validation");
             return false;

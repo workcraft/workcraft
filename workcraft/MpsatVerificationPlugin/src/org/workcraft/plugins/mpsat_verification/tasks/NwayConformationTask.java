@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
@@ -20,6 +19,8 @@ import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.SortUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -115,7 +116,7 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             Collection<String> problems = getMissingPhaseProblems(we, signalPhaseData);
             if (!problems.isEmpty()) {
                 String msg = "Model '" + we.getTitle() + "' misses phases of interface signals that are present in other models";
-                return Result.exception(getMessageWithProblemList(msg, problems));
+                return Result.exception(TextUtils.getTextWithBulletpoints(msg, SortUtils.getSortedNatural(problems)));
             }
         }
         // Check initial state consistency for the driver and its driven signals
@@ -126,7 +127,7 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             Collection<String> problems = getInitialStateMismatchProblems(we, initialState, signalStateData);
             if (!problems.isEmpty()) {
                 String msg = "Model '" + we.getTitle() + "' has interface signals whose initial state is different in other models";
-                return Result.exception(getMessageWithProblemList(msg, problems));
+                return Result.exception(TextUtils.getTextWithBulletpoints(msg, SortUtils.getSortedNatural(problems)));
             }
         }
         return null;
@@ -266,12 +267,6 @@ public class NwayConformationTask implements Task<VerificationChainOutput> {
             }
         }
         return result;
-    }
-
-    private String getMessageWithProblemList(String message, Collection<String> problems) {
-        return message + ":\n" + problems.stream()
-                .map(problem -> PropertyHelper.BULLET_PREFIX + problem)
-                .collect(Collectors.joining("\n"));
     }
 
     private Result<? extends VerificationChainOutput> init() {

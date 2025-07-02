@@ -4,7 +4,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.Library;
@@ -309,11 +308,11 @@ public final class VerilogUtils {
     }
 
     public static String getAssignDelayHelp() {
-        return "Verilog delay parameter must be one of these:\n"
-                + PropertyHelper.BULLET_PREFIX + "empty string\n"
-                + PropertyHelper.BULLET_PREFIX + "an integer or floating-point number\n"
-                + PropertyHelper.BULLET_PREFIX + "a string in parenthesis, e.g. "
-                + CircuitSettings.DEFAULT_RANDOM_DELAY_INTERVAL;
+        return "Verilog delay parameter must be one of these:"
+                + TextUtils.getBulletpoint("empty string")
+                + TextUtils.getBulletpoint("an integer or floating-point number")
+                + TextUtils.getBulletpoint("a string in parenthesis, e.g. "
+                + CircuitSettings.DEFAULT_RANDOM_DELAY_INTERVAL);
     }
 
     private static String getPortNameWithSubstitutions(String moduleName, String portName) {

@@ -13,7 +13,7 @@ public class PdfExporter implements Exporter {
 
     @Override
     public boolean isCompatible(Model model) {
-        return  model instanceof VisualModel;
+        return model instanceof VisualModel;
     }
 
     @Override

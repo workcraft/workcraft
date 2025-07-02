@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.mpsat_verification.presets.*;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainTask;
@@ -17,6 +16,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -71,10 +71,10 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
         boolean noDummies = stg.getDummyTransitions().isEmpty();
         if (!noDummies) {
             String message = "The following properties can currently be checked only for STGs without dummies:"
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "Input properness"
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "Output persistency"
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "Absence of local self-triggering"
-                    + '\n' + PropertyHelper.BULLET_PREFIX + "Delay insensitive interface";
+                    + TextUtils.getBulletpoint("Input properness")
+                    + TextUtils.getBulletpoint("Output persistency")
+                    + TextUtils.getBulletpoint("Absence of local self-triggering")
+                    + TextUtils.getBulletpoint("Delay insensitive interface");
 
             String question = ". \n\nProceed with verification of other properties?";
             if (!DialogUtils.showConfirmWarning(message, question)) {

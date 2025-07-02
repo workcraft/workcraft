@@ -5,10 +5,10 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.commands.RefinementStatisticsCommand;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.PackageUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -28,67 +28,67 @@ class RefinementStatisticsCommandTests {
     void testBufferDependency() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
         testRefinementStatisticsCommand(workName,
-                "Refinement analysis:\n"
-                        + PropertyHelper.BULLET_PREFIX + "Top-level Circuit:\n"
-                        + "    buffer.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "Top-level environment:\n"
-                        + "    buffer-compact.stg.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "No Circuit dependencies\n"
-                        + PropertyHelper.BULLET_PREFIX + "No STG dependencies\n"
-                        + PropertyHelper.BULLET_PREFIX + "No invalid dependencies\n"
-                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments\n");
+                "Refinement analysis:"
+                        + TextUtils.getBulletpoint("Top-level Circuit:")
+                        + "\n    buffer.circuit.work"
+                        + TextUtils.getBulletpoint("Top-level environment:")
+                        + "\n    buffer-compact.stg.work"
+                        + TextUtils.getBulletpoint("No Circuit dependencies")
+                        + TextUtils.getBulletpoint("No STG dependencies")
+                        + TextUtils.getBulletpoint("No invalid dependencies")
+                        + TextUtils.getBulletpoint("No additional STG environments"));
     }
 
     @Test
     void testInvalidDependency() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "rdg-invalid/top.circuit.work");
         testRefinementStatisticsCommand(workName,
-                "Refinement analysis:\n"
-                        + PropertyHelper.BULLET_PREFIX + "Top-level Circuit:\n"
-                        + "    rdg-invalid/top.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "No top-level environment\n"
-                        + PropertyHelper.BULLET_PREFIX + "2 Circuit dependencies:\n"
-                        + "    rdg-invalid/buf.circuit.work\n"
-                        + "    rdg-invalid/mid.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "STG dependency:\n"
-                        + "    rdg-invalid/buf.stg.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "Invalid dependency:\n"
-                        + "    rdg-invalid/invalid.stg.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "Additional STG environment:\n"
-                        + "    rdg-invalid/mid-env.stg.work\n\n");
+                "Refinement analysis:"
+                        + TextUtils.getBulletpoint("Top-level Circuit:")
+                        + "\n    rdg-invalid/top.circuit.work"
+                        + TextUtils.getBulletpoint("No top-level environment")
+                        + TextUtils.getBulletpoint("2 Circuit dependencies:")
+                        + "\n    rdg-invalid/buf.circuit.work"
+                        + "\n    rdg-invalid/mid.circuit.work"
+                        + TextUtils.getBulletpoint("STG dependency:")
+                        + "\n    rdg-invalid/buf.stg.work"
+                        + TextUtils.getBulletpoint("Invalid dependency:")
+                        + "\n    rdg-invalid/invalid.stg.work"
+                        + TextUtils.getBulletpoint("Additional STG environment:")
+                        + "\n    rdg-invalid/mid-env.stg.work");
     }
 
     @Test
     void testCyclicDependency() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "rdg-cyclic/top.circuit.work");
         testRefinementStatisticsCommand(workName,
-                "Refinement analysis:\n"
-                        + PropertyHelper.BULLET_PREFIX + "Top-level Circuit:\n"
-                        + "    rdg-cyclic/top.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "No top-level environment\n"
-                        + PropertyHelper.BULLET_PREFIX + "Circuit dependency:\n"
-                        + "    rdg-cyclic/mid.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "STG dependency:\n"
-                        + "    rdg-cyclic/buf.stg.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "No invalid dependencies\n"
-                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments\n");
+                "Refinement analysis:"
+                        + TextUtils.getBulletpoint("Top-level Circuit:")
+                        + "\n    rdg-cyclic/top.circuit.work"
+                        + TextUtils.getBulletpoint("No top-level environment")
+                        + TextUtils.getBulletpoint("Circuit dependency:")
+                        + "\n    rdg-cyclic/mid.circuit.work"
+                        + TextUtils.getBulletpoint("STG dependency:")
+                        + "\n    rdg-cyclic/buf.stg.work"
+                        + TextUtils.getBulletpoint("No invalid dependencies")
+                        + TextUtils.getBulletpoint("No additional STG environments"));
     }
 
     @Test
     void testAcyclicDependency() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "rdg-acyclic/top.circuit.work");
         testRefinementStatisticsCommand(workName,
-                "Refinement analysis:\n"
-                        + PropertyHelper.BULLET_PREFIX + "Top-level Circuit:\n"
-                        + "    rdg-acyclic/top.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "No top-level environment\n"
-                        + PropertyHelper.BULLET_PREFIX + "2 Circuit dependencies:\n"
-                        + "    rdg-acyclic/buf.circuit.work\n"
-                        + "    rdg-acyclic/mid.circuit.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "STG dependency:\n"
-                        + "    rdg-acyclic/buf.stg.work\n"
-                        + PropertyHelper.BULLET_PREFIX + "No invalid dependencies\n"
-                        + PropertyHelper.BULLET_PREFIX + "No additional STG environments\n");
+                "Refinement analysis:"
+                        + TextUtils.getBulletpoint("Top-level Circuit:")
+                        + "\n    rdg-acyclic/top.circuit.work"
+                        + TextUtils.getBulletpoint("No top-level environment")
+                        + TextUtils.getBulletpoint("2 Circuit dependencies:")
+                        + "\n    rdg-acyclic/buf.circuit.work"
+                        + "\n    rdg-acyclic/mid.circuit.work"
+                        + TextUtils.getBulletpoint("STG dependency:")
+                        + "\n    rdg-acyclic/buf.stg.work"
+                        + TextUtils.getBulletpoint("No invalid dependencies")
+                        + TextUtils.getBulletpoint("No additional STG environments"));
     }
 
     private void testRefinementStatisticsCommand(String workName, String expected)
@@ -114,8 +114,7 @@ class RefinementStatisticsCommandTests {
             }
         }
 
-        RefinementStatisticsCommand refinementStatisticsCommand = new RefinementStatisticsCommand();
-        String refinementStatistics = refinementStatisticsCommand.execute(we);
+        String refinementStatistics = new RefinementStatisticsCommand().execute(we);
         Assertions.assertEquals(expectedRefinementStatistics.toString(), refinementStatistics);
 
         framework.closeWork(we);

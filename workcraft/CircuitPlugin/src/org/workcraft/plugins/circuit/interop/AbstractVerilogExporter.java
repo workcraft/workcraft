@@ -6,7 +6,6 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.visitors.StringGenerator;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
@@ -90,8 +89,8 @@ public abstract class AbstractVerilogExporter implements Exporter {
                 if ((path != null) && !path.equals(exportedPath)) {
                     LogUtils.logError(
                             "Different circuit refinement has been used for Verilog module '" + moduleName + "'"
-                                    + '\n' + PropertyHelper.BULLET_PREFIX + "Original refinement: " + exportedPath
-                                    + '\n' + PropertyHelper.BULLET_PREFIX + "Conflict refinement: " + path);
+                                    + TextUtils.getBulletpoint("Original refinement: " + exportedPath)
+                                    + TextUtils.getBulletpoint("Conflict refinement: " + path));
                 }
             }
         }

@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -85,10 +84,8 @@ public final class VerificationUtils {
         String longMessage = "";
         String shortMessage = "";
         if (!skipEnvironmentCheck && (envStg == null)) {
-            String itemText = (envFile == null)
-                    ? ('\n' + PropertyHelper.BULLET_PREFIX + "Environment STG is missing.")
-                    : ('\n' + PropertyHelper.BULLET_PREFIX + "Environment STG cannot be read from the file:\n"
-                    + envFile.getAbsolutePath());
+            String itemText = TextUtils.getBulletpoint((envFile == null) ? "Environment STG is missing."
+                    : ("Environment STG cannot be read from the file:\n" + envFile.getAbsolutePath()));
 
             longMessage += itemText;
             shortMessage += itemText;
@@ -102,8 +99,8 @@ public final class VerificationUtils {
         // Check the circuit for hanging contacts
         Set<String> hangingSignals = getHangingSignals(circuit);
         if (!hangingSignals.isEmpty()) {
-            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
-                    "Hanging contact", SortUtils.getSortedNatural(hangingSignals));
+            String itemText = TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
+                    "Hanging contact", SortUtils.getSortedNatural(hangingSignals)));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -111,8 +108,8 @@ public final class VerificationUtils {
         // Check the circuit for unconstrained inputs and unused outputs
         Set<String> unconstrainedInputSignals = getUnconstrainedInputSignals(envStg, circuit);
         if (!unconstrainedInputSignals.isEmpty()) {
-            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
-                    "Unconstrained input signal", SortUtils.getSortedNatural(unconstrainedInputSignals));
+            String itemText = TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
+                    "Unconstrained input signal", SortUtils.getSortedNatural(unconstrainedInputSignals)));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -123,8 +120,8 @@ public final class VerificationUtils {
                 .collect(Collectors.toSet());
 
         if (!unusedOutputSignals.isEmpty()) {
-            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
-                    "Unused output signal", SortUtils.getSortedNatural(unusedOutputSignals));
+            String itemText = TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
+                    "Unused output signal", SortUtils.getSortedNatural(unusedOutputSignals)));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);
@@ -132,8 +129,8 @@ public final class VerificationUtils {
         // Check the circuit for excited components
         Set<String> excitedComponentRefs = getExcitedComponentRefs(circuit);
         if (!excitedComponentRefs.isEmpty()) {
-            String itemText = '\n' + PropertyHelper.BULLET_PREFIX + TextUtils.wrapMessageWithItems(
-                    "Excited component", SortUtils.getSortedNatural(excitedComponentRefs));
+            String itemText = TextUtils.getBulletpoint(TextUtils.wrapMessageWithItems(
+                    "Excited component", SortUtils.getSortedNatural(excitedComponentRefs)));
 
             longMessage += itemText;
             shortMessage += TextUtils.getHeadAndTail(itemText, 5, 0);

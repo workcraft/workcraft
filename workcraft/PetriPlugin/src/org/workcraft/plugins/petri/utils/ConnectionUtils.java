@@ -73,7 +73,7 @@ public class ConnectionUtils extends org.workcraft.dom.visual.connections.Connec
         if (node instanceof VisualPlace) {
             return (VisualPlace) node;
         } else if (node instanceof VisualReplicaPlace r) {
-            return  (VisualPlace) r.getMaster();
+            return (VisualPlace) r.getMaster();
         }
         return null;
     }

@@ -139,12 +139,12 @@ public class SilverOceanTheme extends OceanTheme {
 
     @Override
     protected ColorUIResource getSecondary2() {
-        return  new ColorUIResource(0xcccccc);
+        return new ColorUIResource(0xcccccc);
     }
 
     @Override
     protected ColorUIResource getSecondary3() {
-        return  new ColorUIResource(0xeeeeee);
+        return new ColorUIResource(0xeeeeee);
     }
 
     @Override

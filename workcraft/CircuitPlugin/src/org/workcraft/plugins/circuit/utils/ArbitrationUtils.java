@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.*;
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.stg.Mutex;
@@ -15,6 +14,7 @@ import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
+import org.workcraft.utils.TextUtils;
 
 import java.util.*;
 
@@ -390,19 +390,19 @@ public class ArbitrationUtils {
         String messageDetails = "";
         boolean addSettingsHint = false;
         if (!unimplementableMutexPlaces.isEmpty()) {
-            messageDetails += "\n" + PropertyHelper.BULLET_PREFIX + "Not implementable by MUTEX: "
-                    + ReferenceHelper.getNodesAsString(stg, unimplementableMutexPlaces);
+            messageDetails += TextUtils.getBulletpoint("Not implementable by MUTEX: "
+                    + ReferenceHelper.getNodesAsString(stg, unimplementableMutexPlaces));
         }
         if (!missingEarlyMutexPlaces.isEmpty()) {
             addSettingsHint = true;
-            messageDetails += "\n" + PropertyHelper.BULLET_PREFIX + "Missing definition of Early protocol MUTEX: "
-                    + ReferenceHelper.getNodesAsString(stg, missingEarlyMutexPlaces);
+            messageDetails += TextUtils.getBulletpoint("Missing definition of Early protocol MUTEX: "
+                    + ReferenceHelper.getNodesAsString(stg, missingEarlyMutexPlaces));
 
         }
         if (!missingLateMutexPlaces.isEmpty()) {
             addSettingsHint = true;
-            messageDetails += "\n" + PropertyHelper.BULLET_PREFIX + "Missing definition of Late protocol MUTEX: "
-                    + ReferenceHelper.getNodesAsString(stg, missingLateMutexPlaces);
+            messageDetails += TextUtils.getBulletpoint("Missing definition of Late protocol MUTEX: "
+                    + ReferenceHelper.getNodesAsString(stg, missingLateMutexPlaces));
         }
         if (!messageDetails.isEmpty()) {
             String messagePrefix = "Synthesis cannot be performed due to problems with Mutex places.";

@@ -288,13 +288,13 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
     private String getCheckAssertEnabledText() {
         String first = passiveRadioButton.isSelected() ? REQ_LABEL + ASSERTED_LABEL : ACK_LABEL + ASSERTED_LABEL;
         String second = passiveRadioButton.isSelected() ? ACK_LABEL + WITHDRAWN_LABEL : REQ_LABEL + ASSERTED_LABEL;
-        return  first +  " must be enabled after " + second;
+        return first +  " must be enabled after " + second;
     }
 
     private String getCheckWithdrawEnabledText() {
         String first = passiveRadioButton.isSelected() ? REQ_LABEL + WITHDRAWN_LABEL : ACK_LABEL + WITHDRAWN_LABEL;
         String second = passiveRadioButton.isSelected() ? ACK_LABEL + ASSERTED_LABEL : REQ_LABEL + WITHDRAWN_LABEL;
-        return  first +  " must be enabled after " + second;
+        return first +  " must be enabled after " + second;
     }
 
     private void updateOkEnableness() {

@@ -1,6 +1,5 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
-import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
@@ -9,6 +8,7 @@ import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.List;
@@ -68,11 +68,11 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
         } else {
             List<VerificationParameters> verificationParametersList = chainOutput.getVerificationParametersList();
             for (VerificationParameters verificationParameters : verificationParametersList) {
-                msg.append('\n').append(PropertyHelper.BULLET_PREFIX).append(verificationParameters.getDescription());
+                msg.append(TextUtils.getBulletpoint(verificationParameters.getDescription()));
             }
             if (vacuousMutexImplementability) {
                 // Add trivial mutex implementability result if no mutex places found
-                msg.append('\n').append(PropertyHelper.BULLET_PREFIX).append("Mutex implementability (vacuously)");
+                msg.append(TextUtils.getBulletpoint("Mutex implementability (vacuously)"));
             }
             if (msg.length() == 0) {
                 msg.append("All checks passed.");

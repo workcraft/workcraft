@@ -7,6 +7,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
 import org.workcraft.plugins.PluginManager;
+import org.workcraft.utils.TextUtils;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -43,7 +44,7 @@ public class FavoriteCommonSettings extends AbstractCommonSettings {
                 for (ModelDescriptor descriptor : sortedModelDescriptors) {
                     String displayName = descriptor.getDisplayName();
                     properties.add(new PropertyDeclaration<>(Boolean.class,
-                            PropertyHelper.BULLET_PREFIX + displayName,
+                            TextUtils.getBullet(displayName),
                             value -> setIsFavorite(displayName, value),
                             () -> getIsFavorite(displayName)));
                 }
