@@ -12,7 +12,7 @@ public class ExceptionDialog {
         cause.printStackTrace(new PrintWriter(writer));
         String name = cause.getClass().getName();
         DialogUtils.showMessage("Exception of type " + name + ": \n"
-                + cause.getMessage() + "\n\n" + writer.toString());
+                + cause.getMessage() + "\n\n" + writer);
     }
 
 }

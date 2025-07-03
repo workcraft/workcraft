@@ -15,7 +15,7 @@ public class MockMathModel extends AbstractMathModel {
     }
 
     @Override
-    public boolean reparent(Container targetContainer, Model sourceModel,
+    public boolean reparent(Container targetContainer, Model<?, ?> sourceModel,
             Container sourceRoot, Collection<? extends MathNode> sourceChildren) {
 
         return true;

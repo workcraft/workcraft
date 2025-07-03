@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class VisualCommonSettings extends AbstractCommonSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "CommonVisualSettings";
 
     /*
@@ -305,7 +305,7 @@ public class VisualCommonSettings extends AbstractCommonSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

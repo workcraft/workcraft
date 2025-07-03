@@ -68,7 +68,7 @@ public class Petri extends AbstractMathModel implements PetriModel {
         return isEnabled(this, t);
     }
 
-    public static final boolean isEnabled(PetriModel net, Transition t) {
+    public static boolean isEnabled(PetriModel net, Transition t) {
         // gather number of connections for each pre-place
         Map<Place, Integer> map = new HashMap<>();
         for (MathConnection c: net.getConnections(t)) {
@@ -95,7 +95,7 @@ public class Petri extends AbstractMathModel implements PetriModel {
         fire(this, t);
     }
 
-    public static final void fire(PetriModel net, Transition t) {
+    public static void fire(PetriModel net, Transition t) {
         if (net.isEnabled(t)) {
             // first consume tokens and then produce tokens (to avoid extra capacity)
             for (MathConnection c : net.getConnections(t)) {
@@ -118,7 +118,7 @@ public class Petri extends AbstractMathModel implements PetriModel {
         return isUnfireEnabled(this, t);
     }
 
-    public static final boolean isUnfireEnabled(PetriModel net, Transition t) {
+    public static boolean isUnfireEnabled(PetriModel net, Transition t) {
         // gather number of connections for each post-place
         Map<Place, Integer> map = new HashMap<>();
         for (MathConnection c: net.getConnections(t)) {
@@ -143,7 +143,7 @@ public class Petri extends AbstractMathModel implements PetriModel {
         unFire(this, t);
     }
 
-    public static final void unFire(PetriModel net, Transition t) {
+    public static void unFire(PetriModel net, Transition t) {
         // the opposite action to fire, no additional checks,
         // (the transition must be "unfireble")
 

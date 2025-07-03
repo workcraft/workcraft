@@ -99,7 +99,7 @@ public class Fsm extends AbstractMathModel {
     }
 
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
+    public boolean reparent(Container dstContainer, Model<?, ?> srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
@@ -107,7 +107,7 @@ public class Fsm extends AbstractMathModel {
         return super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
     }
 
-    public void reparentDependencies(Model srcModel, Collection<? extends MathNode> srcChildren) {
+    public void reparentDependencies(Model<?, ?> srcModel, Collection<? extends MathNode> srcChildren) {
         for (MathNode srcNode: srcChildren) {
             if (srcNode instanceof Event srcEvent) {
                 Symbol dstSymbol = reparentSymbol(srcModel, srcEvent.getSymbol());
@@ -116,7 +116,7 @@ public class Fsm extends AbstractMathModel {
         }
     }
 
-    private Symbol reparentSymbol(Model srcModel, Symbol srcSymbol) {
+    private Symbol reparentSymbol(Model<?, ?> srcModel, Symbol srcSymbol) {
         Symbol dstSymbol = null;
         if (srcSymbol != null) {
             String symbolName = srcModel.getNodeReference(srcSymbol);

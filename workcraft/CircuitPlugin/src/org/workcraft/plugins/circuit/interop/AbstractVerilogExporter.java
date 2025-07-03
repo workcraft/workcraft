@@ -36,12 +36,12 @@ public abstract class AbstractVerilogExporter implements Exporter {
     public abstract VerilogFormat getFormat();
 
     @Override
-    public boolean isCompatible(Model model) {
+    public boolean isCompatible(Model<?, ?> model) {
         return model instanceof Circuit;
     }
 
     @Override
-    public void serialise(Model model, OutputStream out) {
+    public void serialise(Model<?, ?> model, OutputStream out) {
         if (model instanceof Circuit circuit) {
             VerilogWriter writer = new VerilogWriter(out);
             String moduleName = ExportUtils.getTitleAsIdentifier(circuit.getTitle());

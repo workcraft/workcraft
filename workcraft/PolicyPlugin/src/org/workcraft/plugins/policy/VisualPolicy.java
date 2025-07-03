@@ -259,27 +259,27 @@ public class VisualPolicy extends VisualPetri {
         return properties;
     }
 
-    private PropertyDescriptor getBundleNameProperty(VisualBundle bundle) {
+    private PropertyDescriptor<?> getBundleNameProperty(VisualBundle bundle) {
         return new PropertyDeclaration<>(String.class,
                 getMathModel().getName(bundle.getReferencedBundle()) + " name",
                 value -> getMathModel().setName(bundle.getReferencedBundle(), value),
                 () -> getMathModel().getName(bundle.getReferencedBundle()));
     }
 
-    private PropertyDescriptor getBundleColorProperty(VisualBundle bundle) {
+    private PropertyDescriptor<?> getBundleColorProperty(VisualBundle bundle) {
         return new PropertyDeclaration<>(Color.class,
                 getMathModel().getName(bundle.getReferencedBundle()) + " color",
                 bundle::setColor, bundle::getColor);
     }
 
-    private PropertyDescriptor getTransitionsOfBundleProperty(VisualBundle bundle) {
+    private PropertyDescriptor<?> getTransitionsOfBundleProperty(VisualBundle bundle) {
         return new PropertyDeclaration<>(String.class,
                 getMathModel().getName(bundle.getReferencedBundle()) + " transitions",
                 value -> setTransitionsOfBundleAsString(bundle, value),
                 () -> getTransitionsOfBundleAsString(bundle));
     }
 
-    private PropertyDescriptor getBundlesOfTransitionProperty(VisualBundledTransition transition) {
+    private PropertyDescriptor<?> getBundlesOfTransitionProperty(VisualBundledTransition transition) {
         return new PropertyDeclaration<>(String.class, "Bundles",
                 value -> setBundlesOfTransitionAsString(transition, value),
                 () -> getBundlesOfTransitionAsString(transition));

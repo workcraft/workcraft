@@ -16,12 +16,12 @@ public class StgExporter implements Exporter {
     }
 
     @Override
-    public boolean isCompatible(Model model) {
+    public boolean isCompatible(Model<?, ?> model) {
         return model instanceof PetriModel;
     }
 
     @Override
-    public void serialise(Model model, OutputStream out) {
+    public void serialise(Model<?, ?> model, OutputStream out) {
         SerialiserUtils.writeModel(model, out, getCurrentFile(), SerialiserUtils.Style.STG, false);
     }
 

@@ -214,7 +214,7 @@ public class PluginManager implements PluginProvider {
         }, singleton);
     }
 
-    public void registerModelSerialiser(Initialiser<? extends ModelSerialiser> initialiser) {
+    public void registerModelSerialiser(Initialiser<? extends ModelSerialiser<?, ?>> initialiser) {
         registerClass(ModelSerialiser.class, initialiser, true);
     }
 

@@ -5,7 +5,7 @@ import org.workcraft.interop.Format;
 
 public class NoExporterException extends RuntimeException {
 
-    public NoExporterException(Model model, Format format) {
+    public NoExporterException(Model<?, ?> model, Format format) {
         this(model.getDisplayName(), format.getName());
     }
 

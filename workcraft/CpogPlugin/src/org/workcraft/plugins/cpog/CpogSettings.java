@@ -28,7 +28,7 @@ public class CpogSettings extends AbstractModelSettings {
         }
     }
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "CpogSettings";
 
     private static final String keyScencoCommand = prefix + ".scencoCommand";
@@ -115,7 +115,7 @@ public class CpogSettings extends AbstractModelSettings {
     }
 
     @Override
-    public Collection<PropertyDescriptor> getDescriptors() {
+    public Collection<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

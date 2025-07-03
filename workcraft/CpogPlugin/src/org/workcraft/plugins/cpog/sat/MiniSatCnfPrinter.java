@@ -26,7 +26,7 @@ public class MiniSatCnfPrinter {
                 if (literal.getNegation()) {
                     result.append('-');
                 }
-                result.append(number.toString());
+                result.append(number);
                 result.append(' ');
             }
             result.append('0');
@@ -38,10 +38,14 @@ public class MiniSatCnfPrinter {
         for (BooleanVariable var : new TreeMap<>(numbers).keySet()) {
             String label = var.getLabel();
             if (!label.isEmpty()) {
-                head.append("c " + numbers.get(var) + ' ' + label + '\n');
+                head.append("c ");
+                head.append(numbers.get(var));
+                head.append(' ');
+                head.append(label);
+                head.append('\n');
             }
         }
-        result.insert(0, head.toString());
+        result.insert(0, head);
         return result.toString();
     }
 

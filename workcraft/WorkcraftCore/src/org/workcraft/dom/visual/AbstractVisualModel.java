@@ -685,7 +685,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
     }
 
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends VisualNode> srcChildren) {
+    public boolean reparent(Container dstContainer, Model<?, ?> srcModel, Container srcRoot, Collection<? extends VisualNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
@@ -779,11 +779,11 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         return properties;
     }
 
-    private PropertyDescriptor getTitleProperty() {
+    private PropertyDescriptor<?> getTitleProperty() {
         return new PropertyDeclaration<>(String.class, PROPERTY_TITLE, this::setTitle, this::getTitle);
     }
 
-    private PropertyDescriptor getNameProperty(VisualNode node) {
+    private PropertyDescriptor<?> getNameProperty(VisualNode node) {
         String name = getMathName(node);
         return new PropertyDeclaration<>(String.class, Model.PROPERTY_NAME,
                 value -> {

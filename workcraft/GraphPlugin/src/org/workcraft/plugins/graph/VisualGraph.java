@@ -21,7 +21,6 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.graph.tools.GraphSimulationTool;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -57,7 +56,7 @@ public class VisualGraph extends AbstractVisualModel {
         if (node == null) {
             Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
             List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols(container));
-            Collections.sort(symbols, Comparator.comparing(getMathModel()::getNodeReference));
+            symbols.sort(Comparator.comparing(getMathModel()::getNodeReference));
             for (final Symbol symbol : symbols) {
                 properties.add(getSymbolProperty(symbol));
             }
@@ -67,7 +66,7 @@ public class VisualGraph extends AbstractVisualModel {
         return properties;
     }
 
-    private PropertyDescriptor getSymbolProperty(Symbol symbol) {
+    private PropertyDescriptor<?> getSymbolProperty(Symbol symbol) {
         return new PropertyDeclaration<>(String.class, getMathModel().getName(symbol) + " name",
                 value -> {
                     Node node = getMathModel().getNodeByReference(value);
@@ -83,7 +82,7 @@ public class VisualGraph extends AbstractVisualModel {
                 () -> getMathModel().getName(symbol));
     }
 
-    private PropertyDescriptor getVertexSymbolProperty(VisualVertex event) {
+    private PropertyDescriptor<?> getVertexSymbolProperty(VisualVertex event) {
         return new PropertyDeclaration<>(String.class, Vertex.PROPERTY_SYMBOL,
                 value -> {
                     Symbol symbol = null;

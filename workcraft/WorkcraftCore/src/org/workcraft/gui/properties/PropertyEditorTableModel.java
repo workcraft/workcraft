@@ -3,6 +3,7 @@ package org.workcraft.gui.properties;
 import javax.swing.table.AbstractTableModel;
 import java.util.Map;
 
+@SuppressWarnings("rawtypes")
 public class PropertyEditorTableModel extends AbstractTableModel {
 
     private final String[] columnNames;
@@ -67,10 +68,11 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         return (col > 0) && isRowInRange(row) && declarations[row].isEditable();
     }
 
-    public PropertyDescriptor getDeclaration(int row) {
+    public PropertyDescriptor<?> getDeclaration(int row) {
         return isRowInRange(row) ? declarations[row] : null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object getValueAt(int row, int col) {
         if (!isRowInRange(row)) {
@@ -96,6 +98,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setValueAt(Object value, int row, int col) {
         PropertyDescriptor declaration = declarations[row];

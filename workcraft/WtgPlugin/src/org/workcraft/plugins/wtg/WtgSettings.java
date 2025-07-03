@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public class WtgSettings extends AbstractModelSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "WtgSettings";
 
     private static final String keyLowStateSuffix = prefix + ".lowStateSuffix";
@@ -107,7 +107,7 @@ public class WtgSettings extends AbstractModelSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

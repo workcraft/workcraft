@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public class StgSettings extends AbstractModelSettings {
 
-    private static final List<PropertyDescriptor> properties = new LinkedList<>();
+    private static final List<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "StgSettings";
 
     private static final String keyDensityMapLevelLimit = prefix + ".densityMapLevelLimit";
@@ -84,7 +84,7 @@ public class StgSettings extends AbstractModelSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

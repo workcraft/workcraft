@@ -14,7 +14,7 @@ import java.io.OutputStream;
 public class PngExporter implements Exporter {
 
     @Override
-    public boolean isCompatible(Model model) {
+    public boolean isCompatible(Model<?, ?> model) {
         return model instanceof VisualModel;
     }
 
@@ -24,7 +24,7 @@ public class PngExporter implements Exporter {
     }
 
     @Override
-    public void serialise(Model model, OutputStream out) throws SerialisationException {
+    public void serialise(Model<?, ?> model, OutputStream out) throws SerialisationException {
         PNGTranscoder transcoder = new PNGTranscoder();
         transcoder.addTranscodingHint(ImageTranscoder.KEY_BACKGROUND_COLOR,
                 EditorCommonSettings.getPngBackgroundColor());

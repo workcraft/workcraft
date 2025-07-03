@@ -30,7 +30,7 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
         }
     }
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "DotLayoutSettings";
 
     private static final String keyCommand = prefix + ".dotCommand";
@@ -79,7 +79,7 @@ public class DotLayoutSettings extends AbstractLayoutSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

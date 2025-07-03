@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public class ModelEntry {
     private final ModelDescriptor descriptor;
-    private final Model model;
+    private final Model<?, ?> model;
     private Stamp stamp;
     private String desiredName;
 
-    public ModelEntry(ModelDescriptor descriptor, Model model) {
+    public ModelEntry(ModelDescriptor descriptor, Model<?, ?> model) {
         this.descriptor = descriptor;
         this.model = model;
     }
@@ -23,7 +23,7 @@ public class ModelEntry {
         return descriptor;
     }
 
-    public Model getModel() {
+    public Model<?, ?> getModel() {
         return model;
     }
 
@@ -53,7 +53,7 @@ public class ModelEntry {
 
     public boolean isApplicableExact(Class<?> cls) {
         boolean result = false;
-        final Model model = getModel();
+        final Model<?, ?> model = getModel();
         if (model.getClass() == cls) {
             result = true;
         } else if (isVisual()) {

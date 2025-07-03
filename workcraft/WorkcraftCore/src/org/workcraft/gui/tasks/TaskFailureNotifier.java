@@ -29,7 +29,7 @@ public class TaskFailureNotifier extends BasicProgressMonitor<Object> {
                 if (result.getCause() != null) {
                     Throwable reason = result.getCause();
                     reason.printStackTrace();
-                    message += "\n\nThe reason was: " + reason.toString();
+                    message += "\n\nThe reason was: " + reason;
                     message += "\nPlease see the 'Problems' tab for further details.";
                 }
                 if (!errorMessage.isEmpty()) {

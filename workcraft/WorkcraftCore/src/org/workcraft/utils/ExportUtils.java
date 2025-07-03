@@ -31,11 +31,11 @@ public class ExportUtils {
         return null;
     }
 
-    public static Exporter chooseBestExporter(Model model, Format format) {
+    public static Exporter chooseBestExporter(Model<?, ?> model, Format format) {
         return chooseBestExporter(model, format.getName(), format.getUuid());
     }
 
-    public static Exporter chooseBestExporter(Model model, String formatName, UUID formatUuid) {
+    public static Exporter chooseBestExporter(Model<?, ?> model, String formatName, UUID formatUuid) {
         final PluginManager pm = Framework.getInstance().getPluginManager();
         for (Exporter exporter : pm.getSortedExporters()) {
             if (exporter.isCompatible(model)) {
@@ -50,7 +50,7 @@ public class ExportUtils {
         return null;
     }
 
-    public static void exportToFile(Model model, File file, Format format)
+    public static void exportToFile(Model<?, ?> model, File file, Format format)
             throws IOException, SerialisationException {
 
         Exporter exporter = chooseBestExporter(model, format);
@@ -60,7 +60,7 @@ public class ExportUtils {
         exportToFile(exporter, model, file);
     }
 
-    public static void exportToFile(Exporter exporter, Model model, File file)
+    public static void exportToFile(Exporter exporter, Model<?, ?> model, File file)
             throws IOException, SerialisationException {
 
         file.createNewFile();
@@ -100,11 +100,11 @@ public class ExportUtils {
         return title.replaceAll("[^A-Za-z0-9_]", "_");
     }
 
-    public static String getExportMessage(Model model, File file) {
+    public static String getExportMessage(Model<?, ?> model, File file) {
         return getExportMessage(model, file, "Exporting model");
     }
 
-    public static String getExportMessage(Model model, File file, String description) {
+    public static String getExportMessage(Model<?, ?> model, File file, String description) {
         String result = description;
         String title = model.getTitle();
         if (!title.isEmpty()) {

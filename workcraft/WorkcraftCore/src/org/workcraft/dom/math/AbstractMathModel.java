@@ -119,7 +119,7 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
     }
 
     private void setNamespaceRecursively(HierarchyReferenceManager dstRefManager, Container dstContainer,
-            Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
+            Model<?, ?> srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
 
         // Collect the nodes to reparent - need to assign the whole tree to new providers
         Collection<Node> nodes = null;
@@ -152,7 +152,7 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
     }
 
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
+    public boolean reparent(Container dstContainer, Model<?, ?> srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }

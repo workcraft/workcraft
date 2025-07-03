@@ -21,6 +21,7 @@ public class NodeContextTracker<N extends Node, C extends Connection> extends Hi
         connections.remove(n);
     }
 
+    @SuppressWarnings("unchecked")
     private void nodeAdded(Node n) {
         initHashes((N) n);
 
@@ -105,7 +106,7 @@ public class NodeContextTracker<N extends Node, C extends Connection> extends Hi
     }
 
     @Override
-    public Set<C> getConnections(N node) {
+    public Set<C> getConnections(Node node) {
         Set<C> ret = connections.get(node);
         return Collections.unmodifiableSet(ret == null ? new HashSet<>() : ret);
     }

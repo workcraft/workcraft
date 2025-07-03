@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CircuitLayoutSettings extends AbstractLayoutSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "CircuitLayout";
 
     private static final String keySpacingHorizontal = prefix + ".spacingHorizontal";
@@ -83,7 +83,7 @@ public class CircuitLayoutSettings extends AbstractLayoutSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

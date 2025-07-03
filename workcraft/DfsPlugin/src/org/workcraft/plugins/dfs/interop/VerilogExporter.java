@@ -42,7 +42,7 @@ public class VerilogExporter implements Exporter {
     private static final String PREFIX_AO = NAME_AO + SEPARATOR;
 
     @Override
-    public boolean isCompatible(Model model) {
+    public boolean isCompatible(Model<?, ?> model) {
         return model instanceof Dfs;
     }
 
@@ -52,7 +52,7 @@ public class VerilogExporter implements Exporter {
     }
 
     @Override
-    public void serialise(Model model, OutputStream out) {
+    public void serialise(Model<?, ?> model, OutputStream out) {
         if (model instanceof Dfs) {
             PrintWriter writer = new PrintWriter(out);
             String moduleName = ExportUtils.getTitleAsIdentifier(model.getTitle());

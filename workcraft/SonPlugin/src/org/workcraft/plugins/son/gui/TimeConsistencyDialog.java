@@ -48,7 +48,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected ArrayList<Node> selectedNodes;
 
     public enum Granularity {
-        YEAR_YEAR, HOUR_MINS;
+        YEAR_YEAR, HOUR_MINS
     }
 
     @SuppressWarnings("rawtypes")

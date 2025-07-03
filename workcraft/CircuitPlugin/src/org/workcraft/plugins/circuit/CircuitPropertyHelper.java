@@ -28,12 +28,12 @@ public class CircuitPropertyHelper {
 
     private static final String PROPERTY_ENVIRONMENT = "Environment";
 
-    public static PropertyDescriptor getEnvironmentProperty(VisualCircuit circuit) {
+    public static PropertyDescriptor<?> getEnvironmentProperty(VisualCircuit circuit) {
         return new PropertyDeclaration<>(FileReference.class, PROPERTY_ENVIRONMENT,
                 circuit.getMathModel()::setEnvironment, circuit.getMathModel()::getEnvironment);
     }
 
-    public static PropertyDescriptor getRefinementProperty(VisualCircuit circuit, VisualFunctionComponent component) {
+    public static PropertyDescriptor<?> getRefinementProperty(VisualCircuit circuit, VisualFunctionComponent component) {
         return new PropertyDeclaration<>(FileReference.class, CircuitComponent.PROPERTY_REFINEMENT,
                 value -> setRefinementIfCompatible(circuit, component, value),
                 () -> component.getReferencedComponent().getRefinement());
@@ -147,12 +147,12 @@ public class CircuitPropertyHelper {
         component.getReferencedComponent().setRefinement(value);
     }
 
-    public static Collection<PropertyDescriptor> getComponentProperties(VisualCircuit circuit) {
+    public static Collection<PropertyDescriptor<?>> getComponentProperties(VisualCircuit circuit) {
         List<VisualFunctionComponent> components = new ArrayList<>(Hierarchy.getChildrenOfType(
                 circuit.getCurrentLevel(), VisualFunctionComponent.class));
 
         SortUtils.sortNatural(components, circuit::getMathName);
-        Collection<PropertyDescriptor> result = new ArrayList<>();
+        Collection<PropertyDescriptor<?>> result = new ArrayList<>();
         if (!components.isEmpty()) {
             result.add(PropertyHelper.createSeparatorProperty("Components with color-coded refinement type"));
             result.add(getRefinementLegendProperty());
@@ -163,7 +163,7 @@ public class CircuitPropertyHelper {
         return result;
     }
 
-    private static PropertyDescriptor getRefinementLegendProperty() {
+    private static PropertyDescriptor<?> getRefinementLegendProperty() {
         Color cellColor = GuiUtils.getTableCellBackgroundColor();
 
         return new LegendListDeclaration()
@@ -174,7 +174,7 @@ public class CircuitPropertyHelper {
                 .setReadonly();
     }
 
-    private static PropertyDescriptor getComponentProperty(VisualCircuit circuit, VisualFunctionComponent component) {
+    private static PropertyDescriptor<?> getComponentProperty(VisualCircuit circuit, VisualFunctionComponent component) {
         String name = circuit.getMathModel().getComponentName(component.getReferencedComponent());
 
         Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
@@ -219,14 +219,14 @@ public class CircuitPropertyHelper {
         return ColorUtils.colorise(GuiUtils.getTableCellBackgroundColor(), color);
     }
 
-    public static Collection<PropertyDescriptor> getPortProperties(VisualCircuit circuit, Contact.IOType type) {
+    public static Collection<PropertyDescriptor<?>> getPortProperties(VisualCircuit circuit, Contact.IOType type) {
         List<VisualContact> inputPorts = new ArrayList<>(Hierarchy.getChildrenOfType(
                 circuit.getCurrentLevel(), VisualContact.class,
                 port -> port.isPort() && (port.getReferencedComponent().getIOType() == type)));
 
         SortUtils.sortNatural(inputPorts, VisualContact::getName);
 
-        Collection<PropertyDescriptor> result = new ArrayList<>();
+        Collection<PropertyDescriptor<?>> result = new ArrayList<>();
         if (!inputPorts.isEmpty()) {
             result.add(PropertyHelper.createSeparatorProperty(type + " ports"));
         }
@@ -236,7 +236,7 @@ public class CircuitPropertyHelper {
         return result;
     }
 
-    private static PropertyDescriptor getPortProperty(VisualCircuit circuit, VisualContact port) {
+    private static PropertyDescriptor<?> getPortProperty(VisualCircuit circuit, VisualContact port) {
         String name = circuit.getMathReference(port);
 
         Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
@@ -257,7 +257,7 @@ public class CircuitPropertyHelper {
         ).setSpan();
     }
 
-    public static PropertyDescriptor getSetFunctionProperty(VisualCircuit circuit, VisualFunctionContact contact) {
+    public static PropertyDescriptor<?> getSetFunctionProperty(VisualCircuit circuit, VisualFunctionContact contact) {
         return new PropertyDeclaration<>(String.class, FunctionContact.PROPERTY_SET_FUNCTION,
                 value -> {
                     try {
@@ -271,7 +271,7 @@ public class CircuitPropertyHelper {
                 .setCombinable();
     }
 
-    public static PropertyDescriptor getResetFunctionProperty(VisualCircuit circuit, VisualFunctionContact contact) {
+    public static PropertyDescriptor<?> getResetFunctionProperty(VisualCircuit circuit, VisualFunctionContact contact) {
         return new PropertyDeclaration<>(String.class, FunctionContact.PROPERTY_RESET_FUNCTION,
                 value -> {
                     try {

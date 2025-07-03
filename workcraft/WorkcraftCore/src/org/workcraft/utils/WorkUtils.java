@@ -142,7 +142,7 @@ public final class WorkUtils {
             if (mathResult == null) {
                 throw new DeserialisationException("Math model is missing");
             }
-            Model model = mathResult.model;
+            Model<?, ?> model = mathResult.model;
             model.afterDeserialisation();
 
             // Load visual model (if present)
@@ -353,7 +353,7 @@ public final class WorkUtils {
             final PluginManager pm = Framework.getInstance().getPluginManager();
             XMLModelSerialiser serialiser = new XMLModelSerialiser(pm);
             // Save math model
-            Model mathModel = me.getMathModel();
+            Model<?, ?> mathModel = me.getMathModel();
             if (mathModel != null) {
                 zos.putNextEntry(new ZipEntry(MATH_MODEL_WORK_ENTRY));
                 mathModel.beforeSerialisation();
@@ -475,17 +475,17 @@ public final class WorkUtils {
     }
 
     private static void adjustPropertyFilePaths(VisualModel model, String base, boolean absolute) {
-        Set<PropertyDescriptor> properties = new HashSet<>(model.getProperties(null).getDescriptors());
+        Set<PropertyDescriptor<?>> properties = new HashSet<>(model.getProperties(null).getDescriptors());
         for (VisualNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
             properties.addAll(node.getDescriptors());
             properties.addAll(model.getProperties(node).getDescriptors());
         }
-        for (PropertyDescriptor property : properties) {
+        for (PropertyDescriptor<?> property : properties) {
             adjustPropertyFilePath(property, base, absolute);
         }
     }
 
-    private static void adjustPropertyFilePath(PropertyDescriptor property, String base, boolean absolute) {
+    private static void adjustPropertyFilePath(PropertyDescriptor<?> property, String base, boolean absolute) {
         Object value = property.getValue();
         if (value instanceof FileReference fileReference) {
             fileReference.setBase(base);

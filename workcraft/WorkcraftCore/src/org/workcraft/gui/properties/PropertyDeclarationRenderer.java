@@ -19,7 +19,7 @@ public class PropertyDeclarationRenderer extends DefaultTableCellRenderer {
         }
     };
 
-    public PropertyDeclarationRenderer(PropertyDescriptor descriptor) {
+    public PropertyDeclarationRenderer(PropertyDescriptor<?> descriptor) {
         label.setHorizontalAlignment(LEADING);
 
         if ((descriptor != null) && (descriptor.getValue() == null) && descriptor.isCombinable()) {

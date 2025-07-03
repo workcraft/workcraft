@@ -8,7 +8,6 @@ import org.workcraft.dom.math.MathNode;
 
 import java.util.Set;
 
-@SuppressWarnings("unchecked")
 class NodeContextTrackerTests {
 
     static class MockNode extends MathNode {
@@ -37,26 +36,26 @@ class NodeContextTrackerTests {
         group.add(n3);
         group.add(n4);
 
-        NodeContextTracker nct = new NodeContextTracker<>();
+        NodeContextTracker<MockNode, MathConnection> nct = new NodeContextTracker<>();
         nct.attach(group);
 
-        Set<Node> n4pre = nct.getPreset(n4);
-        Assertions.assertEquals(n4pre.size(), 1);
+        Set<MockNode> n4pre = nct.getPreset(n4);
+        Assertions.assertEquals(1, n4pre.size());
         Assertions.assertTrue(n4pre.contains(n3));
 
-        Set<Node> n3pre = nct.getPreset(n3);
-        Assertions.assertEquals(n3pre.size(), 2);
+        Set<MockNode> n3pre = nct.getPreset(n3);
+        Assertions.assertEquals(2, n3pre.size());
         Assertions.assertTrue(n3pre.contains(n1));
         Assertions.assertTrue(n3pre.contains(n2));
 
-        Set<Node> n3post = nct.getPostset(n3);
-        Assertions.assertEquals(n3post.size(), 1);
+        Set<MockNode> n3post = nct.getPostset(n3);
+        Assertions.assertEquals(1, n3post.size());
         Assertions.assertTrue(n3post.contains(n4));
 
-        Set<Node> n4post = nct.getPostset(n4);
+        Set<MockNode> n4post = nct.getPostset(n4);
         Assertions.assertTrue(n4post.isEmpty());
 
-        Set<Node> n1pre = nct.getPreset(n1);
+        Set<MockNode> n1pre = nct.getPreset(n1);
         Assertions.assertTrue(n1pre.isEmpty());
     }
 
@@ -64,7 +63,7 @@ class NodeContextTrackerTests {
     void testAddRemove1() {
         MathGroup group = new MathGroup();
 
-        NodeContextTracker nct = new NodeContextTracker<>();
+        NodeContextTracker<MockNode, MathConnection> nct = new NodeContextTracker<>();
         nct.attach(group);
 
         MockNode n1 = new MockNode();
@@ -85,23 +84,23 @@ class NodeContextTrackerTests {
         group.add(n3);
         group.add(n4);
 
-        Set<Node> n4pre = nct.getPreset(n4);
-        Assertions.assertEquals(n4pre.size(), 1);
+        Set<MockNode> n4pre = nct.getPreset(n4);
+        Assertions.assertEquals(1, n4pre.size());
         Assertions.assertTrue(n4pre.contains(n3));
 
-        Set<Node> n3pre = nct.getPreset(n3);
-        Assertions.assertEquals(n3pre.size(), 2);
+        Set<MockNode> n3pre = nct.getPreset(n3);
+        Assertions.assertEquals(2, n3pre.size());
         Assertions.assertTrue(n3pre.contains(n1));
         Assertions.assertTrue(n3pre.contains(n2));
 
-        Set<Node> n3post = nct.getPostset(n3);
-        Assertions.assertEquals(n3post.size(), 1);
+        Set<MockNode> n3post = nct.getPostset(n3);
+        Assertions.assertEquals(1, n3post.size());
         Assertions.assertTrue(n3post.contains(n4));
 
-        Set<Node> n4post = nct.getPostset(n4);
+        Set<MockNode> n4post = nct.getPostset(n4);
         Assertions.assertTrue(n4post.isEmpty());
 
-        Set<Node> n1pre = nct.getPreset(n1);
+        Set<MockNode> n1pre = nct.getPreset(n1);
         Assertions.assertTrue(n1pre.isEmpty());
 
         group.remove(n3);

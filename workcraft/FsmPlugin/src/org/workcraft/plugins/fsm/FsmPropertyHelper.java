@@ -17,8 +17,8 @@ import java.util.List;
 
 public class FsmPropertyHelper {
 
-    public static Collection<PropertyDescriptor> getSymbolProperties(VisualFsm fsm) {
-        Collection<PropertyDescriptor> result = new ArrayList<>();
+    public static Collection<PropertyDescriptor<?>> getSymbolProperties(VisualFsm fsm) {
+        Collection<PropertyDescriptor<?>> result = new ArrayList<>();
         List<Symbol> symbols = new ArrayList<>(fsm.getMathModel().getSymbols());
         symbols.sort((s1, s2) -> SortUtils.compareNatural(fsm.getMathReference(s1), fsm.getMathReference(s2)));
         for (Symbol symbol : symbols) {
@@ -27,7 +27,7 @@ public class FsmPropertyHelper {
         return result;
     }
 
-    private static PropertyDescriptor getSymbolProperty(VisualFsm fsm, Symbol symbol) {
+    private static PropertyDescriptor<?> getSymbolProperty(VisualFsm fsm, Symbol symbol) {
         String symbolName = fsm.getMathName(symbol);
         Action rightAction = new Action(PropertyHelper.SEARCH_SYMBOL,
                 () -> {
@@ -58,7 +58,7 @@ public class FsmPropertyHelper {
         ).setSpan();
     }
 
-    public static PropertyDescriptor getEventSymbolProperty(Fsm fsm, Event event) {
+    public static PropertyDescriptor<?> getEventSymbolProperty(Fsm fsm, Event event) {
         return new PropertyDeclaration<>(String.class, Event.PROPERTY_SYMBOL,
                 value -> {
                     Symbol symbol = null;

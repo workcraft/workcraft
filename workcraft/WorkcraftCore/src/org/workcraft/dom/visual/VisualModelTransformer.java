@@ -35,7 +35,7 @@ public class VisualModelTransformer {
 
                     AffineTransform t3 = AffineTransform.getTranslateInstance(-t2.getTranslateX(), -t2.getTranslateY());
                     t3.concatenate(t2);
-                    Collection children = NodeHelper.filterByType(vn.getChildren(), VisualNode.class);
+                    Collection<VisualNode> children = NodeHelper.filterByType(vn.getChildren(), VisualNode.class);
                     transformNodes(children, t3);
 
                     t.transform(pos, pos);

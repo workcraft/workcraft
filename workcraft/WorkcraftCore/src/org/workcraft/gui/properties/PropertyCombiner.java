@@ -3,12 +3,13 @@ package org.workcraft.gui.properties;
 import java.util.Map;
 import java.util.Set;
 
+@SuppressWarnings("rawtypes")
 public final class PropertyCombiner implements PropertyDescriptor {
     private final String name;
     private final Class<?> type;
-    private final Set<PropertyDescriptor> values;
+    private final Set<PropertyDescriptor<?>> values;
 
-    public PropertyCombiner(String name, Class<?> type, Set<PropertyDescriptor> values) {
+    public PropertyCombiner(String name, Class<?> type, Set<PropertyDescriptor<?>> values) {
         this.name = name;
         this.type = type;
         this.values = values;
@@ -17,7 +18,7 @@ public final class PropertyCombiner implements PropertyDescriptor {
     @Override
     public Object getValue() {
         Object result = null;
-        for (PropertyDescriptor descriptor: values) {
+        for (PropertyDescriptor<?> descriptor: values) {
             if (descriptor.isVisible()) {
                 if (result == null) {
                     result = descriptor.getValue();
@@ -29,6 +30,7 @@ public final class PropertyCombiner implements PropertyDescriptor {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void setValue(Object value) {
         for (PropertyDescriptor descriptor : values) {
@@ -41,7 +43,7 @@ public final class PropertyCombiner implements PropertyDescriptor {
     @Override
     public Map<?, String> getChoice() {
         Map<?, String> result = null;
-        for (PropertyDescriptor descriptor: values) {
+        for (PropertyDescriptor<?> descriptor: values) {
             result = descriptor.getChoice();
         }
         return result;

@@ -11,6 +11,7 @@ import java.io.File;
 public class PresetManagerPanel<T> extends JPanel {
 
     class PresetComboBox extends JComboBox<Preset<T>> {
+        @SuppressWarnings("unchecked")
         @Override
         public Preset<T> getSelectedItem() {
             return (Preset<T>) super.getSelectedItem();

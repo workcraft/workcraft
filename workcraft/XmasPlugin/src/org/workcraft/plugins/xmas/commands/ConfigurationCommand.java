@@ -42,11 +42,11 @@ public class ConfigurationCommand implements Command {
     }
 
     private JFrame mainFrame = null;
-    private JComboBox trcombob = null;
-    private JComboBox lvcombob = null;
-    private JComboBox hlcombob = null;
-    private JComboBox dycombob = null;
-    private JComboBox slcombob = null;
+    private JComboBox<?> trcombob = null;
+    private JComboBox<?> lvcombob = null;
+    private JComboBox<String> hlcombob = null;
+    private JComboBox<?> dycombob = null;
+    private JComboBox<?> slcombob = null;
 
     private static final String[] trchoices = {
         "q1",
@@ -173,12 +173,12 @@ public class ConfigurationCommand implements Command {
             //panellist.get(panellist.size()-1).add(new JTextField("1", 1));
         }
         lvcombob.addActionListener(event -> {
-            JComboBox comboBox = (JComboBox) event.getSource();
+            JComboBox<String> comboBox = (JComboBox<String>) event.getSource();
             Object selected = comboBox.getSelectedItem();
-            if ("normal".equals(selected.toString())) {
+            if ("normal".equals(selected)) {
                 hlcombob.removeItemAt(1);
                 hlcombob.addItem("local");
-            } else if ("advanced".equals(selected.toString())) {
+            } else if ("advanced".equals(selected)) {
                 hlcombob.removeItemAt(1);
                 hlcombob.addItem("rel");
             }

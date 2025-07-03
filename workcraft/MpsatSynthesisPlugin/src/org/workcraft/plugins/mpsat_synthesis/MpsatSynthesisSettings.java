@@ -28,7 +28,7 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
                 "");
     }
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "Tools.mpsatSynthesis";
 
     private static final String keyCommand = prefix + ".command";
@@ -127,7 +127,7 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

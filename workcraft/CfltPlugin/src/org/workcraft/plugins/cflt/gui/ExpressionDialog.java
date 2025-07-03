@@ -22,7 +22,7 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
     private JComboBox<ExpressionParameters.Mode> modeCombo;
     private CodePanel codePanel;
 
-    public ExpressionDialog(Window owner, PresetManager presetManager,
+    public ExpressionDialog(Window owner, PresetManager<ExpressionParameters> presetManager,
             BiConsumer<WorkspaceEntry, CodePanel> syntaxChecker, boolean addExternalMode, WorkspaceEntry we) {
 
         super(owner, "ProFlo translator", presetManager);

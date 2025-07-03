@@ -12,7 +12,7 @@ public class EncodingPropertyProvider implements PropertyClassProvider {
     }
 
     @Override
-    public PropertyClass getPropertyGui() {
+    public PropertyClass<?, ?> getPropertyGui() {
         return new EncodingProperty();
     }
 

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class FavoriteCommonSettings extends AbstractCommonSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "CommonFavoriteSettings";
 
     private static final String keyShowAll = prefix + ".filterFavorites";
@@ -52,7 +52,7 @@ public class FavoriteCommonSettings extends AbstractCommonSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

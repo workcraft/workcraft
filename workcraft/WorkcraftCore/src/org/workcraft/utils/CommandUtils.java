@@ -130,12 +130,14 @@ public class CommandUtils {
     }
 
 
+    @SuppressWarnings("unchecked")
     public static <R> R execute(WorkspaceEntry we, String className) {
         ScriptableCommand<R> command = findMatchingCommand(className, ScriptableCommand.class);
         checkCommandApplicability(we, command);
         return command.execute(we);
     }
 
+    @SuppressWarnings("unchecked")
     public static <R, D> R execute(WorkspaceEntry we, String className, String serialisedData) {
         ScriptableDataCommand<R, D> command = CommandUtils.findMatchingCommand(className, ScriptableDataCommand.class);
         checkCommandApplicability(we, command);

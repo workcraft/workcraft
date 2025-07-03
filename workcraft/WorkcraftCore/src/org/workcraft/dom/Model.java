@@ -41,7 +41,7 @@ public interface Model<N extends Node, C extends Connection> extends NodeContext
     Container createDefaultRoot();
     Container getRoot();
     ReferenceManager createDefaultReferenceManager();
-    boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends N> srcChildren);
+    boolean reparent(Container dstContainer, Model<?, ?> srcModel, Container srcRoot, Collection<? extends N> srcChildren);
 
     <T> Set<T> getPreset(N node, Class<T> type);
     <T> Set<T> getPostset(N node, Class<T> type);

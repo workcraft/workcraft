@@ -400,7 +400,7 @@ public class VisualCircuit extends AbstractVisualModel {
             if (mainOutput != null) {
                 properties.add(CircuitPropertyHelper.getSetFunctionProperty(this, mainOutput));
                 properties.add(CircuitPropertyHelper.getResetFunctionProperty(this, mainOutput));
-                for (PropertyDescriptor property : mainOutput.getDescriptors()) {
+                for (PropertyDescriptor<?> property : mainOutput.getDescriptors()) {
                     String propertyName = property.getName();
                     if (Contact.PROPERTY_INIT_TO_ONE.equals(propertyName)
                             || Contact.PROPERTY_FORCED_INIT.equals(propertyName)

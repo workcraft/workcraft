@@ -47,7 +47,7 @@ public class VisualParity extends AbstractVisualModel {
     /**
      * Constructor where the Parity game model is provided, as well as the root
      * of a pre-existing VisualGroup.
-     * @param model    Model of Parity game
+     * @param model    Model<?, ?> of Parity game
      * @param root     Root of the VisualGroup. Contains the whole collection,
      *                 but points to root of collection.
      */
@@ -82,7 +82,7 @@ public class VisualParity extends AbstractVisualModel {
     /**
      * Gather the properties of all components within the Graph game.
      * @param node           A VisualNode used to build the output from
-     * @return properties    Model properties of the whole graph game
+     * @return properties    Model<?, ?> properties of the whole graph game
      */
     @Override
     public ModelProperties getProperties(VisualNode node) {
@@ -134,9 +134,9 @@ public class VisualParity extends AbstractVisualModel {
      * Get the property symbols from all possible components in the Model, using
      * a symbol as the root.
      * @param symbol    Root Symbol member
-     * @return          PropertyDescriptor of the whole Model
+     * @return          PropertyDescriptor<?> of the whole Model
      */
-    private PropertyDescriptor getSymbolProperty(Symbol symbol) {
+    private PropertyDescriptor<?> getSymbolProperty(Symbol symbol) {
         return new PropertyDeclaration<>(String.class, getMathModel().getName(
                 symbol) + " name", value -> {
                     Node node = getMathModel().getNodeByReference(value);
@@ -162,9 +162,9 @@ public class VisualParity extends AbstractVisualModel {
      * Get the Vertex objects of Player 0
      * @param event    Some kind of event that forces the Player 0 vertices to
      *                 update
-     * @return         PropertyDescriptor of the whole Model
+     * @return         PropertyDescriptor<?> of the whole Model
      */
-    private PropertyDescriptor getPlayer0SymbolProperty(VisualPlayer0 event) {
+    private PropertyDescriptor<?> getPlayer0SymbolProperty(VisualPlayer0 event) {
         return new PropertyDeclaration<>(String.class, Player0.PROPERTY_SYMBOL,
                 value -> {
                     Symbol symbol = null;
@@ -193,9 +193,9 @@ public class VisualParity extends AbstractVisualModel {
      * Get the Vertex objects of Player 1
      * @param event    Some kind of event that forces the Player 1 vertices to
      *                 update
-     * @return         PropertyDescriptor of the whole Model
+     * @return         PropertyDescriptor<?> of the whole Model
      */
-    private PropertyDescriptor getPlayer1SymbolProperty(VisualPlayer1 event) {
+    private PropertyDescriptor<?> getPlayer1SymbolProperty(VisualPlayer1 event) {
         return new PropertyDeclaration<>(String.class, Player1.PROPERTY_SYMBOL,
                 value -> {
                     Symbol symbol = null;

@@ -334,8 +334,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     private Properties wrapProperties(final ModelProperties properties) {
         return () -> {
-            ArrayList<PropertyDescriptor> list = new ArrayList<>();
-            for (final PropertyDescriptor descriptor : properties.getDescriptors()) {
+            Collection<PropertyDescriptor<?>> list = new ArrayList<>();
+            for (final PropertyDescriptor<?> descriptor : properties.getDescriptors()) {
                 if (descriptor.isVisible()) {
                     list.add(wrapProperty(descriptor));
                 }
@@ -344,10 +344,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         };
     }
 
-    private PropertyDescriptor wrapProperty(PropertyDescriptor descriptor) {
-        return new PropertyDerivative(descriptor) {
+    private <V> PropertyDescriptor<V> wrapProperty(PropertyDescriptor<V> descriptor) {
+        return new PropertyDerivative<>(descriptor) {
             @Override
-            public void setValue(Object value) {
+            public void setValue(V value) {
                 we.saveMemento();
                 we.setChanged(true);
                 super.setValue(value);

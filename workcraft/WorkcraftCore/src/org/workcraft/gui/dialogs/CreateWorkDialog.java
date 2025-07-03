@@ -62,7 +62,7 @@ public class CreateWorkDialog extends ModalDialog<Void> {
         }
     }
 
-    private JList workTypeList;
+    private JList<?> workTypeList;
 
     public CreateWorkDialog(MainWindow owner) {
         super(owner, "New work", null);
@@ -129,7 +129,8 @@ public class CreateWorkDialog extends ModalDialog<Void> {
             elements.addAll(otherElements);
         }
 
-        DefaultListModel listModel = (DefaultListModel) workTypeList.getModel();
+        @SuppressWarnings("unchecked")
+        DefaultListModel<ListElement> listModel = (DefaultListModel<ListElement>) workTypeList.getModel();
         listModel.clear();
         for (ListElement element : elements) {
             listModel.addElement(element);

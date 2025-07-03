@@ -6,21 +6,21 @@ import java.util.LinkedList;
 
 public class ModelProperties implements Properties {
 
-    private final LinkedList<PropertyDescriptor> propertyDescriptors = new LinkedList<>();
+    private final LinkedList<PropertyDescriptor<?>> propertyDescriptors = new LinkedList<>();
 
-    public void add(final PropertyDescriptor descriptor) {
+    public void add(final PropertyDescriptor<?> descriptor) {
         if (descriptor != null) {
             propertyDescriptors.add(descriptor);
         }
     }
 
-    public void addAll(final Collection<PropertyDescriptor> descriptors) {
+    public void addAll(final Collection<PropertyDescriptor<?>> descriptors) {
         if (descriptors != null) {
             propertyDescriptors.addAll(descriptors);
         }
     }
 
-    public void remove(final PropertyDescriptor descriptor) {
+    public void remove(final PropertyDescriptor<?> descriptor) {
         if (descriptor != null) {
             propertyDescriptors.remove(descriptor);
         }
@@ -28,7 +28,7 @@ public class ModelProperties implements Properties {
 
     public void removeByName(final String propertyName) {
         if (propertyName != null) {
-            for (PropertyDescriptor descriptor : new LinkedList<>(propertyDescriptors)) {
+            for (PropertyDescriptor<?> descriptor : new LinkedList<>(propertyDescriptors)) {
                 if ((descriptor != null) && propertyName.equals(descriptor.getName())) {
                     remove(descriptor);
                 }
@@ -36,9 +36,9 @@ public class ModelProperties implements Properties {
         }
     }
 
-    public void rename(final PropertyDescriptor descriptor, final String newPropertyName) {
+    public <V> void rename(final PropertyDescriptor<V> descriptor, final String newPropertyName) {
         if (descriptor != null) {
-            PropertyDerivative newDescriptor = new PropertyDerivative(descriptor) {
+            PropertyDerivative<V> newDescriptor = new PropertyDerivative<>(descriptor) {
                 @Override
                 public String getName() {
                     return newPropertyName;
@@ -51,7 +51,7 @@ public class ModelProperties implements Properties {
 
     public void renameByName(final String propertyName, final String newPropertyName) {
         if (propertyName != null) {
-            for (PropertyDescriptor descriptor : new LinkedList<>(propertyDescriptors)) {
+            for (PropertyDescriptor<?> descriptor : new LinkedList<>(propertyDescriptors)) {
                 if ((descriptor != null) && propertyName.equals(descriptor.getName())) {
                     rename(descriptor, newPropertyName);
                 }
@@ -60,7 +60,7 @@ public class ModelProperties implements Properties {
     }
 
     @Override
-    public Collection<PropertyDescriptor> getDescriptors() {
+    public Collection<PropertyDescriptor<?>> getDescriptors() {
         return Collections.unmodifiableList(propertyDescriptors);
     }
 

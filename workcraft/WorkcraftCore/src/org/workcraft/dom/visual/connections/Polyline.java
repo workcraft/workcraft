@@ -15,8 +15,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class Polyline implements ConnectionGraphic, Container, StateObserver,
         HierarchyObserver, ObservableHierarchy, SelectionObserver {
@@ -191,7 +191,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         return getControlPoint(index - 1).getPosition();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public List<ControlPoint> getControlPoints() {
         return Collections.unmodifiableList((List) getChildren());

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class SimulationDecorationSettings extends AbstractDecorationSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "SimulationDecorationSettings";
 
     private static final String keyExcitedComponentColor = prefix + ".excitedComponentColor";
@@ -35,7 +35,7 @@ public class SimulationDecorationSettings extends AbstractDecorationSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 
