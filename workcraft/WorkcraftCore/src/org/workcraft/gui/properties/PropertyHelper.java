@@ -39,4 +39,12 @@ public class PropertyHelper {
                 });
     }
 
+    public static String indentWithBullet(String name) {
+        return "  " + prependBullet(name);
+    }
+
+    public static String prependBullet(String name) {
+        return BULLET_SYMBOL + ' ' + (name == null ? "" : name);
+    }
+
 }

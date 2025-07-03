@@ -4,7 +4,6 @@ import org.workcraft.Config;
 import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.gui.properties.PropertyHelper;
-import org.workcraft.utils.TextUtils;
 
 import java.awt.*;
 import java.util.LinkedHashMap;
@@ -201,7 +200,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         properties.add(PropertyHelper.createSeparatorProperty("GUI decoration"));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                TextUtils.getBullet("Screen pixel density (DPI) - requires restart"),
+                PropertyHelper.indentWithBullet("Screen pixel density (DPI) - requires restart"),
                 EditorCommonSettings::setScreenDpi,
                 EditorCommonSettings::getScreenDpi) {
             @Override
@@ -211,117 +210,117 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         });
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                TextUtils.getBullet("Base font size (point) - requires restart"),
+                PropertyHelper.indentWithBullet("Base font size (point) - requires restart"),
                 EditorCommonSettings::setFontSize,
                 EditorCommonSettings::getFontSize));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
-                TextUtils.getBullet("Number of recent files (0-99)"),
+                PropertyHelper.indentWithBullet("Number of recent files (0-99)"),
                 EditorCommonSettings::setRecentCount,
                 EditorCommonSettings::getRecentCount));
 
         properties.add(new PropertyDeclaration<>(TitleStyle.class,
-                TextUtils.getBullet("Tab title style"),
+                PropertyHelper.indentWithBullet("Tab title style"),
                 EditorCommonSettings::setTitleStyle,
                 EditorCommonSettings::getTitleStyle));
 
         properties.add(new PropertyDeclaration<>(TabStyle.class,
-                TextUtils.getBullet("Tab layout - requires restart"),
+                PropertyHelper.indentWithBullet("Tab layout - requires restart"),
                 EditorCommonSettings::setTabStyle,
                 EditorCommonSettings::getTabStyle));
 
         properties.add(new PropertyDeclaration<>(DialogStyle.class,
-                TextUtils.getBullet("Dialog style"),
+                PropertyHelper.indentWithBullet("Dialog style"),
                 EditorCommonSettings::setDialogStyle,
                 EditorCommonSettings::getDialogStyle));
 
         properties.add(PropertyHelper.createSeparatorProperty("Canvas"));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
-                TextUtils.getBullet("Minimal redraw interval (ms)"),
+                PropertyHelper.indentWithBullet("Minimal redraw interval (ms)"),
                 EditorCommonSettings::setRedrawInterval,
                 EditorCommonSettings::getRedrawInterval));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                TextUtils.getBullet("Background color"),
+                PropertyHelper.indentWithBullet("Background color"),
                 EditorCommonSettings::setBackgroundColor,
                 EditorCommonSettings::getBackgroundColor));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                TextUtils.getBullet("Background color for PNG export"),
+                PropertyHelper.indentWithBullet("Background color for PNG export"),
                 EditorCommonSettings::setPngBackgroundColor,
                 EditorCommonSettings::getPngBackgroundColor));
 
         properties.add(PropertyHelper.createSeparatorProperty("Grid and rulers"));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Show grid"),
+                PropertyHelper.indentWithBullet("Show grid"),
                 EditorCommonSettings::setGridVisibility,
                 EditorCommonSettings::getGridVisibility));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Use light grid"),
+                PropertyHelper.indentWithBullet("Use light grid"),
                 EditorCommonSettings::setLightGrid,
                 EditorCommonSettings::getLightGrid));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                TextUtils.getBullet("Grid color"),
+                PropertyHelper.indentWithBullet("Grid color"),
                 EditorCommonSettings::setGridColor,
                 EditorCommonSettings::getGridColor));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Show rulers"),
+                PropertyHelper.indentWithBullet("Show rulers"),
                 EditorCommonSettings::setRulerVisibility,
                 EditorCommonSettings::getRulerVisibility));
 
         properties.add(PropertyHelper.createSeparatorProperty("Hints and issues"));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Show hints"),
+                PropertyHelper.indentWithBullet("Show hints"),
                 EditorCommonSettings::setHintVisibility,
                 EditorCommonSettings::getHintVisibility));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                TextUtils.getBullet("Hint color"),
+                PropertyHelper.indentWithBullet("Hint color"),
                 EditorCommonSettings::setHintColor,
                 EditorCommonSettings::getHintColor));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Show issues"),
+                PropertyHelper.indentWithBullet("Show issues"),
                 EditorCommonSettings::setIssueVisibility,
                 EditorCommonSettings::getIssueVisibility));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                TextUtils.getBullet("Issue color"),
+                PropertyHelper.indentWithBullet("Issue color"),
                 EditorCommonSettings::setIssueColor,
                 EditorCommonSettings::getIssueColor));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
-                TextUtils.getBullet("Issue visibility interval (ms)"),
+                PropertyHelper.indentWithBullet("Issue visibility interval (ms)"),
                 EditorCommonSettings::setFlashInterval,
                 EditorCommonSettings::getFlashInterval));
 
         properties.add(PropertyHelper.createSeparatorProperty("Model visualisation"));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Open non-visual models (imported or converted)"),
+                PropertyHelper.indentWithBullet("Open non-visual models (imported or converted)"),
                 EditorCommonSettings::setOpenNonvisual,
                 EditorCommonSettings::getOpenNonvisual));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
-                TextUtils.getBullet("Model size for layout warning (0-9999 elements)"),
+                PropertyHelper.indentWithBullet("Model size for layout warning (0-9999 elements)"),
                 EditorCommonSettings::setLargeModelSize,
                 EditorCommonSettings::getLargeModelSize));
 
         properties.add(PropertyHelper.createSeparatorProperty("Model export"));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Separator for converting page references into flat name"),
+                PropertyHelper.indentWithBullet("Separator for converting page references into flat name"),
                 EditorCommonSettings::setFlatnameSeparator,
                 EditorCommonSettings::getFlatnameSeparator));
 
         properties.add(new PropertyDeclaration<>(ExportHeaderStyle.class,
-                TextUtils.getBullet("File header style"),
+                PropertyHelper.indentWithBullet("File header style"),
                 EditorCommonSettings::setExportHeaderStyle,
                 EditorCommonSettings::getExportHeaderStyle));
     }

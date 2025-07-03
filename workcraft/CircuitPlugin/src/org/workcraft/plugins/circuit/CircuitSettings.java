@@ -16,7 +16,6 @@ import org.workcraft.plugins.stg.Wait;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.FileFilters;
 
 import java.awt.*;
@@ -317,59 +316,59 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(PropertyHelper.createSeparatorProperty("Visualisation"));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                TextUtils.getBullet("Contact font size (cm)"),
+                PropertyHelper.indentWithBullet("Contact font size (cm)"),
                 CircuitSettings::setContactFontSize,
                 CircuitSettings::getContactFontSize));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Show names of zero delay components"),
+                PropertyHelper.indentWithBullet("Show names of zero delay components"),
                 CircuitSettings::setShowZeroDelayNames,
                 CircuitSettings::getShowZeroDelayNames));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Show set/reset functions of driver contacts"),
+                PropertyHelper.indentWithBullet("Show set/reset functions of driver contacts"),
                 CircuitSettings::setShowContactFunctions,
                 CircuitSettings::getShowContactFunctions));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Show fanout of driver contacts"),
+                PropertyHelper.indentWithBullet("Show fanout of driver contacts"),
                 CircuitSettings::setShowContactFanout,
                 CircuitSettings::getShowContactFanout));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                TextUtils.getBullet("Border width"),
+                PropertyHelper.indentWithBullet("Border width"),
                 CircuitSettings::setBorderWidth,
                 CircuitSettings::getBorderWidth));
 
         properties.add(new PropertyDeclaration<>(Double.class,
-                TextUtils.getBullet("Wire width"),
+                PropertyHelper.indentWithBullet("Wire width"),
                 CircuitSettings::setWireWidth,
                 CircuitSettings::getWireWidth));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                TextUtils.getBullet("Active wire"),
+                PropertyHelper.indentWithBullet("Active wire"),
                 CircuitSettings::setActiveWireColor,
                 CircuitSettings::getActiveWireColor));
 
         properties.add(new PropertyDeclaration<>(Color.class,
-                TextUtils.getBullet("Inactive wire"),
+                PropertyHelper.indentWithBullet("Inactive wire"),
                 CircuitSettings::setInactiveWireColor,
                 CircuitSettings::getInactiveWireColor));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Simplify generated circuit STG"),
+                PropertyHelper.indentWithBullet("Simplify generated circuit STG"),
                 CircuitSettings::setSimplifyStg,
                 CircuitSettings::getSimplifyStg));
 
         properties.add(PropertyHelper.createSeparatorProperty("Gates and arbitration primitives"));
 
         properties.add(new PropertyDeclaration<>(File.class,
-                TextUtils.getBullet(GATE_LIBRARY_TITLE),
+                PropertyHelper.indentWithBullet(GATE_LIBRARY_TITLE),
                 value -> setGateLibrary(BackendUtils.getBaseRelativePath(value)),
                 () -> BackendUtils.getBaseRelativeFile(getGateLibrary())));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("WAIT name, dirty input and clean handshake"),
+                PropertyHelper.indentWithBullet("WAIT name, dirty input and clean handshake"),
                 value -> {
                     if (value.isEmpty() || parseWaitDataOrNull(value, Wait.Type.WAIT1) != null) {
                         setWaitData(value);
@@ -380,7 +379,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getWaitData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("WAIT0 name, dirty input and clean handshake"),
+                PropertyHelper.indentWithBullet("WAIT0 name, dirty input and clean handshake"),
                 value -> {
                     if (value.isEmpty() || parseWaitDataOrNull(value, Wait.Type.WAIT0) != null) {
                         setWait0Data(value);
@@ -391,7 +390,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getWait0Data));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Early protocol MUTEX name and request-grant pairs"),
+                PropertyHelper.indentWithBullet("Early protocol MUTEX name and request-grant pairs"),
                 value -> {
                     if (value.isEmpty() || (parseMutexDataOrNull(value, Mutex.Protocol.EARLY) != null)) {
                         setMutexData(value);
@@ -402,7 +401,7 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getMutexData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Late protocol MUTEX name and request-grant pairs"),
+                PropertyHelper.indentWithBullet("Late protocol MUTEX name and request-grant pairs"),
                 value -> {
                     if (value.isEmpty() || parseMutexDataOrNull(value, Mutex.Protocol.LATE) != null) {
                         setMutexLateData(value);
@@ -415,27 +414,27 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(PropertyHelper.createSeparatorProperty("Verilog import and export"));
 
         properties.add(new PropertyDeclaration<>(File.class,
-                TextUtils.getBullet("Substitution rules for export"),
+                PropertyHelper.indentWithBullet("Substitution rules for export"),
                 value -> setExportSubstitutionLibrary(BackendUtils.getBaseRelativePath(value)),
                 () -> BackendUtils.getBaseRelativeFile(getExportSubstitutionLibrary())));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Invert substitution rules for export"),
+                PropertyHelper.indentWithBullet("Invert substitution rules for export"),
                 CircuitSettings::setInvertExportSubstitutionRules,
                 CircuitSettings::getInvertExportSubstitutionRules));
 
         properties.add(new PropertyDeclaration<>(File.class,
-                TextUtils.getBullet("Substitution rules for import"),
+                PropertyHelper.indentWithBullet("Substitution rules for import"),
                 value -> setImportSubstitutionLibrary(BackendUtils.getBaseRelativePath(value)),
                 () -> BackendUtils.getBaseRelativeFile(getImportSubstitutionLibrary())));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Invert substitution rules for import"),
+                PropertyHelper.indentWithBullet("Invert substitution rules for import"),
                 CircuitSettings::setInvertImportSubstitutionRules,
                 CircuitSettings::getInvertImportSubstitutionRules));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Verilog time unit / precision (empty to suppress)"),
+                PropertyHelper.indentWithBullet("Verilog time unit / precision (empty to suppress)"),
                 CircuitSettings::setVerilogTimescale,
                 CircuitSettings::getVerilogTimescale) {
             @Override
@@ -445,7 +444,7 @@ public class CircuitSettings extends AbstractModelSettings {
         });
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Delay for assign statements (empty to suppress)"),
+                PropertyHelper.indentWithBullet("Delay for assign statements (empty to suppress)"),
                 CircuitSettings::setVerilogAssignDelay,
                 CircuitSettings::getVerilogAssignDelay) {
             @Override
@@ -455,7 +454,7 @@ public class CircuitSettings extends AbstractModelSettings {
         });
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Ignore time for WAIT non-persistent input"),
+                PropertyHelper.indentWithBullet("Ignore time for WAIT non-persistent input"),
                 CircuitSettings::setWaitSigIgnoreTime,
                 CircuitSettings::getWaitSigIgnoreTime) {
             @Override
@@ -465,12 +464,12 @@ public class CircuitSettings extends AbstractModelSettings {
         });
 
         properties.add(new PropertyDeclaration<>(WaitUndefinedInterpretation.class,
-                TextUtils.getBullet("WAIT interpretation of X on non-persistent input"),
+                PropertyHelper.indentWithBullet("WAIT interpretation of X on non-persistent input"),
                 CircuitSettings::setWaitUndefinedInterpretation,
                 CircuitSettings::getWaitUndefinedInterpretation));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Delay of Early protocol MUTEX grants"),
+                PropertyHelper.indentWithBullet("Delay of Early protocol MUTEX grants"),
                 CircuitSettings::setMutexEarlyGrantDelay,
                 CircuitSettings::getMutexEarlyGrantDelay) {
             @Override
@@ -480,28 +479,28 @@ public class CircuitSettings extends AbstractModelSettings {
         });
 
         properties.add(new PropertyDeclaration<>(MutexArbitrationWinner.class,
-                TextUtils.getBullet("MUTEX winning grant when both requests are high"),
+                PropertyHelper.indentWithBullet("MUTEX winning grant when both requests are high"),
                 CircuitSettings::setMutexArbitrationWinner,
                 CircuitSettings::getMutexArbitrationWinner));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Bus split/merge suffix on Verilog import/export ("
+                PropertyHelper.indentWithBullet("Bus split/merge suffix on Verilog import/export ("
                         + BUS_INDEX_PLACEHOLDER + " denotes index)"),
                 CircuitSettings::setBusSuffix,
                 CircuitSettings::getBusSuffix));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Dissolve single-bit buses on Verilog export"),
+                PropertyHelper.indentWithBullet("Dissolve single-bit buses on Verilog export"),
                 CircuitSettings::setDissolveSingletonBus,
                 CircuitSettings::getDissolveSingletonBus));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Accept inout ports and ignore their connections"),
+                PropertyHelper.indentWithBullet("Accept inout ports and ignore their connections"),
                 CircuitSettings::setAcceptInoutPort,
                 CircuitSettings::getAcceptInoutPort));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("File pattern for import of hierarchical Verilog modules ("
+                PropertyHelper.indentWithBullet("File pattern for import of hierarchical Verilog modules ("
                         + MODULE_NAME_PLACEHOLDER + " denotes module name)"),
                 CircuitSettings::setModuleFilePattern,
                 CircuitSettings::getModuleFilePattern));
@@ -509,112 +508,112 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(PropertyHelper.createSeparatorProperty("Initialisation"));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Active-high reset port name"),
+                PropertyHelper.indentWithBullet("Active-high reset port name"),
                 CircuitSettings::setResetActiveHighPort,
                 CircuitSettings::getResetActiveHighPort));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Active-low reset port name"),
+                PropertyHelper.indentWithBullet("Active-low reset port name"),
                 CircuitSettings::setResetActiveLowPort,
                 CircuitSettings::getResetActiveLowPort));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Rules for init-low gates as comma-separated list of original_gate->replacement_gate(init_pin)"),
+                PropertyHelper.indentWithBullet("Rules for init-low gates as comma-separated list of original_gate->replacement_gate(init_pin)"),
                 CircuitSettings::setInitLowMappingRules,
                 CircuitSettings::getInitLowMappingRules));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Rules for init-high gates as comma-separated list of original_gate->replacement_gate(init_pin)"),
+                PropertyHelper.indentWithBullet("Rules for init-high gates as comma-separated list of original_gate->replacement_gate(init_pin)"),
                 CircuitSettings::setInitHighMappingRules,
                 CircuitSettings::getInitHighMappingRules));
 
         properties.add(PropertyHelper.createSeparatorProperty("Loop breaking and scan insertion"));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Testable buffer name and input-output pins"),
+                PropertyHelper.indentWithBullet("Testable buffer name and input-output pins"),
                 value -> setGate2Data(value, CircuitSettings::setTbufData, "Testable buffer", defaultTbufData),
                 CircuitSettings::getTbufData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Testable inverter name and input-output pins"),
+                PropertyHelper.indentWithBullet("Testable inverter name and input-output pins"),
                 value -> setGate2Data(value, CircuitSettings::setTinvData, "Testable inverter", defaultTinvData),
                 CircuitSettings::getTinvData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Testable instance prefix (optional "
+                PropertyHelper.indentWithBullet("Testable instance prefix (optional "
                         + INITIAL_STATE_PLACEHOLDER + " denotes initial state)"),
                 CircuitSettings::setTestInstancePrefix,
                 CircuitSettings::getTestInstancePrefix));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Use testable instance as path breaker"),
+                PropertyHelper.indentWithBullet("Use testable instance as path breaker"),
                 CircuitSettings::setUseTestPathBreaker,
                 CircuitSettings::getUseTestPathBreaker));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Scan module suffix"),
+                PropertyHelper.indentWithBullet("Scan module suffix"),
                 CircuitSettings::setScanSuffix,
                 CircuitSettings::getScanSuffix));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Scan input port/pin (empty to skip)"),
+                PropertyHelper.indentWithBullet("Scan input port/pin (empty to skip)"),
                 value -> setPortPinPair(value, CircuitSettings::setScaninData, "Scan input"),
                                 CircuitSettings::getScaninData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Scan output port/pin (empty to skip)"),
+                PropertyHelper.indentWithBullet("Scan output port/pin (empty to skip)"),
                 value -> setPortPinPair(value, CircuitSettings::setScanoutData, "Scan output"),
                 CircuitSettings::getScanoutData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Scan enable port/pin (empty to skip)"),
+                PropertyHelper.indentWithBullet("Scan enable port/pin (empty to skip)"),
                 value -> setPortPinPair(value, CircuitSettings::setScanenData, "Scan enable"),
                 CircuitSettings::getScanenData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Scan clock port/pin (empty to skip)"),
+                PropertyHelper.indentWithBullet("Scan clock port/pin (empty to skip)"),
                 value -> setPortPinPair(value, CircuitSettings::setScanckData, "Scan clock"),
                 CircuitSettings::getScanckData));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Scan test mode port/pin (empty to skip)"),
+                PropertyHelper.indentWithBullet("Scan test mode port/pin (empty to skip)"),
                 value -> setPortPinPair(value, CircuitSettings::setScantmData, "Scan test mode"),
                 CircuitSettings::getScantmData));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Individual scan control and observation"),
+                PropertyHelper.indentWithBullet("Individual scan control and observation"),
                 CircuitSettings::setUseIndividualScan,
                 CircuitSettings::getUseIndividualScan));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
-                TextUtils.getBullet("Use Scan for initialisation"),
+                PropertyHelper.indentWithBullet("Use Scan for initialisation"),
                 CircuitSettings::setUseScanInitialisation,
                 CircuitSettings::getUseScanInitialisation));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Initialisation inverter instance prefix"),
+                PropertyHelper.indentWithBullet("Initialisation inverter instance prefix"),
                 CircuitSettings::setInitialisationInverterInstancePrefix,
                 CircuitSettings::getInitialisationInverterInstancePrefix));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Auxiliary ports regex to exclude from verification, e.g. sig|req[0-9]*|bus__\\d+"),
+                PropertyHelper.indentWithBullet("Auxiliary ports regex to exclude from verification, e.g. sig|req[0-9]*|bus__\\d+"),
                 CircuitSettings::setAuxiliaryPortRegex,
                 CircuitSettings::getAuxiliaryPortRegex));
 
         properties.add(PropertyHelper.createSeparatorProperty("Buffering of forks with high fanout and scanout output"));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
-                TextUtils.getBullet("Fork high fanout"),
+                PropertyHelper.indentWithBullet("Fork high fanout"),
                 CircuitSettings::setForkHighFanout,
                 CircuitSettings::getForkHighFanout));
 
         properties.add(new PropertyDeclaration<>(String.class,
-                TextUtils.getBullet("Fork buffer pattern (" + FORK_FUNOUT_PLACEHOLDER + " denotes fanout)"),
+                PropertyHelper.indentWithBullet("Fork buffer pattern (" + FORK_FUNOUT_PLACEHOLDER + " denotes fanout)"),
                 CircuitSettings::setForkBufferPattern,
                 CircuitSettings::getForkBufferPattern));
 
         properties.add(new PropertyDeclaration<>(ScanoutBufferingStyle.class,
-                TextUtils.getBullet("Buffering style for scanout output"),
+                PropertyHelper.indentWithBullet("Buffering style for scanout output"),
                 CircuitSettings::setScanoutBufferingStyle,
                 CircuitSettings::getScanoutBufferingStyle));
     }
