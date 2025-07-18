@@ -4,7 +4,7 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.BasicXMLSerialiser;
 
-public class EnumSerialiser implements BasicXMLSerialiser<Enum> {
+public class EnumSerialiser implements BasicXMLSerialiser<Enum<?>> {
 
     @Override
     public String getClassName() {
@@ -12,7 +12,7 @@ public class EnumSerialiser implements BasicXMLSerialiser<Enum> {
     }
 
     @Override
-    public void serialise(Element element, Enum object) throws SerialisationException {
+    public void serialise(Element element, Enum<?> object) throws SerialisationException {
         element.setAttribute("enum-class", object.getClass().getName());
         element.setAttribute("value", object.name());
 

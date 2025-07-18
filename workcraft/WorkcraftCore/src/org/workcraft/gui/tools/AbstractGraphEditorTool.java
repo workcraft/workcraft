@@ -160,14 +160,6 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     }
 
     @Override
-    public void mouseEntered(GraphEditorMouseEvent e) {
-    }
-
-    @Override
-    public void mouseExited(GraphEditorMouseEvent e) {
-    }
-
-    @Override
     public void mouseMoved(GraphEditorMouseEvent e) {
     }
 

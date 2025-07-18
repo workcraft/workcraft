@@ -85,7 +85,7 @@ public class Fst extends Fsm {
     }
 
     @Override
-    public void reparentDependencies(Model srcModel, Collection<? extends MathNode> srcChildren) {
+    public void reparentDependencies(Model<?, ?> srcModel, Collection<? extends MathNode> srcChildren) {
         for (MathNode srcNode: srcChildren) {
             if (srcNode instanceof SignalEvent srcSignalEvent) {
                 Signal dstSignal = reparentSignal(srcModel, srcSignalEvent.getSymbol());
@@ -94,7 +94,7 @@ public class Fst extends Fsm {
         }
     }
 
-    private Signal reparentSignal(Model srcModel, Signal srcSignal) {
+    private Signal reparentSignal(Model<?, ?> srcModel, Signal srcSignal) {
         Signal dstSignal = null;
         if (srcSignal != null) {
             String signalName = srcModel.getNodeReference(srcSignal);

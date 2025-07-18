@@ -244,7 +244,7 @@ public class Attractor {
         sb.append("{");
         for (int i = 0; i < targetStates.length; ++i) {
             if (targetStates[i]) {
-                sb.append(Integer.toString(i));
+                sb.append(i);
                 sb.append(",");
             }
         }
@@ -253,7 +253,7 @@ public class Attractor {
 
         for (int i = 0; i < attrSet.length; ++i) {
             if (attrSet[i]) {
-                System.out.print(Integer.toString(i) + " ");
+                System.out.print(i + " ");
             }
         }
         System.out.println();

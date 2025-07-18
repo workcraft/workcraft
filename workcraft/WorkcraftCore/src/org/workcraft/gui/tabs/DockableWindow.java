@@ -39,8 +39,6 @@ public class DockableWindow extends AbstractDockable {
             for (DockableListener l : new ArrayList<>(dockableListeners)) {
                 if (tabbedPane.getSelectedIndex() == tabIndex) {
                     l.tabSelected(tabbedPane, tabIndex);
-                } else {
-                    l.tabDeselected(tabbedPane, tabIndex);
                 }
             }
         }

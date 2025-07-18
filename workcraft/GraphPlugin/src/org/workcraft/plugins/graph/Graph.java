@@ -54,7 +54,7 @@ public class Graph extends AbstractMathModel {
     }
 
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
+    public boolean reparent(Container dstContainer, Model<?, ?> srcModel, Container srcRoot, Collection<? extends MathNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }

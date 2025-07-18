@@ -86,7 +86,7 @@ public class ExternalProcess {
                 inputReaderThread.join();
                 errorReaderThread.join();
                 processFinished();
-            } catch (InterruptedException e) {
+            } catch (InterruptedException ignored) {
             }
         }
     }

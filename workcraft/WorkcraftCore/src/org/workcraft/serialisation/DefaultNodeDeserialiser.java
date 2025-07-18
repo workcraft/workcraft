@@ -50,7 +50,7 @@ class DefaultNodeDeserialiser {
                         // No basic deserialiser, try to use the special case enum deserialiser
                         deserialiser = fac.getDeserialiserFor(Enum.class.getName());
                     }
-                    if (deserialiser instanceof BasicXMLDeserialiser basicDeserialiser) {
+                    if (deserialiser instanceof BasicXMLDeserialiser<?> basicDeserialiser) {
                         Element element = nameMap.get(desc.getName());
                         Object value = basicDeserialiser.deserialise(element);
                         desc.getWriteMethod().invoke(instance, value);
@@ -87,9 +87,9 @@ class DefaultNodeDeserialiser {
             // Check for a custom deserialiser first
             XMLDeserialiser deserialiser = fac.getDeserialiserFor(className);
 
-            if (deserialiser instanceof CustomXMLDeserialiser customDeserialiser) {
+            if (deserialiser instanceof CustomXMLDeserialiser<?> customDeserialiser) {
                 instance = customDeserialiser.createInstance(currentLevelElement, externalReferenceResolver, constructorParameters);
-            } else if (deserialiser instanceof BasicXMLDeserialiser basicDeserialiser) {
+            } else if (deserialiser instanceof BasicXMLDeserialiser<?> basicDeserialiser) {
                 instance = basicDeserialiser.deserialise(currentLevelElement);
             } else {
                 // Check for incoming parameters - these may be supplied when a custom deserialiser requests
@@ -133,6 +133,7 @@ class DefaultNodeDeserialiser {
         }
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void doInitialisation(Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver)
             throws DeserialisationException {
 
@@ -143,7 +144,6 @@ class DefaultNodeDeserialiser {
 
         try {
             XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
-
             if (deserialiser instanceof CustomXMLDeserialiser customDeserialiser) {
                 customDeserialiser.initInstance(currentLevelElement, instance, externalReferenceResolver, initialiser);
             }
@@ -156,6 +156,7 @@ class DefaultNodeDeserialiser {
         }
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     public void doFinalisation(Element element, Object instance, ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver, Class<?> currentLevel)
             throws DeserialisationException {

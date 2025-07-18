@@ -52,7 +52,7 @@ public class Trace extends ArrayList<StepRef> {
     public String toString() {
         StringBuilder result = new StringBuilder();
         // position
-        result.append(String.valueOf(getPosition()));
+        result.append(getPosition());
         result.append(':');
         // trace
         boolean first = true;

@@ -103,7 +103,7 @@ public abstract class AbstractModel<N extends Node, C extends Connection> implem
     }
 
     @Override
-    public Set<C> getConnections(N node) {
+    public Set<C> getConnections(Node node) {
         return nodeContextTracker.getConnections(node);
     }
 
@@ -123,7 +123,7 @@ public abstract class AbstractModel<N extends Node, C extends Connection> implem
         for (N pred: getPreset(node)) {
             try {
                 result.add(type.cast(pred));
-            } catch (ClassCastException e) {
+            } catch (ClassCastException ignored) {
             }
         }
         return result;
@@ -135,7 +135,7 @@ public abstract class AbstractModel<N extends Node, C extends Connection> implem
         for (Node pred: getPostset(node)) {
             try {
                 result.add(type.cast(pred));
-            } catch (ClassCastException e) {
+            } catch (ClassCastException ignored) {
             }
         }
         return result;
@@ -197,6 +197,7 @@ public abstract class AbstractModel<N extends Node, C extends Connection> implem
         return getNodeReference(null, node);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public N getNodeByReference(NamespaceProvider provider, String reference) {
         return (N) mgr.getNodeByReference(provider, reference);

@@ -30,7 +30,7 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
 
     @Override
     public DeserialisationResult deserialise(InputStream is, ReferenceResolver extRef,
-            Model underlyingModel) throws DeserialisationException {
+            Model<?, ?> underlyingModel) throws DeserialisationException {
 
         try {
             XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
@@ -56,7 +56,7 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
             Class<?> cls = Class.forName(modelClassName);
 
             References intRef = deserialisation.getReferenceResolver();
-            Model model = XMLDeserialisationManager.createModel(cls, root, underlyingModel, intRef);
+            Model<?, ?> model = XMLDeserialisationManager.createModel(cls, root, underlyingModel, intRef);
             deserialisation.deserialiseModelProperties(modelElement, model);
 
             return new DeserialisationResult(model, intRef);

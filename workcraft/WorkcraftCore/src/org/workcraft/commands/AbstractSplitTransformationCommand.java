@@ -71,6 +71,7 @@ public abstract class AbstractSplitTransformationCommand extends AbstractTransfo
     public void beforeNodeTransformation(VisualModel model, VisualNode node) {
     }
 
+    @SuppressWarnings("EmptyMethod")
     public void afterNodeTransformation(VisualModel model, VisualNode node) {
     }
 

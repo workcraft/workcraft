@@ -316,7 +316,7 @@ public class Parity extends AbstractMathModel {
      * @param srcChildren     Source children of root component.
      */
     @Override
-    public boolean reparent(Container dstContainer, Model srcModel,
+    public boolean reparent(Container dstContainer, Model<?, ?> srcModel,
             Container srcRoot, Collection<? extends MathNode> srcChildren) {
         if (srcModel == null) {
             srcModel = this;

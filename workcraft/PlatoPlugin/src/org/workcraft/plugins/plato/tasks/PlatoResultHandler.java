@@ -72,7 +72,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
                             int endOfFile = stdout.indexOf(".end") + 4;
                             String info = stdout.substring(endOfFile).trim();
                             stdout = stdout.substring(0, endOfFile);
-                            String[] invariants = info.split(System.getProperty("line.separator"));
+                            String[] invariants = info.split(System.lineSeparator());
 
                             if (!info.isEmpty()) {
                                 for (String s : invariants) {

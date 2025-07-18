@@ -26,12 +26,12 @@ public class DotExporter implements Exporter {
     }
 
     @Override
-    public boolean isCompatible(Model model) {
+    public boolean isCompatible(Model<?, ?> model) {
         return model instanceof VisualModel;
     }
 
     @Override
-    public void serialise(Model model, OutputStream out) throws SerialisationException {
+    public void serialise(Model<?, ?> model, OutputStream out) throws SerialisationException {
         for (VisualNode node : Hierarchy.getDescendantsOfType(model.getRoot(), VisualNode.class)) {
             if ((node instanceof Container) && !(node instanceof VisualGroup) && !(node instanceof VisualPage)) {
                 throw new SerialisationException("Models with ports cannot be exported to Graphviz DOT file.");

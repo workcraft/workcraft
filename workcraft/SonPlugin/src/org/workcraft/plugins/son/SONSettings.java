@@ -12,7 +12,7 @@ import java.util.LinkedList;
 
 public class SONSettings extends AbstractModelSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "SONSettings";
 
     private static final String keyRelationErrColor = prefix + ".relationErrColor";
@@ -70,7 +70,7 @@ public class SONSettings extends AbstractModelSettings {
     }
 
     @Override
-    public Collection<PropertyDescriptor> getDescriptors() {
+    public Collection<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

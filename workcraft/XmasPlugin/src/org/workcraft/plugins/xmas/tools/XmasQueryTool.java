@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
 
     @Override
@@ -64,7 +64,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
     private static String level = "";
     private static String display = "";
     private static String highlight = "";
-    private static List<Qslist> qslist = new ArrayList<>();
+    private static final List<Qslist> qslist = new ArrayList<>();
 
     public void dispose() {
         mainFrame.setVisible(false);

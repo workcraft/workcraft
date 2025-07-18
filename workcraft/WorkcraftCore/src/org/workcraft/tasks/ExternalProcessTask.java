@@ -12,10 +12,10 @@ import java.util.List;
 
 public class ExternalProcessTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
 
-    private List<String> args;
+    private final List<String> args;
     private final File directory;
-    private boolean printStdout;
-    private boolean printStderr;
+    private final boolean printStdout;
+    private final boolean printStderr;
 
     private volatile boolean finished;
     private volatile int returnCode;
@@ -41,7 +41,7 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
     public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         this.monitor = monitor;
 
-        ExternalProcess process = new ExternalProcess(args.toArray(new String[args.size()]), directory);
+        ExternalProcess process = new ExternalProcess(args.toArray(new String[0]), directory);
 
         process.addListener(this);
 
@@ -113,7 +113,7 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
         try {
             stdoutAccum.flush();
             stderrAccum.flush();
-        } catch (IOException e) {
+        } catch (IOException ignored) {
         }
         this.returnCode = returnCode;
         this.finished = true;

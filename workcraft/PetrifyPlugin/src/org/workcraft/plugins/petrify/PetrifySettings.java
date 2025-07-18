@@ -11,7 +11,7 @@ import java.util.List;
 
 public class PetrifySettings extends AbstractToolSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "Tools.petrify";
 
     private static final String keyCommand = prefix + ".command";
@@ -84,7 +84,7 @@ public class PetrifySettings extends AbstractToolSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

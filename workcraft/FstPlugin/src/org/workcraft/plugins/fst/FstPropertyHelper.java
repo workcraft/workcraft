@@ -20,8 +20,8 @@ import java.util.List;
 
 public class FstPropertyHelper {
 
-    public static Collection<PropertyDescriptor> getSignalProperties(VisualFst visualFst) {
-        Collection<PropertyDescriptor> result = new ArrayList<>();
+    public static Collection<PropertyDescriptor<?>> getSignalProperties(VisualFst visualFst) {
+        Collection<PropertyDescriptor<?>> result = new ArrayList<>();
         Fst mathFst = visualFst.getMathModel();
         if (SignalCommonSettings.getGroupByType()) {
             for (Signal.Type type : Signal.Type.values()) {
@@ -47,7 +47,7 @@ public class FstPropertyHelper {
         return result;
     }
 
-    private static PropertyDescriptor getSignalProperty(VisualFst fst, Signal signal) {
+    private static PropertyDescriptor<?> getSignalProperty(VisualFst fst, Signal signal) {
         String signalName = fst.getMathName(signal);
         Signal.Type type = signal.getType();
 
@@ -87,7 +87,7 @@ public class FstPropertyHelper {
         ).setSpan();
     }
 
-    public static PropertyDescriptor getEventSignalProperty(Fst fst, SignalEvent signalEvent) {
+    public static PropertyDescriptor<?> getEventSignalProperty(Fst fst, SignalEvent signalEvent) {
         return new PropertyDeclaration<>(String.class, "Signal",
                 value -> {
                     Identifier.validate(value);
@@ -113,12 +113,12 @@ public class FstPropertyHelper {
                 .setCombinable().setTemplatable();
     }
 
-    public static PropertyDescriptor getSignalTypeProperty(Signal signal, String description) {
+    public static PropertyDescriptor<?> getSignalTypeProperty(Signal signal, String description) {
         return new PropertyDeclaration<>(Signal.Type.class, description,
                 signal::setType, signal::getType).setCombinable().setTemplatable();
     }
 
-    public static PropertyDescriptor getEventDirectionProperty(SignalEvent signalEvent) {
+    public static PropertyDescriptor<?> getEventDirectionProperty(SignalEvent signalEvent) {
         return new PropertyDeclaration<>(SignalEvent.Direction.class, SignalEvent.PROPERTY_DIRECTION,
                 signalEvent::setDirection, signalEvent::getDirection).setCombinable().setTemplatable();
     }

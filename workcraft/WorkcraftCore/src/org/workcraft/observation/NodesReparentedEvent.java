@@ -11,6 +11,7 @@ public class NodesReparentedEvent implements HierarchyEvent {
     private final Node newParentNode;
     private final Collection<Node> affectedNodes;
 
+    @SuppressWarnings("unchecked")
     public NodesReparentedEvent(Node oldParentNode, Node newParentNode, Collection<? extends Node> affectedNodes) {
         this.oldParentNode = oldParentNode;
         this.newParentNode = newParentNode;

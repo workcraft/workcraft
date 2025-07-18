@@ -38,7 +38,8 @@ class DOMTests {
         try {
             petri.getNodeReference(null);
             thrown = false;
-        } catch (Throwable th) { }
+        } catch (Throwable ignored) {
+        }
 
         Assertions.assertTrue(thrown);
     }

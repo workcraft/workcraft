@@ -81,7 +81,7 @@ public class ExtractSelectedGraphsPGMinerCommand extends AbstractPGMinerCommand 
             VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
             PGMinerResultHandler result = new PGMinerResultHandler(visualCpog, we, true);
             taskManager.queue(task, "PGMiner", result);
-        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ArrayIndexOutOfBoundsException ignored) {
         }
     }
 

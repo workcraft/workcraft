@@ -11,7 +11,7 @@ import java.util.List;
 
 public class MpsatTemporalSettings extends AbstractToolSettings {
 
-    public static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    public static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     public static final String prefix = "Tools.mpsatTemporal";
 
     private static final String keyCommand = prefix + ".command";
@@ -95,7 +95,7 @@ public class MpsatTemporalSettings extends AbstractToolSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

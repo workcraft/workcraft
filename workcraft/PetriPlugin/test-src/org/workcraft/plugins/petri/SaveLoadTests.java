@@ -73,7 +73,7 @@ class SaveLoadTests {
         ensureSampleUpToDate("testDataVisualModel", buildSampleVisualPetri(), testDataVisualModel);
     }
 
-    private void ensureSampleUpToDate(String sampleVarName, Model model, String currentValue)
+    private void ensureSampleUpToDate(String sampleVarName, Model<?, ?> model, String currentValue)
             throws SerialisationException {
 
         StringWriter writer = new StringWriter();

@@ -4,5 +4,5 @@ public enum Operator {
     CONCURRENCY,
     CHOICE,
     SEQUENCE,
-    ITERATION;
+    ITERATION
 }

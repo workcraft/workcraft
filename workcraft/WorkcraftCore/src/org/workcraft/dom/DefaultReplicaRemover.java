@@ -12,9 +12,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class DefaultReplicaRemover extends HierarchySupervisor {
-    private final NodeContext nct;
+    private final NodeContext<?, ?> nct;
 
-    public DefaultReplicaRemover(NodeContext nct) {
+    public DefaultReplicaRemover(NodeContext<?, ?> nct) {
         this.nct = nct;
     }
 

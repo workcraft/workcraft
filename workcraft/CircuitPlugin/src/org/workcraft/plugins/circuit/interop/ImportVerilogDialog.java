@@ -18,8 +18,8 @@ import org.workcraft.workspace.FileFilters;
 import javax.swing.*;
 import java.awt.*;
 import java.io.File;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class ImportVerilogDialog extends ModalDialog<Pair<Collection<VerilogModule>, VerilogModule>> {
 
@@ -28,10 +28,10 @@ public class ImportVerilogDialog extends ModalDialog<Pair<Collection<VerilogModu
     private Map<VerilogModule, String> moduleToFileNameMap;
 
     class ModuleFileProperties implements Properties {
-        private final List<PropertyDescriptor> properties = new LinkedList<>();
+        private final List<PropertyDescriptor<?>> properties = new LinkedList<>();
 
         @Override
-        public Collection<PropertyDescriptor> getDescriptors() {
+        public Collection<PropertyDescriptor<?>> getDescriptors() {
             return properties;
         }
 
@@ -53,7 +53,7 @@ public class ImportVerilogDialog extends ModalDialog<Pair<Collection<VerilogModu
         }
     }
 
-    static class ModuleComboBoxRenderer implements ListCellRenderer {
+    static class ModuleComboBoxRenderer implements ListCellRenderer<Object> {
         private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
         private final Map<VerilogModule, String> moduleToTextMap = new HashMap<>();
 

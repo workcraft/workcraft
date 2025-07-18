@@ -21,7 +21,7 @@ public abstract class VisualNode implements Properties, Node, Touchable, Stylabl
     private boolean hidden = false;
     private final ModelProperties properties = new ModelProperties();
 
-    public void addPropertyDeclaration(PropertyDescriptor declaration) {
+    public void addPropertyDeclaration(PropertyDescriptor<?> declaration) {
         properties.add(declaration);
     }
 
@@ -34,7 +34,7 @@ public abstract class VisualNode implements Properties, Node, Touchable, Stylabl
     }
 
     @Override
-    public Collection<PropertyDescriptor> getDescriptors() {
+    public Collection<PropertyDescriptor<?>> getDescriptors() {
         return properties.getDescriptors();
     }
 

@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public class DtdSettings extends AbstractModelSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "DtdSettings";
 
     private static final String keyVerticalSeparation = prefix + ".verticalSeparation";
@@ -59,7 +59,7 @@ public class DtdSettings extends AbstractModelSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

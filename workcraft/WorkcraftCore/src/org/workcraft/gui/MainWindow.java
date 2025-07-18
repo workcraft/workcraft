@@ -856,7 +856,7 @@ public class MainWindow extends JFrame {
         JFileChooser fc = DialogUtils.createFileSaver(title, file, format);
         try {
             file = DialogUtils.chooseValidSaveFileOrCancel(fc, format);
-            Model model = we.getModelEntry().getModel();
+            Model<?, ?> model = we.getModelEntry().getModel();
             ExportTask exportTask = new ExportTask(exporter, model, file);
             final TaskManager taskManager = Framework.getInstance().getTaskManager();
             String description = "Exporting " + format.getDescription();

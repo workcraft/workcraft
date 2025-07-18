@@ -9,7 +9,7 @@ import java.util.List;
 
 public class RandomLayoutSettings extends AbstractLayoutSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "RandomLayoutSettings";
 
     private static final String keyStartX = prefix + ".startX";
@@ -50,7 +50,7 @@ public class RandomLayoutSettings extends AbstractLayoutSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

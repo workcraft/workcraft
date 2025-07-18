@@ -12,7 +12,7 @@ import java.util.LinkedList;
 
 public class ShuttersSettings extends AbstractToolSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "ShuttersSettings";
 
     private static final String keyShuttersCommand = prefix + ".shuttersCommand";
@@ -86,7 +86,7 @@ public class ShuttersSettings extends AbstractToolSettings {
     }
 
     @Override
-    public Collection<PropertyDescriptor> getDescriptors() {
+    public Collection<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

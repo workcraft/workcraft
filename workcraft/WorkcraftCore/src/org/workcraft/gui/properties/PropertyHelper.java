@@ -28,7 +28,7 @@ public class PropertyHelper {
                 value -> { }, () -> text).setReadonly().setSpan();
     }
 
-    public static PropertyDescriptor getSignalSectionProperty(VisualModel visualModel) {
+    public static PropertyDescriptor<?> getSignalSectionProperty(VisualModel visualModel) {
         boolean groupByType = SignalCommonSettings.getGroupByType();
         return new ActionDeclaration(
                 "Signals " + (groupByType ? "(grouped)" : "(sorted)"),

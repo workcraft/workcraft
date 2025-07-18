@@ -10,7 +10,7 @@ import java.util.List;
 
 public class LogCommonSettings extends AbstractCommonSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "CommonLogSettings";
 
     private static final String keyTextColor = prefix + ".textColor";
@@ -67,7 +67,7 @@ public class LogCommonSettings extends AbstractCommonSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

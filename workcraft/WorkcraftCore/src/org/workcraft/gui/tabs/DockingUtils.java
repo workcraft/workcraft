@@ -67,6 +67,7 @@ public class DockingUtils {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static Collection<DockableWindow> getDockableWindows(DockingPort dockingPort) {
         return dockingPort.getDockables();
     }

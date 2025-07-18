@@ -332,7 +332,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         for (ONGroup group : lowerGroups) {
             try {
                 result.put(group, alg.getReachableMarkings(group));
-            } catch (UnboundedException e) {
+            } catch (UnboundedException ignored) {
             }
             break;
         }
@@ -395,7 +395,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
     @Override
     public int getWarningNumber() {
-        return this.warningNumber;
+        return warningNumber;
     }
 
 }

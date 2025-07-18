@@ -285,7 +285,7 @@ public class DFSEstimationAlg extends TimeAlg {
         for (Interval interval : intervals) {
             strs.add(interval.toString());
         }
-        return "(" + strs.toString() + ")";
+        return "(" + strs + ")";
     }
 
 }

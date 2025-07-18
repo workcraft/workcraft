@@ -74,22 +74,10 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
 
     @Override
     public void mouseEntered(MouseEvent e) {
-        if (editor.hasFocus()) {
-            GraphEditorTool tool = toolbox.getSelectedTool();
-            if (tool != null) {
-                tool.mouseEntered(adaptEvent(e));
-            }
-        }
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
-        if (editor.hasFocus()) {
-            GraphEditorTool tool = toolbox.getSelectedTool();
-            if (tool != null) {
-                tool.mouseExited(adaptEvent(e));
-            }
-        }
     }
 
     @Override

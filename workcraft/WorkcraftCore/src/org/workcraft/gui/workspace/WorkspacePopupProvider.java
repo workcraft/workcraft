@@ -69,7 +69,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         }
                     }
                     workspace.fireWorkspaceChanged();
-                } catch (OperationCancelledException e) {
+                } catch (OperationCancelledException ignored) {
                 }
             });
             popup.add(miCreateFolder);
@@ -99,7 +99,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             } else {
                 ModelEntry me = we.getModelEntry();
                 if (me != null) {
-                    final Model model = me.getModel();
+                    final Model<?, ?> model = me.getModel();
                     String title = model.getTitle();
                     JLabel label = new JLabel(model.getDisplayName() + ' ' + (title.isEmpty() ? "" : ("'" + title + "'")));
                     popup.add(label);

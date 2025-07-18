@@ -97,7 +97,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         }
     }
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "CommonEditorSettings";
 
     /*
@@ -326,7 +326,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

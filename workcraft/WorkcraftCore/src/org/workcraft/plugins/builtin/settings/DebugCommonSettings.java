@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DebugCommonSettings extends AbstractCommonSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "CommonDebugSettings";
 
     private static final String keyVerboseImport = prefix + ".verboseImport";
@@ -42,7 +42,7 @@ public class DebugCommonSettings extends AbstractCommonSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

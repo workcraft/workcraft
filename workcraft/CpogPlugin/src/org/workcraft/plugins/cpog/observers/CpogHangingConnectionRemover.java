@@ -13,7 +13,7 @@ import java.util.HashSet;
 
 public class CpogHangingConnectionRemover extends DefaultHangingConnectionRemover {
 
-    public CpogHangingConnectionRemover(NodeContext nct) {
+    public CpogHangingConnectionRemover(NodeContext<?, ?> nct) {
         super(nct);
     }
 

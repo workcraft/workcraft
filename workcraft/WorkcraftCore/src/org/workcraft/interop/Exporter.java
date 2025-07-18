@@ -15,14 +15,14 @@ public interface Exporter {
     Stack<File> files = new Stack<>();
 
     Format getFormat();
-    boolean isCompatible(Model model);
-    void serialise(Model model, OutputStream out) throws SerialisationException;
+    boolean isCompatible(Model<?, ?> model);
+    void serialise(Model<?, ?> model, OutputStream out) throws SerialisationException;
 
     default File getCurrentFile() {
         return files.isEmpty() ? null : files.peek();
     }
 
-    default void exportToFile(Model model, File file) throws SerialisationException {
+    default void exportToFile(Model<?, ?> model, File file) throws SerialisationException {
         if (!isCompatible(model)) {
             throw new SerialisationException("Cannot export " + model.getDisplayName()
                     + " as  " + getFormat().getDescription());

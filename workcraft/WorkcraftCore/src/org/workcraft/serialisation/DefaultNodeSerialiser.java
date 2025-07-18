@@ -48,6 +48,7 @@ public class DefaultNodeSerialiser {
                 && (desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) == null);
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void autoSerialiseProperty(Element element, Object object, PropertyDescriptor desc)
             throws IllegalAccessException, InvocationTargetException, InstantiationException, SerialisationException {
 
@@ -68,6 +69,7 @@ public class DefaultNodeSerialiser {
         }
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void doSerialisation(Element parent, Object object, ReferenceProducer internalReferences,
             ReferenceProducer externalReferences, Class<?> currentLevel)
             throws InstantiationException, IllegalAccessException, SerialisationException,
@@ -80,10 +82,10 @@ public class DefaultNodeSerialiser {
         XMLSerialiser serialiser = fac.getSerialiserFor(currentLevel);
 
         if (serialiser != null) {
-            if (serialiser instanceof BasicXMLSerialiser) {
-                ((BasicXMLSerialiser) serialiser).serialise(curLevelElement, object);
-            } else if (serialiser instanceof CustomXMLSerialiser) {
-                ((CustomXMLSerialiser) serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
+            if (serialiser instanceof BasicXMLSerialiser basicSerialiser) {
+                basicSerialiser.serialise(curLevelElement, object);
+            } else if (serialiser instanceof CustomXMLSerialiser customSerialiser) {
+                customSerialiser.serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
             }
         } else {
             if (object.getClass().equals(currentLevel) && (object instanceof Dependent)) {

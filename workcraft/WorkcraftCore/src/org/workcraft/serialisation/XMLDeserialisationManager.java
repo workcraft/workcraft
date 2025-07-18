@@ -63,18 +63,18 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         return instance;
     }
 
-    public static Model createModel(Class<?> cls, Node root, Object underlyingModel, References rr)
+    public static Model<?, ?> createModel(Class<?> cls, Node root, Object underlyingModel, References rr)
             throws DeserialisationException {
 
-        Model result;
+        Model<?, ?> result;
         try {
             Constructor<?> ctor;
             if (underlyingModel == null) {
                 ctor = new ConstructorParametersMatcher().match(cls, root.getClass(), References.class);
-                result = (Model) ctor.newInstance(root, rr);
+                result = (Model<?, ?>) ctor.newInstance(root, rr);
             } else {
                 ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass());
-                result = (Model) ctor.newInstance(underlyingModel, root);
+                result = (Model<?, ?>) ctor.newInstance(underlyingModel, root);
             }
         } catch (NoSuchMethodException e) {
             throw new DeserialisationException("Missing appropriate constructor for model deserialisation.", e);
@@ -84,7 +84,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         return result;
     }
 
-    public void deserialiseModelProperties(Element element, Model model) throws DeserialisationException {
+    public void deserialiseModelProperties(Element element, Model<?, ?> model) throws DeserialisationException {
         nodeDeserialiser.doInitialisation(element, model, model.getClass(), state.getExternalReferences());
         nodeDeserialiser.doFinalisation(element, model, state.getInternalReferences(), state.getExternalReferences(),
                 model.getClass().getSuperclass());

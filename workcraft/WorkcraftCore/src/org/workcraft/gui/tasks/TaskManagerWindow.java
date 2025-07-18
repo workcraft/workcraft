@@ -130,6 +130,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public ProgressMonitor<?> taskStarting(final String description) {
         TaskControlGenerator tcg = new TaskControlGenerator(content, description);

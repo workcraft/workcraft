@@ -29,8 +29,8 @@ import static org.workcraft.plugins.wtg.utils.WtgUtils.getFinalSignalStatesFromW
 
 public class WtgPropertyHelper {
 
-    public static Collection<PropertyDescriptor> getSignalProperties(VisualWtg visualWtg) {
-        Collection<PropertyDescriptor> result = new ArrayList<>();
+    public static Collection<PropertyDescriptor<?>> getSignalProperties(VisualWtg visualWtg) {
+        Collection<PropertyDescriptor<?>> result = new ArrayList<>();
         Wtg mathWtg = visualWtg.getMathModel();
         if (SignalCommonSettings.getGroupByType()) {
             for (Signal.Type type : Signal.Type.values()) {
@@ -48,7 +48,7 @@ public class WtgPropertyHelper {
         return result;
     }
 
-    private static PropertyDescriptor getSignalProperty(VisualWtg visualWtg, String signalName) {
+    private static PropertyDescriptor<?> getSignalProperty(VisualWtg visualWtg, String signalName) {
         Wtg wtg = visualWtg.getMathModel();
         Signal.Type signalType = wtg.getSignalType(signalName);
         Color color = DtdUtils.getTypeColor(signalType);
@@ -82,8 +82,8 @@ public class WtgPropertyHelper {
         ).setSpan();
     }
 
-    public static Collection<PropertyDescriptor> getSignalDeclarationProperties(VisualWtg visualWtg, VisualWaveform waveform) {
-        Collection<PropertyDescriptor> result = new ArrayList<>();
+    public static Collection<PropertyDescriptor<?>> getSignalDeclarationProperties(VisualWtg visualWtg, VisualWaveform waveform) {
+        Collection<PropertyDescriptor<?>> result = new ArrayList<>();
         List<String> signalNames = SortUtils.getSortedNatural(visualWtg.getMathModel().getSignalNames());
         for (String signalName : signalNames) {
             result.add(getSignalDeclarationProperty(visualWtg, waveform, signalName));
@@ -91,7 +91,7 @@ public class WtgPropertyHelper {
         return result;
     }
 
-    public static PropertyDescriptor getSignalDeclarationProperty(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
+    public static PropertyDescriptor<?> getSignalDeclarationProperty(VisualWtg visualWtg, VisualWaveform visualWaveform, String signalName) {
         Wtg wtg = visualWtg.getMathModel();
         Signal.Type signalType = wtg.getSignalType(signalName);
         String colorCode = ColorUtils.getHexRGB(DtdUtils.getTypeColor(signalType));

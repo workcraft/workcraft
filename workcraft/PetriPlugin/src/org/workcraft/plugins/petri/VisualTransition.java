@@ -30,6 +30,7 @@ public class VisualTransition extends VisualComponent {
         return (Transition) super.getReferencedComponent();
     }
 
+    @SuppressWarnings("RedundantMethodOverride")
     @Override
     public Shape getShape() {
         double size = VisualCommonSettings.getNodeSize() - VisualCommonSettings.getStrokeWidth();

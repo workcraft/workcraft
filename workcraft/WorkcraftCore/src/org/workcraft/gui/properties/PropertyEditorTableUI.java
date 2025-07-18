@@ -47,7 +47,7 @@ public class PropertyEditorTableUI extends BasicTableUI {
             if (table.getShowHorizontalLines()) {
                 g.drawLine(rect.x, y - 1, w - 1, y - 1);
             }
-            PropertyDescriptor declaration = model.getDeclaration(row);
+            PropertyDescriptor<?> declaration = model.getDeclaration(row);
             if (table.getShowVerticalLines() && (declaration != null) && !declaration.isSpan()) {
                 TableColumnModel columnModel = table.getColumnModel();
                 int x = rect.x;

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class AtacsSettings extends AbstractToolSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "Tools.atacs";
 
     private static final String keyShowInMenu = prefix + ".showInMenu";
@@ -68,7 +68,7 @@ public class AtacsSettings extends AbstractToolSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

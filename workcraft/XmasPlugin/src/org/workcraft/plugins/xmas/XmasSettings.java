@@ -28,7 +28,7 @@ public class XmasSettings extends AbstractModelSettings {
     private static final String SYNC_FILE_NAME = "sync";
     private static final String QLIST_FILE_NAME = "qlist";
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "XmasSettings";
 
     private static final String keyShowContacts = prefix + ".showContacts";
@@ -71,7 +71,7 @@ public class XmasSettings extends AbstractModelSettings {
     }
 
     @Override
-    public Collection<PropertyDescriptor> getDescriptors() {
+    public Collection<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

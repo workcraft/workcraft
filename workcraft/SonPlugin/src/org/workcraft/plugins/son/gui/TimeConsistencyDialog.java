@@ -18,11 +18,13 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 
 public class TimeConsistencyDialog extends StructureVerifyDialog {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     protected VisualSON vNet;
@@ -48,12 +50,13 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected ArrayList<Node> selectedNodes;
 
     public enum Granularity {
-        YEAR_YEAR, HOUR_MINS;
+        YEAR_YEAR, HOUR_MINS
     }
 
     @SuppressWarnings("rawtypes")
     static class ScenarioListRenderer extends JRadioButton implements ListCellRenderer {
 
+        @Serial
         private static final long serialVersionUID = 1L;
 
         @Override
@@ -434,11 +437,6 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
 
     public ArrayList<Node> getSelectedNodes() {
         return selectedNodes;
-    }
-
-    @Override
-    public ArrayList<ONGroup> getSelectedGroups() {
-        return selectedGroups;
     }
 
     public ScenarioRef getSelectedScenario() {

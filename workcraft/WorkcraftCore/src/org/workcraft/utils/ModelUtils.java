@@ -22,6 +22,7 @@ import java.util.*;
 
 public class ModelUtils {
 
+    @SuppressWarnings("unchecked")
     public static <N extends Node, C extends Connection> boolean isTransitive(Model<N, C> model, C connection) {
         N fromNode = (N) connection.getFirst();
         N toNode = (N) connection.getSecond();

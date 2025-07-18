@@ -627,28 +627,28 @@ public class VisualSON extends AbstractVisualModel {
         return properties;
     }
 
-    private PropertyDescriptor getConnectionTimeProperty(VisualSONConnection connection) {
+    private PropertyDescriptor<?> getConnectionTimeProperty(VisualSONConnection connection) {
         return new PropertyDeclaration<>(String.class, Time.PROPERTY_CONNECTION_TIME,
                 value -> connection.getReferencedSONConnection().setTime(new Interval(Interval.getMin(value), Interval.getMax(value))),
                 () -> connection.getReferencedSONConnection().getTime().toString())
                 .setReadonly();
     }
 
-    private PropertyDescriptor getStartTimeProperty(Time time) {
+    private PropertyDescriptor<?> getStartTimeProperty(Time time) {
         return new PropertyDeclaration<>(String.class, Time.PROPERTY_START_TIME,
                 value -> time.setStartTime(new Interval(value)),
                 () -> time.getStartTime().toString())
                 .setReadonly();
     }
 
-    private PropertyDescriptor getEndTimeProperty(Time time) {
+    private PropertyDescriptor<?> getEndTimeProperty(Time time) {
         return new PropertyDeclaration<>(String.class, Time.PROPERTY_END_TIME,
                 value -> time.setEndTime(new Interval(value)),
                 () -> time.getEndTime().toString())
                 .setReadonly();
     }
 
-    private PropertyDescriptor getDurationProperty(Time time) {
+    private PropertyDescriptor<?> getDurationProperty(Time time) {
         return new PropertyDeclaration<>(String.class, Time.PROPERTY_DURATION,
                 value -> time.setDuration(new Interval(value)),
                 () -> time.getDuration().toString())

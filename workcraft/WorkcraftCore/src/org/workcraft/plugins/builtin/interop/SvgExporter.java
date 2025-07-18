@@ -11,7 +11,7 @@ import java.io.OutputStream;
 public class SvgExporter implements Exporter {
 
     @Override
-    public boolean isCompatible(Model model) {
+    public boolean isCompatible(Model<?, ?> model) {
         return model instanceof VisualModel;
     }
 
@@ -21,7 +21,7 @@ public class SvgExporter implements Exporter {
     }
 
     @Override
-    public void serialise(Model model, OutputStream out) throws SerialisationException {
+    public void serialise(Model<?, ?> model, OutputStream out) throws SerialisationException {
         BatikUtils.transcode((VisualModel) model, out);
     }
 

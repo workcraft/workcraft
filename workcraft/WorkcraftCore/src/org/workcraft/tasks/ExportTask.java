@@ -13,10 +13,10 @@ import java.io.IOException;
 public class ExportTask implements Task<ExportOutput> {
 
     private final Exporter exporter;
-    private final Model model;
+    private final Model<?, ?> model;
     private final File file;
 
-    public ExportTask(Exporter exporter, Model model, File file) {
+    public ExportTask(Exporter exporter, Model<?, ?> model, File file) {
         this.exporter = exporter;
         this.model = model;
         this.file = file;
@@ -35,7 +35,7 @@ public class ExportTask implements Task<ExportOutput> {
         boolean success = false;
         try {
             // For incompatible visual model try exporting its underlying math model.
-            Model exportModel = model;
+            Model<?, ?> exportModel = model;
             if ((exportModel instanceof VisualModel visualModel) && !exporter.isCompatible(exportModel)) {
                 MathModel mathModel = visualModel.getMathModel();
                 if (exporter.isCompatible(mathModel)) {

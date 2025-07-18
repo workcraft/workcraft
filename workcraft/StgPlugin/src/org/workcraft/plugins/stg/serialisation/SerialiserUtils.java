@@ -36,7 +36,7 @@ public class SerialiserUtils {
 
     public enum Style { STG, LPN }
 
-    public static void writeModel(Model model, OutputStream out, File file, Style style, boolean needsInitialState) {
+    public static void writeModel(Model<?, ?> model, OutputStream out, File file, Style style, boolean needsInitialState) {
         if (!(model instanceof PetriModel petri)) {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }

@@ -22,7 +22,7 @@ import java.util.Map;
 public class PropertyEditorTable extends JTable {
 
     private final PropertyEditorTableModel model;
-    private static final HashMap<Class<?>, PropertyClass> propertyClasses = new HashMap<>();
+    private static final HashMap<Class<?>, PropertyClass<?, ?>> propertyClasses = new HashMap<>();
 
     static {
         propertyClasses.put(int.class, new IntegerProperty());
@@ -93,12 +93,13 @@ public class PropertyEditorTable extends JTable {
         update();
     }
 
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void update() {
         cellRenderers = new TableCellRenderer[model.getRowCount()];
         cellEditors = new TableCellEditor[model.getRowCount()];
         for (int i = 0; i < model.getRowCount(); i++) {
             PropertyDescriptor decl = model.getDeclaration(i);
-            Class type = decl.getType();
+            Class<?> type = decl.getType();
             if (type.isEnum()) {
                 model.setRowClass(i, null);
                 cellRenderers[i] = new ChoiceCellRenderer();
@@ -107,7 +108,7 @@ public class PropertyEditorTable extends JTable {
                 PropertyClass cls = propertyClasses.get(type);
                 model.setRowClass(i, cls);
                 if (cls != null) {
-                    Map<Object, String> predefinedValues = decl.getChoice();
+                    Map<?, String> predefinedValues = decl.getChoice();
                     cellRenderers[i] = cls.getCellRenderer(predefinedValues != null);
                     cellEditors[i] = cls.getCellEditor(predefinedValues);
                 } else {
@@ -133,6 +134,7 @@ public class PropertyEditorTable extends JTable {
         return (col > 0) ? cellRenderers[row] : new PropertyDeclarationRenderer(model.getDeclaration(row));
     }
 
+    @SuppressWarnings("CatchMayIgnoreException")
     @Override
     public void editingStopped(ChangeEvent event) {
         TableCellEditor editor = getCellEditor();
@@ -155,7 +157,7 @@ public class PropertyEditorTable extends JTable {
     @Override
     public Rectangle getCellRect(int row, int column, boolean includeSpacing) {
         Rectangle result = super.getCellRect(row, column, includeSpacing);
-        PropertyDescriptor declaration = model.getDeclaration(row);
+        PropertyDescriptor<?> declaration = model.getDeclaration(row);
         if ((declaration != null) && declaration.isSpan()) {
             if (column == 0) {
                 result.width = 0;
@@ -173,7 +175,7 @@ public class PropertyEditorTable extends JTable {
         int column = super.columnAtPoint(point);
         if (column == 0) {
             int row = super.rowAtPoint(point);
-            PropertyDescriptor declaration = model.getDeclaration(row);
+            PropertyDescriptor<?> declaration = model.getDeclaration(row);
             if ((declaration != null) && declaration.isSpan()) {
                 column = 1;
             }

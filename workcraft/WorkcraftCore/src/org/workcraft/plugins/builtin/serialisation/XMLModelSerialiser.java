@@ -29,12 +29,12 @@ public class XMLModelSerialiser implements ModelSerialiser<ReferenceProducer, Re
     }
 
     @Override
-    public boolean isApplicableTo(Model model) {
+    public boolean isApplicableTo(Model<?, ?> model) {
         return true;
     }
 
     @Override
-    public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer refs)
+    public ReferenceProducer serialise(final Model<?, ?> model, OutputStream out, ReferenceProducer refs)
             throws SerialisationException {
 
         ReferenceProducer internalRefs = obj -> {

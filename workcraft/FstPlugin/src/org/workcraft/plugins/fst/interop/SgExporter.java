@@ -27,12 +27,12 @@ public class SgExporter implements Exporter {
     }
 
     @Override
-    public boolean isCompatible(Model model) {
+    public boolean isCompatible(Model<?, ?> model) {
         return model instanceof Fsm;
     }
 
     @Override
-    public void serialise(Model model, OutputStream out) {
+    public void serialise(Model<?, ?> model, OutputStream out) {
         PrintWriter writer = new PrintWriter(out);
         String title = ExportUtils.getTitleAsIdentifier(model.getTitle());
         File file = getCurrentFile();

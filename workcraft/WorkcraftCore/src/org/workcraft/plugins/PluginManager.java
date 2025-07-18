@@ -18,6 +18,7 @@ import org.workcraft.types.ListMap;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.FileHandler;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -59,8 +60,7 @@ public class PluginManager implements PluginProvider {
 
     private LinkedHashSet<Class<?>> getPluginClasses() throws PluginInstantiationException {
         String classPass = System.getProperty("java.class.path");
-        String pathSeparator = System.getProperty("path.separator");
-        String[] classPathLocations = classPass.split(pathSeparator);
+        String[] classPathLocations = classPass.split(File.pathSeparator);
 
         LinkedHashSet<Class<?>> classes = new LinkedHashSet<>();
         classes.add(BuiltinSerialisers.class);
@@ -214,7 +214,7 @@ public class PluginManager implements PluginProvider {
         }, singleton);
     }
 
-    public void registerModelSerialiser(Initialiser<? extends ModelSerialiser> initialiser) {
+    public void registerModelSerialiser(Initialiser<? extends ModelSerialiser<?, ?>> initialiser) {
         registerClass(ModelSerialiser.class, initialiser, true);
     }
 

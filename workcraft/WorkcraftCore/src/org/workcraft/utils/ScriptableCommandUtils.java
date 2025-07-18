@@ -7,7 +7,7 @@ import org.workcraft.plugins.PluginManager;
 
 public class ScriptableCommandUtils {
 
-    public static void registerCommand(Class<? extends ScriptableCommand> commandClass, String jsName, String jsHelp) {
+    public static void registerCommand(Class<? extends ScriptableCommand<?>> commandClass, String jsName, String jsHelp) {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
         pm.registerCommand(commandClass);
@@ -18,7 +18,7 @@ public class ScriptableCommandUtils {
                         "}", jsHelp);
     }
 
-    public static void registerDataCommand(Class<? extends ScriptableDataCommand> commandClass,
+    public static void registerDataCommand(Class<? extends ScriptableDataCommand<?, ?>> commandClass,
             String jsName, String jsHelp) {
 
         final Framework framework = Framework.getInstance();

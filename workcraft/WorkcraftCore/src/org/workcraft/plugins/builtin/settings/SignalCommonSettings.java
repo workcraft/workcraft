@@ -10,7 +10,7 @@ import java.util.List;
 
 public class SignalCommonSettings extends AbstractCommonSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "CommonSignalSettings";
 
     private static final String keyInputColor = prefix + ".inputColor";
@@ -67,7 +67,7 @@ public class SignalCommonSettings extends AbstractCommonSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

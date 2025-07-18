@@ -135,7 +135,7 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String FORK_FUNOUT_PLACEHOLDER = "$";
     private static final String INITIAL_STATE_PLACEHOLDER = "$";
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
 
     /*
@@ -629,7 +629,7 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     @Override
-    public Collection<PropertyDescriptor> getDescriptors() {
+    public Collection<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

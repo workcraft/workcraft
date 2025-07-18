@@ -11,7 +11,7 @@ import java.util.List;
 
 public class DfsSettings extends AbstractModelSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "DfsSettings";
 
     private static final String keyComputedLogicColor = prefix + ".computedLogicColor";
@@ -26,6 +26,7 @@ public class DfsSettings extends AbstractModelSettings {
     private static Color synchronisationRegisterColor = defaultSynchronisationRegisterColor;
     private static Palette tokenPalette = defaultTokenPalette;
 
+    @SuppressWarnings("unused")
     public enum Palette {
         RGBYMC("6-color palette (RGBYMC)", new Color[]{Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW, Color.MAGENTA, Color.CYAN}),
         RGB("3-color palette (RGB)", new Color[]{Color.RED, Color.GREEN, Color.BLUE}),
@@ -68,7 +69,7 @@ public class DfsSettings extends AbstractModelSettings {
     }
 
     @Override
-    public List<PropertyDescriptor> getDescriptors() {
+    public List<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

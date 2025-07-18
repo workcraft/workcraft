@@ -48,11 +48,6 @@ public class SelectAllSignalTransitionsTransformationCommand extends AbstractTra
     }
 
     @Override
-    public int getPriority() {
-        return 0;
-    }
-
-    @Override
     public Position getPosition() {
         return Position.TOP;
     }

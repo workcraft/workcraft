@@ -5,7 +5,6 @@ import org.jbpt.petri.Place;
 import org.workcraft.plugins.cpog.untangling.UntanglingNode.NodeType;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -35,16 +34,8 @@ public class NodeList extends ArrayList<UntanglingNode> {
     }
 
     /** Sort the list of the untangling's vertices by the id **/
-    @SuppressWarnings("unchecked")
     public void sort() {
-        Collections.sort(this, new Comparator() {
-
-            @Override
-            public int compare(Object node1, Object node2) {
-                return (((UntanglingNode) node2).getId() < ((UntanglingNode) node1).getId()) ? 1 : -1;
-            }
-
-        });
+        this.sort(Comparator.comparingInt(UntanglingNode::getId));
     }
 
     /** Rename with a " _n " the node with same names but different *

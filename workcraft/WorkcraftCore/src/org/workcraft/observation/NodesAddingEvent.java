@@ -10,6 +10,7 @@ public class NodesAddingEvent implements HierarchyEvent {
     private final Node parentNode;
     private final Collection<Node> affectedNodes;
 
+    @SuppressWarnings("unchecked")
     public NodesAddingEvent(Node parentNode, Collection<? extends Node> affectedNodes) {
         this.parentNode = parentNode;
         this.affectedNodes = (Collection<Node>) affectedNodes;

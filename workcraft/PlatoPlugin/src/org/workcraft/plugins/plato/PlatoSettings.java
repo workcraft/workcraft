@@ -11,7 +11,7 @@ import java.util.LinkedList;
 
 public class PlatoSettings extends AbstractToolSettings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor<?>> properties = new LinkedList<>();
     private static final String prefix = "Tools.plato";
 
     private static final String keyPlatoFolderLocation = prefix + ".platoFolderLocation";
@@ -36,7 +36,7 @@ public class PlatoSettings extends AbstractToolSettings {
     }
 
     @Override
-    public Collection<PropertyDescriptor> getDescriptors() {
+    public Collection<PropertyDescriptor<?>> getDescriptors() {
         return properties;
     }
 

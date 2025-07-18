@@ -204,14 +204,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void setPermissions(final GraphEditor editor) {
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setCanModify(true);
-        we.setCanSelect(true);
-        we.setCanCopy(true);
-    }
-
-    @Override
     public boolean isDragging() {
         return dragState != DragState.NONE;
     }
@@ -554,10 +546,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
             e.getEditor().repaint();
         }
         return super.keyReleased(e);
-    }
-
-    public SelectionMode getSelectionMode() {
-        return selectionMode;
     }
 
     public DragState getDragState() {

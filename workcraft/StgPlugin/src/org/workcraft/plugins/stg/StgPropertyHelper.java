@@ -19,39 +19,39 @@ import java.util.List;
 
 public class StgPropertyHelper {
 
-    public static PropertyDescriptor getSignalNameProperty(Stg stg, SignalTransition signalTransition) {
+    public static PropertyDescriptor<?> getSignalNameProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(String.class, "Signal name",
                 value -> stg.setName(signalTransition, value),
                 signalTransition::getSignalName)
                 .setCombinable();
     }
 
-    public static PropertyDescriptor getSignalTypeProperty(Stg stg, SignalTransition signalTransition) {
+    public static PropertyDescriptor<?> getSignalTypeProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(Signal.Type.class, "Signal type",
                 signalTransition::setSignalType, signalTransition::getSignalType)
                 .setCombinable();
     }
 
-    public static PropertyDescriptor getDirectionProperty(Stg stg, SignalTransition signalTransition) {
+    public static PropertyDescriptor<?> getDirectionProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(SignalTransition.Direction.class, SignalTransition.PROPERTY_DIRECTION,
                 value -> stg.setDirection(signalTransition, value),
                 () -> stg.getDirection(signalTransition))
                 .setCombinable();
     }
 
-    public static PropertyDescriptor getInstanceProperty(Stg stg, NamedTransition namedTransition) {
+    public static PropertyDescriptor<?> getInstanceProperty(Stg stg, NamedTransition namedTransition) {
         return new PropertyDeclaration<>(Integer.class, "Instance",
                 value -> stg.setInstanceNumber(namedTransition, value),
                 () -> stg.getInstanceNumber(namedTransition));
     }
 
-    public static PropertyDescriptor getRefinementProperty(Stg stg) {
+    public static PropertyDescriptor<?> getRefinementProperty(Stg stg) {
         return new PropertyDeclaration<>(FileReference.class, "Refinement",
                 stg::setRefinement, stg::getRefinement);
     }
 
-    public static Collection<PropertyDescriptor> getSignalProperties(VisualStg visualStg) {
-        Collection<PropertyDescriptor> result = new ArrayList<>();
+    public static Collection<PropertyDescriptor<?>> getSignalProperties(VisualStg visualStg) {
+        Collection<PropertyDescriptor<?>> result = new ArrayList<>();
         Stg stg = visualStg.getMathModel();
         Container container = NamespaceHelper.getMathContainer(visualStg, visualStg.getCurrentLevel());
         if (SignalCommonSettings.getGroupByType()) {
@@ -74,7 +74,7 @@ public class StgPropertyHelper {
         return result;
     }
 
-    private static PropertyDescriptor getSignalProperty(VisualStg visualStg, String signal, Container container) {
+    private static PropertyDescriptor<?> getSignalProperty(VisualStg visualStg, String signal, Container container) {
         Stg mathStg = visualStg.getMathModel();
         Signal.Type signalType = mathStg.getSignalType(signal, container);
         Color color = StgUtils.getTypeColor(signalType);

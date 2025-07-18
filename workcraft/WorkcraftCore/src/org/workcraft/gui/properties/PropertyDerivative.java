@@ -2,11 +2,11 @@ package org.workcraft.gui.properties;
 
 import java.util.Map;
 
-public class PropertyDerivative implements PropertyDescriptor {
+public class PropertyDerivative<V> implements PropertyDescriptor<V> {
 
-    private final PropertyDescriptor descriptor;
+    private final PropertyDescriptor<V> descriptor;
 
-    public PropertyDerivative(PropertyDescriptor descriptor) {
+    public PropertyDerivative(PropertyDescriptor<V> descriptor) {
         this.descriptor = descriptor;
     }
 
@@ -16,22 +16,22 @@ public class PropertyDerivative implements PropertyDescriptor {
     }
 
     @Override
-    public Class<?> getType() {
+    public Class<V> getType() {
         return descriptor.getType();
     }
 
     @Override
-    public Object getValue() {
+    public V getValue() {
         return descriptor.getValue();
     }
 
     @Override
-    public void setValue(Object value) {
+    public void setValue(V value) {
         descriptor.setValue(value);
     }
 
     @Override
-    public Map<?, String> getChoice() {
+    public Map<V, String> getChoice() {
         return descriptor.getChoice();
     }
 

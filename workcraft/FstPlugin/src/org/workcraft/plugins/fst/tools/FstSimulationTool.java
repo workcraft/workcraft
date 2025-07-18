@@ -175,10 +175,6 @@ public class FstSimulationTool extends StgSimulationTool {
             public Color getColorisation() {
                 return isMarkedPlace ? SimulationDecorationSettings.getExcitedComponentColor() : null;
             }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
         };
     }
 
