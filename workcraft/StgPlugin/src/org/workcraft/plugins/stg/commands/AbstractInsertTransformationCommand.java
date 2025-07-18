@@ -48,11 +48,6 @@ public abstract class AbstractInsertTransformationCommand extends AbstractTransf
     }
 
     @Override
-    public int getPriority() {
-        return 0;
-    }
-
-    @Override
     public Position getPosition() {
         return Position.TOP;
     }

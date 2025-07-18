@@ -28,17 +28,12 @@ public final class RouterPort {
     }
 
     @Override
-    public boolean equals(Object other) {
-        return this == other;
-    }
-
-    @Override
     public int hashCode() {
         int prime = 31;
         int result = 1;
-        result = prime * result + ((getDirection() == null) ? 0 : getDirection().hashCode());
+        result = prime * result + getDirection().hashCode();
         result = prime * result + (isFixedDirection() ? 1231 : 1237);
-        result = prime * result + ((getLocation() == null) ? 0 : getLocation().hashCode());
+        result = prime * result + getLocation().hashCode();
         return result;
     }
 

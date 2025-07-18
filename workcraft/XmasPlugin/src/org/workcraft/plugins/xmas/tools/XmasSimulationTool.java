@@ -208,10 +208,6 @@ public class XmasSimulationTool extends StgSimulationTool {
                 }
                 return COLOR_NONE_READY;
             }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
         };
     }
 
@@ -287,23 +283,20 @@ public class XmasSimulationTool extends StgSimulationTool {
     private Decoration getQueueComponent(final VisualQueueComponent queue) {
         final QueueStg queueStg = converter.getQueueStg(queue);
 
-        return new QueueDecoration() {
-            @Override
-            public SlotState getSlotState(int i) {
-                SlotState result = null;
-                int capacity = queue.getReferencedComponent().getCapacity();
-                if ((i >= 0) && (i < capacity)) {
-                    SlotStg slot = queueStg.slotList.get(i);
-                    boolean isFull = slot.mem.one.getReferencedComponent().getTokens() != 0;
-                    boolean isHead = slot.hd.rdy.one.getReferencedComponent().getTokens() != 0;
-                    boolean isTail = slot.tl.rdy.one.getReferencedComponent().getTokens() != 0;
-                    boolean isMemExcited = getExcitedTransition(slot.mem.getAllTransitions()) != null;
-                    boolean isHeadExcited = getExcitedTransition(slot.hd.rdy.getAllTransitions()) != null;
-                    boolean isTailExcited = getExcitedTransition(slot.tl.rdy.getAllTransitions()) != null;
-                    result = new SlotState(isFull, isHead, isTail, isMemExcited, isHeadExcited, isTailExcited);
-                }
-                return result;
+        return (QueueDecoration) i -> {
+            SlotState result = null;
+            int capacity = queue.getReferencedComponent().getCapacity();
+            if ((i >= 0) && (i < capacity)) {
+                SlotStg slot = queueStg.slotList.get(i);
+                boolean isFull = slot.mem.one.getReferencedComponent().getTokens() != 0;
+                boolean isHead = slot.hd.rdy.one.getReferencedComponent().getTokens() != 0;
+                boolean isTail = slot.tl.rdy.one.getReferencedComponent().getTokens() != 0;
+                boolean isMemExcited = getExcitedTransition(slot.mem.getAllTransitions()) != null;
+                boolean isHeadExcited = getExcitedTransition(slot.hd.rdy.getAllTransitions()) != null;
+                boolean isTailExcited = getExcitedTransition(slot.tl.rdy.getAllTransitions()) != null;
+                result = new SlotState(isFull, isHead, isTail, isMemExcited, isHeadExcited, isTailExcited);
             }
+            return result;
         };
     }
 
