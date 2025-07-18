@@ -21,10 +21,6 @@ public class EditorWindowDockableListener implements DockableListener {
     }
 
     @Override
-    public void tabDeselected(JTabbedPane tabbedPane, int tabIndex) {
-    }
-
-    @Override
     public void dockedStandalone() {
         requestEditorFocus();
     }

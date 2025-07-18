@@ -50,6 +50,7 @@ public class VisualCircuitComponent extends VisualComponent
         addPropertyDeclarations();
     }
 
+    @SuppressWarnings("EmptyMethod")
     private void addPropertyDeclarations() {
         // TODO: Rename label to module name (?)
         //renamePropertyDeclarationByName(PROPERTY_LABEL, "Module name");
