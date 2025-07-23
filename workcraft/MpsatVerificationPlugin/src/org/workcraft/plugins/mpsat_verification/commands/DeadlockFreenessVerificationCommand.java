@@ -13,7 +13,7 @@ public class DeadlockFreenessVerificationCommand extends AbstractVerificationCom
 
     @Override
     public int getPriority() {
-        return 8;
+        return 70;
     }
 
     @Override

@@ -37,8 +37,10 @@ import java.util.stream.Collectors;
 
 public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
 
+    public static final String VACUOUS_PROPERTY_DESCRIPTION = "Output determinacy (vacuously)";
+
     private static final VerificationParameters TRIVIAL_HOLD_PARAMETERS = new VerificationParameters(
-            "Output determinacy (vacuously)", VerificationMode.UNDEFINED, 0,
+            VACUOUS_PROPERTY_DESCRIPTION, VerificationMode.UNDEFINED, 0,
             null, 0, null, true);
 
     private static final String STG_FILE_EXTENSION = StgFormat.getInstance().getExtension();
@@ -113,6 +115,11 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
     }
 
     private boolean isVacuouslyOutputDeterminate(Stg stg) {
+        if (stg.getSignalTransitions(Signal.Type.OUTPUT).isEmpty()
+                && stg.getSignalTransitions(Signal.Type.INTERNAL).isEmpty()) {
+
+            return true;
+        }
         if (!stg.getDummyTransitions().isEmpty()) {
             return false;
         }

@@ -39,7 +39,7 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
 
     @Override
     public int getPriority() {
-        return 1;
+        return 10;
     }
 
     @Override

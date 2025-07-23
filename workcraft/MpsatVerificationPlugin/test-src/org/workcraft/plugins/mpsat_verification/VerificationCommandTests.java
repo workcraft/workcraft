@@ -36,16 +36,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 null,  // combined
                 null,  // consistency
+                null,  // output determinacy
                 false, // deadlock freeness
                 null,  // input properness
+                null,  // mutex implementability
                 null,  // output persistency
-                null,  // output determinacy
-                null,  // CSC
-                null,  // USC
                 null,  // absence of self-triggering local signals
                 null,  // DI interface
-                null,  // normalcy
-                null   // mutex implementability
+                null,  // CSC
+                null,  // USC
+                null   // normalcy
         );
     }
 
@@ -55,16 +55,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 null,  // combined
                 null,  // consistency
+                null,  // output determinacy
                 true,  // deadlock freeness
                 null,  // input properness
+                null,  // mutex implementability
                 null,  // output persistency
-                null,  // output determinacy
-                null,  // CSC
-                null,  // USC
                 null,  // absence of self-triggering local signals
                 null,  // DI interface
-                null,  // normalcy
-                null   // mutex implementability
+                null,  // CSC
+                null,  // USC
+                null  // normalcy
         );
     }
 
@@ -74,16 +74,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 true,  // combined
                 true,  // consistency
+                true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
+                null,  // mutex implementability
                 true,  // output persistency
-                true,  // output determinacy
-                false, // CSC
-                false, // USC
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
-                false, // normalcy
-                null   // mutex implementability
+                false, // CSC
+                false, // USC
+                false  // normalcy
         );
     }
 
@@ -93,16 +93,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 false,  // combined
                 true,  // consistency
+                true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
+                true,  // mutex implementability
                 true,  // output persistency
-                true,  // output determinacy
-                true,  // CSC
-                true,  // USC
                 true,  // absence of self-triggering local signals
                 false, // DI interface
-                false, // normalcy
-                true  // mutex implementability
+                true,  // CSC
+                true,  // USC
+                false  // normalcy
         );
     }
 
@@ -112,16 +112,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 false, // combined
                 true,  // consistency
+                true,  // output determinacy
                 false, // deadlock freeness
                 true,  // input properness
+                null,  // mutex implementability
                 false, // output persistency
-                true,  // output determinacy
-                true,  // CSC
-                false, // USC
                 true,  // absence of self-triggering local signals
                 false, // DI interface
-                false, // normalcy
-                null   // mutex implementability
+                true,  // CSC
+                false, // USC
+                false  // normalcy
         );
     }
 
@@ -131,16 +131,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 null, // combined
                 true,  // consistency
+                true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
+                null,  // mutex implementability
                 null,  // output persistency
-                true,  // output determinacy
-                true,  // CSC
-                true,  // USC
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
-                true,  // normalcy
-                null   // mutex implementability
+                true,  // CSC
+                true,  // USC
+                true   // normalcy
         );
     }
 
@@ -150,16 +150,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 false, // combined
                 true,  // consistency
+                true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
+                false, // mutex implementability
                 true,  // output persistency
-                true,  // output determinacy
-                true,  // CSC
-                true,  // USC
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
-                false, // normalcy
-                false  // mutex implementability
+                true,  // CSC
+                true,  // USC
+                false  // normalcy
         );
     }
 
@@ -169,16 +169,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 true, // combined
                 true,  // consistency
+                true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
+                true,  // mutex implementability
                 true,  // output persistency
-                true,  // output determinacy
-                true,  // CSC
-                true,  // USC
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
-                false, // normalcy
-                true  // mutex implementability
+                true,  // CSC
+                true,  // USC
+                false  // normalcy
         );
     }
 
@@ -188,16 +188,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 false, // combined
                 false, // consistency
+                true,  // output determinacy
                 null,  // deadlock freeness
                 null,  // input properness
+                null,  // mutex implementability
                 null,  // output persistency
-                true,  // output determinacy
-                null,  // CSC
-                null,  // USC
                 null,  // absence of self-triggering local signals
                 null,  // DI interface
-                null,  // normalcy
-                null   // mutex implementability
+                null,  // CSC
+                null,  // USC
+                null   // normalcy
         );
     }
 
@@ -209,16 +209,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 false, // combined
                 true,  // consistency
+                false, // output determinacy
                 true,  // deadlock freeness
                 false, // input properness
+                null,  // mutex implementability
                 true,  // output persistency
-                false, // output determinacy
-                false, // CSC
-                false, // USC
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
-                false, // normalcy
-                null   // mutex implementability
+                false, // CSC
+                false, // USC
+                false  // normalcy
         );
     }
 
@@ -228,16 +228,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 false, // combined
                 true,  // consistency
+                true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
+                null,  // mutex implementability
                 true,  // output persistency
-                true,  // output determinacy
-                true, // CSC
-                true, // USC
                 true,  // absence of self-triggering local signals
                 false, // DI interface
-                false, // normalcy
-                null   // mutex implementability
+                true,  // CSC
+                true,  // USC
+                false  // normalcy
         );
     }
 
@@ -247,16 +247,16 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 false, // combined
                 true,  // consistency
+                true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
+                null,  // mutex implementability
                 true,  // output persistency
-                true,  // output determinacy
-                false, // CSC
-                false, // USC
                 false, // absence of self-triggering local signals
                 false, // DI interface
-                false, // normalcy
-                null   // mutex implementability
+                false, // CSC
+                false, // USC
+                false  // normalcy
         );
     }
 
@@ -266,25 +266,25 @@ class VerificationCommandTests {
         testVerificationCommands(workName,
                 true, // combined
                 true,  // consistency
+                true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
+                null,  // mutex implementability
                 true,  // output persistency
-                true,  // output determinacy
-                false, // CSC
-                false, // USC
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
-                false, // normalcy
-                null   // mutex implementability
+                false, // CSC
+                false, // USC
+                false  // normalcy
         );
     }
 
     private void testVerificationCommands(String workName, Boolean combined,
-            Boolean consistency, Boolean deadlockFreeness,
-            Boolean inputProperness, Boolean outputPersistency, Boolean outputDeterminacy,
-            Boolean csc, Boolean usc,
-            Boolean localSelfTriggering, Boolean diInterface, Boolean normalcy,
-            Boolean mutexImplementability)
+            Boolean consistency, Boolean outputDeterminacy,
+            Boolean deadlockFreeness, Boolean inputProperness,
+            Boolean mutexImplementability, Boolean outputPersistency,
+            Boolean localSelfTriggering, Boolean diInterface,
+            Boolean csc, Boolean usc, Boolean normalcy)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
@@ -298,23 +298,20 @@ class VerificationCommandTests {
         ConsistencyVerificationCommand consistencyCommand = new ConsistencyVerificationCommand();
         Assertions.assertEquals(consistency, consistencyCommand.execute(we));
 
+        OutputDeterminacyVerificationCommand determinacyCommand = new OutputDeterminacyVerificationCommand();
+        Assertions.assertEquals(outputDeterminacy, determinacyCommand.execute(we));
+
         DeadlockFreenessVerificationCommand deadlockCommand = new DeadlockFreenessVerificationCommand();
         Assertions.assertEquals(deadlockFreeness, deadlockCommand.execute(we));
 
         InputPropernessVerificationCommand inputPropernessCommand = new InputPropernessVerificationCommand();
         Assertions.assertEquals(inputProperness, inputPropernessCommand.execute(we));
 
+        MutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MutexImplementabilityVerificationCommand();
+        Assertions.assertEquals(mutexImplementability, mutexImplementabilityCommand.execute(we));
+
         OutputPersistencyVerificationCommand persistencyCommand = new OutputPersistencyVerificationCommand();
         Assertions.assertEquals(outputPersistency, persistencyCommand.execute(we));
-
-        OutputDeterminacyVerificationCommand determinacyCommand = new OutputDeterminacyVerificationCommand();
-        Assertions.assertEquals(outputDeterminacy, determinacyCommand.execute(we));
-
-        CscVerificationCommand cscCommand = new CscVerificationCommand();
-        Assertions.assertEquals(csc, cscCommand.execute(we));
-
-        UscVerificationCommand uscCommand = new UscVerificationCommand();
-        Assertions.assertEquals(usc, uscCommand.execute(we));
 
         DiInterfaceVerificationCommand diInterfaceCommand = new DiInterfaceVerificationCommand();
         Assertions.assertEquals(diInterface, diInterfaceCommand.execute(we));
@@ -322,11 +319,14 @@ class VerificationCommandTests {
         LocalSelfTriggeringVerificationCommand localSelfTriggeringCommand = new LocalSelfTriggeringVerificationCommand();
         Assertions.assertEquals(localSelfTriggering, localSelfTriggeringCommand.execute(we));
 
+        CscVerificationCommand cscCommand = new CscVerificationCommand();
+        Assertions.assertEquals(csc, cscCommand.execute(we));
+
+        UscVerificationCommand uscCommand = new UscVerificationCommand();
+        Assertions.assertEquals(usc, uscCommand.execute(we));
+
         NormalcyVerificationCommand normalcyCommand = new NormalcyVerificationCommand();
         Assertions.assertEquals(normalcy, normalcyCommand.execute(we));
-
-        MutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MutexImplementabilityVerificationCommand();
-        Assertions.assertEquals(mutexImplementability, mutexImplementabilityCommand.execute(we));
     }
 
 }

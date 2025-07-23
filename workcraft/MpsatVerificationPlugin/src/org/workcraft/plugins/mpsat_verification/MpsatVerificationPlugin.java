@@ -23,9 +23,14 @@ public class MpsatVerificationPlugin implements Plugin {
 
         // Core verification commands
         ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkStgCombined",
-                "combined check of the STG 'work' for consistency, deadlock freeness, input properness, output persistency, and mutex implementability");
+                "combined check of the STG 'work' for consistency, output determinacy, "
+                        + "deadlock freeness, input properness, "
+                        + "mutex implementability, output persistency, "
+                        + "absence of local self-triggering, delay-insensitive interface");
         ScriptableCommandUtils.registerCommand(ConsistencyVerificationCommand.class, "checkStgConsistency",
                 "check the STG 'work' for consistency");
+        ScriptableCommandUtils.registerCommand(OutputDeterminacyVerificationCommand.class, "checkStgOutputDeterminacy",
+                "check the STG 'work' for output determinacy");
         ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkStgDeadlockFreeness",
                 "check the STG (or Petri net) 'work' for deadlock freeness");
         ScriptableCommandUtils.registerCommand(InputPropernessVerificationCommand.class, "checkStgInputProperness",
@@ -38,8 +43,6 @@ public class MpsatVerificationPlugin implements Plugin {
                 "check the STG 'work' for absence of local self-triggering");
         ScriptableCommandUtils.registerCommand(DiInterfaceVerificationCommand.class, "checkStgDiInterface",
                 "check the STG 'work' for delay-insensitive interface");
-        ScriptableCommandUtils.registerCommand(OutputDeterminacyVerificationCommand.class, "checkStgOutputDeterminacy",
-                "check the STG 'work' for output determinacy");
 
         // Auxiliary verification commands
         ScriptableCommandUtils.registerCommand(NormalcyVerificationCommand.class, "checkStgNormalcy",

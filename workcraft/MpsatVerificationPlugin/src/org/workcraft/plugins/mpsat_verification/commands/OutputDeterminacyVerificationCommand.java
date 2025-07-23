@@ -26,7 +26,7 @@ public class OutputDeterminacyVerificationCommand extends org.workcraft.commands
 
     @Override
     public int getPriority() {
-        return 2;
+        return 80;
     }
 
     @Override
