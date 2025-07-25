@@ -25,7 +25,7 @@ public class DiInterfaceVerificationCommand extends AbstractVerificationCommand 
 
     @Override
     public int getPriority() {
-        return 3;
+        return 20;
     }
 
     @Override

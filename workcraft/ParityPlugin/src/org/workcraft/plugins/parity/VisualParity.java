@@ -21,9 +21,8 @@ import org.workcraft.gui.tools.SelectionTool;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.utils.Hierarchy;
 
-import java.util.Collection;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
@@ -64,10 +63,8 @@ public class VisualParity extends AbstractVisualModel {
         addGraphEditorTool(new SelectionTool(true, false, true, true));
         addGraphEditorTool(new CommentGeneratorTool());
         addGraphEditorTool(new ConnectionTool(false, true, true));
-        addGraphEditorTool(new NodeGeneratorTool(
-                new DefaultNodeGenerator(Player0.class)));
-        addGraphEditorTool(new NodeGeneratorTool(
-                new DefaultNodeGenerator(Player1.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Player0.class)));
+        addGraphEditorTool(new NodeGeneratorTool(new DefaultNodeGenerator(Player1.class)));
     }
 
     /**
@@ -88,12 +85,9 @@ public class VisualParity extends AbstractVisualModel {
     public ModelProperties getProperties(VisualNode node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            Container container = NamespaceHelper.getMathContainer(this,
-                    getCurrentLevel());
-            List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols(
-                    container));
-            Collections.sort(symbols, Comparator.comparing(
-                    getMathModel()::getNodeReference));
+            Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
+            List<Symbol> symbols = new ArrayList<>(getMathModel().getSymbols(container));
+            symbols.sort(Comparator.comparing(getMathModel()::getNodeReference));
             for (final Symbol symbol : symbols) {
                 properties.add(getSymbolProperty(symbol));
             }
@@ -102,7 +96,6 @@ public class VisualParity extends AbstractVisualModel {
         } else if (node instanceof VisualPlayer1) {
             properties.add(getPlayer1SymbolProperty((VisualPlayer1) node));
         }
-
         return properties;
     }
 
@@ -137,22 +130,19 @@ public class VisualParity extends AbstractVisualModel {
      * @return          PropertyDescriptor<?> of the whole Model
      */
     private PropertyDescriptor<?> getSymbolProperty(Symbol symbol) {
-        return new PropertyDeclaration<>(String.class, getMathModel().getName(
-                symbol) + " name", value -> {
+        return new PropertyDeclaration<>(String.class, getMathModel().getName(symbol) + " name",
+                value -> {
                     Node node = getMathModel().getNodeByReference(value);
                     if (node == null) {
                         getMathModel().setName(symbol, value);
                         for (Player0 event: getMathModel().getPlayer0(symbol)) {
-                            event.sendNotification(new PropertyChangedEvent(
-                                    event, Player0.PROPERTY_SYMBOL));
+                            event.sendNotification(new PropertyChangedEvent(event, Player0.PROPERTY_SYMBOL));
                         }
                         for (Player1 event: getMathModel().getPlayer1(symbol)) {
-                            event.sendNotification(new PropertyChangedEvent(
-                                    event, Player1.PROPERTY_SYMBOL));
+                            event.sendNotification(new PropertyChangedEvent(event, Player1.PROPERTY_SYMBOL));
                         }
                     } else if (!(node instanceof Symbol)) {
-                        throw new FormatException("Node '" + value
-                            + "' already exists and it is not a symbol.");
+                        throw new FormatException("Node '" + value + "' already exists and it is not a symbol.");
                     }
                 },
                 () -> getMathModel().getName(symbol));

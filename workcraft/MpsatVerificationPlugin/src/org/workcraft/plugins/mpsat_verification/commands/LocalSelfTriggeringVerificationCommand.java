@@ -28,7 +28,7 @@ public class LocalSelfTriggeringVerificationCommand extends AbstractVerification
 
     @Override
     public int getPriority() {
-        return 4;
+        return 30;
     }
 
     @Override

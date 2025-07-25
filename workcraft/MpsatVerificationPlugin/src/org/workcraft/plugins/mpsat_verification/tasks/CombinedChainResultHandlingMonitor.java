@@ -3,6 +3,7 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.OutcomeUtils;
+import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
@@ -11,18 +12,21 @@ import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandlingMonitor<CombinedChainOutput> {
 
-    private boolean vacuousMutexImplementability = false;
+    private static final String MUTEX_PROTOCOL_VACUOUS_PROPERTY_DESCRIPTION = "Mutex protocol (vacuously)";
+
+    private boolean vacuousMutexProtocol = false;
 
     public CombinedChainResultHandlingMonitor(WorkspaceEntry we) {
         super(we);
     }
 
-    public void setVacuousMutexImplementability(boolean value) {
-        vacuousMutexImplementability = value;
+    public void setVacuousMutexProtocol(boolean value) {
+        vacuousMutexProtocol = value;
     }
 
     @Override
@@ -67,17 +71,49 @@ public class CombinedChainResultHandlingMonitor extends AbstractChainResultHandl
             msg.append(chainOutputMessage);
         } else {
             List<VerificationParameters> verificationParametersList = chainOutput.getVerificationParametersList();
+            List<VerificationParameters> remainingVerificationParametersList = new ArrayList<>(verificationParametersList);
+            // Start with Consistency property
             for (VerificationParameters verificationParameters : verificationParametersList) {
+                String propertyDescription = verificationParameters.getDescription();
+                if ((verificationParameters.getMode() == VerificationMode.STG_REACHABILITY_CONSISTENCY)
+                        || (ReachUtils.CONSISTENCY_PROPERTY_DESCRIPTION.equals(propertyDescription))) {
+
+                    msg.append(TextUtils.getBulletpoint(propertyDescription));
+                    remainingVerificationParametersList.remove(verificationParameters);
+                    break;
+                }
+            }
+            // Then process Output determinacy
+            for (VerificationParameters verificationParameters : verificationParametersList) {
+                String propertyDescription = verificationParameters.getDescription();
+                if ((verificationParameters.getMode() == VerificationMode.STG_REACHABILITY_OUTPUT_DETERMINACY)
+                        || (OutputDeterminacyTask.VACUOUS_PROPERTY_DESCRIPTION.equals(propertyDescription))) {
+
+                    msg.append(TextUtils.getBulletpoint(propertyDescription));
+                    remainingVerificationParametersList.remove(verificationParameters);
+                    break;
+                }
+            }
+            // Finally process the remaining properties and handle vacuous mutex protocol specially
+            boolean needToInsertVacuousMutexProtocol = vacuousMutexProtocol;
+            for (VerificationParameters verificationParameters : remainingVerificationParametersList) {
+                // Insert Mutex protocol (vacuously) before Output persistency if no mutex places found
+                if (needToInsertVacuousMutexProtocol
+                        && (verificationParameters.getMode() == VerificationMode.STG_REACHABILITY_OUTPUT_PERSISTENCY)) {
+
+                    msg.append(TextUtils.getBulletpoint(MUTEX_PROTOCOL_VACUOUS_PROPERTY_DESCRIPTION));
+                    needToInsertVacuousMutexProtocol = false;
+                }
                 msg.append(TextUtils.getBulletpoint(verificationParameters.getDescription()));
             }
-            if (vacuousMutexImplementability) {
-                // Add trivial mutex implementability result if no mutex places found
-                msg.append(TextUtils.getBulletpoint("Mutex implementability (vacuously)"));
+            // Add Mutex protocol (vacuous) in the end, if needed and no Output persistence was checked
+            if (needToInsertVacuousMutexProtocol) {
+                msg.append(TextUtils.getBulletpoint(MUTEX_PROTOCOL_VACUOUS_PROPERTY_DESCRIPTION));
             }
             if (msg.isEmpty()) {
-                msg.append("All checks passed.");
+                msg.append("All properties have been successfully verified.");
             } else {
-                msg.insert(0, "The following checks passed:");
+                msg.insert(0, "The following properties have been successfully verified:");
             }
         }
         if (isInteractive()) {

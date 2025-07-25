@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * InputNode class is used to represent part of the model of a parity game.
  * Each node is one of the vertices in the parity game, and through the outgoing
  * ArrayList will also store the edge information.
- *
+ * <p>
  * An ArrayList of InputNodes represent the whole game.
  */
 public class InputNode {
@@ -30,19 +30,12 @@ public class InputNode {
     /**
      * ArrayList of identifiers of other input nodes that have an outgoing edge
      * from the current node to those.
-     *
+     * <p>
      * i.e. if this node has an id of 1, and an outgoing of {2,3,4}, there will
      * be edges 1->2, 1->3, and 1->4.
      */
     ArrayList<Integer> outgoing;
 
-    /**
-     * Constructor.
-     * @param id
-     * @param priority
-     * @param ownedBy
-     * @param outgoing
-     */
     public InputNode(Integer id, Integer priority, Boolean ownedBy,
             ArrayList<Integer> outgoing) {
         this.id = id;

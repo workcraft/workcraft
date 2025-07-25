@@ -39,7 +39,7 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
 
     @Override
     public int getPriority() {
-        return 1;
+        return 10;
     }
 
     @Override
@@ -98,7 +98,7 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
         }
 
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-        verificationParametersList.addAll(ReachUtils.getMutexImplementabilityParameters(mutexes));
+        verificationParametersList.addAll(ReachUtils.getMutexProtocolParameters(mutexes));
         if (noDummies) {
             LinkedList<Pair<String, String>> mutexExceptions = MutexUtils.getMutexGrantPersistencyExceptions(stg);
             verificationParametersList.add(ReachUtils.getOutputPersistencyParameters(mutexExceptions));
@@ -120,7 +120,7 @@ public class CombinedVerificationCommand extends org.workcraft.commands.Abstract
         TaskManager manager = Framework.getInstance().getTaskManager();
         CombinedChainTask task = new CombinedChainTask(we, verificationParametersList, extraTask);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        monitor.setVacuousMutexImplementability(mutexes.isEmpty());
+        monitor.setVacuousMutexProtocol(mutexes.isEmpty());
 
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);

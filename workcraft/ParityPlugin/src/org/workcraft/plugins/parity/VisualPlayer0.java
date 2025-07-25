@@ -163,8 +163,7 @@ public class VisualPlayer0 extends VisualComponent {
         if (symbol != null) {
 
             String label = Integer.toString(tempNode.getPrio());
-            cacheLabelRenderedText(label, getLabelFont(), Positioning.CENTER,
-                    getLabelOffset());
+            cacheLabelRenderedText(label, getLabelFont(), Positioning.CENTER, getLabelOffset());
         }
     }
 
@@ -178,8 +177,7 @@ public class VisualPlayer0 extends VisualComponent {
             cacheLabelRenderedText(r);
             Player0 tempNode = getReferencedComponent();
             String label = Integer.toString(tempNode.getPrio());
-            RenderedText displayText = new RenderedText(label, getLabelFont(),
-                    Positioning.CENTER, getLabelOffset());
+            RenderedText displayText = new RenderedText(label, getLabelFont(), Positioning.CENTER, getLabelOffset());
             Graphics2D g = r.getGraphics();
             displayText.draw(g);
         }
