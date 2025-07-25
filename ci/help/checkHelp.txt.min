@@ -17,7 +17,7 @@ checkFsmReachability(work) - check the FSM/FST 'work' for reachability of all st
 checkFsmReversibility(work) - check the FSM/FST 'work' for reversibility of all states
 checkGraphReachability(work) - check the Graph 'work' for reachability of all its nodes
 checkPolicyDeadlockFreeness(work) - check the Policy net 'work' for deadlock freeness
-checkStgCombined(work) - combined check of the STG 'work' for consistency, output determinacy, deadlock freeness, input properness, mutex implementability, output persistency, absence of local self-triggering, delay-insensitive interface
+checkStgCombined(work) - combined check of the STG 'work' for consistency, output determinacy, deadlock freeness, input properness, mutex protocol, output persistency, absence of local self-triggering, delay-insensitive interface
 checkStgConformation(work, data) - check the STG 'work' for conformation to the STG specified by file name 'data'
 checkStgConsistency(work) - check the STG 'work' for consistency
 checkStgCsc(work) - check the STG 'work' for complete state coding
@@ -25,7 +25,7 @@ checkStgDeadlockFreeness(work) - check the STG (or Petri net) 'work' for deadloc
 checkStgDiInterface(work) - check the STG 'work' for delay-insensitive interface
 checkStgHandshakeProtocol(work, data) - check the STG 'work' for following a handshake protocol as specified by 'data', e.g. '{req1 req2} {ack12}'
 checkStgInputProperness(work) - check the STG 'work' for input properness
-checkStgMutexImplementability(work) - check the STG 'work' for implementability of its mutex places
+checkStgMutexProtocol(work) - check the STG 'work' for mutex protocol
 checkStgNormalcy(work) - check the STG 'work' for normalcy
 checkStgNwayConformation(work, data) - check the STGs specified by space-separated list of file names 'data' for N-way conformation ('work' parameter is ignored)
 checkStgOutputDeterminacy(work) - check the STG 'work' for output determinacy

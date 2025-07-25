@@ -39,7 +39,7 @@ class VerificationCommandTests {
                 null,  // output determinacy
                 false, // deadlock freeness
                 null,  // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 null,  // output persistency
                 null,  // absence of self-triggering local signals
                 null,  // DI interface
@@ -58,7 +58,7 @@ class VerificationCommandTests {
                 null,  // output determinacy
                 true,  // deadlock freeness
                 null,  // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 null,  // output persistency
                 null,  // absence of self-triggering local signals
                 null,  // DI interface
@@ -77,7 +77,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
@@ -96,7 +96,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
-                true,  // mutex implementability
+                true,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 false, // DI interface
@@ -115,7 +115,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 false, // deadlock freeness
                 true,  // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 false, // output persistency
                 true,  // absence of self-triggering local signals
                 false, // DI interface
@@ -134,7 +134,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 null,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
@@ -153,7 +153,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
-                false, // mutex implementability
+                false, // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
@@ -172,7 +172,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
-                true,  // mutex implementability
+                true,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
@@ -191,7 +191,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 null,  // deadlock freeness
                 null,  // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 null,  // output persistency
                 null,  // absence of self-triggering local signals
                 null,  // DI interface
@@ -212,7 +212,7 @@ class VerificationCommandTests {
                 false, // output determinacy
                 true,  // deadlock freeness
                 false, // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
@@ -231,7 +231,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 false, // DI interface
@@ -250,7 +250,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 true,  // output persistency
                 false, // absence of self-triggering local signals
                 false, // DI interface
@@ -269,7 +269,7 @@ class VerificationCommandTests {
                 true,  // output determinacy
                 true,  // deadlock freeness
                 true,  // input properness
-                null,  // mutex implementability
+                null,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // DI interface
@@ -282,7 +282,7 @@ class VerificationCommandTests {
     private void testVerificationCommands(String workName, Boolean combined,
             Boolean consistency, Boolean outputDeterminacy,
             Boolean deadlockFreeness, Boolean inputProperness,
-            Boolean mutexImplementability, Boolean outputPersistency,
+            Boolean mutexProtocol, Boolean outputPersistency,
             Boolean localSelfTriggering, Boolean diInterface,
             Boolean csc, Boolean usc, Boolean normalcy)
             throws DeserialisationException {
@@ -307,8 +307,8 @@ class VerificationCommandTests {
         InputPropernessVerificationCommand inputPropernessCommand = new InputPropernessVerificationCommand();
         Assertions.assertEquals(inputProperness, inputPropernessCommand.execute(we));
 
-        MutexImplementabilityVerificationCommand mutexImplementabilityCommand = new MutexImplementabilityVerificationCommand();
-        Assertions.assertEquals(mutexImplementability, mutexImplementabilityCommand.execute(we));
+        MutexProtocolVerificationCommand mutexProtocolCommand = new MutexProtocolVerificationCommand();
+        Assertions.assertEquals(mutexProtocol, mutexProtocolCommand.execute(we));
 
         OutputPersistencyVerificationCommand persistencyCommand = new OutputPersistencyVerificationCommand();
         Assertions.assertEquals(outputPersistency, persistencyCommand.execute(we));

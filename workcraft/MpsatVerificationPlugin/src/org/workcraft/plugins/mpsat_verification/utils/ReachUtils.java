@@ -43,6 +43,8 @@ public class ReachUtils {
             "    }\n" +
             "}\n";
 
+    public static final String CONSISTENCY_PROPERTY_DESCRIPTION = "Consistency";
+
     public static VerificationParameters getConsistencyParameters() {
         return new VerificationParameters("Consistency",
                 VerificationMode.STG_REACHABILITY_CONSISTENCY, 0,
@@ -189,7 +191,7 @@ public class ReachUtils {
     private static final String MUTEX_R2_REPLACEMENT = "/* insert r2 name here */";
     private static final String MUTEX_G2_REPLACEMENT = "/* insert g2 name here */";
 
-    private static final String MUTEX_IMPLEMENTABILITY_REACH =
+    private static final String MUTEX_PROTOCOL_REACH =
             "// For given signals r1, r2, g1, g2, check whether they follow\n" +
             "// the early or late mutex protocol mutex with requests r1/r2 and grants g1/g2.\n" +
             "// The properties to check are:\n" +
@@ -240,21 +242,21 @@ public class ReachUtils {
             "    )\n" +
             "}";
 
-    public static List<VerificationParameters> getMutexImplementabilityParameters(Collection<Mutex> mutexes) {
-        return mutexes.stream().map(ReachUtils::getMutexImplementabilityParameters).collect(Collectors.toList());
+    public static List<VerificationParameters> getMutexProtocolParameters(Collection<Mutex> mutexes) {
+        return mutexes.stream().map(ReachUtils::getMutexProtocolParameters).collect(Collectors.toList());
     }
 
-    private static VerificationParameters getMutexImplementabilityParameters(Mutex mutex) {
-        String reach = MUTEX_IMPLEMENTABILITY_REACH
+    private static VerificationParameters getMutexProtocolParameters(Mutex mutex) {
+        String reach = MUTEX_PROTOCOL_REACH
                 .replace(MUTEX_PROTOCOL_REPLACEMENT, mutex.protocol == Mutex.Protocol.LATE ? "true" : "false")
                 .replace(MUTEX_R1_REPLACEMENT, mutex.r1.name)
                 .replace(MUTEX_G1_REPLACEMENT, mutex.g1.name)
                 .replace(MUTEX_R2_REPLACEMENT, mutex.r2.name)
                 .replace(MUTEX_G2_REPLACEMENT, mutex.g2.name);
 
-        String description = "Mutex implementability "
-                + (mutex.protocol == Mutex.Protocol.LATE ? "(late protocol) " : "(early protocol) ")
-                + "for place " + MutexUtils.getMutexPlaceExtendedTitle(mutex);
+        String description = "Mutex "
+                + (mutex.protocol == Mutex.Protocol.LATE ? "late" : "early")
+                + " protocol for place " + MutexUtils.getMutexPlaceExtendedTitle(mutex);
 
         return new VerificationParameters(description,
                 VerificationMode.STG_REACHABILITY, 0,
@@ -264,7 +266,7 @@ public class ReachUtils {
 
             @Override
             public String getDescriptiveSuffix() {
-                return "-Mutex_implementability-" + mutex.name;
+                return "-Mutex_protocol-" + mutex.name;
             }
         };
     }

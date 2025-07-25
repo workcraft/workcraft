@@ -32,7 +32,7 @@ public class MpsatUtils {
     public static boolean mutexStructuralCheck(Stg stg, boolean allowEmptyMutexPlaces) {
         Collection<StgPlace> mutexPlaces = stg.getMutexPlaces();
         if (!allowEmptyMutexPlaces && mutexPlaces.isEmpty()) {
-            DialogUtils.showWarning("No mutex places found to check implementability.");
+            DialogUtils.showWarning("No mutex places found to check protocol.");
             return false;
         }
         final ArrayList<StgPlace> problematicPlaces = new ArrayList<>();

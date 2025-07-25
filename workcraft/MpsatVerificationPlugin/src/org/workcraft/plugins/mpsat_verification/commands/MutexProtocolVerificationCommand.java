@@ -20,11 +20,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.Collection;
 import java.util.List;
 
-public class MutexImplementabilityVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
+public class MutexProtocolVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {
-        return "Mutex place implementability [MPSat]";
+        return "Mutex protocol [MPSat]";
     }
 
     @Override
@@ -71,7 +71,7 @@ public class MutexImplementabilityVerificationCommand extends AbstractVerificati
         TaskManager manager = framework.getTaskManager();
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        List<VerificationParameters> verificationParametersList = ReachUtils.getMutexImplementabilityParameters(mutexes);
+        List<VerificationParameters> verificationParametersList = ReachUtils.getMutexProtocolParameters(mutexes);
         CombinedChainTask task = new CombinedChainTask(we, verificationParametersList);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
