@@ -49,15 +49,7 @@ public class VisualPlayer1 extends VisualComponent {
         }
     }
 
-    /**
-     * Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly
-     * in the source code).
-     */
-    public static final String EPSILON_SYMBOL = Character.toString((char) 0x03B5);
-
     public static final String PROPERTY_RENDER_TYPE = "Render type";
-    public static final String PROPERTY_SYMBOL_POSITIONING = "Symbol positioning";
-    public static final String PROPERTY_SYMBOL_COLOR = "Symbol color";
 
     // Player 1 vertices will all be squares.
     private RenderType renderType = RenderType.SQUARE;
@@ -172,8 +164,7 @@ public class VisualPlayer1 extends VisualComponent {
         if (symbol != null) {
 
             String label = Integer.toString(tempNode.getPrio());
-            cacheLabelRenderedText(label, getLabelFont(), Positioning.CENTER,
-                    getLabelOffset());
+            cacheLabelRenderedText(label, getLabelFont(), Positioning.CENTER, getLabelOffset());
         }
     }
 
@@ -187,8 +178,7 @@ public class VisualPlayer1 extends VisualComponent {
             cacheLabelRenderedText(r);
             Player1 tempNode = getReferencedComponent();
             String label = Integer.toString(tempNode.getPrio());
-            RenderedText displayText = new RenderedText(label, getLabelFont(),
-                    Positioning.CENTER, getLabelOffset());
+            RenderedText displayText = new RenderedText(label, getLabelFont(), Positioning.CENTER, getLabelOffset());
             Graphics2D g = r.getGraphics();
             displayText.draw(g);
         }

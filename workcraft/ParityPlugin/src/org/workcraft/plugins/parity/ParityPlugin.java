@@ -10,8 +10,7 @@ import org.workcraft.utils.ScriptableCommandUtils;
 @SuppressWarnings("unused")
 
 /**
- * ParityPlugin class that actually initiates and executes the Parity game
- * plugin.
+ * ParityPlugin class that actually initiates and executes the Parity game plugin.
  */
 public class ParityPlugin implements Plugin {
 
@@ -43,4 +42,5 @@ public class ParityPlugin implements Plugin {
                 "ParityHelpSolver",
                 "Help for users on how to use the Parity Game Plugin");
     }
+
 }

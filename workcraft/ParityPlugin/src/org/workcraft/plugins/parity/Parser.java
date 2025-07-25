@@ -61,12 +61,9 @@ public class Parser {
     }
 
     /**
-     * Generate an ArrayList of the OutputNode objects, ready to be processed
-     * further.
-     * @param winningRegions    [2][n] array symbolising the winning regions for
-     *                          each player
-     * @param strategy          [2][n] array symbolising the winning strategy
-     *                          for each player, implying one exists
+     * Generate an ArrayList of the OutputNode objects, ready to be processed further.
+     * @param winningRegions    [2][n] array symbolising the winning regions for each player
+     * @param strategy          [2][n] array symbolising the winning strategy for each player, implying one exists
      * @return                  Built OutputNodes
      */
     static ArrayList<OutputNode> buildOutputNodes(Boolean[][] winningRegions,
@@ -77,9 +74,9 @@ public class Parser {
 
             boolean wonByPlayer1;
             int strat;
-            /**
-             * if player 0 wins, mark wonByPlayer1 as false and check strategy[0]
-             * for a valid strategy. Else, do this with strategy[1].
+            /*
+              if player 0 wins, mark wonByPlayer1 as false and check strategy[0]
+              for a valid strategy. Else, do this with strategy[1].
              */
             if (winningRegions[0][nodeIter]) {
                 wonByPlayer1 = false;
@@ -98,7 +95,6 @@ public class Parser {
                 outputnodes.add(tempOutputNode);
             }
         }
-
         return outputnodes;
     }
 }

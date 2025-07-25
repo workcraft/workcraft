@@ -18,19 +18,19 @@ import java.util.Map.Entry;
 /**
  * Class to model the entire Parity game.
  * This is a subclass of the AbstractMathModel.
- *
+ * <p>
  * A Parity game is a type of infinite graph game where the vertices are owned
  * by either Player 0 or Player 1. A token starts on a selected vertex, and the
  * player who owns a given vertex decides which edge the token travels across.
  * A strategy is followed (an edge is selected) by each player for each vertex
  * they own, and this edge selection is guaranteed to be the same regardless of
  * context.
- *
+ * <p>
  * The game ends once an infinite cycle has been identified, and then the group
  * of vertices that make up this are compared to see which infinitely occurring
  * vertex has the largest attached priority value. If it is even then Player 0
  * wins, and if it is odd then Player 1 wins.
- *
+ * <p>
  * In the graph, Player 0 vertices are identified by Circles, and Player 1
  * vertices are identified by Squares. Once the game has been solved, a vertex
  * will be coloured Blue if Player 0 wins, and will be coloured Red if Player 1
@@ -39,8 +39,6 @@ import java.util.Map.Entry;
  * be coloured blue or red for Players 0 or 1, respectively.
  */
 public class Parity extends AbstractMathModel {
-
-    public static final String EPSILON_SERIALISATION = "epsilon";
 
     /**
      * Empty constructor
@@ -168,23 +166,19 @@ public class Parity extends AbstractMathModel {
      * It is best practice to guarantee the vertex priorities are non-negative,
      * although it is possible to just increase the value of all priorities by
      * some uniform value such that the lowest negative number is >= 0.
-     *
+     * <p>
      * Returns true if All vertices have a priority that is 0 or larger.
      * @return    true if all vertices have priority of 0 or higher
      */
     public boolean isNonNegative() {
         Collection<Player0> p0nodes = getPlayer0();
-        Iterator<Player0> p0iter = p0nodes.iterator();
-        while (p0iter.hasNext()) {
-            Player0 tempNode = p0iter.next();
+        for (Player0 tempNode : p0nodes) {
             if (tempNode.getPrio() < 0) {
                 return false;
             }
         }
         Collection<Player1> p1nodes = getPlayer1();
-        Iterator<Player1> p1iter = p1nodes.iterator();
-        while (p1iter.hasNext()) {
-            Player1 tempNode = p1iter.next();
+        for (Player1 tempNode : p1nodes) {
             if (tempNode.getPrio() < 0) {
                 return false;
             }
@@ -274,11 +268,8 @@ public class Parity extends AbstractMathModel {
      * @return              true if every vertex has at least one outgoing edge
      */
     public boolean isInfinite(ArrayList<InputNode> inputNodes) {
-
-        for (int inputNodeIter = 0; inputNodeIter < inputNodes.size();
-                ++inputNodeIter) {
-
-            if (inputNodes.get(inputNodeIter).getOutgoing().isEmpty()) {
+        for (InputNode inputNode : inputNodes) {
+            if (inputNode.getOutgoing().isEmpty()) {
                 return false;
             }
         }

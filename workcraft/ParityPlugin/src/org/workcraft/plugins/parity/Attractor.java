@@ -8,7 +8,7 @@ package org.workcraft.plugins.parity;
  * 'Recursive algorithm for solving parity games'.
  * There is also a solid explanation found on page 5 of:
  * 'Graph games with perfect information' by Dietmar Berwanger.
- *
+ * <p>
  * Although this generates the set of reachable states for some set of target
  * states F, this is extended to parity by treating vertices with a given value
  * as said target states and then calculating the fixed point attractor for such
@@ -165,9 +165,9 @@ public class Attractor {
             Boolean[] targetStates, Boolean[] vertices,
             boolean player) {
 
-        /**
-         * If the target states are not included within vertices, an
-         * ERROR STATE has been reached. This should not be possible.
+        /*
+          If the target states are not included within vertices, an
+          ERROR STATE has been reached. This should not be possible.
          */
         if (!isIncluded(targetStates, vertices)) {
             System.out.print("TARGET STATES NOT A SUBSET OF VERTICES. ERROR\n"
@@ -221,8 +221,8 @@ public class Attractor {
                     int playerInt = player ? 1 : 0;
                     if (adjMatrix[rankIter][outgoing] && vertices[rankIter] &&
                             vertices[outgoing] && ownedBy[playerInt][rankIter]
-                            && rank[rankIter] > rank[outgoing]
-                            && rank[outgoing] > -1) {
+                            && (rank[rankIter] > rank[outgoing])
+                            && (rank[outgoing] > -1)) {
                         strategy[rankIter] = outgoing;
                         break;
                     }
@@ -258,4 +258,5 @@ public class Attractor {
         }
         System.out.println();
     }
+
 }
