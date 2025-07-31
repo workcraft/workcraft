@@ -7,7 +7,8 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class NormalcyVerificationCommand extends AbstractVerificationCommand {
+public class NormalcyVerificationCommand
+        extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {
@@ -21,7 +22,7 @@ public class NormalcyVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public Position getPosition() {
-        return Position.TOP_MIDDLE;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

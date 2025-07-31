@@ -111,8 +111,8 @@ public class PNetGenerationCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return "GenCPNet";
+    public Section getSection() {
+        return new Section("GenCPNet");
     }
 
     @Override
@@ -850,11 +850,11 @@ public class PNetGenerationCommand implements Command {
                     while (jp.nextToken() != JsonToken.END_ARRAY) {
                         JsonNode node = jp.readValueAsTree();
                         String idName = node.get("id").toString();
-                        String idName1 = "";
-                        String idName2 = "";
-                        String idNamep = "";
-                        String idNamep1 = "";
-                        String idNamep2 = "";
+                        String idName1;
+                        String idName2;
+                        String idNamep;
+                        String idNamep1;
+                        String idNamep2;
                         String typeName = node.get("type").toString();
                         //System.out.println("id: " + idName + "type: " + typeName);
                         lst2.add(new Ids(idName, typeName));

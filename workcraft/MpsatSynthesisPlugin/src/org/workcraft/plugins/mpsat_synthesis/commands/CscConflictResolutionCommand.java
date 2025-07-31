@@ -20,8 +20,8 @@ public class CscConflictResolutionCommand implements ScriptableCommand<Workspace
     private static final String TITLE = "Resolution of CSC conflicts";
 
     @Override
-    public String getSection() {
-        return "Encoding conflicts";
+    public Section getSection() {
+        return new Section("Encoding conflicts");
     }
 
     @Override

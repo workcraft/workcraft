@@ -13,8 +13,8 @@ public class ColorResetCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return "Custom tools";
+    public Section getSection() {
+        return new Section("Custom tools");
     }
 
     @Override

@@ -11,12 +11,18 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class OutputDeterminacyVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+public class OutputDeterminacyVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableCommand<Boolean> {
 
     @Override
+    public Section getSection() {
+        return AbstractEssentialVerificationCommand.SECTION;
+    }
+
+    @Override
     public String getDisplayName() {
-        return "Output determinacy [MPSat]";
+        return "Output determinacy";
     }
 
     @Override

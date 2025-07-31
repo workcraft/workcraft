@@ -325,7 +325,7 @@ public class MainWindow extends JFrame {
             }
             // Remove commands menu and update property window
             if (currentEditor == editor) {
-                menu.setCommandsMenu(null);
+                menu.setCommandsMenus(null);
                 currentEditor = null;
                 propertyEditorWindow.clear();
                 setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);

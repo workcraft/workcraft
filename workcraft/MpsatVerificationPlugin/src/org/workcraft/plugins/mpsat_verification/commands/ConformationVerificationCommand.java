@@ -16,22 +16,23 @@ import org.workcraft.workspace.WorkspaceEntry;
 import javax.swing.*;
 import java.io.File;
 
-public class ConformationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+public class ConformationVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableDataCommand<Boolean, File> {
 
     @Override
     public String getDisplayName() {
-        return "1-way conformation [MPSat]...";
+        return "1-way conformation...";
+    }
+
+    @Override
+    public Section getSection() {
+        return AbstractRefinementVerificationCommand.SECTION;
     }
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, StgModel.class);
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

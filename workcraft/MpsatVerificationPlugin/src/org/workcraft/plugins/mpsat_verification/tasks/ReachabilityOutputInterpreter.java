@@ -102,9 +102,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
     }
 
     public String extendMessage(String message) {
-        boolean inversePredicate = getOutput().getVerificationParameters().isInversePredicate();
-        String traceCharacteristic = inversePredicate ? "problematic" : "sought";
-        String traceInfo = "Trace(s) leading to the " + traceCharacteristic + " state(s):";
+        String traceInfo = "Witness trace(s)";
         return "<html>&#160;" + message + "<br><br>&#160;" + traceInfo + "<br></html>";
     }
 

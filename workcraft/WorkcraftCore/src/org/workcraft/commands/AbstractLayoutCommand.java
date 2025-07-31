@@ -7,11 +7,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
 
-    private static final String SECTION_TITLE = "Graph layout";
+    public static final Section SECTION = new Section("Graph layout");
 
     @Override
-    public final String getSection() {
-        return SECTION_TITLE;
+    public final Section getSection() {
+        return SECTION;
     }
 
     @Override

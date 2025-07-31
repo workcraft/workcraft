@@ -2,8 +2,8 @@ package org.workcraft.plugins.son.commands;
 
 import org.workcraft.commands.Command;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class ClearMarkingCommand implements Command {
 
@@ -13,8 +13,8 @@ public class ClearMarkingCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return "Custom tools";
+    public Section getSection() {
+        return new Section("Custom tools");
     }
 
     @Override

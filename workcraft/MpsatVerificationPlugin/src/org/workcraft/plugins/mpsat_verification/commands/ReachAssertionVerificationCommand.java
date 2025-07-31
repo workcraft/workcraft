@@ -18,7 +18,8 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ReachAssertionVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+public class ReachAssertionVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableDataCommand<Boolean, VerificationParameters> {
 
     private static final String PRESET_KEY = "reach-assertions.xml";

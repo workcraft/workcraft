@@ -90,8 +90,8 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
         }
         if (!isGoodInitial) {
             String msg = (checkConformation && checkPersistency
-                    ? "Conformantion and output persistency"
-                    : checkConformation ? "Conformation" : "Output persistence")
+                    ? "Conformation and output persistency"
+                    : checkConformation ? "Conformation" : "Output persistency")
                     + " must hold before optimising zero delay components.";
             DialogUtils.showError(msg);
             return;
@@ -159,7 +159,7 @@ public class OptimiseZeroDelayTransformationCommand extends AbstractTransformati
 
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
-        CheckTask task = new CheckTask(we, checkConformation, false, checkPersistence);
+        CheckTask task = new CheckTask(we, checkConformation, checkPersistence, false);
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
         monitor.setInteractive(false);
         // FIXME: Execute synchronously (asynchronous queueing blocks when called from the main menu)

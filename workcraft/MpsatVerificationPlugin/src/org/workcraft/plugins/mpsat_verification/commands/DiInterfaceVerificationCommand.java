@@ -11,11 +11,12 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class DiInterfaceVerificationCommand extends AbstractVerificationCommand {
+public class DiInterfaceVerificationCommand
+        extends AbstractEssentialVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Delay insensitive interface (without dummies) [MPSat]...";
+        return "Delay insensitive interface (without dummies)...";
     }
 
     @Override
@@ -26,11 +27,6 @@ public class DiInterfaceVerificationCommand extends AbstractVerificationCommand 
     @Override
     public int getPriority() {
         return 20;
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.TOP;
     }
 
     @Override

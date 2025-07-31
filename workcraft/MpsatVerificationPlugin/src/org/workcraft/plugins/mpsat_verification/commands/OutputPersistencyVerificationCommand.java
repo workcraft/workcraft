@@ -3,20 +3,21 @@ package org.workcraft.plugins.mpsat_verification.commands;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
-import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.utils.DialogUtils;
+import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.types.Pair;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.LinkedList;
 
-public class OutputPersistencyVerificationCommand extends AbstractVerificationCommand {
+public class OutputPersistencyVerificationCommand
+        extends AbstractEssentialVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Output persistency (without dummies) [MPSat]";
+        return "Output persistency (without dummies)";
     }
 
     @Override
@@ -26,12 +27,7 @@ public class OutputPersistencyVerificationCommand extends AbstractVerificationCo
 
     @Override
     public int getPriority() {
-        return 40;
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.TOP;
+        return 50;
     }
 
     @Override
@@ -44,10 +40,7 @@ public class OutputPersistencyVerificationCommand extends AbstractVerificationCo
             DialogUtils.showError("Output persistency can currently be checked only for STGs without dummies.");
             return false;
         }
-        if (!MpsatUtils.mutexStructuralCheck(stg, true)) {
-            return false;
-        }
-        return true;
+        return MpsatUtils.mutexStructuralCheck(stg, true);
     }
 
     @Override

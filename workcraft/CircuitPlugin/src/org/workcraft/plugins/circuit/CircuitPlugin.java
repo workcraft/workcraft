@@ -93,13 +93,15 @@ public class CircuitPlugin implements Plugin {
 
         // Verification commands
         ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkCircuitCombined",
-                "combined check of the Circuit 'work' for conformation to environment, deadlock freeness, and output persistency");
+                "combined check of the Circuit 'work' for all essential properties"
+                        + " (conformation to environment, output persistency, deadlock freeness)");
         ScriptableCommandUtils.registerCommand(ConformationVerificationCommand.class, "checkCircuitConformation",
                 "check the Circuit 'work' for conformation to environment");
-        ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkCircuitDeadlockFreeness",
-                "check the Circuit 'work' for deadlock freeness");
         ScriptableCommandUtils.registerCommand(OutputPersistencyVerificationCommand.class, "checkCircuitOutputPersistency",
                 "check the Circuit 'work' for output persistency");
+        ScriptableCommandUtils.registerCommand(DeadlockFreenessVerificationCommand.class, "checkCircuitDeadlockFreeness",
+                "check the Circuit 'work' for deadlock freeness");
+
         ScriptableCommandUtils.registerCommand(StrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
                 "check the Circuit 'work' for strict implementation of its signals according to the environment");
         ScriptableCommandUtils.registerCommand(BinateImplementationVerificationCommand.class, "checkCircuitBinateImplementation",

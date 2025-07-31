@@ -1,7 +1,6 @@
 package org.workcraft.plugins.msfsm.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.MenuOrdering;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.msfsm.MsfsmSettings;
@@ -15,16 +14,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 
-public abstract class AbstractConversionCommand implements ScriptableCommand<Collection<WorkspaceEntry>>, MenuOrdering  {
+public abstract class AbstractConversionCommand implements ScriptableCommand<Collection<WorkspaceEntry>> {
 
     @Override
-    public final String getSection() {
-        return org.workcraft.commands.AbstractConversionCommand.SECTION_TITLE;
-    }
-
-    @Override
-    public int getPriority() {
-        return 0;
+    public final Category getCategory() {
+        return org.workcraft.commands.AbstractConversionCommand.CATEGORY;
     }
 
     @Override
@@ -38,8 +32,8 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Col
     }
 
     @Override
-    public MenuVisibility getMenuVisibility() {
-        return MsfsmSettings.getShowInMenu() ? MenuVisibility.APPLICABLE : MenuVisibility.NEVER;
+    public Visibility getVisibility() {
+        return MsfsmSettings.getShowInMenu() ? Visibility.APPLICABLE : Visibility.NEVER;
     }
 
     @Override

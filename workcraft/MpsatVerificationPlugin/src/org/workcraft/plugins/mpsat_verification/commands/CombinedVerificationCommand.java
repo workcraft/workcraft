@@ -25,26 +25,28 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CombinedVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand implements ScriptableCommand<Boolean> {
+public class CombinedVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public String getDisplayName() {
-        return "All of the above (reuse unfolding) [MPSat]";
-    }
-
-    @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Stg.class);
-    }
-
-    @Override
-    public int getPriority() {
-        return 10;
+        return "All essential properties (reuse unfolding) [MPSat]";
     }
 
     @Override
     public Position getPosition() {
         return Position.TOP;
+    }
+
+    @Override
+    public int getPriority() {
+        return 20;
+    }
+
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Stg.class);
     }
 
     @Override

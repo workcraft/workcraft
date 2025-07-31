@@ -14,14 +14,17 @@ import java.util.*;
 
 public abstract class AbstractMutexProtocolTransformationCommand extends AbstractComponentTransformationCommand {
 
+    public static final Section SECTION
+            = new Section("Mutex protocol changing", Position.TOP_MIDDLE, 60);
+
     @Override
-    public boolean isApplicableTo(VisualNode node) {
-        return (node instanceof VisualFunctionComponent component) && component.isMutex();
+    public Section getSection() {
+        return SECTION;
     }
 
     @Override
-    public Position getPosition() {
-        return Position.TOP_MIDDLE;
+    public boolean isApplicableTo(VisualNode node) {
+        return (node instanceof VisualFunctionComponent component) && component.isMutex();
     }
 
     @Override

@@ -33,8 +33,8 @@ public class SynchronisationCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return "Sync";
+    public Section getSection() {
+        return new Section("Sync");
     }
 
     @Override

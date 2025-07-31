@@ -3,7 +3,6 @@ package org.workcraft.plugins.shutters.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.commands.Command;
-import org.workcraft.commands.MenuOrdering;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.VisualFst;
@@ -21,16 +20,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-public class ExtractWindowsCommand implements Command, MenuOrdering {
+public class ExtractWindowsCommand implements Command {
 
     @Override
-    public final String getSection() {
-        return AbstractConversionCommand.SECTION_TITLE;
-    }
-
-    @Override
-    public int getPriority() {
-        return 0;
+    public final Category getCategory() {
+        return AbstractConversionCommand.CATEGORY;
     }
 
     @Override

@@ -18,12 +18,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 
-public class CombinedVerificationCommand extends AbstractVerificationCommand
+public class CombinedVerificationCommand
+        extends AbstractVerificationCommand
         implements ScriptableCommand<Boolean> {
+
+    public static final Section SECTION
+            = new Section("Individual essential properties [MPSat]", Position.TOP, 10);
 
     @Override
     public String getDisplayName() {
-        return "All of the above (reuse unfolding) [MPSat]";
+        return "All essential properties (reuse unfolding) [MPSat]";
     }
 
     @Override
@@ -34,6 +38,11 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
     @Override
     public Position getPosition() {
         return Position.TOP;
+    }
+
+    @Override
+    public int getPriority() {
+        return 20;
     }
 
     @Override
@@ -102,9 +111,8 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
             return monitor;
         }
 
-        Framework framework = Framework.getInstance();
-        TaskManager manager = framework.getTaskManager();
-        CheckTask task = new CheckTask(we, checkConformation, checkDeadlock, checkPersistency);
+        TaskManager manager = Framework.getInstance().getTaskManager();
+        CheckTask task = new CheckTask(we, checkConformation, checkPersistency, checkDeadlock);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         manager.queue(task, description, monitor);
         return monitor;
@@ -122,11 +130,11 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand
         return true;
     }
 
-    public boolean checkDeadlock() {
+    public boolean checkPersistency() {
         return true;
     }
 
-    public boolean checkPersistency() {
+    public boolean checkDeadlock() {
         return true;
     }
 

@@ -27,7 +27,7 @@ public class ReachUtils {
     }
 
     public static VerificationParameters getDeadlockParameters() {
-        return new VerificationParameters("Deadlock freeness",
+        return new VerificationParameters("Deadlock freeness (no determinisation)",
                 VerificationMode.DEADLOCK, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount());

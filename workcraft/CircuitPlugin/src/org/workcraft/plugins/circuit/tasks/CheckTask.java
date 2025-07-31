@@ -35,14 +35,14 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
     private final WorkspaceEntry we;
     private final boolean checkConformation;
-    private final boolean checkDeadlock;
     private final boolean checkPersistency;
+    private final boolean checkDeadlock;
 
-    public CheckTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
+    public CheckTask(WorkspaceEntry we, boolean checkConformation, boolean checkPersistency, boolean checkDeadlock) {
         this.we = we;
         this.checkConformation = checkConformation;
-        this.checkDeadlock = checkDeadlock;
         this.checkPersistency = checkPersistency;
+        this.checkDeadlock = checkDeadlock;
     }
 
     @Override
@@ -65,8 +65,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
             Stg devStg = converter.getStg().getMathModel();
             // Expose mutex grants as outputs in the device STG (store the original signal type to apply in composition STG)
-            Map<String, Signal.Type> originalMutexGrantTypes = new HashMap<>();
-            exposeMutexGrants(devStg, exceptionPairs, originalMutexGrantTypes);
+            Map<String, Signal.Type> originalMutexGrantTypes = ArbitrationUtils.exposeMutexGrants(devStg, exceptionPairs);
 
             // Load environment STG
             File envStgFile = null;
@@ -134,7 +133,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 Stg modSysStg = StgUtils.loadOrImportStg(modSysStgFile);
                 // Restore the original types of mutex grant in modified system STG (if needed)
                 if (!originalMutexGrantTypes.isEmpty()) {
-                    restoreMutexGrants(modSysStg, exceptionPairs, originalMutexGrantTypes);
+                    ArbitrationUtils.restoreMutexGrants(modSysStg, exceptionPairs, originalMutexGrantTypes);
                     modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
                     StgUtils.exportStg(modSysStg, modSysStgFile, monitor);
                 }
@@ -181,14 +180,14 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 if (conformationMpsatResult.getPayload().hasSolutions()) {
                     return Result.success(new VerificationChainOutput(
                             compositionExportResult, modPcompResult, conformationMpsatResult, conformationParameters,
-                            "Circuit does not conform to the environment after the following trace(s):"));
+                            getViolationMessage(envFile, conformationParameters.getDescription())));
                 }
             }
             monitor.progressUpdate(0.6);
 
             // Generating system .g for deadlock freeness and output persistency checks (only if needed)
             Result<? extends PcompOutput>  pcompResult = null;
-            if (checkDeadlock || checkPersistency) {
+            if (checkPersistency || checkDeadlock) {
                 File sysStgFile;
                 if (envStg == null) {
                     sysStgFile = devStgFile;
@@ -207,7 +206,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 // Restore the original types of mutex grant in system STG (if needed)
                 if (!originalMutexGrantTypes.isEmpty()) {
                     Stg sysStg = StgUtils.loadOrImportStg(sysStgFile);
-                    restoreMutexGrants(sysStg, exceptionPairs, originalMutexGrantTypes);
+                    ArbitrationUtils.restoreMutexGrants(sysStg, exceptionPairs, originalMutexGrantTypes);
                     sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
                     StgUtils.exportStg(sysStg, sysStgFile, monitor);
                 }
@@ -225,31 +224,6 @@ public class CheckTask implements Task<VerificationChainOutput> {
                     return Result.failure(new VerificationChainOutput(
                             devExportResult, pcompResult, unfoldingResult, preparationParameters));
                 }
-
-                // Check for deadlock (if requested)
-                if (checkDeadlock) {
-                    VerificationParameters deadlockParameters = ReachUtils.getDeadlockParameters();
-                    MpsatTask deadlockMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, deadlockParameters, directory);
-                    SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                    Result<? extends MpsatOutput> deadlockMpsatResult = manager.execute(
-                            deadlockMpsatTask, "Running deadlock check [MPSat]", mpsatMonitor);
-
-                    if (!deadlockMpsatResult.isSuccess()) {
-                        if (deadlockMpsatResult.isCancel()) {
-                            return Result.cancel();
-                        }
-                        return Result.failure(new VerificationChainOutput(
-                                devExportResult, pcompResult, deadlockMpsatResult, deadlockParameters));
-                    }
-                    monitor.progressUpdate(0.7);
-
-                    if (deadlockMpsatResult.getPayload().hasSolutions()) {
-                        return Result.success(new VerificationChainOutput(
-                                devExportResult, pcompResult, deadlockMpsatResult, deadlockParameters,
-                                "Circuit has a deadlock after the following trace(s):"));
-                    }
-                }
-                monitor.progressUpdate(0.8);
 
                 // Check for persistency (if requested)
                 if (checkPersistency) {
@@ -271,12 +245,37 @@ public class CheckTask implements Task<VerificationChainOutput> {
                         return Result.failure(new VerificationChainOutput(
                                 devExportResult, pcompResult, persistencyMpsatResult, persistencyParameters));
                     }
-                    monitor.progressUpdate(0.9);
+                    monitor.progressUpdate(0.7);
 
                     if (persistencyMpsatResult.getPayload().hasSolutions()) {
                         return Result.success(new VerificationChainOutput(
                                 devExportResult, pcompResult, persistencyMpsatResult, persistencyParameters,
-                                "Circuit is not output-persistent after the following trace(s):"));
+                                getViolationMessage(envFile, persistencyParameters.getDescription())));
+                    }
+                }
+                monitor.progressUpdate(0.8);
+
+                // Check for deadlock (if requested)
+                if (checkDeadlock) {
+                    VerificationParameters deadlockParameters = ReachUtils.getDeadlockParameters();
+                    MpsatTask deadlockMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, deadlockParameters, directory);
+                    SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
+                    Result<? extends MpsatOutput> deadlockMpsatResult = manager.execute(
+                            deadlockMpsatTask, "Running deadlock check [MPSat]", mpsatMonitor);
+
+                    if (!deadlockMpsatResult.isSuccess()) {
+                        if (deadlockMpsatResult.isCancel()) {
+                            return Result.cancel();
+                        }
+                        return Result.failure(new VerificationChainOutput(
+                                devExportResult, pcompResult, deadlockMpsatResult, deadlockParameters));
+                    }
+                    monitor.progressUpdate(0.9);
+
+                    if (deadlockMpsatResult.getPayload().hasSolutions()) {
+                        return Result.success(new VerificationChainOutput(
+                                devExportResult, pcompResult, deadlockMpsatResult, deadlockParameters,
+                                getViolationMessage(envFile, deadlockParameters.getDescription())));
                     }
                 }
                 monitor.progressUpdate(1.0);
@@ -296,79 +295,40 @@ public class CheckTask implements Task<VerificationChainOutput> {
         }
     }
 
-    private void restoreMutexGrants(Stg stg, LinkedList<Pair<String, String>> grantPairs,
-            Map<String, Signal.Type> grantTypes) {
-
-        for (Pair<String, String> grantPair : grantPairs) {
-            String g1SignalName = grantPair.getFirst();
-            Signal.Type g1SignalType = grantTypes.get(g1SignalName);
-            if (g1SignalType != null) {
-                stg.setSignalType(g1SignalName, g1SignalType);
-            }
-            String g2SignalName = grantPair.getSecond();
-            Signal.Type g2SignalType = grantTypes.get(g2SignalName);
-            if (g2SignalType != null) {
-                stg.setSignalType(g2SignalName, g2SignalType);
-            }
-        }
-    }
-
-    private void exposeMutexGrants(Stg stg, LinkedList<Pair<String, String>> grantPairs,
-            Map<String, Signal.Type> grantTypes) {
-
-        for (Pair<String, String> grantPair : grantPairs) {
-            String g1SignalName = grantPair.getFirst();
-            Signal.Type g1SignalType = stg.getSignalType(g1SignalName);
-            if (g1SignalType != Signal.Type.OUTPUT) {
-                grantTypes.put(g1SignalName, g1SignalType);
-                stg.setSignalType(g1SignalName, Signal.Type.OUTPUT);
-            }
-            String g2SignalName = grantPair.getSecond();
-            Signal.Type g2SignalType = stg.getSignalType(g2SignalName);
-            if (g2SignalType != Signal.Type.OUTPUT) {
-                grantTypes.put(g2SignalName, g2SignalType);
-                stg.setSignalType(g2SignalName, Signal.Type.OUTPUT);
-            }
-        }
-    }
-
     private String getSuccessMessage(File environmentFile) {
-        int checkCount = 0;
+        List<String> details = new ArrayList<>();
         if (checkConformation) {
-            checkCount++;
-        }
-        if (checkDeadlock) {
-            checkCount++;
+            details.add("Conformation");
         }
         if (checkPersistency) {
-            checkCount++;
+            details.add("Output persistency (environment without dummies)");
         }
-        String message;
+        if (checkDeadlock) {
+            details.add("Deadlock freeness (no determinisation)");
+        }
+        if (details.isEmpty()) {
+            return "";
+        }
+        String message = (details.size() == 1) ? details.get(0) : "The following properties";
+        message += " have been successfully verified for the circuit ";
+        if ((environmentFile != null) && environmentFile.exists()) {
+            message += "under the given environment (" + environmentFile.getName() + ")";
+        } else {
+            message += "without environment restrictions";
+        }
+        String text = TextUtils.wrapText(message);
+        return (details.size() > 1) ? TextUtils.getTextWithBulletpoints(text, details) : text;
+    }
+
+    private String getViolationMessage(File environmentFile, String propertyName) {
+        String message = propertyName + " is violated for the circuit ";
         boolean hasEnvironment = (environmentFile != null) && environmentFile.exists();
         if (hasEnvironment) {
-            message = "Under the given environment (" + environmentFile.getName() + ")";
+            message += "under the given environment (" + environmentFile.getName() + ")";
         } else {
-            message = "Without environment restrictions";
-        }
-        message += " the circuit is";
-        message += checkCount > 1 ? ":\n" : " ";
-        if (checkConformation) {
-            message += getPropertyMessage("conformant", checkCount > 1);
-        }
-        if (checkDeadlock) {
-            message += getPropertyMessage("deadlock-free", checkCount > 1);
-        }
-        if (checkPersistency) {
-            message += getPropertyMessage("output-persistent", checkCount > 1);
+            message += "without environment restrictions";
         }
         return TextUtils.wrapText(message);
-    }
-
-    private String getPropertyMessage(String message, boolean multiline) {
-        if (multiline) {
-            return TextUtils.getBullet(message + '\n');
-        }
-        return message;
     }
 
 }

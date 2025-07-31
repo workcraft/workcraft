@@ -8,8 +8,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 public abstract class AbstractInsertionCommand implements ScriptableCommand<Void> {
 
     @Override
-    public final String getSection() {
-        return "Insertion";
+    public final Section getSection() {
+        return new Section("Insertion");
     }
 
     @Override
@@ -18,8 +18,8 @@ public abstract class AbstractInsertionCommand implements ScriptableCommand<Void
     }
 
     @Override
-    public MenuVisibility getMenuVisibility() {
-        return MenuVisibility.NEVER;
+    public Visibility getVisibility() {
+        return Visibility.NEVER;
     }
 
     @Override

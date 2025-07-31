@@ -2,7 +2,6 @@ package org.workcraft.gui;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.Command;
-import org.workcraft.commands.MenuOrdering.Position;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
@@ -21,21 +20,19 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Menu extends JMenuBar {
-
-    private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
 
     private final JMenu mnImport = new JMenu("Import");
     private final JMenu mnExport = new JMenu("Export");
     private final JMenu mnRecent = new JMenu("Open recent");
     private final JMenu mnToolbars = new JMenu("Toolbars");
     private final JMenu mnUtilityWindows = new JMenu("Utility windows");
-    private final HashMap<JToolBar, ActionCheckBoxMenuItem> toolbarItems = new HashMap<>();
-    private final HashMap<DockableWindow, ActionCheckBoxMenuItem> utilityWindowItems = new HashMap<>();
-    private final LinkedList<JMenu> mnCommandsList = new LinkedList<>();
+    private final Map<JToolBar, ActionCheckBoxMenuItem> toolbarItems = new HashMap<>();
+    private final Map<DockableWindow, ActionCheckBoxMenuItem> utilityWindowItems = new HashMap<>();
+    private final List<JMenu> mnCommandsMenus = new ArrayList<>();
     private final JMenu mnHelp = new JMenu("Help");
 
     Menu() {
@@ -44,7 +41,7 @@ public class Menu extends JMenuBar {
         addEditMenu();
         addViewMenu();
         addHelpMenu();
-        setCommandsMenu(null);
+        setCommandsMenus(null);
     }
 
     private void addFileMenu() {
@@ -337,86 +334,32 @@ public class Menu extends JMenuBar {
         }
     }
 
-    public void setCommandsMenu(final WorkspaceEntry we) {
-        mnCommandsList.forEach(this::remove);
-
-        JMenu mnCommands = new JMenu("Tools");
-        mnCommands.setMnemonic(KeyEvent.VK_T);
-        mnCommandsList.clear();
-        List<Command> applicableVisibleCommands = CommandUtils.getApplicableVisibleCommands(we);
-        List<String> sections = CommandUtils.getSections(applicableVisibleCommands);
-        for (String section : sections) {
-            JMenu mnSection = mnCommands;
-            if (!section.isEmpty()) {
-                mnSection = new JMenu(section);
-                if (isPromotedSection(section)) {
-                    String menuName = getMenuNameFromSection(section);
-                    mnSection.setText(menuName);
-                    mnCommandsList.add(mnSection);
-                } else {
-                    mnCommands.add(mnSection);
-                    mnCommandsList.addFirst(mnCommands);
-                }
-            }
-            List<Command> sectionCommands = CommandUtils.getSectionCommands(section, applicableVisibleCommands);
-            addCommandMenuSection(mnSection, sectionCommands);
+    public void setCommandsMenus(final WorkspaceEntry we) {
+        for (JMenu commandsMenu1 : mnCommandsMenus) {
+            remove(commandsMenu1);
         }
-
-        mnCommandsList.forEach(this::add);
-
+        mnCommandsMenus.clear();
         remove(mnHelp);
+        List<Command> applicableVisibleCommands = CommandUtils.getApplicableVisibleCommands(we);
+        List<String> orderedCategoryNames = CommandUtils.getOrderedCategoryNames(applicableVisibleCommands);
+        for (String categoryName : orderedCategoryNames) {
+            JMenu menu = CommandUtils.createCommandsMenu(categoryName, applicableVisibleCommands);
+            add(menu);
+            mnCommandsMenus.add(menu);
+        }
         add(mnHelp);
         revalidate();
     }
 
-    private void addCommandMenuSection(JMenu mnSection, List<Command> sectionCommands) {
-        List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
-        sectionCommandsPartitions.add(CommandUtils.getUnpositionedCommands(sectionCommands));
-        for (Position position: Position.values()) {
-            sectionCommandsPartitions.add(CommandUtils.getPositionedCommands(sectionCommands, position));
-        }
-        boolean needSeparator = false;
-        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        for (List<Command> sectionCommandsPartition : sectionCommandsPartitions) {
-            boolean isFirstItem = true;
-            for (Command command : sectionCommandsPartition) {
-                if (needSeparator && isFirstItem) {
-                    mnSection.addSeparator();
-                }
-                needSeparator = true;
-                isFirstItem = false;
-                Action action = new Action(command.getDisplayName().trim(), () -> CommandUtils.run(mainWindow, command));
-                ActionMenuItem miCommand = new ActionMenuItem(action);
-                mnSection.add(miCommand);
-            }
-        }
-    }
-
-    public static boolean isPromotedSection(String section) {
-        return (section != null) && section.startsWith(MENU_SECTION_PROMOTED_PREFIX);
-    }
-
-    public static String getMenuNameFromSection(String section) {
-        String result = "";
-        if (section != null) {
-            if (section.startsWith(MENU_SECTION_PROMOTED_PREFIX)) {
-                result = section.substring(MENU_SECTION_PROMOTED_PREFIX.length());
-            } else {
-                result = section;
-            }
-        }
-        return result.trim();
-    }
-
     public void updateCommandsMenuState(boolean enable) {
-        for (JMenu mnCommands : mnCommandsList) {
-            mnCommands.setEnabled(enable);
+        for (JMenu commandsMenu : mnCommandsMenus) {
+            commandsMenu.setEnabled(enable);
         }
     }
 
     public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
         setExportMenu(we);
-        setCommandsMenu(we);
+        setCommandsMenus(we);
         if (we != null) {
             we.updateActionState();
         }

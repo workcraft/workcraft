@@ -27,14 +27,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
 public class XmasVerificationTool extends AbstractGraphEditorTool implements Command {
 
     @Override
-    public String getSection() {
-        return "Verification";
+    public Section getSection() {
+        return new Section("Verification");
     }
 
     @Override
@@ -63,6 +64,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
+            return Collections.emptyList();
         }
         String targ = "";
         String larg = "";
@@ -118,14 +120,15 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
+            return null;
         }
-        String str = "";
+        StringBuilder str = new StringBuilder();
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str += line + '\n';
+            str.append(line).append('\n');
         }
-        return str;
+        return str.toString();
     }
 
     private static void processQsl(String file) {
@@ -154,14 +157,15 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
+            return null;
         }
-        String str = "";
+        StringBuilder str = new StringBuilder();
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str += line + '\n';
+            str.append(line).append('\n');
         }
-        return str;
+        return str.toString();
     }
 
     public int checkType(String s) {
@@ -356,11 +360,11 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
             vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
             vxmCommand.addAll(processArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath()));
             ExternalProcess.printCommandLine(vxmCommand);
-            String[] cmdArray = vxmCommand.toArray(new String[vxmCommand.size()]);
+            String[] cmdArray = vxmCommand.toArray(new String[0]);
             Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 
             String s;
-            String str = "";
+            StringBuilder str = new StringBuilder();
             InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
             BufferedReader stdInput = new BufferedReader(inputStreamReader);
             int n = 0;
@@ -368,7 +372,7 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
             initHighlight(xnet, vnet);
             while ((s = stdInput.readLine()) != null) {
                 if (test == -1) test = checkType(s);
-                if (n > 0) str += s + '\n';
+                if (n > 0) str.append(s).append('\n');
                 n++;
                 System.out.println(s);
             }
@@ -378,25 +382,25 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                 processQsl(qslFile.getAbsolutePath());
 
                 File equFile = XmasSettings.getTempVxmEquFile();
-                str = processEq(equFile.getAbsolutePath());
+                str = new StringBuilder(processEq(equFile.getAbsolutePath()));
             } else if ("normal".equals(level) && (test == 2)) {
                 System.out.println("LEVEL IS NORMAL ");
                 File locFile = XmasSettings.getTempVxmLocFile();
-                str = processLoc(locFile.getAbsolutePath());
+                str = new StringBuilder(processLoc(locFile.getAbsolutePath()));
             }
             if (test > 0) {
                 if ("popup".equals(display)) {
                     if ("advanced".equals(level)) {
-                        new SolutionsDialog2(test, str);
+                        new SolutionsDialog2(test, str.toString());
                     } else {
-                        new SolutionsDialog1(test, str);
+                        new SolutionsDialog1(test, str.toString());
                     }
                 }
                 if (test == 2) {
                     if ("local".equals(highlight)) {
-                        localHighlight(str, xnet, vnet);
+                        localHighlight(str.toString(), xnet, vnet);
                     } else if ("rel".equals(highlight)) {
-                        relHighlight(str, xnet, vnet);
+                        relHighlight(str.toString(), xnet, vnet);
                         //System.out.println("str = " + str);
                         activeHighlight(xnet, vnet);
                     }

@@ -32,8 +32,8 @@ public class ConfigurationCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return "Verification";
+    public Section getSection() {
+        return new Section("Verification");
     }
 
     @Override

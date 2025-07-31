@@ -6,6 +6,14 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 
 public abstract class AbstractGateTransformationCommand extends AbstractComponentTransformationCommand {
 
+    public static final Section SECTION
+            = new Section("Gate decomposition", Position.TOP_MIDDLE, 70);
+
+    @Override
+    public Section getSection() {
+        return SECTION;
+    }
+
     @Override
     public boolean isApplicableTo(VisualNode node) {
         return (node instanceof VisualFunctionComponent) && ((VisualFunctionComponent) node).isGate();

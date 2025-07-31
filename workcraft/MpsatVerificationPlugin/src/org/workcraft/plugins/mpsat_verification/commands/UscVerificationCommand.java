@@ -6,7 +6,8 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class UscVerificationCommand extends AbstractVerificationCommand {
+public class UscVerificationCommand
+        extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {
@@ -20,7 +21,7 @@ public class UscVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public Position getPosition() {
-        return Position.MIDDLE;
+        return Position.TOP_MIDDLE;
     }
 
     @Override

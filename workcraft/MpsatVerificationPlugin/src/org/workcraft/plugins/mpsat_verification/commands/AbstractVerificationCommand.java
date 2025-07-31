@@ -13,7 +13,9 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public abstract class AbstractVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand implements ScriptableCommand<Boolean> {
+public abstract class AbstractVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {

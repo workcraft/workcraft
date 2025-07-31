@@ -4,21 +4,17 @@ import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class DeadlockFreenessVerificationCommand extends AbstractVerificationCommand {
+public class DeadlockFreenessVerificationCommand
+        extends AbstractEssentialVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Deadlock freeness [MPSat]";
+        return "Deadlock freeness (no determinisation)";
     }
 
     @Override
     public int getPriority() {
-        return 70;
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.TOP;
+        return 30;
     }
 
     @Override

@@ -35,11 +35,6 @@ public class ParallelCompositionCommand
         implements ScriptableDataCommand<WorkspaceEntry, Pair<Collection<WorkspaceEntry>, PcompParameters>> {
 
     @Override
-    public String getSection() {
-        return "Composition";
-    }
-
-    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return (we == null) || WorkspaceUtils.isApplicable(we, StgModel.class);
     }

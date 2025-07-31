@@ -13,11 +13,12 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.List;
 
-public class InputPropernessVerificationCommand extends AbstractVerificationCommand {
+public class InputPropernessVerificationCommand
+        extends AbstractEssentialVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Input properness (without dummies) [MPSat]...";
+        return "Input properness (without dummies)...";
     }
 
     @Override
@@ -27,12 +28,7 @@ public class InputPropernessVerificationCommand extends AbstractVerificationComm
 
     @Override
     public int getPriority() {
-        return 60;
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.TOP;
+        return 70;
     }
 
     @Override
