@@ -22,7 +22,8 @@ import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class HandshakeVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+public class HandshakeVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableDataCommand<Boolean, HandshakeParameters> {
 
     private static final Pattern DATA_PATTERN = Pattern.compile(

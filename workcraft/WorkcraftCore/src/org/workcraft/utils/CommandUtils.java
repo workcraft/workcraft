@@ -2,27 +2,23 @@ package org.workcraft.utils;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.*;
-import org.workcraft.commands.MenuOrdering.Position;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.actions.Action;
+import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import javax.swing.*;
+import java.util.*;
 import java.util.function.Function;
 
 public class CommandUtils {
 
-    public static String makePromotedSectionTitle(String title, int order) {
-        return '!' + TextUtils.repeat(" ", 9 - order) + title;
-    }
-
     public static List<Command> getCommands(Function<Command, Boolean> filter) {
-        ArrayList<Command> result = new ArrayList<>();
+        List<Command> result = new ArrayList<>();
         final PluginManager pm = Framework.getInstance().getPluginManager();
         for (Command command : pm.getCommands()) {
             if (filter.apply(command)) {
@@ -46,9 +42,9 @@ public class CommandUtils {
 
     public static List<Command> getApplicableVisibleCommands(WorkspaceEntry we) {
         return getCommands(command -> {
-            Command.MenuVisibility menuVisibility = command.getMenuVisibility();
-            return (menuVisibility == Command.MenuVisibility.ALWAYS)
-                    || ((menuVisibility == Command.MenuVisibility.APPLICABLE) && command.isApplicableTo(we));
+            Command.Visibility visibility = command.getVisibility();
+            return (visibility == Command.Visibility.ALWAYS)
+                    || ((visibility == Command.Visibility.APPLICABLE) && command.isApplicableTo(we));
         });
     }
 
@@ -58,66 +54,191 @@ public class CommandUtils {
                     && command.isApplicableTo(we)
                     && (nodeTransformer.isApplicableTo(node))) {
 
-                Command.MenuVisibility menuVisibility = command.getMenuVisibility();
-                return (menuVisibility == Command.MenuVisibility.ALWAYS)
-                        || (menuVisibility == Command.MenuVisibility.APPLICABLE)
-                        || (menuVisibility == Command.MenuVisibility.APPLICABLE_POPUP_ONLY);
+                Command.Visibility visibility = command.getVisibility();
+                return (visibility == Command.Visibility.ALWAYS)
+                        || (visibility == Command.Visibility.APPLICABLE)
+                        || (visibility == Command.Visibility.APPLICABLE_POPUP_ONLY);
             }
             return false;
         });
     }
 
-    public static List<String> getSections(List<Command> commands) {
-        HashSet<String> sections = new HashSet<>();
-        for (Command command: commands) {
-            sections.add(command.getSection());
+    public static List<String> getOrderedCategoryNames(List<Command> commands) {
+        Map<String, Integer> categoryNameToPriorityMap = new HashMap<>();
+        for (Command command : commands) {
+            Command.Category category = command.getCategory();
+            if (category == null) {
+                category = Command.DEFAULT_CATEGORY;
+            }
+            int priority = category.getPriority();
+            String categoryName = category.getName();
+            if ((categoryName == null) || categoryName.isEmpty()) {
+                categoryName = Command.DEFAULT_CATEGORY.getName();
+                priority = Command.DEFAULT_CATEGORY.getPriority();
+            }
+            categoryNameToPriorityMap.put(categoryName, priority);
         }
-        return SortUtils.getSortedNatural(sections);
-    }
 
-    public static List<Command> getSectionCommands(String section, List<Command> commands) {
-        List<Command> sectionCommands = new ArrayList<>();
-        for (Command command: commands) {
-            if (command.getSection().equals(section)) {
-                sectionCommands.add(command);
-            }
-        }
-        sectionCommands.sort((o1, o2) -> {
-            Integer p1 = (o1 instanceof MenuOrdering) ? ((MenuOrdering) o1).getPriority() : 0;
-            Integer p2 = (o2 instanceof MenuOrdering) ? ((MenuOrdering) o2).getPriority() : 0;
-            int result = -p1.compareTo(p2); // Reverse the order, so low values correspond to lower priority
-            if (result == 0) {
-                result = o1.getDisplayName().compareTo(o2.getDisplayName());
-            }
-            return result;
+        List<String> result = new ArrayList<>(categoryNameToPriorityMap.keySet());
+        result.sort((s1, s2) -> {
+            Integer p1 = categoryNameToPriorityMap.getOrDefault(s1, 0);
+            Integer p2 = categoryNameToPriorityMap.getOrDefault(s2, 0);
+            int r = -p1.compareTo(p2); // Reverse the order, so low values correspond to lower priority
+            return (r == 0) ? s1.compareTo(s2) : r;
         });
-        return sectionCommands;
+        return result;
     }
 
-    public static List<Command> getPositionedCommands(List<Command> commands, Position position) {
-        List<Command> result = new ArrayList<>();
-        for (Command command: commands) {
-            if ((command instanceof MenuOrdering) && (((MenuOrdering) command).getPosition() == position)) {
-                result.add(command);
+    private static List<Entry> getOrderedSectionsAndUnsectionedCommands(String categoryName, List<Command> commands) {
+        if ((categoryName == null) || categoryName.isEmpty()) {
+            categoryName = Command.DEFAULT_CATEGORY.getName();
+        }
+        Set<Entry> entries = new HashSet<>();
+        Map<String, Command.Section> nameToSectionMap = new HashMap<>();
+        for (Command command : commands) {
+            Command.Category commandCategory = command.getCategory();
+            if (commandCategory == null) {
+                commandCategory = Command.DEFAULT_CATEGORY;
+            }
+            String commandCategoryName = commandCategory.getName();
+            if ((commandCategoryName == null) || commandCategoryName.isEmpty()) {
+                commandCategoryName = Command.DEFAULT_CATEGORY.getName();
+            }
+            if (categoryName.equals(commandCategoryName)) {
+                Command.Section section = command.getSection();
+                if (section != null) {
+                    // Keep only one menu section with the same name
+                    nameToSectionMap.put(section.getDisplayName(), section);
+                } else {
+                    entries.add(command);
+                }
+            }
+        }
+        List<Entry> result = new ArrayList<>(entries);
+        result.addAll(nameToSectionMap.values());
+        result.sort(CommandUtils::entryComparator);
+        return result;
+    }
+
+    private static int entryComparator(Entry entry1, Entry entry2) {
+        if ((entry1 == null) && (entry2 == null)) {
+            return 0;
+        }
+        if (entry1 == null) {
+            return 1;
+        }
+        if (entry2 == null) {
+            return -1;
+        }
+        Integer priority1 = entry1.getPriority();
+        Integer priority2 = entry2.getPriority();
+        int result = -priority1.compareTo(priority2); // Reverse the order, so low values correspond to lower priority
+        if (result == 0) {
+            result = entry1.getDisplayName().compareTo(entry2.getDisplayName());
+        }
+        return result;
+    }
+
+    public static JMenu createCommandsMenu(String categoryName, List<Command> applicableVisibleCommands) {
+        JMenu result = new JMenu(categoryName.trim());
+        List<Entry> orderedEntries = getOrderedSectionsAndUnsectionedCommands(categoryName, applicableVisibleCommands);
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        boolean isFirstMenuItem = true;
+        for (Command.Position position : getOrderedPositionsWithNull()) {
+            boolean isFirstPositionItem = true;
+            for (Entry entry : orderedEntries) {
+                if (position != entry.getPosition()) continue;
+                if (!isFirstMenuItem && isFirstPositionItem) {
+                    result.addSeparator();
+                }
+                if (entry instanceof Command.Section section) {
+                    String sectionName = section.getDisplayName();
+                    List<Command> orderedSectionCommands
+                            = getOrderedSectionCommands(categoryName, sectionName, applicableVisibleCommands);
+
+                    if (orderedSectionCommands.isEmpty()) continue;
+                    // Dissolve the section if it contains a single command
+                    if (orderedSectionCommands.size() == 1) {
+                        Command command = orderedSectionCommands.get(0);
+                        Action action = new Action(command.getDisplayName().trim(), () -> run(mainWindow, command));
+                        result.add(new ActionMenuItem(action));
+                    } else {
+                        JMenu sectionSubmenu = new JMenu(sectionName.trim());
+                        addCommandMenuSection(sectionSubmenu, orderedSectionCommands);
+                        result.add(sectionSubmenu);
+                    }
+                    isFirstMenuItem = false;
+                    isFirstPositionItem = false;
+                }
+                if (entry instanceof Command command) {
+                    Action action = new Action(command.getDisplayName().trim(), () -> run(mainWindow, command));
+                    result.add(new ActionMenuItem(action));
+                    isFirstMenuItem = false;
+                    isFirstPositionItem = false;
+                }
             }
         }
         return result;
     }
 
-    public static List<Command> getUnpositionedCommands(List<Command> commands) {
+    private static List<Command> getOrderedSectionCommands(String categoryName, String sectionName, List<Command> commands) {
         List<Command> result = new ArrayList<>();
-        for (Command command: commands) {
-            if (!(command instanceof MenuOrdering) || (((MenuOrdering) command).getPosition() == null)) {
-                result.add(command);
+        if ((categoryName == null) || categoryName.isEmpty()) {
+            categoryName = Command.DEFAULT_CATEGORY.getName();
+        }
+        for (Command command : commands) {
+            String commandCategoryName = command.getCategory().getName();
+            if ((commandCategoryName == null) || commandCategoryName.isEmpty()) {
+                commandCategoryName = Command.DEFAULT_CATEGORY.getName();
+            }
+            if (categoryName.equals(commandCategoryName)) {
+                Command.Section commandSection = command.getSection();
+                if (((sectionName != null) && (commandSection != null)
+                        && sectionName.equals(commandSection.getDisplayName()))
+                        || (sectionName == null) && (commandSection == null)) {
+
+                    result.add(command);
+                }
             }
         }
+        result.sort((c1, c2) -> {
+            Integer p1 = c1.getPriority();
+            Integer p2 = c2.getPriority();
+            int r = -p1.compareTo(p2); // Reverse the order, so low values correspond to lower priority
+            return (r == 0) ? c1.getDisplayName().compareTo(c2.getDisplayName()) : r;
+        });
+        return result;
+    }
+
+    private static void addCommandMenuSection(JMenu menu, List<Command> commands) {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        boolean isFirstMenuItem = true;
+        for (Command.Position position : getOrderedPositionsWithNull()) {
+            boolean isFirstPositionItem = true;
+            for (Command command : commands) {
+                if (position != command.getPosition()) continue;
+                if (!isFirstMenuItem && isFirstPositionItem) {
+                    menu.addSeparator();
+                }
+                Action action = new Action(command.getDisplayName().trim(), () -> run(mainWindow, command));
+                menu.add(new ActionMenuItem(action));
+                isFirstMenuItem = false;
+                isFirstPositionItem = false;
+            }
+
+        }
+    }
+
+    private static List<Command.Position> getOrderedPositionsWithNull() {
+        List<Command.Position> result = new ArrayList<>(List.of(Command.Position.values()));
+        result.add(0, null);
         return result;
     }
 
     public static void run(MainWindow mainWindow, Command command) {
         if (mainWindow != null) {
             GraphEditor currentEditor = mainWindow.getCurrentEditor();
-            WorkspaceEntry we = currentEditor == null ? null : currentEditor.getWorkspaceEntry();
+            WorkspaceEntry we = (currentEditor == null) ? null : currentEditor.getWorkspaceEntry();
             checkCommandApplicability(we, command);
             command.run(we);
         }

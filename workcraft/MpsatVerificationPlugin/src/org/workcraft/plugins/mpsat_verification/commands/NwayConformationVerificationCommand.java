@@ -23,22 +23,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class NwayConformationVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+public class NwayConformationVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableDataCommand<Boolean, List<WorkspaceEntry>> {
 
     @Override
     public String getDisplayName() {
-        return "N-way conformation [MPSat]...";
+        return "N-way conformation...";
+    }
+
+    @Override
+    public Section getSection() {
+        return AbstractRefinementVerificationCommand.SECTION;
     }
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return (we == null) || WorkspaceUtils.isApplicable(we, Stg.class);
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

@@ -26,7 +26,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+public class PlaceRedundancyVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
         implements NodeTransformer, ScriptableDataCommand<Boolean, Collection<String>> {
 
     private static final String PLACE_REDUNDANCY_NAMES_REPLACEMENT =
@@ -73,7 +74,7 @@ public class PlaceRedundancyVerificationCommand extends org.workcraft.commands.A
 
     @Override
     public Position getPosition() {
-        return Position.TOP_MIDDLE;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

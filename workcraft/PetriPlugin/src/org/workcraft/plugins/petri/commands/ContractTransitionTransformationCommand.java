@@ -44,8 +44,8 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public MenuVisibility getMenuVisibility() {
-        return MenuVisibility.APPLICABLE_POPUP_ONLY;
+    public Visibility getVisibility() {
+        return Visibility.APPLICABLE_POPUP_ONLY;
     }
 
     @Override

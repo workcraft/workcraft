@@ -3,7 +3,6 @@ package org.workcraft.plugins.cflt.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.commands.Command;
-import org.workcraft.commands.MenuOrdering;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.cflt.Model;
@@ -20,7 +19,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.function.BiConsumer;
 
-public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
+public class TranslateProfloExpressionCommand implements Command {
 
     private static final String PRESET_KEY = "proflo-expressions.xml";
     private static final ExpressionDataSerialiser DATA_SERIALISER = new ExpressionDataSerialiser();
@@ -31,13 +30,8 @@ public class TranslateProfloExpressionCommand implements Command, MenuOrdering {
     public static BiConsumer<WorkspaceEntry, String> externalTranslator = null;
 
     @Override
-    public final String getSection() {
-        return AbstractConversionCommand.SECTION_TITLE;
-    }
-
-    @Override
-    public int getPriority() {
-        return 0;
+    public final Category getCategory() {
+        return AbstractConversionCommand.CATEGORY;
     }
 
     @Override

@@ -4,8 +4,8 @@ import org.workcraft.commands.Command;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class TimeValueDisablerCommand implements Command {
 
@@ -15,8 +15,8 @@ public class TimeValueDisablerCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return "Time analysis";
+    public Section getSection() {
+        return new Section("Time analysis");
     }
 
     @Override

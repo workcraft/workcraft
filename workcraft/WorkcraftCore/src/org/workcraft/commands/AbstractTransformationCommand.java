@@ -2,30 +2,19 @@ package org.workcraft.commands;
 
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.utils.CommandUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-public abstract class AbstractTransformationCommand implements ScriptableCommand<Void>, MenuOrdering {
+public abstract class AbstractTransformationCommand implements ScriptableCommand<Void> {
 
-    private static final String SECTION_TITLE = CommandUtils.makePromotedSectionTitle("Transformation", 2);
-
-    @Override
-    public final String getSection() {
-        return SECTION_TITLE;
-    }
+    public static final Category CATEGORY = new Category("Transformation", 7);
 
     @Override
-    public int getPriority() {
-        return 0;
-    }
-
-    @Override
-    public Position getPosition() {
-        return null;
+    public final Category getCategory() {
+        return CATEGORY;
     }
 
     @Override

@@ -18,18 +18,13 @@ import java.util.function.Function;
 public abstract class AbstractTagCommand implements ScriptableCommand<Void> {
 
     @Override
-    public final String getSection() {
-        return null;
-    }
-
-    @Override
     public String getDisplayName() {
         return null;
     }
 
     @Override
-    public MenuVisibility getMenuVisibility() {
-        return MenuVisibility.NEVER;
+    public Visibility getVisibility() {
+        return Visibility.NEVER;
     }
 
     @Override

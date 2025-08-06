@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainResultHandlingMonitor;
@@ -20,11 +19,18 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.Collection;
 import java.util.List;
 
-public class MutexProtocolVerificationCommand extends AbstractVerificationCommand implements ScriptableCommand<Boolean> {
+public class MutexProtocolVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
+        implements ScriptableCommand<Boolean> {
+
+    @Override
+    public Section getSection() {
+        return AbstractEssentialVerificationCommand.SECTION;
+    }
 
     @Override
     public String getDisplayName() {
-        return "Mutex protocol [MPSat]";
+        return "Mutex protocol";
     }
 
     @Override
@@ -34,7 +40,7 @@ public class MutexProtocolVerificationCommand extends AbstractVerificationComman
 
     @Override
     public int getPriority() {
-        return 50;
+        return 60;
     }
 
     @Override

@@ -1,24 +1,30 @@
 package org.workcraft.plugins.circuit.commands;
 
-public class ConformationVerificationCommand extends CombinedVerificationCommand {
+public class ConformationVerificationCommand
+        extends CombinedVerificationCommand {
 
     @Override
     public int getPriority() {
-        return 1;
+        return 40;
     }
 
     @Override
     public String getDisplayName() {
-        return "Conformation [MPSat]";
+        return "Conformation";
     }
 
     @Override
-    public boolean checkDeadlock() {
-        return false;
+    public Section getSection() {
+        return SECTION;
     }
 
     @Override
     public boolean checkPersistency() {
+        return false;
+    }
+
+    @Override
+    public boolean checkDeadlock() {
         return false;
     }
 

@@ -26,8 +26,8 @@ public class JsonExportCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return "Export";
+    public Section getSection() {
+        return new Section("Export");
     }
 
     @Override

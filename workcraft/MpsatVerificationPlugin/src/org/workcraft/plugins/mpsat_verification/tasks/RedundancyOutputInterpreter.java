@@ -14,7 +14,7 @@ class RedundancyOutputInterpreter extends ReachabilityOutputInterpreter {
 
     @Override
     public String extendMessage(String message) {
-        String traceInfo = "Trace(s) leading to the witness state(s):";
+        String traceInfo = "Witness trace(s):";
         return "<html><br>&#160;" + message + "<br><br>&#160;" + traceInfo + "<br></html>";
     }
 

@@ -13,15 +13,13 @@ import org.workcraft.workspace.WorkspaceEntry;
  */
 public abstract class AbstractGameSolverCommand implements ScriptableCommand<String> {
 
-    private static final String SECTION_TITLE = "Game Solver";
-
     /**
      * Returns the title of the menu to be created.
      * @return    Title of the menu to be displayed. 'Game Solver'
      */
     @Override
-    public final String getSection() {
-        return SECTION_TITLE;
+    public final Section getSection() {
+        return new Section("Game Solver");
     }
 
     /**

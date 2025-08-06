@@ -9,7 +9,6 @@ import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
 import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.CommandUtils;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -18,7 +17,7 @@ import java.awt.*;
 
 public abstract class AbstractScencoCommand implements Command {
 
-    public static final String SECTION_TITLE = CommandUtils.makePromotedSectionTitle("Encoding", 5);
+    public static final Category CATEGORY = new Category("Encoding", 4);
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
@@ -26,8 +25,8 @@ public abstract class AbstractScencoCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return SECTION_TITLE;
+    public Category getCategory() {
+        return CATEGORY;
     }
 
     @Override

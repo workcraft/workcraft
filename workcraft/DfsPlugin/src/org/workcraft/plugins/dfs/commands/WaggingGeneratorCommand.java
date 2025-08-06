@@ -24,8 +24,8 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
     }
 
     @Override
-    public String getSection() {
-        return "Wagging";
+    public Section getSection() {
+        return new Section("Wagging");
     }
 
     @Override

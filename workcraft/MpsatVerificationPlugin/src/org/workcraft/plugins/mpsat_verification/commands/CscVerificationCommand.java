@@ -20,7 +20,7 @@ public class CscVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public Position getPosition() {
-        return Position.MIDDLE;
+        return Position.TOP_MIDDLE;
     }
 
     @Override

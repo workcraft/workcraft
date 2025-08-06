@@ -21,7 +21,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,8 +34,8 @@ import java.util.Scanner;
 public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
 
     @Override
-    public String getSection() {
-        return "Verification";
+    public Section getSection() {
+        return new Section("Verification");
     }
 
     @Override
@@ -159,14 +158,15 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
+            return null;
         }
-        String str = "";
+        StringBuilder str = new StringBuilder();
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str += line + '\n';
+            str.append(line).append('\n');
         }
-        return str;
+        return str.toString();
     }
 
     private static void processQsl(String file) {
@@ -195,14 +195,15 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
+            return null;
         }
-        String str = "";
+        StringBuilder str = new StringBuilder();
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str += line + '\n';
+            str.append(line).append('\n');
         }
-        return str;
+        return str.toString();
     }
 
     private static String processQue(String file) {
@@ -211,14 +212,15 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
+            return null;
         }
-        String str = "";
+        StringBuilder str = new StringBuilder();
         while (sc.hasNextLine()) {
             String line = sc.nextLine();
             //System.out.println(sc.next());
-            str += line + '\n';
+            str.append(line).append('\n');
         }
-        return str;
+        return str.toString();
     }
 
     public int checkType(String s) {
@@ -470,19 +472,16 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         panellist.get(panellist.size() - 1).add(q2combob = new JComboBox<>());
         populateQlists(cnet);
         panellist.get(panellist.size() - 1).add(jcb = new JCheckBox(""));
-        ItemListener itemListener2 = new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() instanceof JCheckBox sjcb) {
-                    if (sjcb.isSelected()) {
-                        index = jcbn.indexOf(sjcb) + 1;
-                        //System.out.println("indexb==" + index);
-                    }
-                    if (jcblast != null) jcblast.setSelected(false);
-                    jcblast = sjcb;
-                    //String name = sjcb.getName();
-                    //System.out.println(name);
+        ItemListener itemListener2 = e -> {
+            if (e.getSource() instanceof JCheckBox sjcb) {
+                if (sjcb.isSelected()) {
+                    index = jcbn.indexOf(sjcb) + 1;
+                    //System.out.println("indexb==" + index);
                 }
+                if (jcblast != null) jcblast.setSelected(false);
+                jcblast = sjcb;
+                //String name = sjcb.getName();
+                //System.out.println(name);
             }
         };
         jcb.addItemListener(itemListener2);
@@ -492,19 +491,16 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         panellist.get(panellist.size() - 1).add(qscombob = new JComboBox<>());
         populateQslists(vnet, cnet);
         panellist.get(panellist.size() - 1).add(jcb = new JCheckBox(""));
-        ItemListener itemListener = new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getSource() instanceof JCheckBox sjcb) {
-                    if (sjcb.isSelected()) {
-                        index = jcbn.indexOf(sjcb) + 1;
-                        //System.out.println("indexb==" + index);
-                    }
-                    if (jcblast != null) jcblast.setSelected(false);
-                    jcblast = sjcb;
-                    //String name = sjcb.getName();
-                    //System.out.println(name);
+        ItemListener itemListener = e -> {
+            if (e.getSource() instanceof JCheckBox sjcb) {
+                if (sjcb.isSelected()) {
+                    index = jcbn.indexOf(sjcb) + 1;
+                    //System.out.println("indexb==" + index);
                 }
+                if (jcblast != null) jcblast.setSelected(false);
+                jcblast = sjcb;
+                //String name = sjcb.getName();
+                //System.out.println(name);
             }
         };
         jcb.addItemListener(itemListener);
@@ -564,7 +560,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                     vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
                     vxmCommand.addAll(processArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
                     ExternalProcess.printCommandLine(vxmCommand);
-                    String[] cmdArray = vxmCommand.toArray(new String[vxmCommand.size()]);
+                    String[] cmdArray = vxmCommand.toArray(new String[0]);
                     Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 
                     String s;

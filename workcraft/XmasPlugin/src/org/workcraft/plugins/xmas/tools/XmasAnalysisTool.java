@@ -54,8 +54,8 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
     }
 
     @Override
-    public String getSection() {
-        return "Verification";
+    public Section getSection() {
+        return new Section("Verification");
     }
 
     public void dispose() {
@@ -128,6 +128,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
+            return null;
         }
         StringBuilder str = new StringBuilder();
         while (sc.hasNextLine()) {
@@ -146,6 +147,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
+            return;
         }
         while (sc.hasNextLine()) {
             Scanner line = new Scanner(sc.nextLine());
@@ -165,6 +167,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
             LogUtils.logError(e.getMessage());
+            return null;
         }
         StringBuilder str = new StringBuilder();
         while (sc.hasNextLine()) {
@@ -177,7 +180,6 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
     }
 
     public int checkType(String s) {
-
         if (s.contains("DEADLOCK FREE")) {
             return 0;
         } else if (s.contains("TRACE FOUND")) {
@@ -191,7 +193,6 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
     public void initHighlight(Xmas xnet, VisualXmas vnet) {
         VisualQueueComponent vqc;
         VisualSyncComponent vsc;
-
         for (Node node : vnet.getNodes()) {
             if (node instanceof VisualQueueComponent) {
                 vqc = (VisualQueueComponent) node;

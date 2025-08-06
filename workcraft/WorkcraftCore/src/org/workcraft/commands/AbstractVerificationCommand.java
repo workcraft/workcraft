@@ -1,24 +1,12 @@
 package org.workcraft.commands;
 
-import org.workcraft.utils.CommandUtils;
+public abstract class AbstractVerificationCommand implements Command {
 
-public abstract class AbstractVerificationCommand implements Command, MenuOrdering {
-
-    private static final String SECTION_TITLE = CommandUtils.makePromotedSectionTitle("Verification", 3);
+    public static final Category CATEGORY = new Category("Verification", 6);
 
     @Override
-    public final String getSection() {
-        return SECTION_TITLE;
-    }
-
-    @Override
-    public int getPriority() {
-        return 0;
-    }
-
-    @Override
-    public Position getPosition() {
-        return null;
+    public final Category getCategory() {
+        return CATEGORY;
     }
 
 }

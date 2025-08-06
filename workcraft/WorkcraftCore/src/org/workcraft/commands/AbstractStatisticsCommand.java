@@ -7,11 +7,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractStatisticsCommand implements ScriptableCommand<String> {
 
-    private static final String SECTION_TITLE = "Statistics";
+    public static final Section SECTION = new Section("Statistics");
 
     @Override
-    public final String getSection() {
-        return SECTION_TITLE;
+    public final Section getSection() {
+        return SECTION;
     }
 
     @Override

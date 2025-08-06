@@ -5,8 +5,8 @@ import org.workcraft.commands.Command;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.tasks.ReachabilityTask;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class ReachabilityCommand implements Command {
 
@@ -16,8 +16,8 @@ public class ReachabilityCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return "Verification";
+    public Section getSection() {
+        return new Section("Verification");
     }
 
     @Override

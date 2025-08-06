@@ -6,11 +6,12 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
 
-public class ConsistencyVerificationCommand extends AbstractVerificationCommand {
+public class ConsistencyVerificationCommand
+        extends AbstractEssentialVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Consistency [MPSat]";
+        return "Consistency";
     }
 
     @Override
@@ -21,11 +22,6 @@ public class ConsistencyVerificationCommand extends AbstractVerificationCommand 
     @Override
     public int getPriority() {
         return 90;
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.TOP;
     }
 
     @Override

@@ -14,11 +14,12 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 
-public class LocalSelfTriggeringVerificationCommand extends AbstractVerificationCommand {
+public class LocalSelfTriggeringVerificationCommand
+        extends AbstractEssentialVerificationCommand {
 
     @Override
     public String getDisplayName() {
-        return "Absence of local self-triggering (without dummies) [MPSat]...";
+        return "Absence of local self-triggering (without dummies)...";
     }
 
     @Override
@@ -28,12 +29,7 @@ public class LocalSelfTriggeringVerificationCommand extends AbstractVerification
 
     @Override
     public int getPriority() {
-        return 30;
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.TOP;
+        return 40;
     }
 
     @Override

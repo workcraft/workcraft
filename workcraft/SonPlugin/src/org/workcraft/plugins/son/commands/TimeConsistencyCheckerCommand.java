@@ -20,8 +20,8 @@ public class TimeConsistencyCheckerCommand implements Command {
     }
 
     @Override
-    public String getSection() {
-        return "Time analysis";
+    public Section getSection() {
+        return new Section("Time analysis");
     }
 
     @Override

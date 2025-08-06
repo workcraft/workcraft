@@ -5,10 +5,7 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.*;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgPlace;
-import org.workcraft.plugins.stg.Wait;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
@@ -424,6 +421,42 @@ public class ArbitrationUtils {
             return CircuitUtils.getSignalReference(circuit, signal);
         }
         return null;
+    }
+
+    public static Map<String, Signal.Type> exposeMutexGrants(Stg stg, LinkedList<Pair<String, String>> grantPairs) {
+        Map<String, Signal.Type> grantTypes = new HashMap<>();
+        for (Pair<String, String> grantPair : grantPairs) {
+            String g1SignalName = grantPair.getFirst();
+            Signal.Type g1SignalType = stg.getSignalType(g1SignalName);
+            if (g1SignalType != Signal.Type.OUTPUT) {
+                grantTypes.put(g1SignalName, g1SignalType);
+                stg.setSignalType(g1SignalName, Signal.Type.OUTPUT);
+            }
+            String g2SignalName = grantPair.getSecond();
+            Signal.Type g2SignalType = stg.getSignalType(g2SignalName);
+            if (g2SignalType != Signal.Type.OUTPUT) {
+                grantTypes.put(g2SignalName, g2SignalType);
+                stg.setSignalType(g2SignalName, Signal.Type.OUTPUT);
+            }
+        }
+        return grantTypes;
+    }
+
+    public static void restoreMutexGrants(Stg stg, LinkedList<Pair<String, String>> grantPairs,
+            Map<String, Signal.Type> grantTypes) {
+
+        for (Pair<String, String> grantPair : grantPairs) {
+            String g1SignalName = grantPair.getFirst();
+            Signal.Type g1SignalType = grantTypes.get(g1SignalName);
+            if (g1SignalType != null) {
+                stg.setSignalType(g1SignalName, g1SignalType);
+            }
+            String g2SignalName = grantPair.getSecond();
+            Signal.Type g2SignalType = grantTypes.get(g2SignalName);
+            if (g2SignalType != null) {
+                stg.setSignalType(g2SignalName, g2SignalType);
+            }
+        }
     }
 
 }

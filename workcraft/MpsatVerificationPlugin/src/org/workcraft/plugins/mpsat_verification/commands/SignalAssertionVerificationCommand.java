@@ -19,7 +19,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 
-public class SignalAssertionVerificationCommand extends org.workcraft.commands.AbstractVerificationCommand
+public class SignalAssertionVerificationCommand
+        extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableDataCommand<Boolean, String> {
 
     private static final String PRESET_KEY = "signal-assertions.xml";
