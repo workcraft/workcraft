@@ -290,6 +290,8 @@ def workcraftRunConfiguration = '''
     </configuration>
 '''
 
+import groovy.xml.XmlParser
+
 idea.workspace.iws {
     withXml { workspace ->
         def runManagerNode = workspace.node.component.find { it.@name == 'RunManager' }
