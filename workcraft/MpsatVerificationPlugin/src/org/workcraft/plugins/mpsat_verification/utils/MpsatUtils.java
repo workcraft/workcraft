@@ -7,24 +7,21 @@ import org.workcraft.plugins.mpsat_verification.tasks.MpsatSyntaxCheckTask;
 import org.workcraft.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.utils.*;
+import org.workcraft.utils.BisonSyntaxUtils;
+import org.workcraft.utils.FileUtils;
+import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
 
-public class MpsatUtils {
+public final class MpsatUtils {
 
-    public static String getToolchainDescription(String title) {
-        String result = "MPSat tool chain";
-        if ((title != null) && !title.isEmpty()) {
-            result += " (" + title + ")";
-        }
-        return result;
+    private MpsatUtils() {
     }
 
-
+    public static String getToolchainDescription(String details) {
+        return TextUtils.getTextWithOptionalDetails("MPSat tool chain", details);
     }
 
     public static void checkSyntax(WorkspaceEntry we, CodePanel codePanel, VerificationParameters verificationParameters) {

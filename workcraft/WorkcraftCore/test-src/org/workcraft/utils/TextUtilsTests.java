@@ -267,4 +267,21 @@ class TextUtilsTests {
                 TextUtils.getTextWithBulletpoints("single", List.of("item"), true));
     }
 
+    @Test
+    void replaceBulletsTest() {
+        Assertions.assertEquals("text", TextUtils.replaceBullets("text", "*"));
+        Assertions.assertEquals("  * item", TextUtils.replaceBullets(BULLET_PREFIX +  "item", "*"));
+        Assertions.assertEquals("intro:\n  * item1\n  * item2",
+                TextUtils.replaceBullets("intro:"
+                + '\n' + BULLET_PREFIX +  "item1"
+                + '\n' + BULLET_PREFIX +  "item2", "*"));
+    }
+
+    @Test
+    void getTextWithOptionalDetailsTest() {
+        Assertions.assertEquals("text", TextUtils.getTextWithOptionalDetails("text", null));
+        Assertions.assertEquals("text", TextUtils.getTextWithOptionalDetails("text", ""));
+        Assertions.assertEquals("text (details)", TextUtils.getTextWithOptionalDetails("text", "details"));
+    }
+
 }
