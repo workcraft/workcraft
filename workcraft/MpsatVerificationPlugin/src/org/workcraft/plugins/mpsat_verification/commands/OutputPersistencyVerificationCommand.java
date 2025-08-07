@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.MutexUtils;
@@ -40,7 +39,7 @@ public class OutputPersistencyVerificationCommand
             DialogUtils.showError("Output persistency can currently be checked only for STGs without dummies.");
             return false;
         }
-        return MpsatUtils.mutexStructuralCheck(stg, true);
+        return MutexUtils.mutexStructuralCheck(stg, true);
     }
 
     @Override

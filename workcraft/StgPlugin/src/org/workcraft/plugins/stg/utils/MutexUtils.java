@@ -2,8 +2,10 @@ package org.workcraft.plugins.stg.utils;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
@@ -273,6 +275,31 @@ public class MutexUtils {
             result.append(TextUtils.getBulletpoint(getMutexPlaceExtendedTitle(mutex)));
         }
         return result.toString();
+    }
+
+    public static boolean mutexStructuralCheck(Stg stg, boolean allowEmptyMutexPlaces) {
+        Collection<StgPlace> mutexPlaces = stg.getMutexPlaces();
+        if (!allowEmptyMutexPlaces && mutexPlaces.isEmpty()) {
+            DialogUtils.showWarning("No mutex places found to check protocol.");
+            return false;
+        }
+        final ArrayList<StgPlace> problematicPlaces = new ArrayList<>();
+        for (StgPlace place: mutexPlaces) {
+            Mutex mutex = MutexUtils.getMutex(stg, place);
+            if (mutex == null) {
+                problematicPlaces.add(place);
+            }
+        }
+        if (!problematicPlaces.isEmpty()) {
+            Collection<String> problematicPlacesRefs = ReferenceHelper.getReferenceList(stg, problematicPlaces);
+            String msg = TextUtils.wrapMessageWithItems("Failed to determine requests or grants for mutex place", problematicPlacesRefs)
+                    + TextUtils.getBulletpoint("postset of mutex place must comprise rising transitions of 2 distinct output or internal signals (grants)")
+                    + TextUtils.getBulletpoint("rising transitions of each grant must be triggered by rising transitions of the same signal (request)");
+
+            DialogUtils.showError(msg, "Model validation");
+            return false;
+        }
+        return true;
     }
 
 }

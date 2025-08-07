@@ -85,7 +85,7 @@ public class CombinedVerificationCommand
             }
         }
 
-        if (!MpsatUtils.mutexStructuralCheck(stg, true)) {
+        if (!MutexUtils.mutexStructuralCheck(stg, true)) {
             monitor.isFinished(Result.cancel());
             return monitor;
         }

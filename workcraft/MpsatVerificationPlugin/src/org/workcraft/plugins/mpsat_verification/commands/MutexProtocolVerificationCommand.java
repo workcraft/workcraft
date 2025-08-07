@@ -68,7 +68,7 @@ public class MutexProtocolVerificationCommand
         }
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        if (!MpsatUtils.mutexStructuralCheck(stg, false)) {
+        if (!MutexUtils.mutexStructuralCheck(stg, false)) {
             monitor.isFinished(Result.cancel());
             return monitor;
         }
