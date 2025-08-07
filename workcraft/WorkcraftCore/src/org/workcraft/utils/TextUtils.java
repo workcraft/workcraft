@@ -324,6 +324,12 @@ public class TextUtils {
         return result.toString();
     }
 
+    public static String getCurrentTimestamp() {
+        long currentTime = System.currentTimeMillis();
+        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), ZoneId.systemDefault());
+        return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    }
+
     public static String getBullet(String text) {
         return "  " + BULLET_SYMBOL + ' ' + (text == null ? "" : text);
     }
@@ -354,10 +360,14 @@ public class TextUtils {
         StringBuilder result = new StringBuilder(text == null ? "" : text);
         if ((items != null) && !items.isEmpty()) {
             if ((items.size() == 1) && mergeSingleItem) {
-                result.append(' ');
+                if (!result.isEmpty()) {
+                    result.append(' ');
+                }
                 result.append(items.iterator().next());
             } else {
-                result.append(':');
+                if (!result.isEmpty()) {
+                    result.append(':');
+                }
                 for (String item : items) {
                     result.append(getBulletpoint(item));
                 }
@@ -370,10 +380,8 @@ public class TextUtils {
         return text.replace(BULLET_SYMBOL, replacement);
     }
 
-    public static String getCurrentTimestamp() {
-        long currentTime = System.currentTimeMillis();
-        ZonedDateTime zdt = ZonedDateTime.ofInstant(Instant.ofEpochMilli(currentTime), ZoneId.systemDefault());
-        return zdt.format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+    public static String getTextWithOptionalDetails(String text, String details) {
+        return ((details == null) || details.isEmpty()) ? text : (text + " (" + details + ")");
     }
 
 }
