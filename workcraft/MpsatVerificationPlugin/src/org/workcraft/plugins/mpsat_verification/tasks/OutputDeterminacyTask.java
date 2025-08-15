@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
@@ -12,10 +11,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -33,7 +29,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
 
@@ -48,16 +43,16 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
     private static final String ENV_STG_FILE_NAME = StgUtils.ENVIRONMENT_FILE_PREFIX + STG_FILE_EXTENSION;
     private static final String MOD_SYS_STG_FILE_NAME = StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + STG_FILE_EXTENSION;
 
-    private static final String SHADOW_TRANSITIONS_REPLACEMENT =
-            "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
+    private static final String SHADOW_ENABLER_PLACE_REPLACEMENT =
+            "/* insert the place name that enables all shadow transitions here */"; // For example: "shadow_place"
 
     private static final String OUTPUT_DETERMINACY_REACH =
             "// Check whether an STG is output-determinate.\n" +
             "// The enabled-via-dummies semantics is assumed for @.\n" +
             "// Configurations with maximal dummies are assumed to be allowed.\n" +
             "let\n" +
-            "    // Set of phantom output transition names in the whole composed STG.\n" +
-            "    SHADOW_OUTPUT_TRANSITIONS = T ( {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"} )\n" +
+            "    // Shadow output transitions in the composed STG.\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS = post P \"" + SHADOW_ENABLER_PLACE_REPLACEMENT + "\"\n" +
             "{\n" +
             "    // Optimisation: make sure phantom events are not in the configuration.\n" +
             "    forall e in E SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
@@ -201,12 +196,11 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
         localSignals.addAll(sysStg.getSignalReferences(Signal.Type.INTERNAL));
         File devStgFile = new File(directory, DEV_STG_FILE_NAME);
         Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(localSignals, devStgFile);
-        // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
-        transformer.insertShadowEnablerPlace(shadowTransitions);
 
-        // Fill verification parameters with the inserted shadow transitions
-        Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(sysStg, shadowTransitions);
-        VerificationParameters verificationParameters = getVerificationParameters(shadowTransitionRefs);
+        // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
+        StgPlace shadowEnablerPlace = transformer.insertShadowEnablerPlace(shadowTransitions);
+        String shadowEnablerPlaceRef = sysStg.getNodeReference(shadowEnablerPlace);
+        VerificationParameters verificationParameters = getVerificationParameters(shadowEnablerPlaceRef);
 
         File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
         Result<? extends ExportOutput> exportResult = StgUtils.exportStg(sysStg, modSysStgFile, monitor);
@@ -217,12 +211,8 @@ public class OutputDeterminacyTask implements Task<VerificationChainOutput> {
                 .applyVerificationParameters(verificationParameters));
     }
 
-    private VerificationParameters getVerificationParameters(Collection<String> shadowTransitionRefs) {
-        String str = shadowTransitionRefs.stream()
-                .map(ref -> "\"" + ref + "\", ")
-                .collect(Collectors.joining());
-
-        String reach = OUTPUT_DETERMINACY_REACH.replace(SHADOW_TRANSITIONS_REPLACEMENT, str);
+    private VerificationParameters getVerificationParameters(String shadowEnablerPlaceRef) {
+        String reach = OUTPUT_DETERMINACY_REACH.replace(SHADOW_ENABLER_PLACE_REPLACEMENT, shadowEnablerPlaceRef);
         return new VerificationParameters("Output determinacy",
                 VerificationMode.STG_REACHABILITY_OUTPUT_DETERMINACY, 0,
                 MpsatVerificationSettings.getSolutionMode(),

@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat_verification.MpsatVerificationSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationMode;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
@@ -11,10 +10,7 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -26,7 +22,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class RefinementTask implements Task<VerificationChainOutput> {
 
@@ -34,16 +29,16 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             "Refinement", VerificationMode.UNDEFINED, 0,
             null, 0, null, false);
 
-    private static final String SHADOW_TRANSITIONS_REPLACEMENT =
-            "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
+    private static final String SHADOW_ENABLER_PLACE_REPLACEMENT =
+            "/* insert the place name that enables all shadow transitions here */"; // For example: "shadow_place"
 
     private static final String REFINEMENT_REACH =
             "// Check whether one STG (implementation) refines another STG (specification).\n" +
             "// The enabled-via-dummies semantics is assumed for @, and configurations with maximal\n" +
             "// dummies are assumed to be allowed - this corresponds to the -Fe mode of MPSAT.\n" +
             "let\n" +
-            "    // Names of all shadow transitions in the composed STG.\n" +
-            "    SHADOW_TRANSITIONS = T ( {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"} )\n" +
+            "    // Shadow transitions in the composed STG.\n" +
+            "    SHADOW_TRANSITIONS = post P \"" + SHADOW_ENABLER_PLACE_REPLACEMENT + "\"\n" +
             "{\n" +
             "    // Optimisation: make sure shadow events are not in the configuration.\n" +
             "    forall e in E SHADOW_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
@@ -281,14 +276,12 @@ public class RefinementTask implements Task<VerificationChainOutput> {
             shadowTransitions.addAll(transformer.insetShadowTransitions(inputSignals, specificationStgFile));
         }
         // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
-        transformer.insertShadowEnablerPlace(shadowTransitions);
+        StgPlace shadowEnablerPlace = transformer.insertShadowEnablerPlace(shadowTransitions);
+        String shadowEnablerPlaceRef = compositionStg.getNodeReference(shadowEnablerPlace);
+        VerificationParameters verificationParameters = getVerificationParameters(shadowEnablerPlaceRef);
 
         // Apply substitutions to the composition data of the STG components
         CompositionUtils.applyExportSubstitutions(compositionData, payload.getExportResult().getPayload());
-
-        // Fill verification parameters with the inserted shadow transitions
-        Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(compositionStg, shadowTransitions);
-        VerificationParameters verificationParameters = getVerificationParameters(shadowTransitionRefs);
 
         File shadowCompositionStgFile = new File(directory, COMPOSITION_SHADOW_STG_FILE_NAME);
         Result<? extends ExportOutput> exportResult = StgUtils.exportStg(compositionStg, shadowCompositionStgFile, monitor);
@@ -299,12 +292,8 @@ public class RefinementTask implements Task<VerificationChainOutput> {
                 .applyVerificationParameters(verificationParameters));
     }
 
-    private VerificationParameters getVerificationParameters(Collection<String> shadowTransitionRefs) {
-        String str = shadowTransitionRefs.stream()
-                .map(ref -> "\"" + ref + "\", ")
-                .collect(Collectors.joining());
-
-        String reach = REFINEMENT_REACH.replace(SHADOW_TRANSITIONS_REPLACEMENT, str);
+    private VerificationParameters getVerificationParameters(String shadowEnablerPlaceRef) {
+        String reach = REFINEMENT_REACH.replace(SHADOW_ENABLER_PLACE_REPLACEMENT, shadowEnablerPlaceRef);
         return new VerificationParameters("Refinement",
                 VerificationMode.STG_REACHABILITY_REFINEMENT, 0,
                 MpsatVerificationSettings.getSolutionMode(),
