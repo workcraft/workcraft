@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
@@ -17,6 +16,7 @@ import org.workcraft.plugins.pcomp.utils.PcompUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
@@ -152,12 +152,11 @@ public class CheckTask implements Task<VerificationChainOutput> {
                 CompositionTransformer transformer = new CompositionTransformer(modSysStg, compositionData);
                 Collection<String> devOutputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
                 Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(devOutputSignals, devStgFile);
-                // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
-                transformer.insertShadowEnablerPlace(shadowTransitions);
 
-                // Fill verification parameters with the inserted shadow transitions
-                Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(modSysStg, shadowTransitions);
-                VerificationParameters conformationParameters = ReachUtils.getConformationParameters(shadowTransitionRefs);
+                // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
+                StgPlace shadowEnablerPlace = transformer.insertShadowEnablerPlace(shadowTransitions);
+                String shadowEnablerPlaceRef = modSysStg.getNodeReference(shadowEnablerPlace);
+                VerificationParameters conformationParameters = ReachUtils.getConformationParameters(shadowEnablerPlaceRef);
 
                 modSysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + "-shadow" + stgFileExtension);
                 StgUtils.exportStg(modSysStg, modSysStgFile, monitor);

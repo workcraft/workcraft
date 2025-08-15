@@ -131,16 +131,16 @@ public class ReachUtils {
                 reachOutputPersistence, true);
     }
 
-    private static final String SHADOW_TRANSITIONS_REPLACEMENT =
-            "/* insert set of names of shadow transitions here */"; // For example: "x+/1", "x-", "y+", "y-/1"
+    private static final String SHADOW_ENABLER_PLACE_REPLACEMENT =
+            "/* insert the place name that enables all shadow transitions here */"; // For example: "shadow_place"
 
     private static final String CONFORMATION_REACH =
             "// Check whether several STGs conform to each other.\n" +
             "// The enabled-via-dummies semantics is assumed for @.\n" +
             "// Configurations with maximal dummies are assumed to be allowed.\n" +
             "let\n" +
-            "    // Set of phantom output transition names in the whole composed STG.\n" +
-            "    SHADOW_OUTPUT_TRANSITIONS = T ( {" + SHADOW_TRANSITIONS_REPLACEMENT + "\"\"} \\ {\"\"} )\n" +
+            "    // Shadow output transitions in the composed STG.\n" +
+            "    SHADOW_OUTPUT_TRANSITIONS = post P \"" + SHADOW_ENABLER_PLACE_REPLACEMENT + "\"\n" +
             "{\n" +
             "    // Optimisation: make sure phantom events are not in the configuration.\n" +
             "    forall e in E SHADOW_OUTPUT_TRANSITIONS \\ CUTOFFS { ~$e }\n" +
@@ -158,8 +158,8 @@ public class ReachUtils {
             "    }\n" +
             "}\n";
 
-    public static VerificationParameters getConformationParameters(Collection<String> shadowTransitionNames) {
-        String reach = getConformationReach(shadowTransitionNames);
+    public static VerificationParameters getConformationParameters(String shadowEnablerPlaceRef) {
+        String reach = CONFORMATION_REACH.replace(SHADOW_ENABLER_PLACE_REPLACEMENT, shadowEnablerPlaceRef);
         return new VerificationParameters("Conformation",
                 VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
                 MpsatVerificationSettings.getSolutionMode(),
@@ -167,21 +167,13 @@ public class ReachUtils {
                 reach, true);
     }
 
-    public static VerificationParameters getNwayConformationParameters(Collection<String> shadowTransitionNames) {
-        String reach = getConformationReach(shadowTransitionNames);
+    public static VerificationParameters getNwayConformationParameters(String shadowEnablerPlaceRef) {
+        String reach = CONFORMATION_REACH.replace(SHADOW_ENABLER_PLACE_REPLACEMENT, shadowEnablerPlaceRef);
         return new VerificationParameters("N-way conformation",
                 VerificationMode.STG_REACHABILITY_CONFORMATION, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
                 reach, true);
-    }
-
-    private static String getConformationReach(Collection<String> shadowTransitionNames) {
-        String str = shadowTransitionNames.stream()
-                .map(ref -> "\"" + ref + "\", ")
-                .collect(Collectors.joining());
-
-        return CONFORMATION_REACH.replace(SHADOW_TRANSITIONS_REPLACEMENT, str);
     }
 
     // REACH expression for checking if these two pairs of signals can be implemented by a mutex

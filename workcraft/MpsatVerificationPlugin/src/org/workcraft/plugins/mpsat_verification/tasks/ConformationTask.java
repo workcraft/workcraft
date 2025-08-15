@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
@@ -9,10 +8,7 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.tasks.*;
@@ -204,11 +200,9 @@ public class ConformationTask implements Task<VerificationChainOutput> {
         Set<String> devOutputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
         Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(devOutputSignals, devStgFile);
         // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
-        transformer.insertShadowEnablerPlace(shadowTransitions);
-
-        // Fill verification parameters with the inserted shadow transitions
-        Collection<String> shadowTransitionRefs = ReferenceHelper.getReferenceList(sysStg, shadowTransitions);
-        VerificationParameters verificationParameters = ReachUtils.getConformationParameters(shadowTransitionRefs);
+        StgPlace shadowEnablerPlace = transformer.insertShadowEnablerPlace(shadowTransitions);
+        String shadowEnablerPlaceRef = sysStg.getNodeReference(shadowEnablerPlace);
+        VerificationParameters verificationParameters = ReachUtils.getConformationParameters(shadowEnablerPlaceRef);
 
         File modSysStgFile = new File(directory, MOD_SYS_STG_FILE_NAME);
         Result<? extends ExportOutput> exportResult = StgUtils.exportStg(sysStg, modSysStgFile, monitor);
