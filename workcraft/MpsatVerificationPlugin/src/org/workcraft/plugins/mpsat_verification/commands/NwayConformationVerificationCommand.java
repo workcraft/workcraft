@@ -27,6 +27,8 @@ public class NwayConformationVerificationCommand
         extends org.workcraft.commands.AbstractVerificationCommand
         implements ScriptableDataCommand<Boolean, List<WorkspaceEntry>> {
 
+    public static Visibility visibility =  Visibility.ALWAYS;
+
     @Override
     public String getDisplayName() {
         return "N-way conformation...";
@@ -40,6 +42,11 @@ public class NwayConformationVerificationCommand
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return (we == null) || WorkspaceUtils.isApplicable(we, Stg.class);
+    }
+
+    @Override
+    public Visibility getVisibility() {
+        return visibility;
     }
 
     @Override
