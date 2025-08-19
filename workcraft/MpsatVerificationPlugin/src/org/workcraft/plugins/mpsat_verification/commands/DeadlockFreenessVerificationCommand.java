@@ -9,7 +9,7 @@ public class DeadlockFreenessVerificationCommand
 
     @Override
     public String getDisplayName() {
-        return "Deadlock freeness (no determinisation)";
+        return "Deadlock freeness";
     }
 
     @Override
