@@ -7,7 +7,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.ControlPoint;
@@ -767,31 +766,9 @@ public final class CircuitUtils {
         return result;
     }
 
-    public static void fuseContacts(VisualCircuit circuit, VisualContact inputContact, VisualContact outputContact) {
-        for (VisualConnection inputConnection: circuit.getConnections(inputContact)) {
-            VisualNode fromNode = inputConnection.getFirst();
-            for (VisualConnection outputConnection : new ArrayList<>(circuit.getConnections(outputContact))) {
-                VisualNode toNode = outputConnection.getSecond();
-                LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(outputContact,
-                        inputConnection, outputConnection);
+    public static VisualConnection connectIfPossible(VisualCircuit circuit,
+            VisualContact fromContact, VisualContact toContact) {
 
-                circuit.remove(outputConnection);
-                try {
-                    VisualConnection newConnection = circuit.connect(fromNode, toNode);
-                    newConnection.mixStyle(inputConnection, outputConnection);
-                    ConnectionHelper.addControlPoints(newConnection, locations);
-                } catch (InvalidConnectionException e) {
-                    LogUtils.logWarning(e.getMessage());
-                }
-            }
-            VisualContact inputDriver = CircuitUtils.findDriver(circuit, inputContact, false);
-            if (inputDriver != null) {
-                ConversionUtils.updateReplicas(circuit, outputContact, inputDriver);
-            }
-        }
-    }
-
-    public static VisualConnection connectIfPossible(VisualCircuit circuit, VisualContact fromContact, VisualContact toContact) {
         if ((fromContact != null) && (toContact != null)) {
             VisualConnection connection = circuit.getConnection(fromContact, toContact);
             if (connection == null) {
