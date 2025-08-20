@@ -539,10 +539,7 @@ public final class GateUtils {
                     insertGateBefore(circuit, newInverter, inputPin, 1.5);
                     newInverter.setIsZeroDelay(true);
                 } else if (trivialDriverComponent.isInverter()) {
-                    VisualFunctionContact existingInverterInputPin = trivialDriverComponent.getFirstVisualInput();
-                    VisualFunctionContact existingInverterOutputPin = trivialDriverComponent.getFirstVisualOutput();
-                    CircuitUtils.fuseContacts(circuit, existingInverterInputPin, existingInverterOutputPin);
-                    circuit.remove(trivialDriverComponent);
+                    ContractionUtils.contractComponentIfPossible(circuit, trivialDriverComponent);
                 } else if (trivialDriverComponent.isBuffer()) {
                     convertBufferToInverter(circuit, trivialDriverComponent);
                     trivialDriverComponent.setIsZeroDelay(true);
@@ -587,10 +584,7 @@ public final class GateUtils {
                 VisualFunctionComponent existingInverter = getOnlyDrivenInverterOrNull(circuit, outputPin);
                 boolean initToOne = outputPin.getInitToOne();
                 if (existingInverter != null) {
-                    VisualFunctionContact existingInverterInputPin = existingInverter.getFirstVisualInput();
-                    VisualFunctionContact existingInverterOutputPin = existingInverter.getFirstVisualOutput();
-                    CircuitUtils.fuseContacts(circuit, existingInverterInputPin, existingInverterOutputPin);
-                    circuit.remove(existingInverter);
+                    ContractionUtils.contractComponentIfPossible(circuit, existingInverter);
                 } else {
                     VisualFunctionComponent newInverter = createInverterGate(circuit);
                     if (outputPin.getParent() instanceof VisualFunctionComponent component) {

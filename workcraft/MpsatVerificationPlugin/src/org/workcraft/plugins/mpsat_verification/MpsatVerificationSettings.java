@@ -5,7 +5,7 @@ import org.workcraft.gui.properties.PropertyDeclaration;
 import org.workcraft.gui.properties.PropertyDescriptor;
 import org.workcraft.plugins.builtin.settings.AbstractToolSettings;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters.SolutionMode;
-import org.workcraft.plugins.mpsat_verification.tasks.CompositionOutputInterpreter.ConformationReportStyle;
+import org.workcraft.plugins.mpsat_verification.tasks.CompositionSolutionLogger;
 import org.workcraft.utils.BackendUtils;
 
 import java.util.LinkedList;
@@ -38,7 +38,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static final Boolean defaultPrintStderr = true;
     private static final Boolean defaultDebugReach = false;
     private static final Boolean defaultDebugCores = false;
-    private static final ConformationReportStyle defaultConformationReportStyle = ConformationReportStyle.TABLE;
+    private static final CompositionSolutionLogger.Style defaultConformationReportStyle = CompositionSolutionLogger.Style.TABLE;
 
     private static String command = defaultCommand;
     private static int threadCount = defaultThreadCount;
@@ -50,7 +50,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
     private static Boolean printStderr = defaultPrintStderr;
     private static Boolean debugReach = defaultDebugReach;
     private static Boolean debugCores = defaultDebugCores;
-    private static ConformationReportStyle conformationReportStyle = defaultConformationReportStyle;
+    private static CompositionSolutionLogger.Style conformationReportStyle = defaultConformationReportStyle;
 
     static {
         properties.add(new PropertyDeclaration<>(String.class,
@@ -103,7 +103,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
                 MpsatVerificationSettings::setDebugCores,
                 MpsatVerificationSettings::getDebugCores));
 
-        properties.add(new PropertyDeclaration<>(ConformationReportStyle.class,
+        properties.add(new PropertyDeclaration<>(CompositionSolutionLogger.Style.class,
                 "Report style for conformation violation",
                 MpsatVerificationSettings::setConformationReportStyle,
                 MpsatVerificationSettings::getConformationReportStyle));
@@ -126,7 +126,7 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
         setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
         setDebugCores(config.getBoolean(keyDebugCores, defaultDebugCores));
-        setConformationReportStyle(config.getEnum(keyConformationReportStyle, ConformationReportStyle.class, defaultConformationReportStyle));
+        setConformationReportStyle(config.getEnum(keyConformationReportStyle, CompositionSolutionLogger.Style.class, defaultConformationReportStyle));
     }
 
     @Override
@@ -235,11 +235,11 @@ public class MpsatVerificationSettings extends AbstractToolSettings {
         debugCores = value;
     }
 
-    public static void setConformationReportStyle(ConformationReportStyle value) {
+    public static void setConformationReportStyle(CompositionSolutionLogger.Style value) {
         conformationReportStyle = value;
     }
 
-    public static ConformationReportStyle getConformationReportStyle() {
+    public static CompositionSolutionLogger.Style getConformationReportStyle() {
         return conformationReportStyle;
     }
 

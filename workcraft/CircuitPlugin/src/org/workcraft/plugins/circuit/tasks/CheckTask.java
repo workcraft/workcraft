@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.tasks;
 
 import org.workcraft.Framework;
+import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.circuit.utils.ArbitrationUtils;
@@ -226,11 +227,8 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
                 // Check for persistency (if requested)
                 if (checkPersistency) {
-                    Set<String> skipSignals = ScanUtils.getScanoutAndAuxiliarySignals(circuit.getMathModel());
-                    List<String> orderedSkipSignals = SortUtils.getSortedNatural(skipSignals);
-
                     VerificationParameters persistencyParameters = ReachUtils.getOutputPersistencyParameters(
-                            exceptionPairs, orderedSkipSignals);
+                            exceptionPairs, getOutputPersistencyOrderedSkipSignals());
 
                     MpsatTask persistencyMpsatTask = new MpsatTask(unfoldingFile, sysStgFile, persistencyParameters, directory);
                     SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
@@ -294,16 +292,28 @@ public class CheckTask implements Task<VerificationChainOutput> {
         }
     }
 
+    private List<String> getOutputPersistencyOrderedSkipSignals() {
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        Set<String> skipSignals = ScanUtils.getScanoutAndAuxiliarySignals(circuit);
+        return SortUtils.getSortedNatural(skipSignals);
+    }
+
     private String getSuccessMessage(File environmentFile) {
         List<String> details = new ArrayList<>();
         if (checkConformation) {
             details.add("Conformation");
         }
         if (checkPersistency) {
-            details.add("Output persistency (environment without dummies)");
+            String detail = "Output persistency";
+            List<String> skipSignals = getOutputPersistencyOrderedSkipSignals();
+            if (!skipSignals.isEmpty()) {
+                detail += " with exceptions (" + String.join(", ", skipSignals) + ")";
+            }
+            details.add(detail);
+
         }
         if (checkDeadlock) {
-            details.add("Deadlock freeness (no determinisation)");
+            details.add("Deadlock freeness");
         }
         if (details.isEmpty()) {
             return "";

@@ -48,12 +48,7 @@ public class AbstractCompositionOutputInterpreter extends ReachabilityOutputInte
 
     @Override
     public void reportSolutions(String message, List<Solution> solutions) {
-        writeBrief(solutions);
-        super.reportSolutions(message, solutions);
-    }
-
-    public void writeBrief(List<Solution> solutions) {
-        boolean needsMultiLineMessage = solutions.size() > 1;
+        boolean needsMultiLineMessage = (solutions.size() > 1);
         if (needsMultiLineMessage) {
             LogUtils.logMessage("Violation traces of the composition:");
         }
@@ -65,6 +60,7 @@ public class AbstractCompositionOutputInterpreter extends ReachabilityOutputInte
                 LogUtils.logMessage("Violation trace of the composition: " + trace);
             }
         }
+        super.reportSolutions(message, solutions);
     }
 
     public StgModel getCompositionStg() {
