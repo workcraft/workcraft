@@ -15,7 +15,7 @@ public interface ModelConverter<S extends VisualModel, T extends VisualModel> {
     Map<Class<? extends MathNode>, Class<? extends MathNode>> getComponentClassMap();
     Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap();
 
-    String convertNodeName(String srcName, Container container);
+    String convertNodeName(String srcName, Container container, Class<? extends MathNode> srcNodeClass);
     Container getRefToDstPage(String ref);
     VisualNode getSrcToDstNode(VisualNode srcNode);
 

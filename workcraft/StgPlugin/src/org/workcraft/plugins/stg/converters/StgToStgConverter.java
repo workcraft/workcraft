@@ -29,7 +29,9 @@ public class StgToStgConverter extends DefaultPetriConverter<VisualStg, VisualSt
     @Override
     public void copyStyle(Stylable srcStylable, Stylable dstStylable) {
         super.copyStyle(srcStylable, dstStylable);
-        if ((srcStylable instanceof VisualSignalTransition srcTransition) && (dstStylable instanceof VisualSignalTransition dstTransition)) {
+        if ((srcStylable instanceof VisualSignalTransition srcTransition)
+                && (dstStylable instanceof VisualSignalTransition dstTransition)) {
+
             Signal.Type type = srcTransition.getReferencedComponent().getSignalType();
             dstTransition.getReferencedComponent().setSignalType(type);
         }

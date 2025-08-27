@@ -223,7 +223,7 @@ public class FileUtils {
     }
 
     public static boolean containsKeyword(InputStream is, String keyword) {
-        boolean result = false;
+        boolean result = keyword.isEmpty();
         try (Scanner scanner = new Scanner(is)) {
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();

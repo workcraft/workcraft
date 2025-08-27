@@ -15,7 +15,7 @@ public class HideDummyConversionCommand extends AbstractConversionCommand {
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

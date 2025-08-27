@@ -32,17 +32,20 @@ public class StgToPetriConverter extends DefaultPetriConverter<VisualStg, Visual
     }
 
     @Override
-    public String convertNodeName(String srcName, Container container) {
-        Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(srcName);
-        String dstCandidate = instancedTransition.getFirst()
-                .replace("+", "_PLUS")
-                .replace("-", "_MINUS")
-                .replace("~", "_TOGGLE");
+    public String convertNodeName(String srcName, Container container, Class<? extends MathNode> srcNodeClass) {
+        if (srcNodeClass.isAssignableFrom(DummyTransition.class) || srcNodeClass.isAssignableFrom(SignalTransition.class)) {
+            Pair<String, Integer> instancedTransition = LabelParser.parseInstancedTransition(srcName);
+            String dstCandidate = instancedTransition.getFirst()
+                    .replace("+", "_PLUS")
+                    .replace("-", "_MINUS")
+                    .replace("~", "_TOGGLE");
 
-        HierarchyReferenceManager refManager = getDstModel().getMathModel().getReferenceManager();
-        NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(container);
-        NameManager nameManager = refManager.getNameManager(namespaceProvider);
-        return nameManager.getDerivedName(null, dstCandidate);
+            HierarchyReferenceManager refManager = getDstModel().getMathModel().getReferenceManager();
+            NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(container);
+            NameManager nameManager = refManager.getNameManager(namespaceProvider);
+            return nameManager.getDerivedName(null, dstCandidate);
+        }
+        return super.convertNodeName(srcName, container, srcNodeClass);
     }
 
     @Override

@@ -79,7 +79,7 @@ public class CompositionCompatibilityChecker {
 
     public String getMissingPhaseSignalMessageOrNull() {
         SignalPhaseData signalPhaseData = getPhasePresenceForInterfaceSignals();
-        // Check that all component models are STGs
+        // Check for interface signals with missing phases
         for (WorkspaceEntry we : wes) {
             Collection<String> problems = getMissingPhaseProblems(we, signalPhaseData);
             if (!problems.isEmpty()) {

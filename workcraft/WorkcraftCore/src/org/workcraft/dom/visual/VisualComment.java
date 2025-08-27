@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedList;
 
 @Hotkey(KeyEvent.VK_N)
 @DisplayName("Text Note")
@@ -130,6 +131,25 @@ public class VisualComment extends VisualComponent {
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
         return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
+    }
+    @Override
+    public void copyStyle(Stylable src) {
+        super.copyStyle(src);
+        if (src instanceof VisualComment srcComment) {
+            setTextAlignment(srcComment.getTextAlignment());
+        }
+    }
+
+    @Override
+    public void mixStyle(Stylable... srcs) {
+        super.mixStyle(srcs);
+        LinkedList<Alignment> textAlignments = new LinkedList<>();
+        for (Stylable src: srcs) {
+            if (src instanceof VisualComment srcComment) {
+                textAlignments.add(srcComment.getTextAlignment());
+            }
+        }
+        setTextAlignment(MixUtils.vote(textAlignments, Alignment.CENTER));
     }
 
 }

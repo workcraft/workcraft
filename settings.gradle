@@ -22,7 +22,7 @@ gradle.ext.javaTargetVersion = JavaVersion.VERSION_17
 gradle.ext.javaReleaseVersion = 17  /* Must be integer, e.g. 17 for JDK17 */
 
 // Checkstyle code linter (https://checkstyle.sourceforge.io/) 
-gradle.ext.checkstyleVersion = '10.26.1'
+gradle.ext.checkstyleVersion = '11.0.0'
 // PMD code analyser (https://pmd.github.io/)
 gradle.ext.pmdVersion = '7.16.0'
 // Jacoco code coverage (https://www.eclemma.org/jacoco/)
