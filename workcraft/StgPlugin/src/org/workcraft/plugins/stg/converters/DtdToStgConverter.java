@@ -9,8 +9,8 @@ import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.*;
-import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.utils.LogUtils;
 
 import java.awt.geom.Point2D;
@@ -59,15 +59,18 @@ public class DtdToStgConverter extends DefaultModelConverter<VisualDtd, VisualSt
     }
 
     @Override
-    public String convertNodeName(String srcName, Container container) {
-        VisualTransitionEvent event = getSrcModel().getVisualComponentByMathReference(srcName, VisualTransitionEvent.class);
-        if (event != null) {
-            VisualSignal signal = event.getVisualSignal();
-            String signalName = getSrcModel().getMathName(signal);
-            SignalTransition.Direction direction = convertDirection(event.getDirection());
-            return signalName + direction;
+    public String convertNodeName(String srcName, Container container, Class<? extends MathNode> srcNodeClass) {
+        if (srcNodeClass.isAssignableFrom(TransitionEvent.class)) {
+            VisualTransitionEvent event = getSrcModel().getVisualComponentByMathReference(srcName, VisualTransitionEvent.class);
+            if (event != null) {
+                VisualSignal signal = event.getVisualSignal();
+                String signalName = getSrcModel().getMathName(signal);
+                SignalTransition.Direction direction = convertDirection(event.getDirection());
+                return signalName + direction;
+            }
+            return srcName;
         }
-        return srcName;
+        return super.convertNodeName(srcName, container, srcNodeClass);
     }
 
     private SignalTransition.Direction convertDirection(TransitionEvent.Direction direction) {

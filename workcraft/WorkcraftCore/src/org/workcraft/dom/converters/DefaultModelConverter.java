@@ -37,7 +37,7 @@ public class DefaultModelConverter<S extends VisualModel, T extends VisualModel>
     }
 
     @Override
-    public String convertNodeName(String srcName, Container container) {
+    public String convertNodeName(String srcName, Container container, Class<? extends MathNode> srcNodeClass) {
         return srcName;
     }
 
@@ -66,18 +66,18 @@ public class DefaultModelConverter<S extends VisualModel, T extends VisualModel>
         String srcRef = getSrcModel().getMathReference(srcComponent);
         if (srcRef != null) {
             Map<Class<? extends MathNode>, Class<? extends MathNode>> componentClassMap = getComponentClassMap();
-            Class<? extends MathNode> dstMathNodeClass = componentClassMap.get(srcComponent.getReferencedComponent().getClass());
+            Class<? extends MathNode> srcMathNodeClass = srcComponent.getReferencedComponent().getClass();
+            Class<? extends MathNode> dstMathNodeClass = componentClassMap.get(srcMathNodeClass);
             if (dstMathNodeClass != null) {
                 Class<? extends VisualComponent> dstVisualComponentClass = getVisualComponentClass(dstMathNodeClass);
                 if (dstVisualComponentClass != null) {
                     String path = NamespaceHelper.getParentReference(srcRef);
                     Container container = getRefToDstPage(path);
                     String srcName = NamespaceHelper.getReferenceName(srcRef);
-                    String dstName = convertNodeName(srcName, container);
+                    String dstName = convertNodeName(srcName, container, srcMathNodeClass);
                     Container mathContainer = NamespaceHelper.getMathContainer(getDstModel(), container);
                     MathModel dstMathModel = getDstModel().getMathModel();
                     MathNode dstMathNode = dstMathModel.createNode(dstName, mathContainer, dstMathNodeClass);
-
                     dstComponent = getDstModel().createVisualComponent(dstMathNode, dstVisualComponentClass, container);
                 }
             }
