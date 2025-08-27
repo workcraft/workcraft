@@ -90,14 +90,19 @@ class FileUtilsTests {
 
     @Test
     void testContainsKeyword() throws IOException {
+        File emptyFile = FileUtils.createTempFile("empty", ".txt");
+        Assertions.assertTrue(FileUtils.containsKeyword(emptyFile, ""));
+        Assertions.assertFalse(FileUtils.containsKeyword(emptyFile, " "));
+
         File file = FileUtils.createTempFile("test", ".txt");
-        String text = " \nabc\n123 \n\n";
+        String text = " \nabc\n123 \n\neof";
         FileUtils.writeAllText(file, text);
         Assertions.assertTrue(FileUtils.containsKeyword(file, ""));
         Assertions.assertTrue(FileUtils.containsKeyword(file, "abc"));
         Assertions.assertTrue(FileUtils.containsKeyword(file, "12"));
         Assertions.assertFalse(FileUtils.containsKeyword(file, "key1"));
         Assertions.assertFalse(FileUtils.containsKeyword(file, "c\n1"));
+        Assertions.assertTrue(FileUtils.containsKeyword(file, "eof"));
     }
 
     @Test
