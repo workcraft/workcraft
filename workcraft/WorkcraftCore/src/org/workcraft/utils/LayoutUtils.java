@@ -29,8 +29,7 @@ public final class LayoutUtils {
         int nodeCount = Hierarchy.getDescendantsOfType(root, VisualNode.class).size();
         int answer = 0;
         if (nodeCount > EditorCommonSettings.getLargeModelSize()) {
-            String message = "The model may be too large for automatic"
-                    + "\nlayout (" + nodeCount + " elements)."
+            String message = "The model may be too large for automatic layout (" + nodeCount + " elements)."
                     + "\nPerform layout anyway before opening in editor?";
 
             answer = DialogUtils.showYesNoCancel(message, "Graph layout",
