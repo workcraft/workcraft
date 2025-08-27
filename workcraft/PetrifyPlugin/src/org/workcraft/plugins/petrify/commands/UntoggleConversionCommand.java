@@ -15,7 +15,7 @@ public class UntoggleConversionCommand extends AbstractConversionCommand {
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override
