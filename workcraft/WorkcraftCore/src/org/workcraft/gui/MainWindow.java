@@ -664,12 +664,7 @@ public class MainWindow extends JFrame {
         if (DialogUtils.showFileOpener(fc)) {
             final HashSet<WorkspaceEntry> newWorkspaceEntries = new HashSet<>();
             for (File file : fc.getSelectedFiles()) {
-                File workFile = file;
-                String path = file.getPath();
-                if (!FileFilters.isWorkPath(path)) {
-                    workFile = new File(path + FileFilters.DOCUMENT_EXTENSION);
-                }
-                WorkspaceEntry we = openWork(workFile);
+                WorkspaceEntry we = openWork(FileFilters.addWorkExtensionIfMissing(file));
                 if (we != null) {
                     newWorkspaceEntries.add(we);
                 }
@@ -711,12 +706,7 @@ public class MainWindow extends JFrame {
         fc.setMultiSelectionEnabled(true);
         if (DialogUtils.showFileOpener(fc)) {
             for (File file : fc.getSelectedFiles()) {
-                File workFile = file;
-                String path = file.getPath();
-                if (!FileFilters.isWorkPath(path)) {
-                    workFile = new File(path + FileFilters.DOCUMENT_EXTENSION);
-                }
-                mergeWork(workFile);
+                mergeWork(FileFilters.addWorkExtensionIfMissing(file));
             }
         }
     }
@@ -812,7 +802,7 @@ public class MainWindow extends JFrame {
         fc.setMultiSelectionEnabled(true);
         if (DialogUtils.showFileOpener(fc)) {
             for (File file : fc.getSelectedFiles()) {
-                importFrom(importer, file);
+                importFrom(importer, FileFilters.addImporterExtensionIfMissing(file, importer));
             }
         }
     }

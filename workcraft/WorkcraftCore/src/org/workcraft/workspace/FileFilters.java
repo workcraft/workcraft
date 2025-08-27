@@ -1,5 +1,7 @@
 package org.workcraft.workspace;
 
+import org.workcraft.interop.Importer;
+
 import javax.swing.filechooser.FileFilter;
 import java.io.File;
 
@@ -50,12 +52,24 @@ public final class FileFilters {
         return (path != null) && path.endsWith(DOCUMENT_EXTENSION);
     }
 
-    public static boolean isWorkspaceFile(File file) {
-        return (file != null) && isWorkspacePath(file.getName());
+    private static boolean isWorkspaceFile(File file) {
+        return (file != null) && file.getName().endsWith(WORKSPACE_EXTENSION);
     }
 
-    public static boolean isWorkspacePath(String path) {
-        return (path != null) && path.endsWith(WORKSPACE_EXTENSION);
+    public static File addWorkExtensionIfMissing(File file) {
+        return addExtensionIfMissing(file, DOCUMENT_EXTENSION);
+    }
+
+    public static File addImporterExtensionIfMissing(File file, Importer importer) {
+        return addExtensionIfMissing(file, importer.getFormat().getExtension());
+    }
+
+    private static File addExtensionIfMissing(File file, String extension) {
+        return (file == null) ? null : new File(addExtensionIfMissing(file.getPath(), extension));
+    }
+
+    private static String addExtensionIfMissing(String path, String extension) {
+        return ((path == null) || (extension == null) || path.endsWith(extension)) ? path : (path + extension);
     }
 
 }
