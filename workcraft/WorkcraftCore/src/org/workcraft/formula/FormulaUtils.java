@@ -42,7 +42,24 @@ public class FormulaUtils {
 
         BooleanFormula result = null;
         if (formula != null) {
-            result = formula.accept(new BooleanReplacer(variables, values, worker));
+            if (variables.size() != values.size()) {
+                throw new RuntimeException("Length of the variable list must be equal to that of formula list.");
+            }
+            Map<BooleanVariable, BooleanFormula> variableToValueMap = new HashMap<>();
+            for (int i = 0; i < variables.size(); i++) {
+                variableToValueMap.put(variables.get(i), values.get(i));
+            }
+            result = formula.accept(new BooleanReplacer(variableToValueMap, worker));
+        }
+        return result;
+    }
+
+    public static BooleanFormula replace(BooleanFormula formula,
+            Map<? extends BooleanVariable, ? extends BooleanFormula> variableToValueMap, BooleanWorker worker) {
+
+        BooleanFormula result = null;
+        if (formula != null) {
+            result = formula.accept(new BooleanReplacer(variableToValueMap, worker));
         }
         return result;
     }
@@ -88,11 +105,11 @@ public class FormulaUtils {
     }
 
     public static BooleanFormula invert(BooleanFormula formula) {
-        return formula == null ? null : formula.accept(Inverter.getInstance());
+        return (formula == null) ? null : formula.accept(Inverter.getInstance());
     }
 
     public static BooleanFormula propagateInversion(BooleanFormula formula) {
-        return formula == null ? null : FormulaUtils.invert(formula.accept(
+        return (formula == null) ? null : FormulaUtils.invert(formula.accept(
                 new BooleanComplementTransformer(CleverBooleanWorker.getInstance())));
     }
 

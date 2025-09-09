@@ -35,10 +35,8 @@ import java.util.stream.Collectors;
 
 public final class CircuitUtils {
 
-    private static final String ARROW_DOWN_SYMBOL = Character.toString((char) 0x2193);
-    private static final String ARROW_UP_SYMBOL = Character.toString((char) 0x2191);
-    private static final String RESET_FUNCTION_PREFIX = ARROW_DOWN_SYMBOL + " = ";
-    private static final String SET_FUNCTION_PREFIX = ARROW_UP_SYMBOL + " = ";
+    private static final String DOWN_ARROW_SYMBOL = Character.toString((char) 0x2193);
+    private static final String UP_ARROW_SYMBOL = Character.toString((char) 0x2191);
 
     private CircuitUtils() {
     }
@@ -475,22 +473,10 @@ public final class CircuitUtils {
         boolean isFirstOutputPin = true;
         for (FunctionContact outputPin : cell.getFunctionOutputs()) {
             String outputName = outputPin.getName();
-
             BooleanFormula setFunction = outputPin.getSetFunction();
-            String setString = StringGenerator.toString(setFunction);
-
             BooleanFormula resetFunction = outputPin.getResetFunction();
-            String resetString = StringGenerator.toString(resetFunction);
 
-            String outputDetail = null;
-            if (!setString.isEmpty() && resetString.isEmpty()) {
-                outputDetail = outputName + " = " + setString;
-            } else if (setString.isEmpty() && !resetString.isEmpty()) {
-                outputDetail = outputName + RESET_FUNCTION_PREFIX + resetString;
-            } else if (!setString.isEmpty()) {
-                outputDetail = outputName + SET_FUNCTION_PREFIX + setString
-                        + ", " + outputName + RESET_FUNCTION_PREFIX + resetString;
-            }
+            String outputDetail = getOutputFunctionString(setFunction, resetFunction, outputName);
             if (outputDetail != null) {
                 if (!isFirstOutputPin) {
                     outputDetails.append("; ");
@@ -502,6 +488,38 @@ public final class CircuitUtils {
         String result = circuit.getComponentReference(cell);
         if (!outputDetails.isEmpty()) {
             result += " [" + outputDetails + "]";
+        }
+        return result;
+    }
+
+    public static String getOutputFunctionString(BooleanFormula setFunction, BooleanFormula resetFunction,
+            String outputName) {
+
+        String result = null;
+        if (outputName == null) {
+            outputName = "";
+        }
+        String setString = StringGenerator.toString(setFunction);
+        String resetString = StringGenerator.toString(resetFunction);
+        if (!setString.isEmpty() && resetString.isEmpty()) {
+            if (outputName.isEmpty()) {
+                result = setString;
+            } else {
+                result = outputName + " = " + setString;
+            }
+        } else if (setString.isEmpty() && !resetString.isEmpty()) {
+            if (outputName.isEmpty()) {
+                result = DOWN_ARROW_SYMBOL + ": " + resetString;
+            } else {
+                result = outputName + DOWN_ARROW_SYMBOL + " = " + resetString;
+            }
+        } else if (!setString.isEmpty()) {
+            if (outputName.isEmpty()) {
+                result = UP_ARROW_SYMBOL + ": " + setString + ", " + DOWN_ARROW_SYMBOL + ": " + resetString;
+            } else {
+                result = outputName + UP_ARROW_SYMBOL + " = " + setString + ", "
+                        + outputName + DOWN_ARROW_SYMBOL + " = " + resetString;
+            }
         }
         return result;
     }

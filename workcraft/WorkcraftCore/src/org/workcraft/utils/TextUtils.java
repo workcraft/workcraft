@@ -339,7 +339,7 @@ public class TextUtils {
     }
 
     public static String getBulletpointPair(String key, String value) {
-        return getBulletpoint(key + ((value == null) || value.isEmpty() ? " is empty" : (": " + value)));
+        return getBulletpoint(key + ": " + ((value == null) || value.isEmpty() ? "<empty>" : value));
     }
 
     public static String getBulletpointPair(String key, Collection<String> values) {

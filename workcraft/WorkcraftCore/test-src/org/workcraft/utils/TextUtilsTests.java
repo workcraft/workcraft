@@ -235,7 +235,7 @@ class TextUtilsTests {
 
     @Test
     void getBulletpointPairTest() {
-        Assertions.assertEquals('\n' + BULLET_PREFIX + "key is empty",
+        Assertions.assertEquals('\n' + BULLET_PREFIX + "key: <empty>",
                 TextUtils.getBulletpointPair("key", ""));
 
         Assertions.assertEquals('\n' + BULLET_PREFIX + "key: value",

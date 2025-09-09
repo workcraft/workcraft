@@ -267,10 +267,9 @@ public final class ScanUtils {
             result = CircuitUtils.getOrCreatePort(circuit, portName, Contact.IOType.INPUT, direction);
         }
         if (result != null) {
-            result.setSetFunction(Zero.getInstance());
-            result.setResetFunction(One.getInstance());
             result.setInitToOne(initToOne);
             result.setForcedInit(true);
+            result.setBothFunctions(Zero.getInstance(), One.getInstance());
         }
         return result;
     }
@@ -406,11 +405,13 @@ public final class ScanUtils {
         VisualContact port = CircuitUtils.getOrCreatePort(circuit, portName,
                 Contact.IOType.OUTPUT, VisualContact.Direction.EAST);
 
-        CircuitUtils.disconnectContact(circuit, port);
-        CircuitUtils.connectIfPossible(circuit, pin, port);
-        port.setInitToOne(pin.getInitToOne());
-        SpaceUtils.positionPortAtBottom(circuit, port, true);
-        ConversionUtils.replicateDriverContact(circuit, port);
+        if (port != null) {
+            CircuitUtils.disconnectContact(circuit, port);
+            CircuitUtils.connectIfPossible(circuit, pin, port);
+            port.setInitToOne(pin.getInitToOne());
+            SpaceUtils.positionPortAtBottom(circuit, port, true);
+            ConversionUtils.replicateDriverContact(circuit, port);
+        }
     }
 
     private static VisualContact getOrCreateContact(VisualCircuit circuit, VisualFunctionComponent component,
