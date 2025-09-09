@@ -499,17 +499,25 @@ public final class GateUtils {
         Set<String> invertedPins = extendedMapping.getThird();
         component.getReferencedComponent().setModule(gate.name);
 
+        Map<BooleanVariable, BooleanFormula> pinToInvertedPinMap
+                = convertInputPins(circuit, component, pinRenames, invertedPins);
+
+
         VisualFunctionContact outputPin = component.getGateOutput();
-        BooleanFormula setFunction = outputPin.getSetFunction();
-        BooleanFormula newSetFunction = convertInputPins(circuit, component, pinRenames, invertedPins, setFunction);
-        return convertOutputPin(circuit, gate, outputPin, invertedPins, newSetFunction);
+
+        BooleanFormula newSetFunction = FormulaUtils.replace(outputPin.getSetFunction(),
+                pinToInvertedPinMap, CleverBooleanWorker.getInstance());
+
+        BooleanFormula newResetFunction = FormulaUtils.replace(outputPin.getResetFunction(),
+                pinToInvertedPinMap, CleverBooleanWorker.getInstance());
+
+        return convertOutputPin(circuit, gate, outputPin, invertedPins, newSetFunction, newResetFunction);
     }
 
-    private static BooleanFormula convertInputPins(VisualCircuit circuit, VisualFunctionComponent component,
-            Map<BooleanVariable, String> pinRenames, Set<String> invertedPins, BooleanFormula setFunction) {
+    private static Map<BooleanVariable, BooleanFormula> convertInputPins(VisualCircuit circuit,
+            VisualFunctionComponent component, Map<BooleanVariable, String> pinRenames, Set<String> invertedPins) {
 
-        List<BooleanVariable> invertedInputVars = new ArrayList<>();
-        List<BooleanFormula> newInvertedInputVars = new ArrayList<>();
+        Map<BooleanVariable, BooleanFormula> result = new HashMap<>();
         for (VisualContact inputPin : component.getVisualInputs()) {
             Contact inputPinVar = inputPin.getReferencedComponent();
             String newInputPinName = pinRenames.get(inputPinVar);
@@ -518,8 +526,7 @@ public final class GateUtils {
             }
             circuit.setMathName(inputPin, Identifier.makeInternal(newInputPinName));
             if (invertedPins.contains(newInputPinName)) {
-                invertedInputVars.add(inputPinVar);
-                newInvertedInputVars.add(new Not(inputPinVar));
+                result.put(inputPinVar, new Not(inputPinVar));
             }
         }
 
@@ -550,8 +557,7 @@ public final class GateUtils {
                 }
             }
         }
-        return FormulaUtils.replace(setFunction, invertedInputVars, newInvertedInputVars,
-                CleverBooleanWorker.getInstance());
+        return result;
     }
 
     private static VisualFunctionComponent getDedicatedTrivialDriverOrNull(
@@ -574,7 +580,7 @@ public final class GateUtils {
     }
 
     private static VisualContact convertOutputPin(VisualCircuit circuit, Gate gate, VisualFunctionContact outputPin,
-            Set<String> invertedPins, BooleanFormula setFunction) {
+            Set<String> invertedPins, BooleanFormula setFunction, BooleanFormula resetFunction) {
 
         VisualContact result = outputPin;
         String newOutputPinName = gate.function.name;
@@ -599,9 +605,10 @@ public final class GateUtils {
                 }
                 outputPin.setInitToOne(!initToOne);
                 setFunction = FormulaUtils.invert(setFunction);
+                resetFunction = FormulaUtils.invert(setFunction);
             }
         }
-        updateFunction(gate, setFunction, outputPin);
+        updateFunction(gate, outputPin, setFunction, resetFunction);
         return result;
     }
 
@@ -619,15 +626,18 @@ public final class GateUtils {
         return null;
     }
 
-    private static void updateFunction(Gate gate, BooleanFormula setFunction, VisualFunctionContact outputPin) {
+    private static void updateFunction(Gate gate, VisualFunctionContact outputPin,
+            BooleanFormula setFunction, BooleanFormula resetFunction) {
+
         try {
-            BooleanFormula gateFormula = BooleanFormulaParser.parse(gate.function.formula);
+            BooleanFormula gateFormula = BooleanFormulaParser.parse(GenlibUtils.getSetFunction(gate));
             if ((setFunction instanceof Not) != (gateFormula instanceof Not)) {
                 setFunction = FormulaUtils.propagateInversion(setFunction);
+                resetFunction = FormulaUtils.propagateInversion(resetFunction);
             }
         } catch (ParseException ignored) {
         }
-        outputPin.setSetFunction(setFunction);
+        outputPin.setBothFunctions(setFunction, resetFunction);
     }
 
     private static void convertBufferToInverter(VisualCircuit circuit, VisualFunctionComponent component) {
