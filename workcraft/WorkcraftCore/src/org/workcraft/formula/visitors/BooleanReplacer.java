@@ -4,7 +4,6 @@ import org.workcraft.formula.*;
 import org.workcraft.formula.workers.BooleanWorker;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
@@ -15,17 +14,6 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
 
     private final HashMap<BooleanFormula, BooleanFormula> map;
     private final BooleanWorker worker;
-
-    public BooleanReplacer(List<? extends BooleanVariable> from, List<? extends BooleanFormula> to, BooleanWorker worker) {
-        this.map = new HashMap<>();
-        if (from.size() != to.size()) {
-            throw new RuntimeException("Length of the variable list must be equal to that of formula list.");
-        }
-        for (int i = 0; i < from.size(); i++) {
-            this.map.put(from.get(i), to.get(i));
-        }
-        this.worker = worker;
-    }
 
     public BooleanReplacer(Map<? extends BooleanVariable, ? extends BooleanFormula> map, BooleanWorker worker) {
         this.map = new HashMap<>(map);
