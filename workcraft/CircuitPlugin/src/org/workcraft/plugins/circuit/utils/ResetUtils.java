@@ -275,6 +275,9 @@ public final class ResetUtils {
     private static BooleanFormula getFormulaWithReset(BooleanFormula formula, BooleanVariable initVar,
             boolean activeLow, boolean initToOne) {
 
+        if (formula == null) {
+            return null;
+        }
         if (initToOne) {
             if (activeLow) {
                 if (formula instanceof Not notFormula) {
@@ -395,12 +398,9 @@ public final class ResetUtils {
         BooleanFormula resetFunction = contact.getResetFunction();
         Contact initVar = resetContact.getReferencedComponent();
         boolean initToOne = contact.getInitToOne();
-        if (setFunction != null) {
-            contact.setSetFunction(getFormulaWithReset(setFunction, initVar, activeLow, initToOne));
-        }
-        if (resetFunction != null) {
-            contact.setResetFunction(getFormulaWithReset(resetFunction, initVar, activeLow, !initToOne));
-        }
+        contact.setBothFunctions(
+                getFormulaWithReset(setFunction, initVar, activeLow, initToOne),
+                getFormulaWithReset(resetFunction, initVar, activeLow, !initToOne));
     }
 
     private static void insertResetGate(VisualCircuit circuit, VisualContact resetPort,
@@ -424,8 +424,9 @@ public final class ResetUtils {
     private static void setInitialisationProtocol(VisualCircuit circuit, VisualFunctionContact resetPort, boolean activeLow) {
         resetPort.setInitToOne(!activeLow);
         resetPort.setForcedInit(true);
-        resetPort.setSetFunction(activeLow ? One.getInstance() : Zero.getInstance());
-        resetPort.setResetFunction(activeLow ? Zero.getInstance() : One.getInstance());
+        resetPort.setBothFunctions(activeLow ? One.getInstance() : Zero.getInstance(),
+                activeLow ? Zero.getInstance() : One.getInstance());
+
         for (VisualFunctionContact contact : circuit.getVisualFunctionContacts()) {
             if (contact.isPin() && contact.isOutput()) {
                 contact.setForcedInit(false);

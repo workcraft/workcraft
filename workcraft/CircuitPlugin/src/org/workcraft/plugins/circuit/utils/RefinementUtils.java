@@ -180,6 +180,7 @@ public final class RefinementUtils {
                 Set<BooleanVariable> variables = FormulaUtils.extractVariables(gateFormula);
                 return variables.stream()
                         .map(BooleanVariable::getLabel)
+                        .filter(inputSignal -> !inputSignal.equals(gate.seq))
                         .collect(Collectors.toSet());
             } catch (ParseException e) {
                 throw new RuntimeException(e);
@@ -407,8 +408,7 @@ public final class RefinementUtils {
 
     public static void removeComponentFunctions(VisualFunctionComponent component) {
         for (VisualFunctionContact contact : component.getVisualFunctionContacts()) {
-            contact.setSetFunction(null);
-            contact.setResetFunction(null);
+            contact.setBothFunctions(null, null);
         }
     }
 

@@ -84,6 +84,14 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         renderedResetFunction = null;
     }
 
+    public void setBothFunctions(BooleanFormula setFunction, BooleanFormula resetFunction) {
+        if (getParent() instanceof VisualFunctionComponent p) {
+            p.invalidateRenderingResult();
+        }
+        renderedSetFunction = null;
+        getReferencedComponent().setBothFunctions(setFunction, resetFunction);
+    }
+
     private Font getFunctionFont() {
         return functionFont.deriveFont((float) CircuitSettings.getContactFontSize());
     }
