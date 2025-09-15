@@ -37,11 +37,11 @@ class VerificationCommandTests {
                 null,  // combined
                 null,  // consistency
                 null,  // output determinacy
-                false, // deadlock freeness
                 null,  // input properness
                 null,  // mutex protocol
                 null,  // output persistency
                 null,  // absence of self-triggering local signals
+                false, // deadlock freeness
                 null,  // DI interface
                 null,  // CSC
                 null,  // USC
@@ -56,11 +56,11 @@ class VerificationCommandTests {
                 null,  // combined
                 null,  // consistency
                 null,  // output determinacy
-                true,  // deadlock freeness
                 null,  // input properness
                 null,  // mutex protocol
                 null,  // output persistency
                 null,  // absence of self-triggering local signals
+                true,  // deadlock freeness
                 null,  // DI interface
                 null,  // CSC
                 null,  // USC
@@ -75,11 +75,11 @@ class VerificationCommandTests {
                 true,  // combined
                 true,  // consistency
                 true,  // output determinacy
-                true,  // deadlock freeness
                 true,  // input properness
                 null,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
+                true,  // deadlock freeness
                 true,  // DI interface
                 false, // CSC
                 false, // USC
@@ -94,11 +94,11 @@ class VerificationCommandTests {
                 false,  // combined
                 true,  // consistency
                 true,  // output determinacy
-                true,  // deadlock freeness
                 true,  // input properness
                 true,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
+                true,  // deadlock freeness
                 false, // DI interface
                 true,  // CSC
                 true,  // USC
@@ -113,11 +113,11 @@ class VerificationCommandTests {
                 false, // combined
                 true,  // consistency
                 true,  // output determinacy
-                false, // deadlock freeness
                 true,  // input properness
                 null,  // mutex protocol
                 false, // output persistency
                 true,  // absence of self-triggering local signals
+                false, // deadlock freeness
                 false, // DI interface
                 true,  // CSC
                 false, // USC
@@ -132,11 +132,11 @@ class VerificationCommandTests {
                 null, // combined
                 true,  // consistency
                 true,  // output determinacy
-                true,  // deadlock freeness
                 true,  // input properness
                 null,  // mutex protocol
                 null,  // output persistency
                 true,  // absence of self-triggering local signals
+                true,  // deadlock freeness
                 true,  // DI interface
                 true,  // CSC
                 true,  // USC
@@ -151,11 +151,11 @@ class VerificationCommandTests {
                 false, // combined
                 true,  // consistency
                 true,  // output determinacy
-                true,  // deadlock freeness
                 true,  // input properness
                 false, // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
+                true,  // deadlock freeness
                 true,  // DI interface
                 true,  // CSC
                 true,  // USC
@@ -170,11 +170,11 @@ class VerificationCommandTests {
                 true, // combined
                 true,  // consistency
                 true,  // output determinacy
-                true,  // deadlock freeness
                 true,  // input properness
                 true,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
+                true,  // deadlock freeness
                 true,  // DI interface
                 true,  // CSC
                 true,  // USC
@@ -183,17 +183,36 @@ class VerificationCommandTests {
     }
 
     @Test
-    void testInconsistentVerification() throws DeserialisationException {
+    void testConsistencyNoAlternationVerification() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "consistency_violation-no_alternation.stg.work");
         testVerificationCommands(workName,
                 false, // combined
                 false, // consistency
                 true,  // output determinacy
-                null,  // deadlock freeness
                 null,  // input properness
                 null,  // mutex protocol
                 null,  // output persistency
                 null,  // absence of self-triggering local signals
+                null,  // deadlock freeness
+                null,  // DI interface
+                null,  // CSC
+                null,  // USC
+                null   // normalcy
+        );
+    }
+
+    @Test
+    void testConsistencyConflictVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "consistency_violation-conflict.stg.work");
+        testVerificationCommands(workName,
+                false, // combined
+                false, // consistency
+                true,  // output determinacy
+                null,  // input properness
+                null,  // mutex protocol
+                null,  // output persistency
+                null,  // absence of self-triggering local signals
+                null,  // deadlock freeness
                 null,  // DI interface
                 null,  // CSC
                 null,  // USC
@@ -210,11 +229,11 @@ class VerificationCommandTests {
                 false, // combined
                 true,  // consistency
                 false, // output determinacy
-                true,  // deadlock freeness
                 false, // input properness
                 null,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
+                true,  // deadlock freeness
                 true,  // DI interface
                 false, // CSC
                 false, // USC
@@ -229,11 +248,11 @@ class VerificationCommandTests {
                 false, // combined
                 true,  // consistency
                 true,  // output determinacy
-                true,  // deadlock freeness
                 true,  // input properness
                 null,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
+                true,  // deadlock freeness
                 false, // DI interface
                 true,  // CSC
                 true,  // USC
@@ -248,11 +267,11 @@ class VerificationCommandTests {
                 false, // combined
                 true,  // consistency
                 true,  // output determinacy
-                true,  // deadlock freeness
                 true,  // input properness
                 null,  // mutex protocol
                 true,  // output persistency
                 false, // absence of self-triggering local signals
+                true,  // deadlock freeness
                 false, // DI interface
                 false, // CSC
                 false, // USC
@@ -267,11 +286,11 @@ class VerificationCommandTests {
                 true, // combined
                 true,  // consistency
                 true,  // output determinacy
-                true,  // deadlock freeness
                 true,  // input properness
                 null,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
+                true,  // deadlock freeness
                 true,  // DI interface
                 false, // CSC
                 false, // USC
@@ -280,10 +299,9 @@ class VerificationCommandTests {
     }
 
     private void testVerificationCommands(String workName, Boolean combined,
-            Boolean consistency, Boolean outputDeterminacy,
-            Boolean deadlockFreeness, Boolean inputProperness,
+            Boolean consistency, Boolean outputDeterminacy, Boolean inputProperness,
             Boolean mutexProtocol, Boolean outputPersistency,
-            Boolean localSelfTriggering, Boolean diInterface,
+            Boolean localSelfTriggering, Boolean deadlockFreeness, Boolean diInterface,
             Boolean csc, Boolean usc, Boolean normalcy)
             throws DeserialisationException {
 
@@ -301,9 +319,6 @@ class VerificationCommandTests {
         OutputDeterminacyVerificationCommand determinacyCommand = new OutputDeterminacyVerificationCommand();
         Assertions.assertEquals(outputDeterminacy, determinacyCommand.execute(we));
 
-        DeadlockFreenessVerificationCommand deadlockCommand = new DeadlockFreenessVerificationCommand();
-        Assertions.assertEquals(deadlockFreeness, deadlockCommand.execute(we));
-
         InputPropernessVerificationCommand inputPropernessCommand = new InputPropernessVerificationCommand();
         Assertions.assertEquals(inputProperness, inputPropernessCommand.execute(we));
 
@@ -313,11 +328,14 @@ class VerificationCommandTests {
         OutputPersistencyVerificationCommand persistencyCommand = new OutputPersistencyVerificationCommand();
         Assertions.assertEquals(outputPersistency, persistencyCommand.execute(we));
 
-        DiInterfaceVerificationCommand diInterfaceCommand = new DiInterfaceVerificationCommand();
-        Assertions.assertEquals(diInterface, diInterfaceCommand.execute(we));
-
         LocalSelfTriggeringVerificationCommand localSelfTriggeringCommand = new LocalSelfTriggeringVerificationCommand();
         Assertions.assertEquals(localSelfTriggering, localSelfTriggeringCommand.execute(we));
+
+        DeadlockFreenessVerificationCommand deadlockCommand = new DeadlockFreenessVerificationCommand();
+        Assertions.assertEquals(deadlockFreeness, deadlockCommand.execute(we));
+
+        DiInterfaceVerificationCommand diInterfaceCommand = new DiInterfaceVerificationCommand();
+        Assertions.assertEquals(diInterface, diInterfaceCommand.execute(we));
 
         CscVerificationCommand cscCommand = new CscVerificationCommand();
         Assertions.assertEquals(csc, cscCommand.execute(we));
