@@ -36,11 +36,11 @@ class VerificationCommandTests {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
-                true,  // deadlock freeness
                 true,  // output persistency
-                true,   // strict implementation
+                true,  // deadlock freeness
+                true,  // strict implementation
                 true,  // binate implementation
-                null // refinement
+                null   // refinement
         );
     }
 
@@ -49,11 +49,11 @@ class VerificationCommandTests {
         String workName = PackageUtils.getPackagePath(getClass(), "buffer-without_environment.circuit.work");
         testVerificationCommands(workName,
                 null,  // conformation
-                true,  // deadlock freeness
                 false, // output persistency
-                null,   // strict implementation
+                true,  // deadlock freeness
+                null,  // strict implementation
                 true,  // binate implementation
-                null // refinement
+                null   // refinement
         );
     }
 
@@ -62,24 +62,50 @@ class VerificationCommandTests {
         String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
-                true,  // deadlock freeness
                 true,  // output persistency
-                true,   // strict implementation
+                true,  // deadlock freeness
+                true,  // strict implementation
                 true,  // binate implementation
-                true // refinement
+                true   // refinement
         );
     }
 
     @Test
-    void mutexBufVerification() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "mutex-buf.circuit.work");
+    void celementDeadlockVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-deadlock.circuit.work");
+        testVerificationCommands(workName,
+                true,  // conformation
+                true,  // output persistency
+                false, // deadlock freeness
+                true,  // strict implementation
+                true,  // binate implementation
+                true   // refinement
+        );
+    }
+
+    @Test
+    void mutexEarlyBufVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "mutex-early-buf.circuit.work");
+        testVerificationCommands(workName,
+                true,  // conformation
+                true,  // output persistency
+                true,  // deadlock freeness
+                null,  // strict implementation
+                true,  // binate implementation
+                false  // refinement
+        );
+    }
+
+    @Test
+    void mutexLateBufVerification() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "mutex-late-buf.circuit.work");
         testVerificationCommands(workName,
                 false,  // conformation
-                true,  // deadlock freeness
                 true,  // output persistency
-                null,   // strict implementation
+                true,  // deadlock freeness
+                null,  // strict implementation
                 true,  // binate implementation
-                false // refinement
+                false  // refinement
         );
     }
 
@@ -88,11 +114,11 @@ class VerificationCommandTests {
         String workName = PackageUtils.getPackagePath(getClass(), "celement-decomposed-tm.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
-                true,  // deadlock freeness
                 true,  // output persistency
-                null,   // strict implementation
+                true,  // deadlock freeness
+                null,  // strict implementation
                 true,  // binate implementation
-                true // refinement
+                true   // refinement
         );
     }
 
@@ -101,11 +127,11 @@ class VerificationCommandTests {
         String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
-                true,  // deadlock freeness
                 true,  // output persistency
+                true,  // deadlock freeness
                 null,  // strict implementation
-                false,  // binate implementation
-                true // refinement
+                false, // binate implementation
+                true   // refinement
         );
     }
 
@@ -114,11 +140,11 @@ class VerificationCommandTests {
         String workName = PackageUtils.getPackagePath(getClass(), "abcd-bad-tm.circuit.work");
         testVerificationCommands(workName,
                 false,  // conformation
+                false, // output persistency
                 true,  // deadlock freeness
-                false,  // output persistency
                 null,  // strict implementation
                 true,  // binate implementation
-                false // refinement
+                false  // refinement
         );
     }
 
@@ -127,11 +153,11 @@ class VerificationCommandTests {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch-tm.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
-                true,  // deadlock freeness
                 true,  // output persistency
+                true,  // deadlock freeness
                 true,  // strict implementation
-                false,  // binate implementation
-                true // refinement
+                false, // binate implementation
+                true   // refinement
         );
     }
 
@@ -140,17 +166,22 @@ class VerificationCommandTests {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch-consensus-tm.circuit.work");
         testVerificationCommands(workName,
                 true,  // conformation
-                true,  // deadlock freeness
                 true,  // output persistency
+                true,  // deadlock freeness
                 true,  // strict implementation
                 true,  // binate implementation
-                true // refinement
+                true   // refinement
         );
     }
 
     private void testVerificationCommands(String workName,
-            Boolean conformation, Boolean deadlockFreeness, Boolean outputPersistency,
-            Boolean strictImplementation, Boolean binateImplementation, Boolean refinement) throws DeserialisationException {
+            Boolean conformation,
+            Boolean outputPersistency,
+            Boolean deadlockFreeness,
+            Boolean strictImplementation,
+            Boolean binateImplementation,
+            Boolean refinement)
+            throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -158,23 +189,23 @@ class VerificationCommandTests {
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
-        ConformationVerificationCommand conformationCommand = new ConformationVerificationCommand();
-        Assertions.assertEquals(conformation, conformationCommand.execute(we));
+        Assertions.assertEquals(conformation,
+                new ConformationVerificationCommand().execute(we));
 
-        DeadlockFreenessVerificationCommand deadlockFreenessCommand = new DeadlockFreenessVerificationCommand();
-        Assertions.assertEquals(deadlockFreeness, deadlockFreenessCommand.execute(we));
+        Assertions.assertEquals(outputPersistency,
+                new OutputPersistencyVerificationCommand().execute(we));
 
-        OutputPersistencyVerificationCommand outputPersistencyCommand = new OutputPersistencyVerificationCommand();
-        Assertions.assertEquals(outputPersistency, outputPersistencyCommand.execute(we));
+        Assertions.assertEquals(deadlockFreeness,
+                new DeadlockFreenessVerificationCommand().execute(we));
 
-        BinateImplementationVerificationCommand binateImplementationCommand = new BinateImplementationVerificationCommand();
-        Assertions.assertEquals(binateImplementation, binateImplementationCommand.execute(we));
+        Assertions.assertEquals(binateImplementation,
+                new BinateImplementationVerificationCommand().execute(we));
 
-        StrictImplementationVerificationCommand strictImplementationCommand = new StrictImplementationVerificationCommand();
-        Assertions.assertEquals(strictImplementation, strictImplementationCommand.execute(we));
+        Assertions.assertEquals(strictImplementation,
+                new StrictImplementationVerificationCommand().execute(we));
 
-        RefinementVerificationCommand refinementCommand = new RefinementVerificationCommand();
-        Assertions.assertEquals(refinement, refinementCommand.execute(we));
+        Assertions.assertEquals(refinement,
+                new RefinementVerificationCommand().execute(we));
 
         framework.closeWork(we);
     }
