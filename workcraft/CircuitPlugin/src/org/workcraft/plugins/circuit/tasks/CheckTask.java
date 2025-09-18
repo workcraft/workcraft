@@ -58,13 +58,12 @@ public class CheckTask implements Task<VerificationChainOutput> {
             // Common variables
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = circuit.getMathModel().getEnvironmentFile();
-            LinkedList<Pair<String, String>> exceptionPairs = new LinkedList<>();
-            exceptionPairs.addAll(ArbitrationUtils.getMutexGrantPersistencyExceptions(circuit.getMathModel()));
-            exceptionPairs.addAll(ArbitrationUtils.getWaitPersistencyExceptions(circuit.getMathModel(), false));
+            LinkedList<Pair<String, String>> exceptionPairs = ArbitrationUtils.getOutputPersistencyExceptions(circuit.getMathModel());
 
             // Load device STG
             CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
             Stg devStg = converter.getStg().getMathModel();
+            Collection<String> devOriginalOutputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
             // Expose mutex grants as outputs in the device STG (store the original signal type to apply in composition STG)
             Map<String, Signal.Type> originalMutexGrantTypes = ArbitrationUtils.exposeMutexGrants(devStg, exceptionPairs);
 
@@ -151,8 +150,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
 
                 // Insert shadow transitions into the composition STG for device outputs and internal signals
                 CompositionTransformer transformer = new CompositionTransformer(modSysStg, compositionData);
-                Collection<String> devOutputSignals = devStg.getSignalReferences(Signal.Type.OUTPUT);
-                Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(devOutputSignals, devStgFile);
+                Collection<SignalTransition> shadowTransitions = transformer.insetShadowTransitions(devOriginalOutputSignals, devStgFile);
 
                 // Insert a marked choice place shared by all shadow transitions (to prevent inconsistency)
                 StgPlace shadowEnablerPlace = transformer.insertShadowEnablerPlace(shadowTransitions);

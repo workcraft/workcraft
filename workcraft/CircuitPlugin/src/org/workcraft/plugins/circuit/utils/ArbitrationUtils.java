@@ -248,7 +248,7 @@ public class ArbitrationUtils {
         return getModuleNameToWaitMap().get(moduleName);
     }
 
-    public static LinkedList<Pair<String, String>> getWaitPersistencyExceptions(Circuit circuit,
+    private static LinkedList<Pair<String, String>> getWaitPersistencyExceptions(Circuit circuit,
             boolean useInternalSignal) {
 
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
@@ -345,7 +345,13 @@ public class ArbitrationUtils {
         return (component.getVisualInputs().size() == 2) && (component.getVisualOutputs().size() == 2);
     }
 
-    public static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Circuit circuit) {
+    public static LinkedList<Pair<String, String>> getOutputPersistencyExceptions(Circuit circuit) {
+        LinkedList<Pair<String, String>> result = getMutexGrantPersistencyExceptions(circuit);
+        result.addAll(getWaitPersistencyExceptions(circuit, false));
+        return result;
+    }
+
+    private static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Circuit circuit) {
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
         Map<String, Mutex> moduleNameToMutexMap = getModuleNameToMutexMap();
         for (FunctionComponent component : circuit.getFunctionComponents()) {

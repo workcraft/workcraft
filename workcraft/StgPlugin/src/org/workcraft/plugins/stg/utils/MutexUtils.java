@@ -18,8 +18,12 @@ public class MutexUtils {
     private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
 
     public static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Stg stg) {
+        return getMutexGrantPersistencyExceptions(getMutexes(stg));
+    }
+
+    public static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(List<Mutex> mutexes) {
         LinkedList<Pair<String, String>> result = new LinkedList<>();
-        for (Mutex mutex: getMutexes(stg)) {
+        for (Mutex mutex : mutexes) {
             result.add(Pair.of(mutex.g1.name, mutex.g2.name));
             result.add(Pair.of(mutex.g2.name, mutex.g1.name));
         }
