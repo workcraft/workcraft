@@ -424,14 +424,23 @@ public abstract class AbstractVerilogImporter implements Importer {
 
     private Mutex instanceToMutexWithProtocol(VerilogInstance verilogInstance, Collection<Mutex> mutexes) {
         String name = verilogInstance.name;
-
+        // Try to derive mutex protocol from STG place with the same name as instance
         Mutex.Protocol mutexProtocol = mutexes.stream()
                 .filter(mutex -> (mutex.name != null) && mutex.name.equals(name))
                 .findFirst()
                 .map(mutex -> mutex.protocol)
-                .orElse(Mutex.Protocol.EARLY);
+                .orElse(null);
 
-        Mutex mutexModule = CircuitSettings.parseMutexData(mutexProtocol);
+        // If there is no corresponding STG mutex place, then try to get it from instance module name
+        Mutex mutexModule = (mutexProtocol == null)
+                ? ArbitrationUtils.getMutexModule(verilogInstance.moduleName)
+                : CircuitSettings.parseMutexData(mutexProtocol);
+
+        // If still cannot determine mutex module, then fall back to Early protocol
+        if (mutexModule == null) {
+            mutexModule = CircuitSettings.parseMutexData(Mutex.Protocol.EARLY);
+        }
+        // If no heuristics work, then report error
         if (mutexModule == null) {
             LogUtils.logError(ArbitrationUtils.getMissingMutexMessage(mutexProtocol));
             return null;
@@ -441,8 +450,7 @@ public abstract class AbstractVerilogImporter implements Importer {
         Signal g1 = getPinConnectedSignal(verilogInstance, mutexModule.g1.name, 1);
         Signal r2 = getPinConnectedSignal(verilogInstance, mutexModule.r2.name, 2);
         Signal g2 = getPinConnectedSignal(verilogInstance, mutexModule.g2.name, 3);
-
-        return new Mutex(name, r1, g1, r2, g2, mutexProtocol);
+        return new Mutex(name, r1, g1, r2, g2, mutexModule.protocol);
     }
 
     private Signal getPinConnectedSignal(VerilogInstance verilogInstance, String portName, int portIndexIfNoPortName) {
