@@ -77,9 +77,16 @@ class ImportExportTests {
     }
 
     @Test
-    void testMutexImportExport() throws DeserialisationException {
-        String workName = PackageUtils.getPackagePath(getClass(), "mutex-buf.circuit.work");
-        String verilogName = PackageUtils.getPackagePath(getClass(), "mutex-buf.circuit.v");
+    void testMutexEarlyImportExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "mutex-early-buf.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "mutex-early-buf.circuit.v");
+        testImportExport(workName, verilogName);
+    }
+
+    @Test
+    void testMutexLateImportExport() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "mutex-late-buf.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "mutex-late-buf.circuit.v");
         testImportExport(workName, verilogName);
     }
 
