@@ -17,13 +17,11 @@ import org.workcraft.plugins.petri.*;
 import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.plugins.stg.tools.*;
 import org.workcraft.plugins.stg.utils.ConnectionUtils;
-import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 @DisplayName("Signal Transition Graph")
@@ -40,9 +38,7 @@ public class VisualStg extends AbstractVisualModel {
     @Override
     public void createDefaultStructure() {
         super.createDefaultStructure();
-        // Convert dual producer-consumer arcs into read-arcs
-        HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = ConversionUtils.getSelectedOrAllDualArcs(this);
-        ConversionUtils.convertDualArcsToReadArcs(this, dualArcs);
+        ConversionUtils.convertDualArcsToReadArcs(this);
 
         // Hide implicit places
         // FIXME: Implicit places should not appear in the first place.

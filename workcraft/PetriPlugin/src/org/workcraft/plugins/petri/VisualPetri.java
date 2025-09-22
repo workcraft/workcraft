@@ -12,6 +12,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.tools.CommentGeneratorTool;
 import org.workcraft.plugins.petri.tools.*;
 import org.workcraft.plugins.petri.utils.ConnectionUtils;
+import org.workcraft.plugins.petri.utils.ConversionUtils;
 import org.workcraft.utils.Hierarchy;
 
 import java.util.Collection;
@@ -25,6 +26,12 @@ public class VisualPetri extends AbstractVisualModel {
 
     public VisualPetri(Petri model, VisualGroup root) {
         super(model, root);
+    }
+
+    @Override
+    public void createDefaultStructure() {
+        super.createDefaultStructure();
+        ConversionUtils.convertDualArcsToReadArcs(this);
     }
 
     @Override
