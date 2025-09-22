@@ -76,6 +76,7 @@ public class StgParser {
             } else if (signals.containsKey(refPair.getFirst())) {
                 Triple<String, SignalTransition.Direction, Integer> refTriple =
                     Triple.of(refPair.getFirst(), SignalTransition.Direction.TOGGLE, refPair.getSecond());
+
                 node = getOrCreate(refTriple);
             } else {
                 throw new FormatException("Undeclared transition encountered: "
