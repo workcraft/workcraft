@@ -1,13 +1,13 @@
 package org.workcraft.plugins.stg.commands;
 
-import org.workcraft.commands.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
+import org.workcraft.commands.NodeTransformer;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.utils.WorkspaceUtils;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -81,10 +81,10 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
 
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
-        if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
-            SignalTransition signalTransition = ((VisualSignalTransition) node).getReferencedComponent();
-            Signal.Type signalType = signalTransition.getSignalType();
-            signalTransition.setSignalType(signalType.mirror());
+        if ((model instanceof VisualStg visualStg) && (node instanceof VisualSignalTransition visualSignalTransition)) {
+            Stg stg = visualStg.getMathModel();
+            SignalTransition signalTransition = visualSignalTransition.getReferencedComponent();
+            stg.setSignalType(signalTransition.getSignalName(), signalTransition.getSignalType().mirror());
         }
     }
 

@@ -42,18 +42,6 @@ public class StgNameManager extends DefaultNameManager {
         instancedNameManager.assign(node, number);
     }
 
-    private void renameSignalTransition(SignalTransition t, String signalName) {
-        signalTransitions.remove(t.getSignalName(), t);
-        t.setSignalName(signalName);
-        signalTransitions.put(t.getSignalName(), t);
-    }
-
-    private void renameDummyTransition(DummyTransition t, String name) {
-        dummyTransitions.remove(t.getName(), t);
-        t.setName(name);
-        dummyTransitions.put(t.getName(), t);
-    }
-
     private void setSignalTransitionName(SignalTransition st, String name, boolean forceInstance) {
         String signalName = name;
         SignalTransition.Direction direction = st.getDirection();
@@ -69,8 +57,18 @@ public class StgNameManager extends DefaultNameManager {
         }
         if (isSignalName(signalName) || isUnusedName(signalName) || renameOccupantIfDifferent(st, signalName)) {
             instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
-            st.setDirection(direction);
-            renameSignalTransition(st, signalName);
+            st.setDirectionQuiet(direction);
+
+            String oldSignalName = st.getSignalName();
+            signalTransitions.remove(oldSignalName, st);
+            if (!signalName.equals(oldSignalName)) {
+                st.setSignalNameQuiet(signalName);
+                for (SignalTransition tt : signalTransitions.get(signalName)) {
+                    st.setSignalTypeQuiet(tt.getSignalType());
+                    break;
+                }
+            }
+            signalTransitions.put(signalName, st);
         }
     }
 
@@ -82,7 +80,9 @@ public class StgNameManager extends DefaultNameManager {
         }
         if (isDummyName(dummyName) || isUnusedName(dummyName) || renameOccupantIfDifferent(dt, dummyName)) {
             instancedNameManager.assign(dt, r, forceInstance);
-            renameDummyTransition(dt, dummyName);
+            dummyTransitions.remove(dt.getName(), dt);
+            dt.setNameQuiet(dummyName);
+            dummyTransitions.put(dt.getName(), dt);
         }
     }
 
@@ -218,13 +218,13 @@ public class StgNameManager extends DefaultNameManager {
         if (!instancedNameManager.contains(st)) {
             String prefix = getPrefix(st);
             Integer count = getPrefixCount(prefix);
-            String name = count <= 0 ? prefix : Identifier.compose(prefix, count.toString());
+            String name = (count <= 0) ? prefix : Identifier.compose(prefix, count.toString());
             while (!isGoodSignalName(name, st.getSignalType())) {
                 count++;
                 name = Identifier.compose(prefix, count.toString());
             }
             setPrefixCount(prefix, count);
-            st.setSignalName(name);
+            st.setSignalNameQuiet(name);
             signalTransitions.put(name, st);
             if (instancedNameManager.getInstance(st) == null) {
                 instancedNameManager.assign(st);
@@ -236,14 +236,14 @@ public class StgNameManager extends DefaultNameManager {
         if (!instancedNameManager.contains(dt)) {
             String prefix = getPrefix(dt);
             Integer count = getPrefixCount(prefix);
-            String name = count <= 0 ? prefix : Identifier.compose(prefix, count.toString());
-            while (!isGoodDummyName(name)) {
+            String dummyName = (count <= 0) ? prefix : Identifier.compose(prefix, count.toString());
+            while (!isGoodDummyName(dummyName)) {
                 count++;
-                name = Identifier.compose(prefix, count.toString());
+                dummyName = Identifier.compose(prefix, count.toString());
             }
             setPrefixCount(prefix, count);
-            dt.setName(name);
-            dummyTransitions.put(name, dt);
+            dt.setNameQuiet(dummyName);
+            dummyTransitions.put(dummyName, dt);
             if (instancedNameManager.getInstance(dt) == null) {
                 instancedNameManager.assign(dt);
             }

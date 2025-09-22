@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.IdentifierPrefix;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.stg.references.StgNameManager;
 import org.workcraft.serialisation.NoAutoSerialisation;
 
@@ -11,15 +10,15 @@ import org.workcraft.serialisation.NoAutoSerialisation;
 @IdentifierPrefix(StgNameManager.DUMMY_PREFIX)
 @VisualClass(VisualDummyTransition.class)
 public class DummyTransition extends NamedTransition {
-    public static final String PROPERTY_NAME = "Name";
+
     private String name;
 
-    @NoAutoSerialisation
-    public void setName(String value) {
+    // FIXME: As dummy name is node reference use Stg.setName instead!
+    // This method is only to be used from StgNameManager.
+    public void setNameQuiet(String value) {
         if (value == null) value = "";
         if (!value.equals(name)) {
             name = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
         }
     }
 
