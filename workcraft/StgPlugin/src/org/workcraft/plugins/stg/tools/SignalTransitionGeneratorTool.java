@@ -1,17 +1,17 @@
 package org.workcraft.plugins.stg.tools;
 
-import java.awt.Cursor;
-
+import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.utils.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.GuiUtils;
+
+import java.awt.*;
 
 public class SignalTransitionGeneratorTool extends NodeGeneratorTool {
 
@@ -25,7 +25,7 @@ public class SignalTransitionGeneratorTool extends NodeGeneratorTool {
                 MathNode node = super.createMathNode();
                 SignalTransition t = (SignalTransition) node;
                 t.setSignalType(shiftKeyDown ? Signal.Type.INPUT : Signal.Type.OUTPUT);
-                t.setDirection(menuKeyDown ? SignalTransition.Direction.MINUS : SignalTransition.Direction.PLUS);
+                t.setDirectionQuiet(menuKeyDown ? SignalTransition.Direction.MINUS : SignalTransition.Direction.PLUS);
                 return node;
             }
         });

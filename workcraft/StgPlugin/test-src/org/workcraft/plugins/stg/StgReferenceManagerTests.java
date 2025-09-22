@@ -25,7 +25,7 @@ class StgReferenceManagerTests {
         MathGroup root = new MathGroup();
         SignalTransition transition = new SignalTransition();
         root.add(transition);
-        transition.setSignalName(null);
+        transition.setSignalNameQuiet(null);
         StgReferenceManager mgr = new StgReferenceManager(null);
         mgr.handleEvent(new NodesAddedEvent(null, Collections.singletonList(transition)));
         Assertions.assertEquals("sig", transition.getSignalName());
@@ -36,7 +36,7 @@ class StgReferenceManagerTests {
         MathGroup root = new MathGroup();
         SignalTransition transition = new SignalTransition();
         root.add(transition);
-        transition.setSignalName("");
+        transition.setSignalNameQuiet("");
         StgReferenceManager mgr = new StgReferenceManager(null);
         mgr.handleEvent(new NodesAddedEvent(null, Collections.singletonList(transition)));
         Assertions.assertEquals("sig", transition.getSignalName());

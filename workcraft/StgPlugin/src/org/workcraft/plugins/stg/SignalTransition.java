@@ -11,6 +11,7 @@ import org.workcraft.serialisation.NoAutoSerialisation;
 @IdentifierPrefix(StgNameManager.INTERNAL_SIGNAL_PREFIX)
 @VisualClass(VisualSignalTransition.class)
 public class SignalTransition extends NamedTransition {
+
     public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
     public static final String PROPERTY_SIGNAL_NAME = "Signal name";
     public static final String PROPERTY_DIRECTION = "Direction";
@@ -59,22 +60,26 @@ public class SignalTransition extends NamedTransition {
 
     public void setSignalType(Signal.Type value) {
         if ((type != value) && (value != null)) {
-            type = value;
+            setSignalTypeQuiet(value);
             sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_TYPE));
         }
     }
 
+    // FIXME: As signal type affects multiple transitions Stg.setSignalType instead!
+    // This method is only to be used from Stg, StgNameManager, and SignalTypeConsistencySupervisor.
+    public void setSignalTypeQuiet(Signal.Type value) {
+        type = value;
+    }
+
+    @NoAutoSerialisation
     public Direction getDirection() {
         return direction;
     }
 
-    // FIXME: As direction is part of the node reference use Stg.setDirection(Node) instead!
-    // This method is only to be used from StgNameManager.
-    public void setDirection(Direction value) {
-        if ((direction != value) && (value != null)) {
-            direction = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
-        }
+    // FIXME: As direction is part of the node reference use Stg.setDirection instead!
+    // This method is only to be used from StgNameManager and SignalTransitionGeneratorTool.
+    public void setDirectionQuiet(Direction value) {
+        direction = value;
     }
 
     @NoAutoSerialisation
@@ -82,15 +87,11 @@ public class SignalTransition extends NamedTransition {
         return signalName;
     }
 
-    @NoAutoSerialisation
-    // FIXME: As signal name is part of the node reference use Stg.setName(Node, String) instead!
+    // FIXME: As signal name is part of the node reference use Stg.setName instead!
     // This method is only to be used from StgNameManager.
-    public void setSignalName(String value) {
+    public void setSignalNameQuiet(String value) {
         if (value == null) value = "";
-        if (!value.equals(signalName)) {
-            signalName = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_NAME));
-        }
+        signalName = value;
     }
 
     @NoAutoSerialisation

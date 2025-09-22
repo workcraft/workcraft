@@ -402,13 +402,14 @@ public class StgUtils {
             Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(ref);
             if (r != null) {
                 String signalRef = r.getFirst();
-                ref = signalRenames.getOrDefault(signalRef, signalRef) + r.getSecond();
+                String renamedSignalRef = signalRenames.getOrDefault(signalRef, signalRef);
+                String renamedRef = renamedSignalRef + r.getSecond();
+                SignalTransition newSignalTransition = newStg.createSignalTransition(renamedRef, null);
+                newStg.setSignalType(renamedSignalRef, signalTransition.getSignalType());
+                newStg.setDirection(newSignalTransition, signalTransition.getDirection());
+                oldToNewNodeMap.put(signalTransition, newSignalTransition);
+                result.put(newStg.getNodeReference(newSignalTransition), stg.getNodeReference(signalTransition));
             }
-            SignalTransition newSignalTransition = newStg.createSignalTransition(ref, null);
-            newSignalTransition.setSignalType(signalTransition.getSignalType());
-            newSignalTransition.setDirection(signalTransition.getDirection());
-            oldToNewNodeMap.put(signalTransition, newSignalTransition);
-            result.put(newStg.getNodeReference(newSignalTransition), stg.getNodeReference(signalTransition));
         }
         // Copy dummy transitions with their hierarchy
         for (DummyTransition dummyTransition : stg.getDummyTransitions()) {

@@ -13,27 +13,43 @@ import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 
 import java.awt.geom.Point2D;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
+import java.util.*;
 
 public class ConversionUtils {
 
-    public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedOrAllDualArcs(VisualModel visualModel) {
+    public static HashSet<Pair<VisualConnection, VisualConnection>> getSelectedOrAllDualArcs(
+            VisualModel visualModel, Collection<VisualNode> selectionOrNull) {
+
         HashSet<Pair<VisualConnection /* consuming arc */, VisualConnection /* producing arc */>> dualArcs = new HashSet<>();
-        HashSet<VisualConnection> consumingArcs = ConnectionUtils.getVisualConsumingArcs(visualModel);
-        HashSet<VisualConnection> producingArcs = ConnectionUtils.getVisualProducingArcs(visualModel);
-        for (VisualConnection consumingArc : consumingArcs) {
-            for (VisualConnection producingArc : producingArcs) {
-                boolean isDualArcs = (consumingArc.getFirst() == producingArc.getSecond())
-                        && (consumingArc.getSecond() == producingArc.getFirst());
+        Map<VisualTransition, Map<VisualNode, VisualConnection>> transitionToPredMap = new HashMap<>();
+        Map<VisualTransition, Map<VisualNode, VisualConnection>> transitionToSuccMap = new HashMap<>();
+        for (VisualConnection connection : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class)) {
+            if (connection instanceof VisualReadArc) {
+                continue;
+            }
+            VisualNode fromNode = connection.getFirst();
+            VisualNode toNode = connection.getSecond();
+            if (!(fromNode instanceof VisualTransition) && (toNode instanceof VisualTransition toTransition)) {
+                transitionToPredMap.computeIfAbsent(toTransition, k -> new HashMap<>())
+                        .put(fromNode, connection);
+            }
+            if ((fromNode instanceof VisualTransition fromTransition) && !(toNode instanceof VisualTransition)) {
+                transitionToSuccMap.computeIfAbsent(fromTransition, k -> new HashMap<>())
+                        .put(toNode, connection);
+            }
+        }
+        for (VisualTransition transition : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualTransition.class)) {
+            Map<VisualNode, VisualConnection> predMap = transitionToPredMap.getOrDefault(transition, Collections.emptyMap());
+            Map<VisualNode, VisualConnection> succMap = transitionToSuccMap.getOrDefault(transition, Collections.emptyMap());
+            Set<VisualNode> overlapNodes = new HashSet<>(predMap.keySet());
+            overlapNodes.retainAll(succMap.keySet());
+            for (VisualNode overlapNode : overlapNodes) {
+                VisualConnection consumingArc = predMap.get(overlapNode);
+                VisualConnection producingArc = succMap.get(overlapNode);
+                if ((selectionOrNull == null)
+                        || selectionOrNull.contains(consumingArc)
+                        || selectionOrNull.contains(producingArc)) {
 
-                Collection<VisualNode> selection = visualModel.getSelection();
-                boolean selectedArcsOrNoSelection = selection.isEmpty()
-                        || selection.contains(consumingArc) || selection.contains(producingArc);
-
-                if (isDualArcs && selectedArcsOrNoSelection) {
                     dualArcs.add(new Pair<>(consumingArc, producingArc));
                 }
             }
@@ -41,10 +57,14 @@ public class ConversionUtils {
         return dualArcs;
     }
 
-    public static HashSet<VisualReadArc> convertDualArcsToReadArcs(VisualModel visualModel,
-            HashSet<Pair<VisualConnection, VisualConnection>> dualArcs) {
+    public static Set<VisualReadArc> convertDualArcsToReadArcs(VisualModel visualModel) {
+        return convertDualArcsToReadArcs(visualModel, getSelectedOrAllDualArcs(visualModel, null));
+    }
 
-        HashSet<VisualReadArc> readArcs = new HashSet<>(dualArcs.size());
+    public static Set<VisualReadArc> convertDualArcsToReadArcs(VisualModel visualModel,
+            Set<Pair<VisualConnection, VisualConnection>> dualArcs) {
+
+        Set<VisualReadArc> readArcs = new HashSet<>(dualArcs.size());
         for (Pair<VisualConnection, VisualConnection> dualArc : dualArcs) {
             VisualConnection consumingArc = dualArc.getFirst();
             VisualConnection producingArc = dualArc.getSecond();

@@ -20,22 +20,23 @@ import java.util.List;
 public class StgPropertyHelper {
 
     public static PropertyDescriptor<?> getSignalNameProperty(Stg stg, SignalTransition signalTransition) {
-        return new PropertyDeclaration<>(String.class, "Signal name",
+        return new PropertyDeclaration<>(String.class, SignalTransition.PROPERTY_SIGNAL_NAME,
                 value -> stg.setName(signalTransition, value),
                 signalTransition::getSignalName)
                 .setCombinable();
     }
 
     public static PropertyDescriptor<?> getSignalTypeProperty(Stg stg, SignalTransition signalTransition) {
-        return new PropertyDeclaration<>(Signal.Type.class, "Signal type",
-                signalTransition::setSignalType, signalTransition::getSignalType)
+        return new PropertyDeclaration<>(Signal.Type.class, SignalTransition.PROPERTY_SIGNAL_TYPE,
+                value -> stg.setSignalType(signalTransition.getSignalName(), value),
+                signalTransition::getSignalType)
                 .setCombinable();
     }
 
     public static PropertyDescriptor<?> getDirectionProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(SignalTransition.Direction.class, SignalTransition.PROPERTY_DIRECTION,
                 value -> stg.setDirection(signalTransition, value),
-                () -> stg.getDirection(signalTransition))
+                signalTransition::getDirection)
                 .setCombinable();
     }
 
