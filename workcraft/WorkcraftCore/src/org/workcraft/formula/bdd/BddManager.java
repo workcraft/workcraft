@@ -146,4 +146,51 @@ public class BddManager {
         return result;
     }
 
+    public boolean isEquivalentToConstant(BooleanFormula formula) {
+        if (formula == null) {
+            return false;
+        }
+        if ((formula == Zero.getInstance()) || (formula == One.getInstance())) {
+            return true;
+        }
+        int formulaBdd = refFormula(formula);
+        int zeroBdd = refFormula(Zero.getInstance());
+        int oneBdd = refFormula(One.getInstance());
+        boolean result = (formulaBdd == zeroBdd) || (formulaBdd == oneBdd);
+        bdd.deref(formulaBdd);
+        bdd.deref(zeroBdd);
+        bdd.deref(oneBdd);
+        return result;
+    }
+
+    public boolean isEquivalentToConstant0(BooleanFormula formula) {
+        if (formula == null) {
+            return false;
+        }
+        if (formula == Zero.getInstance()) {
+            return true;
+        }
+        int formulaBdd = refFormula(formula);
+        int zeroBdd = refFormula(Zero.getInstance());
+        boolean result = (formulaBdd == zeroBdd);
+        bdd.deref(formulaBdd);
+        bdd.deref(zeroBdd);
+        return result;
+    }
+
+    public boolean isEquivalentToConstant1(BooleanFormula formula) {
+        if (formula == null) {
+            return false;
+        }
+        if (formula == One.getInstance()) {
+            return true;
+        }
+        int formulaBdd = refFormula(formula);
+        int oneBdd = refFormula(One.getInstance());
+        boolean result = (formulaBdd == oneBdd);
+        bdd.deref(formulaBdd);
+        bdd.deref(oneBdd);
+        return result;
+    }
+
 }
