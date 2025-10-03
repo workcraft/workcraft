@@ -91,7 +91,6 @@ public final class GateUtils {
     public static void insertGateBefore(VisualCircuit circuit, VisualCircuitComponent component,
             VisualContact succContact, double offset) {
 
-
         Container container = (Container) succContact.getParent();
         // Step up in the hierarchy for a self-loop
         if (container instanceof VisualCircuitComponent) {
@@ -605,7 +604,7 @@ public final class GateUtils {
                 }
                 outputPin.setInitToOne(!initToOne);
                 setFunction = FormulaUtils.invert(setFunction);
-                resetFunction = FormulaUtils.invert(setFunction);
+                resetFunction = FormulaUtils.invert(resetFunction);
             }
         }
         updateFunction(gate, outputPin, setFunction, resetFunction);
