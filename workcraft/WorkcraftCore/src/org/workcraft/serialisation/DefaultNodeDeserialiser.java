@@ -65,8 +65,8 @@ class DefaultNodeDeserialiser {
     }
 
     private boolean needDeserialisation(PropertyDescriptor desc) {
-        return (desc.getPropertyType() != null) && (desc.getWriteMethod() != null) && (desc.getReadMethod() != null)
-                && (desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) == null)
+        return (desc.getPropertyType() != null)
+                && (desc.getWriteMethod() != null)
                 && (desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) == null);
     }
 

@@ -79,6 +79,13 @@ class GenlibUtilsTests {
 
         checkMapping(new And(new Not(a), b), new Not(new Or(a, new Not(b))),
                 gateLibrary, null);
+
+        // Combinational, with explicit reset function is complementary to set function
+        checkMapping(new Not(a), new Not(new Not(a)),
+                gateLibrary, gateLibrary.get("INV"));
+
+        checkMapping(new And(a, b), new Not(new And(a, b)),
+                gateLibrary, gateLibrary.get("AND2"));
     }
 
     private void checkMapping(BooleanFormula func, Library gateLibrary, Gate expGate) {
@@ -155,6 +162,13 @@ class GenlibUtilsTests {
 
         checkExtendedMapping(new And(new Not(a), b), new Not(new Or(a, new Not(b))),
                 gateLibrary, null, Set.of());
+
+        // Combinational, with explicit reset function is complementary to set function
+        checkExtendedMapping(new Not(a), new Not(new Not(a)),
+                gateLibrary, gateLibrary.get("INV"), Set.of());
+
+        checkExtendedMapping(new And(a, b), new Not(new And(a, b)),
+                gateLibrary, gateLibrary.get("AND2"), Set.of());
     }
 
     private void checkExtendedMapping(BooleanFormula func,

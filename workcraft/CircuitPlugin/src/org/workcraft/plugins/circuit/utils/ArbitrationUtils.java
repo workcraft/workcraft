@@ -240,10 +240,6 @@ public class ArbitrationUtils {
         return result;
     }
 
-    public static Set<String> getWaitModuleNames() {
-        return getModuleNameToWaitMap().keySet();
-    }
-
     public static Wait getWaitModule(String moduleName) {
         return getModuleNameToWaitMap().get(moduleName);
     }
@@ -252,24 +248,28 @@ public class ArbitrationUtils {
             boolean useInternalSignal) {
 
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
-        Set<String> waitModuleNames = ArbitrationUtils.getWaitModuleNames();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getIsArbitrationPrimitive()) {
+            if (component.getIsArbitrationPrimitive()
+                    && (component.getInputs().size() == 2) && (component.getOutputs().size() == 1)) {
+
                 String moduleName = component.getModule();
-                if (waitModuleNames.contains(moduleName)) {
-                    Wait waitModule = getWaitModule(moduleName);
-                    if (waitModule != null) {
-                        String sanSignal = getPinSignal(circuit, component, waitModule.san.name);
-                        if (useInternalSignal && (sanSignal != null)) {
-                            String intRef = circuit.getNodeReference(component) + "internal";
-                            grantPairs.add(Pair.of(sanSignal, intRef));
-                            grantPairs.add(Pair.of(intRef, sanSignal));
-                        }
-                        String sigSignal = getPinSignal(circuit, component, waitModule.sig.name);
-                        if ((sigSignal != null) && (sanSignal != null)) {
-                            grantPairs.add(Pair.of(sigSignal, sanSignal));
-                        }
-                    }
+                Wait waitModule = getWaitModule(moduleName);
+                if (waitModule == null) {
+                    LogUtils.logWarning("Arbitrating component '" + circuit.getComponentReference(component)
+                            + "' has 2 inputs and 1 output, but its module name '" + moduleName
+                            + "' is not recognised as Wait or Wait0.");
+
+                    continue;
+                }
+                String sanSignal = getPinSignal(circuit, component, waitModule.san.name);
+                if (useInternalSignal && (sanSignal != null)) {
+                    String intRef = circuit.getNodeReference(component) + "internal";
+                    grantPairs.add(Pair.of(sanSignal, intRef));
+                    grantPairs.add(Pair.of(intRef, sanSignal));
+                }
+                String sigSignal = getPinSignal(circuit, component, waitModule.sig.name);
+                if ((sigSignal != null) && (sanSignal != null)) {
+                    grantPairs.add(Pair.of(sigSignal, sanSignal));
                 }
             }
         }
@@ -341,11 +341,18 @@ public class ArbitrationUtils {
         return getModuleNameToMutexMap().get(moduleName);
     }
 
-    public static boolean hasMutexInterface(VisualFunctionComponent component) {
-        return (component.getVisualInputs().size() == 2) && (component.getVisualOutputs().size() == 2);
-    }
-
     public static LinkedList<Pair<String, String>> getOutputPersistencyExceptions(Circuit circuit) {
+        for (FunctionComponent component : circuit.getFunctionComponents()) {
+            if (component.getIsArbitrationPrimitive()) {
+                int inputCount = component.getInputs().size();
+                int outputCount = component.getOutputs().size();
+                if ((inputCount != 2) || ((outputCount != 1) && (outputCount != 2))) {
+                    LogUtils.logWarning("Arbitrating component '" + circuit.getComponentReference(component)
+                            + "' has " + inputCount + " input(s) and " + outputCount + " output(s)"
+                            + " which is incompatible with Wait and Mutex interface.");
+                }
+            }
+        }
         LinkedList<Pair<String, String>> result = getMutexGrantPersistencyExceptions(circuit);
         result.addAll(getWaitPersistencyExceptions(circuit, false));
         return result;
@@ -353,17 +360,24 @@ public class ArbitrationUtils {
 
     private static LinkedList<Pair<String, String>> getMutexGrantPersistencyExceptions(Circuit circuit) {
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
-        Map<String, Mutex> moduleNameToMutexMap = getModuleNameToMutexMap();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
-            if (component.getIsArbitrationPrimitive()) {
-                Mutex mutexModule = moduleNameToMutexMap.get(component.getModule());
-                if (mutexModule != null) {
-                    String g1Signal = getPinSignal(circuit, component, mutexModule.g1.name);
-                    String g2Signal = getPinSignal(circuit, component, mutexModule.g2.name);
-                    if ((g1Signal != null) && (g2Signal != null)) {
-                        grantPairs.add(Pair.of(g1Signal, g2Signal));
-                        grantPairs.add(Pair.of(g2Signal, g1Signal));
-                    }
+            if (component.getIsArbitrationPrimitive()
+                    && (component.getInputs().size() == 2) && (component.getOutputs().size() == 2)) {
+
+                String moduleName = component.getModule();
+                Mutex mutexModule = getMutexModule(moduleName);
+                if (mutexModule == null) {
+                    LogUtils.logWarning("Arbitrating component '" + circuit.getComponentReference(component)
+                            + "' has 2 inputs and 2 outputs, but its module name '" + moduleName
+                            + "' is not recognised as Mutex with early or late protocol.");
+
+                    continue;
+                }
+                String g1Signal = getPinSignal(circuit, component, mutexModule.g1.name);
+                String g2Signal = getPinSignal(circuit, component, mutexModule.g2.name);
+                if ((g1Signal != null) && (g2Signal != null)) {
+                    grantPairs.add(Pair.of(g1Signal, g2Signal));
+                    grantPairs.add(Pair.of(g2Signal, g1Signal));
                 }
             }
         }

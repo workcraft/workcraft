@@ -22,7 +22,7 @@ gradle.ext.javaTargetVersion = JavaVersion.VERSION_17
 gradle.ext.javaReleaseVersion = 17  /* Must be integer, e.g. 17 for JDK17 */
 
 // Checkstyle code linter (https://checkstyle.sourceforge.io/) 
-gradle.ext.checkstyleVersion = '11.0.0'
+gradle.ext.checkstyleVersion = '11.1.0'
 // PMD code analyser (https://pmd.github.io/)
 gradle.ext.pmdVersion = '7.16.0'
 // Jacoco code coverage (https://www.eclemma.org/jacoco/)
@@ -34,7 +34,7 @@ gradle.ext.jacocoVersion = '0.8.13'
  */
 
 // Unit testing (https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter)
-gradle.ext.junit = 'org.junit.jupiter:junit-jupiter:5.13.4'
+gradle.ext.junit = 'org.junit.jupiter:junit-jupiter:6.0.0'
 gradle.ext.junitPlatformLauncher = 'org.junit.platform:junit-platform-launcher'
 
 // JavaCC parser generator (https://mvnrepository.com/artifact/net.java.dev.javacc/javacc)

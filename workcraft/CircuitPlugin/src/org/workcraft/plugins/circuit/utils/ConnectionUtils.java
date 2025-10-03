@@ -128,12 +128,14 @@ public final class ConnectionUtils {
             VisualTransformableNode secondNode = (VisualTransformableNode) connection.getSecond();
             Point2D p1 = firstNode.getRootSpacePosition();
             Point2D p2 = secondNode.getRootSpacePosition();
-            double x = p1.getX() + dx;
-            if (!Geometry.isAligned(p1.getX(), x)) {
-                polyline.addControlPoint(new Point2D.Double(x, p1.getY()));
-            }
-            if (!Geometry.isAligned(x, p2.getX())) {
-                polyline.addControlPoint(new Point2D.Double(x, p2.getY()));
+            if (!Geometry.isAligned(p1.getY(), p2.getY())) {
+                double x = p1.getX() + dx;
+                if (!Geometry.isAligned(p1.getX(), x)) {
+                    polyline.addControlPoint(new Point2D.Double(x, p1.getY()));
+                }
+                if (!Geometry.isAligned(x, p2.getX())) {
+                    polyline.addControlPoint(new Point2D.Double(x, p2.getY()));
+                }
             }
         }
     }
