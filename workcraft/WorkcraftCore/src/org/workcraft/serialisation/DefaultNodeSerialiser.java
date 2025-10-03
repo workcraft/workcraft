@@ -43,9 +43,9 @@ public class DefaultNodeSerialiser {
     }
 
     private boolean needSerialisation(PropertyDescriptor desc) {
-        return (desc.getPropertyType() != null) && (desc.getWriteMethod() != null) && (desc.getReadMethod() != null)
-                && (desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) == null)
-                && (desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) == null);
+        return (desc.getPropertyType() != null)
+                && (desc.getReadMethod() != null)
+                && (desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) == null);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
