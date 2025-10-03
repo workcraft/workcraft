@@ -104,6 +104,13 @@ public final class GenlibUtils {
         if (library == null) {
             return null;
         }
+        // Ignore resetFormula if it is complementary to setFormula
+        if ((setFormula != null) && (resetFormula != null)) {
+            BddManager bdd = new BddManager();
+            if (bdd.isEquivalent(setFormula, new Not(resetFormula))) {
+                resetFormula = null;
+            }
+        }
         for (Gate gate : library.getGatesOrderedBySize()) {
             if (gate.isPrimitive() && ((resetFormula == null) == gate.isSequential())) {
                 continue;
@@ -181,6 +188,14 @@ public final class GenlibUtils {
         if (library == null) {
             return null;
         }
+        // Ignore resetFormula if it is complementary to setFormula
+        if ((setFormula != null) && (resetFormula != null)) {
+            BddManager bdd = new BddManager();
+            if (bdd.isEquivalent(setFormula, new Not(resetFormula))) {
+                resetFormula = null;
+            }
+        }
+
         // First, try direct implementation
         Pair<Gate, Map<BooleanVariable, String>> mapping = findMapping(setFormula, resetFormula, library);
         if (mapping != null) {
