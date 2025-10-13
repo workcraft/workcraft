@@ -492,7 +492,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         StgReferenceManager referenceManager = getReferenceManager();
         for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
             String name = getName(node);
-            if ((name != null) && !Identifier.isInternal(name) && !(node instanceof SignalTransition)) {
+            if ((name != null) && !Identifier.hasInternalPrefix(name) && !(node instanceof SignalTransition)) {
                 referenceManager.setDefaultName(node);
             }
         }

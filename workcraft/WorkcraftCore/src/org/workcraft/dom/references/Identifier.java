@@ -12,10 +12,6 @@ public class Identifier {
     private static final String NAMESPACE_SUFFIX = NamespaceHelper.getHierarchySeparator();
     private static final Pattern VALID_PATTERN = Pattern.compile("^[_A-Za-z][_A-Za-z0-9]*$");
 
-    public static boolean isInternal(String value) {
-        return value.startsWith(INTERNAL_PREFIX);
-    }
-
     public static boolean isNamespace(String value) {
         return value.endsWith(NAMESPACE_SUFFIX);
     }
@@ -33,8 +29,16 @@ public class Identifier {
         }
     }
 
-    public static String makeInternal(String value) {
+    public static boolean hasInternalPrefix(String value) {
+        return value.startsWith(INTERNAL_PREFIX);
+    }
+
+    public static String addInternalPrefix(String value) {
         return value.startsWith(INTERNAL_PREFIX) ? value : INTERNAL_PREFIX + value;
+    }
+
+    public static String removeInternalPrefix(String value) {
+        return value.startsWith(INTERNAL_PREFIX) ? value.substring(INTERNAL_PREFIX.length()) : value;
     }
 
     public static String getTemporaryName() {

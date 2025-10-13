@@ -523,7 +523,7 @@ public final class GateUtils {
             if (newInputPinName == null) {
                 continue;
             }
-            circuit.setMathName(inputPin, Identifier.makeInternal(newInputPinName));
+            circuit.setMathName(inputPin, Identifier.addInternalPrefix(newInputPinName));
             if (invertedPins.contains(newInputPinName)) {
                 result.put(inputPinVar, new Not(inputPinVar));
             }

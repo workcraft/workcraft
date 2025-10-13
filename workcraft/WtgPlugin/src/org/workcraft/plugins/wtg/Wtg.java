@@ -159,7 +159,7 @@ public class Wtg extends Dtd {
         HashSet<String> takenNames = new HashSet<>(getSignalNames());
         for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
             String name = getName(node);
-            if ((name != null) && !Identifier.isInternal(name) && !(node instanceof Signal)) {
+            if ((name != null) && !Identifier.hasInternalPrefix(name) && !(node instanceof Signal)) {
                 getReferenceManager().setDefaultName(node);
                 takenNames.add(getName(node));
             }
