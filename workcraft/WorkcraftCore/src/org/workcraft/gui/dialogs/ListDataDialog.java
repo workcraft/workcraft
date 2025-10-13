@@ -89,4 +89,9 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
 
     public abstract Collection<String> getItems();
 
+    @Override
+    public boolean hasData() {
+        return !getItems().isEmpty();
+    }
+
 }

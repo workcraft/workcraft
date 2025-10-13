@@ -93,4 +93,8 @@ public class ModalDialog<T> extends JDialog {
         return modalResult;
     }
 
+    public boolean hasData() {
+        return true;
+    }
+
 }
