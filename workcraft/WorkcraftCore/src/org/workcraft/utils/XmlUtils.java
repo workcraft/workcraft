@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.workcraft.types.Pair;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -27,6 +28,9 @@ public class XmlUtils {
 
     private static final String LIST_ELEMENT = "list";
     private static final String ITEM_ELEMENT = "item";
+    private static final String PAIR_ELEMENT = "pair";
+    private static final String FIRST_PAIR_ATTRIBUTE = "first";
+    private static final String SECOND_PAIR_ATTRIBUTE = "second";
 
     private static String getAttribute(Element element, String attributeName) {
         return (element == null) || !element.hasAttribute(attributeName) ? null : element.getAttribute(attributeName);
@@ -150,7 +154,6 @@ public class XmlUtils {
     public static List<List<String>> readItemLists(Element parent) {
         List<Element> listElements = getChildElements(LIST_ELEMENT, parent);
         return listElements.stream()
-                .map(XmlUtils::readList)
                 .map(XmlUtils::readItems)
                 .collect(Collectors.toList());
     }
@@ -158,11 +161,26 @@ public class XmlUtils {
     public static void writeItemLists(Collection<? extends Collection<String>> listOfItems, Element parent) {
         listOfItems.forEach(list -> writeItems(list, createChildElement(LIST_ELEMENT, parent)));
     }
+
+    public static Pair<String, String> readPair(Element pairElement) {
+        return Pair.of(pairElement.getAttribute(FIRST_PAIR_ATTRIBUTE), pairElement.getAttribute(SECOND_PAIR_ATTRIBUTE));
+    }
+
+    public static void writePair(Pair<String, String> pair, Element parent) {
+        Element pairElement = createChildElement(PAIR_ELEMENT, parent);
+        pairElement.setAttribute(FIRST_PAIR_ATTRIBUTE, pair.getFirst());
+        pairElement.setAttribute(SECOND_PAIR_ATTRIBUTE, pair.getSecond());
+    }
+
+    public static List<Pair<String, String>> readPairs(Element parent) {
+        List<Element> listElements = getChildElements(PAIR_ELEMENT, parent);
+        return listElements.stream()
+                .map(XmlUtils::readPair)
                 .collect(Collectors.toList());
     }
 
-    public static void writeListOfLists(Collection<? extends Collection<String>> listOfItems, Element parent) {
-        listOfItems.forEach(list -> writeList(list, createChildElement(LIST_ELEMENT, parent)));
+    public static void writePairs(Collection<? extends Pair<String, String>> listOfPairs, Element parent) {
+        listOfPairs.forEach(pair -> writePair(pair, parent));
     }
 
 }
