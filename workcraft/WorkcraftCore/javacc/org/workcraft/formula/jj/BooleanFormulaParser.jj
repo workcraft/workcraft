@@ -11,6 +11,7 @@ PARSER_BEGIN(BooleanFormulaParser)
 package org.workcraft.formula.jj;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.HashMap;
 import java.io.Reader;
 import java.io.StringReader;
@@ -19,75 +20,55 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FreeVariable;
 import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.formula.visitors.StringGenerator;
+import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.types.Func;
 
 public class BooleanFormulaParser {
 
-    private static final BooleanWorker WORKER = CleverBooleanWorker.getInstance();
+    private BooleanWorker worker;
+    private Func<String, ? extends BooleanFormula> variableResolver;
 
-    private Func<String, ? extends BooleanFormula> vars;
+    public BooleanFormulaParser(Reader reader,
+            Func<String, ? extends BooleanFormula> variableResolver,
+            BooleanWorker worker) {
 
-    public BooleanFormulaParser(Reader reader, Func<String, ? extends BooleanFormula> vars) {
         this(reader);
-        this.vars = vars;
+        this.variableResolver = variableResolver;
+        this.worker = worker;
     }
 
     private BooleanFormula var(String name) throws ParseException {
-        BooleanFormula result = vars.eval(name);
+        BooleanFormula result = variableResolver.eval(name);
         if (result == null) {
             throw new ParseException("Undefined variable: '" + name + "'");
         }
         return result;
     }
 
-    private BooleanFormula constant(String value) {
-        return "0".equals(value) ? WORKER.zero() : WORKER.one();
-    }
-
-    private BooleanFormula and(BooleanFormula a, BooleanFormula b) {
-        return WORKER.and(a, b);
-    }
-
-    private BooleanFormula or(BooleanFormula a, BooleanFormula b) {
-        return WORKER.or(a, b);
-    }
-
-    private BooleanFormula eq(BooleanFormula a, BooleanFormula b) {
-        return WORKER.iff(a, b);
-    }
-
-    private BooleanFormula imply(BooleanFormula a, BooleanFormula b) {
-        return WORKER.imply(a, b);
-    }
-
-    private BooleanFormula xor(BooleanFormula a, BooleanFormula b) {
-        return WORKER.xor(a, b);
-    }
-
-    private BooleanFormula not(BooleanFormula a) {
-        return WORKER.not(a);
-    }
-
-    public static BooleanFormula parse(String text, Func<String, ? extends BooleanFormula> vars)
+    public static BooleanFormula parse(String text, Func<String, ? extends BooleanFormula> variableResolver)
             throws ParseException {
+
+        return parse(text, variableResolver, DumbBooleanWorker.getInstance());
+    }
+
+    public static BooleanFormula parse(String text, Func<String, ? extends BooleanFormula> variableResolver,
+            BooleanWorker worker) throws ParseException {
 
         if ((text == null) || text.isEmpty()) {
             return null;
         }
-        StringReader reader = new StringReader(text);
-        return new BooleanFormulaParser(reader, vars).formula();
+        return new BooleanFormulaParser(new StringReader(text), variableResolver, worker).formula();
     }
 
     public static BooleanFormula parse(String text, Collection<? extends BooleanVariable> variables)
             throws ParseException {
 
-        final HashMap<String, BooleanVariable> labelToVariableMap = new HashMap<>();
+        final Map<String, BooleanVariable> labelToVariableMap = new HashMap<>();
         for(BooleanVariable var : variables) {
             labelToVariableMap.put(var.getLabel(), var);
         }
-        // JavaCC v7.0.10 does not support Java 1.8 syntax for lambdas yet
+        // JavaCC v7.0.13 does not support Java 1.8 syntax for lambdas yet
         return parse(text, new Func<String, BooleanVariable>() {
             @Override
             public BooleanVariable eval(String label) {
@@ -97,8 +78,8 @@ public class BooleanFormulaParser {
     }
 
     public static BooleanFormula parse(String text) throws ParseException {
-        final HashMap<String, BooleanVariable> labelToVariableMap = new HashMap<>();
-        // JavaCC v7.0.10 does not support Java 1.8 syntax for lambdas yet
+        final Map<String, BooleanVariable> labelToVariableMap = new HashMap<>();
+        // JavaCC v7.0.13 does not support Java 1.8 syntax for lambdas yet
         return BooleanFormulaParser.parse(text, new Func<String, BooleanVariable>() {
             @Override
             public BooleanVariable eval(String label) {
@@ -145,7 +126,9 @@ TOKEN : /* OPERATORS */
 
 TOKEN :
 {
-    <CONSTANT: "0"|"1">
+    <CONSTANT0: "0">
+|
+    <CONSTANT1: "1">
 |
     <VARIABLE: ["@", "A"-"Z", "a"-"z", "_"](["A"-"Z", "a"-"z", "_", "0"-"9", ".", "[", "]"])*>
 }
@@ -157,7 +140,7 @@ BooleanFormula formula() :
 }
 {
     result = eqOp() ( <EQUALS> op = eqOp()
-    { result = eq(result, op); } )*
+    { result = worker.iff(result, op); } )*
     { return result; }
 }
 
@@ -168,7 +151,7 @@ BooleanFormula eqOp() :
 }
 {
     result = neqOp() ( <NOTEQUALS> op = neqOp()
-    { result = xor(result, op); } ) *
+    { result = worker.xor(result, op); } ) *
     { return result; }
 }
 
@@ -179,7 +162,7 @@ BooleanFormula neqOp() :
 }
 {
     result = implyOp() [ <IMPLIES> op = implyOp()
-    { result = imply(result, op); } ]
+    { result = worker.imply(result, op); } ]
     { return result; }
 }
 
@@ -190,7 +173,7 @@ BooleanFormula implyOp() :
 }
 {
     result = orOp() ( <OR> op = orOp()
-    { result = or(result, op); } ) *
+    { result = worker.or(result, op); } ) *
     { return result; }
 }
 
@@ -201,7 +184,7 @@ BooleanFormula orOp() :
 }
 {
     result = xorOp() ( <XOR> op = xorOp()
-    { result = xor(result, op); } ) *
+    { result = worker.xor(result, op); } ) *
     { return result; }
 }
 
@@ -212,7 +195,7 @@ BooleanFormula xorOp() :
 }
 {
     result = andOp() ( <AND> op = andOp()
-    { result = and(result, op); } ) *
+    { result = worker.and(result, op); } ) *
     { return result; }
 }
 
@@ -225,7 +208,7 @@ BooleanFormula andOp() :
     (<NOT> { inverse = !inverse; } )*
     result = literal()
     (<POSTNOT> { inverse = !inverse; } )*
-    { return inverse ? not(result) : result; }
+    { return inverse ? worker.not(result) : result; }
 }
 
 BooleanFormula literal() :
@@ -238,8 +221,11 @@ BooleanFormula literal() :
         t = <VARIABLE>
         { result = var(t.image); }
     |
-        t = <CONSTANT>
-        { result = constant(t.image); }
+        t = <CONSTANT0>
+        { result = worker.zero(); }
+    |
+        t = <CONSTANT1>
+        { result = worker.one(); }
     |
         "(" result = formula() ")"
     )
