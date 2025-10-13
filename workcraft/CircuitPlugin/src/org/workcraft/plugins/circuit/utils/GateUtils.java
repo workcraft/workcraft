@@ -501,7 +501,6 @@ public final class GateUtils {
         Map<BooleanVariable, BooleanFormula> pinToInvertedPinMap
                 = convertInputPins(circuit, component, pinRenames, invertedPins);
 
-
         VisualFunctionContact outputPin = component.getGateOutput();
 
         BooleanFormula newSetFunction = FormulaUtils.replace(outputPin.getSetFunction(),
@@ -547,7 +546,7 @@ public final class GateUtils {
                 } else if (trivialDriverComponent.isInverter()) {
                     ContractionUtils.contractComponentIfPossible(circuit, trivialDriverComponent);
                 } else if (trivialDriverComponent.isBuffer()) {
-                    convertBufferToInverter(circuit, trivialDriverComponent);
+                    convertBufferToInverter(circuit, trivialDriverComponent, false);
                     trivialDriverComponent.setIsZeroDelay(true);
                 } else if (trivialDriverComponent.isTie1()) {
                     convertTie1ToTie0(circuit, trivialDriverComponent);
@@ -586,11 +585,10 @@ public final class GateUtils {
         if (newOutputPinName != null) {
             circuit.setMathName(outputPin, newOutputPinName);
             if (invertedPins.contains(newOutputPinName)) {
-                VisualFunctionComponent existingInverter = getOnlyDrivenInverterOrNull(circuit, outputPin);
-                boolean initToOne = outputPin.getInitToOne();
-                if (existingInverter != null) {
-                    ContractionUtils.contractComponentIfPossible(circuit, existingInverter);
-                } else {
+                VisualFunctionComponent trivialDrivenComponent
+                        = getDedicatedTrivialDrivenComponentWithCorrectInitOrNull(circuit, outputPin);
+
+                if (trivialDrivenComponent == null) {
                     VisualFunctionComponent newInverter = createInverterGate(circuit);
                     if (outputPin.getParent() instanceof VisualFunctionComponent component) {
                         newInverter.copyStylePreserveMapping(component);
@@ -598,11 +596,15 @@ public final class GateUtils {
                     SpaceUtils.makeSpaceAroundContact(circuit, outputPin, 2.0);
                     insertGateAfter(circuit, newInverter, outputPin, 1.5);
                     result = newInverter.getGateOutput();
-                    result.setInitToOne(initToOne);
+                    result.setInitToOne(outputPin.getInitToOne());
                     result.getReferencedComponent().setPathBreaker(outputPin.getReferencedComponent().getPathBreaker());
                     outputPin.getReferencedComponent().setPathBreaker(false);
+                } else if (trivialDrivenComponent.isInverter()) {
+                    ContractionUtils.contractComponentIfPossible(circuit, trivialDrivenComponent);
+                } else if (trivialDrivenComponent.isBuffer()) {
+                    convertBufferToInverter(circuit, trivialDrivenComponent, true);
                 }
-                outputPin.setInitToOne(!initToOne);
+                outputPin.setInitToOne(!outputPin.getInitToOne());
                 setFunction = FormulaUtils.invert(setFunction);
                 resetFunction = FormulaUtils.invert(resetFunction);
             }
@@ -611,15 +613,21 @@ public final class GateUtils {
         return result;
     }
 
-    private static VisualFunctionComponent getOnlyDrivenInverterOrNull(
+    private static VisualFunctionComponent getDedicatedTrivialDrivenComponentWithCorrectInitOrNull(
             VisualCircuit circuit, VisualFunctionContact contact) {
 
         Set<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact);
         if (drivenContacts.size() == 1) {
             VisualContact drivenContact = drivenContacts.iterator().next();
             Node parent = drivenContact.getParent();
-            if ((parent instanceof VisualFunctionComponent drivenComponent) && drivenComponent.isInverter()) {
-                return drivenComponent;
+            if (parent instanceof VisualFunctionComponent drivenComponent) {
+                VisualFunctionContact outputPin = drivenComponent.getMainVisualOutput();
+                if (outputPin != null) {
+                    boolean isSameInit = (outputPin.getInitToOne() == contact.getInitToOne());
+                    if ((drivenComponent.isInverter() && !isSameInit) || (drivenComponent.isBuffer() && isSameInit)) {
+                        return drivenComponent;
+                    }
+                }
             }
         }
         return null;
@@ -639,7 +647,9 @@ public final class GateUtils {
         outputPin.setBothFunctions(setFunction, resetFunction);
     }
 
-    private static void convertBufferToInverter(VisualCircuit circuit, VisualFunctionComponent component) {
+    private static void convertBufferToInverter(VisualCircuit circuit, VisualFunctionComponent component,
+            boolean preserveInitToOne) {
+
         if (!component.isBuffer()) {
             throw new RuntimeException("Buffer is expected");
         }
@@ -662,6 +672,9 @@ public final class GateUtils {
             circuit.setMathName(component.getFirstVisualInput(), inputName);
         }
         outputPin.setSetFunction(FormulaUtils.invert(outputPin.getSetFunction()));
+        if (!preserveInitToOne) {
+            outputPin.setInitToOne(!outputPin.getInitToOne());
+        }
     }
 
     private static void convertTie1ToTie0(VisualCircuit circuit, VisualFunctionComponent component) {
