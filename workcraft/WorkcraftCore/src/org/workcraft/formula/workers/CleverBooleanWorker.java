@@ -1,7 +1,6 @@
 package org.workcraft.formula.workers;
 
 import org.workcraft.formula.*;
-import org.workcraft.formula.visitors.StringGenerator;
 
 public final class CleverBooleanWorker implements BooleanWorker {
 
@@ -28,22 +27,22 @@ public final class CleverBooleanWorker implements BooleanWorker {
     }
 
     @Override
-    public BooleanFormula not(BooleanFormula x) {
-        return FormulaUtils.invert(x);
+    public BooleanFormula not(BooleanFormula f) {
+        return FormulaUtils.invert(f);
     }
 
     @Override
     public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
-        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
-            return x;
+        if ((x == zero()) || (y == zero())) {
+            return zero();
         }
-        if ((x == Zero.getInstance()) || (y == Zero.getInstance())) {
-            return Zero.getInstance();
-        }
-        if (x == One.getInstance()) {
+        if (x == one()) {
             return y;
         }
-        if (y == One.getInstance()) {
+        if (y == one()) {
+            return x;
+        }
+        if (x == y) {
             return x;
         }
         return new And(x, y);
@@ -51,125 +50,85 @@ public final class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula or(BooleanFormula x, BooleanFormula y) {
-        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
-            return x;
+        if ((x == one()) || (y == one())) {
+            return one();
         }
-        if (checkStrings(StringGenerator.toString(x), StringGenerator.toString(y), " + ")) {
-            return x;
-        }
-        if (checkStrings(StringGenerator.toString(x), invertString(StringGenerator.toString(y)), " + ")) {
-            return One.getInstance();
-        }
-        if ((x == One.getInstance()) || (y == One.getInstance())) {
-            return One.getInstance();
-        }
-        if (x == Zero.getInstance()) {
+        if (x == zero()) {
             return y;
         }
-        if (y == Zero.getInstance()) {
+        if (y == zero()) {
             return x;
         }
+        if (x == y) {
+            return x;
+        }
+//        String xString = StringGenerator.toString(x);
+//        String yString = StringGenerator.toString(y);
+//        if (xString.equals(yString) || checkStrings(xString, yString, " + ")) {
+//            return x;
+//        }
+//        String invYText = invertString(yString);
+//        if (xString.equals(invYText) || checkStrings(xString, invYText, " + ")) {
+//            return one();
+//        }
         return new Or(x, y);
     }
 
     @Override
     public BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
-        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
-            return Zero.getInstance();
-        }
-        if (x == One.getInstance()) {
+        if (x == one()) {
             return not(y);
         }
-        if (x == Zero.getInstance()) {
+        if (x == zero()) {
             return y;
         }
-        if (y == One.getInstance()) {
+        if (y == one()) {
             return not(x);
         }
-        if (y == Zero.getInstance()) {
+        if (y == zero()) {
             return x;
+        }
+        if (x == y) {
+            return zero();
         }
         return new Xor(x, y);
     }
 
     @Override
     public BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
-        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
-            return One.getInstance();
+        if ((x == zero()) || (y == one())) {
+            return one();
         }
-        if ((x == Zero.getInstance()) || (y == One.getInstance())) {
-            return One.getInstance();
-        }
-        if (x == One.getInstance()) {
+        if (x == one()) {
             return y;
         }
-        if (y == Zero.getInstance()) {
+        if (y == zero()) {
             return not(x);
+        }
+        if (x == y) {
+            return one();
         }
         return new Imply(x, y);
     }
 
     @Override
     public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
-        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
-            return One.getInstance();
-        }
-        if (x == One.getInstance()) {
+        if (x == one()) {
             return y;
         }
-        if (x == Zero.getInstance()) {
+        if (x == zero()) {
             return not(y);
         }
-        if (y == One.getInstance()) {
+        if (y == one()) {
             return x;
         }
-        if (y == Zero.getInstance()) {
+        if (y == zero()) {
             return not(x);
         }
+        if (x == y) {
+            return one();
+        }
         return new Iff(x, y);
-    }
-
-    private boolean checkStrings(String x, String y, String op) {
-        if (x.contains(y)) {
-            if (x.startsWith(y + op)) {
-                return true;
-            } else if (x.endsWith(op + y)) {
-                return true;
-            } else if (x.contains(op + y + op)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private String invertString(String x) {
-        String result = "";
-        //find first operator
-        int op = x.indexOf("*");
-        if ((x.indexOf(" + ") < op) && (x.indexOf(" + ") > 0)) {
-            op = x.indexOf(" + ");
-            if (x.substring(0, op).contains("'")) {
-                result = x.substring(0, op).replace("'", "");
-            } else {
-                result = x.substring(0, op) + "'";
-            }
-            result += x.substring(op, op + 2) + invertString(x.substring(op + 2));
-            return result;
-        }
-        if (op == -1) {
-            if (x.contains("'")) {
-                return x.replace("'", "");
-            } else {
-                return x + "'";
-            }
-        }
-        if (x.substring(0, op).contains("'")) {
-            result = x.substring(0, op).replace("'", "");
-        } else {
-            result = x.substring(0, op) + "'";
-        }
-        result += x.charAt(op) + invertString(x.substring(op + 1));
-        return result;
     }
 
 }
