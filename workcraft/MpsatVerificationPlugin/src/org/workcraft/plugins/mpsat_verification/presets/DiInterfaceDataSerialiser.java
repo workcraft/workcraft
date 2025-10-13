@@ -8,12 +8,12 @@ public class DiInterfaceDataSerialiser implements DataSerialiser<DiInterfacePara
 
     @Override
     public DiInterfaceParameters fromXML(Element parent, DiInterfaceParameters defaultParameters) {
-        return new DiInterfaceParameters(XmlUtils.readListOfLists(parent));
+        return new DiInterfaceParameters(XmlUtils.readItemLists(parent));
     }
 
     @Override
     public void toXML(DiInterfaceParameters parameters, Element parent) {
-        XmlUtils.writeListOfLists(parameters.getOrderedExceptionSignalSets(), parent);
+        XmlUtils.writeItemLists(parameters.getOrderedExceptionSignalSets(), parent);
     }
 
 }

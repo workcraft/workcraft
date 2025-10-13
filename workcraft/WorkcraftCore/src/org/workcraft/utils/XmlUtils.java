@@ -136,21 +136,28 @@ public class XmlUtils {
         writeDocument(doc, new FileOutputStream(file));
     }
 
-    public static List<String> readList(Element parent) {
+    public static List<String> readItems(Element parent) {
         List<Element> itemElements = getChildElements(ITEM_ELEMENT, parent);
         return itemElements.stream()
                 .map(Node::getTextContent)
                 .collect(Collectors.toList());
     }
 
-    public static void writeList(Collection<String> items, Element parent) {
+    public static void writeItems(Collection<String> items, Element parent) {
         items.forEach(item -> createChildElement(ITEM_ELEMENT, parent).setTextContent(item));
     }
 
-    public static List<List<String>> readListOfLists(Element parent) {
+    public static List<List<String>> readItemLists(Element parent) {
         List<Element> listElements = getChildElements(LIST_ELEMENT, parent);
         return listElements.stream()
                 .map(XmlUtils::readList)
+                .map(XmlUtils::readItems)
+                .collect(Collectors.toList());
+    }
+
+    public static void writeItemLists(Collection<? extends Collection<String>> listOfItems, Element parent) {
+        listOfItems.forEach(list -> writeItems(list, createChildElement(LIST_ELEMENT, parent)));
+    }
                 .collect(Collectors.toList());
     }
 

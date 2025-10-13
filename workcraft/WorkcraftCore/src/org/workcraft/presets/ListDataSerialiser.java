@@ -9,12 +9,12 @@ public class ListDataSerialiser implements DataSerialiser<List<String>> {
 
     @Override
     public List<String> fromXML(Element parent, List<String> defaultParameters) {
-        return XmlUtils.readList(parent);
+        return XmlUtils.readItems(parent);
     }
 
     @Override
     public void toXML(List<String> parameters, Element parent) {
-        XmlUtils.writeList(parameters, parent);
+        XmlUtils.writeItems(parameters, parent);
     }
 
 }
