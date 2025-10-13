@@ -45,8 +45,7 @@ public class ModalDialog<T> extends JDialog {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         pack();
-        Dimension dimension = getSize();
-        setMinimumSize(dimension);
+        GuiUtils.reduceToScreen(this, 0.5f, 0.5f);
         setLocationRelativeTo(owner);
     }
 
