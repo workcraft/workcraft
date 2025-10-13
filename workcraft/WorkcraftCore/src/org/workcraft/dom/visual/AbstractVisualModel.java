@@ -772,7 +772,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
             properties.add(getTitleProperty());
         } else {
             String name = getMathName(node);
-            if ((name != null) && !Identifier.isInternal(name)) {
+            if ((name != null) && !Identifier.hasInternalPrefix(name)) {
                 properties.add(getNameProperty(node));
             }
         }

@@ -29,6 +29,7 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
 
     public ListDataDialog(Window owner, String title, DataPreserver<List<String>> userData) {
         super(owner, title, userData);
+
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -87,5 +88,10 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
     }
 
     public abstract Collection<String> getItems();
+
+    @Override
+    public boolean hasData() {
+        return !getItems().isEmpty();
+    }
 
 }

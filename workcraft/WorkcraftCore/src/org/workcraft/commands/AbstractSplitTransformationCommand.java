@@ -166,8 +166,8 @@ public abstract class AbstractSplitTransformationCommand extends AbstractTransfo
         String desiredName = model.getMathName(component);
         model.remove(component);
         // Rename firstComponent last, so it picks the name of the original component
-        ModelUtils.renameNode(model, secondComponent, desiredName);
-        ModelUtils.renameNode(model, firstComponent, desiredName);
+        ModelUtils.setNameRenameClashes(model, secondComponent, desiredName);
+        ModelUtils.setNameRenameClashes(model, firstComponent, desiredName);
     }
 
     private void adjustSplitComponentPositions(VisualModel model,

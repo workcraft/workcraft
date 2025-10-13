@@ -4,6 +4,7 @@ import jdd.bdd.BDD;
 import org.workcraft.formula.*;
 import org.workcraft.formula.visitors.BooleanVisitor;
 import org.workcraft.types.Func2;
+import org.workcraft.utils.SetUtils;
 
 import java.util.*;
 
@@ -83,7 +84,24 @@ public class BddManager {
     }
 
     public BooleanFormula getDistinctFormula(BooleanFormula formula) {
-        return bddToDistinctFormulaMap.computeIfAbsent(refFormula(formula), bdd -> formula);
+        BooleanFormula distinctFormula = removeRedundantVariables(formula);
+        return bddToDistinctFormulaMap.computeIfAbsent(refFormula(distinctFormula), bdd -> distinctFormula);
+    }
+
+    public Set<BooleanVariable> getRedundantVariables(BooleanFormula formula) {
+        Set<BooleanVariable> allVariables = FormulaUtils.extractVariables(formula);
+        Set<BooleanVariable> usefulVariables = FormulaUtils.extractVariables(removeRedundantVariables(formula));
+        return SetUtils.difference(allVariables, usefulVariables);
+    }
+
+    public BooleanFormula removeRedundantVariables(BooleanFormula formula) {
+        for (BooleanVariable var : FormulaUtils.extractVariables(formula)) {
+            BooleanFormula var0Formula = FormulaUtils.replaceZero(formula, var);
+            if (isEquivalent(formula, var0Formula)) {
+                formula = var0Formula;
+            }
+        }
+        return formula;
     }
 
     public boolean isBinate(BooleanFormula formula, BooleanVariable var) {

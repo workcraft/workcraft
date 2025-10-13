@@ -397,11 +397,11 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             ProductPlacePositioning productPlacePositioning, VisualPlace predPlace, VisualPlace succPlace) {
 
         switch (productPlacePositioning) {
-            case PRED_PLACE -> ModelUtils.renameNode(model, productPlace, model.getMathName(predPlace));
-            case SUCC_PLACE -> ModelUtils.renameNode(model, productPlace, model.getMathName(succPlace));
+            case PRED_PLACE -> ModelUtils.setNameRenameClashes(model, productPlace, model.getMathName(predPlace));
+            case SUCC_PLACE -> ModelUtils.setNameRenameClashes(model, productPlace, model.getMathName(succPlace));
             default -> {
                 String mixName = model.getMathName(predPlace) + model.getMathName(succPlace);
-                ModelUtils.renameNode(model, productPlace, mixName);
+                ModelUtils.setNameRenameClashes(model, productPlace, mixName);
             }
         }
     }

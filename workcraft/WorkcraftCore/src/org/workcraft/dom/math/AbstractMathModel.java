@@ -200,7 +200,7 @@ public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConn
         setTitle("");
         for (MathNode node : Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
             String name = getName(node);
-            if (!Identifier.isInternal(name)) {
+            if (!Identifier.hasInternalPrefix(name)) {
                 getReferenceManager().setDefaultName(node);
             }
         }

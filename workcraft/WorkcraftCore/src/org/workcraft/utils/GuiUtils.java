@@ -47,11 +47,27 @@ public class GuiUtils {
         return new JPanel(new FlowLayout(FlowLayout.RIGHT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
     }
 
-    public static void centerAndSizeToParent(Window frame, Window parent) {
-        if ((frame != null) && (parent != null)) {
-            Dimension parentSize = parent.getSize();
-            frame.setSize(2 * parentSize.width / 3, 2 * parentSize.height / 3);
-            frame.setLocationRelativeTo(parent);
+    public static Dimension getScreenDimension() {
+        return Toolkit.getDefaultToolkit().getScreenSize();
+    }
+
+    public static void reduceToScreen(Window frame, float xScale, float yScale) {
+        if (frame != null) {
+            Dimension screenDimension = getScreenDimension();
+            Dimension frameDimension = frame.getSize();
+            frameDimension.width = Math.min(frameDimension.width, Math.round(screenDimension.width * xScale));
+            frameDimension.height = Math.min(frameDimension.height, Math.round(screenDimension.height * yScale));
+            frame.setSize(frameDimension);
+        }
+    }
+
+    public static void sizeToScreen(Window frame, float xScale, float yScale) {
+        if (frame != null) {
+            Dimension screenDimension = getScreenDimension();
+            Dimension frameDimension = new Dimension(Math.round(screenDimension.width * xScale),
+                    Math.round(screenDimension.height * yScale));
+
+            frame.setSize(frameDimension);
         }
     }
 

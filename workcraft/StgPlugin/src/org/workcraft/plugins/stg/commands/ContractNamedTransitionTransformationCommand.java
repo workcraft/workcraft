@@ -17,6 +17,7 @@ import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.utils.Hierarchy;
+import org.workcraft.utils.ModelUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -55,24 +56,31 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
             VisualPlace productPlace, ProductPlacePositioning productPlacePositioning,
             VisualPlace predPlace, VisualPlace succPlace) {
 
-        if (!(model instanceof VisualStg) || !(productPlace instanceof VisualStgPlace)) {
-            super.nameProductPlace(model, productPlace, productPlacePositioning, predPlace, succPlace);
+        if ((model instanceof VisualStg stg)
+                && (productPlace instanceof VisualStgPlace productStgPlace)
+                && (predPlace instanceof VisualStgPlace predStgPlace)
+                &&  (succPlace instanceof VisualStgPlace succStgPlace)) {
+
+            if (convertedImplicitPlaces.contains(predStgPlace) && !convertedImplicitPlaces.contains(succStgPlace)) {
+                nameProductPlace(stg, productStgPlace, succStgPlace);
+                return;
+            }
+            if (!convertedImplicitPlaces.contains(predStgPlace) && convertedImplicitPlaces.contains(succStgPlace)) {
+                nameProductPlace(stg, productStgPlace, predStgPlace);
+                return;
+            }
         }
-        VisualStg stg = (VisualStg) model;
-        VisualStgPlace productStgPlace = (VisualStgPlace) productPlace;
-        if (convertedImplicitPlaces.contains(predPlace) && convertedImplicitPlaces.contains(succPlace)) {
-            super.nameProductPlace(model, productPlace, productPlacePositioning, predPlace, succPlace);
-        } else if (convertedImplicitPlaces.contains(predPlace)) {
-            String succPlaceName = stg.getMathName(succPlace);
-            stg.setMathName(succPlace, Identifier.makeInternal(succPlaceName));
-            stg.setMathName(productStgPlace, succPlaceName);
-        } else if (convertedImplicitPlaces.contains(succPlace)) {
-            String predPlaceName = stg.getMathName(predPlace);
-            stg.setMathName(predPlace, Identifier.makeInternal(predPlaceName));
-            stg.setMathName(productStgPlace, predPlaceName);
+        super.nameProductPlace(model, productPlace, productPlacePositioning, predPlace, succPlace);
+    }
+
+    private static void nameProductPlace(VisualStg stg, VisualStgPlace productStgPlace, VisualStgPlace stgPlace) {
+        String stgPlaceName = stg.getMathName(stgPlace);
+        if (Identifier.hasInternalPrefix(stgPlaceName)) {
+            stgPlaceName = Identifier.removeInternalPrefix(stgPlaceName);
         } else {
-            super.nameProductPlace(model, productPlace, productPlacePositioning, predPlace, succPlace);
+            stg.setMathName(stgPlace, Identifier.addInternalPrefix(stgPlaceName));
         }
+        ModelUtils.setNameOrDerivedName(stg, productStgPlace, stgPlaceName);
     }
 
     @Override
@@ -80,32 +88,37 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
             VisualPlace productPlace, ProductPlacePositioning productPlacePositioning,
             VisualPlace predPlace, VisualTransition transition, VisualPlace succPlace) {
 
-        if (!(model instanceof VisualStg) || !(productPlace instanceof VisualStgPlace)) {
-            super.positionProductPlace(model, productPlace, productPlacePositioning, predPlace, transition, succPlace);
+        if ((model instanceof VisualStg stg)
+                && (productPlace instanceof VisualStgPlace productStgPlace)
+                && (predPlace instanceof VisualStgPlace predStgPlace)
+                &&  (succPlace instanceof VisualStgPlace succStgPlace)) {
+
+            if (convertedImplicitPlaces.contains(predStgPlace) && convertedImplicitPlaces.contains(succStgPlace)) {
+                productStgPlace.copyPosition(transition);
+                shapeProductPlacePredConnection(stg, productStgPlace, predStgPlace, null, null);
+                shapeProductPlaceSuccConnection(stg, productStgPlace, succStgPlace, null, null);
+                VisualConnection connection = stg.makeImplicitIfPossible(productStgPlace, true);
+                filterControlPoints(connection);
+                return;
+            }
+            if (convertedImplicitPlaces.contains(predStgPlace)) {
+                productStgPlace.copyPosition(succStgPlace);
+                productStgPlace.copyStyle(succStgPlace);
+                shapeProductPlacePredConnection(stg, productStgPlace, predStgPlace, transition, succStgPlace);
+                return;
+            }
+            if (convertedImplicitPlaces.contains(succStgPlace)) {
+                productStgPlace.copyPosition(predStgPlace);
+                productStgPlace.copyStyle(predStgPlace);
+                shapeProductPlaceSuccConnection(stg, productStgPlace, succStgPlace, transition, predStgPlace);
+                return;
+            }
         }
-        VisualStg stg = (VisualStg) model;
-        VisualStgPlace productStgPlace = (VisualStgPlace) productPlace;
-        if (convertedImplicitPlaces.contains(predPlace) && convertedImplicitPlaces.contains(succPlace)) {
-            productStgPlace.copyPosition(transition);
-            shapeProductPlacePredConnection(stg, productStgPlace, predPlace, null, null);
-            shapeProductPlaceSuccConnection(stg, productStgPlace, succPlace, null, null);
-            VisualConnection connection = stg.makeImplicitIfPossible(productStgPlace, true);
-            filterControlPoints(connection);
-        } else if (convertedImplicitPlaces.contains(predPlace)) {
-            productStgPlace.copyPosition(succPlace);
-            productStgPlace.copyStyle(succPlace);
-            shapeProductPlacePredConnection(stg, productStgPlace, predPlace, transition, succPlace);
-        } else if (convertedImplicitPlaces.contains(succPlace)) {
-            productStgPlace.copyPosition(predPlace);
-            productStgPlace.copyStyle(predPlace);
-            shapeProductPlaceSuccConnection(stg, productStgPlace, succPlace, transition, predPlace);
-        } else {
-            super.positionProductPlace(model, productPlace, productPlacePositioning, predPlace, transition, succPlace);
-        }
+        super.positionProductPlace(model, productPlace, productPlacePositioning, predPlace, transition, succPlace);
     }
 
     private void shapeProductPlacePredConnection(VisualStg stg, VisualStgPlace productPlace,
-            VisualPlace predPlace, VisualTransition transition, VisualPlace succPlace) {
+            VisualStgPlace predPlace, VisualTransition transition, VisualStgPlace succPlace) {
 
         VisualConnection predPlacePredConnection = getOnlyPredConnectionOrNull(stg, predPlace);
         VisualConnection predPlaceSuccConnection = getOnlySuccConnectionOrNull(stg, predPlace);
@@ -131,7 +144,7 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
     }
 
     private void shapeProductPlaceSuccConnection(VisualStg stg, VisualStgPlace productPlace,
-            VisualPlace succPlace, VisualTransition transition, VisualPlace predPlace) {
+            VisualStgPlace succPlace, VisualTransition transition, VisualStgPlace predPlace) {
 
         VisualConnection succPlacePredConnection = getOnlyPredConnectionOrNull(stg, succPlace);
         VisualConnection succPlaceSuccConnection = getOnlySuccConnectionOrNull(stg, succPlace);

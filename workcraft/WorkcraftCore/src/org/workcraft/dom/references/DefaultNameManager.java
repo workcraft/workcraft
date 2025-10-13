@@ -22,9 +22,9 @@ public class DefaultNameManager implements NameManager {
         String result = Annotations.getIdentifierPrefix(node.getClass());
         if (result == null) {
             if (node instanceof Connection) {
-                result = Identifier.makeInternal("c");
+                result = Identifier.addInternalPrefix("c");
             } else if (node instanceof Container) {
-                result = Identifier.makeInternal("group");
+                result = Identifier.addInternalPrefix("group");
             } else {
                 result = "node";
             }

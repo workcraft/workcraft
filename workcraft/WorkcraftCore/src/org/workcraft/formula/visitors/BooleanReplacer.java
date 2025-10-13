@@ -45,7 +45,11 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
         if (x != null) {
             BooleanFormula evalX = x.accept(this);
             if (evalX != null) {
-                result = (x == evalX) ? node : worker.not(evalX);
+                if ((evalX == One.getInstance()) || (evalX == Zero.getInstance()) || (evalX != x)) {
+                    result = worker.not(evalX);
+                } else {
+                    result = node;
+                }
             }
         }
         map.put(node, result);
@@ -95,8 +99,15 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
                 result = evalY;
             } else if (evalY == null) {
                 result = evalX;
+            } else if ((evalX == Zero.getInstance())
+                    || (evalX == One.getInstance())
+                    || (evalY == Zero.getInstance())
+                    || (evalY == One.getInstance())
+                    || (evalX != x) || (evalY != y)) {
+
+                result = op.apply(evalX, evalY);
             } else {
-                result = ((x == evalX) && (y == evalY)) ? node : op.apply(evalX, evalY);
+                result = node;
             }
         }
         map.put(node, result);

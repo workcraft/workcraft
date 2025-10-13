@@ -5,6 +5,7 @@ import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
+import org.workcraft.formula.workers.CleverBooleanWorker;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -124,7 +125,8 @@ public class ExpressionUtils {
         BooleanFormula resultFormula = null;
         try {
             BooleanFormula formula = BooleanFormulaParser.parse(expression,
-                    literal -> literalToVariableMap.computeIfAbsent(literal, FreeVariable::new));
+                    literal -> literalToVariableMap.computeIfAbsent(literal, FreeVariable::new),
+                    CleverBooleanWorker.getInstance());
 
             if (formula != null) {
                 BooleanFormula exactFormula = seqValue
@@ -134,7 +136,8 @@ public class ExpressionUtils {
                 if (exactFormula != null) {
                     String heuristicExpression = heuristic.apply(expression, seqLiteral);
                     BooleanFormula heuristicFormula = BooleanFormulaParser.parse(heuristicExpression,
-                            literal -> literalToVariableMap.computeIfAbsent(literal, FreeVariable::new));
+                            literal -> literalToVariableMap.computeIfAbsent(literal, FreeVariable::new),
+                            CleverBooleanWorker.getInstance());
 
                     if (heuristicFormula == null) {
                         resultFormula = exactFormula;

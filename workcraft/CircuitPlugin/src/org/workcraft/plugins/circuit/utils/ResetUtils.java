@@ -280,13 +280,21 @@ public final class ResetUtils {
         }
         if (initToOne) {
             if (activeLow) {
-                if (formula instanceof Not notFormula) {
+                if (formula instanceof One) {
+                    return One.getInstance();
+                } else if (formula instanceof Zero) {
+                    return new Not(initVar);
+                } else if (formula instanceof Not notFormula) {
                     return new Not(new And(notFormula.getX(), initVar));
                 } else {
                     return new Or(formula, new Not(initVar));
                 }
             } else {
-                if (formula instanceof Not notFormula) {
+                if (formula instanceof One) {
+                    return One.getInstance();
+                } else if (formula instanceof Zero) {
+                    return initVar;
+                } else if (formula instanceof Not notFormula) {
                     return new Not(new And(notFormula.getX(), new Not(initVar)));
                 } else {
                     return new Or(formula, initVar);
@@ -294,13 +302,21 @@ public final class ResetUtils {
             }
         } else {
             if (activeLow) {
-                if (formula instanceof Not notFormula) {
+                if (formula instanceof Zero) {
+                    return Zero.getInstance();
+                } else if (formula instanceof One) {
+                    return initVar;
+                } else if (formula instanceof Not notFormula) {
                     return new Not(new Or(notFormula.getX(), new Not(initVar)));
                 } else {
                     return new And(formula, initVar);
                 }
             } else {
-                if (formula instanceof Not notFormula) {
+                if (formula instanceof Zero) {
+                    return Zero.getInstance();
+                } else if (formula instanceof One) {
+                    return new Not(initVar);
+                } else if (formula instanceof Not notFormula) {
                     return new Not(new Or(notFormula.getX(), initVar));
                 } else {
                     return new And(formula, new Not(initVar));

@@ -70,9 +70,8 @@ public class SettingsEditorDialog extends JDialog {
             }
         });
 
-        Dimension minSize = new Dimension(500, 200);
-        setMinimumSize(minSize);
-        GuiUtils.centerAndSizeToParent(this, owner);
+        GuiUtils.sizeToScreen(this, 0.5f, 0.5f);
+        setLocationRelativeTo(owner);
 
         initComponents();
         loadSections();

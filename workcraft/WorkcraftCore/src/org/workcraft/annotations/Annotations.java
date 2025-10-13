@@ -34,7 +34,7 @@ public class Annotations {
     public static String getIdentifierPrefix(Class<?> cls) {
         IdentifierPrefix annotation = cls.getAnnotation(IdentifierPrefix.class);
         return annotation == null ? null : annotation.isInternal()
-                ? Identifier.makeInternal(annotation.value()) : annotation.value();
+                ? Identifier.addInternalPrefix(annotation.value()) : annotation.value();
     }
 
 }
