@@ -40,36 +40,41 @@ public class FormulaUtils {
     public static BooleanFormula replace(BooleanFormula formula, List<? extends BooleanVariable> variables,
             List<? extends BooleanFormula> values, BooleanWorker worker) {
 
-        BooleanFormula result = null;
-        if (formula != null) {
-            if (variables.size() != values.size()) {
-                throw new RuntimeException("Length of the variable list must be equal to that of formula list.");
-            }
-            Map<BooleanVariable, BooleanFormula> variableToValueMap = new HashMap<>();
-            for (int i = 0; i < variables.size(); i++) {
-                variableToValueMap.put(variables.get(i), values.get(i));
-            }
-            result = formula.accept(new BooleanReplacer(variableToValueMap, worker));
+        if ((formula == null) || (variables == null) || (values == null) || variables.isEmpty() || values.isEmpty()) {
+            return formula;
         }
-        return result;
+        if (variables.size() != values.size()) {
+            throw new RuntimeException("Length of the variable list must be equal to that of formula list.");
+        }
+        Map<BooleanVariable, BooleanFormula> variableToValueMap = new HashMap<>();
+        for (int i = 0; i < variables.size(); i++) {
+            variableToValueMap.put(variables.get(i), values.get(i));
+        }
+        return formula.accept(new BooleanReplacer(variableToValueMap, worker));
+    }
+
+    public static BooleanFormula replace(BooleanFormula formula,
+            Map<? extends BooleanVariable, ? extends BooleanFormula> variableToValueMap) {
+
+        return replace(formula, variableToValueMap, DumbBooleanWorker.getInstance());
     }
 
     public static BooleanFormula replace(BooleanFormula formula,
             Map<? extends BooleanVariable, ? extends BooleanFormula> variableToValueMap, BooleanWorker worker) {
 
-        BooleanFormula result = null;
-        if (formula != null) {
-            result = formula.accept(new BooleanReplacer(variableToValueMap, worker));
+        if ((formula == null) || (variableToValueMap == null) || variableToValueMap.isEmpty()) {
+            return formula;
         }
-        return result;
+        return formula.accept(new BooleanReplacer(variableToValueMap, worker));
     }
 
-    public static BooleanFormula replaceBinateVariable(BooleanFormula formula, BooleanVariable variable, BooleanFormula value) {
-        BooleanFormula result = null;
-        if (formula != null) {
-            result = formula.accept(new BinateVariableReplacer(variable, value));
+    public static BooleanFormula replaceBinateVariable(BooleanFormula formula,
+            BooleanVariable variable, BooleanFormula value) {
+
+        if ((formula == null) || (variable == null) || (value == null)) {
+            return formula;
         }
-        return result;
+        return formula.accept(new BinateVariableReplacer(variable, value));
     }
 
     public static Set<BooleanVariable> extractNegatedVariables(BooleanFormula formula) {
