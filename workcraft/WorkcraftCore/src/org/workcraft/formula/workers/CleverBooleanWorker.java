@@ -62,15 +62,6 @@ public final class CleverBooleanWorker implements BooleanWorker {
         if (x == y) {
             return x;
         }
-//        String xString = StringGenerator.toString(x);
-//        String yString = StringGenerator.toString(y);
-//        if (xString.equals(yString) || checkStrings(xString, yString, " + ")) {
-//            return x;
-//        }
-//        String invYText = invertString(yString);
-//        if (xString.equals(invYText) || checkStrings(xString, invYText, " + ")) {
-//            return one();
-//        }
         return new Or(x, y);
     }
 
