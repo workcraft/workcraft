@@ -3,6 +3,7 @@ package org.workcraft.formula.bdd;
 import jdd.bdd.BDD;
 import org.workcraft.formula.*;
 import org.workcraft.formula.visitors.BooleanVisitor;
+import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.types.Func2;
 import org.workcraft.utils.SetUtils;
 
@@ -96,7 +97,9 @@ public class BddManager {
 
     public BooleanFormula removeRedundantVariables(BooleanFormula formula) {
         for (BooleanVariable var : FormulaUtils.extractVariables(formula)) {
-            BooleanFormula var0Formula = FormulaUtils.replaceZero(formula, var);
+            BooleanFormula var0Formula = FormulaUtils.replace(formula, var, Zero.getInstance(),
+                    CleverBooleanWorker.getInstance());
+
             if (isEquivalent(formula, var0Formula)) {
                 formula = var0Formula;
             }

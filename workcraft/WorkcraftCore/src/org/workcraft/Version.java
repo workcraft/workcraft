@@ -10,6 +10,12 @@ public class Version implements Comparable<Version> {
         RC1("rc1"),
         RC2("rc2"),
         RC3("rc3"),
+        RC4("rc4"),
+        RC5("rc5"),
+        RC6("rc6"),
+        RC7("rc7"),
+        RC8("rc8"),
+        RC9("rc9"),
         RELEASE("");
 
         private final String name;
