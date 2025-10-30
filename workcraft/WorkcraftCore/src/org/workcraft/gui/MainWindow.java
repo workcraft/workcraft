@@ -178,6 +178,11 @@ public class MainWindow extends JFrame {
         weWindowMap.put(we, window);
         requestFocus(editorPanel);
         setWorkActionsEnabledness(true);
+        // Refresh bounding boxes of all model components, so connections are clipped correctly
+        VisualModel visualModel = we.getModelEntry().getVisualModel();
+        if (visualModel != null) {
+            ModelUtils.refreshBoundingBox(visualModel);
+        }
         editorPanel.zoomFit();
         return editorPanel;
     }
