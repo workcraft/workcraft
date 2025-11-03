@@ -59,7 +59,7 @@ public class SplitFormGenerator {
                 argToVarMap.put(arg, variable);
                 BooleanFormula oldFormula  = formula;
                 formula = variable;
-                if (oldFormula  != null) {
+                if (oldFormula != null) {
                     formula = operation.eval(oldFormula, formula);
                 }
             }

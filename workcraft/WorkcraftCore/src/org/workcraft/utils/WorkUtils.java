@@ -209,7 +209,7 @@ public final class WorkUtils {
             throws IOException, DeserialisationException {
 
         Element element = XmlUtils.getChildElement(META_VISUAL_MODEL_WORK_ELEMENT, document.getDocumentElement());
-        if (element  != null) {
+        if (element != null) {
             try (InputStream visualData = getZipEntry(element.getAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE), bytes)) {
                 if (visualData != null) {
                     PluginManager pm = Framework.getInstance().getPluginManager();

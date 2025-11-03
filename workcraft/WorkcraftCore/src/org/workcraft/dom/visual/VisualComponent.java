@@ -309,7 +309,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
 
     protected void cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         text = Identifier.truncateNamespaceSeparator(text);
-        if ((nameRenderedText  == null) || nameRenderedText.isDifferent(text, font, positioning, offset)) {
+        if ((nameRenderedText == null) || nameRenderedText.isDifferent(text, font, positioning, offset)) {
             nameRenderedText = new RenderedText(text, font, positioning, offset);
         }
     }
