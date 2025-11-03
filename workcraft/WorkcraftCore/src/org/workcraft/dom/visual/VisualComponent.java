@@ -395,6 +395,15 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         }
     }
 
+    public Point2D getNameDrawPosition() {
+        if (nameRenderedText != null) {
+            return nameRenderedText.getDrawPosition();
+        } else {
+            Rectangle2D box = getInternalBoundingBoxInLocalSpace();
+            return new Point2D.Double(box.getCenterX(), box.getCenterY());
+        }
+    }
+
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
         return getInternalBoundingBoxInLocalSpace().contains(pointInLocalSpace);

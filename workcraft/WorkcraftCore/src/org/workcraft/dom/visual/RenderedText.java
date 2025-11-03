@@ -59,4 +59,12 @@ public class RenderedText implements RenderingResult {
         return boundingBox;
     }
 
+    public Point2D getDrawPosition() {
+        return drawPosition;
+    }
+
+    public boolean isEmpty() {
+        return text.isEmpty();
+    }
+
 }
