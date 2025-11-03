@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.javacc.javacc'
     id 'com.github.kt3k.coveralls'
-    id 'de.aaschmid.cpd'
+    id 'org.danilopianini.cpd'
     id 'com.github.jk1.dependency-license-report'
 }
 
@@ -111,7 +111,7 @@ subprojects {
     }
 
 
-    apply plugin: 'de.aaschmid.cpd'
+    apply plugin: 'org.danilopianini.cpd'
 
     cpd {
         toolVersion = gradle.pmdVersion

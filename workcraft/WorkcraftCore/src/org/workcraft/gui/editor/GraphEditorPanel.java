@@ -348,9 +348,11 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return new PropertyDerivative<>(descriptor) {
             @Override
             public void setValue(V value) {
-                we.saveMemento();
-                we.setChanged(true);
-                super.setValue(value);
+                if (value != null) {
+                    we.saveMemento();
+                    we.setChanged(true);
+                    super.setValue(value);
+                }
             }
         };
     }

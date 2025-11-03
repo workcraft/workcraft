@@ -309,7 +309,7 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
 
     protected void cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         text = Identifier.truncateNamespaceSeparator(text);
-        if ((nameRenderedText  == null) || nameRenderedText.isDifferent(text, font, positioning, offset)) {
+        if ((nameRenderedText == null) || nameRenderedText.isDifferent(text, font, positioning, offset)) {
             nameRenderedText = new RenderedText(text, font, positioning, offset);
         }
     }
@@ -392,6 +392,15 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         } else {
             Rectangle2D box = getInternalBoundingBoxInLocalSpace();
             return new Rectangle2D.Double(box.getCenterX(), box.getCenterY(), 0.0, 0.0);
+        }
+    }
+
+    public Point2D getNameDrawPosition() {
+        if (nameRenderedText != null) {
+            return nameRenderedText.getDrawPosition();
+        } else {
+            Rectangle2D box = getInternalBoundingBoxInLocalSpace();
+            return new Point2D.Double(box.getCenterX(), box.getCenterY());
         }
     }
 
