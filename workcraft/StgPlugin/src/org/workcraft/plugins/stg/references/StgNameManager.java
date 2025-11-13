@@ -1,9 +1,11 @@
 package org.workcraft.plugins.stg.references;
 
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.DefaultNameManager;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.LabelParser;
 import org.workcraft.types.ListMap;
@@ -69,6 +71,7 @@ public class StgNameManager extends DefaultNameManager {
                 }
             }
             signalTransitions.put(signalName, st);
+            st.sendNotification(new PropertyChangedEvent(st, Model.PROPERTY_NAME));
         }
     }
 
@@ -83,6 +86,7 @@ public class StgNameManager extends DefaultNameManager {
             dummyTransitions.remove(dt.getName(), dt);
             dt.setNameQuiet(dummyName);
             dummyTransitions.put(dt.getName(), dt);
+            dt.sendNotification(new PropertyChangedEvent(dt, Model.PROPERTY_NAME));
         }
     }
 

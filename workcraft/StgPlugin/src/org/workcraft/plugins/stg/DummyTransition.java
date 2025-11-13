@@ -13,7 +13,7 @@ public class DummyTransition extends NamedTransition {
 
     private String name;
 
-    // FIXME: As dummy name is node reference use Stg.setName instead!
+    // FIXME: As dummy name is the node reference use Stg.setName instead!
     // This method is only to be used from StgNameManager.
     public void setNameQuiet(String value) {
         if (value == null) value = "";
