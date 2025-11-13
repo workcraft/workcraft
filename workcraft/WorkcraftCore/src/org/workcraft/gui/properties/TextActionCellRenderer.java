@@ -38,9 +38,12 @@ public class TextActionCellRenderer extends JPanel implements TableCellRenderer 
             boolean isSelected, boolean hasFocus, int row, int column) {
 
         if (value instanceof TextAction textAction) {
+            int buttonSize = table.getRowHeight(row);
+            Dimension buttonDimension = new Dimension(buttonSize, buttonSize);
 
             Action leftAction = textAction.getLeftAction();
             if (leftAction != null) {
+                leftButton.setPreferredSize(buttonDimension);
                 leftButton.setVisible(true);
                 leftButton.setText(leftAction.getTitle());
                 leftButton.setToolTipText(ActionUtils.getActionTooltip(leftAction));
@@ -61,6 +64,7 @@ public class TextActionCellRenderer extends JPanel implements TableCellRenderer 
 
             Action rightAction = textAction.getRightAction();
             if (rightAction != null) {
+                rightButton.setPreferredSize(buttonDimension);
                 rightButton.setVisible(true);
                 rightButton.setText(rightAction.getTitle());
                 rightButton.setToolTipText(ActionUtils.getActionTooltip(rightAction));

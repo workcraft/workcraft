@@ -40,6 +40,10 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
         chooseButton.setToolTipText(null);
 
         if (value instanceof File file) {
+            int buttonSize = table.getRowHeight(row);
+            Dimension buttonDimension = new Dimension(buttonSize, buttonSize);
+            clearButton.setPreferredSize(buttonDimension);
+
             if (file.exists()) {
                 chooseButton.setForeground(Color.BLACK);
             } else {

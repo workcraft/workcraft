@@ -12,7 +12,7 @@ public class PropertyDeclaration<V> implements PropertyDescriptor<V> {
     private final Consumer<V> setter;
     private final Supplier<V> getter;
     private Supplier<Boolean> visibilitySupplier = null;
-    private boolean editable = true;
+    private Supplier<Boolean> editabilitySupplier = null;
     private boolean combinable = false;
     private boolean templatable = false;
     private boolean span = false;
@@ -61,23 +61,23 @@ public class PropertyDeclaration<V> implements PropertyDescriptor<V> {
         return this;
     }
 
-    public PropertyDeclaration<V> setReadonly() {
-        return setEditable(false);
-    }
-
-    public PropertyDeclaration<V> setEditable(boolean value) {
-        this.editable = value;
-        return this;
-    }
-
     @Override
     public boolean isVisible() {
         return (visibilitySupplier == null) || visibilitySupplier.get();
     }
 
+    public PropertyDeclaration<V> setEditabilitySupplier(Supplier<Boolean> value) {
+        editabilitySupplier = value;
+        return this;
+    }
+
+    public PropertyDeclaration<V> setReadonly() {
+        return setEditabilitySupplier(() -> false);
+    }
+
     @Override
     public boolean isEditable() {
-        return editable;
+        return (editabilitySupplier == null) || editabilitySupplier.get();
     }
 
     public PropertyDeclaration<V> setCombinable() {

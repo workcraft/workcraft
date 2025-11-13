@@ -21,6 +21,7 @@ public class ChoiceCellRenderer extends FlatComboBox implements TableCellRendere
         if (value != null) {
             addItem(value);
         }
+        setSelectedItem(value);
         setOpaque(value == null);
         return this;
     }

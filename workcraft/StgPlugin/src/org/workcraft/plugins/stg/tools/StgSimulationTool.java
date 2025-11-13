@@ -14,6 +14,7 @@ import org.workcraft.gui.properties.ColorCellEditor;
 import org.workcraft.gui.properties.ColorCellRenderer;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.gui.tools.GraphEditor;
+import org.workcraft.gui.tools.TableRowTransferHandler;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.builtin.settings.SimulationDecorationSettings;
 import org.workcraft.plugins.dtd.DtdDescriptor;
@@ -36,8 +37,6 @@ import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.activation.ActivationDataFlavor;
-import javax.activation.DataHandler;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
@@ -45,11 +44,8 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DragSource;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class StgSimulationTool extends PetriSimulationTool {
 
@@ -94,7 +90,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             getTableHeader().setReorderingAllowed(false);
             setDragEnabled(true);
             setDropMode(DropMode.INSERT_ROWS);
-            setTransferHandler(new StateTableRowTransferHandler(this));
+            setTransferHandler(new TableRowTransferHandler(this, model::moveRow));
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
             setRowHeight(SizeHelper.getComponentHeightFromFont(this.getFont()));
             setDefaultRenderer(SignalData.class, new SignalDataRenderer());
@@ -182,7 +178,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             };
         }
 
-        public void reorderRows(int from, int to) {
+        private void moveRow(int from, int to) {
             if ((from >= 0) && (from < signals.size()) && (to >= 0) && (to < signals.size()) && (from != to)) {
                 String name = signals.remove(from);
                 signals.add(to, name);
@@ -232,70 +228,6 @@ public class StgSimulationTool extends PetriSimulationTool {
             label.setToolTipText(fits ? null : label.getText());
             return label;
         }
-    }
-
-    public class StateTableRowTransferHandler extends TransferHandler {
-
-        private final DataFlavor localObjectFlavor = new ActivationDataFlavor(Integer.class,
-                "Integer Row Index");
-
-        private final JTable table;
-
-        public StateTableRowTransferHandler(JTable table) {
-            this.table = table;
-        }
-
-        @Override
-        protected Transferable createTransferable(JComponent c) {
-            return new DataHandler(table.getSelectedRow(), localObjectFlavor.getMimeType());
-        }
-
-        @Override
-        public boolean canImport(TransferSupport info) {
-            boolean result = (info.getComponent() == table) && info.isDrop() && info.isDataFlavorSupported(localObjectFlavor);
-            table.setCursor(result ? DragSource.DefaultMoveDrop : DragSource.DefaultMoveNoDrop);
-            return result;
-        }
-
-        @Override
-        public int getSourceActions(JComponent c) {
-            return TransferHandler.COPY_OR_MOVE;
-        }
-
-        @Override
-        public boolean importData(TransferSupport info) {
-            JTable target = (JTable) info.getComponent();
-            JTable.DropLocation dl = (JTable.DropLocation) info.getDropLocation();
-            int toRow = dl.getRow();
-            int lastRow = table.getModel().getRowCount();
-            if ((toRow < 0) || (toRow > lastRow)) {
-                toRow = lastRow;
-            }
-            target.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            try {
-                int fromRow = (Integer) info.getTransferable().getTransferData(localObjectFlavor);
-                if (toRow > fromRow) {
-                    toRow--;
-                }
-                if ((fromRow != -1) && (fromRow != toRow)) {
-                    StateTableModel stateTableModel = (StateTableModel) table.getModel();
-                    stateTableModel.reorderRows(fromRow, toRow);
-                    target.getSelectionModel().addSelectionInterval(toRow, toRow);
-                    return true;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return false;
-        }
-
-        @Override
-        protected void exportDone(JComponent c, Transferable t, int act) {
-            if ((act == TransferHandler.MOVE) || (act == TransferHandler.NONE)) {
-                table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            }
-        }
-
     }
 
     private final class TraceTableCellRendererImplementation implements TableCellRenderer {

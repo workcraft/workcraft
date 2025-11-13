@@ -8,6 +8,11 @@ import java.awt.*;
 
 public class ActionCellRenderer extends JButton implements TableCellRenderer {
 
+    public ActionCellRenderer() {
+        super();
+        setMargin(PropertyHelper.BUTTON_INSETS);
+    }
+
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
