@@ -174,7 +174,6 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
         });
         passiveRadioButton.setSelected(true);
 
-
         result.add(typePanel, BorderLayout.NORTH);
         result.add(signalPanel, BorderLayout.CENTER);
         result.add(optionsPanel, BorderLayout.SOUTH);
@@ -190,7 +189,6 @@ public class HandshakeWizardDialog extends PresetDialog<HandshakeParameters> {
             case REQ0ACK1 -> LABEL_PREFIX + ACK_LABEL + WITHDRAWN_LABEL;
         };
     }
-
 
     private String getStateTooltip(HandshakeParameters.State state) {
         return switch (state) {
