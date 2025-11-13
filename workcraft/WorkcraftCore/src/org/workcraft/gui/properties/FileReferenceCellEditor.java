@@ -119,11 +119,16 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
     public Component getTableCellEditorComponent(JTable table, Object value,
             boolean isSelected, int row, int column) {
 
-        if (value instanceof FileReference) {
-            fileReference = (FileReference) value;
+        if (value instanceof FileReference fileReferenceValue) {
+            fileReference = fileReferenceValue;
             update();
         }
         if (table != null) {
+            int buttonSize = table.getRowHeight(row);
+            Dimension buttonDimension = new Dimension(buttonSize, buttonSize);
+            enterButton.setPreferredSize(buttonDimension);
+            clearButton.setPreferredSize(buttonDimension);
+
             Font font = table.getFont();
             enterButton.setFont(font);
             chooseButton.setFont(font);

@@ -21,7 +21,7 @@ public class PropertyHelper {
     // Note: 0x26B2 (looks like a magnifying glass) is often missing, therefore use 0xA4 (looks like aim).
     public static final String SEARCH_SYMBOL = Character.toString((char) 0xA4);
 
-    public static final Insets BUTTON_INSETS =  new Insets(1, 1, 1, 1);
+    public static final Insets BUTTON_INSETS = new Insets(1, 1, 1, 1);
 
     public static PropertyDescriptor<String> createSeparatorProperty(String text) {
         return new PropertyDeclaration<>(String.class, text,

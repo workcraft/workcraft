@@ -53,6 +53,11 @@ public class FileReferenceCellRenderer extends JPanel implements TableCellRender
         chooseButton.setToolTipText(null);
 
         if (value instanceof FileReference fileReference) {
+            int buttonSize = table.getRowHeight(row);
+            Dimension buttonDimension = new Dimension(buttonSize, buttonSize);
+            enterButton.setPreferredSize(buttonDimension);
+            clearButton.setPreferredSize(buttonDimension);
+
             File file = fileReference.getFile();
             if (file != null) {
                 if (file.exists()) {

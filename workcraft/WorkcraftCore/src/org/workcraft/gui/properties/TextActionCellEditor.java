@@ -50,9 +50,12 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         if (value instanceof TextAction textAction) {
+            int buttonSize = table.getRowHeight(row);
+            Dimension buttonDimension = new Dimension(buttonSize, buttonSize);
 
             Action leftAction = textAction.getLeftAction();
             if (leftAction != null) {
+                leftButton.setPreferredSize(buttonDimension);
                 leftButton.setVisible(true);
                 leftButton.setText(leftAction.getTitle());
                 leftButton.setToolTipText(ActionUtils.getActionTooltip(leftAction));
@@ -80,6 +83,7 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
 
             Action rightAction = textAction.getRightAction();
             if (rightAction != null) {
+                rightButton.setPreferredSize(buttonDimension);
                 rightButton.setVisible(true);
                 rightButton.setText(rightAction.getTitle());
                 rightButton.setToolTipText(ActionUtils.getActionTooltip(rightAction));
