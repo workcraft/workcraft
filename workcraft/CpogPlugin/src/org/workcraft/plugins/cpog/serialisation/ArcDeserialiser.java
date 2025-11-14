@@ -2,11 +2,11 @@ package org.workcraft.plugins.cpog.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.serialisation.BooleanFunctionDeserialiser;
+import org.workcraft.formula.serialisation.BooleanFormulaDeserialiser;
 import org.workcraft.plugins.cpog.Arc;
 import org.workcraft.serialisation.ReferenceResolver;
 
-public class ArcDeserialiser extends BooleanFunctionDeserialiser<Arc> {
+public class ArcDeserialiser extends BooleanFormulaDeserialiser<Arc> {
 
     @Override
     public String getClassName() {
