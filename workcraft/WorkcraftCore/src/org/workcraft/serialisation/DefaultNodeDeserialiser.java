@@ -11,6 +11,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 
@@ -65,9 +66,19 @@ class DefaultNodeDeserialiser {
     }
 
     private boolean needDeserialisation(PropertyDescriptor desc) {
-        return (desc.getPropertyType() != null)
-                && (desc.getWriteMethod() != null)
-                && (desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) == null);
+        if (desc.getPropertyType() == null) {
+            return false;
+        }
+        Method writeMethod = desc.getWriteMethod();
+        if ((writeMethod != null) && (writeMethod.getAnnotation(ForceDeserialisation.class) != null)) {
+            return true;
+        }
+        Method readMethod = desc.getReadMethod();
+        if ((writeMethod == null) || (readMethod == null)) {
+            return false;
+        }
+        return (writeMethod.getAnnotation(NoAutoSerialisation.class) == null)
+                && (readMethod.getAnnotation(NoAutoSerialisation.class) == null);
     }
 
     public Object initInstance(Element element, ReferenceResolver externalReferenceResolver, Object... constructorParameters)

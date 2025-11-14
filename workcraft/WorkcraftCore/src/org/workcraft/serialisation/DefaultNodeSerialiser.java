@@ -9,6 +9,7 @@ import org.workcraft.utils.XmlUtils;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 
 import static org.workcraft.serialisation.BeanInfoCache.getBeanInfo;
@@ -43,9 +44,16 @@ public class DefaultNodeSerialiser {
     }
 
     private boolean needSerialisation(PropertyDescriptor desc) {
-        return (desc.getPropertyType() != null)
-                && (desc.getReadMethod() != null)
-                && (desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) == null);
+        if (desc.getPropertyType() == null) {
+            return false;
+        }
+        Method writeMethod = desc.getWriteMethod();
+        Method readMethod = desc.getReadMethod();
+        if ((writeMethod == null) || (readMethod == null)) {
+            return false;
+        }
+        return (writeMethod.getAnnotation(NoAutoSerialisation.class) == null)
+                && (readMethod.getAnnotation(NoAutoSerialisation.class) == null);
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
