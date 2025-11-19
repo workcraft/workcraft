@@ -16,8 +16,10 @@ public class ActionListCellEditor extends AbstractCellEditor implements TableCel
         if (value instanceof ActionList actions) {
             for (Action action : actions) {
                 JButton button = new JButton(action.getTitle());
-                button.setToolTipText(ActionUtils.getActionTooltip(action));
                 button.setFocusable(false);
+                button.setMargin(PropertyHelper.BUTTON_INSETS);
+                button.setToolTipText(ActionUtils.getActionTooltip(action));
+                button.setEnabled(action.isEnabled());
                 button.addActionListener(e -> action.run());
                 result.add(button);
             }

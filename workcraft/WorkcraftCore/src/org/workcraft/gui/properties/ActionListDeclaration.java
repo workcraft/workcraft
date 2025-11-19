@@ -11,7 +11,11 @@ public class ActionListDeclaration extends PropertyDeclaration<ActionList> {
     }
 
     public ActionListDeclaration addAction(String title, Runnable runnable, String description) {
-        actions.add(new Action(title, runnable, description));
+        return addAction(new Action(title, runnable, description));
+    }
+
+    public ActionListDeclaration addAction(Action action) {
+        actions.add(action);
         return this;
     }
 

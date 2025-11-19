@@ -31,6 +31,7 @@ public class ActionListCellRenderer extends JPanel implements TableCellRenderer 
                     button.setFocusable(false);
                     button.setMargin(PropertyHelper.BUTTON_INSETS);
                     button.setToolTipText(ActionUtils.getActionTooltip(action));
+                    button.setEnabled(action.isEnabled());
                     add(button);
                     actionButtonMap.put(action, button);
                 }
