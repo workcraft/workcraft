@@ -146,10 +146,6 @@ public class WorkspaceEntry implements ObservableState {
         return details == null ? "" : " : " + details;
     }
 
-    public String getTitleAndModelType() {
-        return getTitle() + getModelTypeSuffix();
-    }
-
     public String getHtmlDetailedTitle() {
         String prefix = isChanged() ? "*" : "";
         String suffix = getModelTypeSuffix();
