@@ -146,10 +146,6 @@ public class WorkspaceEntry implements ObservableState {
         return details == null ? "" : " : " + details;
     }
 
-    public String getTitleAndModelType() {
-        return getTitle() + getModelTypeSuffix();
-    }
-
     public String getHtmlDetailedTitle() {
         String prefix = isChanged() ? "*" : "";
         String suffix = getModelTypeSuffix();
@@ -319,6 +315,7 @@ public class WorkspaceEntry implements ObservableState {
         VisualModel model = modelEntry.getVisualModel();
         if (!model.getSelection().isEmpty()) {
             captureMemento();
+            model.beforeCopy();
             // Remember the current level, selected nodes, and then jump to the root level.
             Container currentLevel = model.getCurrentLevel();
             Collection<VisualNode> selectedNodes = new HashSet<>(model.getSelection());

@@ -83,6 +83,9 @@ public interface VisualModel extends Model<VisualNode, VisualConnection>, Observ
 
     ModelProperties getProperties(VisualNode node);
 
+    default void beforeCopy() {
+    }
+
     default void afterPaste() {
     }
 

@@ -19,6 +19,7 @@ public class ActionCellRenderer extends JButton implements TableCellRenderer {
 
         if (value instanceof Action action) {
             setText(action.getTitle());
+            setEnabled(table.isCellEditable(row, column));
         }
         return this;
     }
