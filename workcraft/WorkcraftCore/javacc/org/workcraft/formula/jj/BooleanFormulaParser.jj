@@ -58,6 +58,10 @@ public class BooleanFormulaParser {
         if ((text == null) || text.isEmpty()) {
             return null;
         }
+        // Add trailing space to prevent uninformative errors referring to <EOF>
+        if (!text.endsWith(" ")) {
+            text = text + ' ';
+        }
         return new BooleanFormulaParser(new StringReader(text), variableResolver, worker).formula();
     }
 
@@ -105,21 +109,22 @@ SKIP :
 |
     "\n"
 }
+
 TOKEN : /* OPERATORS */
 {
-    <EQUALS: "eq" | "=" | "==" | "<->" | "<=>">
+    <EQUALS: "=" | "==" | "<->" | "<=>">
 |
-    <NOTEQUALS: "neq" | "!=">
+    <NOTEQUALS: "!=">
 |
-    <IMPLIES: "imp" | "=>" | "\u21d2" | "->">
+    <IMPLIES: "=>" | "\u21d2" | "->">
 |
-    <OR: "or" | "|" | "+" | "\u2228">
+    <OR: "|" | "+" | "\u2228">
 |
-    <XOR: "xor" | "^" | "\u2295">
+    <XOR: "^" | "\u2295">
 |
-    <AND: "and" | "&" | "*" | "\u2227" | "\u2022" | "\u00b7">
+    <AND: "&" | "*" | "\u2227" | "\u2022" | "\u00b7">
 |
-    <NOT: "not" | "!" | "~" | "\u00ac">
+    <NOT: "!" | "~" | "\u00ac">
 |
     <POSTNOT: "'">
 }
@@ -134,6 +139,15 @@ TOKEN :
 }
 
 BooleanFormula formula() :
+{
+    BooleanFormula result;
+}
+{
+    result = expression() <EOF>
+    { return result; }
+}
+
+BooleanFormula expression() :
 {
     BooleanFormula result;
     BooleanFormula op;
@@ -227,7 +241,7 @@ BooleanFormula literal() :
         t = <CONSTANT1>
         { result = worker.one(); }
     |
-        "(" result = formula() ")"
+        "(" result = expression() ")"
     )
     { return result; }
 }
