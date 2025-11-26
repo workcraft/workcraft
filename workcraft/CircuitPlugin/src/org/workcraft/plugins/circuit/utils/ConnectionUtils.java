@@ -3,13 +3,11 @@ package org.workcraft.plugins.circuit.utils;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.utils.Geometry;
 
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -117,52 +115,6 @@ public final class ConnectionUtils {
 
                     component.setPositionByDirection(contact, direction, dy < 0);
                 }
-            }
-        }
-    }
-
-    public static void shapeConnectionAsStep(VisualConnection connection, double dx) {
-        if (connection != null) {
-            Polyline polyline = (Polyline) connection.getGraphic();
-            VisualTransformableNode firstNode = (VisualTransformableNode) connection.getFirst();
-            VisualTransformableNode secondNode = (VisualTransformableNode) connection.getSecond();
-            Point2D p1 = firstNode.getRootSpacePosition();
-            Point2D p2 = secondNode.getRootSpacePosition();
-            if (!Geometry.isAligned(p1.getY(), p2.getY())) {
-                double x = p1.getX() + dx;
-                if (!Geometry.isAligned(p1.getX(), x)) {
-                    polyline.addControlPoint(new Point2D.Double(x, p1.getY()));
-                }
-                if (!Geometry.isAligned(x, p2.getX())) {
-                    polyline.addControlPoint(new Point2D.Double(x, p2.getY()));
-                }
-            }
-        }
-    }
-
-    public static void shapeConnectionAsBridge(VisualConnection connection, double dx, double dy) {
-        shapeConnectionAsBridge(connection, dx, dy, 0.0);
-    }
-
-    public static void shapeConnectionAsBridge(VisualConnection connection, double dx1, double dy, double dx2) {
-        if (connection != null) {
-            Polyline polyline = (Polyline) connection.getGraphic();
-            VisualTransformableNode firstNode = (VisualTransformableNode) connection.getFirst();
-            VisualTransformableNode secondNode = (VisualTransformableNode) connection.getSecond();
-            Point2D p1 = firstNode.getRootSpacePosition();
-            Point2D p2 = secondNode.getRootSpacePosition();
-            double y = dy + (dy > 0 ? Math.max(p1.getY(), p2.getY()) : Math.min(p1.getY(), p2.getY()));
-
-            double x1 = p1.getX() + dx1;
-            if (!Geometry.isNegligible(dx1)) {
-                polyline.addControlPoint(new Point2D.Double(x1, p1.getY()));
-            }
-            polyline.addControlPoint(new Point2D.Double(x1, y));
-
-            double x2 = p2.getX() + dx2;
-            polyline.addControlPoint(new Point2D.Double(x2, y));
-            if (!Geometry.isNegligible(dx2)) {
-                polyline.addControlPoint(new Point2D.Double(x2, p2.getY()));
             }
         }
     }
