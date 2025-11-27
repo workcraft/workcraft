@@ -110,13 +110,13 @@ SKIP :
     "\n"
 }
 
-TOKEN : /* OPERATORS */
+TOKEN :
 {
-    <EQUALS: "=" | "==" | "<->" | "<=>">
+    <EQUAL: "=" | "==" | "<->" | "<=>">
 |
-    <NOTEQUALS: "!=">
+    <NOT_EQUAL: "!=">
 |
-    <IMPLIES: "=>" | "\u21d2" | "->">
+    <IMPLY: "=>" | "\u21d2" | "->">
 |
     <OR: "|" | "+" | "\u2228">
 |
@@ -126,11 +126,12 @@ TOKEN : /* OPERATORS */
 |
     <NOT: "!" | "~" | "\u00ac">
 |
-    <POSTNOT: "'">
-}
-
-TOKEN :
-{
+    <POSTPIX_NOT: "'">
+|
+    <OPEN_BRACKET: "(">
+|
+    <CLOSE_BRACKET: ")">
+|
     <CONSTANT0: "0">
 |
     <CONSTANT1: "1">
@@ -153,7 +154,7 @@ BooleanFormula expression() :
     BooleanFormula op;
 }
 {
-    result = eqOp() ( <EQUALS> op = eqOp()
+    result = eqOp() ( <EQUAL> op = eqOp()
     { result = worker.iff(result, op); } )*
     { return result; }
 }
@@ -164,7 +165,7 @@ BooleanFormula eqOp() :
     BooleanFormula op;
 }
 {
-    result = neqOp() ( <NOTEQUALS> op = neqOp()
+    result = neqOp() ( <NOT_EQUAL> op = neqOp()
     { result = worker.xor(result, op); } ) *
     { return result; }
 }
@@ -175,7 +176,7 @@ BooleanFormula neqOp() :
     BooleanFormula op;
 }
 {
-    result = implyOp() [ <IMPLIES> op = implyOp()
+    result = implyOp() [ <IMPLY> op = implyOp()
     { result = worker.imply(result, op); } ]
     { return result; }
 }
@@ -221,7 +222,7 @@ BooleanFormula andOp() :
 {
     (<NOT> { inverse = !inverse; } )*
     result = literal()
-    (<POSTNOT> { inverse = !inverse; } )*
+    (<POSTPIX_NOT> { inverse = !inverse; } )*
     { return inverse ? worker.not(result) : result; }
 }
 
@@ -241,7 +242,7 @@ BooleanFormula literal() :
         t = <CONSTANT1>
         { result = worker.one(); }
     |
-        "(" result = expression() ")"
+        <OPEN_BRACKET> result = expression() <CLOSE_BRACKET>
     )
     { return result; }
 }
