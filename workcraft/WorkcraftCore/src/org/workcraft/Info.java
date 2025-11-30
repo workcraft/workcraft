@@ -17,7 +17,7 @@ public class Info {
     private static final String SUBTITLE_3 = "Return of the Hazard";
     private static final String SUBTITLE_4 = "Revenge of the Timing Assumption";
 
-    private static final Version VERSION = new Version(3, 5, 4, Status.RC7);
+    private static final Version VERSION = new Version(3, 5, 4, Status.RELEASE);
 
     private static final int START_YEAR = 2006;
     private static final int CURRENT_YEAR = Calendar.getInstance().get(Calendar.YEAR);
