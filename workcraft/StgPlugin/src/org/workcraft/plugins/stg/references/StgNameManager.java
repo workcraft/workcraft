@@ -209,7 +209,7 @@ public class StgNameManager extends DefaultNameManager {
         }
         if (isSignalName(name)) {
             Signal.Type expectedType = getSignalType(name);
-            return (expectedType == null) || expectedType.equals(type);
+            return (expectedType == null) || (expectedType == type);
         }
         return true;
     }

@@ -719,7 +719,7 @@ public class VerificationUtils {
                                     "' the following signals have an inconsistent exit state with respect to the exit state of other waveforms:");
                             for (Map.Entry<String, Signal.State> signal : signalStates.get(successorNode).entrySet()) {
                                 if ((finalWaveformSignalState.containsKey(signal.getKey())) &&
-                                        (!finalWaveformSignalState.get(signal.getKey()).equals(signal.getValue()))) {
+                                        (finalWaveformSignalState.get(signal.getKey()) != signal.getValue())) {
                                     msg.append(' ');
                                     msg.append(signal.getKey());
                                 }

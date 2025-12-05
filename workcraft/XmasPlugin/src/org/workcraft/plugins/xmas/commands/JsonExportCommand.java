@@ -234,20 +234,8 @@ public class JsonExportCommand implements Command {
                         }
                     }
                 }
-                if (node instanceof SourceComponent) {
-                    System.out.println("      ],");
-                    writer.println("      ],");
-                } else if (node instanceof QueueComponent) {
-                    System.out.println("      ],");
-                    writer.println("      ],");
-                } else {
-                    System.out.println("      ],");
-                    writer.println("      ],");
-                }
-                /*else {
-                  System.out.println("      ]");
-                  writer.println("      ]");
-                  }*/
+                System.out.println("      ],");
+                writer.println("      ],");
                 if (node instanceof SourceComponent) {
                     //char srcchecktype = srcNode.getVal();
                     //System.out.println("type = " + srcchecktype);
