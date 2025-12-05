@@ -352,7 +352,7 @@ public class MainWindow extends JFrame {
             DockingManager.close(window);
             DockingManager.unregisterDockable(window);
             window.setClosed(true);
-        } catch (OperationCancelledException e) {
+        } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
     }
@@ -742,7 +742,7 @@ public class MainWindow extends JFrame {
     public void saveWork(WorkspaceEntry we) {
         try {
             saveWorkOrCancel(we);
-        } catch (OperationCancelledException e) {
+        } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
     }
@@ -767,7 +767,7 @@ public class MainWindow extends JFrame {
     public void saveWorkAs(WorkspaceEntry we) {
         try {
             saveWorkAsOrCancel(we);
-        } catch (OperationCancelledException e) {
+        } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
     }
@@ -835,7 +835,7 @@ public class MainWindow extends JFrame {
                 framework.setLastDirectory(FileUtils.getFileDirectory(file));
             } catch (DeserialisationException e) {
                 DialogUtils.showError(e.getMessage());
-            } catch (OperationCancelledException e) {
+            } catch (OperationCancelledException ignored) {
                 // Operation cancelled by the user - restore last directory
             } finally {
                 // Reset context directory for future imports
@@ -858,7 +858,7 @@ public class MainWindow extends JFrame {
             final TaskFailureNotifier monitor = new TaskFailureNotifier(description);
             taskManager.queue(exportTask, description, monitor);
             Framework.getInstance().setLastDirectory(fc.getCurrentDirectory());
-        } catch (OperationCancelledException e) {
+        } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
     }
@@ -917,7 +917,7 @@ public class MainWindow extends JFrame {
         for (DockableWindow window : windows) {
             try {
                 closeDockableWindow(window);
-            } catch (ClassCastException e) {
+            } catch (ClassCastException ignored) {
                 // FIXME: Flexdock may throw ClassCast exception when closing Workcraft.
             }
         }
@@ -1026,7 +1026,7 @@ public class MainWindow extends JFrame {
                 File file = new File(Framework.UILAYOUT_FILE_PATH);
                 file.delete();
                 framework.startGUI();
-            } catch (OperationCancelledException e) {
+            } catch (OperationCancelledException ignored) {
                 // Operation cancelled by the user
             }
         }

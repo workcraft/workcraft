@@ -69,6 +69,7 @@ public class PluginFinder {
         return result;
     }
 
+    @SuppressWarnings("PMD.UselessPureMethodCall")
     private static List<Class<?>> processPathEntry(String path, String requiredPrefix)
             throws PluginInstantiationException {
 

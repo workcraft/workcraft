@@ -77,7 +77,7 @@ public class Signal {
     public boolean equals(Object o) {
         boolean result = false;
         if (o instanceof Signal s) {
-            result = name.equals(s.name) && type.equals(s.type);
+            result = name.equals(s.name) && (type == s.type);
         }
         return result;
     }

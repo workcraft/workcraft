@@ -269,7 +269,7 @@ public class FileUtils {
             msg = "Not a readable file '" + file.getPath() + "'";
         }
         showAccessError(msg, errorTitleOrNull);
-        return (msg == null);
+        return msg == null;
     }
 
     public static boolean checkFileWritability(File file) {
@@ -286,7 +286,7 @@ public class FileUtils {
             msg = "Not a writable file '" + file.getPath() + "'";
         }
         showAccessError(msg, errorTitleOrNull);
-        return (msg == null);
+        return msg == null;
     }
 
     public static boolean checkDirectoryWritability(File directory, String errorTitleOrNull) {
@@ -301,7 +301,7 @@ public class FileUtils {
             msg = "Not a writable directory '" + directory.getPath() + "'";
         }
         showAccessError(msg, errorTitleOrNull);
-        return (msg == null);
+        return msg == null;
     }
 
     private static void showAccessError(String msg, String title) {

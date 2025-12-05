@@ -42,15 +42,10 @@ public class CpogParsingTool {
 
     private BooleanVariable labelToVar(String label, final VisualCpog visualCpog) {
         if (variableMap.containsKey(label)) {
-            HashSet<VisualVariable> vars = new HashSet<>(visualCpog.getVariables());
-            if (!vars.contains(variableMap.get(label))) {
-                if (variableMap.get(label).getParent() != null) {
-                    return variableMap.get(label);
-                }
-                variableMap.remove(label);
-            } else {
-                variableMap.remove(label);
+            if (variableMap.get(label).getParent() != null) {
+                return variableMap.get(label);
             }
+            variableMap.remove(label);
         }
 
         VisualVariable visVar = visualCpog.createVisualVariable();
@@ -654,13 +649,8 @@ public class CpogParsingTool {
         for (String k : refMap.keySet()) {
             added = false;
             if (text.contains(' ' + k + ' ')) {
-                if (k.startsWith("[")) {
-                    text = text.replace(' ' + k + ' ', " (" + refMap.get(k).getNormalForm() + ") ");
-                    added = true;
-                } else {
-                    text = text.replace(' ' + k + ' ', " (" + refMap.get(k).getNormalForm() + ") ");
-                    added = true;
-                }
+                text = text.replace(' ' + k + ' ', " (" + refMap.get(k).getNormalForm() + ") ");
+                added = true;
             }
             if (text.contains(']' + k + ' ')) {
                 text = text.replace(']' + k + ' ', "](" + refMap.get(k).getNormalForm() + ") ");

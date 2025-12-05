@@ -135,21 +135,11 @@ public class CpogSelectionTool extends SelectionTool {
             localVertices.put(label, vertex);
 
             if (!boolExpression.isEmpty()) {
-                String s = StringGenerator.toString(vertex.getCondition());
-                if (s.isEmpty()) {
-                    try {
-                        BooleanFormula bf = parsingTool.parseBool(boolExpression, visualCpog);
-                        vertex.setCondition(bf);
-                    } catch (org.workcraft.formula.jj.ParseException e) {
-                        throw new ParseException("Boolean error in: " + boolExpression);
-                    }
-                } else {
-                    try {
-                        BooleanFormula bf = parsingTool.parseBool(boolExpression, visualCpog);
-                        vertex.setCondition(bf);
-                    } catch (org.workcraft.formula.jj.ParseException e) {
-                        throw new ParseException("Boolean error in: " + boolExpression);
-                    }
+                try {
+                    BooleanFormula bf = parsingTool.parseBool(boolExpression, visualCpog);
+                    vertex.setCondition(bf);
+                } catch (org.workcraft.formula.jj.ParseException e) {
+                    throw new ParseException("Boolean error in: " + boolExpression);
                 }
             }
             return vertex;

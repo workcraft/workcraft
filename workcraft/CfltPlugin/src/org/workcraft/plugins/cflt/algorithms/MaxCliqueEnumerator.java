@@ -116,7 +116,7 @@ public class MaxCliqueEnumerator {
         return arlHold;
     }
     private void bronKerboschWithoutPivot(List<Vertex> r, List<Vertex> p, List<Vertex> x, String pre) {
-        if ((p.isEmpty()) && (x.isEmpty())) {
+        if (p.isEmpty() && x.isEmpty()) {
             saveClique(r);
             return;
         }

@@ -108,7 +108,7 @@ public class WorkspaceWindow extends JPanel {
             Framework framework = Framework.getInstance();
             framework.getWorkspace().saveAs(file);
             framework.setLastDirectory(FileUtils.getFileDirectory(file));
-        } catch (OperationCancelledException e) {
+        } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
     }
@@ -164,7 +164,7 @@ public class WorkspaceWindow extends JPanel {
             saveChangedOrCancel();
             Framework framework = Framework.getInstance();
             framework.getWorkspace().clear();
-        } catch (OperationCancelledException e) {
+        } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
     }
@@ -189,7 +189,7 @@ public class WorkspaceWindow extends JPanel {
                 }
                 framework.setLastDirectory(FileUtils.getFileDirectory(file));
             }
-        } catch (OperationCancelledException e) {
+        } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
     }

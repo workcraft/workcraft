@@ -195,7 +195,7 @@ public class DialogUtils {
         if (framework.isInGuiMode()) {
             MainWindow mainWindow = framework.getMainWindow();
             int result = JOptionPane.showConfirmDialog(mainWindow, message, title, JOptionPane.OK_CANCEL_OPTION, messageType);
-            return (result == JOptionPane.OK_OPTION);
+            return result == JOptionPane.OK_OPTION;
         }
         return defaultChoice;
     }

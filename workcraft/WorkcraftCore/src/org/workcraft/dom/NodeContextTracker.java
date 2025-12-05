@@ -114,7 +114,7 @@ public class NodeContextTracker<N extends Node, C extends Connection> extends Hi
     @Override
     public boolean hasConnection(N first, N second) {
         LinkedHashSet<N> firstPostset = postsets.get(first);
-        return (firstPostset != null) && (firstPostset.contains(second));
+        return (firstPostset != null) && firstPostset.contains(second);
     }
 
     @Override
