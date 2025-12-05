@@ -122,7 +122,7 @@ public final class WorkUtils {
                 String base = FileUtils.getBasePath(file);
                 adjustPropertyFilePaths(me.getVisualModel(), base, true);
                 return me;
-            } catch (OperationCancelledException e) {
+            } catch (OperationCancelledException ignored) {
                 // Operation cancelled by the user
             }
         }

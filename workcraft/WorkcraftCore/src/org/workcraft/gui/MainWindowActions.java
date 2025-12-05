@@ -62,7 +62,7 @@ public class MainWindowActions {
             () -> {
                 try {
                     Framework.getInstance().shutdownGUI();
-                } catch (OperationCancelledException e) {
+                } catch (OperationCancelledException ignored) {
                     // Operation cancelled by the user
                 }
             });

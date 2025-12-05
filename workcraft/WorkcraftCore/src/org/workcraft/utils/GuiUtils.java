@@ -83,7 +83,7 @@ public class GuiUtils {
             g.drawRoundRect(r.x - 10, r.y - 10, r.width + 20, r.height + 20, 5, 5);
             g.setColor(color);
             LineMetrics lm = g.getFont().getLineMetrics(message, g.getFontRenderContext());
-            g.drawString(message, r.x, r.y + r.height - (int) (lm.getDescent()));
+            g.drawString(message, r.x, r.y + r.height - (int) lm.getDescent());
         }
     }
 

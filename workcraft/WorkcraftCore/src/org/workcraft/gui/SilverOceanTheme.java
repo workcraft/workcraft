@@ -21,13 +21,13 @@ public class SilverOceanTheme extends OceanTheme {
         @Override
         public int getIconWidth() {
             // For symmetry the icon is better to have odd width
-            return (SizeHelper.getCheckBoxIconSize() / 2) * 2 + 1;
+            return SizeHelper.getCheckBoxIconSize() / 2 * 2 + 1;
         }
 
         @Override
         public int getIconHeight() {
             // For symmetry the icon is better to have odd height
-            return (SizeHelper.getCheckBoxIconSize() / 2) * 2 + 1;
+            return SizeHelper.getCheckBoxIconSize() / 2 * 2 + 1;
         }
 
         @Override
@@ -63,13 +63,13 @@ public class SilverOceanTheme extends OceanTheme {
         @Override
         public int getIconWidth() {
             // For symmetry the icon is better to have odd width
-            return (SizeHelper.getRadioButtonIconSize() / 2) * 2 + 1;
+            return SizeHelper.getRadioButtonIconSize() / 2 * 2 + 1;
         }
 
         @Override
         public int getIconHeight() {
             // For symmetry the icon is better to have odd height
-            return (SizeHelper.getRadioButtonIconSize() / 2) * 2 + 1;
+            return SizeHelper.getRadioButtonIconSize() / 2 * 2 + 1;
         }
 
         @Override

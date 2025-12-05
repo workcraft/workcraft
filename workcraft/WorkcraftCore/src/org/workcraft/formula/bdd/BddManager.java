@@ -161,7 +161,7 @@ public class BddManager {
         }
         int firstBdd = refFormula(leftFormula);
         int secondBdd = refFormula(rightFormula);
-        boolean result = (firstBdd == secondBdd);
+        boolean result = firstBdd == secondBdd;
         bdd.deref(firstBdd);
         bdd.deref(secondBdd);
         return result;
@@ -193,7 +193,7 @@ public class BddManager {
         }
         int formulaBdd = refFormula(formula);
         int zeroBdd = refFormula(Zero.getInstance());
-        boolean result = (formulaBdd == zeroBdd);
+        boolean result = formulaBdd == zeroBdd;
         bdd.deref(formulaBdd);
         bdd.deref(zeroBdd);
         return result;
@@ -208,7 +208,7 @@ public class BddManager {
         }
         int formulaBdd = refFormula(formula);
         int oneBdd = refFormula(One.getInstance());
-        boolean result = (formulaBdd == oneBdd);
+        boolean result = formulaBdd == oneBdd;
         bdd.deref(formulaBdd);
         bdd.deref(oneBdd);
         return result;

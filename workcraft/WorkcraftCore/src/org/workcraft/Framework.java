@@ -758,7 +758,7 @@ public final class Framework {
             WorkspaceEntry we = createWork(me, path, true, false);
             updateJavaScript(we);
             return we;
-        } catch (OperationCancelledException e) {
+        } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
         return null;
@@ -889,7 +889,7 @@ public final class Framework {
     }
 
     public void pushRecentFilePath(String filePath) {
-        if ((filePath != null) && (new File(filePath).exists())) {
+        if ((filePath != null) && new File(filePath).exists()) {
             // Remove previous entry of the fileName
             recentFilePaths.remove(filePath);
             // Make sure there is not too many entries
