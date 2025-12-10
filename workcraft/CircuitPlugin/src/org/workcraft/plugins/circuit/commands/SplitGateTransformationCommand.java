@@ -169,6 +169,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         return gate;
     }
 
+    @SuppressWarnings("PMD.AvoidBranchingStatementAsLastInLoop")
     private static List<NodeConnectionPair> getComponentDriverNodes(VisualCircuit circuit, VisualFunctionComponent component) {
         List<NodeConnectionPair> result = new LinkedList<>();
         for (VisualContact inputContact : getOrderedInputsWithRepetitions(component)) {
