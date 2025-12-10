@@ -353,6 +353,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
     private static final List<JCheckBox> jcbn = new ArrayList<>();
     private JCheckBox jcblast;
 
+    @SuppressWarnings("PMD.AssignmentInOperand")
     private void createPanel(List<JPanel> panellist, String file) {
         int no = 1;
         Scanner sc = null;
@@ -374,8 +375,6 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                             if (sjcb.isSelected()) System.out.println("indexa==" + index);
                             if (jcblast != null) jcblast.setSelected(false);
                             jcblast = sjcb;
-                            //String name = sjcb.getName();
-                            //System.out.println(name);
                         }
                     };
                     jcb.addItemListener(itemListener);
@@ -398,11 +397,8 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         ItemListener itemListener = e -> {
             if (e.getSource() instanceof JCheckBox sjcb) {
                 if (sjcb.isSelected()) index = jcbn.indexOf(sjcb) + 1;
-                //if (sjcb.isSelected()) System.out.println("indexb==" + index);
                 if (jcblast != null) jcblast.setSelected(false);
                 jcblast = sjcb;
-                //String name = sjcb.getName();
-                //System.out.println(name);
             }
         };
         jcb.addItemListener(itemListener);

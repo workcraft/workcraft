@@ -145,6 +145,7 @@ public class ConfigurationCommand implements Command {
 
     private int loaded = 0;
 
+    @SuppressWarnings("PMD.AssignmentInOperand")
     @Override
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");

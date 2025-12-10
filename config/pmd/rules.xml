@@ -99,14 +99,13 @@
     </rule>
 
     <rule ref="category/java/errorprone.xml">
-        <exclude name="AssignmentInOperand"/> <!-- Interesting to enforce -->
         <exclude name="AvoidBranchingStatementAsLastInLoop"/> <!-- Interesting to enforce -->
         <exclude name="AvoidCatchingGenericException"/> <!-- Interesting to enforce, but used often -->
         <exclude name="AvoidDuplicateLiterals"/> <!-- Interesting to enforce, but used often -->
         <exclude name="AvoidLiteralsInIfCondition"/> <!-- Too restrictive -->
         <exclude name="CloseResource"/> <!-- Interesting to enforce -->
         <exclude name="CollectionTypeMismatch"/> <!-- Interesting to enforce, but used often -->
-        <exclude name="CompareObjectsWithEquals"/> <!-- Interesting to enforce -->
+        <exclude name="CompareObjectsWithEquals"/> <!-- Too restrictive -->
         <exclude name="ConstructorCallsOverridableMethod"/> <!-- Too restrictive -->
         <exclude name="MissingSerialVersionUID"/> <!-- Too restrictive -->
         <exclude name="NonSerializableClass"/> <!-- Too restrictive -->
@@ -114,6 +113,13 @@
         <exclude name="OverrideBothEqualsAndHashcode"/> <!-- Too restrictive -->
         <exclude name="OverrideBothEqualsAndHashCodeOnComparable"/> <!-- Interesting to enforce -->
         <exclude name="ReturnEmptyCollectionRatherThanNull"/> <!-- Too restrictive -->
+    </rule>
+
+    <rule ref="category/java/errorprone.xml/AssignmentInOperand">
+        <properties>
+            <property name="allowWhile" value="true" />
+            <property name="allowIncrementDecrement" value="true" />
+        </properties>
     </rule>
 
 </ruleset>

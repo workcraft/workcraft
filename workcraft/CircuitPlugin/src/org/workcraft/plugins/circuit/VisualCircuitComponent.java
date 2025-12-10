@@ -400,6 +400,7 @@ public class VisualCircuitComponent extends VisualComponent
         return new Rectangle2D.Double(x1, y1, x2 - x1, y2 - y1);
     }
 
+    @SuppressWarnings("PMD.AssignmentInOperand")
     private Rectangle2D getContactBestBox() {
         Collection<VisualContact> contacts = Hierarchy.getChildrenOfType(this, VisualContact.class);
         Rectangle2D bb = getContactExpandedBox(contacts);

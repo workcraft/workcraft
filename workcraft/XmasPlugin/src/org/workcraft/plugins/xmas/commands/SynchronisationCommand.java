@@ -266,6 +266,7 @@ public class SynchronisationCommand implements Command {
     public List<String> slist1 = new ArrayList<>();
     public List<String> slist2 = new ArrayList<>();
 
+    @SuppressWarnings("PMD.AssignmentInOperand")
     @Override
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
