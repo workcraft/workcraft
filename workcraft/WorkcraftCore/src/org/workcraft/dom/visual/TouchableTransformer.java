@@ -1,10 +1,10 @@
 package org.workcraft.dom.visual;
 
+import org.workcraft.utils.Geometry;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-
-import org.workcraft.utils.Geometry;
 
 public class TouchableTransformer implements Touchable {
 
@@ -16,18 +16,6 @@ public class TouchableTransformer implements Touchable {
         this.toTransform = toTransform;
         this.transformation = transformation;
         this.inverseTransformation = Geometry.optimisticInverse(transformation);
-    }
-
-    private void minMax(double[] x, double[] minMax) {
-        minMax[0] = minMax[1] = x[0];
-        for (int i = 1; i < x.length; i++) {
-            if (x[i] > minMax[1]) {
-                minMax[1] = x[i];
-            }
-            if (x[i] < minMax[0]) {
-                minMax[0] = x[i];
-            }
-        }
     }
 
     @Override
@@ -46,16 +34,25 @@ public class TouchableTransformer implements Touchable {
 
         transformation.transform(corners, 0, corners, 0, 4);
 
-        double[] minMaxY = new double[2];
-        double[] minMaxX = new double[2];
-
-        double[] x = {corners[0].getX(), corners[1].getX(), corners[2].getX(), corners[3].getX()};
-        double[] y = {corners[0].getY(), corners[1].getY(), corners[2].getY(), corners[3].getY()};
-
-        minMax(x, minMaxX);
-        minMax(y, minMaxY);
-
-        return new Rectangle2D.Double(minMaxX[0], minMaxY[0], minMaxX[1] - minMaxX[0], minMaxY[1] - minMaxY[0]);
+        double minX = corners[0].getX();
+        double maxX = corners[0].getX();
+        double minY = corners[0].getY();
+        double maxY = corners[0].getY();
+        for (int i = 1; i < corners.length; i++) {
+            if (corners[i].getX() < minX) {
+                minX = corners[i].getX();
+            }
+            if (corners[i].getX() > maxX) {
+                maxX = corners[i].getX();
+            }
+            if (corners[i].getY() < minY) {
+                minY = corners[i].getY();
+            }
+            if (corners[i].getY() > maxY) {
+                maxY = corners[i].getY();
+            }
+        }
+        return new Rectangle2D.Double(minX, minY, maxX - minX, maxY - minY);
     }
 
     @Override

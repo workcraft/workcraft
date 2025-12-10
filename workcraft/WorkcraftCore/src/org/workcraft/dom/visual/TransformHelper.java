@@ -56,7 +56,7 @@ public class TransformHelper {
     }
 
     public static double snapP5(double x) {
-        return (double) (Math.round(x * 2)) / 2;
+        return (double) Math.round(x * 2) / 2;
     }
 
     public static Point2D snapP5(Point2D pos) {

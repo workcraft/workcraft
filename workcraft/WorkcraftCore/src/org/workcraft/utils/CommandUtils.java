@@ -52,7 +52,7 @@ public class CommandUtils {
         return getCommands(command -> {
             if ((command instanceof NodeTransformer nodeTransformer)
                     && command.isApplicableTo(we)
-                    && (nodeTransformer.isApplicableTo(node))) {
+                    && nodeTransformer.isApplicableTo(node)) {
 
                 Command.Visibility visibility = command.getVisibility();
                 return (visibility == Command.Visibility.ALWAYS)

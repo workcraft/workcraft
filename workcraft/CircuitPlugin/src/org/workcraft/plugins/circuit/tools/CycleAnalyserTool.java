@@ -183,7 +183,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 LogUtils.logError("Could not write into file '" + file.getAbsolutePath() + "'");
             }
             Framework.getInstance().setLastDirectory(fc.getCurrentDirectory());
-        } catch (OperationCancelledException e) {
+        } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
     }

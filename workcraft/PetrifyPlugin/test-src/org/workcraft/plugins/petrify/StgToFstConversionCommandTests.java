@@ -102,9 +102,10 @@ class StgToFstConversionCommandTests {
                 Color stateColor = state.getFillColor();
                 Color conflictColor = Color.WHITE;
                 for (String conflictStateSuffix : conflictStateSuffixes) {
-                    if (!stateName.endsWith(conflictStateSuffix)) continue;
-                    conflictColor = conflictColorMap.computeIfAbsent(conflictStateSuffix, s -> stateColor);
-                    break;
+                    if (stateName.endsWith(conflictStateSuffix)) {
+                        conflictColor = conflictColorMap.computeIfAbsent(conflictStateSuffix, s -> stateColor);
+                        break;
+                    }
                 }
                 Assertions.assertEquals(conflictColor, stateColor);
             }

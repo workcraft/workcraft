@@ -445,6 +445,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         }
     }
 
+    @SuppressWarnings("PMD.AssignmentInOperand")
     private void createPanel(List<JPanel> panellist, Xmas cnet, VisualXmas vnet, int grnum) {
         panellist.add(new JPanel());
         panellist.get(panellist.size() - 1).add(new JLabel(" Sources" + ": "));

@@ -84,12 +84,13 @@ public class Untanglings {
             if (!place.getName().equals(node1)) continue;
             // checking existence of the transition
             for (Transition transition : t) {
-                if (!transition.getName().equals(node2)) continue;
-                // adding arc to the system
-                sys.addFlow(place, transition);
-                // debug: printing connection added
-                // System.out.println(place.getName() + " -> " + transition.getName());
-                return true;
+                if (transition.getName().equals(node2)) {
+                    // adding arc to the system
+                    sys.addFlow(place, transition);
+                    // debug: printing connection added
+                    // System.out.println(place.getName() + " -> " + transition.getName());
+                    return true;
+                }
             }
         }
         // if the two nodes are not present the connection
@@ -104,12 +105,13 @@ public class Untanglings {
             if (!transition.getName().equals(node1)) continue;
             // checking existence of the transition
             for (Place place : p) {
-                if (!place.getName().equals(node2)) continue;
-                // adding arc to the system
-                sys.addFlow(transition, place);
-                // debug: printing connection added
-                // System.out.println(transition.getName() + " -> " + place.getName());
-                return true;
+                if (place.getName().equals(node2)) {
+                    // adding arc to the system
+                    sys.addFlow(transition, place);
+                    // debug: printing connection added
+                    // System.out.println(transition.getName() + " -> " + place.getName());
+                    return true;
+                }
             }
         }
         // if the two nodes are not present the connection

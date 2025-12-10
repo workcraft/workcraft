@@ -65,10 +65,9 @@ public class StgNameManager extends DefaultNameManager {
             signalTransitions.remove(oldSignalName, st);
             if (!signalName.equals(oldSignalName)) {
                 st.setSignalNameQuiet(signalName);
-                for (SignalTransition tt : signalTransitions.get(signalName)) {
-                    st.setSignalTypeQuiet(tt.getSignalType());
-                    break;
-                }
+                signalTransitions.get(signalName).stream()
+                        .findFirst()
+                        .ifPresent(tt -> st.setSignalTypeQuiet(tt.getSignalType()));
             }
             signalTransitions.put(signalName, st);
             st.sendNotification(new PropertyChangedEvent(st, Model.PROPERTY_NAME));
@@ -186,10 +185,10 @@ public class StgNameManager extends DefaultNameManager {
     }
 
     private Signal.Type getSignalType(String signalName) {
-        for (SignalTransition st: signalTransitions.get(signalName)) {
-            return st.getSignalType();
-        }
-        return null;
+        return signalTransitions.get(signalName).stream()
+                .findFirst()
+                .map(SignalTransition::getSignalType)
+                .orElse(null);
     }
 
     private boolean isSignalName(String name) {
@@ -209,7 +208,7 @@ public class StgNameManager extends DefaultNameManager {
         }
         if (isSignalName(name)) {
             Signal.Type expectedType = getSignalType(name);
-            return (expectedType == null) || expectedType.equals(type);
+            return (expectedType == null) || (expectedType == type);
         }
         return true;
     }

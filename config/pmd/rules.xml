@@ -19,6 +19,7 @@
         <exclude name="LooseCoupling"/> <!-- Interesting to enforce, but used often -->
         <exclude name="MethodReturnsInternalArray"/> <!-- Interesting to enforce, but used often -->
         <exclude name="PreserveStackTrace"/> <!-- Interesting to enforce, but used often -->
+        <exclude name="RelianceOnDefaultCharset" /> <!-- Interesting to enforce -->
         <exclude name="SystemPrintln"/> <!-- Too restrictive -->
         <exclude name="UnitTestShouldIncludeAssert"/>  <!-- Too restrictive, as forbids test delegation -->
         <exclude name="UnusedAssignment"/> <!-- Too restrictive as forbids initialisation to null -->
@@ -55,7 +56,6 @@
         <exclude name="ShortMethodName"/> <!-- Too restrictive -->
         <exclude name="ShortVariable"/> <!-- Too restrictive -->
         <exclude name="UnnecessaryFullyQualifiedName"/> <!-- Too restrictive as forbids reference to nested classes -->
-        <exclude name="UnnecessaryImport" /> <!-- Good to have, but seems to be broken -->
         <exclude name="UseUnderscoresInNumericLiterals"/> <!-- Interesting to enforce -->
         <exclude name="UselessParentheses"/> <!-- Too restrictive -->
     </rule>
@@ -68,7 +68,6 @@
 
     <rule ref="category/java/design.xml">
         <exclude name="AvoidCatchingGenericException"/> <!-- Too restrictive -->
-        <exclude name="AvoidDeeplyNestedIfStmts"/> <!-- Interesting to enforce, but used often -->
         <exclude name="AvoidThrowingRawExceptionTypes"/> <!-- Too restrictive -->
         <exclude name="CognitiveComplexity"/> <!-- Too restrictive -->
         <exclude name="CollapsibleIfStatements"/> <!-- Interesting to enforce, but used often -->
@@ -93,21 +92,33 @@
         <exclude name="UseUtilityClass"/> <!-- Interesting to enforce -->
     </rule>
 
+    <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
+        <properties>
+            <property name="problemDepth" value="10" />
+        </properties>
+    </rule>
+
     <rule ref="category/java/errorprone.xml">
-        <exclude name="AssignmentInOperand"/> <!-- Too restrictive -->
-        <exclude name="AvoidBranchingStatementAsLastInLoop"/> <!-- Interesting to enforce -->
-        <exclude name="AvoidCatchingThrowable"/> <!-- Interesting to enforce -->
-        <exclude name="AvoidDuplicateLiterals"/> <!-- Too restrictive -->
+        <exclude name="AvoidCatchingGenericException"/> <!-- Interesting to enforce, but used often -->
+        <exclude name="AvoidDuplicateLiterals"/> <!-- Interesting to enforce, but used often -->
         <exclude name="AvoidLiteralsInIfCondition"/> <!-- Too restrictive -->
         <exclude name="CloseResource"/> <!-- Interesting to enforce -->
+        <exclude name="CollectionTypeMismatch"/> <!-- Interesting to enforce, but used often -->
         <exclude name="CompareObjectsWithEquals"/> <!-- Too restrictive -->
         <exclude name="ConstructorCallsOverridableMethod"/> <!-- Too restrictive -->
-        <exclude name="EmptyCatchBlock"/> <!-- Too restrictive as forbids ignoring exception -->
         <exclude name="MissingSerialVersionUID"/> <!-- Too restrictive -->
         <exclude name="NonSerializableClass"/> <!-- Too restrictive -->
         <exclude name="NullAssignment"/> <!-- Too restrictive -->
         <exclude name="OverrideBothEqualsAndHashcode"/> <!-- Too restrictive -->
+        <exclude name="OverrideBothEqualsAndHashCodeOnComparable"/> <!-- Interesting to enforce -->
         <exclude name="ReturnEmptyCollectionRatherThanNull"/> <!-- Too restrictive -->
+    </rule>
+
+    <rule ref="category/java/errorprone.xml/AssignmentInOperand">
+        <properties>
+            <property name="allowWhile" value="true" />
+            <property name="allowIncrementDecrement" value="true" />
+        </properties>
     </rule>
 
 </ruleset>

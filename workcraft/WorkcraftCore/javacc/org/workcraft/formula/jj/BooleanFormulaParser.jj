@@ -126,7 +126,7 @@ TOKEN :
 |
     <NOT: "!" | "~" | "\u00ac">
 |
-    <POSTPIX_NOT: "'">
+    <POSTFIX_NOT: "'">
 |
     <OPEN_BRACKET: "(">
 |
@@ -222,7 +222,7 @@ BooleanFormula andOp() :
 {
     (<NOT> { inverse = !inverse; } )*
     result = literal()
-    (<POSTPIX_NOT> { inverse = !inverse; } )*
+    (<POSTFIX_NOT> { inverse = !inverse; } )*
     { return inverse ? worker.not(result) : result; }
 }
 

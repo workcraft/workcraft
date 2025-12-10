@@ -153,7 +153,7 @@ public class ErrorTracingAlg extends SimulationAlg {
 
                 if (post instanceof ChannelPlace) {
                     for (MathNode n : net.getPostset(post)) {
-                        if (!sync.contains(n)) {
+                        if ((n instanceof TransitionNode) && !sync.contains(n)) {
                             ((ChannelPlace) post).setErrors(err);
                         }
                     }
@@ -255,7 +255,7 @@ public class ErrorTracingAlg extends SimulationAlg {
                 }
                 if (pre instanceof ChannelPlace) {
                     for (MathNode n : net.getPreset(pre)) {
-                        if (!sync.contains(n)) {
+                        if ((n instanceof TransitionNode) && !sync.contains(n)) {
                             err += ((ChannelPlace) pre).getErrors();
                         }
                     }
@@ -278,7 +278,7 @@ public class ErrorTracingAlg extends SimulationAlg {
 
                 if (post instanceof ChannelPlace) {
                     for (MathNode n : net.getPostset(post)) {
-                        if (!sync.contains(n)) {
+                        if ((n instanceof TransitionNode) && !sync.contains(n)) {
                             ((ChannelPlace) post).setErrors(((ChannelPlace) post).getErrors() - err);
                         }
                     }

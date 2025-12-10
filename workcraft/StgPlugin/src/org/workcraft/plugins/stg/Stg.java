@@ -181,7 +181,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             container = getRoot();
         }
         return Hierarchy.getChildrenOfType(container, SignalTransition.class,
-                transition -> type.equals(transition.getSignalType()));
+                transition -> (type == transition.getSignalType()));
     }
 
     public Collection<SignalTransition> getSignalTransitions(final String signalName, Container container) {

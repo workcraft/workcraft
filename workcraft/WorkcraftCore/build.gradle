@@ -1,6 +1,6 @@
 dependencies {
     // Rhino implementation of JavaScript (https://mvnrepository.com/artifact/org.mozilla/rhino)
-    lib 'org.mozilla:rhino:1.8.0'
+    lib 'org.mozilla:rhino:1.8.1'
     // JavaBeans Activation Framework (JAF) (https://mvnrepository.com/artifact/com.sun.activation/javax.activation)
     lib 'com.sun.activation:javax.activation:1.2.0'
     // Reload4j (replacement for EOLed Apache Log4j v1.x) for configuration of FOP logs (https://mvnrepository.com/artifact/ch.qos.reload4j/reload4j)
@@ -8,7 +8,7 @@ dependencies {
     // Needed for TableLayout (https://mvnrepository.com/artifact/info.clearthought/table-layout)
     lib 'info.clearthought:table-layout:4.3.0'
     // Needed for logging in Batik PDF Transcoder (https://mvnrepository.com/artifact/commons-io/commons-io)
-    lib 'commons-io:commons-io:2.20.0'
+    lib 'commons-io:commons-io:2.21.0'
     // Needed for logging in Batik PDF Transcoder (https://mvnrepository.com/artifact/commons-logging/commons-logging)
     lib 'commons-logging:commons-logging:1.3.5'
 }

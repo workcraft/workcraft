@@ -8,7 +8,7 @@ public class EnumUtils {
 
     public static <T extends Enum<T>> T itemFromString(String s, Class<T> enumType) {
         for (T item : EnumSet.allOf(enumType)) {
-            if ((s != null) && (s.equals(item.toString()))) {
+            if ((s != null) && s.equals(item.toString())) {
                 return item;
             }
         }

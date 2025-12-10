@@ -59,9 +59,10 @@ public class InitialStateSupervisor extends StateSupervisor {
     private void handleStateRemoval(State state) {
         if (state.isInitial()) {
             for (State otherState : fsm.getStates()) {
-                if (otherState == state) continue;
-                otherState.setInitial(true);
-                break;
+                if (otherState != state) {
+                    otherState.setInitial(true);
+                    break;
+                }
             }
         }
     }

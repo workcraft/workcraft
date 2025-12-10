@@ -152,7 +152,7 @@ public class StgUtils {
                 }
             } catch (DeserialisationException e) {
                 LogUtils.logError("Cannot read STG model from file '" + filePath + "':\n" + e.getMessage());
-            } catch (OperationCancelledException e) {
+            } catch (OperationCancelledException ignored) {
                 // Operation cancelled by the user
             }
             if (me != null) {
