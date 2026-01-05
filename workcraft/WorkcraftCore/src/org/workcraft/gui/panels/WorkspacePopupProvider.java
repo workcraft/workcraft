@@ -5,6 +5,7 @@ import org.workcraft.commands.Command;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Menu;
+import org.workcraft.gui.panels.WorkspacePanel;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.CommandUtils;
@@ -19,11 +20,11 @@ import java.util.List;
 
 public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
-    private final WorkspaceWindow workspaceWindow;
+    private final WorkspacePanel workspacePanel;
     private boolean allowFileRemoval = false;
 
-    public WorkspacePopupProvider(WorkspaceWindow workspaceWindow) {
-        this.workspaceWindow = workspaceWindow;
+    public WorkspacePopupProvider(WorkspacePanel workspacePanel) {
+        this.workspacePanel = workspacePanel;
     }
 
     @Override
@@ -56,7 +57,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
         if (path.isEmpty()) {
             popup.addSeparator();
-            for (Component component : workspaceWindow.createMenu().getMenuComponents()) {
+            for (Component component : workspacePanel.createMenu().getMenuComponents()) {
                 popup.add(component);
             }
         }
@@ -70,7 +71,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
         popup.addSeparator();
         final JMenuItem miLink = new JMenuItem("Link external files or directories...");
-        miLink.addActionListener(event -> workspaceWindow.addToWorkspace(path));
+        miLink.addActionListener(event -> workspacePanel.addToWorkspace(path));
         popup.add(miLink);
         final JMenuItem miCreateWork = new JMenuItem("Create work...");
         miCreateWork.addActionListener(event -> mainWindow.createWork(path));

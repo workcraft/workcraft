@@ -1,4 +1,4 @@
-package org.workcraft.gui;
+package org.workcraft.gui.panels;
 
 import org.workcraft.gui.properties.Properties;
 import org.workcraft.gui.properties.PropertyEditorTable;

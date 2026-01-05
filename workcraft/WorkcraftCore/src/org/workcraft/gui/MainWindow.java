@@ -25,10 +25,7 @@ import org.workcraft.gui.dialogs.CreateWorkDialog;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.layouts.MultiBorderLayout;
 import org.workcraft.gui.properties.SettingsEditorDialog;
-import org.workcraft.gui.tabs.ContentPanel;
-import org.workcraft.gui.tabs.DockableWindow;
-import org.workcraft.gui.tabs.DockingUtils;
-import org.workcraft.gui.tabs.ScrollDockingPort;
+import org.workcraft.gui.tabs.*;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.tools.GraphEditor;
@@ -48,6 +45,7 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import javax.swing.plaf.MenuBarUI;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import java.awt.*;
@@ -79,7 +77,7 @@ public class MainWindow extends JFrame {
     private static final String TITLE_WORKCRAFT = "Workcraft";
     private static final String TITLE_OUTPUT = "Output";
     private static final String TITLE_PROBLEMS = "Problems";
-    private static final String TITLE_JAVASCRIPT = "Javascript";
+    private static final String TITLE_JAVASCRIPT = "JavaScript";
     private static final String TITLE_TASKS = "Tasks";
     private static final String TITLE_WORKSPACE = "Workspace";
     private static final String TITLE_PROPERTY_EDITOR = "Property editor";
@@ -88,19 +86,22 @@ public class MainWindow extends JFrame {
     private static final String TITLE_PLACEHOLDER = "";
     private static final String PREFIX_DOCUMENT = "Document";
     private static final String TITLE_CLOSE_WORK = "Close work";
+    private static final String SYMBOL_INFO = Character.toString((char) 0x2709);
+    private static final String SYMBOL_PROBLEM = Character.toString((char) 0x26A0);
 
     private MultiBorderLayout layout;
     private JPanel content;
 
     private ScrollDockingPort defaultDockingPort;
     private DockableWindow outputDockable;
+    private DockableWindow errorDockable;
+    private DockableWindow taskManagerDockable;
     private DockableWindow propertyEditorDockable;
     private DockableWindow toolControlsDockable;
     private DockableWindow documentPlaceholder;
 
     private OutputWindow outputWindow;
     private ErrorWindow errorWindow;
-    private JavaScriptWindow javaScriptWindow;
     private PropertyEditorWindow propertyEditorWindow;
     private ToolControlsWindow toolControlsWindow;
     private WorkspaceWindow workspaceWindow;
@@ -111,6 +112,37 @@ public class MainWindow extends JFrame {
     private ToolBar globalToolbar;
     private JToolBar modelToolbar;
     private JToolBar controlToolbar;
+
+    class TaskManagerProgressTimer extends Timer {
+        private static final char[] PROGRESS_SYMBOLS = {(char) 0x2596, (char) 0x2598, (char) 0x259D, (char) 0x2597};
+        private int progressIndex = 0;
+
+        TaskManagerProgressTimer() {
+            super(250, null);
+            addActionListener(event -> {
+                taskManagerDockable.setTitle(PROGRESS_SYMBOLS[progressIndex] + " " + TITLE_TASKS);
+                DockingUtils.updateHeader(taskManagerDockable);
+                progressIndex = (progressIndex + 1) % PROGRESS_SYMBOLS.length;
+            });
+        }
+
+        @Override
+        public void start() {
+            progressIndex = 0;
+            setRepeats(true);
+            setInitialDelay(0);
+            super.start();
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
+            taskManagerDockable.setTitle(TITLE_TASKS);
+            DockingUtils.updateHeader(taskManagerDockable);
+        }
+    }
+
+    private final TaskManagerProgressTimer taskManagerTimer = new TaskManagerProgressTimer();
 
     private final Map<WorkspaceEntry, DockableWindow> weWindowMap = new HashMap<>();
 
@@ -129,17 +161,43 @@ public class MainWindow extends JFrame {
         workspaceWindow = new WorkspaceWindow();
         workspaceWindow.setVisible(true);
 
-        outputWindow = new OutputWindow();
+        outputWindow = new OutputWindow(this::updateOutputTitle);
         outputWindow.captureStream();
 
-        errorWindow = new ErrorWindow();
+        errorWindow = new ErrorWindow(this::updateErrorTitle);
         errorWindow.captureStream();
-
-        javaScriptWindow = new JavaScriptWindow();
 
         propertyEditorWindow = new PropertyEditorWindow();
         toolControlsWindow = new ToolControlsWindow();
         setMinimumSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
+    }
+
+    private void updateOutputTitle() {
+        if (outputDockable.isHiddenTab() && !outputWindow.isEmpty()) {
+            outputDockable.setTitle(SYMBOL_INFO + " " + TITLE_OUTPUT);
+        } else {
+            outputDockable.setTitle(TITLE_OUTPUT);
+        }
+        DockingUtils.updateHeader(outputDockable);
+    }
+
+    private void updateErrorTitle() {
+        if (errorDockable.isHiddenTab() && !errorWindow.isEmpty()) {
+            errorDockable.setTitle(SYMBOL_PROBLEM + " " + TITLE_PROBLEMS);
+        } else {
+            errorDockable.setTitle(TITLE_PROBLEMS);
+        }
+        DockingUtils.updateHeader(errorDockable);
+    }
+
+    private void updatTaskManagerTitle(boolean isActive) {
+        if (taskManagerDockable.isHiddenTab() && isActive) {
+            if (!taskManagerTimer.isRunning()) {
+                taskManagerTimer.start();
+            }
+        } else if (taskManagerTimer.isRunning()) {
+            taskManagerTimer.stop();
+        }
     }
 
     public GraphEditor getOrCreateEditor(WorkspaceEntry we) {
@@ -450,19 +508,21 @@ public class MainWindow extends JFrame {
         outputDockable = DockingUtils.createUtilityDockable(outputWindow,
                 TITLE_OUTPUT, documentPlaceholder, DockingManager.SOUTH_REGION, ySplit);
 
-        DockableWindow errorDockable = DockingUtils.createUtilityDockable(errorWindow,
-                TITLE_PROBLEMS, outputDockable);
+        outputDockable.addTabListener(new UtilityWindowDockableListener(this::updateOutputTitle));
 
-        DockableWindow javaScriptDockable = DockingUtils.createUtilityDockable(javaScriptWindow,
+        errorDockable = DockingUtils.createUtilityDockable(errorWindow, TITLE_PROBLEMS, outputDockable);
+        errorDockable.addTabListener(new UtilityWindowDockableListener(this::updateErrorTitle));
+
+        DockableWindow javaScriptDockable = DockingUtils.createUtilityDockable(new JavaScriptWindow(),
                 TITLE_JAVASCRIPT, outputDockable);
 
-        DockableWindow tasksDockable = DockingUtils.createUtilityDockable(new TaskManagerWindow(),
+        taskManagerDockable = DockingUtils.createUtilityDockable(new TaskManagerWindow(this::updatTaskManagerTitle),
                 TITLE_TASKS, outputDockable);
 
         registerUtilityWindow(outputDockable);
         registerUtilityWindow(errorDockable);
         registerUtilityWindow(javaScriptDockable);
-        registerUtilityWindow(tasksDockable);
+        registerUtilityWindow(taskManagerDockable);
         registerUtilityWindow(propertyEditorDockable);
         registerUtilityWindow(toolControlsDockable);
         registerUtilityWindow(workspaceDockable);
@@ -873,14 +933,14 @@ public class MainWindow extends JFrame {
             if ((window != null) && !window.isClosed()) {
                 String title = we.getHtmlDetailedTitle();
                 window.setTitle(title);
+                DockingUtils.updateHeader(window);
             }
         }
-        DockingUtils.updateHeaders(defaultDockingPort);
     }
 
     public void setPropertyEditorTitle(String title) {
         propertyEditorDockable.setTitle(title);
-        DockingUtils.updateHeaders(defaultDockingPort);
+        DockingUtils.updateHeader(propertyEditorDockable);
     }
 
     public GraphEditor getCurrentEditor() {
@@ -1000,7 +1060,7 @@ public class MainWindow extends JFrame {
     }
 
     public void editSettings() {
-        JTextArea outputTextArea = outputWindow.getTextArea();
+        JTextArea outputTextArea = outputWindow.getTextEditor();
         Collection<HighlightUtils.HighlightData> outputHighlights = HighlightUtils.getHighlights(outputTextArea);
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         if (dialog.reveal()) {

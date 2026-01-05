@@ -13,8 +13,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class DockableWindow extends AbstractDockable {
 
@@ -91,7 +91,7 @@ public class DockableWindow extends AbstractDockable {
 
     public void setMaximized(boolean maximized) {
         contentPanel.setMaximized(maximized);
-        DockingUtils.updateHeaders(getDockingPort());
+        DockingUtils.updateHeader(this);
         for (DockableListener l : new ArrayList<>(dockableListeners)) {
             if (maximized) {
                 l.windowMaximised();
@@ -177,6 +177,15 @@ public class DockableWindow extends AbstractDockable {
     @Override
     public List<Component> getDragSources() {
         return dragSources;
+    }
+
+    public boolean isHiddenTab() {
+        Container parent = contentPanel.getParent();
+        if (parent instanceof JTabbedPane tabbedPane) {
+            int tabIndex = DockingUtils.getTabIndex(tabbedPane, contentPanel);
+            return (tabbedPane.getSelectedIndex() != tabIndex);
+        }
+        return false;
     }
 
 }

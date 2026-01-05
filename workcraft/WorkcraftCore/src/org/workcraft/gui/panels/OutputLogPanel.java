@@ -1,7 +1,6 @@
-package org.workcraft.gui;
+package org.workcraft.gui.panels;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.controls.LogPanel;
 import org.workcraft.plugins.builtin.settings.LogCommonSettings;
 import org.workcraft.utils.HighlightUtils;
 import org.workcraft.utils.LogUtils;
@@ -98,9 +97,13 @@ public class OutputWindow extends LogPanel {
         STDERR,
     }
 
+    public OutputWindow(Runnable updater) {
+        super(updater);
+    }
+
     public void captureStream() {
         if (!streamCaptured) {
-            OutputStreamView outView = new OutputStreamView(new ByteArrayOutputStream(), getTextArea());
+            OutputStreamView outView = new OutputStreamView(new ByteArrayOutputStream(), getTextEditor());
             PrintStream outStream = new PrintStream(outView, true, StandardCharsets.UTF_8);
             systemOut = System.out;
             System.setOut(outStream);

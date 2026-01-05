@@ -14,6 +14,7 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.function.Consumer;
 
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
@@ -49,8 +50,6 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     }
 
     public static class ScrollPaneWidthTrackingPanel extends JPanel implements Scrollable {
-        private static final long serialVersionUID = 1L;
-
         @Override
         public Dimension getPreferredScrollableViewportSize() {
             return getPreferredSize();
@@ -94,15 +93,16 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         @Override
         public void run() {
             taskControl = new TaskControl(description);
-
             container.add(taskControl);
             container.revalidate();
         }
     }
 
     private final JPanel content;
+    private final Consumer<Boolean> activityConsumer;
 
-    public TaskManagerWindow() {
+    public TaskManagerWindow(Consumer<Boolean> activityConsumer) {
+        this.activityConsumer = activityConsumer;
         setLayout(new BorderLayout());
         JScrollPane scroll = new JScrollPane();
         add(scroll, BorderLayout.CENTER);
@@ -118,15 +118,14 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         Border lineBorder = new CompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 
-        final Framework framework = Framework.getInstance();
-        framework.getTaskManager().addObserver(this);
+        Framework.getInstance().getTaskManager().addObserver(this);
     }
 
     public void removeTaskControl(TaskControl taskControl) {
         content.remove(taskControl);
         content.revalidate();
         if (content.getComponentCount() == 0) {
-            setTabActivity(false);
+            activityConsumer.accept(false);
         }
     }
 
@@ -134,8 +133,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     @Override
     public ProgressMonitor<?> taskStarting(final String description) {
         TaskControlGenerator tcg = new TaskControlGenerator(content, description);
-
-        setTabActivity(true);
+        activityConsumer.accept(true);
 
         if (SwingUtilities.isEventDispatchThread()) {
             tcg.run();
@@ -147,25 +145,6 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
             }
         }
         return new TaskControlMonitor(this, tcg.getTaskControl());
-    }
-
-    private void setTabActivity(final boolean active) {
-        SwingUtilities.invokeLater(() -> {
-            Container component = getParent().getParent();
-            Container parent = component.getParent();
-            if (parent instanceof JTabbedPane tab) {
-                for (int i = 0; i < tab.getTabCount(); i++) {
-                    if (tab.getComponentAt(i) != component) continue;
-
-                    Component tabComponent = tab.getTabComponentAt(i);
-                    if (active) {
-                        tabComponent.setForeground(new Color(0.22f, 0.45f, 0.9f));
-                    } else {
-                        tabComponent.setForeground(Color.BLACK);
-                    }
-                }
-            }
-        });
     }
 
 }

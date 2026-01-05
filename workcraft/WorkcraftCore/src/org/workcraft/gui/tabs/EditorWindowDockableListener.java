@@ -1,8 +1,7 @@
-package org.workcraft.gui;
+package org.workcraft.gui.tabs;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.editor.GraphEditorPanel;
-import org.workcraft.gui.tabs.DockableListener;
 
 import javax.swing.*;
 

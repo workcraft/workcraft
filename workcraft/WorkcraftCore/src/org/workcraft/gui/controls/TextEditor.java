@@ -4,6 +4,8 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DesktopApi;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
@@ -105,6 +107,30 @@ public class TextEditor extends JTextArea {
                 history.redo();
             }
         });
+    }
+
+    public void addUpdateListener(Runnable updater) {
+        DocumentListener documentListener = new DocumentListener() {
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updater.run();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updater.run();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updater.run();
+            }
+        };
+        getDocument().addDocumentListener(documentListener);
+    }
+
+    public boolean isEmpty() {
+        return getDocument().getLength() <= 0;
     }
 
     @Override
