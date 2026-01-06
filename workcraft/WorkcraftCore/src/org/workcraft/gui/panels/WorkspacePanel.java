@@ -1,12 +1,8 @@
 package org.workcraft.gui.panels;
 
 import org.workcraft.Framework;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.MainWindowActions;
-import org.workcraft.gui.actions.Action;
-import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceTreeDecorator;
@@ -22,7 +18,6 @@ import java.io.File;
 
 public class WorkspacePanel extends JPanel {
 
-    private static final String DIALOG_OPEN_WORKSPACE = "Open workspace";
     private static final String DIALOG_SAVE_WORKSPACE_AS = "Save workspace as...";
 
     private final TreeWindow<Path<String>> workspaceTree;
@@ -56,22 +51,6 @@ public class WorkspacePanel extends JPanel {
 
         setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
-    }
-
-    public JMenu createMenu() {
-        JMenu menu = new JMenu("Workspace");
-
-        ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
-        menu.add(miNewModel);
-
-        menu.addSeparator();
-
-        menu.add(new ActionMenuItem(new Action("Link files to the root of workspace...",
-                () -> addToWorkspace(Path.root("")))));
-
-        menu.add(new ActionMenuItem(new Action("Save workspace", this::saveWorkspace)));
-        menu.add(new ActionMenuItem(new Action("Save workspace as...", this::saveWorkspaceAs)));
-        return menu;
     }
 
     public void addToWorkspace(Path<String> path) {
@@ -140,57 +119,6 @@ public class WorkspacePanel extends JPanel {
             }
         }
         throw new OperationCancelledException();
-    }
-
-    private void saveChangedOrCancel() throws OperationCancelledException {
-        Framework framework = Framework.getInstance();
-        if (framework.getWorkspace().isChanged()) {
-            MainWindow mainWindow = framework.getMainWindow();
-            String message = "Current workspace is not saved.\n" + "Save before opening another workspace?";
-            switch (DialogUtils.showYesNoCancelWarning(message, DIALOG_OPEN_WORKSPACE)) {
-                case JOptionPane.YES_OPTION -> {
-                    mainWindow.closeEditorPanelDockables();
-                    saveWorkspace();
-                }
-                case JOptionPane.NO_OPTION -> mainWindow.closeEditorPanelDockables();
-                default -> throw new OperationCancelledException();
-            }
-        }
-    }
-
-    public void newWorkspace() {
-        try {
-            saveChangedOrCancel();
-            Framework framework = Framework.getInstance();
-            framework.getWorkspace().clear();
-        } catch (OperationCancelledException ignored) {
-            // Operation cancelled by the user
-        }
-    }
-
-    public void openWorkspace() {
-        try {
-            saveChangedOrCancel();
-            JFileChooser fc = new JFileChooser();
-            Framework framework = Framework.getInstance();
-            fc.setDialogType(JFileChooser.OPEN_DIALOG);
-            fc.setFileFilter(FileFilters.WORKSPACE_FILES);
-            fc.setCurrentDirectory(framework.getLastDirectory());
-            fc.setMultiSelectionEnabled(false);
-            fc.setDialogTitle(DIALOG_OPEN_WORKSPACE);
-            if (DialogUtils.showFileOpener(fc)) {
-                File file = fc.getSelectedFile();
-                try {
-                    framework.loadWorkspace(file);
-                } catch (DeserialisationException e) {
-                    DialogUtils.showError("Workspace load failed. See the Problems window for details.");
-                    e.printStackTrace();
-                }
-                framework.setLastDirectory(FileUtils.getFileDirectory(file));
-            }
-        } catch (OperationCancelledException ignored) {
-            // Operation cancelled by the user
-        }
     }
 
     public void setAutoExpand(boolean value) {

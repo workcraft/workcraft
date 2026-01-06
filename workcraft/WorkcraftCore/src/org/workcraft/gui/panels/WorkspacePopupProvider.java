@@ -2,18 +2,15 @@ package org.workcraft.gui.panels;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.Command;
-import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Menu;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.CommandUtils;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.*;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -46,21 +43,11 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 addCommandMenus(we, popup);
             }
         }
-
-        if (path.isEmpty()) {
-            popup.addSeparator();
-            for (Component component : workspacePanel.createMenu().getMenuComponents()) {
-                popup.add(component);
-            }
-        }
         return popup;
     }
 
     private void addDirectoryMenuItems(Path<String> path, JPopupMenu popup) {
-        Framework framework = Framework.getInstance();
-        Workspace workspace = framework.getWorkspace();
-        MainWindow mainWindow = framework.getMainWindow();
-
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         popup.addSeparator();
         final JMenuItem miLink = new JMenuItem("Link external files or directories...");
         miLink.addActionListener(event -> workspacePanel.addToWorkspace(path));
@@ -68,29 +55,6 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
         final JMenuItem miCreateWork = new JMenuItem("Create work...");
         miCreateWork.addActionListener(event -> mainWindow.createWork(path));
         popup.add(miCreateWork);
-        final JMenuItem miCreateFolder = new JMenuItem("Create folder...");
-
-        miCreateFolder.addActionListener(event -> {
-            try {
-                String name;
-                while (true) {
-                    name = DialogUtils.showInput("Please enter the name of the new folder:", "");
-                    if (name == null) {
-                        throw new OperationCancelledException();
-                    }
-                    File newDir = workspace.getFile(Path.append(path, name));
-                    if (!newDir.mkdir()) {
-                        DialogUtils.showWarning("The directory could not be created.\n"
-                                + "Please check that the name does not contain any special characters.");
-                    } else {
-                        break;
-                    }
-                }
-                workspace.fireWorkspaceChanged();
-            } catch (OperationCancelledException ignored) {
-            }
-        });
-        popup.add(miCreateFolder);
     }
 
     private static void addFileMenuItems(File file, JPopupMenu popup) {
