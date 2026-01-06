@@ -6,6 +6,7 @@ import org.flexdock.docking.DockingManager;
 import org.flexdock.docking.DockingPort;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.editor.GraphEditorPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,84 +14,75 @@ import java.util.Collection;
 
 public class DockingUtils {
 
-    public static DockableWindow createPlaceholderDockable(JComponent component, String title, DockingPort port) {
-        ContentPanel panel = new ContentPanel(title, component, 0);
-        DockableWindow dockable = new DockableWindow(panel, title);
-        DockingManager.registerDockable(dockable);
-        DockingManager.dock(dockable, port, DockingConstants.CENTER_REGION);
-        return dockable;
+    public static PanelDockable createPlaceholderDockable(JComponent component, String title, DockingPort port) {
+        PanelDockable result = new PanelDockable(new ContentPanel(title, component, 0), title);
+        DockingManager.registerDockable(result);
+        DockingManager.dock(result, port, DockingConstants.CENTER_REGION);
+        return result;
     }
 
-    public static DockableWindow createEditorDockable(JComponent component, String title, Dockable neighbour,
-            String persistentID) {
+    public static EditorPanelDockable createEditorDockable(GraphEditorPanel editorPanel,
+            String title, Dockable neighbour, String persistentID) {
 
-        return createDockable(component, title, neighbour,
-                ContentPanel.CLOSE_BUTTON | ContentPanel.MAXIMIZE_BUTTON,
-                DockingConstants.CENTER_REGION, -1, persistentID);
+        EditorPanelDockable result = new EditorPanelDockable(editorPanel, title, persistentID);
+        DockingManager.registerDockable(result);
+        DockingManager.dock(result, neighbour, DockingConstants.CENTER_REGION);
+        return result;
     }
 
-    public static DockableWindow createUtilityDockable(JComponent component, String title, Dockable neighbour) {
-        return createUtilityDockable(component, title, neighbour,
-                DockingConstants.CENTER_REGION, -1);
+    public static UtilityPanelDockable createUtilityDockable(JComponent component, String title, Dockable neighbour) {
+        return createUtilityDockable(component, title, neighbour, DockingConstants.CENTER_REGION, -1);
     }
 
-    public static DockableWindow createUtilityDockable(JComponent component, String title, Dockable neighbour,
+    public static UtilityPanelDockable createUtilityDockable(JComponent component, String title, Dockable neighbour,
             String region, float split) {
 
-        return createDockable(component, title, neighbour,
-                ContentPanel.CLOSE_BUTTON, region, split, title);
-    }
-
-    private static DockableWindow createDockable(JComponent component, String title, Dockable neighbour, int options,
-            String region, float split, String persistentID) {
-
-        ContentPanel panel = new ContentPanel(title, component, options);
-        DockableWindow dockable = new DockableWindow(panel, persistentID);
-        DockingManager.registerDockable(dockable);
-        DockingManager.dock(dockable, neighbour, region);
+        UtilityPanelDockable result = new UtilityPanelDockable(component, title);
+        DockingManager.registerDockable(result);
+        DockingManager.dock(result, neighbour, region);
         if (split > 0) {
-            DockingManager.setSplitProportion(dockable, split);
+            DockingManager.setSplitProportion(result, split);
         }
-        return dockable;
+        return result;
     }
 
-    public static void unmaximise(Collection<DockableWindow> dockableWindows) {
-        for (DockableWindow dockableWindow : dockableWindows) {
-            if (dockableWindow.isMaximized()) {
-                DockingManager.toggleMaximized(dockableWindow);
-                dockableWindow.setMaximized(false);
+    public static void unmaximise(Collection<EditorPanelDockable> editorPanelDockables) {
+        for (EditorPanelDockable editorPanelDockable : editorPanelDockables) {
+            if (editorPanelDockable.isMaximized()) {
+                DockingManager.toggleMaximized(editorPanelDockable);
+                editorPanelDockable.setMaximized(false);
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    public static Collection<DockableWindow> getDockableWindows(DockingPort dockingPort) {
+    private static Collection<PanelDockable> getPanelDockables(DockingPort dockingPort) {
         return dockingPort.getDockables();
     }
 
     public static void processTabEvents(DockingPort dockingPort) {
-        for (DockableWindow dockableWindow : getDockableWindows(dockingPort)) {
-            dockableWindow.processTabEvents();
+        for (PanelDockable panelDockable : getPanelDockables(dockingPort)) {
+            panelDockable.processTabEvents();
         }
     }
 
     public static void updateHeaders(DockingPort dockingPort) {
-        for (DockableWindow dockableWindow : getDockableWindows(dockingPort)) {
-            updateHeader(dockableWindow);
+        for (PanelDockable panelDockable : getPanelDockables(dockingPort)) {
+            updateHeader(panelDockable);
         }
     }
 
-    public static void updateHeader(DockableWindow dockableWindow) {
-        Container parent = dockableWindow.getComponent().getParent();
+    public static void updateHeader(PanelDockable panelDockable) {
+        Container parent = panelDockable.getComponent().getParent();
         boolean inTab = parent instanceof JTabbedPane;
-        if (!inTab || dockableWindow.isMaximized()) {
-            dockableWindow.setHeaderVisible(true);
+        if (!inTab || panelDockable.isMaximized()) {
+            panelDockable.setHeaderVisible(true);
         } else {
-            dockableWindow.setHeaderVisible(false);
+            panelDockable.setHeaderVisible(false);
             JTabbedPane tabbedPane = (JTabbedPane) parent;
             for (int i = 0; i < tabbedPane.getTabCount(); i++) {
-                if (dockableWindow.getComponent() == tabbedPane.getComponentAt(i)) {
-                    DockableTab dockableTab = new DockableTab(dockableWindow);
+                if (panelDockable.getComponent() == tabbedPane.getComponentAt(i)) {
+                    DockableTab dockableTab = new DockableTab(panelDockable);
                     tabbedPane.setTabComponentAt(i, dockableTab);
                     break;
                 }
@@ -103,7 +95,7 @@ public class DockingUtils {
             Component component = tabbedPane.getComponentAt(tabIndex);
             if (component instanceof ContentPanel contentPanel) {
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                mainWindow.closeDockableWindow(contentPanel.getDockableWindow());
+                mainWindow.closePanelDockable(contentPanel.getPanelDockable());
             }
         }
     }
@@ -117,9 +109,9 @@ public class DockingUtils {
         return -1;
     }
 
-    public static void activateNextTab(DockableWindow dockableWindow, int step) {
-        if (dockableWindow != null) {
-            Container parent = dockableWindow.getComponent().getParent();
+    public static void activateNextTab(PanelDockable panelDockable, int step) {
+        if (panelDockable != null) {
+            Container parent = panelDockable.getComponent().getParent();
             if (parent instanceof JTabbedPane tabbedPane) {
                 int index = tabbedPane.getSelectedIndex();
                 if (index >= 0) {

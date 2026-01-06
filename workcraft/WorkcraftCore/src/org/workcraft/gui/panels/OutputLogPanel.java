@@ -10,7 +10,7 @@ import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class OutputWindow extends LogPanel {
+public class OutputLogPanel extends LogPanel {
 
     class OutputStreamView extends FilterOutputStream {
         private final JTextArea target;
@@ -97,7 +97,7 @@ public class OutputWindow extends LogPanel {
         STDERR,
     }
 
-    public OutputWindow(Runnable updater) {
+    public OutputLogPanel(Runnable updater) {
         super(updater);
     }
 

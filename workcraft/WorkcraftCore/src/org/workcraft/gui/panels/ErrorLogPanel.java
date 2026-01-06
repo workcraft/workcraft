@@ -7,7 +7,7 @@ import java.awt.*;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
-public class ErrorWindow extends LogPanel {
+public class ErrorLogPanel extends LogPanel {
 
     class ErrorStreamView extends FilterOutputStream {
         private final JTextArea target;
@@ -44,7 +44,7 @@ public class ErrorWindow extends LogPanel {
     private PrintStream systemErr;
     private boolean streamCaptured = false;
 
-    public ErrorWindow(Runnable updater) {
+    public ErrorLogPanel(Runnable updater) {
         super(updater);
         getTextEditor().setForeground(Color.RED);
     }

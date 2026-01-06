@@ -1,7 +1,8 @@
-package org.workcraft.gui.tasks;
+package org.workcraft.gui.panels;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.layouts.SmartFlowLayout;
+import org.workcraft.gui.tasks.TaskControl;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -14,17 +15,16 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
-import java.util.function.Consumer;
 
-public class TaskManagerWindow extends JPanel implements TaskMonitor {
+public class TaskManagerPanel extends JPanel implements TaskMonitor {
 
     static class TaskControlMonitor extends BasicProgressMonitor<Object> {
-        private final TaskManagerWindow window;
+        private final TaskManagerPanel taskManagerPanel;
         private final TaskControl taskControl;
 
-        TaskControlMonitor(TaskManagerWindow window, TaskControl taskControl) {
+        TaskControlMonitor(TaskManagerPanel taskManagerPanel, TaskControl taskControl) {
+            this.taskManagerPanel = taskManagerPanel;
             this.taskControl = taskControl;
-            this.window = window;
         }
 
         @Override
@@ -35,7 +35,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         @Override
         public void isFinished(Result<?> result) {
             super.isFinished(result);
-            SwingUtilities.invokeLater(() -> window.removeTaskControl(taskControl));
+            SwingUtilities.invokeLater(() -> taskManagerPanel.removeTaskControl(taskControl));
         }
 
         @Override
@@ -99,10 +99,10 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     }
 
     private final JPanel content;
-    private final Consumer<Boolean> activityConsumer;
+    private final Runnable updater;
 
-    public TaskManagerWindow(Consumer<Boolean> activityConsumer) {
-        this.activityConsumer = activityConsumer;
+    public TaskManagerPanel(Runnable updater) {
+        this.updater = updater;
         setLayout(new BorderLayout());
         JScrollPane scroll = new JScrollPane();
         add(scroll, BorderLayout.CENTER);
@@ -124,17 +124,14 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     public void removeTaskControl(TaskControl taskControl) {
         content.remove(taskControl);
         content.revalidate();
-        if (content.getComponentCount() == 0) {
-            activityConsumer.accept(false);
-        }
+        updater.run();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public ProgressMonitor<?> taskStarting(final String description) {
         TaskControlGenerator tcg = new TaskControlGenerator(content, description);
-        activityConsumer.accept(true);
-
+        updater.run();
         if (SwingUtilities.isEventDispatchThread()) {
             tcg.run();
         } else {
@@ -145,6 +142,10 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
             }
         }
         return new TaskControlMonitor(this, tcg.getTaskControl());
+    }
+
+    public boolean isEmpty() {
+        return content.getComponentCount() <= 0;
     }
 
 }

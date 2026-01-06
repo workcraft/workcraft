@@ -6,14 +6,14 @@ import org.workcraft.gui.properties.PropertyEditorTable;
 import javax.swing.*;
 import java.awt.*;
 
-public class PropertyEditorWindow extends JPanel {
+public class PropertyEditorPanel extends JPanel {
 
     private final DisabledPanel disabledPanel = new DisabledPanel();
     private final PropertyEditorTable propertyTable = new PropertyEditorTable();
     private final JScrollPane scrollPane = new JScrollPane();
     private boolean empty;
 
-    public PropertyEditorWindow() {
+    public PropertyEditorPanel() {
         setLayout(new BorderLayout());
         scrollPane.setViewportView(propertyTable);
         add(disabledPanel, BorderLayout.CENTER);

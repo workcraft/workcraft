@@ -1,12 +1,15 @@
-package org.workcraft.gui.workspace;
+package org.workcraft.gui.panels;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
+import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.trees.TreeWindow;
+import org.workcraft.gui.workspace.Path;
+import org.workcraft.gui.workspace.WorkspaceTreeDecorator;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.FileFilters;
@@ -17,14 +20,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-public class WorkspaceWindow extends JPanel {
+public class WorkspacePanel extends JPanel {
 
     private static final String DIALOG_OPEN_WORKSPACE = "Open workspace";
     private static final String DIALOG_SAVE_WORKSPACE_AS = "Save workspace as...";
 
     private final TreeWindow<Path<String>> workspaceTree;
 
-    public WorkspaceWindow() {
+    public WorkspacePanel() {
         super();
         Framework framework = Framework.getInstance();
         Workspace workspace = framework.getWorkspace();
@@ -63,15 +66,11 @@ public class WorkspaceWindow extends JPanel {
 
         menu.addSeparator();
 
-        ActionMenuItem miAdd = new ActionMenuItem(WorkspaceWindowActions.ADD_FILES_TO_WORKSPACE_ACTION);
-        menu.add(miAdd);
+        menu.add(new ActionMenuItem(new Action("Link files to the root of workspace...",
+                () -> addToWorkspace(Path.root("")))));
 
-        ActionMenuItem miSave = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_ACTION);
-        menu.add(miSave);
-
-        ActionMenuItem miSaveAs = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_AS_ACTION);
-        menu.add(miSaveAs);
-
+        menu.add(new ActionMenuItem(new Action("Save workspace", this::saveWorkspace)));
+        menu.add(new ActionMenuItem(new Action("Save workspace as...", this::saveWorkspaceAs)));
         return menu;
     }
 
@@ -150,10 +149,10 @@ public class WorkspaceWindow extends JPanel {
             String message = "Current workspace is not saved.\n" + "Save before opening another workspace?";
             switch (DialogUtils.showYesNoCancelWarning(message, DIALOG_OPEN_WORKSPACE)) {
                 case JOptionPane.YES_OPTION -> {
-                    mainWindow.closeEditorWindows();
+                    mainWindow.closeEditorPanelDockables();
                     saveWorkspace();
                 }
-                case JOptionPane.NO_OPTION -> mainWindow.closeEditorWindows();
+                case JOptionPane.NO_OPTION -> mainWindow.closeEditorPanelDockables();
                 default -> throw new OperationCancelledException();
             }
         }

@@ -49,7 +49,7 @@ public class ContentPanel extends JPanel {
 
             if ((options & MAXIMIZE_BUTTON) != 0) {
                 btnMax = createHeaderButton(UIManager.getIcon("InternalFrame.maximizeIcon"),
-                        new Action(null, () -> mainWindow.toggleDockableWindowMaximized(dockableWindow),
+                        new Action(null, () -> mainWindow.togglePanelDockableMaximized(panelDockable),
                                 "Toggle maximised"));
 
                 buttonPanel.add(btnMax);
@@ -59,7 +59,7 @@ public class ContentPanel extends JPanel {
             Icon closeIcon = UIManager.getIcon("InternalFrame.closeIcon");
             if ((options & CLOSE_BUTTON) != 0) {
                 ActionButton btnClose = createHeaderButton(closeIcon,
-                        new Action(null, () -> mainWindow.closeDockableWindow(dockableWindow),
+                        new Action(null, () -> mainWindow.closePanelDockable(panelDockable),
                                 "Close window"));
 
                 buttonPanel.add(btnClose);
@@ -122,10 +122,9 @@ public class ContentPanel extends JPanel {
     private final JPanel contentPane;
     private final DockableViewHeader header;
     private final int options;
-    private DockableWindow dockableWindow;
+    private PanelDockable panelDockable;
 
     public ContentPanel(String title, JComponent content, int options) {
-
         super();
         setLayout(new BorderLayout(0, 0));
 
@@ -197,12 +196,12 @@ public class ContentPanel extends JPanel {
         return options;
     }
 
-    public DockableWindow getDockableWindow() {
-        return dockableWindow;
+    public PanelDockable getPanelDockable() {
+        return panelDockable;
     }
 
-    public void setDockableWindow(DockableWindow dockableWindow) {
-        this.dockableWindow = dockableWindow;
+    public void setDockableWindow(PanelDockable panelDockable) {
+        this.panelDockable = panelDockable;
     }
 
 }

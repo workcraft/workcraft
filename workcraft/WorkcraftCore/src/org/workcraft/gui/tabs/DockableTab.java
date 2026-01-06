@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class DockableTab extends JPanel {
 
-    public DockableTab(DockableWindow dockableWindow) {
+    public DockableTab(PanelDockable panelDockable) {
         super();
         setOpaque(false);
         setLayout(new BorderLayout());
@@ -20,18 +20,18 @@ public class DockableTab extends JPanel {
         buttonsPanel.setOpaque(false);
         buttonsPanel.setFocusable(false);
 
-        JLabel label = new JLabel(dockableWindow.getTabText());
+        JLabel label = new JLabel(panelDockable.getTabText());
         label.setFocusable(false);
         label.setOpaque(false);
         Font font = label.getFont();
         label.setFont(font.deriveFont(font.getStyle() | Font.BOLD));
 
-        ContentPanel contentPanel = dockableWindow.getComponent();
+        ContentPanel contentPanel = panelDockable.getComponent();
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         int extraSpace = 0;
         if ((contentPanel.getOptions() & ContentPanel.MAXIMIZE_BUTTON) != 0) {
             TabButton maxButton = new TabButton("Maximize window",
-                    new Action("\u2191", () -> mainWindow.toggleDockableWindowMaximized(dockableWindow)));
+                    new Action("\u2191", () -> mainWindow.togglePanelDockableMaximized(panelDockable)));
 
             buttonsPanel.add(maxButton);
             extraSpace = maxButton.getPreferredSize().width;
@@ -39,7 +39,7 @@ public class DockableTab extends JPanel {
 
         if ((contentPanel.getOptions() & ContentPanel.CLOSE_BUTTON) != 0) {
             TabButton closeButton = new TabButton("Close window",
-                    new Action("\u00d7", () -> mainWindow.closeDockableWindow(dockableWindow)));
+                    new Action("\u00d7", () -> mainWindow.closePanelDockable(panelDockable)));
 
             buttonsPanel.add(Box.createRigidArea(new Dimension(extraSpace / 2, 0)));
             buttonsPanel.add(closeButton);

@@ -3,7 +3,7 @@ package org.workcraft.utils;
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.workspace.WorkspaceWindow;
+import org.workcraft.gui.panels.WorkspacePanel;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -63,7 +63,7 @@ public class WorkspaceUtils {
 
     private static void setWorkspaceViewAutoExpansion(boolean value) {
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        WorkspaceWindow workspaceView = mainWindow == null ? null : mainWindow.getWorkspaceView();
+        WorkspacePanel workspaceView = mainWindow == null ? null : mainWindow.getWorkspaceView();
         if (workspaceView != null) {
             workspaceView.setAutoExpand(value);
             workspaceView.refresh();

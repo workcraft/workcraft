@@ -1,12 +1,12 @@
-package org.workcraft.gui.workspace;
+package org.workcraft.gui.panels;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.Command;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Menu;
-import org.workcraft.gui.panels.WorkspacePanel;
 import org.workcraft.gui.trees.TreePopupProvider;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.utils.CommandUtils;
 import org.workcraft.utils.DialogUtils;
@@ -21,7 +21,6 @@ import java.util.List;
 public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
     private final WorkspacePanel workspacePanel;
-    private boolean allowFileRemoval = false;
 
     public WorkspacePopupProvider(WorkspacePanel workspacePanel) {
         this.workspacePanel = workspacePanel;
@@ -45,13 +44,6 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             } else {
                 addWorkMenuItems(we, popup);
                 addCommandMenus(we, popup);
-            }
-
-            if (allowFileRemoval) {
-                popup.addSeparator();
-                JMenuItem miRemove = new JMenuItem("Delete");
-                miRemove.addActionListener(event -> workspace.deleteEntry(path));
-                popup.add(miRemove);
             }
         }
 
@@ -165,10 +157,6 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             JMenu menu = CommandUtils.createCommandsMenu(categoryName, applicableVisibleCommands);
             popup.add(menu);
         }
-    }
-
-    public void setAllowFileRemoval(boolean value) {
-        allowFileRemoval = value;
     }
 
 }

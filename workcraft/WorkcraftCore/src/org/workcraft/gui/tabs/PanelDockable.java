@@ -16,7 +16,7 @@ import java.awt.event.MouseListener;
 import java.util.*;
 import java.util.List;
 
-public class DockableWindow extends AbstractDockable {
+public class PanelDockable extends AbstractDockable {
 
     private static final MouseAdapter TAB_MOUSE_LISTENER = new MouseAdapter() {
         @Override
@@ -47,7 +47,7 @@ public class DockableWindow extends AbstractDockable {
     private boolean inTab = false;
     private boolean closed = false;
 
-    public DockableWindow(ContentPanel contentPanel, String persistentID) {
+    public PanelDockable(ContentPanel contentPanel, String persistentID) {
         super(persistentID);
         this.contentPanel = contentPanel;
         contentPanel.setDockableWindow(this);
@@ -62,7 +62,7 @@ public class DockableWindow extends AbstractDockable {
                 public void mouseClicked(MouseEvent e) {
                     if (e.getButton() == MouseEvent.BUTTON2) {
                         MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                        mainWindow.closeDockableWindow(DockableWindow.this);
+                        mainWindow.closePanelDockable(PanelDockable.this);
                     } else {
                         for (DockableListener l : new ArrayList<>(dockableListeners)) {
                             l.headerClicked(e.getButton());

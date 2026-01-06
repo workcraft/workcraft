@@ -1,4 +1,6 @@
-package org.workcraft.gui.controls;
+package org.workcraft.gui.panels;
+
+import org.workcraft.gui.controls.TextEditor;
 
 import javax.swing.*;
 import javax.swing.text.DefaultCaret;
