@@ -9,6 +9,8 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.gui.*;
 import org.workcraft.gui.actions.ActionButton;
+import org.workcraft.gui.panels.PropertyEditorPanel;
+import org.workcraft.gui.panels.ToolControlsPanel;
 import org.workcraft.gui.properties.*;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.GraphEditorTool;
@@ -26,6 +28,7 @@ import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -102,6 +105,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         }
     }
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     public WorkspaceEntry we;
@@ -375,7 +379,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                 selectedTool.updateControlsToolbar(controlToolbar, this);
 
                 JPanel panel = selectedTool.getControlsPanel(this);
-                ToolControlsWindow controlWindow = mainWindow.getControlsView();
+                ToolControlsPanel controlWindow = mainWindow.getControlsView();
                 controlWindow.setContent(panel);
             }
         }
@@ -408,19 +412,19 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         }
 
         final MainWindow mainWindow = framework.getMainWindow();
-        final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
+        final PropertyEditorPanel propertyEditorPanel = mainWindow.getPropertyView();
         GraphEditorTool tool = (toolbox == null) ? null : toolbox.getSelectedTool();
         if ((tool == null) || !tool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
-            propertyEditorWindow.clear();
+            propertyEditorPanel.clear();
         } else {
-            propertyEditorWindow.set(wrapProperties(properties));
+            propertyEditorPanel.set(wrapProperties(properties));
             if ((templateNode != null) && (defaultNode != null)) {
                 JButton resetButton = new JButton(RESET_TO_DEFAULTS);
                 resetButton.addActionListener(event -> {
                     templateNode.copyStyle(defaultNode);
                     updatePropertyViewRequested = true;
                 });
-                propertyEditorWindow.add(resetButton, BorderLayout.SOUTH);
+                propertyEditorPanel.add(resetButton, BorderLayout.SOUTH);
                 // A hack to display reset button: toggle its visibility a couple of times.
                 resetButton.setVisible(false);
                 resetButton.setVisible(true);

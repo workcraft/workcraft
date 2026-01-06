@@ -3,7 +3,7 @@ package org.workcraft.gui.editor;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
-import org.workcraft.gui.tabs.DockableWindow;
+import org.workcraft.gui.tabs.PanelDockable;
 import org.workcraft.gui.tabs.DockingUtils;
 import org.workcraft.gui.tools.GraphEditorKeyListener;
 import org.workcraft.utils.DesktopApi;
@@ -30,7 +30,7 @@ class GraphEditorPanelKeyListener implements KeyListener {
                 case KeyEvent.VK_DOWN -> editor.panDown(e.isShiftDown());
                 case KeyEvent.VK_TAB -> {
                     MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                    DockableWindow editorWindow = mainWindow.getDockableWindow(editor);
+                    PanelDockable editorWindow = mainWindow.getEditorPanelDockable(editor);
                     DockingUtils.activateNextTab(editorWindow, e.isShiftDown() ? -1 : 1);
                 }
                 default -> { }

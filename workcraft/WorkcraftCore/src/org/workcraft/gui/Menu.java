@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ActionMenuItem;
-import org.workcraft.gui.tabs.DockableWindow;
+import org.workcraft.gui.tabs.UtilityPanelDockable;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.interop.Importer;
@@ -29,9 +29,9 @@ public class Menu extends JMenuBar {
     private final JMenu mnExport = new JMenu("Export");
     private final JMenu mnRecent = new JMenu("Open recent");
     private final JMenu mnToolbars = new JMenu("Toolbars");
-    private final JMenu mnUtilityWindows = new JMenu("Utility windows");
+    private final JMenu mnUtilityPanels = new JMenu("Utility panels");
     private final Map<JToolBar, ActionCheckBoxMenuItem> toolbarItems = new HashMap<>();
-    private final Map<DockableWindow, ActionCheckBoxMenuItem> utilityWindowItems = new HashMap<>();
+    private final Map<UtilityPanelDockable, ActionCheckBoxMenuItem> utilityPanelItemMap = new HashMap<>();
     private final List<JMenu> mnCommandsMenus = new ArrayList<>();
     private final JMenu mnHelp = new JMenu("Help");
 
@@ -211,7 +211,7 @@ public class Menu extends JMenuBar {
         mnView.addSeparator();
 
         mnView.add(mnToolbars);
-        mnView.add(mnUtilityWindows);
+        mnView.add(mnUtilityPanels);
 
         ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
         mnView.add(miResetLayout);
@@ -280,13 +280,13 @@ public class Menu extends JMenuBar {
         mnToolbars.add(miToolbarItem);
     }
 
-    public final void registerUtilityWindow(DockableWindow window) {
+    public final void registerUtilityPanelDockable(UtilityPanelDockable utilityPanelDockable) {
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        Action action = new Action(window.getTitle(), () -> mainWindow.toggleDockableWindow(window));
+        Action action = new Action(utilityPanelDockable.getTitle(), () -> mainWindow.toggleUtilityPanelDockable(utilityPanelDockable));
         ActionCheckBoxMenuItem menuItem = new ActionCheckBoxMenuItem(action);
-        menuItem.setSelected(!window.isClosed());
-        utilityWindowItems.put(window, menuItem);
-        mnUtilityWindows.add(menuItem);
+        menuItem.setSelected(!utilityPanelDockable.isClosed());
+        utilityPanelItemMap.put(utilityPanelDockable, menuItem);
+        mnUtilityPanels.add(menuItem);
     }
 
     public final void updateRecentMenu() {
@@ -327,8 +327,8 @@ public class Menu extends JMenuBar {
         }
     }
 
-    public final void setUtilityWindowVisibility(DockableWindow window, boolean selected) {
-        ActionCheckBoxMenuItem mi = utilityWindowItems.get(window);
+    public final void setUtilityPanelDockableVisibility(UtilityPanelDockable utilityPanelDockable, boolean selected) {
+        ActionCheckBoxMenuItem mi = utilityPanelItemMap.get(utilityPanelDockable);
         if (mi != null) {
             mi.setSelected(selected);
         }

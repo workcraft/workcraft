@@ -1,7 +1,8 @@
-package org.workcraft.gui.tasks;
+package org.workcraft.gui.panels;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.layouts.SmartFlowLayout;
+import org.workcraft.gui.tasks.TaskControl;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -15,15 +16,15 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 
-public class TaskManagerWindow extends JPanel implements TaskMonitor {
+public class TaskManagerPanel extends JPanel implements TaskMonitor {
 
     static class TaskControlMonitor extends BasicProgressMonitor<Object> {
-        private final TaskManagerWindow window;
+        private final TaskManagerPanel taskManagerPanel;
         private final TaskControl taskControl;
 
-        TaskControlMonitor(TaskManagerWindow window, TaskControl taskControl) {
+        TaskControlMonitor(TaskManagerPanel taskManagerPanel, TaskControl taskControl) {
+            this.taskManagerPanel = taskManagerPanel;
             this.taskControl = taskControl;
-            this.window = window;
         }
 
         @Override
@@ -34,7 +35,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         @Override
         public void isFinished(Result<?> result) {
             super.isFinished(result);
-            SwingUtilities.invokeLater(() -> window.removeTaskControl(taskControl));
+            SwingUtilities.invokeLater(() -> taskManagerPanel.removeTaskControl(taskControl));
         }
 
         @Override
@@ -49,8 +50,6 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     }
 
     public static class ScrollPaneWidthTrackingPanel extends JPanel implements Scrollable {
-        private static final long serialVersionUID = 1L;
-
         @Override
         public Dimension getPreferredScrollableViewportSize() {
             return getPreferredSize();
@@ -94,15 +93,16 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         @Override
         public void run() {
             taskControl = new TaskControl(description);
-
             container.add(taskControl);
             container.revalidate();
         }
     }
 
     private final JPanel content;
+    private final Runnable updater;
 
-    public TaskManagerWindow() {
+    public TaskManagerPanel(Runnable updater) {
+        this.updater = updater;
         setLayout(new BorderLayout());
         JScrollPane scroll = new JScrollPane();
         add(scroll, BorderLayout.CENTER);
@@ -118,25 +118,20 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         Border lineBorder = new CompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 
-        final Framework framework = Framework.getInstance();
-        framework.getTaskManager().addObserver(this);
+        Framework.getInstance().getTaskManager().addObserver(this);
     }
 
     public void removeTaskControl(TaskControl taskControl) {
         content.remove(taskControl);
         content.revalidate();
-        if (content.getComponentCount() == 0) {
-            setTabActivity(false);
-        }
+        updater.run();
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public ProgressMonitor<?> taskStarting(final String description) {
         TaskControlGenerator tcg = new TaskControlGenerator(content, description);
-
-        setTabActivity(true);
-
+        updater.run();
         if (SwingUtilities.isEventDispatchThread()) {
             tcg.run();
         } else {
@@ -149,23 +144,8 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         return new TaskControlMonitor(this, tcg.getTaskControl());
     }
 
-    private void setTabActivity(final boolean active) {
-        SwingUtilities.invokeLater(() -> {
-            Container component = getParent().getParent();
-            Container parent = component.getParent();
-            if (parent instanceof JTabbedPane tab) {
-                for (int i = 0; i < tab.getTabCount(); i++) {
-                    if (tab.getComponentAt(i) != component) continue;
-
-                    Component tabComponent = tab.getTabComponentAt(i);
-                    if (active) {
-                        tabComponent.setForeground(new Color(0.22f, 0.45f, 0.9f));
-                    } else {
-                        tabComponent.setForeground(Color.BLACK);
-                    }
-                }
-            }
-        });
+    public boolean isEmpty() {
+        return content.getComponentCount() <= 0;
     }
 
 }

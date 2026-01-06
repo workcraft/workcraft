@@ -1,12 +1,11 @@
-package org.workcraft.gui.workspace;
+package org.workcraft.gui.panels;
 
 import org.workcraft.Framework;
-import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.MainWindowActions;
-import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.trees.TreeWindow;
+import org.workcraft.gui.workspace.Path;
+import org.workcraft.gui.workspace.WorkspaceTreeDecorator;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.workspace.FileFilters;
@@ -17,14 +16,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 
-public class WorkspaceWindow extends JPanel {
+public class WorkspacePanel extends JPanel {
 
-    private static final String DIALOG_OPEN_WORKSPACE = "Open workspace";
     private static final String DIALOG_SAVE_WORKSPACE_AS = "Save workspace as...";
 
     private final TreeWindow<Path<String>> workspaceTree;
 
-    public WorkspaceWindow() {
+    public WorkspacePanel() {
         super();
         Framework framework = Framework.getInstance();
         Workspace workspace = framework.getWorkspace();
@@ -53,26 +51,6 @@ public class WorkspaceWindow extends JPanel {
 
         setLayout(new BorderLayout());
         this.add(scrollPane, BorderLayout.CENTER);
-    }
-
-    public JMenu createMenu() {
-        JMenu menu = new JMenu("Workspace");
-
-        ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
-        menu.add(miNewModel);
-
-        menu.addSeparator();
-
-        ActionMenuItem miAdd = new ActionMenuItem(WorkspaceWindowActions.ADD_FILES_TO_WORKSPACE_ACTION);
-        menu.add(miAdd);
-
-        ActionMenuItem miSave = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_ACTION);
-        menu.add(miSave);
-
-        ActionMenuItem miSaveAs = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_AS_ACTION);
-        menu.add(miSaveAs);
-
-        return menu;
     }
 
     public void addToWorkspace(Path<String> path) {
@@ -141,57 +119,6 @@ public class WorkspaceWindow extends JPanel {
             }
         }
         throw new OperationCancelledException();
-    }
-
-    private void saveChangedOrCancel() throws OperationCancelledException {
-        Framework framework = Framework.getInstance();
-        if (framework.getWorkspace().isChanged()) {
-            MainWindow mainWindow = framework.getMainWindow();
-            String message = "Current workspace is not saved.\n" + "Save before opening another workspace?";
-            switch (DialogUtils.showYesNoCancelWarning(message, DIALOG_OPEN_WORKSPACE)) {
-                case JOptionPane.YES_OPTION -> {
-                    mainWindow.closeEditorWindows();
-                    saveWorkspace();
-                }
-                case JOptionPane.NO_OPTION -> mainWindow.closeEditorWindows();
-                default -> throw new OperationCancelledException();
-            }
-        }
-    }
-
-    public void newWorkspace() {
-        try {
-            saveChangedOrCancel();
-            Framework framework = Framework.getInstance();
-            framework.getWorkspace().clear();
-        } catch (OperationCancelledException ignored) {
-            // Operation cancelled by the user
-        }
-    }
-
-    public void openWorkspace() {
-        try {
-            saveChangedOrCancel();
-            JFileChooser fc = new JFileChooser();
-            Framework framework = Framework.getInstance();
-            fc.setDialogType(JFileChooser.OPEN_DIALOG);
-            fc.setFileFilter(FileFilters.WORKSPACE_FILES);
-            fc.setCurrentDirectory(framework.getLastDirectory());
-            fc.setMultiSelectionEnabled(false);
-            fc.setDialogTitle(DIALOG_OPEN_WORKSPACE);
-            if (DialogUtils.showFileOpener(fc)) {
-                File file = fc.getSelectedFile();
-                try {
-                    framework.loadWorkspace(file);
-                } catch (DeserialisationException e) {
-                    DialogUtils.showError("Workspace load failed. See the Problems window for details.");
-                    e.printStackTrace();
-                }
-                framework.setLastDirectory(FileUtils.getFileDirectory(file));
-            }
-        } catch (OperationCancelledException ignored) {
-            // Operation cancelled by the user
-        }
     }
 
     public void setAutoExpand(boolean value) {

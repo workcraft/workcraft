@@ -56,7 +56,7 @@ public class MainWindowActions {
             KeyStroke.getKeyStroke(KeyEvent.VK_F4, DesktopApi.getMenuKeyMask()));
 
     public static final Action CLOSE_ALL_EDITORS_ACTION = new Action("Close all works",
-            () -> Framework.getInstance().getMainWindow().closeEditorWindows());
+            () -> Framework.getInstance().getMainWindow().closeEditorPanelDockables());
 
     public static final Action SHUTDOWN_GUI_ACTION = new Action("Switch to console mode",
             () -> {

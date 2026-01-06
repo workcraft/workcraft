@@ -1,4 +1,4 @@
-package org.workcraft.gui;
+package org.workcraft.gui.panels;
 
 import org.workcraft.utils.GuiUtils;
 
@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-public class DocumentPlaceholder extends JPanel {
+public class DocumentPlaceholderPanel extends JPanel {
 
     private final BufferedImage logoImage;
 
@@ -26,7 +26,7 @@ public class DocumentPlaceholder extends JPanel {
         }
     }
 
-    public DocumentPlaceholder() {
+    public DocumentPlaceholderPanel() {
         super();
         logoImage = getImage();
         setBackground(new Color(255, 255, 255));

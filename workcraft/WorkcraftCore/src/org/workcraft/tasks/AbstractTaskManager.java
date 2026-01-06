@@ -7,8 +7,6 @@ public abstract class AbstractTaskManager implements TaskManager {
     public final TaskObserverList taskObserverList = new TaskObserverList();
 
     public static class TaskObserverList extends ArrayList<TaskMonitor> implements TaskMonitor {
-        private static final long serialVersionUID = 1L;
-
         @Override
         public <T> ProgressMonitorArray<T> taskStarting(String description) {
             ProgressMonitorArray<T> l = new ProgressMonitorArray<>();

@@ -200,7 +200,7 @@ public class Toolbox implements GraphEditorKeyListener {
             // Update visibility of Property editor and Tool controls.
             if (updateDockableVisibility) {
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                mainWindow.updateDockableWindowVisibility();
+                mainWindow.updateUtilityPanelDockableVisibility();
             }
         }
     }

@@ -1,4 +1,4 @@
-package org.workcraft.gui;
+package org.workcraft.gui.panels;
 
 import org.mozilla.javascript.Context;
 import org.workcraft.Framework;
@@ -11,7 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 
-public class JavaScriptWindow extends JPanel {
+public class JavaScriptPanel extends JPanel {
     private static final String SCRIPT_SUBMIT = "script-submit";
     private static final KeyStroke ctrlEnter = KeyStroke.getKeyStroke("ctrl ENTER");
 
@@ -49,7 +49,7 @@ public class JavaScriptWindow extends JPanel {
         }
     }
 
-    public JavaScriptWindow() {
+    public JavaScriptPanel() {
         txtScript = new JTextPane();
         txtScript.setBorder(GuiUtils.getEmptyBorder());
         txtScript.addFocusListener(new FocusListener() {
