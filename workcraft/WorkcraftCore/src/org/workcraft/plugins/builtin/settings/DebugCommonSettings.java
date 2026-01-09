@@ -15,14 +15,17 @@ public class DebugCommonSettings extends AbstractCommonSettings {
     private static final String keyVerboseImport = prefix + ".verboseImport";
     private static final String keyParserTracing = prefix + ".parserTracing";
     private static final String keyVerboseCompatibilityManager = prefix + ".verboseCompatibilityManager";
+    private static final String keyLodPerformance = prefix + ".logPerformance";
 
     private static final boolean defaultVerboseImport = false;
     private static final boolean defaultParserTracing = false;
     private static final boolean defaultVerboseCompatibilityManager = false;
+    private static final boolean defaultLogPerformance = false;
 
     private static boolean verboseImport = defaultVerboseImport;
     private static boolean parserTracing = defaultParserTracing;
     private static boolean verboseCompatibilityManager = defaultVerboseCompatibilityManager;
+    private static boolean logPerformance = defaultLogPerformance;
 
     static {
         properties.add(new PropertyDeclaration<>(Boolean.class,
@@ -39,6 +42,11 @@ public class DebugCommonSettings extends AbstractCommonSettings {
                 "Log compatibility manager substitutions",
                 DebugCommonSettings::setVerboseCompatibilityManager,
                 DebugCommonSettings::getVerboseCompatibilityManager));
+
+        properties.add(new PropertyDeclaration<>(Boolean.class,
+                "Enable popup menu for logging performance",
+                DebugCommonSettings::setLogPerformance,
+                DebugCommonSettings::getLogPerformance));
     }
 
     @Override
@@ -51,6 +59,7 @@ public class DebugCommonSettings extends AbstractCommonSettings {
         setVerboseImport(config.getBoolean(keyVerboseImport, defaultVerboseImport));
         setParserTracing(config.getBoolean(keyParserTracing, defaultParserTracing));
         setVerboseCompatibilityManager(config.getBoolean(keyVerboseCompatibilityManager, defaultVerboseCompatibilityManager));
+        setLogPerformance(config.getBoolean(keyLodPerformance, defaultLogPerformance));
     }
 
     @Override
@@ -58,6 +67,7 @@ public class DebugCommonSettings extends AbstractCommonSettings {
         config.setBoolean(keyVerboseImport, getVerboseImport());
         config.setBoolean(keyParserTracing, getParserTracing());
         config.setBoolean(keyVerboseCompatibilityManager, getVerboseCompatibilityManager());
+        config.setBoolean(keyLodPerformance, getLogPerformance());
     }
 
     @Override
@@ -87,6 +97,14 @@ public class DebugCommonSettings extends AbstractCommonSettings {
 
     public static void setVerboseCompatibilityManager(boolean value) {
         verboseCompatibilityManager = value;
+    }
+
+    public static boolean getLogPerformance() {
+        return logPerformance;
+    }
+
+    public static void setLogPerformance(boolean value) {
+        logPerformance = value;
     }
 
 }

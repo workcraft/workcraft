@@ -29,6 +29,9 @@ class CommonSettingsTest {
 
         Assertions.assertEquals(Config.toString(DebugCommonSettings.getVerboseCompatibilityManager()),
                 framework.getConfigVar(prefix + ".verboseCompatibilityManager", false));
+
+        Assertions.assertEquals(Config.toString(DebugCommonSettings.getLogPerformance()),
+                framework.getConfigVar(prefix + ".logPerformance", false));
     }
 
     @Test

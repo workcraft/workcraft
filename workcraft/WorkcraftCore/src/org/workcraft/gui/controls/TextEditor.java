@@ -4,8 +4,6 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.utils.DesktopApi;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.undo.UndoManager;
 import java.awt.*;
@@ -73,7 +71,7 @@ public class TextEditor extends JTextArea {
         popup.add(miSelect);
 
         JMenuItem miClear = new JMenuItem("Clear");
-        miClear.addActionListener(event -> setText(""));
+        miClear.addActionListener(event -> clear());
         miClear.setMnemonic(KeyEvent.VK_R);
         popup.add(miClear);
 
@@ -109,26 +107,6 @@ public class TextEditor extends JTextArea {
         });
     }
 
-    public void addUpdateListener(Runnable updater) {
-        DocumentListener documentListener = new DocumentListener() {
-            @Override
-            public void removeUpdate(DocumentEvent e) {
-                updater.run();
-            }
-
-            @Override
-            public void insertUpdate(DocumentEvent e) {
-                updater.run();
-            }
-
-            @Override
-            public void changedUpdate(DocumentEvent e) {
-                updater.run();
-            }
-        };
-        getDocument().addDocumentListener(documentListener);
-    }
-
     public boolean isEmpty() {
         return getDocument().getLength() <= 0;
     }
@@ -139,6 +117,10 @@ public class TextEditor extends JTextArea {
             history.discardAllEdits();
         }
         super.setText(text);
+    }
+
+    public void clear() {
+        setText("");
     }
 
 }

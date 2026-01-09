@@ -1058,8 +1058,6 @@ public class MainWindow extends JFrame {
     }
 
     public void editSettings() {
-        JTextArea outputTextArea = outputLogPanel.getTextEditor();
-        Collection<HighlightUtils.HighlightData> outputHighlights = HighlightUtils.getHighlights(outputTextArea);
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         if (dialog.reveal()) {
             if (currentEditor != null) {
@@ -1070,7 +1068,7 @@ public class MainWindow extends JFrame {
                 globalToolbar.refreshToggles();
             }
             updateLookAndFeel();
-            HighlightUtils.highlightLines(outputTextArea, outputHighlights);
+            outputLogPanel.updateUI();
         }
     }
 

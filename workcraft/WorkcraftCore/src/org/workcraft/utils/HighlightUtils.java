@@ -1,12 +1,11 @@
 package org.workcraft.utils;
 
+import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class HighlightUtils {
 
@@ -22,24 +21,13 @@ public class HighlightUtils {
         }
     }
 
-    public static Collection<HighlightData> getHighlights(JTextComponent textComponent) {
-        Collection<HighlightData> result = new ArrayList<>();
-        for (Highlighter.Highlight highlight : textComponent.getHighlighter().getHighlights()) {
-            if (highlight.getPainter() instanceof DefaultHighlighter.DefaultHighlightPainter painter) {
-                result.add(new HighlightData(highlight.getStartOffset(), highlight.getEndOffset(), painter.getColor()));
-            }
+    public static void highlightLine(JTextArea textArea, int lineIndex, Color color) {
+        try {
+            int fromPos = textArea.getLineStartOffset(lineIndex);
+            int toPos = textArea.getLineEndOffset(lineIndex);
+            highlightText(textArea, fromPos, toPos, color, false);
+        } catch (BadLocationException ignored) {
         }
-        return result;
-    }
-
-    public static void highlightLines(JTextComponent textComponent, Collection<HighlightData> highlights) {
-        for (HighlightData highlight : highlights) {
-            HighlightUtils.highlightLines(textComponent, highlight.fromPos, highlight.toPos, highlight.color);
-        }
-    }
-
-    public static Object highlightLines(JTextComponent textComponent, int fromPos, int toPos, Color color) {
-        return highlightText(textComponent, fromPos, toPos, color, false);
     }
 
     public static Object highlightText(JTextComponent textComponent, int fromPos, int toPos, Color color) {
@@ -54,10 +42,7 @@ public class HighlightUtils {
             highlighter.setDrawsLayeredHighlights(drawsLayeredHighlights);
             Highlighter.HighlightPainter painter = new DefaultHighlighter.DefaultHighlightPainter(color);
             try {
-                return highlighter.addHighlight(
-                        Math.max(fromPos, 0),
-                        Math.min(toPos, textComponent.getText().length()),
-                        painter);
+                return highlighter.addHighlight(fromPos, toPos, painter);
             } catch (BadLocationException ignored) {
             }
         }

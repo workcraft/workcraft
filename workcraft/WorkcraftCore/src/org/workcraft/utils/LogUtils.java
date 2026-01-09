@@ -71,7 +71,7 @@ public class LogUtils {
     }
 
     public static String getTextWithoutPrefix(String text) {
-        return text == null ? null : text.substring(getPrefix(text).length());
+        return (text == null) ? null : text.substring(getPrefix(text).length());
     }
 
 }
