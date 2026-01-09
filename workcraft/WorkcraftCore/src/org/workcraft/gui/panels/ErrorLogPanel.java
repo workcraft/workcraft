@@ -45,7 +45,8 @@ public class ErrorLogPanel extends LogPanel {
     private boolean streamCaptured = false;
 
     public ErrorLogPanel(Runnable updater) {
-        super(updater);
+        super();
+        registerContentChangeListener(updater);
         getTextEditor().setForeground(Color.RED);
     }
 
