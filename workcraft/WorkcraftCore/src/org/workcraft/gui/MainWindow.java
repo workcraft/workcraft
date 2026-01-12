@@ -355,13 +355,13 @@ public class MainWindow extends JFrame {
 
     public void closePanelDockable(PanelDockable panelDockable) {
         if (panelDockable instanceof EditorPanelDockable editorPanelDockable) {
-            closeEditorPanelDockable(editorPanelDockable);
+            closeEditorPanelDockable(editorPanelDockable, true);
         } else if (panelDockable instanceof UtilityPanelDockable utilityPanelDockable) {
             closeUtilityPanelDockable(utilityPanelDockable);
         }
     }
 
-    private void closeEditorPanelDockable(EditorPanelDockable editorPanelDockable) {
+    private void closeEditorPanelDockable(EditorPanelDockable editorPanelDockable, boolean promptSave) {
         GraphEditor editor = getEditor(editorPanelDockable);
         if (editor == null) {
             return;
@@ -372,7 +372,9 @@ public class MainWindow extends JFrame {
             Toolbox toolbox = getToolbox(we);
             toolbox.selectDefaultTool();
             // Prompt to save changes if necessary
-            saveChangedOrCancel(we);
+            if (promptSave) {
+                saveChangedOrCancel(we);
+            }
             // Un-maximise the editor panel
             if (DockingManager.isMaximized(editorPanelDockable)) {
                 togglePanelDockableMaximized(editorPanelDockable);
@@ -531,7 +533,7 @@ public class MainWindow extends JFrame {
     }
 
     public void shutdown() throws OperationCancelledException {
-        closeEditorPanelDockables();
+        closeAllEditorPanelDockables();
         if (!weDockableMap.isEmpty()) {
             throw new OperationCancelledException();
         }
@@ -836,6 +838,7 @@ public class MainWindow extends JFrame {
         if (file == null) {
             file = new File(we.getFileName());
         }
+        requestFocus(we);
         JFileChooser fc = DialogUtils.createFileSaver("Save work as", file, null);
         file = DialogUtils.chooseValidSaveFileOrCancel(fc, null);
         saveWork(we, file);
@@ -855,6 +858,30 @@ public class MainWindow extends JFrame {
                 menu.updateRecentMenu();
             } catch (SerialisationException e) {
                 DialogUtils.showError(e.getMessage());
+            }
+        }
+    }
+
+    public void saveWorks() {
+        try {
+            saveWorksOrCancel();
+        } catch (OperationCancelledException ignored) {
+            // Operation cancelled by the user
+        }
+    }
+    public void saveWorksOrCancel() throws OperationCancelledException {
+        Collection<WorkspaceEntry> wes = weDockableMap.keySet().stream().filter(WorkspaceEntry::isChanged).toList();
+        if (wes.size() == 1) {
+            WorkspaceEntry we = wes.iterator().next();
+            saveWorkOrCancel(we);
+        } else if (wes.size() > 1) {
+            SaveMultipleWorkDialog saveMultipleWorkDialog = new SaveMultipleWorkDialog(this);
+            if (saveMultipleWorkDialog.reveal()) {
+                for (WorkspaceEntry we : saveMultipleWorkDialog.getCheckedWorks()) {
+                    saveWorkOrCancel(we);
+                }
+            } else {
+                throw new OperationCancelledException();
             }
         }
     }
@@ -960,29 +987,34 @@ public class MainWindow extends JFrame {
             EditorPanelDockable editorPanelDockable = weDockableMap.get(we);
             ContentPanel contentPanel = (editorPanelDockable == null) ? null : editorPanelDockable.getComponent();
             if ((contentPanel != null) && (contentPanel.getContent() == currentEditor)) {
-                closeEditorPanelDockable(editorPanelDockable);
+                closeEditorPanelDockable(editorPanelDockable, true);
             }
         }
     }
 
-    public void closeEditorPanelDockables() {
-        Set<EditorPanelDockable> editorPanelDockables = new HashSet<>(weDockableMap.values());
-        for (EditorPanelDockable editorPanelDockable : editorPanelDockables) {
-            if (DockingManager.isMaximized(editorPanelDockable)) {
-                togglePanelDockableMaximized(editorPanelDockable);
+    public void closeAllEditorPanelDockables() {
+        try {
+            saveWorksOrCancel();
+            Set<EditorPanelDockable> editorPanelDockables = new HashSet<>(weDockableMap.values());
+            for (EditorPanelDockable editorPanelDockable : editorPanelDockables) {
+                if (DockingManager.isMaximized(editorPanelDockable)) {
+                    togglePanelDockableMaximized(editorPanelDockable);
+                }
             }
-        }
-        for (EditorPanelDockable editorPanelDockable : editorPanelDockables) {
-            try {
-                closeEditorPanelDockable(editorPanelDockable);
-            } catch (ClassCastException ignored) {
-                // FIXME: Flexdock may throw ClassCast exception when closing Workcraft.
+            for (EditorPanelDockable editorPanelDockable : editorPanelDockables) {
+                try {
+                    closeEditorPanelDockable(editorPanelDockable, false);
+                } catch (ClassCastException ignored) {
+                    // FIXME: Flexdock may throw ClassCast exception when closing Workcraft.
+                }
             }
+        } catch (OperationCancelledException ignored) {
+            // Operation cancelled by the user
         }
     }
 
     public void closeEditor(WorkspaceEntry we) {
-        closeEditorPanelDockable(weDockableMap.get(we));
+        closeEditorPanelDockable(weDockableMap.get(we), true);
     }
 
     public void undo() {

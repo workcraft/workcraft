@@ -51,12 +51,15 @@ public class MainWindowActions {
     public static final Action SAVE_WORK_AS_ACTION = new Action("Save work as...",
             () -> Framework.getInstance().getMainWindow().saveWorkAs());
 
+    public static final Action SAVE_WORKS_ACTION = new Action("Save modified works...",
+            () -> Framework.getInstance().getMainWindow().saveWorks());
+
     public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action("Close active work",
             () -> Framework.getInstance().getMainWindow().closeActiveEditor(),
             KeyStroke.getKeyStroke(KeyEvent.VK_F4, DesktopApi.getMenuKeyMask()));
 
     public static final Action CLOSE_ALL_EDITORS_ACTION = new Action("Close all works",
-            () -> Framework.getInstance().getMainWindow().closeEditorPanelDockables());
+            () -> Framework.getInstance().getMainWindow().closeAllEditorPanelDockables());
 
     public static final Action SHUTDOWN_GUI_ACTION = new Action("Switch to console mode",
             () -> {

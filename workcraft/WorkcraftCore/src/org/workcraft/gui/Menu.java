@@ -71,11 +71,8 @@ public class Menu extends JMenuBar {
         ActionMenuItem miSaveWorkAs = new ActionMenuItem(MainWindowActions.SAVE_WORK_AS_ACTION);
         mnFile.add(miSaveWorkAs);
 
-        ActionMenuItem miCloseActive = new ActionMenuItem(MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION);
-        mnFile.add(miCloseActive);
-
-        ActionMenuItem miCloseAll = new ActionMenuItem(MainWindowActions.CLOSE_ALL_EDITORS_ACTION);
-        mnFile.add(miCloseAll);
+        ActionMenuItem miSaveWorks = new ActionMenuItem(MainWindowActions.SAVE_WORKS_ACTION);
+        mnFile.add(miSaveWorks);
 
         mnFile.addSeparator();
 
@@ -83,6 +80,14 @@ public class Menu extends JMenuBar {
         setImportMenu();
 
         mnFile.add(mnExport);
+
+        mnFile.addSeparator();
+
+        ActionMenuItem miCloseActive = new ActionMenuItem(MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION);
+        mnFile.add(miCloseActive);
+
+        ActionMenuItem miCloseAll = new ActionMenuItem(MainWindowActions.CLOSE_ALL_EDITORS_ACTION);
+        mnFile.add(miCloseAll);
 
         mnFile.addSeparator();
 
@@ -105,10 +110,6 @@ public class Menu extends JMenuBar {
 
         mnFile.addSeparator();
 */
-        ActionMenuItem miShutdownGUI = new ActionMenuItem(MainWindowActions.SHUTDOWN_GUI_ACTION);
-        mnFile.add(miShutdownGUI);
-        mnFile.addSeparator();
-
         ActionMenuItem miExit = new ActionMenuItem(MainWindowActions.EXIT_ACTION);
         mnFile.add(miExit);
     }
@@ -215,6 +216,9 @@ public class Menu extends JMenuBar {
 
         ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
         mnView.add(miResetLayout);
+
+        ActionMenuItem miShutdownGUI = new ActionMenuItem(MainWindowActions.SHUTDOWN_GUI_ACTION);
+        mnView.add(miShutdownGUI);
     }
 
     private void addHelpMenu() {

@@ -2,11 +2,9 @@ package org.workcraft.workspace;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.types.LinkedTwoWayMap;
-import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.XmlUtils;
@@ -403,38 +401,6 @@ public class Workspace {
 
     public WorkspaceEntry getWork(Path<String> path) {
         return openFiles.getValue(path);
-    }
-
-    public void deleteEntry(Path<String> path) {
-        final File file = getFile(path);
-        if ((file != null) && file.exists()) {
-            File[] childFiles = file.listFiles();
-            if (file.isDirectory()) {
-                if (childFiles != null) {
-                    for (File childFile : childFiles) {
-                        deleteEntry(getPath(childFile));
-                    }
-                }
-                if (!file.delete()) {
-                    DialogUtils.showError("Deletion failed for file '" + file.getAbsolutePath() + "'");
-                }
-            } else {
-                deleteFile(path);
-            }
-        }
-    }
-
-    private void deleteFile(Path<String> path) {
-        final WorkspaceEntry openFile = getWork(path);
-        if (openFile != null) {
-            final Framework framework = Framework.getInstance();
-            framework.getMainWindow().closeEditor(openFile);
-        }
-        openFiles.removeValue(openFile);
-        final File file = getFile(path);
-        if (file.exists() && !file.delete()) {
-            DialogUtils.showError("Deletion failed for file '" + file.getAbsolutePath() + "'");
-        }
     }
 
     public File getWorkspaceFile() {
