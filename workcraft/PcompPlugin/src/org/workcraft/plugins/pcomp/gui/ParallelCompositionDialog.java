@@ -34,6 +34,9 @@ public class ParallelCompositionDialog extends ModalDialog<Void> {
         for (WorkspaceEntry we : workspace.getWorks()) {
             stgChooser.setChecked(we.getWorkspacePath(), true);
         }
+        // Set minimal size before reducing to screen dimension
+        setMinimumSize(new Dimension(300, 300));
+        GuiUtils.reduceToScreen(this, 0.5f, 0.5f);
     }
 
     @Override
