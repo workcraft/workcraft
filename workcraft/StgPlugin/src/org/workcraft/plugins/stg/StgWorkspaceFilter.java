@@ -11,8 +11,7 @@ public class StgWorkspaceFilter implements Func<Path<String>, Boolean> {
 
     @Override
     public Boolean eval(Path<String> arg) {
-        final Framework framework = Framework.getInstance();
-        final Workspace workspace = framework.getWorkspace();
+        final Workspace workspace = Framework.getInstance().getWorkspace();
         WorkspaceEntry we = workspace.getWork(arg);
         return WorkspaceUtils.isApplicable(we, StgModel.class) || arg.getNode().endsWith(".g");
     }

@@ -17,8 +17,9 @@ import java.util.Set;
 public class WorkspaceChooser extends JPanel {
     private final Func<Path<String>, Boolean> filter;
     private final TreeWindow<Path<String>> tree;
-    private final JTextField nameFilter;
     private final FilteredTreeSource<Path<String>> filteredSource;
+    private final JTextField nameFilter = new JTextField();
+    private final JPanel searchPanel = GuiUtils.createLabeledComponent(nameFilter, "Search: ");
 
     public WorkspaceChooser(Workspace workspace, Func<Path<String>, Boolean> filter) {
         super();
@@ -26,8 +27,6 @@ public class WorkspaceChooser extends JPanel {
         setLayout(GuiUtils.createBorderLayout());
         setBorder(GuiUtils.getEmptyBorder());
 
-        nameFilter = new JTextField();
-        JPanel searchPanel = GuiUtils.createLabeledComponent(nameFilter, "Search: ");
         String tipText = "Hide unselected items that do not contain the given substring";
         searchPanel.setToolTipText(tipText);
         nameFilter.setToolTipText(tipText);
@@ -72,6 +71,14 @@ public class WorkspaceChooser extends JPanel {
         add(toggleButton, BorderLayout.SOUTH);
     }
 
+    public void setCheckBoxMode(CheckBoxMode mode) {
+        tree.setCheckBoxMode(mode);
+    }
+
+    public void setFileterVisibility(boolean value) {
+        searchPanel.setVisible(value);
+    }
+
     private void expand(Path<String> node) {
         if (filteredSource.isLeaf(node)) {
             if (filter.eval(node)) {
@@ -100,10 +107,6 @@ public class WorkspaceChooser extends JPanel {
                 tree.setChecked(node, value);
             }
         }
-    }
-
-    public void setCheckBoxMode(CheckBoxMode mode) {
-        tree.setCheckBoxMode(mode);
     }
 
     public Set<Path<String>> getCheckedNodes() {

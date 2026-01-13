@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.formula.*;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
@@ -225,6 +226,9 @@ public final class ResetUtils {
         // Attempt to reuse existing reset pin
         VisualFunctionContact resetInputPin = CircuitUtils.getFunctionContact(circuit, component, portName);
         if (resetInputPin != null) {
+            for (VisualConnection exisitngResetConnection : circuit.getConnections(resetInputPin)) {
+                circuit.remove(exisitngResetConnection);
+            }
             CircuitUtils.connectIfPossible(circuit, resetPort, resetInputPin);
             ConversionUtils.replicateDriverContact(circuit, resetInputPin);
             return;

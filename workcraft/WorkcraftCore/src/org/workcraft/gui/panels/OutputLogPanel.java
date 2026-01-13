@@ -103,6 +103,7 @@ public class OutputLogPanel extends LogPanel {
             int toPos = fromPos + text.length();
             target.insert(text, fromPos);
             target.setCaretPosition(toPos);
+            paintHighlights();
         }
 
         private LogType getLogType(String text) {
