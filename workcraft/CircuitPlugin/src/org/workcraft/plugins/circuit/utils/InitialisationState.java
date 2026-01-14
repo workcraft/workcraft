@@ -73,7 +73,7 @@ public class InitialisationState {
     }
 
     private boolean isForcedOrConstant(FunctionContact contact) {
-        return contact.getForcedInit() || CircuitUtils.isConstant0(contact) || CircuitUtils.isConstant1(contact);
+        return contact.getForcedInit() || CircuitUtils.isConstantDriver0(contact) || CircuitUtils.isConstantDriver1(contact);
     }
 
     private void fillVariableValues(FunctionComponent component,

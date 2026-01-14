@@ -157,7 +157,7 @@ public final class CircuitUtils {
         return getVisualContacts(circuit, drivenContacts);
     }
 
-    public static Collection<Contact> findDriven(Circuit circuit, MathNode curNode, boolean transparentZeroDelayComponents) {
+    public static Set<Contact> findDriven(Circuit circuit, MathNode curNode, boolean transparentZeroDelayComponents) {
         Set<Contact> result = new HashSet<>();
         HashSet<MathNode> visited = new HashSet<>();
         Queue<MathNode> queue = new ArrayDeque<>();
@@ -711,12 +711,12 @@ public final class CircuitUtils {
         }
     }
 
-    public static boolean isConstant(FunctionContact contact) {
-        return isConstant1(contact) || isConstant0(contact);
+    public static boolean isConstantDriver(FunctionContact contact) {
+        return isConstantDriver1(contact) || isConstantDriver0(contact);
     }
 
-    public static boolean isConstant0(FunctionContact contact) {
-        return !contact.getInitToOne() && cannotRise(contact);
+    public static boolean isConstantDriver0(FunctionContact contact) {
+        return contact.isDriver() && !contact.getInitToOne() && cannotRise(contact);
     }
 
     public static boolean cannotRise(FunctionContact contact) {
@@ -728,8 +728,8 @@ public final class CircuitUtils {
         return isConstant1(resetFunction);
     }
 
-    public static boolean isConstant1(FunctionContact contact) {
-        return contact.getInitToOne() && cannotFall(contact);
+    public static boolean isConstantDriver1(FunctionContact contact) {
+        return contact.isDriver() && contact.getInitToOne() && cannotFall(contact);
     }
 
     public static boolean cannotFall(FunctionContact contact) {
