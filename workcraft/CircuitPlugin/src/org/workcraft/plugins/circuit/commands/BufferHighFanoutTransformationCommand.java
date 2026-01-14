@@ -38,6 +38,8 @@ public class BufferHighFanoutTransformationCommand extends AbstractTransformatio
         int forkHighFanout = CircuitSettings.getForkHighFanout();
         if (model instanceof VisualCircuit circuit) {
             for (VisualContact driver : circuit.getVisualDrivers()) {
+                // Skip forks driven by constant
+                if (CircuitUtils.isConstant(driver.getReferencedComponent())) continue;
                 Set<VisualContact> driven = CircuitUtils.findDriven(circuit, driver, false);
                 if (driven.size() >= forkHighFanout) {
                     result.add(driver);
