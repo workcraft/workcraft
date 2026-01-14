@@ -373,7 +373,7 @@ public class MainWindow extends JFrame {
             toolbox.selectDefaultTool();
             // Prompt to save changes if necessary
             if (promptSave) {
-                saveChangedOrCancel(we);
+                saveChangedWorkOrCancel(we);
             }
             // Un-maximise the editor panel
             if (DockingManager.isMaximized(editorPanelDockable)) {
@@ -415,7 +415,7 @@ public class MainWindow extends JFrame {
         }
     }
 
-    private void saveChangedOrCancel(WorkspaceEntry we) throws OperationCancelledException {
+    private void saveChangedWorkOrCancel(WorkspaceEntry we) throws OperationCancelledException {
         if (we.isChanged()) {
             requestFocus(we);
             String message = "Document '" + we.getTitle() + "' has unsaved changes.\n" + "Save before closing?";
@@ -806,6 +806,7 @@ public class MainWindow extends JFrame {
             // Operation cancelled by the user
         }
     }
+
     public void saveWorkOrCancel(WorkspaceEntry we) throws OperationCancelledException {
         Workspace workspace = Framework.getInstance().getWorkspace();
         File file = workspace.getFile(we);
@@ -862,18 +863,18 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void saveWorks() {
+    public void saveChangedWorks() {
         try {
-            saveWorksOrCancel();
+            saveChangedWorksOrCancel();
         } catch (OperationCancelledException ignored) {
             // Operation cancelled by the user
         }
     }
-    public void saveWorksOrCancel() throws OperationCancelledException {
+    public void saveChangedWorksOrCancel() throws OperationCancelledException {
         Collection<WorkspaceEntry> wes = weDockableMap.keySet().stream().filter(WorkspaceEntry::isChanged).toList();
         if (wes.size() == 1) {
             WorkspaceEntry we = wes.iterator().next();
-            saveWorkOrCancel(we);
+            saveChangedWorkOrCancel(we);
         } else if (wes.size() > 1) {
             SaveMultipleWorkDialog saveMultipleWorkDialog = new SaveMultipleWorkDialog(this);
             if (saveMultipleWorkDialog.reveal()) {
@@ -994,7 +995,7 @@ public class MainWindow extends JFrame {
 
     public void closeAllEditorPanelDockables() {
         try {
-            saveWorksOrCancel();
+            saveChangedWorksOrCancel();
             Set<EditorPanelDockable> editorPanelDockables = new HashSet<>(weDockableMap.values());
             for (EditorPanelDockable editorPanelDockable : editorPanelDockables) {
                 if (DockingManager.isMaximized(editorPanelDockable)) {
