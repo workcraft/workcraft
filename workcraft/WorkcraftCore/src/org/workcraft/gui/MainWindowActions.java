@@ -52,23 +52,15 @@ public class MainWindowActions {
             () -> Framework.getInstance().getMainWindow().saveWorkAs());
 
     public static final Action SAVE_WORKS_ACTION = new Action("Save modified works...",
-            () -> Framework.getInstance().getMainWindow().saveWorks());
+            () -> Framework.getInstance().getMainWindow().saveChangedWorks());
 
-    public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action("Close active work",
+    public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action("Close work",
             () -> Framework.getInstance().getMainWindow().closeActiveEditor(),
             KeyStroke.getKeyStroke(KeyEvent.VK_F4, DesktopApi.getMenuKeyMask()));
 
     public static final Action CLOSE_ALL_EDITORS_ACTION = new Action("Close all works",
             () -> Framework.getInstance().getMainWindow().closeAllEditorPanelDockables());
 
-    public static final Action SHUTDOWN_GUI_ACTION = new Action("Switch to console mode",
-            () -> {
-                try {
-                    Framework.getInstance().shutdownGUI();
-                } catch (OperationCancelledException ignored) {
-                    // Operation cancelled by the user
-                }
-            });
 
     public static final Action EXIT_ACTION = new Action("Exit",
             () -> Framework.getInstance().shutdown(),
@@ -215,6 +207,15 @@ public class MainWindowActions {
 
     public static final Action RESET_GUI_ACTION = new Action("Reset UI layout",
             () -> Framework.getInstance().getMainWindow().resetLayout());
+
+    public static final Action SHUTDOWN_GUI_ACTION = new Action("Switch to console mode",
+            () -> {
+                try {
+                    Framework.getInstance().shutdownGUI();
+                } catch (OperationCancelledException ignored) {
+                    // Operation cancelled by the user
+                }
+            });
 
     public static final Action HELP_OVERVIEW_ACTION = new Action("Overview",
             () -> FileUtils.openExternally("overview/start.html", "Overview access error"));
