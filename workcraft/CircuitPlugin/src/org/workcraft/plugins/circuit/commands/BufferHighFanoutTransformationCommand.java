@@ -37,21 +37,25 @@ public class BufferHighFanoutTransformationCommand extends AbstractTransformatio
         Collection<VisualContact> result = new HashSet<>();
         int forkHighFanout = CircuitSettings.getForkHighFanout();
         if (model instanceof VisualCircuit circuit) {
-            for (VisualContact driver : circuit.getVisualDrivers()) {
-                // Skip forks driven by constant
-                if (CircuitUtils.isConstant(driver.getReferencedComponent())) continue;
-                Set<VisualContact> driven = CircuitUtils.findDriven(circuit, driver, false);
-                if (driven.size() >= forkHighFanout) {
-                    result.add(driver);
+            for (VisualContact visualDriver : circuit.getVisualDrivers()) {
+                if (visualDriver.getReferencedComponent() instanceof FunctionContact mathFunctionContact) {
+                    // Skip constant drivers
+                    if (CircuitUtils.isConstantDriver(mathFunctionContact)) continue;
+
+                    // Skip low fanout drivers
+                    Set<Contact> driven = CircuitUtils.findDriven(circuit.getMathModel(), mathFunctionContact, false);
+                    if (driven.size() < forkHighFanout) continue;
+
+                    result.add(visualDriver);
                 }
             }
-        }
 
-        String highFanoutForksDetail = " forks with high fanout (" + forkHighFanout + " and above)";
-        if (result.isEmpty()) {
-            LogUtils.logInfo("No" + highFanoutForksDetail);
-        } else {
-            LogUtils.logInfo("Buffering " + result.size() + highFanoutForksDetail);
+            String highFanoutForksDetail = " forks with high fanout (" + forkHighFanout + " and above)";
+            if (result.isEmpty()) {
+                LogUtils.logInfo("No" + highFanoutForksDetail);
+            } else {
+                LogUtils.logInfo("Buffering " + result.size() + highFanoutForksDetail);
+            }
         }
         return result;
     }
