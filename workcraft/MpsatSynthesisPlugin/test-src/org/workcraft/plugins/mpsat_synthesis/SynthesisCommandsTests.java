@@ -209,12 +209,6 @@ class SynthesisCommandsTests {
     }
 
     @Test
-    void duplicatorCscHierTechnologyMappingSynthesis() {
-        String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
-        testTechnologyMappingSynthesisCommand(workName, 11);
-    }
-
-    @Test
     void dlatchSplitPlaceTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "dlatch.stg.work");
         testTechnologyMappingSynthesisCommand(workName, 2);

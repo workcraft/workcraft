@@ -8,6 +8,7 @@ public class BackendUtils {
     private static final String LINUX_DIR_PATH = "linux/";
     private static final String MACOS_DIR_PATH = "osx/Contents/Resources/";
     private static final String WINDOWS_DIR_PATH = "windows/";
+    private static final String COMMON_DIR_PATH = "common/";
 
     private static final String TOOLS_DIR_NAME = "tools";
     private static final String LIBRARIES_DIR_NAME = "libraries";
@@ -35,16 +36,7 @@ public class BackendUtils {
     }
 
     public static String getTemplateLibraryPath(String fileName) {
-        return getTemplateLibraryPath(fileName, TEMPLATE_DIR_PATH);
-    }
-
-    public static String getTemplateLibraryPath(String fileName, String templateDirPath) {
-        return switch (DesktopApi.getOs()) {
-            case LINUX -> templateDirPath + LINUX_DIR_PATH + getLibraryPath(fileName);
-            case MACOS -> templateDirPath + MACOS_DIR_PATH + getLibraryPath(fileName);
-            case WINDOWS -> templateDirPath + WINDOWS_DIR_PATH + getLibraryPath(fileName);
-            default -> getLibraryPath(fileName);
-        };
+        return TEMPLATE_DIR_PATH + COMMON_DIR_PATH + getLibraryPath(fileName);
     }
 
     public static String getTemplateToolPath(String dirName, String fileName) {

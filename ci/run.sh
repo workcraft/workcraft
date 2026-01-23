@@ -89,17 +89,15 @@ LOG_FILE="workcraft.log"
 cd "$(dirname "$0")/.."
 
 # Prepare directories for gate libraries and backend tools
+[[ -e libraries ]] || ln -s dist/template/common/libraries
 case $OSTYPE in
     darwin*)
-        [[ -e libraries ]] || ln -s dist/template/osx/Contents/Resources/libraries
         [[ -e tools ]] || ln -s dist/template/osx/Contents/Resources/tools
         ;;
     linux*)
-        [[ -e libraries ]] || ln -s dist/template/linux/libraries
         [[ -e tools ]] || ln -s dist/template/linux/tools
         ;;
     msys*)
-        [[ -e libraries ]] || cp -r dist/template/windows/libraries .
         [[ -e tools ]] || cp -r dist/template/windows/tools .
         ;;
     *)

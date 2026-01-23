@@ -37,6 +37,8 @@ class GenlibUtilsTests {
                 "OR2", "NOR2", "NOR2B", "OR3", "NOR3", "NOR3B", "OR4", "NOR4", "NOR4B", "NOR4BB",
                 "AOI21", "AOI211", "AOI22", "AOI221", "AOI222", "AOI31", "AOI32", "AOI33", "AOI2BB1", "AOI2BB2", "AO21", "AO22",
                 "OAI21", "OAI211", "OAI22", "OAI221", "OAI222", "OAI31", "OAI32", "OAI33", "OAI2BB1", "OAI2BB2", "OA21", "OA22",
+                "AOA212", "AOAI212",
+                "OAO212", "OAOI212",
                 "LOGIC1", "LOGIC0",
                 "C2", "NC2"));
 
