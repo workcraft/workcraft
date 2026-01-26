@@ -1,6 +1,6 @@
 dependencies {
     // Rhino implementation of JavaScript (https://mvnrepository.com/artifact/org.mozilla/rhino)
-    lib 'org.mozilla:rhino:1.8.1'
+    lib 'org.mozilla:rhino:1.9.0'
     // JavaBeans Activation Framework (JAF) (https://mvnrepository.com/artifact/com.sun.activation/javax.activation)
     lib 'com.sun.activation:javax.activation:1.2.0'
     // Reload4j (replacement for EOLed Apache Log4j v1.x) for configuration of FOP logs (https://mvnrepository.com/artifact/ch.qos.reload4j/reload4j)
