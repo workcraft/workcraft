@@ -5,7 +5,7 @@ pluginManagement {
         // Plugin for sending Jacoco coverage reports to coveralls.io (https://plugins.gradle.org/plugin/com.github.kt3k.coveralls)
         id 'com.github.kt3k.coveralls' version '2.12.2'
         // Plugin for PMD-based Copy-Paste Detection (https://plugins.gradle.org/plugin/org.danilopianini.cpd)
-        id 'org.danilopianini.cpd' version '4.0.7'
+        id 'org.danilopianini.cpd' version '4.0.8'
         // Plugin for analysing licenses of dependencies (https://plugins.gradle.org/plugin/com.github.jk1.dependency-license-report)
         id 'com.github.jk1.dependency-license-report' version '3.0.1'
     }
@@ -34,7 +34,7 @@ gradle.ext.jacocoVersion = '0.8.14'
  */
 
 // Unit testing (https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter)
-gradle.ext.junit = 'org.junit.jupiter:junit-jupiter:6.0.1'
+gradle.ext.junit = 'org.junit.jupiter:junit-jupiter:6.0.2'
 gradle.ext.junitPlatformLauncher = 'org.junit.platform:junit-platform-launcher'
 
 // JavaCC parser generator (https://mvnrepository.com/artifact/net.java.dev.javacc/javacc)
