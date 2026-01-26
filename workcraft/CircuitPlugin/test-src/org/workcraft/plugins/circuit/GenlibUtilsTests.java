@@ -12,8 +12,6 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
-import org.workcraft.types.Pair;
-import org.workcraft.types.Triple;
 import org.workcraft.utils.BackendUtils;
 
 import java.util.*;
@@ -95,7 +93,7 @@ class GenlibUtilsTests {
     }
 
     private void checkMapping(BooleanFormula setFunc, BooleanFormula resetFunc, Library gateLibrary, Gate expGate) {
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(setFunc, resetFunc, gateLibrary);
+        Gate.Mapping mapping = GenlibUtils.findMapping(setFunc, resetFunc, gateLibrary);
         if (expGate == null) {
             Assertions.assertNull(mapping);
         } else {
@@ -105,10 +103,10 @@ class GenlibUtilsTests {
         if (mapping == null) {
             System.out.println(funcInfo + " == ?");
         } else {
-            Gate gate = mapping.getFirst();
+            Gate gate = mapping.gate();
             Assertions.assertEquals(expGate, gate, expGate.name + "!=" + gate.name);
             System.out.print(funcInfo + " == " + gate.name + " [" + gate.function.formula + "]");
-            Map<BooleanVariable, String> assignments = mapping.getSecond();
+            Map<BooleanVariable, String> assignments = mapping.pinRenamining();
             boolean isFirstEntry = true;
             for (Map.Entry<BooleanVariable, String> entry : assignments.entrySet()) {
                 if (isFirstEntry) {
@@ -182,7 +180,7 @@ class GenlibUtilsTests {
     private void checkExtendedMapping(BooleanFormula setFunc, BooleanFormula resetFunc,
             Library gateLibrary, Gate expGate, Set<String> expInvertedPins) {
 
-        Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping
+        Gate.ExtendedMapping extendedMapping
                 = GenlibUtils.findExtendedMapping(setFunc, resetFunc, gateLibrary, true, true);
 
         String funcInfo = CircuitUtils.getOutputFunctionString(setFunc, resetFunc, "");
@@ -195,9 +193,9 @@ class GenlibUtilsTests {
         if (extendedMapping == null) {
             System.out.println(funcInfo + " == ?");
         } else {
-            Gate gate = extendedMapping.getFirst();
-            Map<BooleanVariable, String> assignments = extendedMapping.getSecond();
-            Set<String> invertedPins = extendedMapping.getThird();
+            Gate gate = extendedMapping.gate();
+            Map<BooleanVariable, String> assignments = extendedMapping.pinRenamining();
+            Set<String> invertedPins = extendedMapping.invertedPinNames();
             Assertions.assertEquals(expGate, gate, expGate.name + "!=" + gate.name);
             Assertions.assertEquals(expInvertedPins, invertedPins);
 

@@ -1,6 +1,21 @@
 package org.workcraft.plugins.circuit.genlib;
 
+import org.workcraft.formula.BooleanVariable;
+
+import java.util.HashMap;
+import java.util.Set;
+
 public class Gate {
+
+    public static class PinRenamining extends HashMap<BooleanVariable, String> {
+    }
+
+    public record Mapping(Gate gate, PinRenamining pinRenamining) {
+    }
+
+    public record ExtendedMapping(Gate gate, PinRenamining pinRenamining, Set<String> invertedPinNames) {
+    }
+
     public final String name;
     public final double size;
     public final Function function;

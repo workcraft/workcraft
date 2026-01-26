@@ -21,7 +21,6 @@ import org.workcraft.plugins.circuit.genlib.GateInterface;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
-import org.workcraft.types.Triple;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
@@ -279,7 +278,7 @@ public final class GateUtils {
                 .collect(Collectors.toList());
 
         BooleanFormula desiredGateFunction = func.apply(inputVars);
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(desiredGateFunction,
+        Gate.Mapping mapping = GenlibUtils.findMapping(desiredGateFunction,
                 LibraryManager.getLibrary());
 
         String functionString;
@@ -288,12 +287,13 @@ public final class GateUtils {
             functionString = StringGenerator.toString(desiredGateFunction);
             inputNames = new ArrayList<>(defaultGateInterface.getInputs());
         } else {
-            Gate gate = mapping.getFirst();
+            Gate gate = mapping.gate();
             component.setLabel(gate.name);
             functionString = gate.function.formula;
             outputName = gate.function.name;
+            Gate.PinRenamining pinRenamining = mapping.pinRenamining();
             inputNames = inputVars.stream()
-                    .map(mapping.getSecond()::get)
+                    .map(pinRenamining::get)
                     .collect(Collectors.toList());
         }
 
@@ -491,15 +491,15 @@ public final class GateUtils {
     }
 
     public static VisualContact convertGate(VisualCircuit circuit, VisualFunctionComponent component,
-            Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping) {
+            Gate.ExtendedMapping extendedMapping) {
 
-        Gate gate = extendedMapping.getFirst();
-        Map<BooleanVariable, String> pinRenames = extendedMapping.getSecond();
-        Set<String> invertedPins = extendedMapping.getThird();
+        Gate gate = extendedMapping.gate();
+        Map<BooleanVariable, String> pinRenames = extendedMapping.pinRenamining();
+        Set<String> invertedPinNames = extendedMapping.invertedPinNames();
         component.getReferencedComponent().setModule(gate.name);
 
         Map<BooleanVariable, BooleanFormula> pinToInvertedPinMap
-                = convertInputPins(circuit, component, pinRenames, invertedPins);
+                = convertInputPins(circuit, component, pinRenames, invertedPinNames);
 
         VisualFunctionContact outputPin = component.getGateOutput();
 
@@ -509,7 +509,7 @@ public final class GateUtils {
         BooleanFormula newResetFunction = FormulaUtils.replace(outputPin.getResetFunction(),
                 pinToInvertedPinMap, CleverBooleanWorker.getInstance());
 
-        return convertOutputPin(circuit, gate, outputPin, invertedPins, newSetFunction, newResetFunction);
+        return convertOutputPin(circuit, gate, outputPin, invertedPinNames, newSetFunction, newResetFunction);
     }
 
     private static Map<BooleanVariable, BooleanFormula> convertInputPins(VisualCircuit circuit,
@@ -578,13 +578,13 @@ public final class GateUtils {
     }
 
     private static VisualContact convertOutputPin(VisualCircuit circuit, Gate gate, VisualFunctionContact outputPin,
-            Set<String> invertedPins, BooleanFormula setFunction, BooleanFormula resetFunction) {
+            Set<String> invertedPinNames, BooleanFormula setFunction, BooleanFormula resetFunction) {
 
         VisualContact result = outputPin;
         String newOutputPinName = gate.function.name;
         if (newOutputPinName != null) {
             circuit.setMathName(outputPin, newOutputPinName);
-            if (invertedPins.contains(newOutputPinName)) {
+            if (invertedPinNames.contains(newOutputPinName)) {
                 VisualFunctionComponent trivialDrivenComponent
                         = getDedicatedTrivialDrivenComponentWithCorrectInitOrNull(circuit, outputPin);
 
@@ -656,17 +656,17 @@ public final class GateUtils {
 
         BooleanVariable inputVar = new FreeVariable("I");
         BooleanFormula formula = new Not(inputVar);
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        Gate.Mapping mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
         if (mapping == null) {
             throw new RuntimeException("Cannot find inverter gate mapping");
         }
 
-        Gate gate = mapping.getFirst();
+        Gate gate = mapping.gate();
         component.getReferencedComponent().setModule(gate.name);
         VisualFunctionContact outputPin = component.getFirstVisualOutput();
         circuit.setMathName(outputPin, gate.function.name);
 
-        Map<BooleanVariable, String> inputRenames = mapping.getSecond();
+        Map<BooleanVariable, String> inputRenames = mapping.pinRenamining();
         String inputName = inputRenames.get(inputVar);
         if (inputName != null) {
             circuit.setMathName(component.getFirstVisualInput(), inputName);
@@ -683,12 +683,12 @@ public final class GateUtils {
         }
 
         BooleanFormula formula = Zero.getInstance();
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        Gate.Mapping mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
         if (mapping == null) {
             throw new RuntimeException("Cannot find tie0 gate mapping");
         }
 
-        Gate gate = mapping.getFirst();
+        Gate gate = mapping.gate();
         component.getReferencedComponent().setModule(gate.name);
         VisualFunctionContact outputPin = component.getFirstVisualOutput();
         circuit.setMathName(outputPin, gate.function.name);
@@ -703,12 +703,12 @@ public final class GateUtils {
         }
 
         BooleanFormula formula = One.getInstance();
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        Gate.Mapping mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
         if (mapping == null) {
             throw new RuntimeException("Cannot find tie0 gate mapping");
         }
 
-        Gate gate = mapping.getFirst();
+        Gate gate = mapping.gate();
         component.getReferencedComponent().setModule(gate.name);
         VisualFunctionContact outputPin = component.getFirstVisualOutput();
         circuit.setMathName(outputPin, gate.function.name);

@@ -14,20 +14,17 @@ import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.ExpressionUtils;
-import org.workcraft.types.Pair;
-import org.workcraft.types.Triple;
 import org.workcraft.utils.ListUtils;
 import org.workcraft.utils.LogUtils;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public final class GenlibUtils {
 
-    static class ExtendedVariableMapping extends HashMap<BooleanVariable, Pair<String, Boolean>> {
-    }
-
     private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
+
+    private record PinRenamingAndInversion(Gate.PinRenamining pinRenamining, Set<String> invertedPinNames) {
+    }
 
     private GenlibUtils() {
     }
@@ -94,11 +91,11 @@ public final class GenlibUtils {
                 : ExpressionUtils.extractResetFunction(gate.function.formula, gate.seq);
     }
 
-    public static Pair<Gate, Map<BooleanVariable, String>> findMapping(BooleanFormula formula, Library library) {
+    public static Gate.Mapping findMapping(BooleanFormula formula, Library library) {
         return GenlibUtils.findMapping(formula, null, library);
     }
 
-    public static Pair<Gate, Map<BooleanVariable, String>> findMapping(BooleanFormula setFormula,
+    public static Gate.Mapping findMapping(BooleanFormula setFormula,
             BooleanFormula resetFormula, Library library) {
 
         if (library == null) {
@@ -116,18 +113,18 @@ public final class GenlibUtils {
                 continue;
             }
             try {
-                Map<BooleanVariable, String> variableMapping = getVariableMappingIfEquivalentOrNull(setFormula,
+                Gate.PinRenamining pinRenamining = getVariableMappingIfEquivalentOrNull(setFormula,
                         BooleanFormulaParser.parse(GenlibUtils.getSetFunction(gate)));
 
                 if (resetFormula != null) {
                     BooleanFormula gateResetFormula = BooleanFormulaParser.parse(GenlibUtils.getResetFunction(gate));
-                    Map<BooleanVariable, String> resetVariableMapping
+                    Gate.PinRenamining resetPinRenamining
                             = getVariableMappingIfEquivalentOrNull(resetFormula, gateResetFormula);
 
-                    variableMapping = mergeVariableMappingsIfCompatibleOrNull(variableMapping, resetVariableMapping);
+                    pinRenamining = mergeVariableMappingsIfCompatibleOrNull(pinRenamining, resetPinRenamining);
                 }
-                if (variableMapping != null) {
-                    return Pair.of(gate, variableMapping);
+                if (pinRenamining != null) {
+                    return new Gate.Mapping(gate, pinRenamining);
                 }
             } catch (ParseException ignored) {
             }
@@ -135,7 +132,7 @@ public final class GenlibUtils {
         return null;
     }
 
-    public static Map<BooleanVariable, String> getVariableMappingIfEquivalentOrNull(
+    public static Gate.PinRenamining getVariableMappingIfEquivalentOrNull(
             BooleanFormula formula, BooleanFormula candidateFormula) {
 
         List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(formula);
@@ -145,7 +142,7 @@ public final class GenlibUtils {
             for (List<BooleanVariable> permutatedVars : ListUtils.permutate(vars)) {
                 BooleanFormula mappedFormula = FormulaUtils.replace(formula, permutatedVars, candidateVars);
                 if (bdd.isEquivalent(mappedFormula, candidateFormula)) {
-                    Map<BooleanVariable, String> result = new HashMap<>();
+                    Gate.PinRenamining result = new Gate.PinRenamining();
                     for (int i = 0; i < permutatedVars.size(); i++) {
                         result.put(permutatedVars.get(i), candidateVars.get(i).getLabel());
                     }
@@ -156,16 +153,17 @@ public final class GenlibUtils {
         return null;
     }
 
-    private static Map<BooleanVariable, String> mergeVariableMappingsIfCompatibleOrNull(
-            Map<BooleanVariable, String> setVariableMapping, Map<BooleanVariable, String> resetVariableMapping) {
+    private static Gate.PinRenamining mergeVariableMappingsIfCompatibleOrNull(
+            Gate.PinRenamining setPinRenamining, Gate.PinRenamining resetPinRenamining) {
 
-        if ((setVariableMapping == null) || (resetVariableMapping == null)) {
+        if ((setPinRenamining == null) || (resetPinRenamining == null)) {
             return null;
         }
-        Map<BooleanVariable, String> result = new HashMap<>(setVariableMapping);
-        for (BooleanVariable variable : resetVariableMapping.keySet()) {
-            String variableName = setVariableMapping.get(variable);
-            String resetVariableName = resetVariableMapping.get(variable);
+        Gate.PinRenamining result = new Gate.PinRenamining();
+        result.putAll(setPinRenamining);
+        for (BooleanVariable variable : resetPinRenamining.keySet()) {
+            String variableName = setPinRenamining.get(variable);
+            String resetVariableName = resetPinRenamining.get(variable);
             if (variableName == null) {
                 result.put(variable, resetVariableName);
             } else if (!variableName.equals(resetVariableName)) {
@@ -175,13 +173,13 @@ public final class GenlibUtils {
         return result;
     }
 
-    public static Triple<Gate, Map<BooleanVariable, String>, Set<String>> findExtendedMapping(
+    public static Gate.ExtendedMapping findExtendedMapping(
             BooleanFormula formula, Library library, boolean allowOutputInversion, boolean allowInputInversion) {
 
         return findExtendedMapping(formula, null, library, allowOutputInversion, allowInputInversion);
     }
 
-    public static Triple<Gate, Map<BooleanVariable, String>, Set<String>> findExtendedMapping(
+    public static Gate.ExtendedMapping findExtendedMapping(
             BooleanFormula setFormula, BooleanFormula resetFormula, Library library,
             boolean allowOutputInversion, boolean allowInputInversion) {
 
@@ -197,23 +195,23 @@ public final class GenlibUtils {
         }
 
         // First, try direct implementation
-        Pair<Gate, Map<BooleanVariable, String>> mapping = findMapping(setFormula, resetFormula, library);
+        Gate.Mapping mapping = findMapping(setFormula, resetFormula, library);
         if (mapping != null) {
-            return Triple.of(mapping.getFirst(), mapping.getSecond(), Set.of());
+            return new Gate.ExtendedMapping(mapping.gate(), mapping.pinRenamining(), Set.of());
         }
         // Then try inverted gates
         BooleanFormula notSetFormula = (setFormula == null) ? null : new Not(setFormula);
         BooleanFormula notResetFormula = (resetFormula == null) ? null : new Not(resetFormula);
         if (allowOutputInversion) {
-            Pair<Gate, Map<BooleanVariable, String>> invMapping = findMapping(notSetFormula, notResetFormula, library);
+            Gate.Mapping invMapping = findMapping(notSetFormula, notResetFormula, library);
             if (invMapping != null) {
-                Gate gate = invMapping.getFirst();
-                return Triple.of(gate, invMapping.getSecond(), Set.of(gate.function.name));
+                Gate gate = invMapping.gate();
+                return new Gate.ExtendedMapping(gate, invMapping.pinRenamining(), Set.of(gate.function.name));
             }
         }
         // Then try direct implementation with input bubbles (only for combinational gates, i.e. without reset function)
         if (allowInputInversion) {
-            Triple<Gate, Map<BooleanVariable, String>, Set<String>> bubbleMapping
+            Gate.ExtendedMapping bubbleMapping
                     = findMappingWithInputInversions(setFormula, resetFormula, library);
 
             if (bubbleMapping != null) {
@@ -222,21 +220,20 @@ public final class GenlibUtils {
         }
         // Finally try inverted gates with input bubbles (only for combinational gates, i.e. without reset function)
         if (allowOutputInversion && allowInputInversion) {
-            Triple<Gate, Map<BooleanVariable, String>, Set<String>> invBubbleMapping
+            Gate.ExtendedMapping invBubbleMapping
                     = findMappingWithInputInversions(notSetFormula, notResetFormula, library);
 
             if (invBubbleMapping != null) {
-                Gate gate = invBubbleMapping.getFirst();
-                Map<BooleanVariable, String> varAssignments = invBubbleMapping.getSecond();
-                Set<String> invertedPins = invBubbleMapping.getThird();
+                Gate gate = invBubbleMapping.gate();
+                Set<String> invertedPins = invBubbleMapping.invertedPinNames();
                 invertedPins.add(gate.function.name);
-                return Triple.of(gate, varAssignments, invertedPins);
+                return new Gate.ExtendedMapping(gate, invBubbleMapping.pinRenamining(), invertedPins);
             }
         }
         return null;
     }
 
-    private static Triple<Gate, Map<BooleanVariable, String>, Set<String>> findMappingWithInputInversions(
+    private static Gate.ExtendedMapping findMappingWithInputInversions(
             BooleanFormula setFormula, BooleanFormula resetFormula, Library library) {
 
         if (library == null) {
@@ -248,28 +245,20 @@ public final class GenlibUtils {
             }
             try {
                 BooleanFormula gateSetFormula = BooleanFormulaParser.parse(GenlibUtils.getSetFunction(gate));
-                ExtendedVariableMapping extendedVariableMapping
-                        = getVariableExtendedMappingIfEquivalentOrNull(setFormula, gateSetFormula);
+                PinRenamingAndInversion pinRenamingAndInversion
+                        = getExtendedVariableMappingIfEquivalentOrNull(setFormula, gateSetFormula);
 
                 if (resetFormula != null) {
                     BooleanFormula gateResetFormula = BooleanFormulaParser.parse(GenlibUtils.getResetFunction(gate));
-                    ExtendedVariableMapping resetExtendedVariableMapping
-                            = getVariableExtendedMappingIfEquivalentOrNull(resetFormula, gateResetFormula);
+                    PinRenamingAndInversion resetPinRenamingAndInversion
+                            = getExtendedVariableMappingIfEquivalentOrNull(resetFormula, gateResetFormula);
 
-                    extendedVariableMapping = mergeExtendedVariableMappingsIfCompatibleOrNull(
-                            extendedVariableMapping, resetExtendedVariableMapping);
+                    pinRenamingAndInversion = mergeExtendedVariableMappingsIfCompatibleOrNull(
+                            pinRenamingAndInversion, resetPinRenamingAndInversion);
                 }
 
-                if (extendedVariableMapping != null) {
-                    Map<BooleanVariable, String> variableMapping = extendedVariableMapping.entrySet().stream()
-                            .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getFirst()));
-
-                    Set<String> invertedPins = extendedVariableMapping.values().stream()
-                            .filter(Pair::getSecond)
-                            .map(Pair::getFirst)
-                            .collect(Collectors.toSet());
-
-                    return Triple.of(gate, variableMapping, invertedPins);
+                if (pinRenamingAndInversion != null) {
+                    return new Gate.ExtendedMapping(gate, pinRenamingAndInversion.pinRenamining(), pinRenamingAndInversion.invertedPinNames());
                 }
             } catch (ParseException ignored) {
             }
@@ -277,7 +266,7 @@ public final class GenlibUtils {
         return null;
     }
 
-    private static ExtendedVariableMapping getVariableExtendedMappingIfEquivalentOrNull(
+    private static PinRenamingAndInversion getExtendedVariableMappingIfEquivalentOrNull(
             BooleanFormula formula, BooleanFormula candidateFormula) {
 
         List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(formula);
@@ -298,37 +287,47 @@ public final class GenlibUtils {
                 }
                 BooleanFormula mappedFormula = FormulaUtils.replace(formula, permutatedVars, invCandidateVars);
                 if (bdd.isEquivalent(mappedFormula, candidateFormula)) {
-                    ExtendedVariableMapping result = new ExtendedVariableMapping();
+                    Gate.PinRenamining pinRenamining = new Gate.PinRenamining();
+                    Set<String> invertedPinNames = new HashSet<>();
                     for (int varIndex = 0; varIndex < varCount; varIndex++) {
                         String varLabel = candidateVars.get(varIndex).getLabel();
-                        Boolean varInversion = inversionCombination.get(varIndex);
-                        result.put(permutatedVars.get(varIndex), Pair.of(varLabel, varInversion));
+                        pinRenamining.put(permutatedVars.get(varIndex), varLabel);
+                        if (inversionCombination.get(varIndex)) {
+                            invertedPinNames.add(varLabel);
+                        }
                     }
-                    return result;
+                    return new PinRenamingAndInversion(pinRenamining, invertedPinNames);
                 }
             }
         }
         return null;
     }
 
-    private static ExtendedVariableMapping mergeExtendedVariableMappingsIfCompatibleOrNull(
-            ExtendedVariableMapping setExtendedVariableMapping, ExtendedVariableMapping resetExtendedVariableMapping) {
+    private static PinRenamingAndInversion mergeExtendedVariableMappingsIfCompatibleOrNull(
+            PinRenamingAndInversion setPinRenamingAndInversion, PinRenamingAndInversion resetPinRenamingAndInversion) {
 
-        if ((setExtendedVariableMapping == null) || (resetExtendedVariableMapping == null)) {
+        if ((setPinRenamingAndInversion == null) || (resetPinRenamingAndInversion == null)) {
             return null;
         }
-        ExtendedVariableMapping result = new ExtendedVariableMapping();
-        result.putAll(setExtendedVariableMapping);
-        for (BooleanVariable variable : resetExtendedVariableMapping.keySet()) {
-            Pair<String, Boolean> variableNameAndInversionPair = setExtendedVariableMapping.get(variable);
-            Pair<String, Boolean> resetVariableNameAndInversionPair = resetExtendedVariableMapping.get(variable);
-            if (variableNameAndInversionPair == null) {
-                result.put(variable, resetVariableNameAndInversionPair);
-            } else if (!variableNameAndInversionPair.equals(resetVariableNameAndInversionPair)) {
+        Gate.PinRenamining pinRenamining = new Gate.PinRenamining();
+        pinRenamining.putAll(setPinRenamingAndInversion.pinRenamining());
+        Set<String> invertedPinNames = new HashSet<>(setPinRenamingAndInversion.invertedPinNames());
+        for (BooleanVariable variable : resetPinRenamingAndInversion.pinRenamining().keySet()) {
+            String pinRename = pinRenamining.get(variable);
+            String resetPinRename = resetPinRenamingAndInversion.pinRenamining().get(variable);
+            Set<String> resetInvertedPinNames = resetPinRenamingAndInversion.invertedPinNames();
+            if (pinRename == null) {
+                pinRenamining.put(variable, resetPinRename);
+                if (resetInvertedPinNames.contains(resetPinRename)) {
+                    invertedPinNames.add(resetPinRename);
+                }
+            } else if (!pinRename.equals(resetPinRename)
+                    || (invertedPinNames.contains(pinRename) != resetInvertedPinNames.contains(pinRename))) {
+
                 return null;
             }
         }
-        return result;
+        return new PinRenamingAndInversion(pinRenamining, invertedPinNames);
     }
 
     public static String gateToString(Gate gate) {
@@ -341,12 +340,12 @@ public final class GenlibUtils {
         return gate.name + details;
     }
 
-    public static String getExtendedMappingInfo(Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping,
+    public static String getExtendedMappingInfo(Gate.ExtendedMapping extendedMapping,
             List<BooleanVariable> inputVars, BooleanVariable outputVar) {
 
-        Gate gate = extendedMapping.getFirst();
-        Map<BooleanVariable, String> assignments = extendedMapping.getSecond();
-        Set<String> invertedPins = extendedMapping.getThird();
+        Gate gate = extendedMapping.gate();
+        Map<BooleanVariable, String> assignments = extendedMapping.pinRenamining();
+        Set<String> invertedPins = extendedMapping.invertedPinNames();
         StringBuilder s = new StringBuilder(gateToString(gate));
         boolean isFirstAssignment = true;
         if (outputVar != null) {

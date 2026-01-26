@@ -15,7 +15,6 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.types.Pair;
-import org.workcraft.types.Triple;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
@@ -258,7 +257,7 @@ public final class ResetUtils {
         }
         FunctionContact resetVar = new FunctionContact(Contact.IOType.INPUT);
         BooleanFormula formulaWithReset = getFormulaWithReset(setFunction, resetVar, activeLow, outputPin.getInitToOne());
-        Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping = GenlibUtils.findExtendedMapping(
+        Gate.ExtendedMapping extendedMapping = GenlibUtils.findExtendedMapping(
                 formulaWithReset, LibraryManager.getLibrary(), true, true);
 
         if (extendedMapping == null) {

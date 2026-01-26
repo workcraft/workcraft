@@ -547,10 +547,10 @@ public final class CircuitUtils {
         boolean result = false;
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         FreeVariable inVar = new FreeVariable("I");
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(inVar, LibraryManager.getLibrary());
+        Gate.Mapping mapping = GenlibUtils.findMapping(inVar, LibraryManager.getLibrary());
         if (mapping != null) {
-            Gate buf = mapping.getFirst();
-            Map<BooleanVariable, String> assignments = mapping.getSecond();
+            Gate buf = mapping.gate();
+            Gate.PinRenamining assignments = mapping.pinRenamining();
             String inName = assignments.get(inVar);
             String outName = buf.function.name;
             for (FunctionComponent component : circuit.getFunctionComponents()) {
