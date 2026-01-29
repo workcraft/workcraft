@@ -17,9 +17,14 @@ public class RefinementDependencyGraph {
 
     private static final String COMPOSITE_LABEL_SEPARATOR = ":";
 
+    record VertexData(Map<String, File> data, ModelEntry me) {
+        VertexData() {
+            this(Collections.emptyMap(), null);
+        }
+    }
+
     private final File topFile;
-    private final Map<File, Map<String, File>> detailedDependencyGraph = new HashMap<>();
-    private final Map<File, ModelEntry> fileToModelMap = new HashMap<>();
+    private final Map<File, VertexData> vertexOrderedDataMap = new LinkedHashMap<>();
 
     public RefinementDependencyGraph(WorkspaceEntry we) {
         this(Framework.getInstance().getWorkspace().getFile(we));
@@ -32,8 +37,7 @@ public class RefinementDependencyGraph {
             ModelEntry topMe = WorkUtils.loadModel(topFile);
             Map<String, File> topDependencyMap = extractInstanceDependencyMap(topMe);
             stack.addAll(topDependencyMap.values());
-            detailedDependencyGraph.put(topFile, topDependencyMap);
-            fileToModelMap.put(topFile, topMe);
+            vertexOrderedDataMap.put(topFile, new VertexData(topDependencyMap, topMe));
         } catch (DeserialisationException e) {
             String filePath = FileUtils.getFullPath(topFile);
             LogUtils.logError("Cannot read top-level file '" + filePath + "':\n" + e.getMessage());
@@ -45,15 +49,13 @@ public class RefinementDependencyGraph {
             if ((file != null) && !visited.contains(file)) {
                 visited.add(file);
                 if (!FileUtils.isReadableFile(file)) {
-                    fileToModelMap.put(file, null);
-                    detailedDependencyGraph.put(file, Collections.emptyMap());
+                    vertexOrderedDataMap.put(file, new VertexData(Collections.emptyMap(), null));
                 } else {
                     try {
                         ModelEntry me = WorkUtils.loadModel(file);
-                        fileToModelMap.put(file, me);
                         Map<String, File> dependencyMap = extractInstanceDependencyMap(me);
                         stack.addAll(dependencyMap.values());
-                        detailedDependencyGraph.put(file, dependencyMap);
+                        vertexOrderedDataMap.put(file, new VertexData(dependencyMap, me));
                     } catch (DeserialisationException e) {
                         String filePath = FileUtils.getFullPath(file);
                         LogUtils.logError("Cannot read model from file '" + filePath + "':\n" + e.getMessage());
@@ -107,11 +109,11 @@ public class RefinementDependencyGraph {
 
 
     public Set<File> getVertices() {
-        return detailedDependencyGraph.keySet();
+        return vertexOrderedDataMap.keySet();
     }
 
     public Map<String, File> getInstanceDependencyMap(File file) {
-        return detailedDependencyGraph.getOrDefault(file, Collections.emptyMap());
+        return vertexOrderedDataMap.getOrDefault(file, new VertexData()).data;
     }
 
     public Set<File> getDependencies(File file) {
@@ -129,13 +131,11 @@ public class RefinementDependencyGraph {
     }
 
     public boolean isCircuit(File file) {
-        ModelEntry me = fileToModelMap.get(file);
-        return WorkspaceUtils.isApplicable(me, Circuit.class);
+        return WorkspaceUtils.isApplicable(vertexOrderedDataMap.getOrDefault(file, new VertexData()).me, Circuit.class);
     }
 
     public boolean isStg(File file) {
-        ModelEntry me = fileToModelMap.get(file);
-        return WorkspaceUtils.isApplicable(me, Stg.class);
+        return WorkspaceUtils.isApplicable(vertexOrderedDataMap.getOrDefault(file, new VertexData()).me, Stg.class);
     }
 
     public Set<File> getCircuitFiles() {
@@ -157,7 +157,7 @@ public class RefinementDependencyGraph {
     }
 
     public ModelEntry getModelEntry(File file) {
-        return fileToModelMap.get(file);
+        return vertexOrderedDataMap.getOrDefault(file, new VertexData()).me;
     }
 
     public String getFileDescription(File file) {
