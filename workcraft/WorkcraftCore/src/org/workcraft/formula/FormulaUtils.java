@@ -101,6 +101,14 @@ public class FormulaUtils {
         return result;
     }
 
+    public static List<BooleanVariable> extractOrderedVariables(BooleanFormula setFormula, BooleanFormula resetFormula) {
+        List<BooleanVariable> result = extractOrderedVariables(setFormula);
+        List<BooleanVariable> resetFormulaVars = extractOrderedVariables(resetFormula);
+        resetFormulaVars.removeAll(result);
+        result.addAll(resetFormulaVars);
+        return result;
+    }
+
     public static List<BooleanVariable> extractOrderedVariables(BooleanFormula formula) {
         List<BooleanVariable> result = new ArrayList<>();
         if (formula != null) {

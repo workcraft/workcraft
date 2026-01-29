@@ -282,7 +282,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                         ? LibraryItem.Type.SEQUENTIAL_GATE
                         : LibraryItem.Type.COMBINATIONAL_GATE;
 
-                int pinCount = GenlibUtils.getPinCount(gate);
+                int pinCount = gate.getPinCount();
 
                 InstancePanel.Instantiator instantiator = (circuit, component) ->
                         GenlibUtils.instantiateGate(gate, circuit, component);

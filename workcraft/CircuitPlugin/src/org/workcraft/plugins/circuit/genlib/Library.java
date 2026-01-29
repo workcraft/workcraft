@@ -40,8 +40,9 @@ public class Library {
         return gates.keySet();
     }
 
-    public List<Gate> getGatesOrderedBySize() {
+    public List<Gate> getGatesOrderedBySize(int pinCount, boolean sequential) {
         return gates.values().stream()
+                .filter(gate -> (gate.getPinCount() == pinCount) && (gate.isSequential() == sequential))
                 .sorted(Comparator.comparingDouble(gate -> gate.size))
                 .collect(Collectors.toList());
     }

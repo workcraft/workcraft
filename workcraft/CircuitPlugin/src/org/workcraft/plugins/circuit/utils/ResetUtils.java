@@ -257,8 +257,7 @@ public final class ResetUtils {
         }
         FunctionContact resetVar = new FunctionContact(Contact.IOType.INPUT);
         BooleanFormula formulaWithReset = getFormulaWithReset(setFunction, resetVar, activeLow, outputPin.getInitToOne());
-        Gate.ExtendedMapping extendedMapping = GenlibUtils.findExtendedMapping(
-                formulaWithReset, LibraryManager.getLibrary(), true, true);
+        Gate.ExtendedMapping extendedMapping = GenlibUtils.findExtendedMapping(formulaWithReset, LibraryManager.getLibrary());
 
         if (extendedMapping == null) {
             return false;

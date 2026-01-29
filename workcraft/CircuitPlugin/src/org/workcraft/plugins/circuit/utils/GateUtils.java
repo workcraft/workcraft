@@ -9,7 +9,6 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
-import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.workers.BooleanWorker;
@@ -498,17 +497,50 @@ public final class GateUtils {
         Set<String> invertedPinNames = extendedMapping.invertedPinNames();
         component.getReferencedComponent().setModule(gate.name);
 
+        // Process extra pins (if any)
+        Map<String, BooleanVariable> extraPinAssignment = extendedMapping.extraPinAssignment();
+        for (String extraPinName : extraPinAssignment.keySet()) {
+            VisualFunctionContact extraInputPin = component.createContact(Contact.IOType.INPUT);
+            pinRenames.put(extraInputPin.getReferencedComponent(), extraPinName);
+            if (extraPinAssignment.get(extraPinName) instanceof Contact replicatedVar) {
+                Pair<Contact, Boolean> driverAndInversion =
+                        CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit.getMathModel(), replicatedVar);
+
+                if (driverAndInversion != null) {
+                    VisualContact driver = circuit.getVisualComponent(driverAndInversion.getFirst(), VisualContact.class);
+                    try {
+                        circuit.connect(driver, extraInputPin);
+                    } catch (InvalidConnectionException e) {
+                        throw new RuntimeException(e);
+                    }
+                    if (driverAndInversion.getSecond()) {
+                        invertedPinNames.remove(extraPinName);
+                    }
+                }
+            }
+        }
+
         Map<BooleanVariable, BooleanFormula> pinToInvertedPinMap
                 = convertInputPins(circuit, component, pinRenames, invertedPinNames);
 
         VisualFunctionContact outputPin = component.getGateOutput();
 
-        BooleanFormula newSetFunction = FormulaUtils.replace(outputPin.getSetFunction(),
-                pinToInvertedPinMap, CleverBooleanWorker.getInstance());
+        BooleanFormula newSetFunction = null;
+        BooleanFormula newResetFunction = null;
+        if (extraPinAssignment.isEmpty()) {
+            newSetFunction = FormulaUtils.replace(outputPin.getSetFunction(),
+                    pinToInvertedPinMap, CleverBooleanWorker.getInstance());
 
-        BooleanFormula newResetFunction = FormulaUtils.replace(outputPin.getResetFunction(),
-                pinToInvertedPinMap, CleverBooleanWorker.getInstance());
-
+            newResetFunction = FormulaUtils.replace(outputPin.getResetFunction(),
+                    pinToInvertedPinMap, CleverBooleanWorker.getInstance());
+        } else {
+            try {
+                newSetFunction = CircuitUtils.parseContactFunction(circuit, outputPin, gate.getSetExpression());
+                newResetFunction = CircuitUtils.parseContactFunction(circuit, outputPin, gate.getResetExpression());
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+        }
         return convertOutputPin(circuit, gate, outputPin, invertedPinNames, newSetFunction, newResetFunction);
     }
 
@@ -636,13 +668,9 @@ public final class GateUtils {
     private static void updateFunction(Gate gate, VisualFunctionContact outputPin,
             BooleanFormula setFunction, BooleanFormula resetFunction) {
 
-        try {
-            BooleanFormula gateFormula = BooleanFormulaParser.parse(GenlibUtils.getSetFunction(gate));
-            if ((setFunction instanceof Not) != (gateFormula instanceof Not)) {
-                setFunction = FormulaUtils.propagateInversion(setFunction);
-                resetFunction = FormulaUtils.propagateInversion(resetFunction);
-            }
-        } catch (ParseException ignored) {
+        if ((setFunction instanceof Not) != (gate.getSetFormula() instanceof Not)) {
+            setFunction = FormulaUtils.propagateInversion(setFunction);
+            resetFunction = FormulaUtils.propagateInversion(resetFunction);
         }
         outputPin.setBothFunctions(setFunction, resetFunction);
     }
