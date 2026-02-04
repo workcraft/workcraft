@@ -47,7 +47,9 @@ public class Gate {
     private final BooleanFormula resetFormula;
     private final int pinCount;
 
-    public Gate(String name, double size, Function function, String seq, boolean primitive) {
+    public Gate(String name, double size, Function function, String seq, boolean primitive)
+            throws ParseException {
+
         this.name = name;
         this.size = size;
         this.function = function;
@@ -57,15 +59,11 @@ public class Gate {
         setExpression = isSequential() ? ExpressionUtils.extractSetFunction(function.formula, seq) : function.formula;
         resetExpression = isSequential() ? ExpressionUtils.extractResetFunction(function.formula, seq) : null;
 
-        try {
-            setFormula = BooleanFormulaParser.parse(setExpression);
-            resetFormula = BooleanFormulaParser.parse(resetExpression);
-            BooleanFormula formula = BooleanFormulaParser.parse(function.formula);
-            List<BooleanVariable> pins = FormulaUtils.extractOrderedVariables(formula);
-            pinCount = pins.size() + (isSequential() ? 0 : 1);
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        setFormula = BooleanFormulaParser.parse(setExpression);
+        resetFormula = BooleanFormulaParser.parse(resetExpression);
+        BooleanFormula formula = BooleanFormulaParser.parse(function.formula);
+        List<BooleanVariable> pins = FormulaUtils.extractOrderedVariables(formula);
+        pinCount = pins.size() + (isSequential() ? 0 : 1);
     }
 
     public boolean isSequential() {

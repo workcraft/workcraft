@@ -62,10 +62,10 @@ public final class LibraryManager {
                 } else {
                     genlibParser.disable_tracing();
                 }
-                LogUtils.logInfo("Reading gate library '" + file.getAbsolutePath() + "'.");
+                LogUtils.logInfo("Reading gate library '" + file.getAbsolutePath() + "'");
                 return genlibParser.parseGenlib();
             } catch (FileNotFoundException | org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
-                LogUtils.logWarning("Could not parse the gate library '" + path + "'.");
+                LogUtils.logWarning("Could not parse gate library '" + path + "'\n" + e.getMessage());
             }
         }
         return null;
@@ -123,10 +123,10 @@ public final class LibraryManager {
                     LogUtils.logInfo("Renaming gates and pins using "
                             + (invert ? "inverted" : "direct")
                             + " rules in the file of substitutions '"
-                            + path + "'.");
+                            + path + "'");
 
                 } catch (FileNotFoundException | ParseException e) {
-                    LogUtils.logWarning("Could not parse the file of substitutions '" + path + "'.");
+                    LogUtils.logWarning("Could not parse the file of substitutions '" + path + "'\n" + e.getMessage());
                 }
             }
         }

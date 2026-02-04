@@ -754,7 +754,9 @@ public abstract class AbstractVerilogImporter implements Importer {
         return result;
     }
 
-    private Gate createPrimitiveGate(VerilogInstance verilogInstance) {
+    private Gate createPrimitiveGate(VerilogInstance verilogInstance)
+            throws DeserialisationException {
+
         String operator = VerilogUtils.getPrimitiveOperator(verilogInstance.moduleName);
         if (operator == null) {
             return null;
@@ -777,7 +779,11 @@ public abstract class AbstractVerilogImporter implements Importer {
             expression.insert(0, "!");
         }
         Function function = new Function(VerilogUtils.getPrimitiveGatePinName(0), expression.toString());
-        return new Gate("", 0.0, function, null, true);
+        try {
+            return new Gate("", 0.0, function, null, true);
+        } catch (ParseException e) {
+            throw new DeserialisationException(e);
+        }
     }
 
     private FunctionComponent createLibraryGate(Circuit circuit, VerilogInstance verilogInstance,

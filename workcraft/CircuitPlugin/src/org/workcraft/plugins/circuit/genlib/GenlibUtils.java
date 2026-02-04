@@ -161,12 +161,12 @@ public final class GenlibUtils {
                 resetFormula = null;
             }
         }
-        // First, try direct implementation
+        // Try 1: match gates directly
         Gate.Mapping mapping = findMapping(setFormula, resetFormula, library);
         if (mapping != null) {
             return new Gate.ExtendedMapping(mapping.gate(), mapping.pinRenamining(), Set.of());
         }
-        // Then try inverted gates
+        // Try 2: match inverted gates
         BooleanFormula notSetFormula = (setFormula == null) ? null : new Not(setFormula);
         BooleanFormula notResetFormula = (resetFormula == null) ? null : new Not(resetFormula);
         if (allowOutputInversion) {
@@ -176,7 +176,7 @@ public final class GenlibUtils {
                 return new Gate.ExtendedMapping(gate, invMapping.pinRenamining(), Set.of(gate.function.name));
             }
         }
-        // Then try adding extra pin
+        // Try 3: match gates with extra pin
         if (allowExtraPin) {
             Gate.ExtendedMapping extendedMapping
                     = getEquivalentExtendedMappingOrNull(setFormula, resetFormula, library, true, false);
@@ -185,7 +185,7 @@ public final class GenlibUtils {
                 return extendedMapping;
             }
         }
-        // Then try adding extra pin to inverted gates
+        // Try 4: match inverted gates with extra pin
         if (allowExtraPin && allowOutputInversion) {
             Gate.ExtendedMapping invExtendedMapping
                     = getEquivalentExtendedMappingOrNull(notSetFormula, notResetFormula, library, true, false);
@@ -195,7 +195,7 @@ public final class GenlibUtils {
                 return invExtendedMapping;
             }
         }
-        // Then try direct implementation with input inverters, possibly with extra pin
+        // Try 5: match gates with input inverters, possibly with extra pin
         if (allowInputInversion) {
             Gate.ExtendedMapping extendedMapping
                     = getEquivalentExtendedMappingOrNull(setFormula, resetFormula, library, false, true);
@@ -207,7 +207,7 @@ public final class GenlibUtils {
                 return extendedMapping;
             }
         }
-        // Finally try inverted gates with input inverters, possibly with extra pin
+        // Try 6: match inverted gates with input inverters, possibly with extra pin
         if (allowOutputInversion && allowInputInversion) {
             Gate.ExtendedMapping invExtendedMapping
                     = getEquivalentExtendedMappingOrNull(notSetFormula, notResetFormula, library, false, true);
@@ -271,15 +271,18 @@ public final class GenlibUtils {
         if (!withExtraPin) {
             return getEquivalentExtendedMappingOrNull(formula, vars, candidateFormula, candidateVars, inversionCombinations, bdd);
         } else {
+            // Insert extra input pin before its replica
+            int varIndex = 0;
             for (BooleanVariable replicaVar : vars) {
                 List<BooleanVariable> extendedVars = new ArrayList<>(vars);
-                extendedVars.add(replicaVar);
+                extendedVars.add(varIndex, replicaVar);
                 Gate.ExtendedMapping extendedMapping = getEquivalentExtendedMappingOrNull(
                         formula, extendedVars, candidateFormula, candidateVars, inversionCombinations, bdd);
 
                 if (extendedMapping != null) {
                     return extendedMapping;
                 }
+                varIndex++;
             }
         }
         return null;
@@ -409,6 +412,10 @@ public final class GenlibUtils {
 
     private static String getExtendedAssignmentInfo(BooleanFormula formula, String pin, Set<String> invertedPins) {
         return StringGenerator.toString(formula) + RIGHT_ARROW_SYMBOL + pin + (invertedPins.contains(pin) ? "'" : "");
+    }
+
+    public static Gate getNegatedGate(Gate gate) {
+        return null;
     }
 
 }

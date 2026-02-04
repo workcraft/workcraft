@@ -25,7 +25,7 @@ import org.workcraft.exceptions.NotFoundException;
 
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.Gate;
-import org.workcraft.plugins.circuit.genlib.Function;
+import org.workcraft.plugins.circuit.genlib.Function;import org.workcraft.utils.LogUtils;
 
 public class GenlibParser {
 }
@@ -114,7 +114,9 @@ List<Gate> parseGates() :
     (
         ( gate = parseGate() | gate = parseLatch() )
         {
-            gates.add(gate);
+            if (gate != null) {
+                gates.add(gate);
+            }
         }
     )*
     {
@@ -136,7 +138,12 @@ Gate parseGate() :
         )*
     )
     {
-        return new Gate(name, size, function, null, false);
+        try {
+            return new Gate(name, size, function, null, false);
+        } catch (org.workcraft.formula.jj.ParseException e) {
+            LogUtils.logWarning("Skipping GATE " + name + " as cannot parse its function " + function.formula);
+            return null;
+        }
     }
 }
 
@@ -158,8 +165,13 @@ Gate parseLatch() :
         [ parseConstraint() ]
     )
     {
+    try {
         return new Gate(name, size, function, next, false);
+    } catch (org.workcraft.formula.jj.ParseException e) {
+        LogUtils.logWarning("Skipping LATCH " + name + " as cannot parse its function " + function.formula);
+        return null;
     }
+}
 }
 
 String parseModuleName() :
