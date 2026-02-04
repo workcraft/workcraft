@@ -1,10 +1,14 @@
 package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.*;
+import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ConnectionUtils;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.utils.Hierarchy;
@@ -92,8 +96,8 @@ public final class SpaceUtils {
     }
 
     private static Rectangle2D getBoundingBox(VisualTransformableNode transformableNode) {
-        return (transformableNode instanceof VisualComponent)
-                ? ((VisualComponent) transformableNode).getInternalBoundingBoxInLocalSpace()
+        return (transformableNode instanceof VisualCircuitComponent circuitComponent)
+                ? circuitComponent.getInternalBoundingBoxInLocalSpace()
                 : transformableNode.getBoundingBoxInLocalSpace();
     }
 
