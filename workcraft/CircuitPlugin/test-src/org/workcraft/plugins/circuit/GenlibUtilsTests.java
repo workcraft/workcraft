@@ -14,6 +14,7 @@ import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.utils.BackendUtils;
+import org.workcraft.utils.SetUtils;
 
 import java.util.*;
 
@@ -30,18 +31,20 @@ class GenlibUtilsTests {
 
     @Test
     void testReadLibrary() {
-        Set<String> gateNames = new HashSet<>(Arrays.asList(
+        Set<String> expGateNames = new HashSet<>(Arrays.asList(
                 "BUF", "INV",
                 "AND2", "NAND2", "NAND2B", "AND3", "NAND3", "NAND3B", "AND4", "NAND4", "NAND4B", "NAND4BB",
                 "OR2", "NOR2", "NOR2B", "OR3", "NOR3", "NOR3B", "OR4", "NOR4", "NOR4B", "NOR4BB",
-                "AOI21", "AOI211", "AOI22", "AOI221", "AOI222", "AOI31", "AOI32", "AOI33", "AOI2BB1", "AOI2BB2", "AO21", "AO22",
-                "OAI21", "OAI211", "OAI22", "OAI221", "OAI222", "OAI31", "OAI32", "OAI33", "OAI2BB1", "OAI2BB2", "OA21", "OA22",
-                "AOA212", "AOAI212",
-                "OAO212", "OAOI212",
+                "AOI21", "AOI211", "AOI22", "AOI221", "AOI222", "AOI31", "AOI32", "AOI33", "AOI2BB1", "AOI2BB2", "AO21", "AO22", "AO222",
+                "OAI21", "OAI211", "OAI22", "OAI221", "OAI222", "OAI31", "OAI32", "OAI33", "OAI2BB1", "OAI2BB2", "OA21", "OA22", "OA222",
+                "AOA212", "AOAI212", "OAO212", "OAOI212",
                 "LOGIC1", "LOGIC0",
                 "C2", "NC2"));
 
-        Assertions.assertEquals(gateNames, LibraryManager.getLibrary().getNames());
+        Set<String> gateNames = LibraryManager.getLibrary().getNames();
+        Assertions.assertEquals(expGateNames, gateNames,
+                "Missing gates: " + SetUtils.difference(expGateNames, gateNames)
+                + "\nExtra gates: " + SetUtils.difference(gateNames, expGateNames));
     }
 
     @Test
