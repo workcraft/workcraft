@@ -147,22 +147,29 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 .setCombinable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Contact.PROPERTY_INIT_TO_ONE,
-                value -> getReferencedComponent().setInitToOne(value),
-                () -> getReferencedComponent().getInitToOne())
+                this::setInitToOne, this::getInitToOne)
                 .setVisibilitySupplier(() -> isDriver() && !isZeroDelayDriver())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Contact.PROPERTY_FORCED_INIT,
-                value -> getReferencedComponent().setForcedInit(value),
-                () -> getReferencedComponent().getForcedInit())
+                this::setForcedInit, this::getForcedInit)
                 .setVisibilitySupplier(() -> isDriver() && !isZeroDelayPin() && !isAvoidInitPin())
                 .setCombinable().setTemplatable());
 
         addPropertyDeclaration(new PropertyDeclaration<>(Boolean.class, Contact.PROPERTY_PATH_BREAKER,
-                value -> getReferencedComponent().setPathBreaker(value),
-                () -> getReferencedComponent().getPathBreaker())
+                this::setPathBreaker, this::getPathBreaker)
                 .setVisibilitySupplier(() -> isPin() && !isZeroDelayDriver())
                 .setCombinable().setTemplatable());
+    }
+
+    @NoAutoSerialisation
+    public void setInitToOne(boolean value) {
+        getReferencedComponent().setInitToOne(value);
+    }
+
+    @NoAutoSerialisation
+    public boolean getInitToOne() {
+        return getReferencedComponent().getInitToOne();
     }
 
     @NoAutoSerialisation
@@ -176,13 +183,13 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     @NoAutoSerialisation
-    public void setInitToOne(boolean value) {
-        getReferencedComponent().setInitToOne(value);
+    public void setPathBreaker(boolean value) {
+        getReferencedComponent().setPathBreaker(value);
     }
 
     @NoAutoSerialisation
-    public boolean getInitToOne() {
-        return getReferencedComponent().getInitToOne();
+    public boolean getPathBreaker() {
+        return getReferencedComponent().getPathBreaker();
     }
 
     @Override
@@ -537,9 +544,9 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     public void copyStyle(Stylable src) {
         super.copyStyle(src);
         if (src instanceof VisualContact srcComponent) {
-            getReferencedComponent().setInitToOne(srcComponent.getReferencedComponent().getInitToOne());
-            getReferencedComponent().setForcedInit(srcComponent.getReferencedComponent().getForcedInit());
-            getReferencedComponent().setPathBreaker(srcComponent.getReferencedComponent().getPathBreaker());
+            setInitToOne(srcComponent.getInitToOne());
+            setForcedInit(srcComponent.getForcedInit());
+            setPathBreaker(srcComponent.getPathBreaker());
             // TODO: Note that IOType and Direction are currently NOT copied to allow input/output
             //       port generation with Shift key (and not to be copied from a template node).
         }
