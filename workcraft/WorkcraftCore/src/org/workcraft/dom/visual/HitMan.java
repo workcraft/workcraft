@@ -93,6 +93,7 @@ public class HitMan {
         // Try connections in the same container not touching the hit node
         if ((node == null) || (connection != null) && (connection.getParent() == container)
                 && (connection.getFirst() != node) && (connection.getSecond() != node)) {
+
             return connection;
         }
         return node;

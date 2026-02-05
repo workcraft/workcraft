@@ -70,6 +70,7 @@ public interface VisualModel extends Model<VisualNode, VisualConnection>, Observ
     VisualPage groupPageSelection();
     void ungroupSelection();
 
+    Collection<VisualNode> hitBox(Point2D p1, Point2D p2, Container container);
     Collection<VisualNode> hitBox(Point2D p1, Point2D p2);
     AbstractLayoutCommand getBestLayouter();
     AbstractLayoutCommand getFallbackLayouter();

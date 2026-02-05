@@ -31,8 +31,8 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 public class SelectionTool extends AbstractGraphEditorTool {
 
@@ -69,6 +69,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     private SelectionMode selectionMode = SelectionMode.NONE;
     private Rectangle2D selectionBox = null;
+    private Container boxSelectionContainer = null;
     private final LinkedHashSet<VisualNode> selected = new LinkedHashSet<>();
 
     private Point2D currentMousePosition = null;
@@ -192,6 +193,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         currentMousePosition = null;
         currentNode = null;
         currentNodes = null;
+        boxSelectionContainer = null;
     }
 
     @Override
@@ -201,6 +203,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         currentMousePosition = null;
         currentNode = null;
         currentNodes = null;
+        boxSelectionContainer = null;
     }
 
     @Override
@@ -221,6 +224,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         Point2D position = e.getPosition();
         if (e.getButton() == MouseEvent.BUTTON1) {
+            boxSelectionContainer = null;
             VisualNode node = HitMan.hitFirstInCurrentLevel(position, model);
             if (node == null) {
                 if (e.getClickCount() > 1) {
@@ -250,7 +254,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 }
             } else {
                 if (e.getClickCount() > 1) {
-                    if (node instanceof VisualGroup || node instanceof VisualPage) {
+                    if ((node instanceof VisualGroup) || (node instanceof VisualPage)) {
                         changeLevelDown(editor);
                         return;
 
@@ -267,11 +271,12 @@ public class SelectionTool extends AbstractGraphEditorTool {
                             ? getNodeWithAdjacentConnections(model, node)
                             : Collections.singleton(node);
 
-                    if (e.isCtrlKeyDown()) {
+                    if (e.isMenuKeyDown()) {
                         model.toggleSelection(nodes);
                     } else {
                         model.select(nodes);
                     }
+                    updateBoxSelectionContainer(model);
                 }
             }
             anchorGenerator.mouseClicked(e);
@@ -345,7 +350,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             moveOffset = new Point2D.Double(dx, dy);
         } else if (dragState == DragState.SELECT) {
             selected.clear();
-            selected.addAll(model.hitBox(e.getStartPosition(), pos));
+            selected.addAll(model.hitBox(e.getStartPosition(), pos, boxSelectionContainer));
             selectionBox = getSelectionRect(e.getStartPosition(), pos);
             editor.repaint();
         } else {
@@ -407,7 +412,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 }
                 // Selection will not actually be changed until drag completes
                 dragState = DragState.SELECT;
-                selected.clear();
                 if (selectionMode == SelectionMode.REPLACE) {
                     model.selectNone();
                 } else {
@@ -449,7 +453,23 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
         dragState = DragState.NONE;
         selected.clear();
+        updateBoxSelectionContainer(editor.getModel());
         editor.repaint();
+    }
+
+    private void updateBoxSelectionContainer(VisualModel model) {
+        boxSelectionContainer = null;
+        Collection<VisualNode> currentSelection = model.getSelection();
+        for (VisualNode selectedNode : currentSelection) {
+            if (selectedNode.getParent() instanceof Container container) {
+                if (boxSelectionContainer == null) {
+                    boxSelectionContainer = container;
+                } else if (boxSelectionContainer != container) {
+                    boxSelectionContainer = null;
+                    break;
+                }
+            }
+        }
     }
 
     private void cancelDrag(GraphEditor editor) {
@@ -566,8 +586,13 @@ public class SelectionTool extends AbstractGraphEditorTool {
         if (dragState == DragState.MOVE) {
             return "Hold Shift for dragging parallel to axes.";
         }
-        return "Hold " + DesktopApi.getMenuKeyName() + " for adding to or removing from selection. "
+        String result = "Hold " + DesktopApi.getMenuKeyName() + " for adding to or removing from selection. "
                 + "Hold Shift for extending selection to proxies and adjacent connections.";
+
+        if ((boxSelectionContainer != null) && (boxSelectionContainer != editor.getModel().getCurrentLevel())) {
+            result += " Box selection is restricted to children of the same object as the currently selected children.";
+        }
+        return result;
     }
 
     @Override

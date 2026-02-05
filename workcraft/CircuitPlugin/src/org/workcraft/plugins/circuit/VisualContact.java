@@ -259,7 +259,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
         boolean isDisconnected = r.getModel().getMathModel().getConnections(this.getReferencedComponent()).isEmpty();
         boolean showContact = isDisconnected || (d instanceof StateDecoration)
-                || (d.getColorisation() != null) || (d.getBackground() != null);
+                || (d == Decoration.Highlighted.INSTANCE) || (d == Decoration.Selected.INSTANCE);
 
         if (showContact || isPort()) {
             boolean showForcedInit = (d instanceof StateDecoration) && ((StateDecoration) d).showForcedInit();

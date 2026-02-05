@@ -121,7 +121,7 @@ public class CircuitSelectionTool extends SelectionTool {
                     processed = true;
                 }
             } else if (node instanceof VisualCircuitComponent component) {
-                if (e.isCtrlKeyDown()) {
+                if (e.isMenuKeyDown()) {
                     RefinementUtils.openRefinementCircuit(component);
                 } else {
                     RefinementUtils.openRefinementModel(component);
