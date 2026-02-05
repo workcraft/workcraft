@@ -9,19 +9,14 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.*;
-import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.genlib.Gate;
-import org.workcraft.plugins.circuit.genlib.GateInterface;
-import org.workcraft.plugins.circuit.genlib.GenlibUtils;
-import org.workcraft.plugins.circuit.genlib.LibraryManager;
+import org.workcraft.plugins.circuit.genlib.*;
 import org.workcraft.types.Pair;
-import org.workcraft.types.Triple;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
@@ -165,7 +160,7 @@ public final class GateUtils {
             VisualConnection outputConnection = circuit.connect(outputContact, toNode);
             ConnectionHelper.addControlPoints(outputConnection, suffixControlPoints);
         } catch (InvalidConnectionException e) {
-            throw new RuntimeException(e.getMessage());
+            LogUtils.logWarning(e.getMessage());
         }
     }
 
@@ -279,7 +274,7 @@ public final class GateUtils {
                 .collect(Collectors.toList());
 
         BooleanFormula desiredGateFunction = func.apply(inputVars);
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(desiredGateFunction,
+        Gate.Mapping mapping = GenlibUtils.findMapping(desiredGateFunction,
                 LibraryManager.getLibrary());
 
         String functionString;
@@ -288,12 +283,13 @@ public final class GateUtils {
             functionString = StringGenerator.toString(desiredGateFunction);
             inputNames = new ArrayList<>(defaultGateInterface.getInputs());
         } else {
-            Gate gate = mapping.getFirst();
+            Gate gate = mapping.gate();
             component.setLabel(gate.name);
             functionString = gate.function.formula;
             outputName = gate.function.name;
+            Gate.PinRenamining pinRenamining = mapping.pinRenamining();
             inputNames = inputVars.stream()
-                    .map(mapping.getSecond()::get)
+                    .map(pinRenamining::get)
                     .collect(Collectors.toList());
         }
 
@@ -490,32 +486,114 @@ public final class GateUtils {
         return component;
     }
 
-    public static VisualContact convertGate(VisualCircuit circuit, VisualFunctionComponent component,
-            Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping) {
-
-        Gate gate = extendedMapping.getFirst();
-        Map<BooleanVariable, String> pinRenames = extendedMapping.getSecond();
-        Set<String> invertedPins = extendedMapping.getThird();
-        component.getReferencedComponent().setModule(gate.name);
-
-        Map<BooleanVariable, BooleanFormula> pinToInvertedPinMap
-                = convertInputPins(circuit, component, pinRenames, invertedPins);
-
+    public static void renameGatePins(VisualCircuit circuit, VisualFunctionComponent component, Gate.Mapping mapping) {
+        Map<BooleanVariable, String> pinRenamining = mapping.pinRenamining();
+        for (VisualContact inpitPin : component.getVisualInputs()) {
+            String pinName = pinRenamining.get(inpitPin.getReferencedComponent());
+            if (pinName != null) {
+                circuit.setMathName(inpitPin, pinName);
+            }
+        }
         VisualFunctionContact outputPin = component.getGateOutput();
+        if (outputPin != null) {
+            circuit.setMathName(outputPin, mapping.gate().function.name);
+        }
+    }
 
-        BooleanFormula newSetFunction = FormulaUtils.replace(outputPin.getSetFunction(),
-                pinToInvertedPinMap, CleverBooleanWorker.getInstance());
+    public static VisualContact convertGate(VisualCircuit circuit, VisualFunctionComponent component,
+            Gate.ExtendedMapping extendedMapping) {
 
-        BooleanFormula newResetFunction = FormulaUtils.replace(outputPin.getResetFunction(),
-                pinToInvertedPinMap, CleverBooleanWorker.getInstance());
+        insertExtraInputPin(circuit, component, extendedMapping);
+        Map<BooleanVariable, BooleanFormula> inputVarReplacements = convertInputPins(circuit, component, extendedMapping);
+        VisualFunctionContact outputPin = component.getGateOutput();
+        VisualContact result = convertOutputPin(circuit, outputPin, extendedMapping);
+        updateFunction(circuit, outputPin, inputVarReplacements, extendedMapping);
+        component.getReferencedComponent().setModule(extendedMapping.gate().name);
+        return result;
+    }
 
-        return convertOutputPin(circuit, gate, outputPin, invertedPins, newSetFunction, newResetFunction);
+    private static void insertExtraInputPin(VisualCircuit circuit, VisualFunctionComponent component,
+            Gate.ExtendedMapping extendedMapping) {
+
+        Map<BooleanVariable, String> pinRenames = extendedMapping.pinRenamining();
+        Set<String> invertedPinNames = extendedMapping.invertedPinNames();
+        Map<String, BooleanVariable> extraPinAssignment = extendedMapping.extraPinAssignment();
+
+        for (String extraPinName : extraPinAssignment.keySet()) {
+            VisualFunctionContact extraInputPin = component.createContact(Contact.IOType.INPUT);
+            pinRenames.put(extraInputPin.getReferencedComponent(), extraPinName);
+            if (extraPinAssignment.get(extraPinName) instanceof Contact originalVar) {
+                VisualFunctionContact originalInputPin = circuit.getVisualComponent(originalVar, VisualFunctionContact.class);
+                Contact directDriverVar = CircuitUtils.findDriver(circuit.getMathModel(), originalVar, false);
+                if (directDriverVar == null) {
+                    connectFromCommonJoint(circuit, originalInputPin, extraInputPin);
+                } else if (!directDriverVar.isZeroDelayDriver()) {
+                    VisualConnection originalConnection = circuit.getConnections(originalInputPin).iterator().next();
+                    connectFromConnectionIfPossible(circuit, originalConnection, extraInputPin);
+                } else {
+                    Pair<Contact, Boolean> throughZeroDelayDriverAndInversion =
+                            CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit.getMathModel(), originalVar);
+
+                    if (throughZeroDelayDriverAndInversion == null) continue;
+
+                    connectFromVarIfPossible(circuit, throughZeroDelayDriverAndInversion.getFirst(), extraInputPin);
+                    if (throughZeroDelayDriverAndInversion.getSecond()) {
+                        invertedPinNames.remove(extraPinName);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void connectFromCommonJoint(VisualCircuit circuit,
+            VisualFunctionContact firstPin, VisualFunctionContact secondPin) {
+
+        if ((firstPin != null) && (secondPin != null)) {
+            Container container = Hierarchy.getNearestContainer(firstPin, secondPin);
+            VisualJoint joint = circuit.createJoint(container);
+            joint.setRootSpacePosition(firstPin.getRootSpacePosition());
+            try {
+                circuit.connect(joint, firstPin);
+                circuit.connect(joint, secondPin);
+            } catch (InvalidConnectionException e) {
+                LogUtils.logWarning(e.getMessage());
+            }
+        }
+    }
+
+    private static void connectFromVarIfPossible(VisualCircuit circuit, Contact fromVar, VisualContact toContact) {
+        VisualContact fromContact = circuit.getVisualComponent(fromVar, VisualContact.class);
+        if ((fromContact != null) && (toContact != null)) {
+            try {
+                circuit.connect(fromContact, toContact);
+            } catch (InvalidConnectionException e) {
+                LogUtils.logWarning(e.getMessage());
+            }
+        }
+    }
+
+    private static void connectFromConnectionIfPossible(VisualCircuit circuit,
+            VisualConnection fromConnection, VisualFunctionContact toContact) {
+
+        if ((fromConnection != null) && (toContact != null)) {
+            if (fromConnection.getSecond() instanceof VisualContact contact) {
+                fromConnection.setSplitPoint(contact.getRootSpacePosition());
+            }
+            try {
+                circuit.connect(fromConnection, toContact);
+            } catch (InvalidConnectionException e) {
+                LogUtils.logWarning(e.getMessage());
+            }
+        }
     }
 
     private static Map<BooleanVariable, BooleanFormula> convertInputPins(VisualCircuit circuit,
-            VisualFunctionComponent component, Map<BooleanVariable, String> pinRenames, Set<String> invertedPins) {
+            VisualFunctionComponent component, Gate.ExtendedMapping extendedMapping) {
 
         Map<BooleanVariable, BooleanFormula> result = new HashMap<>();
+        Map<BooleanVariable, String> pinRenames = extendedMapping.pinRenamining();
+        Set<String> invertedPinNames = extendedMapping.invertedPinNames();
+
         for (VisualContact inputPin : component.getVisualInputs()) {
             Contact inputPinVar = inputPin.getReferencedComponent();
             String newInputPinName = pinRenames.get(inputPinVar);
@@ -523,7 +601,7 @@ public final class GateUtils {
                 continue;
             }
             circuit.setMathName(inputPin, Identifier.addInternalPrefix(newInputPinName));
-            if (invertedPins.contains(newInputPinName)) {
+            if (invertedPinNames.contains(newInputPinName)) {
                 result.put(inputPinVar, new Not(inputPinVar));
             }
         }
@@ -535,7 +613,7 @@ public final class GateUtils {
                 continue;
             }
             circuit.setMathName(inputPin, newInputPinName);
-            if (invertedPins.contains(newInputPinName)) {
+            if (invertedPinNames.contains(newInputPinName)) {
                 VisualFunctionComponent trivialDriverComponent = getDedicatedTrivialDriverOrNull(circuit, inputPin);
                 if (trivialDriverComponent == null) {
                     VisualFunctionComponent newInverter = createInverterGate(circuit);
@@ -577,39 +655,36 @@ public final class GateUtils {
         return null;
     }
 
-    private static VisualContact convertOutputPin(VisualCircuit circuit, Gate gate, VisualFunctionContact outputPin,
-            Set<String> invertedPins, BooleanFormula setFunction, BooleanFormula resetFunction) {
+    private static VisualContact convertOutputPin(VisualCircuit circuit, VisualFunctionContact outputPin,
+            Gate.ExtendedMapping extendedMapping) {
 
         VisualContact result = outputPin;
-        String newOutputPinName = gate.function.name;
-        if (newOutputPinName != null) {
-            circuit.setMathName(outputPin, newOutputPinName);
-            if (invertedPins.contains(newOutputPinName)) {
-                VisualFunctionComponent trivialDrivenComponent
-                        = getDedicatedTrivialDrivenComponentWithCorrectInitOrNull(circuit, outputPin);
+        String newOutputPinName = extendedMapping.gate().function.name;
+        circuit.setMathName(outputPin, newOutputPinName);
 
-                if (trivialDrivenComponent == null) {
-                    VisualFunctionComponent newInverter = createInverterGate(circuit);
-                    if (outputPin.getParent() instanceof VisualFunctionComponent component) {
-                        newInverter.copyStylePreserveMapping(component);
-                    }
-                    SpaceUtils.makeSpaceAroundContact(circuit, outputPin, 2.0);
-                    insertGateAfter(circuit, newInverter, outputPin, 1.5);
-                    result = newInverter.getGateOutput();
-                    result.setInitToOne(outputPin.getInitToOne());
-                    result.getReferencedComponent().setPathBreaker(outputPin.getReferencedComponent().getPathBreaker());
-                    outputPin.getReferencedComponent().setPathBreaker(false);
-                } else if (trivialDrivenComponent.isInverter()) {
-                    ContractionUtils.contractComponentIfPossible(circuit, trivialDrivenComponent);
-                } else if (trivialDrivenComponent.isBuffer()) {
-                    convertBufferToInverter(circuit, trivialDrivenComponent, true);
+        Set<String> invertedPinNames = extendedMapping.invertedPinNames();
+        if (invertedPinNames.contains(newOutputPinName)) {
+            VisualFunctionComponent trivialDrivenComponent
+                    = getDedicatedTrivialDrivenComponentWithCorrectInitOrNull(circuit, outputPin);
+
+            if (trivialDrivenComponent == null) {
+                VisualFunctionComponent newInverter = createInverterGate(circuit);
+                if (outputPin.getParent() instanceof VisualFunctionComponent component) {
+                    newInverter.copyStylePreserveMapping(component);
                 }
-                outputPin.setInitToOne(!outputPin.getInitToOne());
-                setFunction = FormulaUtils.invert(setFunction);
-                resetFunction = FormulaUtils.invert(resetFunction);
+                SpaceUtils.makeSpaceAroundContact(circuit, outputPin, 3.0);
+                insertGateAfter(circuit, newInverter, outputPin, 2.0);
+                result = newInverter.getGateOutput();
+                result.setInitToOne(outputPin.getInitToOne());
+                result.setPathBreaker(outputPin.getPathBreaker());
+                outputPin.setPathBreaker(false);
+            } else if (trivialDrivenComponent.isInverter()) {
+                ContractionUtils.contractComponentIfPossible(circuit, trivialDrivenComponent);
+            } else if (trivialDrivenComponent.isBuffer()) {
+                convertBufferToInverter(circuit, trivialDrivenComponent, true);
             }
+            outputPin.setInitToOne(!outputPin.getInitToOne());
         }
-        updateFunction(gate, outputPin, setFunction, resetFunction);
         return result;
     }
 
@@ -633,18 +708,37 @@ public final class GateUtils {
         return null;
     }
 
-    private static void updateFunction(Gate gate, VisualFunctionContact outputPin,
-            BooleanFormula setFunction, BooleanFormula resetFunction) {
+    private static void updateFunction(VisualCircuit circuit, VisualFunctionContact outputPin,
+            Map<BooleanVariable, BooleanFormula> inputVarReplacements, Gate.ExtendedMapping extendedMapping) {
 
-        try {
-            BooleanFormula gateFormula = BooleanFormulaParser.parse(GenlibUtils.getSetFunction(gate));
-            if ((setFunction instanceof Not) != (gateFormula instanceof Not)) {
-                setFunction = FormulaUtils.propagateInversion(setFunction);
-                resetFunction = FormulaUtils.propagateInversion(resetFunction);
+        Gate gate = extendedMapping.gate();
+        BooleanFormula newSetFunction = null;
+        BooleanFormula newResetFunction = null;
+        if (!extendedMapping.extraPinAssignment().isEmpty()) {
+            try {
+                newSetFunction = CircuitUtils.parseContactFunction(circuit, outputPin, gate.getSetExpression());
+                newResetFunction = CircuitUtils.parseContactFunction(circuit, outputPin, gate.getResetExpression());
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
             }
-        } catch (ParseException ignored) {
+        } else {
+            newSetFunction = FormulaUtils.replace(outputPin.getSetFunction(),
+                    inputVarReplacements, CleverBooleanWorker.getInstance());
+
+            newResetFunction = FormulaUtils.replace(outputPin.getResetFunction(),
+                    inputVarReplacements, CleverBooleanWorker.getInstance());
+
+            if (extendedMapping.invertedPinNames().contains(outputPin.getName())) {
+                newSetFunction = FormulaUtils.invert(newSetFunction);
+                newResetFunction = FormulaUtils.invert(newResetFunction);
+            }
         }
-        outputPin.setBothFunctions(setFunction, resetFunction);
+
+        if ((newSetFunction instanceof Not) != (gate.getSetFormula() instanceof Not)) {
+            newSetFunction = FormulaUtils.propagateInversion(newSetFunction);
+            newResetFunction = FormulaUtils.propagateInversion(newResetFunction);
+        }
+        outputPin.setBothFunctions(newSetFunction, newResetFunction);
     }
 
     private static void convertBufferToInverter(VisualCircuit circuit, VisualFunctionComponent component,
@@ -656,17 +750,17 @@ public final class GateUtils {
 
         BooleanVariable inputVar = new FreeVariable("I");
         BooleanFormula formula = new Not(inputVar);
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        Gate.Mapping mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
         if (mapping == null) {
             throw new RuntimeException("Cannot find inverter gate mapping");
         }
 
-        Gate gate = mapping.getFirst();
+        Gate gate = mapping.gate();
         component.getReferencedComponent().setModule(gate.name);
         VisualFunctionContact outputPin = component.getFirstVisualOutput();
         circuit.setMathName(outputPin, gate.function.name);
 
-        Map<BooleanVariable, String> inputRenames = mapping.getSecond();
+        Map<BooleanVariable, String> inputRenames = mapping.pinRenamining();
         String inputName = inputRenames.get(inputVar);
         if (inputName != null) {
             circuit.setMathName(component.getFirstVisualInput(), inputName);
@@ -683,12 +777,12 @@ public final class GateUtils {
         }
 
         BooleanFormula formula = Zero.getInstance();
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        Gate.Mapping mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
         if (mapping == null) {
             throw new RuntimeException("Cannot find tie0 gate mapping");
         }
 
-        Gate gate = mapping.getFirst();
+        Gate gate = mapping.gate();
         component.getReferencedComponent().setModule(gate.name);
         VisualFunctionContact outputPin = component.getFirstVisualOutput();
         circuit.setMathName(outputPin, gate.function.name);
@@ -703,18 +797,73 @@ public final class GateUtils {
         }
 
         BooleanFormula formula = One.getInstance();
-        Pair<Gate, Map<BooleanVariable, String>> mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
+        Gate.Mapping mapping = GenlibUtils.findMapping(formula, LibraryManager.getLibrary());
         if (mapping == null) {
             throw new RuntimeException("Cannot find tie0 gate mapping");
         }
 
-        Gate gate = mapping.getFirst();
+        Gate gate = mapping.gate();
         component.getReferencedComponent().setModule(gate.name);
         VisualFunctionContact outputPin = component.getFirstVisualOutput();
         circuit.setMathName(outputPin, gate.function.name);
 
         outputPin.setSetFunction(One.getInstance());
         outputPin.setInitToOne(true);
+    }
+
+    public static VisualFunctionComponent reuseAdjacentInverterOrBuffer(VisualCircuit circuit, VisualContact contact) {
+        if (contact.getParent() instanceof VisualFunctionComponent component) {
+            if (component.isBuffer() || component.isInverter()) {
+                return component;
+            }
+        }
+        if (!contact.isOutput()) {
+            return null;
+        }
+        Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
+        if (drivenContacts.size() != 1) {
+            return null;
+        }
+        VisualContact drivenContact = drivenContacts.iterator().next();
+        if (drivenContact == contact) {
+            return null;
+        }
+        return reuseAdjacentInverterOrBuffer(circuit, drivenContact);
+    }
+
+    public static VisualFunctionComponent detachInverterOrBuffer(VisualCircuit circuit, VisualFunctionContact contact) {
+        VisualFunctionComponent result = null;
+        // Use negated gate (with inverter) if it is smaller than the original gate
+        if ((contact.getParent() instanceof VisualFunctionComponent component)
+                && component.isGate() && component.isCell()) {
+
+            Library gateLibrary = LibraryManager.getLibrary();
+            BooleanFormula setFunction = contact.getSetFunction();
+            BooleanFormula resetFunction = contact.getResetFunction();
+            Gate.Mapping posMapping = GenlibUtils.findMapping(setFunction, resetFunction, gateLibrary);
+            BooleanFormula notSetFunction = FormulaUtils.invert(setFunction);
+            BooleanFormula notResetFunction = FormulaUtils.invert(resetFunction);
+            Gate.Mapping negMapping = GenlibUtils.findMapping(notSetFunction, notResetFunction, gateLibrary);
+            boolean isMapped = component.isMapped();
+            if ((posMapping != null) && (negMapping != null) && (posMapping.gate().size > negMapping.gate().size)) {
+                contact.setBothFunctions(notSetFunction, notResetFunction);
+                renameGatePins(circuit, component, negMapping);
+                if (isMapped) {
+                    component.getReferencedComponent().setModule(negMapping.gate().name);
+                }
+                contact.setInitToOne(!contact.getInitToOne());
+                result = createInverterGate(circuit);
+            }
+        }
+        // If negative gate with inverter did not work out, then use buffer
+        if (result == null) {
+            result = createBufferGate(circuit);
+        }
+        // Insert inverter/buffer after the given contact
+        SpaceUtils.makeSpaceAroundContact(circuit, contact, 3.0);
+        insertGateAfter(circuit, result, contact, 2.0);
+        propagateInitialState(circuit, result);
+        return result;
     }
 
 }

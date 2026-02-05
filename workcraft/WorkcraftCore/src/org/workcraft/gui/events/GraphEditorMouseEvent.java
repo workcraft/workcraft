@@ -85,10 +85,6 @@ public class GraphEditorMouseEvent {
         return (getModifiers() & mask) == mask;
     }
 
-    public boolean isCtrlKeyDown() {
-        return isMaskHit(MouseEvent.CTRL_DOWN_MASK);
-    }
-
     public boolean isShiftKeyDown() {
         return isMaskHit(MouseEvent.SHIFT_DOWN_MASK);
     }
@@ -97,15 +93,10 @@ public class GraphEditorMouseEvent {
         return isMaskHit(MouseEvent.ALT_DOWN_MASK) || isMaskHit(MouseEvent.ALT_GRAPH_DOWN_MASK);
     }
 
-    public boolean isMetaKeyDown() {
-        return isMaskHit(MouseEvent.META_DOWN_MASK);
-    }
-
     public boolean isMenuKeyDown() {
-        if (DesktopApi.getMenuKeyMask() == ActionEvent.META_MASK) {
-            return isMetaKeyDown();
-        }
-        return isCtrlKeyDown();
+        return (DesktopApi.getMenuKeyMask() == ActionEvent.META_MASK)
+                ? isMaskHit(MouseEvent.META_DOWN_MASK)
+                : isMaskHit(MouseEvent.CTRL_DOWN_MASK);
     }
 
 }

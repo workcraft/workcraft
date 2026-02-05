@@ -10,11 +10,21 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ConnectionHelper {
+
     private static final double SAME_ANCHOR_POINT_DISTANCE_THRESHOLD = 0.1;
     private static final double SAME_ANCHOR_POINT_GRADIENT_THRESHOLD = 0.1;
 
+    private static boolean areSameAnchorPoints(Point2D p1, Point2D p2) {
+        return (p1 != null) && (p2 != null) && !areDifferentAnchorPoints(p1, p2);
+    }
+
     private static boolean areDifferentAnchorPoints(Point2D p1, Point2D p2) {
-        return p1.distance(p2) > SAME_ANCHOR_POINT_DISTANCE_THRESHOLD;
+        return (p1 != null) && (p2 != null) && (p1.distance(p2) > SAME_ANCHOR_POINT_DISTANCE_THRESHOLD);
+    }
+
+    private static boolean areAlignedAnchorPoints(Point2D p1, Point2D p2, Point2D p3) {
+        return (p1 != null) && (p2 != null) && (p3 != null)
+                && (Math.abs(calcGradient(p1, p2, p3)) < SAME_ANCHOR_POINT_GRADIENT_THRESHOLD);
     }
 
     private static boolean canBeAnchorPoint(Point2D locationInRootSpace, VisualConnection connection) {
@@ -120,21 +130,33 @@ public class ConnectionHelper {
             VisualConnection firstConnection, VisualConnection secondConnection) {
 
         LinkedList<Point2D> result = getControlPoints(firstConnection);
-        Point2D lastLocation = result.isEmpty() ? null : result.getLast();
+        Point2D predPos = result.isEmpty() ? null : result.getLast();
+        if ((predPos == null) && (firstConnection != null)
+                && (firstConnection.getFirst() instanceof VisualTransformableNode fromNode)) {
 
-        if (mergeNode != null) {
-            Point2D nodeLocation = mergeNode.getRootSpacePosition();
-            if ((lastLocation != null) && !areDifferentAnchorPoints(nodeLocation, lastLocation)) {
-                result.removeLast();
-            }
-            result.add(nodeLocation);
-            lastLocation = nodeLocation;
+            predPos = fromNode.getRootSpacePosition();
         }
 
         LinkedList<Point2D> secondLocations = getControlPoints(secondConnection);
-        Point2D startLocation = secondLocations.isEmpty() ? null : secondLocations.getFirst();
-        if ((startLocation != null) && (lastLocation != null) && !areDifferentAnchorPoints(lastLocation, startLocation)) {
+        Point2D succPos = secondLocations.isEmpty() ? null : secondLocations.getFirst();
+        if ((succPos == null) && (secondConnection != null)
+                && (secondConnection.getSecond() instanceof VisualTransformableNode toNode)) {
+
+            succPos = toNode.getRootSpacePosition();
+        }
+
+        Point2D midPos = (mergeNode == null) ? null : mergeNode.getRootSpacePosition();
+        if (areSameAnchorPoints(predPos, midPos) || areSameAnchorPoints(midPos, succPos)) {
+            midPos = null;
+        }
+        if (areAlignedAnchorPoints(predPos, midPos, succPos)) {
+            midPos = null;
+        }
+        if ((midPos == null) && areSameAnchorPoints(predPos, succPos)) {
             secondLocations.removeFirst();
+        }
+        if (midPos != null) {
+            result.add(midPos);
         }
         result.addAll(secondLocations);
         return result;

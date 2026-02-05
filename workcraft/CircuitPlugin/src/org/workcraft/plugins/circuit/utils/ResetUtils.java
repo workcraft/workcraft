@@ -15,7 +15,6 @@ import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.types.Pair;
-import org.workcraft.types.Triple;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
@@ -212,7 +211,7 @@ public final class ResetUtils {
     }
 
     private static void insertReset(VisualCircuit circuit, VisualFunctionComponent component,
-            VisualFunctionContact resetPort, boolean isActiveLow) {
+            VisualContact resetPort, boolean isActiveLow) {
 
         // Attempt to reset mapped gate preserving mapping
         if (resetMappedCombinationalGateIfPossible(circuit, component, resetPort, isActiveLow)) {
@@ -243,7 +242,7 @@ public final class ResetUtils {
     }
 
     private static boolean resetMappedCombinationalGateIfPossible(VisualCircuit circuit,
-            VisualFunctionComponent component, VisualFunctionContact resetPort, boolean activeLow) {
+            VisualFunctionComponent component, VisualContact resetPort, boolean activeLow) {
 
         if (!component.isMapped() || !component.isCombinationalGate()) {
             return false;
@@ -258,8 +257,7 @@ public final class ResetUtils {
         }
         FunctionContact resetVar = new FunctionContact(Contact.IOType.INPUT);
         BooleanFormula formulaWithReset = getFormulaWithReset(setFunction, resetVar, activeLow, outputPin.getInitToOne());
-        Triple<Gate, Map<BooleanVariable, String>, Set<String>> extendedMapping = GenlibUtils.findExtendedMapping(
-                formulaWithReset, LibraryManager.getLibrary(), true, true);
+        Gate.ExtendedMapping extendedMapping = GenlibUtils.findExtendedMapping(formulaWithReset, LibraryManager.getLibrary());
 
         if (extendedMapping == null) {
             return false;
@@ -382,10 +380,22 @@ public final class ResetUtils {
     private static void resetByAddingGate(VisualCircuit circuit, VisualFunctionComponent component,
             Collection<VisualFunctionContact> forcedInitOutputs, VisualContact resetPort, boolean isActiveLow) {
 
-        for (VisualFunctionContact contact : forcedInitOutputs) {
-            insertResetGate(circuit, resetPort, contact, isActiveLow);
+        if (component.isGate() && component.isCell()) {
+            for (VisualFunctionContact contact : forcedInitOutputs) {
+                // First, try to reuse adjacent buffer/inverter first as a testable one
+                VisualFunctionComponent initComponent = GateUtils.reuseAdjacentInverterOrBuffer(circuit, contact);
+                // If no adjacent buffer/inverter fond then insert buffer/inverter after the gate
+                if (initComponent == null) {
+                    initComponent = GateUtils.detachInverterOrBuffer(circuit, contact);
+                }
+                VisualFunctionContact outputContact = initComponent.getGateOutput();
+                outputContact.setPathBreaker(contact.getPathBreaker());
+                contact.setPathBreaker(false);
+                outputContact.setForcedInit(contact.getForcedInit());
+                contact.setForcedInit(false);
+                insertReset(circuit, initComponent, resetPort, isActiveLow);
+            }
         }
-        GateUtils.propagateInitialState(circuit, component, forcedInitOutputs);
     }
 
     private static void resetByReplacingGate(VisualCircuit circuit, VisualFunctionComponent component,
@@ -421,24 +431,6 @@ public final class ResetUtils {
         contact.setBothFunctions(
                 getFormulaWithReset(setFunction, initVar, activeLow, initToOne),
                 getFormulaWithReset(resetFunction, initVar, activeLow, !initToOne));
-    }
-
-    private static void insertResetGate(VisualCircuit circuit, VisualContact resetPort,
-            VisualFunctionContact contact, boolean activeLow) {
-
-        SpaceUtils.makeSpaceAroundContact(circuit, contact, 3.0);
-        VisualFunctionComponent resetGate = createResetGate(circuit, contact.getInitToOne(), activeLow);
-        GateUtils.insertGateAfter(circuit, resetGate, contact, 2.0);
-        CircuitUtils.connectToHangingInputPins(circuit, resetPort, resetGate, true);
-        GateUtils.propagateInitialState(circuit, resetGate);
-    }
-
-    private static VisualFunctionComponent createResetGate(VisualCircuit circuit, boolean initToOne, boolean activeLow) {
-        if (activeLow) {
-            return initToOne ? GateUtils.createNand2bGate(circuit) : GateUtils.createAnd2Gate(circuit);
-        } else {
-            return initToOne ? GateUtils.createOr2Gate(circuit) : GateUtils.createNor2bGate(circuit);
-        }
     }
 
     private static void setInitialisationProtocol(VisualCircuit circuit, VisualFunctionContact resetPort, boolean activeLow) {

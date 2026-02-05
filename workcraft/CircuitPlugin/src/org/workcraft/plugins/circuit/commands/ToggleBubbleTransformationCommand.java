@@ -125,6 +125,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                     contact.setSetFunction(resetFunction);
                     contact.setResetFunction(setFunction);
                 }
+                contact.setInitToOne(!contact.getInitToOne());
             } else {
                 for (FunctionContact dependantContact: getDependantContacts(contact)) {
                     BooleanFormula setFunction = dependantContact.getSetFunction();

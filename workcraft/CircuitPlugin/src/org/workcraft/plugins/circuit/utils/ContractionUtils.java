@@ -26,19 +26,27 @@ public final class ContractionUtils {
                 VisualFunctionComponent inputDriverComponent = null;
                 boolean originalZeroDelayForInputDriverComponent = false;
                 VisualContact inputDriver = CircuitUtils.findDriver(circuit, inputContact, false);
-                if ((inputDriver != null) && (inputDriver.getParent() instanceof VisualFunctionComponent)) {
+                if ((inputDriver != null) && (inputDriver.getParent() instanceof VisualFunctionComponent newInputDriverComponent)) {
                     // Temporary clear zero delay attribute of the driver component
-                    inputDriverComponent = (VisualFunctionComponent) inputDriver.getParent();
+                    inputDriverComponent = newInputDriverComponent;
                     originalZeroDelayForInputDriverComponent = inputDriverComponent.getIsZeroDelay();
                     inputDriverComponent.setIsZeroDelay(false);
                 }
+                boolean forceInit = false;
+                boolean pathBreaker = false;
                 for (VisualContact outputContact : component.getVisualOutputs()) {
+                    forceInit |= outputContact.getForcedInit();
+                    pathBreaker |= outputContact.getPathBreaker();
                     fuseContacts(circuit, inputContact, outputContact);
                 }
                 circuit.remove(component);
                 if (inputDriverComponent != null) {
                     // Restore zero delay attribute of the driver component
                     inputDriverComponent.setIsZeroDelay(originalZeroDelayForInputDriverComponent);
+                }
+                if (inputDriver != null) {
+                    inputDriver.setForcedInit(forceInit);
+                    inputDriver.setPathBreaker(pathBreaker);
                 }
             }
         }

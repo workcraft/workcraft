@@ -246,7 +246,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
             if ((contact != null) && contact.isDriver() && !contact.isZeroDelayPin() && !contact.isAvoidInitPin()) {
                 editor.getWorkspaceEntry().saveMemento();
-                contact.getReferencedComponent().setForcedInit(!contact.getReferencedComponent().getForcedInit());
+                contact.setForcedInit(!contact.getForcedInit());
                 processed = true;
             }
         }
@@ -259,15 +259,15 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     public Decorator getDecorator(final GraphEditor editor) {
         return node -> {
             MathNode mathNode = null;
-            if (node instanceof VisualComponent) {
-                mathNode = ((VisualComponent) node).getReferencedComponent();
-            } else if (node instanceof VisualConnection) {
-                mathNode = ((VisualConnection) node).getReferencedConnection();
+            if (node instanceof VisualComponent component) {
+                mathNode = component.getReferencedComponent();
+            } else if (node instanceof VisualConnection connection) {
+                mathNode = connection.getReferencedConnection();
             }
 
             if (mathNode != null) {
-                if (mathNode instanceof FunctionComponent) {
-                    return getComponentDecoration((FunctionComponent) mathNode);
+                if (mathNode instanceof FunctionComponent component) {
+                    return getComponentDecoration(component);
                 } else if (mathNode instanceof Contact) {
                     Circuit circuit = (Circuit) editor.getModel().getMathModel();
                     Contact driver = CircuitUtils.findDriver(circuit, mathNode, false);

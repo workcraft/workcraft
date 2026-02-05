@@ -1,8 +1,8 @@
 package org.workcraft.dom.visual;
 
 import org.workcraft.commands.AbstractLayoutCommand;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.*;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathConnection;
@@ -33,9 +33,9 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.*;
 import java.util.List;
 import java.util.Queue;
-import java.util.*;
 
 public abstract class AbstractVisualModel extends AbstractModel<VisualNode, VisualConnection> implements VisualModel {
 
@@ -634,17 +634,27 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
         }
     }
 
-    private Point2D transformToCurrentSpace(Point2D pointInRootSpace) {
-        Point2D newPoint = new Point2D.Double();
-        TransformHelper.getTransform(getRoot(), currentLevel).transform(pointInRootSpace, newPoint);
-        return newPoint;
+    @Override
+    public Collection<VisualNode> hitBox(Point2D p1, Point2D p2) {
+        return hitBox(p1, p2, currentLevel);
     }
 
     @Override
-    public Collection<VisualNode> hitBox(Point2D p1, Point2D p2) {
-        p1 = transformToCurrentSpace(p1);
-        p2 = transformToCurrentSpace(p2);
-        return HitMan.hitBox(currentLevel, p1, p2);
+    public Collection<VisualNode> hitBox(Point2D p1, Point2D p2, Container container) {
+        if (container == null) {
+            container = currentLevel;
+        }
+        p1 = transformToContainerSpace(p1, container);
+        p2 = transformToContainerSpace(p2, container);
+        return HitMan.hitBox(container, p1, p2);
+    }
+
+    private Point2D transformToContainerSpace(Point2D pointInRootSpace, Container container) {
+        if (container == null) {
+            container = currentLevel;
+        }
+        AffineTransform rootToContainerSpaceTransform = TransformHelper.getTransform(getRoot(), container);
+        return rootToContainerSpaceTransform.transform(pointInRootSpace, null);
     }
 
     @Override
