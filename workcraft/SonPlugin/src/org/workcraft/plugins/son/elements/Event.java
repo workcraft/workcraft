@@ -25,7 +25,7 @@ public class Event extends MathNode implements TransitionNode {
     @Override
     public void setLabel(String value) {
         if (value == null) value = "";
-        if (!value.equals(value)) {
+        if (!value.equals(label)) {
             label = value;
             sendNotification(new PropertyChangedEvent(this, "label"));
         }
