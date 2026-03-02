@@ -16,18 +16,18 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public void mouseReleased(GraphEditorMouseEvent e) {
+    public void mouseReleased(GraphEditorMouseEvent mouseEvent) {
         VisualNode generatedNode = getGeneratedNode();
         if (generatedNode instanceof VisualComment comment) {
-            Toolbox toolbox = e.getEditor().getToolBox();
+            Toolbox toolbox = mouseEvent.getEditor().getToolBox();
             toolbox.selectDefaultTool();
             if (toolbox.getSelectedTool() instanceof SelectionTool) {
-                AbstractInplaceEditor textEditor = new LabelInplaceEditor(e.getEditor(), comment);
+                AbstractInplaceEditor textEditor = new LabelInplaceEditor(mouseEvent.getEditor(), comment);
                 textEditor.edit(comment.getLabel(), comment.getLabelFont(),
                         comment.getLabelOffset(), comment.getLabelAlignment(), true);
             }
         }
-        super.mouseReleased(e);
+        super.mouseReleased(mouseEvent);
     }
 
     @Override

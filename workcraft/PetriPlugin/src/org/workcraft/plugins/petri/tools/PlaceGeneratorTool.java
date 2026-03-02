@@ -20,13 +20,13 @@ public class PlaceGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public void mousePressed(GraphEditorMouseEvent event) {
-        WorkspaceEntry we = event.getEditor().getWorkspaceEntry();
+    public void mousePressed(GraphEditorMouseEvent mouseEvent) {
+        WorkspaceEntry we = mouseEvent.getEditor().getWorkspaceEntry();
         VisualNode node = we.getTemplateNode();
         if (node instanceof VisualPlace place) {
-            place.getReferencedComponent().setTokens(event.isMenuKeyDown() ? 1 : 0);
+            place.getReferencedComponent().setTokens(mouseEvent.isMenuKeyDown() ? 1 : 0);
         }
-        super.mousePressed(event);
+        super.mousePressed(mouseEvent);
     }
 
     @Override

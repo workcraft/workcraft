@@ -32,10 +32,10 @@ public class SignalTransitionGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public void mousePressed(GraphEditorMouseEvent e) {
-        shiftKeyDown = e.isShiftKeyDown();
-        menuKeyDown = e.isMenuKeyDown();
-        super.mousePressed(e);
+    public void mousePressed(GraphEditorMouseEvent mouseEvent) {
+        shiftKeyDown = mouseEvent.isShiftKeyDown();
+        menuKeyDown = mouseEvent.isMenuKeyDown();
+        super.mousePressed(mouseEvent);
     }
 
     @Override

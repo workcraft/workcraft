@@ -120,16 +120,16 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void mousePressed(GraphEditorMouseEvent e) {
-        if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() == 1)) {
-            GraphEditor editor = e.getEditor();
-            Point2D position = e.getPosition();
+    public void mousePressed(GraphEditorMouseEvent mouseEvent) {
+        if ((mouseEvent.getButton() == MouseEvent.BUTTON1) && (mouseEvent.getClickCount() == 1)) {
+            GraphEditor editor = mouseEvent.getEditor();
+            Point2D position = mouseEvent.getPosition();
             Point2D snapPosition = editor.snap(position, null);
-            VisualModel model = e.getModel();
+            VisualModel model = mouseEvent.getModel();
             VisualNode node = HitMan.hitFirstInCurrentLevel(snapPosition, model);
             if (node == null) {
                 editor.getWorkspaceEntry().saveMemento();
-                generatedNode = generateNode(model, snapPosition);
+                generatedNode = generateNode(model, snapPosition, mouseEvent);
                 generatedNode.copyStyle(getTemplateNode());
             } else {
                 Toolkit.getDefaultToolkit().beep();
@@ -138,7 +138,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void mouseReleased(GraphEditorMouseEvent e) {
+    public void mouseReleased(GraphEditorMouseEvent mouseEvent) {
         generatedNode = null;
     }
 
@@ -155,7 +155,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
         return "Creating node on top of another node is not allowed.";
     }
 
-    public VisualNode generateNode(VisualModel model, Point2D position) {
+    public VisualNode generateNode(VisualModel model, Point2D position, GraphEditorMouseEvent event) {
         try {
             return generator.generate(model, position);
         } catch (NodeCreationException e) {
