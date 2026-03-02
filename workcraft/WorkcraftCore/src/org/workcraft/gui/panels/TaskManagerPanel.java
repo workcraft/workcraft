@@ -131,7 +131,6 @@ public class TaskManagerPanel extends JPanel implements TaskMonitor {
     @Override
     public ProgressMonitor<?> taskStarting(final String description) {
         TaskControlGenerator tcg = new TaskControlGenerator(content, description);
-        updater.run();
         if (SwingUtilities.isEventDispatchThread()) {
             tcg.run();
         } else {
@@ -141,6 +140,7 @@ public class TaskManagerPanel extends JPanel implements TaskMonitor {
                 throw new RuntimeException(e);
             }
         }
+        updater.run();
         return new TaskControlMonitor(this, tcg.getTaskControl());
     }
 
