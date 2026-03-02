@@ -503,7 +503,7 @@ public class MainWindow extends JFrame {
                 TITLE_PROPERTY_EDITOR, workspaceDockable, DockingManager.NORTH_REGION, ySplit);
 
         toolControlsDockable = DockingUtils.createUtilityDockable(toolControlsPanel,
-                TITLE_TOOL_CONTROLS, propertyEditorDockable, DockingManager.SOUTH_REGION, 0.5f);
+                TITLE_TOOL_CONTROLS, propertyEditorDockable, DockingManager.SOUTH_REGION, 0.3f);
 
         outputLogDockable = DockingUtils.createUtilityDockable(outputLogPanel, TITLE_OUTPUT, documentPlaceholder,
                 DockingManager.SOUTH_REGION, ySplit);
@@ -716,6 +716,7 @@ public class MainWindow extends JFrame {
         // editor and the Tool controls, and then close the empty one.
         displayUtilityPanelDockable(propertyEditorDockable);
         displayUtilityPanelDockable(toolControlsDockable);
+        DockingManager.setSplitProportion(toolControlsDockable, 0.3f);
         if (toolControlsPanel.isEmpty()) {
             closeUtilityPanelDockable(toolControlsDockable);
         } else if (propertyEditorPanel.isEmpty()) {
