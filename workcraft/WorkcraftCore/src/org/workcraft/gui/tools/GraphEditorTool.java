@@ -26,4 +26,8 @@ public interface GraphEditorTool extends Tool, GraphEditorKeyListener, GraphEdit
     void flashIssue(GraphEditor editor, String message);
     void showIssue(GraphEditor editor, String message);
     void hideIssue(GraphEditor editor);
+
+    default int getPreferredToolboxPosition() {
+        return -1;
+    }
 }
