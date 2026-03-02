@@ -181,7 +181,7 @@ class SaveLoadTests {
         }
     }
 
-    public void assertComponentEquals(MathNode node, MathNode node2) {
+    private void assertComponentEquals(MathNode node, MathNode node2) {
         if (node == null) {
             Assertions.assertNull(node2);
             return;

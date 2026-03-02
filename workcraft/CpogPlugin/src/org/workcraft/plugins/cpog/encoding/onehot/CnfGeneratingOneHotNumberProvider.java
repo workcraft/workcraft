@@ -4,10 +4,10 @@ import org.workcraft.formula.*;
 import org.workcraft.formula.cnf.Cnf;
 import org.workcraft.formula.cnf.CnfClause;
 import org.workcraft.formula.workers.BooleanWorker;
-import org.workcraft.plugins.cpog.formula.MemoryConservingBooleanWorker;
-import org.workcraft.plugins.cpog.formula.PrettifyBooleanWorker;
 import org.workcraft.plugins.cpog.encoding.CnfSorter;
 import org.workcraft.plugins.cpog.encoding.NumberProvider;
+import org.workcraft.plugins.cpog.formula.MemoryConservingBooleanWorker;
+import org.workcraft.plugins.cpog.formula.PrettifyBooleanWorker;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import java.util.List;
 import static org.workcraft.plugins.cpog.encoding.CnfOperations.not;
 import static org.workcraft.plugins.cpog.encoding.CnfOperations.or;
 
-class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
+public class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
 
     private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
@@ -30,32 +30,19 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
         }
 
         List<Literal> literals = new ArrayList<>();
-
-        boolean useSorting = true;
-
-        if (!useSorting) {
-            for (int i = 0; i < range; i++) {
-                for (int j = i + 1; j < range; j++) {
-                    rho.add(or(not(vars.get(i)), not(vars.get(j))));
-                }
-            }
-
-            rho.add(or(vars));
-        } else {
-            List<Literal> sorted = new ArrayList<>();
-            for (int i = 0; i < range; i++) {
-                literals.add(new Literal(vars.get(i)));
-                sorted.add(new Literal(varPrefix + "sorted" + i));
-            }
-
-            Cnf sorting = CnfSorter.sortRound(sorted, literals);
-
-            for (int i = 0; i < range - 1; i++) {
-                rho.add(or(not(sorted.get(i))));
-            }
-            rho.add(or(sorted.get(range - 1)));
-            rho.addAll(sorting.getClauses());
+        List<Literal> sorted = new ArrayList<>();
+        for (int i = 0; i < range; i++) {
+            literals.add(new Literal(vars.get(i)));
+            sorted.add(new Literal(varPrefix + "sorted" + i));
         }
+
+        Cnf sorting = CnfSorter.sortRound(sorted, literals);
+
+        for (int i = 0; i < range - 1; i++) {
+            rho.add(or(not(sorted.get(i))));
+        }
+        rho.add(or(sorted.get(range - 1)));
+        rho.addAll(sorting.getClauses());
 
         return new OneHotIntBooleanFormula(vars);
     }
