@@ -4,8 +4,12 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.panels.WorkspacePanel;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import java.io.File;
 
 public class WorkspaceUtils {
 
@@ -68,6 +72,19 @@ public class WorkspaceUtils {
             workspaceView.setAutoExpand(value);
             workspaceView.refresh();
         }
+    }
+
+    public static boolean closeFileIfOpen(File file) {
+        Framework framework = Framework.getInstance();
+        Workspace workspace = framework.getWorkspace();
+        Path<String> path = workspace.getPath(file);
+        WorkspaceEntry we = workspace.getWork(path);
+        boolean isOpen = (we != null);
+        if (isOpen) {
+            framework.closeWork(we);
+            workspace.removeMount(path);
+        }
+        return isOpen;
     }
 
 }
