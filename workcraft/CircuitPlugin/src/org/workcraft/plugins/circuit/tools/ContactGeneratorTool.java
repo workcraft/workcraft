@@ -29,9 +29,9 @@ public class ContactGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public void mousePressed(GraphEditorMouseEvent e) {
-        shiftKeyDown = e.isShiftKeyDown();
-        super.mousePressed(e);
+    public void mousePressed(GraphEditorMouseEvent mouseEvent) {
+        shiftKeyDown = mouseEvent.isShiftKeyDown();
+        super.mousePressed(mouseEvent);
     }
 
     @Override

@@ -1,9 +1,14 @@
 package org.workcraft.plugins.circuit.tools;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.tools.Decoration;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
-import org.workcraft.plugins.circuit.*;
+import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,13 +22,17 @@ public class InstancePanel extends JPanel {
     private VisualFunctionComponent templateNode;
     private Instantiator instantiator;
 
-    public interface Instantiator extends BiConsumer<VisualCircuit, VisualFunctionComponent> { }
+    public record ComponentInCircuit(VisualFunctionComponent component, VisualCircuit circuit) {
+    }
+
+    public interface Instantiator extends BiConsumer<ComponentInCircuit, GraphEditorMouseEvent> {
+    }
 
     private final VisualCircuit circuit = new VisualCircuit(new Circuit()) {
         @Override
         public void registerGraphEditorTools() {
             // Prevent registration of GraphEditorTools because it leads to a loop
-            // between VisualCircuit and FunctionComponentGeneratorTool classes.
+            // between VisualCircuit and *ComponentGeneratorTool classes.
         }
     };
 
@@ -62,7 +71,7 @@ public class InstancePanel extends JPanel {
         circuit.getMathModel().add(component.getReferencedComponent());
         circuit.add(component);
         if (instantiator != null) {
-            instantiator.accept(circuit, component);
+            instantiator.accept(new ComponentInCircuit(component, circuit), null);
         }
         repaint();
     }
@@ -81,7 +90,6 @@ public class InstancePanel extends JPanel {
             component.cacheRenderedText(null);
 
             Graphics2D g2d = (Graphics2D) g;
-            g2d.translate(getWidth() / 2, getHeight() / 2);
             Rectangle2D bb = component.getBoundingBox();
             double scaleX = (getWidth() - 5 * SizeHelper.getLayoutHGap()) / bb.getWidth();
             double scaleY = (getHeight() - 5 * SizeHelper.getLayoutVGap()) / bb.getHeight();
@@ -92,8 +100,18 @@ public class InstancePanel extends JPanel {
             if (scale > MAX_SCALE_FACTOR) {
                 scale = MAX_SCALE_FACTOR;
             }
+            g2d.translate(getWidth() / 2, getHeight() / 2);
             g2d.scale(scale, scale);
-            circuit.draw(g2d, Decorator.Empty.INSTANCE);
+            g2d.translate(-bb.getCenterX(), -bb.getCenterY());
+            // Pass decoration with non-null colorisation to make pivot point visible
+            circuit.draw(g2d, node -> new BorederColorDecoration());
+        }
+    }
+
+    private static final class BorederColorDecoration implements Decoration {
+        @Override
+        public Color getColorisation() {
+            return VisualCommonSettings.getBorderColor();
         }
     }
 

@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.generators.DefaultNodeGenerator;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.controls.IntRangeSlider;
+import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.NodeGeneratorTool;
 import org.workcraft.observation.StateObserver;
@@ -89,10 +90,11 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public VisualFunctionComponent generateNode(VisualModel model, Point2D position) {
-        VisualFunctionComponent component = (VisualFunctionComponent) super.generateNode(model, position);
-        if (libraryItem != null) {
-            libraryItem.instantiator.accept((VisualCircuit) model, component);
+    public VisualFunctionComponent generateNode(VisualModel model, Point2D position, GraphEditorMouseEvent mouseEvent) {
+        VisualFunctionComponent component = (VisualFunctionComponent) super.generateNode(model, position, mouseEvent);
+        if ((libraryItem != null) && (model instanceof VisualCircuit circuit)) {
+            InstancePanel.ComponentInCircuit componentInCircuit = new InstancePanel.ComponentInCircuit(component, circuit);
+            libraryItem.instantiator.accept(componentInCircuit, mouseEvent);
         }
         return component;
     }
@@ -284,8 +286,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
                 int pinCount = gate.getPinCount();
 
-                InstancePanel.Instantiator instantiator = (circuit, component) ->
-                        GenlibUtils.instantiateGate(gate, circuit, component);
+                InstancePanel.Instantiator instantiator = (componentInCircuit, mouseEvent) ->
+                        GenlibUtils.instantiateGate(gate, componentInCircuit.circuit(), componentInCircuit.component());
 
                 libraryItems.add(new LibraryItem(gateName, type, pinCount, instantiator));
             }
@@ -316,7 +318,8 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     private LibraryItem createCustomItem() {
-        InstancePanel.Instantiator instantiator = (circuit, component) -> {
+        InstancePanel.Instantiator instantiator = (componentInCircuit, mouseEvent) -> {
+            VisualFunctionComponent component = componentInCircuit.component();
             VisualContact contact = component.createContact(Contact.IOType.OUTPUT);
             component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
         };
@@ -328,10 +331,12 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         if (module == null) {
             return null;
         }
-        InstancePanel.Instantiator instantiator = (circuit, component) -> {
+        InstancePanel.Instantiator instantiator = (componentInCircuit, mouseEvent) -> {
+            VisualFunctionComponent component = componentInCircuit.component();
             component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);
 
+            VisualCircuit circuit = componentInCircuit.circuit();
             VisualFunctionContact sigContact = component.createContact(IOType.INPUT);
             circuit.setMathName(sigContact, module.sig.name);
             sigContact.setPosition(new Point2D.Double(-1.5, 0.0));
@@ -355,10 +360,12 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         if (module == null) {
             return null;
         }
-        InstancePanel.Instantiator instantiator = (circuit, component) -> {
+        InstancePanel.Instantiator instantiator = (componentInCircuit, mouseEvent) -> {
+            VisualFunctionComponent component = componentInCircuit.component();
             component.setRenderType(ComponentRenderingResult.RenderType.GATE);
             component.getReferencedComponent().setIsArbitrationPrimitive(true);
 
+            VisualCircuit circuit = componentInCircuit.circuit();
             VisualFunctionContact r1Contact = component.createContact(IOType.INPUT);
             circuit.setMathName(r1Contact, module.r1.name);
             r1Contact.setPosition(new Point2D.Double(-1.5, -0.5));
