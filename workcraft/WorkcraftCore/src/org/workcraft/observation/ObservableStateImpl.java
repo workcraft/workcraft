@@ -1,10 +1,11 @@
 package org.workcraft.observation;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class ObservableStateImpl implements ObservableState {
 
-    private final HashSet<StateObserver> observers = new HashSet<>();
+    private final Set<StateObserver> observers = new HashSet<>();
 
     @Override
     public void addObserver(StateObserver obs) {
