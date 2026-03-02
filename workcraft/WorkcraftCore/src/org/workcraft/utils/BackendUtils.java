@@ -23,8 +23,12 @@ public class BackendUtils {
         return (path == null) || path.isEmpty() ? null : new File(path);
     }
 
+    public static String getLibraryDirectory() {
+        return LIBRARIES_DIR_NAME + File.separator;
+    }
+
     public static String getLibraryPath(String fileName) {
-        return LIBRARIES_DIR_NAME + File.separator + fileName;
+        return getLibraryDirectory() + fileName;
     }
 
     public static String getToolPath(String dirName, String fileName) {
@@ -52,8 +56,16 @@ public class BackendUtils {
         };
     }
 
+    public static String getComponentDirectory() {
+        return COMPONENTS_DIR_NAME + File.separator;
+    }
+
+    public static String getComponentDirectory(String dirName) {
+        return getComponentDirectory() + dirName + File.separator;
+    }
+
     public static String getComponentPath(String dirName, String fileName) {
-        return COMPONENTS_DIR_NAME + File.separator + dirName + File.separator + fileName;
+        return getComponentDirectory(dirName) + fileName;
     }
 
 }

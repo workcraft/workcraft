@@ -33,11 +33,11 @@ public class WaggingGenerator {
     private final ArrayList<WaggingData> wagging = new ArrayList<>();
 
     private static final class WaggingData {
-        public final HashSet<VisualComponent> dataComponents = new HashSet<>();
-        public final HashSet<VisualPushRegister> pushRegisters = new HashSet<>();
-        public final HashSet<VisualControlRegister> pushControls = new HashSet<>();
-        public final HashSet<VisualPopRegister> popRegisters = new HashSet<>();
-        public final HashSet<VisualControlRegister> popControls = new HashSet<>();
+        final HashSet<VisualComponent> dataComponents = new HashSet<>();
+        final HashSet<VisualPushRegister> pushRegisters = new HashSet<>();
+        final HashSet<VisualControlRegister> pushControls = new HashSet<>();
+        final HashSet<VisualPopRegister> popRegisters = new HashSet<>();
+        final HashSet<VisualControlRegister> popControls = new HashSet<>();
     }
 
     public WaggingGenerator(VisualDfs dfs, int count) {

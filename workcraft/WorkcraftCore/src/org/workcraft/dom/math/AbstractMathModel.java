@@ -18,10 +18,6 @@ import java.util.HashSet;
 
 public abstract class AbstractMathModel extends AbstractModel<MathNode, MathConnection> implements MathModel {
 
-    public AbstractMathModel() {
-        this(null);
-    }
-
     public AbstractMathModel(Container root) {
         this(root, (References) null);
     }

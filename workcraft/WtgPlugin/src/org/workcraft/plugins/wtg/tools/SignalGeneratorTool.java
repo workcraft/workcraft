@@ -11,10 +11,10 @@ import java.awt.*;
 public class SignalGeneratorTool extends org.workcraft.plugins.dtd.tools.SignalGeneratorTool {
 
     @Override
-    public void mousePressed(GraphEditorMouseEvent e) {
-        VisualModel model = e.getModel();
+    public void mousePressed(GraphEditorMouseEvent mouseEvent) {
+        VisualModel model = mouseEvent.getModel();
         if (model.getCurrentLevel() instanceof VisualWaveform) {
-            super.mousePressed(e);
+            super.mousePressed(mouseEvent);
         }
     }
 

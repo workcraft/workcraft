@@ -68,9 +68,9 @@ public class SignalGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public void mousePressed(GraphEditorMouseEvent e) {
-        shiftKeyDown = e.isShiftKeyDown();
-        super.mousePressed(e);
+    public void mousePressed(GraphEditorMouseEvent mouseEvent) {
+        shiftKeyDown = mouseEvent.isShiftKeyDown();
+        super.mousePressed(mouseEvent);
     }
 
     @Override
@@ -79,8 +79,8 @@ public class SignalGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public VisualSignal generateNode(VisualModel model, Point2D position) {
-        return (VisualSignal) super.generateNode(model, position);
+    public VisualSignal generateNode(VisualModel model, Point2D position, GraphEditorMouseEvent  mouseEvent) {
+        return (VisualSignal) super.generateNode(model, position, mouseEvent);
     }
 
 }

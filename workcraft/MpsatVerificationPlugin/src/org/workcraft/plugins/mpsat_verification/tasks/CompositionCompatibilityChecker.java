@@ -21,19 +21,19 @@ public class CompositionCompatibilityChecker {
         private final Map<String, WorkspaceEntry> risingSignalToWorkMap = new HashMap<>();
         private final Map<String, WorkspaceEntry> fallingSignalToWorkMap = new HashMap<>();
 
-        public void addRisingSignalIfAbsent(String signalRef, WorkspaceEntry we) {
+        void addRisingSignalIfAbsent(String signalRef, WorkspaceEntry we) {
             risingSignalToWorkMap.computeIfAbsent(signalRef, ref -> we);
         }
 
-        public void addFallingSignalIfAbsent(String signalRef, WorkspaceEntry we) {
+        void addFallingSignalIfAbsent(String signalRef, WorkspaceEntry we) {
             fallingSignalToWorkMap.computeIfAbsent(signalRef, ref -> we);
         }
 
-        public WorkspaceEntry getRisingSignalWork(String signalRef) {
+        WorkspaceEntry getRisingSignalWork(String signalRef) {
             return risingSignalToWorkMap.get(signalRef);
         }
 
-        public WorkspaceEntry getFallingSignalWork(String signalRef) {
+        WorkspaceEntry getFallingSignalWork(String signalRef) {
             return fallingSignalToWorkMap.get(signalRef);
         }
     }
@@ -42,21 +42,21 @@ public class CompositionCompatibilityChecker {
         private final Map<String, WorkspaceEntry> lowSignalToWorkMap = new HashMap<>();
         private final Map<String, WorkspaceEntry> highSignalToWorkMap = new HashMap<>();
 
-        public void addLowSignalIfAbsent(String signalRef, WorkspaceEntry we) {
+        void addLowSignalIfAbsent(String signalRef, WorkspaceEntry we) {
             highSignalToWorkMap.remove(signalRef);
             lowSignalToWorkMap.computeIfAbsent(signalRef, ref -> we);
         }
 
-        public void addHighSignalIfAbsent(String signalRef, WorkspaceEntry we) {
+        void addHighSignalIfAbsent(String signalRef, WorkspaceEntry we) {
             lowSignalToWorkMap.remove(signalRef);
             highSignalToWorkMap.computeIfAbsent(signalRef, ref -> we);
         }
 
-        public WorkspaceEntry getLowSignalWork(String signalRef) {
+        WorkspaceEntry getLowSignalWork(String signalRef) {
             return lowSignalToWorkMap.get(signalRef);
         }
 
-        public WorkspaceEntry getHighSignalWork(String signalRef) {
+        WorkspaceEntry getHighSignalWork(String signalRef) {
             return highSignalToWorkMap.get(signalRef);
         }
     }

@@ -10,9 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class FileUtils {
 
@@ -249,6 +247,10 @@ public class FileUtils {
         }
     }
 
+    public static boolean isReadableDirectory(File file) {
+        return (file != null) && file.exists() && file.isDirectory() && file.canRead();
+    }
+
     public static boolean isReadableFile(File file) {
         return (file != null) && file.exists() && !file.isDirectory() && file.canRead();
     }
@@ -383,13 +385,24 @@ public class FileUtils {
     }
 
     public static List<File> getDirectoryFiles(File dir) {
+        return getDirectoryFiles(dir, false);
+    }
+
+    public static List<File> getDirectoryFiles(File dir, boolean recursive) {
         List<File> result = new ArrayList<>();
-        if ((dir != null) && dir.isDirectory()) {
-            File[] fileArray = dir.listFiles();
-            if (fileArray != null) {
+        Queue<File> queue = new ArrayDeque<>();
+        queue.add(dir);
+        while (!queue.isEmpty()) {
+            File curDir = queue.remove();
+            if (isReadableDirectory(curDir)) {
+                File[] fileArray = curDir.listFiles();
+                if (fileArray == null) continue;
                 for (File file : fileArray) {
-                    if ((file != null) && file.isFile()) {
+                    if (file == null) continue;
+                    if (file.isFile()) {
                         result.add(file);
+                    } else if (file.isDirectory() && recursive) {
+                        queue.add(file);
                     }
                 }
             }

@@ -1,19 +1,16 @@
 package org.workcraft.dom.visual.connections;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Shape;
+import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.Drawable;
+import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.utils.ColorUtils;
+
+import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.Drawable;
-import org.workcraft.dom.visual.Touchable;
-import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.utils.ColorUtils;
-
-public class ControlPoint extends VisualTransformableNode implements Drawable, Touchable {
+public class ControlPoint extends VisualTransformableNode implements Drawable {
 
     private static final double size = 0.2;
     private static final Color fillColor = Color.BLUE;

@@ -5,10 +5,7 @@ import org.workcraft.dom.*;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
-import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.math.*;
 import org.workcraft.dom.references.FlatReferenceManager;
 import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -41,21 +38,17 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
     public static final String PROPERTY_TITLE = "Title";
 
-    private final MathModel mathModel;
+    private final AbstractMathModel mathModel;
     private Container currentLevel;
     private final Set<VisualNode> selection = new HashSet<>();
     private final ObservableStateImpl observableState = new ObservableStateImpl();
     private final List<GraphEditorTool> graphEditorTools = new ArrayList<>();
 
-    public AbstractVisualModel() {
-        this(null, null);
-    }
-
-    public AbstractVisualModel(MathModel mathModel) {
+    public AbstractVisualModel(AbstractMathModel mathModel) {
         this(mathModel, null);
     }
 
-    public AbstractVisualModel(MathModel mathModel, VisualGroup root) {
+    public AbstractVisualModel(AbstractMathModel mathModel, VisualGroup root) {
         super(root);
         this.mathModel = mathModel;
         this.currentLevel = getRoot();
@@ -75,6 +68,7 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
                 observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));
             }
         }.attach(getRoot());
+
         if (generatedRoot) {
             createDefaultStructure();
         }

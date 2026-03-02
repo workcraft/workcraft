@@ -122,7 +122,7 @@ public class WtgPropertyHelper {
         for (GraphEditorTool tool : visualWtg.getGraphEditorTools()) {
             if (tool instanceof SignalGeneratorTool signalGeneratorTool) {
                 Point2D position = newSignalPosition(visualWaveform);
-                VisualSignal newSignal = signalGeneratorTool.generateNode(visualWtg, position);
+                VisualSignal newSignal = signalGeneratorTool.generateNode(visualWtg, position, null);
                 Signal signal = newSignal.getReferencedComponent();
                 visualWtg.getMathModel().setName(signal, signalName);
                 signal.sendNotification(new PropertyChangedEvent(signal, Signal.PROPERTY_NAME));

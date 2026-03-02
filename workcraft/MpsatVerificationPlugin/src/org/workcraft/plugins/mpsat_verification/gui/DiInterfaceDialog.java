@@ -71,7 +71,7 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
             model.clear();
         }
 
-        public void addItemInOrderAndSelect(Collection<String> item) {
+        void addItemInOrderAndSelect(Collection<String> item) {
             ItemSet itemSet = new ItemSet(item);
             int index = 0;
             Comparator<ItemSet> itemSetComparator = Comparator.comparing(ItemSet::toComparisonString);
@@ -86,13 +86,13 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
             setSelectedIndices(new int[]{index});
         }
 
-        public Collection<ItemSet> getItems() {
+        Collection<ItemSet> getItems() {
             return IntStream.range(0, model.size())
                     .mapToObj(model::get)
                     .collect(Collectors.toList());
         }
 
-        public void removeSelectedElements() {
+        void removeSelectedElements() {
             Arrays.stream(getSelectedIndices())
                     .boxed()
                     .sorted((i1, i2) -> Long.compare(i2, i1))

@@ -4,6 +4,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.mozilla.javascript.*;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -915,6 +916,18 @@ public final class Framework {
         ArrayList<String> result = new ArrayList<>(recentFilePaths);
         Collections.reverse(result);
         return result;
+    }
+
+    public WorkspaceEntry getWorkspaceEntry(Model<?, ?> model) {
+        for (WorkspaceEntry we : getWorkspace().getWorks()) {
+            Model<?, ?> curModel = we.getModelEntry().getModel();
+            if ((curModel == model)
+                    || ((curModel instanceof VisualModel visualModel) && (visualModel.getMathModel() == model))) {
+
+                return we;
+            }
+        }
+        return null;
     }
 
     public WorkspaceEntry getWorkspaceEntry(ModelEntry me) {

@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.stg.utils.StgUtils;
 import org.workcraft.serialisation.NoAutoSerialisation;
@@ -14,7 +13,7 @@ import java.awt.event.KeyEvent;
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Signal Transition")
 @SVGIcon("images/stg-node-signal_transition.svg")
-public class VisualSignalTransition extends VisualNamedTransition implements StateObserver {
+public class VisualSignalTransition extends VisualNamedTransition {
 
     public VisualSignalTransition(SignalTransition signalTransition) {
         super(signalTransition);

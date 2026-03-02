@@ -1,12 +1,12 @@
 package org.workcraft.plugins.cflt.algorithms;
 
+import org.workcraft.plugins.cflt.graph.Clique;
+import org.workcraft.plugins.cflt.graph.Graph;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.workcraft.plugins.cflt.graph.Clique;
-import org.workcraft.plugins.cflt.graph.Graph;
 
 // TODO: Remove this once a SAT Solver (or any other exact, efficient solution) is used instead of the ExhaustiveSearch
 public class MaxCliqueEnumerator {
@@ -22,31 +22,19 @@ public class MaxCliqueEnumerator {
         int degree;
         ArrayList<Vertex> neighbours = new ArrayList<>();
 
-        public int getX() {
+        int getX() {
             return x;
         }
 
-        public void setX(int x) {
+        void setX(int x) {
             this.x = x;
         }
 
-        public int getDegree() {
-            return degree;
-        }
-
-        public void setDegree(int degree) {
-            this.degree = degree;
-        }
-
-        public ArrayList<Vertex> getNeighbours() {
+        ArrayList<Vertex> getNeighbours() {
             return neighbours;
         }
 
-        public void setNeighbours(ArrayList<Vertex> neighbours) {
-            this.neighbours = neighbours;
-        }
-
-        public void addNeighbour(Vertex vertex) {
+        void addNeighbour(Vertex vertex) {
             this.neighbours.add(vertex);
             if (!vertex.getNeighbours().contains(vertex)) {
                 vertex.getNeighbours().add(this);
@@ -56,7 +44,7 @@ public class MaxCliqueEnumerator {
 
         }
 
-        public void removeNeighbour(Vertex vertex) {
+        void removeNeighbour(Vertex vertex) {
             this.neighbours.remove(vertex);
             if (vertex.getNeighbours().contains(vertex)) {
                 vertex.getNeighbours().remove(this);

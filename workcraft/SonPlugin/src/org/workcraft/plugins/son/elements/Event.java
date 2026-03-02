@@ -11,7 +11,7 @@ import java.awt.*;
 
 @IdentifierPrefix("e")
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
-public class Event extends MathNode implements TransitionNode, Time {
+public class Event extends MathNode implements TransitionNode {
 
     private Color foregroundColor = VisualCommonSettings.getBorderColor();
     private Color fillColor = VisualCommonSettings.getFillColor();
@@ -25,7 +25,7 @@ public class Event extends MathNode implements TransitionNode, Time {
     @Override
     public void setLabel(String value) {
         if (value == null) value = "";
-        if (!value.equals(value)) {
+        if (!value.equals(label)) {
             label = value;
             sendNotification(new PropertyChangedEvent(this, "label"));
         }

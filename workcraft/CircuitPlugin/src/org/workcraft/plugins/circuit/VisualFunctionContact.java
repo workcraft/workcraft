@@ -12,7 +12,6 @@ import org.workcraft.formula.visitors.FormulaToGraphics;
 import org.workcraft.gui.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
-import org.workcraft.observation.StateObserver;
 import org.workcraft.serialisation.NoAutoSerialisation;
 import org.workcraft.utils.ColorUtils;
 import org.workcraft.utils.Hierarchy;
@@ -27,7 +26,7 @@ import java.util.HashSet;
 @DisplayName("Input/output port")
 @Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/circuit-node-port.svg")
-public class VisualFunctionContact extends VisualContact implements StateObserver {
+public class VisualFunctionContact extends VisualContact {
 
     private enum ArrowType { UP, DOWN }
 

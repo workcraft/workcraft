@@ -1,11 +1,11 @@
 package org.workcraft.observation;
 
-import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.Model;
 
 public class ModelModifiedEvent implements StateEvent {
-    private final VisualModel sender;
+    private final Model sender;
 
-    public ModelModifiedEvent(VisualModel sender) {
+    public ModelModifiedEvent(Model sender) {
         this.sender = sender;
     }
 

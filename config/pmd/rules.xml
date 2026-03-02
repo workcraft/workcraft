@@ -84,6 +84,7 @@
         <exclude name="MutableStaticState"/> <!-- Interesting to enforce, but used often -->
         <exclude name="NPathComplexity"/> <!-- Interesting to enforce, but used often -->
         <exclude name="NcssCount"/> <!-- Interesting to enforce, but used often -->
+        <exclude name="PublicMemberInNonPublicType"/> <!-- Interesting to enforce, but used often -->
         <exclude name="SimplifiedTernary"/> <!-- Interesting to enforce, but used often -->
         <exclude name="SimplifyBooleanReturns"/> <!-- Too restrictive -->
         <exclude name="SingularField"/> <!-- Interesting to enforce, but used often -->

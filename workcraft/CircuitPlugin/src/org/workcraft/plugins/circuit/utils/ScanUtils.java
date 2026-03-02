@@ -16,12 +16,12 @@ import java.util.stream.Collectors;
 public final class ScanUtils {
 
     private static final class ScanData {
-        public final String scaninPortPrefix = CircuitSettings.getScaninPort();
-        public final String scanenPortPrefix = CircuitSettings.getScanenPort();
-        public final String scanoutPortPrefix = CircuitSettings.getScanoutPort();
-        public final String scaninPinName = CircuitSettings.getScaninPin();
-        public final String scanenPinName = CircuitSettings.getScanenPin();
-        public final String scanoutPinName = CircuitSettings.getScanoutPin();
+        final String scaninPortPrefix = CircuitSettings.getScaninPort();
+        final String scanenPortPrefix = CircuitSettings.getScanenPort();
+        final String scanoutPortPrefix = CircuitSettings.getScanoutPort();
+        final String scaninPinName = CircuitSettings.getScaninPin();
+        final String scanenPinName = CircuitSettings.getScanenPin();
+        final String scanoutPinName = CircuitSettings.getScanoutPin();
     }
 
     private ScanUtils() {

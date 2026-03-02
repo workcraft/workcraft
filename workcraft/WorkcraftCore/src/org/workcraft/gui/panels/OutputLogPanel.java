@@ -82,8 +82,8 @@ public class OutputLogPanel extends LogPanel {
 
         private void displayThreadUnsafe(String text) {
             LogType logType = getLogType(text);
-            // Replace \r\n by \n and suppress \r in MPSat output (inplace updating of unfolding info)
-            text = text.replaceAll("\r\n", "\n").replaceAll("\r", "");
+            // Suppress \r in MPSat output (inplace updating of unfolding info)
+            text = text.replaceAll("\r", "");
 
             if ((logType == LogType.STDOUT) || (logType == LogType.STDERR)) {
                 text = getTextWithoutPrefix(text);

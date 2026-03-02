@@ -16,7 +16,7 @@ import java.util.Collection;
 
 @IdentifierPrefix("b")
 @VisualClass (org.workcraft.plugins.son.elements.VisualBlock.class)
-public class Block extends PageNode implements TransitionNode, Time {
+public class Block extends PageNode implements TransitionNode {
     private String label = "";
     private Color foregroundColor = VisualCommonSettings.getBorderColor();
     private Color fillColor = VisualCommonSettings.getFillColor();

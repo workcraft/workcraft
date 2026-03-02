@@ -67,7 +67,7 @@ public abstract class AbstractInplaceEditor {
         @Override
         public void focusLost(FocusEvent arg0) {
             if (!cancelChanges) {
-                processResult(textPane.getText().replace("\n", NEWLINE_SEPARATOR));
+                processResult(textPane.getText().replaceAll("\r", "").replace("\n", NEWLINE_SEPARATOR));
             }
             dialog.dispose();
             afterEdit();

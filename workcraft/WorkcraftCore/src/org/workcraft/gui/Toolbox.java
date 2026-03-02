@@ -14,10 +14,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.*;
+import java.util.List;
 
 public class Toolbox implements GraphEditorKeyListener {
 
@@ -64,31 +62,36 @@ public class Toolbox implements GraphEditorKeyListener {
         final PluginManager pm = Framework.getInstance().getPluginManager();
         WorkspaceEntry we = editor.getWorkspaceEntry();
         VisualModel model = editor.getModel();
-        boolean isDefault = true;
-        // Tools associated with the model
-        for (GraphEditorTool tool : model.getGraphEditorTools()) {
-            addTool(tool, isDefault);
-            isDefault = false;
-        }
-        // Tools registered via PluginManager
+        // Tools associated with the model - in order of thier regestration in the model
+        List<GraphEditorTool> orderedTools = new ArrayList<>(model.getGraphEditorTools());
+        // Tools registered via PluginManager - take preferred position into acccount
         for (GraphEditorTool tool : pm.getGraphEditorTools()) {
             if (tool.isApplicableTo(we)) {
-                addTool(tool, isDefault);
+                int preferredToolboxPosition = tool.getPreferredToolboxPosition();
+                if ((preferredToolboxPosition >= 0) && (preferredToolboxPosition < orderedTools.size())) {
+                    orderedTools.add(preferredToolboxPosition, tool);
+                } else {
+                    orderedTools.add(tool);
+                }
+                orderedTools.add(tool);
             }
         }
-        // Select default tool
+        // Add ordered tools and select default tool
+        addTools(orderedTools);
         selectTool(defaultTool);
     }
 
-    private void addTool(final GraphEditorTool tool, boolean isDefault) {
-        tools.add(tool);
-        if (tool.requiresButton()) {
-            JToggleButton button = createToolButton(tool);
-            buttons.put(tool, button);
-        }
-        assignToolHotKey(tool, tool.getHotKeyCode());
-        if (isDefault) {
-            defaultTool = tool;
+    private void addTools(List<GraphEditorTool> orderedTools) {
+        for (GraphEditorTool tool : orderedTools) {
+            if (tools.isEmpty()) {
+                defaultTool = tool;
+            }
+            tools.add(tool);
+            if (tool.requiresButton()) {
+                JToggleButton button = createToolButton(tool);
+                buttons.put(tool, button);
+            }
+            assignToolHotKey(tool, tool.getHotKeyCode());
         }
     }
 

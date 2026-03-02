@@ -12,7 +12,7 @@ import org.workcraft.plugins.cpog.encoding.NumberProvider;
 import java.util.ArrayList;
 import java.util.List;
 
-class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanFormula> {
+public class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanFormula> {
 
     private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
