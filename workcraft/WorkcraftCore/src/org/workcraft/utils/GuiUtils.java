@@ -134,7 +134,7 @@ public class GuiUtils {
             g2d.dispose();
             return new ImageIcon(bufferedImage);
         } catch (Throwable e) {
-            System.err.println("Failed to load SVG file " + path);
+            System.err.println("Failed to load SVG file '" + path + "': " + e.getMessage());
             return null;
         }
     }
@@ -152,22 +152,22 @@ public class GuiUtils {
     public static Cursor createCursorFromIcon(ImageIcon icon, String name) {
         int iconSize = icon.getIconWidth();
         int crossLength = (int) Math.round(0.2 * iconSize);
-        int crossWidth = (int) Math.round(0.08 * iconSize);
+        int crossStrock = (int) Math.round(0.08 * iconSize);
         int crossGap = (int) Math.round(0.05 * iconSize);
-        int iconOffset = crossLength + crossGap + crossWidth + crossGap;
+        int iconOffset = crossLength + crossGap + crossStrock + crossGap;
         Image cursorImage = new BufferedImage(iconSize + iconOffset, iconSize + iconOffset, BufferedImage.TYPE_INT_ARGB);
         Graphics g = cursorImage.getGraphics();
         Image iconImage = icon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH);
         g.drawImage(iconImage, iconOffset, iconOffset, null);
         int posClose = crossLength + crossGap;
-        int posFar = posClose + crossWidth + crossGap;
+        int posFar = posClose + crossStrock + crossGap;
         g.setColor(Color.BLACK);
-        g.fillRect(posClose, 0, crossWidth, crossLength);
-        g.fillRect(posClose, posFar, crossWidth, crossLength);
-        g.fillRect(0, posClose, crossLength, crossWidth);
-        g.fillRect(posFar, posClose, crossLength, crossWidth);
+        g.fillRect(posClose, 0, crossStrock, crossLength);
+        g.fillRect(posClose, posFar, crossStrock, crossLength);
+        g.fillRect(0, posClose, crossLength, crossStrock);
+        g.fillRect(posFar, posClose, crossLength, crossStrock);
         Toolkit toolkit = Toolkit.getDefaultToolkit();
-        int offset = posClose + (int) Math.round(0.5 * crossWidth);
+        int offset = posClose + (int) Math.round(0.5 * crossStrock);
         Point hotSpot = new Point(offset, offset);
         return toolkit.createCustomCursor(cursorImage, hotSpot, name);
     }
