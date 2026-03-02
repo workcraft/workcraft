@@ -4,9 +4,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.workcraft.observation.ObservableHierarchy;
-
-public class ArbitraryInsertionGroupImpl extends AbstractGroup implements ObservableHierarchy, Container {
+public class ArbitraryInsertionGroupImpl extends AbstractGroup {
 
     private final LinkedList<Node> children = new LinkedList<>();
 

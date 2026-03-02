@@ -16,8 +16,8 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.*;
 
-public class VisualConnection extends VisualNode implements Node, Drawable, Shapable, Dependent,
-        Connection, VisualConnectionProperties, ObservableHierarchy {
+public class VisualConnection extends VisualNode implements Drawable, Shapable, Dependent, Connection,
+        VisualConnectionProperties, ObservableHierarchy {
 
     public static final String PROPERTY_CONNECTION_TYPE = "Connection type";
     public static final String PROPERTY_COLOR = "Color";

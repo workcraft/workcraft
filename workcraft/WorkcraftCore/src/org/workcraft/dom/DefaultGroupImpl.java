@@ -4,9 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 
-import org.workcraft.observation.ObservableHierarchy;
-
-public class DefaultGroupImpl extends AbstractGroup implements ObservableHierarchy, Container {
+public class DefaultGroupImpl extends AbstractGroup {
 
     private final Collection<Node> children = new LinkedHashSet<>();
 

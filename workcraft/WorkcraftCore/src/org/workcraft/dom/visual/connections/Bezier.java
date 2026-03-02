@@ -19,7 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, SelectionObserver {
+public class Bezier implements ConnectionGraphic, StateObserver, SelectionObserver {
 
     private final Node parent;
     private final VisualConnectionProperties connectionInfo;

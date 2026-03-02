@@ -11,7 +11,7 @@ import java.awt.*;
 
 @IdentifierPrefix("e")
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
-public class Event extends MathNode implements TransitionNode, Time {
+public class Event extends MathNode implements TransitionNode {
 
     private Color foregroundColor = VisualCommonSettings.getBorderColor();
     private Color fillColor = VisualCommonSettings.getFillColor();
