@@ -130,7 +130,9 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
             if (node == null) {
                 editor.getWorkspaceEntry().saveMemento();
                 generatedNode = generateNode(model, snapPosition, mouseEvent);
-                generatedNode.copyStyle(getTemplateNode());
+                if (generatedNode != null) {
+                    generatedNode.copyStyle(getTemplateNode());
+                }
             } else {
                 Toolkit.getDefaultToolkit().beep();
             }
