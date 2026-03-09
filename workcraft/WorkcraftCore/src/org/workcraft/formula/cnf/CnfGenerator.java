@@ -112,7 +112,7 @@ public class CnfGenerator {
                             break;
                         }
                     }
-                    if (!clauseDiscarded) result.addClauses(newClause);
+                    if (!clauseDiscarded) result.addClause(newClause);
                 }
 
             }

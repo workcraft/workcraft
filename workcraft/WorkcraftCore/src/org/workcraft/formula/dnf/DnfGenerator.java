@@ -119,7 +119,7 @@ public class DnfGenerator {
                             break;
                         }
                     }
-                    if (!clauseDiscarded) result.addClauses(newClause);
+                    if (!clauseDiscarded) result.addClause(newClause);
                 }
 
             }

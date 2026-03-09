@@ -25,7 +25,7 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
     }
 
     static class ConstantExpectingCnfGenerator implements BooleanVisitor<Void> {
-        private static boolean cleverOptimiseAnd = true;
+        private static final boolean cleverOptimiseAnd = true;
         private final BooleanVisitor<Literal> dumbGenerator;
         private final Cnf result;
         private boolean currentResult = true;
@@ -44,7 +44,7 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
                 if (!cleverOptimiseAnd) {
                     Literal x = and.getX().accept(dumbGenerator);
                     Literal y = and.getY().accept(dumbGenerator);
-                    result.addClauses(or(not(x), not(y)));
+                    result.addClause(or(not(x), not(y)));
                 } else {
                     Literal[][] side1 = getBiClause(and.getX());
                     Literal[][] side2 = getBiClause(and.getY());
@@ -57,7 +57,7 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
                             for (int k = 0; k < side2[j].length; k++) {
                                 list.add(not(side2[j][k]));
                             }
-                            result.addClauses(new CnfClause(list));
+                            result.addClause(new CnfClause(list));
                         }
                     }
                 }
@@ -145,11 +145,11 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
             Literal x = iff.getX().accept(dumbGenerator);
             Literal y = iff.getY().accept(dumbGenerator);
             if (currentResult) {
-                result.addClauses(or(x, not(y)));
-                result.addClauses(or(not(x), y));
+                result.addClause(or(x, not(y)));
+                result.addClause(or(not(x), y));
             } else {
-                result.addClauses(or(x, y));
-                result.addClauses(or(not(x), not(y)));
+                result.addClause(or(x, y));
+                result.addClause(or(not(x), not(y)));
             }
             return null;
         }
@@ -166,9 +166,9 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
         @Override
         public Void visit(BooleanVariable node) {
             if (currentResult) {
-                result.addClauses(or(literal(node)));
+                result.addClause(or(literal(node)));
             } else {
-                result.addClauses(or(not(node)));
+                result.addClause(or(not(node)));
             }
             return null;
         }
@@ -231,9 +231,9 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
     public Literal visit(And node) {
         return visit(node,
             (res, x, y) -> {
-                result.addClauses(or(res, not(x), not(y)));
-                result.addClauses(or(not(res), x));
-                result.addClauses(or(not(res), y));
+                result.addClause(or(res, not(x), not(y)));
+                result.addClause(or(not(res), x));
+                result.addClause(or(not(res), y));
             }
         );
     }
@@ -242,10 +242,10 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
     public Literal visit(Iff node) {
         return visit(node,
                 (res, x, y) -> {
-                    result.addClauses(or(not(res), not(x), y));
-                    result.addClauses(or(not(res), x, not(y)));
-                    result.addClauses(or(res, not(x), not(y)));
-                    result.addClauses(or(res, x, y));
+                    result.addClause(or(not(res), not(x), y));
+                    result.addClause(or(not(res), x, not(y)));
+                    result.addClause(or(res, not(x), not(y)));
+                    result.addClause(or(res, x, y));
                 }
             );
     }
@@ -269,9 +269,9 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
     public Literal visit(Imply node) {
         return visit(node,
                 (res, x, y) -> {
-                    result.addClauses(or(not(res), not(x), y));
-                    result.addClauses(or(res, not(y)));
-                    result.addClauses(or(res, x));
+                    result.addClause(or(not(res), not(x), y));
+                    result.addClause(or(res, not(y)));
+                    result.addClause(or(res, x));
                 }
             );
     }
@@ -285,9 +285,9 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
     public Literal visit(Or node) {
         return visit(node,
                 (res, x, y) -> {
-                    result.addClauses(or(not(res), x, y));
-                    result.addClauses(or(res, not(y)));
-                    result.addClauses(or(res, not(x)));
+                    result.addClause(or(not(res), x, y));
+                    result.addClause(or(res, not(y)));
+                    result.addClause(or(res, not(x)));
                 }
             );
     }
@@ -296,10 +296,10 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
     public Literal visit(Xor node) {
         return visit(node,
                 (res, x, y) -> {
-                    result.addClauses(or(res, not(x), y));
-                    result.addClauses(or(res, x, not(y)));
-                    result.addClauses(or(not(res), not(x), not(y)));
-                    result.addClauses(or(not(res), x, y));
+                    result.addClause(or(res, not(x), y));
+                    result.addClause(or(res, x, not(y)));
+                    result.addClause(or(not(res), not(x), not(y)));
+                    result.addClause(or(not(res), x, y));
                 }
             );
     }

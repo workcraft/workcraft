@@ -31,7 +31,7 @@ subprojects {
 
     compileJava {
         options.encoding = 'UTF-8'
-        options.compilerArgs << "-Xlint:deprecation"
+        options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
         if (JavaVersion.current().isJava9Compatible()) {
             options.release = gradle.javaReleaseVersion
         }
