@@ -4,7 +4,6 @@ import org.workcraft.Framework;
 import org.workcraft.gui.layouts.SmartFlowLayout;
 import org.workcraft.gui.tasks.TaskControl;
 import org.workcraft.tasks.BasicProgressMonitor;
-import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskMonitor;
 import org.workcraft.utils.GuiUtils;
@@ -18,7 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 
 public class TaskManagerPanel extends JPanel implements TaskMonitor {
 
-    static class TaskControlMonitor extends BasicProgressMonitor<Object> {
+    public static class TaskControlMonitor<T> extends BasicProgressMonitor<T> {
         private final TaskManagerPanel taskManagerPanel;
         private final TaskControl taskControl;
 
@@ -33,7 +32,7 @@ public class TaskManagerPanel extends JPanel implements TaskMonitor {
         }
 
         @Override
-        public void isFinished(Result<?> result) {
+        public void isFinished(Result<? extends T> result) {
             super.isFinished(result);
             SwingUtilities.invokeLater(() -> taskManagerPanel.removeTaskControl(taskControl));
         }
@@ -127,9 +126,8 @@ public class TaskManagerPanel extends JPanel implements TaskMonitor {
         updater.run();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public ProgressMonitor<?> taskStarting(final String description) {
+    public <T> TaskControlMonitor<T> taskStarting(final String description) {
         TaskControlGenerator tcg = new TaskControlGenerator(content, description);
         if (SwingUtilities.isEventDispatchThread()) {
             tcg.run();
@@ -141,7 +139,7 @@ public class TaskManagerPanel extends JPanel implements TaskMonitor {
             }
         }
         updater.run();
-        return new TaskControlMonitor(this, tcg.getTaskControl());
+        return new TaskControlMonitor<>(this, tcg.getTaskControl());
     }
 
     public boolean isEmpty() {

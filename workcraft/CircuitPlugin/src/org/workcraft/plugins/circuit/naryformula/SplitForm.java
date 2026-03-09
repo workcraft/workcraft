@@ -10,8 +10,8 @@ public class SplitForm extends Nf<BooleanFormula> {
     public SplitForm() {
     }
 
-    public SplitForm(BooleanFormula... clauses) {
-        super(clauses);
+    public SplitForm(BooleanFormula clause) {
+        super(clause);
     }
 
     @Override

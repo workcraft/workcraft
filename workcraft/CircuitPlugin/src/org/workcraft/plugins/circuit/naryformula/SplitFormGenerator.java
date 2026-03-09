@@ -81,7 +81,7 @@ public class SplitFormGenerator {
             }
             // Combine the formula and ins operands together
             SplitForm result = new SplitForm();
-            result.addClauses(formula);
+            result.addClause(formula);
             result.addAll(operands);
             return result;
         }

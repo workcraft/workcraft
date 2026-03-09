@@ -3,7 +3,6 @@ package org.workcraft.formula;
 import org.workcraft.formula.visitors.BooleanVisitor;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public abstract class Nf<C> implements BooleanFormula {
@@ -13,8 +12,8 @@ public abstract class Nf<C> implements BooleanFormula {
     public Nf() {
     }
 
-    public Nf(C... clauses) {
-        this(Arrays.asList(clauses));
+    public Nf(C clause) {
+        this.clauses.add(clause);
     }
 
     public Nf(List<C> clauses) {
@@ -25,12 +24,12 @@ public abstract class Nf<C> implements BooleanFormula {
         return clauses;
     }
 
-    private void addClauses(List<C> list) {
-        clauses.addAll(list);
+    public void addClause(C clause) {
+        clauses.add(clause);
     }
 
-    public void addClauses(C... arr) {
-        addClauses(Arrays.asList(arr));
+    private void addClauses(List<C> clauseList) {
+        clauses.addAll(clauseList);
     }
 
     public void add(Nf<C> nf) {

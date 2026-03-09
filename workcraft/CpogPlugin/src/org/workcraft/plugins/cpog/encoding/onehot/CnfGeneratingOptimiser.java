@@ -112,7 +112,9 @@ public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
                     inverse = false;
                 } else if (ch == '0') {
                     inverse = true;
-                } else throw new RuntimeException("unknown symbol: " + parseBoolean(ch));
+                } else {
+                    throw new RuntimeException("unknown symbol: " + parseBoolean(ch));
+                }
 
                 List<CnfClause> value = select(functionSpace[j], varId, inverse);
 
@@ -125,7 +127,6 @@ public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
         tableConditions.addAll(rho);
 
         // Forming solution output here
-
         BooleanFormula[] funcs = new BooleanFormula[totalVariables];
         for (int j = 0; j < nonDerivedVariables; j++) {
             funcs[j * 2] = variables[j];
@@ -151,9 +152,7 @@ public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
         BooleanFormula[][] enc = new BooleanFormula[encodings.length][];
         for (int i = 0; i < enc.length; i++) {
             enc[i] = new BooleanFormula[encodings[i].length];
-            for (int j = 0; j < enc[i].length; j++) {
-                enc[i][j] = encodings[i][j];
-            }
+            System.arraycopy(encodings[i], 0, enc[i], 0, enc[i].length);
         }
 
         return new OptimisationTask<>(functionVars, enc, new Cnf(tableConditions));

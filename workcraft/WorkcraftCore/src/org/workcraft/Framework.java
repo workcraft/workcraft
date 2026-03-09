@@ -106,7 +106,7 @@ public final class Framework {
 
         @Override
         public Object run(Context cx) {
-            return script.exec(cx, scope);
+            return script.exec(cx, scope, null);
         }
     }
 
@@ -146,6 +146,7 @@ public final class Framework {
     }
 
     static class JavascriptPassThroughException extends RuntimeException {
+        @Serial
         private static final long serialVersionUID = 8906492547355596206L;
         private final String scriptTrace;
 

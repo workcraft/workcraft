@@ -1,14 +1,14 @@
 package org.workcraft.plugins.cpog.encoding;
 
-import static org.workcraft.plugins.cpog.encoding.CnfOperations.not;
-import static org.workcraft.plugins.cpog.encoding.CnfOperations.or;
+import org.workcraft.formula.Literal;
+import org.workcraft.formula.cnf.Cnf;
+import org.workcraft.formula.cnf.CnfClause;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.workcraft.formula.Literal;
-import org.workcraft.formula.cnf.Cnf;
-import org.workcraft.formula.cnf.CnfClause;
+import static org.workcraft.plugins.cpog.encoding.CnfOperations.not;
+import static org.workcraft.plugins.cpog.encoding.CnfOperations.or;
 
 public class CnfSorter {
     public static Cnf sortRound(List<Literal> result, List<Literal> x) {
@@ -29,23 +29,20 @@ public class CnfSorter {
         // (!s[i] + s[i-1] + x[i]) (!s[i-1] + s[i]) (!x[i] + s[i])
         Cnf result = new Cnf();
 
-        result.addClauses(or(not(s.get(0)), x.get(0)));
-        result.addClauses(or(not(x.get(0)), s.get(0)));
+        result.addClause(or(not(s.get(0)), x.get(0)));
+        result.addClause(or(not(x.get(0)), s.get(0)));
         for (int i = 1; i < s.size(); i++) {
-            result.addClauses(or(not(s.get(i)), s.get(i - 1), x.get(i)));
-            result.addClauses(or(not(s.get(i - 1)), s.get(i)));
-            result.addClauses(or(not(x.get(i)), s.get(i)));
+            result.addClause(or(not(s.get(i)), s.get(i - 1), x.get(i)));
+            result.addClause(or(not(s.get(i - 1)), s.get(i)));
+            result.addClause(or(not(x.get(i)), s.get(i)));
         }
 
         return result;
     }
 
     public static Cnf sortRound(List<Literal> result, List<Literal> s, List<Literal> x) {
-
-        List<CnfClause> clauses = new ArrayList<>();
-
         Cnf thermoCnf = makeThermometer(s, x);
-        clauses.addAll(thermoCnf.getClauses());
+        List<CnfClause> clauses = new ArrayList<>(thermoCnf.getClauses());
 
         // y[x] = s[i] x[i+1]
         // (!y[i] + s[i]) (!y[i] + x[i+1]) (!s[i] + !x[i+1] + y[i])
