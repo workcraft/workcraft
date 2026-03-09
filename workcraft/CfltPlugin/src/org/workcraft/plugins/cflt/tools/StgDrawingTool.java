@@ -4,10 +4,10 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Graph;
+import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.node.NodeDetails;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
-import org.workcraft.plugins.cflt.utils.GraphUtils;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -20,7 +20,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.*;
 
 import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.getEdgeCliqueCover;
-import static org.workcraft.plugins.cflt.utils.GraphUtils.getCleanVertexName;
 
 public class StgDrawingTool implements VisualModelDrawingTool {
     private final Map<String, VisualSignalTransition> transitionNameToVisualTransition = new HashMap<>();
@@ -35,16 +34,16 @@ public class StgDrawingTool implements VisualModelDrawingTool {
             boolean isSequence, boolean isRoot, Mode mode, WorkspaceEntry we) {
 
         List<Clique> edgeCliqueCover = getEdgeCliqueCover(inputGraph, outputGraph, isSequence, mode);
-        List<String> vertexNames = isSequence
-                ? inputGraph.getVertexNames()
+        List<Vertex> vertexNames = isSequence
+                ? inputGraph.getVertices()
                 : new ArrayList<>();
-        HashSet<String> inputVertexNames = new HashSet<>(vertexNames);
+        HashSet<Vertex> inputVertices = new HashSet<>(vertexNames);
 
         VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
         if (inputGraph.getIsolatedVertices() != null) {
             this.drawIsolatedVisualObjects(inputGraph, visualStg, isSequence, isRoot);
         }
-        this.drawRemainingVisualObjects(edgeCliqueCover, visualStg, inputVertexNames, isRoot);
+        this.drawRemainingVisualObjects(edgeCliqueCover, visualStg, inputVertices, isRoot);
         makePlacesImplicit(visualStg);
     }
 
@@ -57,23 +56,22 @@ public class StgDrawingTool implements VisualModelDrawingTool {
     }
 
     private void drawRemainingVisualObjects(List<Clique> edgeCliqueCover, VisualStg visualStg,
-            Set<String> inputVertexNames, boolean isRoot) {
+            Set<Vertex> inputVertices, boolean isRoot) {
         for (Clique clique : edgeCliqueCover) {
             VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, isRoot, Positioning.LEFT);
 
-            for (String vertexName : clique.getVertexNames()) {
-                GraphUtils.GetCleanVertexNameResponse getCleanVertexNameResponse = getCleanVertexName(vertexName);
-                String cleanVertexName = getCleanVertexNameResponse.vertexName();
-                boolean isClone = getCleanVertexNameResponse.isClone();
-                boolean isTransitionPresent = transitionNameToVisualTransition.containsKey(cleanVertexName);
+            for (Vertex vertex : clique.getVertices()) {
+                String name = vertex.name();
+                boolean isClone = vertex.isClone();
+                boolean isTransitionPresent = transitionNameToVisualTransition.containsKey(name);
 
                 VisualSignalTransition visualSignalTransition = isTransitionPresent
-                        ? transitionNameToVisualTransition.get(cleanVertexName)
-                        : createVisualSignalTransition(visualStg, cleanVertexName);
+                        ? transitionNameToVisualTransition.get(name)
+                        : createVisualSignalTransition(visualStg, name);
 
-                transitionNameToVisualTransition.put(cleanVertexName, visualSignalTransition);
+                transitionNameToVisualTransition.put(name, visualSignalTransition);
 
-                ConnectionDirection connectionDirection = inputVertexNames.contains(cleanVertexName) || isClone
+                ConnectionDirection connectionDirection = inputVertices.contains(vertex) || isClone
                         ? ConnectionDirection.TRANSITION_TO_PLACE
                         : ConnectionDirection.PLACE_TO_TRANSITION;
 
@@ -83,8 +81,9 @@ public class StgDrawingTool implements VisualModelDrawingTool {
     }
 
     private void drawIsolatedVisualObjects(Graph inputGraph, VisualStg visualStg, boolean isSequence, boolean isRoot) {
-        for (String vertex : inputGraph.getIsolatedVertices()) {
-            boolean isTransitionNamePresent = transitionNameToVisualTransition.containsKey(vertex);
+        for (Vertex vertex : inputGraph.getIsolatedVertices()) {
+            String name = vertex.name();
+            boolean isTransitionNamePresent = transitionNameToVisualTransition.containsKey(name);
 
             VisualStgPlace visualStgPlace = null;
             if (!isTransitionNamePresent && !isSequence) {
@@ -95,13 +94,13 @@ public class StgDrawingTool implements VisualModelDrawingTool {
 
             VisualSignalTransition visualSignalTransition = null;
             if (!isTransitionNamePresent && !isSequence) {
-                visualSignalTransition = createVisualSignalTransition(visualStg, vertex);
+                visualSignalTransition = createVisualSignalTransition(visualStg, name);
             } else if (isRoot) {
-                visualSignalTransition = transitionNameToVisualTransition.get(vertex);
+                visualSignalTransition = transitionNameToVisualTransition.get(name);
             }
 
             if (visualStgPlace != null && visualSignalTransition != null) {
-                transitionNameToVisualTransition.put(vertex, visualSignalTransition);
+                transitionNameToVisualTransition.put(name, visualSignalTransition);
                 connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
             }
         }
