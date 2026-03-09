@@ -251,4 +251,13 @@ public class DesktopApi {
         return KeyStroke.getKeyStroke(KeyEvent.VK_0, getMenuKeyMask());
     }
 
+    public static String getUserWorkingDirectoryPath() {
+        return System.getProperty("user.dir");
+    }
+
+    public static File getUserWorkingDirectory() {
+        String path =  getUserWorkingDirectoryPath();
+        return (path == null) ? null : new File(path);
+    }
+
 }
