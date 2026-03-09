@@ -1,5 +1,6 @@
 package org.workcraft.gui.properties;
 
+import org.workcraft.utils.DesktopApi;
 import org.workcraft.utils.DialogUtils;
 
 import javax.swing.*;
@@ -53,7 +54,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
 
     private void chooseFile() {
         JFileChooser fc = DialogUtils.createFileOpener("Select file", false, null);
-
+        fc.setCurrentDirectory(DesktopApi.getUserWorkingDirectory());
         if (file != null) {
             File dir = file.getParentFile();
             if ((dir != null) && dir.exists()) {
