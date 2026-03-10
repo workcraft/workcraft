@@ -3,9 +3,3 @@ dependencies {
     implementation project(':PetriPlugin')
     implementation project(':StgPlugin')
 }
-
-// The sequence heuristic is similar to the min/max heuristic
-cpdCheck {
-    exclude 'org/workcraft/plugins/cflt/algorithms/MinMaxHeuristic.java'
-    exclude 'org/workcraft/plugins/cflt/algorithms/SequenceHeuristic.java'
-}
