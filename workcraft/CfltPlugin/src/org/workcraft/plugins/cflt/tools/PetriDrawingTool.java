@@ -6,9 +6,9 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Graph;
+import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
-import org.workcraft.plugins.cflt.utils.GraphUtils;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -17,7 +17,6 @@ import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.getEdgeCliqueCover;
-import static org.workcraft.plugins.cflt.utils.GraphUtils.getCleanVertexName;
 
 public class PetriDrawingTool implements VisualModelDrawingTool {
     private final Map<String, VisualTransition> transitionNameToVisualTransition = new HashMap<>();
@@ -32,16 +31,16 @@ public class PetriDrawingTool implements VisualModelDrawingTool {
             boolean isSequence, boolean isRoot, Mode mode, WorkspaceEntry we) {
 
         List<Clique> edgeCliqueCover = getEdgeCliqueCover(inputGraph, outputGraph, isSequence, mode);
-        List<String> vertexNames = isSequence
-                ? inputGraph.getVertexNames()
+        List<Vertex> vertices = isSequence
+                ? inputGraph.getVertices()
                 : new ArrayList<>();
-        HashSet<String> inputVertexNames = new HashSet<>(vertexNames);
+        HashSet<Vertex> inputVertices = new HashSet<>(vertices);
 
         VisualPetri visualPetri = WorkspaceUtils.getAs(we, VisualPetri.class);
         if (inputGraph.getIsolatedVertices() != null) {
             this.drawIsolatedVisualObjects(inputGraph, visualPetri, isSequence, isRoot);
         }
-        this.drawRemainingVisualObjects(edgeCliqueCover, visualPetri, inputVertexNames, isRoot);
+        this.drawRemainingVisualObjects(edgeCliqueCover, visualPetri, inputVertices, isRoot);
     }
 
     @Override
@@ -53,24 +52,22 @@ public class PetriDrawingTool implements VisualModelDrawingTool {
     }
 
     private void drawRemainingVisualObjects(List<Clique> edgeCliqueCover, VisualPetri visualPetri,
-            Set<String> inputVertexNames, boolean isRoot) {
-
+            Set<Vertex> inputVertices, boolean isRoot) {
         for (Clique clique : edgeCliqueCover) {
             VisualPlace visualPlace = createVisualPlace(visualPetri, isRoot, Positioning.LEFT);
 
-            for (String vertexName : clique.getVertexNames()) {
-                GraphUtils.GetCleanVertexNameResponse getCleanVertexNameResponse = getCleanVertexName(vertexName);
-                String cleanVertexName = getCleanVertexNameResponse.vertexName();
-                boolean isClone = getCleanVertexNameResponse.isClone();
-                boolean isTransitionPresent = transitionNameToVisualTransition.containsKey(cleanVertexName);
+            for (Vertex vertex : clique.getVertices()) {
+                String name = vertex.name();
+                boolean isClone = vertex.isClone();
+                boolean isTransitionPresent = transitionNameToVisualTransition.containsKey(name);
 
                 VisualTransition visualTransition = isTransitionPresent
-                        ? transitionNameToVisualTransition.get(cleanVertexName)
-                        : createVisualTransition(visualPetri, cleanVertexName);
+                        ? transitionNameToVisualTransition.get(name)
+                        : createVisualTransition(visualPetri, name);
 
-                transitionNameToVisualTransition.put(cleanVertexName, visualTransition);
+                transitionNameToVisualTransition.put(name, visualTransition);
 
-                ConnectionDirection connectionDirection = inputVertexNames.contains(cleanVertexName) || isClone
+                ConnectionDirection connectionDirection = inputVertices.contains(vertex) || isClone
                         ? ConnectionDirection.TRANSITION_TO_PLACE
                         : ConnectionDirection.PLACE_TO_TRANSITION;
 
@@ -80,8 +77,9 @@ public class PetriDrawingTool implements VisualModelDrawingTool {
     }
 
     private void drawIsolatedVisualObjects(Graph inputGraph, VisualPetri visualPetri, boolean isSequence, boolean isRoot) {
-        for (String vertexName : inputGraph.getIsolatedVertices()) {
-            boolean isTransitionNamePresent = transitionNameToVisualTransition.containsKey(vertexName);
+        for (Vertex vertex : inputGraph.getIsolatedVertices()) {
+            String name = vertex.name();
+            boolean isTransitionNamePresent = transitionNameToVisualTransition.containsKey(name);
 
             VisualPlace visualPlace = null;
             if (!isTransitionNamePresent && !isSequence) {
@@ -92,13 +90,13 @@ public class PetriDrawingTool implements VisualModelDrawingTool {
 
             VisualTransition visualTransition = null;
             if (!isTransitionNamePresent && !isSequence) {
-                visualTransition = createVisualTransition(visualPetri, vertexName);
+                visualTransition = createVisualTransition(visualPetri, name);
             } else if (isRoot) {
-                visualTransition = transitionNameToVisualTransition.get(vertexName);
+                visualTransition = transitionNameToVisualTransition.get(name);
             }
 
             if (visualPlace != null && visualTransition != null) {
-                transitionNameToVisualTransition.put(vertexName, visualTransition);
+                transitionNameToVisualTransition.put(name, visualTransition);
                 connectVisualPlaceAndVisualTransition(visualPetri, visualPlace, visualTransition, ConnectionDirection.PLACE_TO_TRANSITION);
             }
         }

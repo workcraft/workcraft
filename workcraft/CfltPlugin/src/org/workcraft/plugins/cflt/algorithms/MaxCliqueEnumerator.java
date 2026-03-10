@@ -2,6 +2,7 @@ package org.workcraft.plugins.cflt.algorithms;
 
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Graph;
+import org.workcraft.plugins.cflt.graph.Vertex;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,15 +13,15 @@ import java.util.Map;
 public class MaxCliqueEnumerator {
 
     int nodeCount;
-    List<Vertex> graph = new ArrayList<>();
+    List<EnumeratorVertex> graph = new ArrayList<>();
     List<Clique> allMaxCliques = new ArrayList<>();
-    Map<String, Integer> vertexNameToIndex = new HashMap<>();
-    Map<Integer, String> vertexIndexToName = new HashMap<>();
+    Map<Vertex, Integer> vertexToIndex = new HashMap<>();
+    Map<Integer, Vertex> indexToVertex = new HashMap<>();
 
-    static class Vertex implements Comparable<Vertex> {
+    static class EnumeratorVertex implements Comparable<EnumeratorVertex> {
         int x;
         int degree;
-        ArrayList<Vertex> neighbours = new ArrayList<>();
+        ArrayList<EnumeratorVertex> neighbours = new ArrayList<>();
 
         int getX() {
             return x;
@@ -30,11 +31,11 @@ public class MaxCliqueEnumerator {
             this.x = x;
         }
 
-        ArrayList<Vertex> getNeighbours() {
+        ArrayList<EnumeratorVertex> getNeighbours() {
             return neighbours;
         }
 
-        void addNeighbour(Vertex vertex) {
+        void addNeighbour(EnumeratorVertex vertex) {
             this.neighbours.add(vertex);
             if (!vertex.getNeighbours().contains(vertex)) {
                 vertex.getNeighbours().add(this);
@@ -44,7 +45,7 @@ public class MaxCliqueEnumerator {
 
         }
 
-        void removeNeighbour(Vertex vertex) {
+        void removeNeighbour(EnumeratorVertex vertex) {
             this.neighbours.remove(vertex);
             if (vertex.getNeighbours().contains(vertex)) {
                 vertex.getNeighbours().remove(this);
@@ -54,7 +55,7 @@ public class MaxCliqueEnumerator {
         }
 
         @Override
-        public int compareTo(Vertex o) {
+        public int compareTo(EnumeratorVertex o) {
             return Integer.compare(this.degree, o.degree);
         }
     }
@@ -71,46 +72,46 @@ public class MaxCliqueEnumerator {
     private void initGraph() {
         graph.clear();
         for (int i = 0; i < nodeCount; i++) {
-            Vertex v = new Vertex();
+            EnumeratorVertex v = new EnumeratorVertex();
             v.setX(i);
             graph.add(v);
         }
     }
 
     private void readNextGraph(Graph g) {
-        nodeCount = g.getVertexNames().size();
+        nodeCount = g.getVertices().size();
         int edgesCount = g.getEdges().size();
         initGraph();
 
         for (int k = 0; k < edgesCount; k++) {
-            String[] strArr = new String[2];
-            strArr[0] = g.getEdges().get(k).firstVertexName();
-            strArr[1] = g.getEdges().get(k).secondVertexName();
-            int u = vertexNameToIndex.get(strArr[0]);
-            int v = vertexNameToIndex.get(strArr[1]);
-            Vertex vertexU = graph.get(u);
-            Vertex vertexV = graph.get(v);
+            Vertex[] vertexArray = new Vertex[2];
+            vertexArray[0] = g.getEdges().get(k).firstVertex();
+            vertexArray[1] = g.getEdges().get(k).secondVertex();
+            int u = vertexToIndex.get(vertexArray[0]);
+            int v = vertexToIndex.get(vertexArray[1]);
+            EnumeratorVertex vertexU = graph.get(u);
+            EnumeratorVertex vertexV = graph.get(v);
             vertexU.addNeighbour(vertexV);
         }
     }
-    private ArrayList<Vertex> getNeighbours(Vertex v) {
+    private ArrayList<EnumeratorVertex> getNeighbours(EnumeratorVertex v) {
         int i = v.getX();
         return graph.get(i).neighbours;
     }
-    private List<Vertex> intersect(List<Vertex> arlFirst,
-            List<Vertex> arlSecond) {
-        List<Vertex> arlHold = new ArrayList<>(arlFirst);
+    private List<EnumeratorVertex> intersect(List<EnumeratorVertex> arlFirst,
+            List<EnumeratorVertex> arlSecond) {
+        List<EnumeratorVertex> arlHold = new ArrayList<>(arlFirst);
         arlHold.retainAll(arlSecond);
         return arlHold;
     }
-    private void bronKerboschWithoutPivot(List<Vertex> r, List<Vertex> p, List<Vertex> x, String pre) {
+    private void bronKerboschWithoutPivot(List<EnumeratorVertex> r, List<EnumeratorVertex> p, List<EnumeratorVertex> x, String pre) {
         if (p.isEmpty() && x.isEmpty()) {
             saveClique(r);
             return;
         }
 
-        ArrayList<Vertex> p1 = new ArrayList<>(p);
-        for (Vertex v : p) {
+        ArrayList<EnumeratorVertex> p1 = new ArrayList<>(p);
+        for (EnumeratorVertex v : p) {
             r.add(v);
             bronKerboschWithoutPivot(r, intersect(p1, getNeighbours(v)),
                     intersect(x, getNeighbours(v)), pre + "\t");
@@ -120,22 +121,22 @@ public class MaxCliqueEnumerator {
         }
     }
     private void bronKerboschPivotExecute() {
-        List<Vertex> x = new ArrayList<>();
-        List<Vertex> r = new ArrayList<>();
-        List<Vertex> p = new ArrayList<>(graph);
+        List<EnumeratorVertex> x = new ArrayList<>();
+        List<EnumeratorVertex> r = new ArrayList<>();
+        List<EnumeratorVertex> p = new ArrayList<>(graph);
         bronKerboschWithoutPivot(r, p, x, "");
     }
-    private void saveClique(List<Vertex> r) {
+    private void saveClique(List<EnumeratorVertex> r) {
         Clique maxClique = new Clique();
-        for (Vertex v : r) {
-            maxClique.addVertexName(vertexIndexToName.get(v.getX()));
+        for (EnumeratorVertex v : r) {
+            maxClique.addVertex(indexToVertex.get(v.getX()));
         }
         allMaxCliques.add(maxClique);
     }
     private void initialiseMap(Graph graph) {
-        for (int i = 0; i < graph.getVertexNames().size(); i++) {
-            vertexNameToIndex.put(graph.getVertexNames().get(i), i);
-            vertexIndexToName.put(i, graph.getVertexNames().get(i));
+        for (int i = 0; i < graph.getVertices().size(); i++) {
+            vertexToIndex.put(graph.getVertices().get(i), i);
+            indexToVertex.put(i, graph.getVertices().get(i));
         }
     }
 }

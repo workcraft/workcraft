@@ -6,47 +6,46 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static org.workcraft.plugins.cflt.utils.GraphUtils.SPECIAL_CLONE_CHARACTER;
-
 public class Graph {
-    private List<Edge> edges = new ArrayList<>();
-    private List<String> vertexNames = new ArrayList<>();
 
-    public Graph(List<Edge> edges, List<String> vertices) {
+    private List<Edge> edges = new ArrayList<>();
+    private List<Vertex> vertices = new ArrayList<>();
+
+    public Graph(List<Edge> edges, List<Vertex> vertices) {
         this.edges = edges;
-        this.vertexNames = vertices;
+        this.vertices = vertices;
     }
 
     public Graph() {
     }
 
-    public void addVertexName(String vertexName) {
-        this.vertexNames.add(vertexName);
+    public void addVertex(Vertex vertex) {
+        this.vertices.add(vertex);
     }
 
     public void addEdge(Edge edge) {
         this.getEdges().add(edge);
     }
 
-    public List<String> getIsolatedVertices() {
-        if (getEdges().isEmpty()) return new ArrayList<>(this.vertexNames);
+    public List<Vertex> getIsolatedVertices() {
+        if (getEdges().isEmpty()) return new ArrayList<>(this.vertices);
 
-        Set<String> connectedVertices = edges
+        Set<Vertex> connectedVertices = edges
                 .stream()
-                .flatMap(edge -> Stream.of(edge.firstVertexName(), edge.secondVertexName()))
+                .flatMap(edge -> Stream.of(edge.firstVertex(), edge.secondVertex()))
                 .collect(Collectors.toSet());
 
-        return vertexNames
+        return vertices
             .stream()
-            .filter(vertexName -> !connectedVertices.contains(vertexName))
+            .filter(vertex -> !connectedVertices.contains(vertex))
             .collect(Collectors.toCollection(ArrayList::new));
     }
-    public List<String> getVertexNames() {
-        return vertexNames;
+    public List<Vertex> getVertices() {
+        return vertices;
     }
 
-    public void setVertexNames(List<String> vertexNames) {
-        this.vertexNames = vertexNames;
+    public void setVertices(List<Vertex> vertices) {
+        this.vertices = vertices;
     }
 
     public void setEdges(List<Edge> edges) {
@@ -57,19 +56,18 @@ public class Graph {
         return edges;
     }
 
-    public Graph cloneGraph(int counter) {
-        String suffix = SPECIAL_CLONE_CHARACTER + counter;
+    public Graph deepClone(int cloneGeneration) {
 
-        List<String> vertices = this.vertexNames
+        List<Vertex> vertices = this.vertices
                 .stream()
-                .map(vertexName -> vertexName + suffix)
+                .map(vertex -> vertex.clone(cloneGeneration))
                 .collect(Collectors.toCollection(ArrayList::new));
 
         List<Edge> edges = this.getEdges()
                 .stream()
-                .map(edgeName -> new Edge(
-                        edgeName.firstVertexName() + suffix,
-                        edgeName.secondVertexName() + suffix
+                .map(edge -> new Edge(
+                        edge.firstVertex().clone(cloneGeneration),
+                        edge.secondVertex().clone(cloneGeneration)
                 ))
                 .collect(Collectors.toCollection(ArrayList::new));
 
