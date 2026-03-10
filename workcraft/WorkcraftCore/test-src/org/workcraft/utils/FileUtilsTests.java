@@ -107,7 +107,7 @@ class FileUtilsTests {
 
     @Test
     void testFilePath() {
-        String dirPath = System.getProperty("user.dir");
+        String dirPath = DesktopApi.getUserWorkingDirectoryPath();
         File dir = new File(dirPath);
         String fileName = "test.txt";
         File file = new File(fileName);

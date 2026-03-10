@@ -834,8 +834,7 @@ public final class Framework {
 
     public File getWorkingDirectory() {
         if (workingDirectory == null) {
-            String path = System.getProperty("user.dir");
-            setWorkingDirectory(path == null ? null : new File(path));
+            setWorkingDirectory(DesktopApi.getUserWorkingDirectory());
         }
         return workingDirectory;
     }
