@@ -8,7 +8,6 @@ import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.node.NodeCollection;
-import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -27,20 +26,38 @@ public class PetriDrawingTool implements VisualModelDrawingTool {
     }
 
     @Override
-    public void drawVisualObjects(Graph inputGraph, Graph outputGraph,
-            boolean isSequence, boolean isRoot, Mode mode, WorkspaceEntry we) {
+    public void drawVisualObjects(DrawVisualObjectsRequest request) {
 
-        List<Clique> edgeCliqueCover = getEdgeCliqueCover(inputGraph, outputGraph, isSequence, mode);
-        List<Vertex> vertices = isSequence
-                ? inputGraph.getVertices()
+        List<Clique> edgeCliqueCover = getEdgeCliqueCover(
+                request.inputGraph(),
+                request.outputGraph(),
+                request.isSequence(),
+                request.mode()
+        );
+
+        List<Vertex> vertices = request.isSequence()
+                ? request.inputGraph().getVertices()
                 : new ArrayList<>();
+
         HashSet<Vertex> inputVertices = new HashSet<>(vertices);
 
-        VisualPetri visualPetri = WorkspaceUtils.getAs(we, VisualPetri.class);
-        if (inputGraph.getIsolatedVertices() != null) {
-            this.drawIsolatedVisualObjects(inputGraph, visualPetri, isSequence, isRoot);
+        VisualPetri visualPetri = WorkspaceUtils.getAs(request.workspaceEntry(), VisualPetri.class);
+
+        if (request.inputGraph().getIsolatedVertices() != null) {
+            this.drawIsolatedVisualObjects(
+                    request.inputGraph(),
+                    visualPetri,
+                    request.isSequence(),
+                    request.isRoot()
+            );
         }
-        this.drawRemainingVisualObjects(edgeCliqueCover, visualPetri, inputVertices, isRoot);
+
+        this.drawRemainingVisualObjects(
+                edgeCliqueCover,
+                visualPetri,
+                inputVertices,
+                request.isRoot()
+        );
     }
 
     @Override

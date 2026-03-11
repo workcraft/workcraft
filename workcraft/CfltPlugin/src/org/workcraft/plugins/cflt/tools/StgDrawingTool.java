@@ -7,7 +7,6 @@ import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.node.NodeDetails;
-import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -30,20 +29,39 @@ public class StgDrawingTool implements VisualModelDrawingTool {
     }
 
     @Override
-    public void drawVisualObjects(Graph inputGraph, Graph outputGraph,
-            boolean isSequence, boolean isRoot, Mode mode, WorkspaceEntry we) {
+    public void drawVisualObjects(DrawVisualObjectsRequest request) {
 
-        List<Clique> edgeCliqueCover = getEdgeCliqueCover(inputGraph, outputGraph, isSequence, mode);
-        List<Vertex> vertexNames = isSequence
-                ? inputGraph.getVertices()
+        List<Clique> edgeCliqueCover = getEdgeCliqueCover(
+                request.inputGraph(),
+                request.outputGraph(),
+                request.isSequence(),
+                request.mode()
+        );
+
+        List<Vertex> vertexNames = request.isSequence()
+                ? request.inputGraph().getVertices()
                 : new ArrayList<>();
+
         HashSet<Vertex> inputVertices = new HashSet<>(vertexNames);
 
-        VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
-        if (inputGraph.getIsolatedVertices() != null) {
-            this.drawIsolatedVisualObjects(inputGraph, visualStg, isSequence, isRoot);
+        VisualStg visualStg = WorkspaceUtils.getAs(request.workspaceEntry(), VisualStg.class);
+
+        if (request.inputGraph().getIsolatedVertices() != null) {
+            this.drawIsolatedVisualObjects(
+                    request.inputGraph(),
+                    visualStg,
+                    request.isSequence(),
+                    request.isRoot()
+            );
         }
-        this.drawRemainingVisualObjects(edgeCliqueCover, visualStg, inputVertices, isRoot);
+
+        this.drawRemainingVisualObjects(
+                edgeCliqueCover,
+                visualStg,
+                inputVertices,
+                request.isRoot()
+        );
+
         makePlacesImplicit(visualStg);
     }
 

@@ -8,6 +8,9 @@ import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.tools.NodeTraversalTool;
+import org.workcraft.plugins.cflt.tools.PetriDrawingTool;
+import org.workcraft.plugins.cflt.tools.StgDrawingTool;
+import org.workcraft.plugins.cflt.tools.VisualModelDrawingTool;
 import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.VisualStg;
@@ -82,9 +85,19 @@ public final class ExpressionUtils {
         NodeCollection nodeCollection = response.nodeCollection;
         checkMode(mode);
         checkIteration(mode, nodeCollection);
-        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool(nodeCollection, model);
-        nodeTraversalTool.drawInterpretedGraph(mode, model, we);
+
+        VisualModelDrawingTool drawingTool = getDrawingTool(model, nodeCollection);
+        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool(drawingTool, nodeCollection);
+
+        nodeTraversalTool.drawInterpretedGraph(mode, we);
         return true;
+    }
+
+    private static VisualModelDrawingTool getDrawingTool(Model model, NodeCollection nodeCollection) {
+        return switch (model) {
+            case PETRI_NET -> new PetriDrawingTool(nodeCollection);
+            case STG -> new StgDrawingTool(nodeCollection);
+        };
     }
 
     private static void checkIteration(Mode mode, NodeCollection nodeCollection) {

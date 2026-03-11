@@ -8,7 +8,6 @@ import java.util.Map;
 import org.workcraft.plugins.cflt.utils.GraphUtils;
 import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.graph.Vertex;
-import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.cflt.node.Node;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.node.NodeIterator;
@@ -24,19 +23,12 @@ public class NodeTraversalTool {
 
     VisualModelDrawingTool visualModelDrawingTool;
 
-    public NodeTraversalTool(NodeCollection nodeCollection, Model model) {
+    public NodeTraversalTool(VisualModelDrawingTool drawingTool, NodeCollection nodeCollection) {
+        this.visualModelDrawingTool = drawingTool;
         this.nodeCollection = nodeCollection;
-        this.visualModelDrawingTool = this.getDrawingTool(model, nodeCollection);
     }
 
-    private VisualModelDrawingTool getDrawingTool(Model model, NodeCollection nodeCollection) {
-        return switch (model) {
-            case PETRI_NET -> new PetriDrawingTool(nodeCollection);
-            case STG -> new StgDrawingTool(nodeCollection);
-        };
-    }
-
-    public void drawInterpretedGraph(Mode mode, Model model, WorkspaceEntry we) {
+    public void drawInterpretedGraph(Mode mode, WorkspaceEntry we) {
         if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
             drawSingleTransition(we);
         }
@@ -62,7 +54,19 @@ public class NodeTraversalTool {
             }
 
             if (nodeIterator.isLastNode()) {
-                visualModelDrawingTool.drawVisualObjects(entryGraphs.get(leftChildName), new Graph(), false, true, mode, we);
+                Graph inputGraph = entryGraphs.get(leftChildName);
+                Graph outputGraph = new Graph();
+
+                DrawVisualObjectsRequest request = new DrawVisualObjectsRequest(
+                        inputGraph,
+                        outputGraph,
+                        false,
+                        true,
+                        mode,
+                        we
+                );
+
+                visualModelDrawingTool.drawVisualObjects(request);
             }
         }
     }
@@ -106,10 +110,21 @@ public class NodeTraversalTool {
     }
 
     private void handleSequence(String leftChildName, String rightChildName, Mode mode, WorkspaceEntry we) {
-        Graph leftExitGraph = exitGraphs.get(leftChildName);
-        Graph righEntryGraph = entryGraphs.get(rightChildName);
+        Graph inputGraph = exitGraphs.get(leftChildName);
+        Graph outputGraph = entryGraphs.get(rightChildName);
+
         exitGraphs.replace(leftChildName, exitGraphs.get(rightChildName));
-        visualModelDrawingTool.drawVisualObjects(leftExitGraph, righEntryGraph, true, false, mode, we);
+
+        DrawVisualObjectsRequest request = new DrawVisualObjectsRequest(
+                inputGraph,
+                outputGraph,
+                true,
+                false,
+                mode,
+                we
+        );
+
+        visualModelDrawingTool.drawVisualObjects(request);
     }
 
     private void handleIteration(String leftChildName, int nodeCounter) {
