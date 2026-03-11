@@ -1,164 +1,67 @@
 package org.workcraft.plugins.cflt.tools;
 
+import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.cflt.graph.Clique;
-import org.workcraft.plugins.cflt.graph.Graph;
-import org.workcraft.plugins.cflt.graph.Vertex;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.node.NodeDetails;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.plugins.stg.Signal.Type;
+import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.utils.WorkspaceUtils;
-import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.*;
+public class StgDrawingTool extends AbstractDrawingTool {
 
-import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.getEdgeCliqueCover;
-
-public class StgDrawingTool implements VisualModelDrawingTool {
-    private final Map<String, VisualSignalTransition> transitionNameToVisualTransition = new HashMap<>();
-    private final NodeCollection nodeCollection;
-
-    public StgDrawingTool(final NodeCollection nodeCollection) {
-        this.nodeCollection = nodeCollection;
+    public StgDrawingTool(NodeCollection nodeCollection) {
+        super(nodeCollection);
     }
 
     @Override
-    public void drawVisualObjects(DrawVisualObjectsRequest request) {
-
-        List<Clique> edgeCliqueCover = getEdgeCliqueCover(
-                request.inputGraph(),
-                request.outputGraph(),
-                request.isSequence(),
-                request.mode()
-        );
-
-        List<Vertex> vertexNames = request.isSequence()
-                ? request.inputGraph().getVertices()
-                : new ArrayList<>();
-
-        HashSet<Vertex> inputVertices = new HashSet<>(vertexNames);
-
-        VisualStg visualStg = WorkspaceUtils.getAs(request.workspaceEntry(), VisualStg.class);
-
-        if (request.inputGraph().getIsolatedVertices() != null) {
-            this.drawIsolatedVisualObjects(
-                    request.inputGraph(),
-                    visualStg,
-                    request.isSequence(),
-                    request.isRoot()
-            );
-        }
-
-        this.drawRemainingVisualObjects(
-                edgeCliqueCover,
-                visualStg,
-                inputVertices,
-                request.isRoot()
-        );
-
-        makePlacesImplicit(visualStg);
+    protected AbstractVisualModel getModel(WorkspaceEntry we) {
+        return WorkspaceUtils.getAs(we, VisualStg.class);
     }
 
     @Override
-    public void drawSingleTransition(String name, WorkspaceEntry we) {
-        VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
-        VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.LEFT);
-        VisualSignalTransition visualSignalTransition = createVisualSignalTransition(visualStg, name);
-        connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
+    protected VisualNode createPlace(
+            AbstractVisualModel model,
+            boolean hasToken,
+            Positioning positioning) {
+
+        VisualStg visualStg = (VisualStg) model;
+
+        VisualStgPlace place = visualStg.createVisualPlace(null, null);
+        place.getReferencedComponent().setTokens(hasToken ? 1 : 0);
+        place.setNamePositioning(positioning);
+
+        return place;
     }
 
-    private void drawRemainingVisualObjects(List<Clique> edgeCliqueCover, VisualStg visualStg,
-            Set<Vertex> inputVertices, boolean isRoot) {
-        for (Clique clique : edgeCliqueCover) {
-            VisualStgPlace visualStgPlace = createVisualStgPlace(visualStg, isRoot, Positioning.LEFT);
+    @Override
+    protected VisualNode createTransition(
+            AbstractVisualModel model,
+            String name) {
 
-            for (Vertex vertex : clique.getVertices()) {
-                String name = vertex.name();
-                boolean isClone = vertex.isClone();
-                boolean isTransitionPresent = transitionNameToVisualTransition.containsKey(name);
+        VisualStg visualStg = (VisualStg) model;
 
-                VisualSignalTransition visualSignalTransition = isTransitionPresent
-                        ? transitionNameToVisualTransition.get(name)
-                        : createVisualSignalTransition(visualStg, name);
-
-                transitionNameToVisualTransition.put(name, visualSignalTransition);
-
-                ConnectionDirection connectionDirection = inputVertices.contains(vertex) || isClone
-                        ? ConnectionDirection.TRANSITION_TO_PLACE
-                        : ConnectionDirection.PLACE_TO_TRANSITION;
-
-                connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, connectionDirection);
-            }
-        }
-    }
-
-    private void drawIsolatedVisualObjects(Graph inputGraph, VisualStg visualStg, boolean isSequence, boolean isRoot) {
-        for (Vertex vertex : inputGraph.getIsolatedVertices()) {
-            String name = vertex.name();
-            boolean isTransitionNamePresent = transitionNameToVisualTransition.containsKey(name);
-
-            VisualStgPlace visualStgPlace = null;
-            if (!isTransitionNamePresent && !isSequence) {
-                visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.LEFT);
-            } else if (isRoot) {
-                visualStgPlace = createVisualStgPlace(visualStg, true, Positioning.TOP);
-            }
-
-            VisualSignalTransition visualSignalTransition = null;
-            if (!isTransitionNamePresent && !isSequence) {
-                visualSignalTransition = createVisualSignalTransition(visualStg, name);
-            } else if (isRoot) {
-                visualSignalTransition = transitionNameToVisualTransition.get(name);
-            }
-
-            if (visualStgPlace != null && visualSignalTransition != null) {
-                transitionNameToVisualTransition.put(name, visualSignalTransition);
-                connectVisualPlaceAndVisualSignalTransition(visualStg, visualStgPlace, visualSignalTransition, ConnectionDirection.PLACE_TO_TRANSITION);
-            }
-        }
-    }
-
-    private VisualStgPlace createVisualStgPlace(VisualStg visualStg, boolean hasToken, Positioning positioning) {
-        VisualStgPlace visualStgPlace = visualStg.createVisualPlace(null, null);
-        visualStgPlace.getReferencedComponent().setTokens(hasToken ? 1 : 0);
-        visualStgPlace.setNamePositioning(positioning);
-        return visualStgPlace;
-    }
-
-    private VisualSignalTransition createVisualSignalTransition(VisualStg visualStg, String name) {
         NodeDetails nodeDetails = nodeCollection.getNodeDetails(name);
         String label = nodeDetails.getLabel();
-        SignalTransition.Direction dir = nodeDetails.getDirection();
+        SignalTransition.Direction direction = nodeDetails.getDirection();
 
-        VisualSignalTransition visualSignalTransition = visualStg.createVisualSignalTransition(label, Type.INTERNAL, dir);
-        visualSignalTransition.setLabelPositioning(Positioning.BOTTOM);
-        visualSignalTransition.setNamePositioning(Positioning.LEFT);
-        return visualSignalTransition;
+        VisualSignalTransition transition =
+                visualStg.createVisualSignalTransition(label, Type.INTERNAL, direction);
+
+        transition.setLabelPositioning(Positioning.BOTTOM);
+        transition.setNamePositioning(Positioning.LEFT);
+
+        return transition;
     }
 
-    private void connectVisualPlaceAndVisualSignalTransition(
-            VisualStg visualStg,
-            VisualStgPlace visualStgPlace,
-            VisualSignalTransition visualSignalTransition,
-            ConnectionDirection connectionDirection) {
-        try {
-            switch (connectionDirection) {
-                case PLACE_TO_TRANSITION -> visualStg.connect(visualStgPlace, visualSignalTransition);
-                case TRANSITION_TO_PLACE -> visualStg.connect(visualSignalTransition, visualStgPlace);
-            }
-        } catch (InvalidConnectionException e) {
-            LogUtils.logError("Invalid connection of VisualStgPlace and VisualSignalTransition");
-            e.printStackTrace();
-        }
-    }
-
-    private void makePlacesImplicit(VisualStg visualStg) {
+    @Override
+    protected void afterDraw(AbstractVisualModel model) {
+        VisualStg visualStg = (VisualStg) model;
         visualStg.getVisualPlaces().forEach(p -> visualStg.makeImplicitIfPossible(p, true));
     }
 }
