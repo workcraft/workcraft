@@ -17,6 +17,7 @@ public final class EdgeCliqueCoverUtils {
     }
 
     public static List<Clique> getEdgeCliqueCover(Graph inputGraph, Graph outputGraph, boolean isSequence, Mode mode) {
+
         Graph initialGraph = isSequence
                 ? GraphUtils.join(inputGraph, outputGraph)
                 : inputGraph;
@@ -29,6 +30,7 @@ public final class EdgeCliqueCoverUtils {
             ExhaustiveSearch exhaustiveSearch = new ExhaustiveSearch();
             return exhaustiveSearch.getEdgeCliqueCover(initialGraph, optionalEdges);
         }
+
         EdgeCliqueCoverHeuristic heuristic = new EdgeCliqueCoverHeuristic();
         return switch (mode) {
             case FAST_SEQ -> heuristic.getEdgeCliqueCover(initialGraph, optionalEdges, HeuristicType.SEQUENCE);

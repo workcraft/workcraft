@@ -11,8 +11,9 @@ import org.workcraft.plugins.cflt.algorithms.EdgeCliqueCoverHeuristic;
 import org.workcraft.plugins.cflt.algorithms.HeuristicType;
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Graph;
-import org.workcraft.plugins.cflt.algorithms.ExhaustiveSearch;
+import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.utils.GraphUtils;
+import org.workcraft.plugins.cflt.algorithms.ExhaustiveSearch;
 
 class EdgeCliqueCoverTests {
 
@@ -53,17 +54,17 @@ class EdgeCliqueCoverTests {
     private boolean areCliquesMaxSize(List<Clique> edgeCliqueCover, int requiredSize) {
         return edgeCliqueCover
                 .stream()
-                .allMatch(clique -> clique.getVertexNames().size() == requiredSize);
+                .allMatch(clique -> clique.getVertices().size() == requiredSize);
     }
 
     private boolean doesCover(List<Clique> edgeCliqueCover, Graph graph) {
-        Set<String> vertexNames = edgeCliqueCover
+        Set<Vertex> vertices = edgeCliqueCover
                 .stream()
-                .flatMap(clique -> clique.getVertexNames()
+                .flatMap(clique -> clique.getVertices()
                         .stream())
                 .collect(Collectors.toSet());
 
-        return vertexNames.containsAll(graph.getVertexNames());
+        return vertices.containsAll(graph.getVertices());
     }
 
     /**
@@ -72,26 +73,25 @@ class EdgeCliqueCoverTests {
      */
     private Graph getGraph() {
         Graph graph = new Graph();
-        graph.addVertexName("A");
-        graph.addVertexName("B");
+        graph.addVertex(new Vertex("A"));
+        graph.addVertex(new Vertex("B"));
 
         Graph secondGraph = new Graph();
-        secondGraph.addVertexName("C");
-        secondGraph.addVertexName("D");
+        secondGraph.addVertex(new Vertex("C"));
+        secondGraph.addVertex(new Vertex("D"));
 
         Graph thirdGraph = new Graph();
-        thirdGraph.addVertexName("E");
-        thirdGraph.addVertexName("F");
+        thirdGraph.addVertex(new Vertex("E"));
+        thirdGraph.addVertex(new Vertex("F"));
 
         Graph fourthGraph = new Graph();
-        fourthGraph.addVertexName("G");
-        fourthGraph.addVertexName("H");
+        fourthGraph.addVertex(new Vertex("G"));
+        fourthGraph.addVertex(new Vertex("H"));
 
-        Graph finalGraph = GraphUtils.join(graph, secondGraph);
-        finalGraph = GraphUtils.join(finalGraph, thirdGraph);
-        finalGraph = GraphUtils.join(finalGraph, fourthGraph);
+        Graph result = GraphUtils.join(graph, secondGraph);
+        result = GraphUtils.join(result, thirdGraph);
+        result = GraphUtils.join(result, fourthGraph);
 
-        return finalGraph;
+        return result;
     }
-
 }
