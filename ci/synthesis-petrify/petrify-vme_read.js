@@ -1,22 +1,22 @@
-stgWork = load("vme.stg.work");
+stgWork = load("vme_read.stg.work");
 
 cgCircuitWork = synthComplexGatePetrify(stgWork);
 cgStat = statCircuit(cgCircuitWork);
-write(cgStat, "petrify-vme-cg.circuit.stat");
+write(cgStat, "petrify-vme_read-cg.circuit.stat");
 
 gcCircuitWork = synthGeneralisedCelementPetrify(stgWork);
 gcStat = statCircuit(gcCircuitWork);
-write(gcStat, "petrify-vme-gc.circuit.stat");
+write(gcStat, "petrify-vme_read-gc.circuit.stat");
 
 // Note: Petrify produces significantly different stdC implementation in
 // Github Actions Linux runner and sometimes segfaults in Windows runner.
 // Skip Petrify stdC integration test for now.
 //stdcCircuitWork = synthStandardCelementPetrify(stgWork);
 //stdcStat = statCircuit(stdcCircuitWork);
-//write(stdcStat, "petrify-vme-stdc.circuit.stat");
+//write(stdcStat, "petrify-vme_read-stdc.circuit.stat");
 
 tmCircuitWork = synthTechnologyMappingPetrify(stgWork);
 tmStat = statCircuit(tmCircuitWork);
-write(tmStat, "petrify-vme-tm.circuit.stat");
+write(tmStat, "petrify-vme_read-tm.circuit.stat");
 
 exit();

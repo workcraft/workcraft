@@ -1,7 +1,7 @@
-./gradlew run --args="-nogui -noconfig -dir:${test_dir} -exec:petrify-vme.js" >${log_file}
+./gradlew run --args="-nogui -noconfig -dir:${test_dir} -exec:petrify-vme_read.js" >${log_file}
 
 # Filter out fanin/fanout statistics as it often changes on different runs
-for f in ${test_dir}/petrify-vme-*.circuit.stat; do
+for f in ${test_dir}/petrify-vme_read-*.circuit.stat; do
     [[ -f $f ]] || continue
     # OS X `sed -i` requires backup extension, e.g. `sed -i.bak`
     sed  -n -i.bak '/Max fanin \/ fanout/!p' $f
@@ -9,6 +9,3 @@ for f in ${test_dir}/petrify-vme-*.circuit.stat; do
     sed  -n -i.bak '/Fanout distribution/!p' $f
     rm -f ${f}.bak
 done
-
-# Clean up
-rm -f ${test_dir}/vme-csc.stg.work
