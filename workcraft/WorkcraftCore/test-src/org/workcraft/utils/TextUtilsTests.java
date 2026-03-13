@@ -160,6 +160,44 @@ class TextUtilsTests {
     }
 
     @Test
+    void convertMultilineLabelToText() {
+        String multilineLable = "# title in single line||multipline|paragraph|text|  - item1|  * item2 spreads|over several lines||single line paragraph||#tag1 #tag2";
+
+        String expected = """
+                # title in single line
+                multipline paragraph text
+                  - item1
+                  * item2 spreads over several lines
+                single line paragraph
+                #tag1 #tag2""";
+
+        Assertions.assertEquals(expected, TextUtils.convertMultilineLabelToText(multilineLable));
+    }
+
+    @Test
+    void convertMarkdownToHtmlTest() {
+        String text = """
+                # title
+                text
+                  - item1
+                  * item2
+                text
+                #tag1 #tag2""";
+
+        String expected = """
+                <html>
+                <b>title</b><br>
+                text<br>
+                &nbsp;&nbsp;&bull; item1<br>
+                &nbsp;&nbsp;&bull; item2<br>
+                text<br>
+                <u>#tag1</u> <u>#tag2</u>
+                </html>""";
+
+        Assertions.assertEquals(expected, TextUtils.convertMarkdownToHtml(text));
+    }
+
+    @Test
     void replaceLinebreaksTest() {
         //noinspection ConstantValue
         Assertions.assertNull(TextUtils.replaceLinebreaks(null, " "));
