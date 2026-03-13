@@ -1,9 +1,9 @@
 Circuit analysis:
-  Component count (mapped + unmapped) -  14 (14 + 0)
+  Component count (mapped + unmapped) -  12 (12 + 0)
   Area -  184.0
-  Non-trivial component count (function + blackbox) -  6 (6 + 0)
-  Trivial gate count (buffer / 0-delay + inverter / 0-delay + const) -  8 (0 / 0 + 8 / 7 + 0)
-  Driver pin count (combinational + sequential + undefined) -  14 (14 + 0 + 0)
-  Literal count combinational / sequential (set + reset) -  30 / 0 (0 + 0)
+  Non-trivial component count (function + blackbox) -  7 (7 + 0)
+  Trivial gate count (buffer / 0-delay + inverter / 0-delay + const) -  5 (0 / 0 + 5 / 4 + 0)
+  Driver pin count (combinational + sequential + undefined) -  12 (12 + 0 + 0)
+  Literal count combinational / sequential (set + reset) -  29 / 0 (0 + 0)
   Port count (input + output) -  6 (3 + 3)
   Isolated components / ports / pins -  0 / 0 / 0
