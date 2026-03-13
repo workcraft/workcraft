@@ -232,6 +232,47 @@ public class TextUtils {
         return sb.toString();
     }
 
+    public static String convertMultilineLabelToText(String multilineLabel) {
+        return multilineLabel.replaceAll("\r", "")
+                .replaceAll("\\|\\s*\\|", "\n")    // empty line separates paragraphs
+                .replaceAll("\\| {2}", "\n  ")     // two leading spaces denote list item
+                .replaceAll(" \\| ", " ")          // glue consequtive non-empty lines into paragrpah
+                .replaceAll("\\| ", " ")
+                .replaceAll("\\|", " ");
+    }
+
+    public static String convertMarkdownToHtml(String markdownText) {
+        String[] lines = markdownText.split("\n");
+        StringBuilder sb = new StringBuilder();
+        sb.append("<html>");
+        boolean isFirstLine = true;
+        for (String line : lines) {
+            if (isFirstLine) {
+                isFirstLine = false;
+            } else {
+                sb.append("<br>");
+            }
+            String escapedLine = escapeHtml(line);
+            if (escapedLine.startsWith("# ")) {
+                sb.append("\n<b>");
+                sb.append(escapedLine.substring(2));
+                sb.append("</b>");
+            } else if (escapedLine.startsWith("  - ") || escapedLine.startsWith("  * ")) {
+                sb.append("\n&nbsp;&nbsp;&bull; ");
+                sb.append(escapedLine.substring(4));
+            } else if (escapedLine.startsWith("  ")) {
+                sb.append("\n&nbsp;&nbsp; ");
+                sb.append(escapedLine.substring(3));
+            } else {
+                sb.append("\n");
+                sb.append(escapedLine);
+            }
+        }
+        sb.append("\n</html>");
+        // Underline tags
+        return sb.toString().replaceAll("(#\\w+)", "<u>$1</u>");
+    }
+
     public static String getHtmlSpanColor(String text, Color color) {
         return "<span style=\"" + getHtmlColorAttribute("color", color) + "\">" + text + "</span>";
     }

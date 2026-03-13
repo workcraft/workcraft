@@ -668,16 +668,23 @@ public final class GateUtils {
                     = getDedicatedTrivialDrivenComponentWithCorrectInitOrNull(circuit, outputPin);
 
             if (trivialDrivenComponent == null) {
+                // Detach output inverter from the gate
                 VisualFunctionComponent newInverter = createInverterGate(circuit);
-                if (outputPin.getParent() instanceof VisualFunctionComponent component) {
-                    newInverter.copyStylePreserveMapping(component);
-                }
                 SpaceUtils.makeSpaceAroundContact(circuit, outputPin, 3.0);
                 insertGateAfter(circuit, newInverter, outputPin, 2.0);
+                // Inherit initial state of the inverter from the original gate
                 result = newInverter.getGateOutput();
                 result.setInitToOne(outputPin.getInitToOne());
+                // Propagate initial state of the gate from its inputs (its forced initial state is now held by the inverter)
+                if (outputPin.getParent() instanceof VisualFunctionComponent component) {
+                    newInverter.copyStylePreserveMapping(component);
+                    GateUtils.propagateInitialState(circuit, component);
+                }
+                // Move path-breaker and force-init tags from the original gate to the detached inverter
                 result.setPathBreaker(outputPin.getPathBreaker());
                 outputPin.setPathBreaker(false);
+                result.setForcedInit(outputPin.getForcedInit());
+                outputPin.setForcedInit(false);
             } else if (trivialDrivenComponent.isInverter()) {
                 ContractionUtils.contractComponentIfPossible(circuit, trivialDrivenComponent);
             } else if (trivialDrivenComponent.isBuffer()) {
