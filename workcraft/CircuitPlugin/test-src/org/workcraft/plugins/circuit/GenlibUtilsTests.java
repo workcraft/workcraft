@@ -35,8 +35,10 @@ class GenlibUtilsTests {
                 "BUF", "INV",
                 "AND2", "NAND2", "NAND2B", "AND3", "NAND3", "NAND3B", "AND4", "NAND4", "NAND4B", "NAND4BB",
                 "OR2", "NOR2", "NOR2B", "OR3", "NOR3", "NOR3B", "OR4", "NOR4", "NOR4B", "NOR4BB",
-                "AOI21", "AOI211", "AOI22", "AOI221", "AOI222", "AOI31", "AOI32", "AOI33", "AOI2BB1", "AOI2BB2", "AO21", "AO22", "AO222",
-                "OAI21", "OAI211", "OAI22", "OAI221", "OAI222", "OAI31", "OAI32", "OAI33", "OAI2BB1", "OAI2BB2", "OA21", "OA22", "OA222",
+                "AO21", "AOI21", "AO211", "AOI211", "AO22", "AOI22", "AO221", "AOI221", "AO222", "AOI222",
+                "AO31", "AOI31", "AO32", "AOI32", "AO33", "AOI33", "AOI2BB1", "AOI2BB2",
+                "OA21", "OAI21", "OA211", "OAI211", "OA22", "OAI22", "OA221", "OAI221", "OA222", "OAI222",
+                "OA31", "OAI31", "OA32", "OAI32", "OA33", "OAI33", "OAI2BB1", "OAI2BB2",
                 "AOA212", "AOAI212", "OAO212", "OAOI212",
                 "LOGIC1", "LOGIC0",
                 "C2", "NC2"));

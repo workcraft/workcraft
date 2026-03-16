@@ -225,7 +225,7 @@ class SynthesisCommandsTests {
     @Test
     void duplicatorCscHierTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "duplicator-hier-csc.stg.work");
-        testTechnologyMappingSynthesisCommand(workName, 13);
+        testTechnologyMappingSynthesisCommand(workName, 12);
     }
 
     private void testTechnologyMappingSynthesisCommand(String workName, Integer expectedGateCount) {
