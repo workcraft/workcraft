@@ -104,16 +104,21 @@ public class ConnectionUtils {
             VisualTransformableNode secondNode = (VisualTransformableNode) connection.getSecond();
             Point2D p1 = firstNode.getRootSpacePosition();
             Point2D p2 = secondNode.getRootSpacePosition();
-            double y = dy + (dy > 0 ? Math.max(p1.getY(), p2.getY()) : Math.min(p1.getY(), p2.getY()));
 
             double x1 = p1.getX() + dx1;
             if (!Geometry.isNegligible(dx1)) {
                 polyline.addControlPoint(new Point2D.Double(x1, p1.getY()));
             }
-            polyline.addControlPoint(new Point2D.Double(x1, y));
+
+            double y = dy + (dy > 0 ? Math.max(p1.getY(), p2.getY()) : Math.min(p1.getY(), p2.getY()));
+            if (!Geometry.isNegligible(dy)) {
+                polyline.addControlPoint(new Point2D.Double(x1, y));
+            }
 
             double x2 = p2.getX() + dx2;
-            polyline.addControlPoint(new Point2D.Double(x2, y));
+            if (!Geometry.isNegligible(dy)) {
+                polyline.addControlPoint(new Point2D.Double(x2, y));
+            }
             if (!Geometry.isNegligible(dx2)) {
                 polyline.addControlPoint(new Point2D.Double(x2, p2.getY()));
             }
