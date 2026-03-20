@@ -1,5 +1,8 @@
 transformCircuitBufferHighFanout(work) - buffer forks with high fanout in the Circuit 'work'
 transformCircuitCollapseProxy(work) - transform the Circuit 'work' by collapsing selected (or all) proxy contacts
+transformCircuitConnectHangingInputPortToPin(work) - transform the Circuit 'work' by connecting selected (or all) haging input pins to ports with the same name
+transformCircuitConnectHangingOutputPinToPort(work) - transform the Circuit 'work' by connecting selected (or all) haging output pins to ports with the same name
+transformCircuitConnectHangingPinToPort(work) - transform the Circuit 'work' by connecting selected (or all) haging pins to ports with the same name
 transformCircuitContractComponent(work) - transform the Circuit 'work' by contracting selected single-input/single-output components
 transformCircuitContractJoint(work) - transform the Circuit 'work' by contracting selected (or all) joints
 transformCircuitDetachJoint(work) - transform the Circuit 'work' by detaching selected (or all) joints

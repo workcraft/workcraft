@@ -78,6 +78,12 @@ public class CircuitPlugin implements Plugin {
                 "transform the Circuit 'work' by creating proxies for selected driver contacts");
         ScriptableCommandUtils.registerCommand(CollapseProxyTransformationCommand.class, "transformCircuitCollapseProxy",
                 "transform the Circuit 'work' by collapsing selected (or all) proxy contacts");
+        ScriptableCommandUtils.registerCommand(ConnectHangingInputPinsToPortsTransformationCommand.class, "transformCircuitConnectHangingInputPortToPin",
+                "transform the Circuit 'work' by connecting selected (or all) haging input pins to ports with the same name");
+        ScriptableCommandUtils.registerCommand(ConnectHangingOutputPinsToPortsTransformationCommand.class, "transformCircuitConnectHangingOutputPinToPort",
+                "transform the Circuit 'work' by connecting selected (or all) haging output pins to ports with the same name");
+        ScriptableCommandUtils.registerCommand(ConnectHangingPinsToPortsTransformationCommand.class, "transformCircuitConnectHangingPinToPort",
+                "transform the Circuit 'work' by connecting selected (or all) haging pins to ports with the same name");
 
         // Statistics commands
         ScriptableCommandUtils.registerCommand(StatisticsCommand.class, "statCircuit",
