@@ -56,7 +56,7 @@ public class SetUtils {
         return result;
     }
 
-    public static <T> boolean isFirstSmaller(HashSet<T> set1, HashSet<T> set2, boolean equalWins) {
+    public static <T> boolean isFirstSmaller(Set<T> set1, Set<T> set2, boolean equalWins) {
         if (set2.containsAll(set1)) {
             if (set2.size() > set1.size()) return true;
             return equalWins;
