@@ -15,7 +15,7 @@ import org.workcraft.utils.TextUtils;
 
 import java.util.*;
 
-public class ArbitrationUtils {
+public final class ArbitrationUtils {
 
     public record WaitData(
             Wait.Type waitType,
@@ -30,6 +30,8 @@ public class ArbitrationUtils {
             Contact r2InputPin,
             Contact g2OutputPin) { }
 
+    private ArbitrationUtils() {
+    }
 
     public static WaitData getWaitData(Circuit circuit, FunctionComponent component,
             String errorPrefixOrNullToSilence) {

@@ -105,4 +105,14 @@ public class SelectionHelper {
         return result;
     }
 
+    public static void selectByMathReferences(VisualModel model, Collection<String> refs) {
+        model.selectNone();
+        for (String ref : refs) {
+            VisualComponent component = model.getVisualComponentByMathReference(ref);
+            if (component != null) {
+                model.addToSelection(component);
+            }
+        }
+    }
+
 }

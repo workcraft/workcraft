@@ -603,21 +603,23 @@ public final class CircuitUtils {
         if (component == null) {
             result = circuit.getOrCreatePort(portName, ioType);
             if (result == null) {
-                DialogUtils.showError("Cannot create port '" + portName + "'.");
+                LogUtils.logError("Cannot create port '" + portName + "'.");
                 return null;
             }
         } else if (component instanceof VisualFunctionContact) {
             result = (VisualFunctionContact) component;
             if (result.getReferencedComponent().getIOType() != ioType) {
-                DialogUtils.showError("Cannot reuse existing port '" + portName + "' because it is of different type.");
+                LogUtils.logError("Cannot reuse existing port '" + portName + "' because it is of different type.");
                 return null;
             }
             LogUtils.logWarning("Reusing existing port '" + portName + "'.");
         } else {
-            DialogUtils.showError("Cannot insert port '" + portName + "' because a component with the same name already exists.");
+            LogUtils.logError("Cannot insert port '" + portName + "' because a component with the same name already exists.");
             return null;
         }
-        result.setDirection(direction);
+        if (direction != null) {
+            result.setDirection(direction);
+        }
         return result;
     }
 

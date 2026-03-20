@@ -25,7 +25,10 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class ConversionUtils {
+public final class ConversionUtils {
+
+    private ConversionUtils() {
+    }
 
     public static void collapseReplicaContact(VisualCircuit circuit, VisualReplicaContact replica) {
         VisualComponent firstNode = replica.getMaster();

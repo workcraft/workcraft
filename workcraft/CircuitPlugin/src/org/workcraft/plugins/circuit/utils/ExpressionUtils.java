@@ -14,12 +14,15 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
-public class ExpressionUtils {
+public final class ExpressionUtils {
 
     private static final char TERM_DELIMITER = '+';
     private static final char FACTOR_DELIMITER = '*';
     private static final char NEGATION_DELIMITER = '!';
     private static final String ESCAPED_FACTOR_DELIMITER = "\\" + FACTOR_DELIMITER;
+
+    private ExpressionUtils() {
+    }
 
     public static String extractSetFunction(String expression, String seqLiteral) {
         return extractFunction(expression, seqLiteral, false, ExpressionUtils::extractHeuristicSetFunction);

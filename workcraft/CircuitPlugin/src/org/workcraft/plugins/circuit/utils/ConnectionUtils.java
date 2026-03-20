@@ -28,6 +28,7 @@ public final class ConnectionUtils {
             }
         }
     }
+
     private static void moveInsideComponentContactsToControlPoints(
             VisualNode first, VisualNode second, Polyline polyline) {
 
