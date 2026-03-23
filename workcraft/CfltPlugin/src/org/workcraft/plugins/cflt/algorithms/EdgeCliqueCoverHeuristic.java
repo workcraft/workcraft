@@ -3,6 +3,7 @@ package org.workcraft.plugins.cflt.algorithms;
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Edge;
 import org.workcraft.plugins.cflt.graph.Vertex;
+import org.workcraft.plugins.cflt.utils.CliqueUtils;
 import org.workcraft.plugins.cflt.graph.Graph;
 
 import java.util.*;
@@ -22,10 +23,11 @@ public class EdgeCliqueCoverHeuristic {
     Set<Vertex> uncoveredVertices = new HashSet<>();
     Set<Edge> optionalEdges = new HashSet<>();
 
-    public List<Clique> getEdgeCliqueCover(Graph graph, List<Edge> optionalEdges, HeuristicType heuristicType) {
+    public List<Clique> getEdgeCliqueCover(Graph graph, Set<Edge> optionalEdges, HeuristicType heuristicType) {
 
+        this.optionalEdges = optionalEdges;
+        this.vertexToAllNeighbours = graph.getVertexToAllNeighbours();
         initialiseHeuristicDataStructures(graph);
-        this.optionalEdges = new HashSet<>(optionalEdges);
 
         int cliqueNumber = -1;
         int maxCliqueSize = 0;
@@ -95,20 +97,17 @@ public class EdgeCliqueCoverHeuristic {
             uncoveredVertices = updateUncoveredVertices();
         }
 
-        handleNonMaximalCliques(maxCliqueSize);
+        CliqueUtils.expandNonMaximalCliques(
+                maxCliqueSize,
+                finalCliques,
+                vertexToAllNeighbours,
+                edgeToNoOfCliquesItsContainedIn);
+
         removeRedundantCliques();
-        return removeCliquesConsistingOfOptionalEdges();
+        return filterCliquesConsistingOnlyOfOptionalEdges();
     }
 
     private void initialiseHeuristicDataStructures(Graph graph) {
-        for (Edge edge : graph.getEdges()) {
-            vertexToAllNeighbours
-                    .computeIfAbsent(edge.firstVertex(), k -> new HashSet<>())
-                    .add(edge.secondVertex());
-            vertexToAllNeighbours
-                    .computeIfAbsent(edge.secondVertex(), k -> new HashSet<>())
-                    .add(edge.firstVertex());
-        }
 
         for (Edge edge : graph.getEdges()) {
             edgeToIsCovered.put(edge, false);
@@ -139,53 +138,15 @@ public class EdgeCliqueCoverHeuristic {
         }
     }
 
-    private List<Clique> removeCliquesConsistingOfOptionalEdges() {
+    private List<Clique> filterCliquesConsistingOnlyOfOptionalEdges() {
         return finalCliques
                 .stream()
-                .map(finalClique -> {
-                    List<Edge> edges = finalClique.getEdges();
-                    boolean containsOnlyOptionalEdges = optionalEdges.containsAll(edges);
-                    return containsOnlyOptionalEdges
-                            ? new Clique()
-                            : finalClique;
-                })
+                .map(finalClique ->
+                    optionalEdges.containsAll(finalClique.getEdges())
+                        ? new Clique()
+                        : finalClique
+                )
                 .toList();
-    }
-
-    private void handleNonMaximalCliques(int maxCliqueSize) {
-        int currentCliqueIndex = 0;
-
-        for (Clique clique : finalCliques) {
-            if (clique.getVertices().size() < maxCliqueSize && !clique.getVertices().isEmpty()) {
-                Vertex firstClique = clique.getVertices().get(0);
-                Set<Vertex> firstCliqueNeighbours = vertexToAllNeighbours.get(firstClique);
-
-                Set<Vertex> neighboursOfFirstVertex = new HashSet<>(firstCliqueNeighbours);
-                List<Vertex> verticesToBeAdded = new ArrayList<>(neighboursOfFirstVertex);
-
-                for (int x = 1; x < clique.getVertices().size(); x++) {
-                    Vertex currentClique = clique.getVertices().get(x);
-                    Set<Vertex> currentCliqueNeighbours = vertexToAllNeighbours.get(currentClique);
-                    verticesToBeAdded.retainAll(currentCliqueNeighbours);
-                }
-
-                while (!verticesToBeAdded.isEmpty()) {
-                    Vertex i = verticesToBeAdded.get(0);
-                    clique.addVertex(i);
-                    Set<Vertex> neighboursOfi = vertexToAllNeighbours.get(i);
-                    verticesToBeAdded.retainAll(neighboursOfi);
-
-                    for (Vertex s : clique.getVertices()) {
-                        if (!i.equals(s)) {
-                            Edge edge = new Edge(i, s);
-                            finalCliques.get(currentCliqueIndex).addEdge(edge);
-                            edgeToNoOfCliquesItsContainedIn.merge(edge, 1, Integer::sum);
-                        }
-                    }
-                }
-            }
-            currentCliqueIndex++;
-        }
     }
 
     private Vertex argMin(Map<Vertex, Integer> uncoveredDegree, Set<Vertex> uncoveredVertices) {

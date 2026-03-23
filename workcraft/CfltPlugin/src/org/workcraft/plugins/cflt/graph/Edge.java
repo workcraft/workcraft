@@ -1,7 +1,5 @@
 package org.workcraft.plugins.cflt.graph;
 
-import java.util.Objects;
-
 public record Edge(Vertex firstVertex, Vertex secondVertex) {
 
     @Override
@@ -13,13 +11,13 @@ public record Edge(Vertex firstVertex, Vertex secondVertex) {
             return false;
         }
 
-        return (Objects.equals(firstVertex, other.firstVertex) && Objects.equals(secondVertex, other.secondVertex))
-                || (Objects.equals(firstVertex, other.secondVertex) && Objects.equals(secondVertex, other.firstVertex));
+        return (firstVertex.equals(other.firstVertex) && secondVertex.equals(other.secondVertex))
+                || (firstVertex.equals(other.secondVertex) && secondVertex.equals(other.firstVertex));
     }
 
     @Override
     public int hashCode() {
         // Order-independent hash
-        return Objects.hash(firstVertex) + Objects.hash(secondVertex);
+        return firstVertex.hashCode() + secondVertex.hashCode();
     }
 }

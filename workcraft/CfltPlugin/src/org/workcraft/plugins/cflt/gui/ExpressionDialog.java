@@ -106,8 +106,8 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
         modeCombo.setEditable(false);
         modeCombo.addItem(ExpressionParameters.Mode.FAST_MIN);
         modeCombo.addItem(ExpressionParameters.Mode.FAST_MAX);
-        modeCombo.addItem(ExpressionParameters.Mode.SLOW_EXACT);
         modeCombo.addItem(ExpressionParameters.Mode.FAST_SEQ);
+        modeCombo.addItem(ExpressionParameters.Mode.SLOW_EXACT);
 
         JPanel result = new JPanel(GuiUtils.createBorderLayout());
         result.add(GuiUtils.createLabeledComponent(modeCombo, "Translation mode:     "), BorderLayout.NORTH);

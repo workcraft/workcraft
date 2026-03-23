@@ -1,10 +1,12 @@
 package org.workcraft.plugins.cflt.graph;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class Graph {
 
@@ -28,18 +30,15 @@ public class Graph {
     }
 
     public List<Vertex> getIsolatedVertices() {
-        if (getEdges().isEmpty()) return new ArrayList<>(this.vertices);
+        if (vertices.isEmpty()) return new ArrayList<>();
 
-        Set<Vertex> connectedVertices = edges
-                .stream()
-                .flatMap(edge -> Stream.of(edge.firstVertex(), edge.secondVertex()))
-                .collect(Collectors.toSet());
+        Map<Vertex, Set<Vertex>> neighbours = getVertexToAllNeighbours();
 
-        return vertices
-            .stream()
-            .filter(vertex -> !connectedVertices.contains(vertex))
-            .collect(Collectors.toCollection(ArrayList::new));
+        return vertices.stream()
+                .filter(v -> !neighbours.containsKey(v) || neighbours.get(v).isEmpty())
+                .collect(Collectors.toCollection(ArrayList::new));
     }
+
     public List<Vertex> getVertices() {
         return vertices;
     }
@@ -72,5 +71,21 @@ public class Graph {
                 .collect(Collectors.toCollection(ArrayList::new));
 
         return new Graph(edges, vertices);
+    }
+
+    public Map<Vertex, Set<Vertex>> getVertexToAllNeighbours() {
+
+        Map<Vertex, Set<Vertex>> vertexToAllNeighbours = new HashMap<>();
+
+        for (Edge edge : this.getEdges()) {
+            vertexToAllNeighbours
+                    .computeIfAbsent(edge.firstVertex(), k -> new HashSet<>())
+                    .add(edge.secondVertex());
+            vertexToAllNeighbours
+                    .computeIfAbsent(edge.secondVertex(), k -> new HashSet<>())
+                    .add(edge.firstVertex());
+        }
+
+        return vertexToAllNeighbours;
     }
 }

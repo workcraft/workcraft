@@ -5,7 +5,6 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.cflt.graph.Clique;
-import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.utils.LogUtils;
@@ -91,9 +90,11 @@ public abstract class AbstractDrawingTool implements VisualModelDrawingTool {
 
         AbstractVisualModel model = getModel(request.workspaceEntry());
 
-        if (request.inputGraph().getIsolatedVertices() != null) {
+        List<Vertex> isolatedVertices = request.inputGraph().getIsolatedVertices();
+
+        if (isolatedVertices != null && !isolatedVertices.isEmpty()) {
             drawIsolatedVisualObjects(
-                    request.inputGraph(),
+                    isolatedVertices,
                     model,
                     request.isSequence(),
                     request.isRoot()
@@ -141,12 +142,12 @@ public abstract class AbstractDrawingTool implements VisualModelDrawingTool {
     }
 
     private void drawIsolatedVisualObjects(
-            Graph inputGraph,
+            List<Vertex> isolatedVertices,
             AbstractVisualModel model,
             boolean isSequence,
             boolean isRoot) {
 
-        for (Vertex vertex : inputGraph.getIsolatedVertices()) {
+        for (Vertex vertex : isolatedVertices) {
 
             String name = vertex.name();
 

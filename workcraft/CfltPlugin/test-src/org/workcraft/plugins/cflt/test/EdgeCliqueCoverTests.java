@@ -1,54 +1,45 @@
 package org.workcraft.plugins.cflt.test;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
+
 import org.workcraft.plugins.cflt.algorithms.EdgeCliqueCoverHeuristic;
+import org.workcraft.plugins.cflt.algorithms.EdgeCliqueCoverSolver;
 import org.workcraft.plugins.cflt.algorithms.HeuristicType;
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.utils.GraphUtils;
-import org.workcraft.plugins.cflt.algorithms.ExhaustiveSearch;
 
 class EdgeCliqueCoverTests {
 
-    @Test
-    void doesCliqueCoverGraph() {
+    @ParameterizedTest
+    @EnumSource(HeuristicType.class)
+    void doesCliqueCoverGraphWithMaximalCliques(HeuristicType heuristicType) {
         EdgeCliqueCoverHeuristic heuristic = new EdgeCliqueCoverHeuristic();
-        ExhaustiveSearch exhaustiveSearch = new ExhaustiveSearch();
         Graph graph = getGraph();
 
-        List<Clique> seqEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.SEQUENCE);
-        List<Clique> maxEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.MAXIMAL);
-        List<Clique> minEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.MINIMAL);
-        List<Clique> exactEcc = exhaustiveSearch.getEdgeCliqueCover(graph, new ArrayList<>());
+        List<Clique> ecc = heuristic.getEdgeCliqueCover(graph, new HashSet<>(), heuristicType);
 
-        Assertions.assertTrue(doesCover(seqEcc, graph));
-        Assertions.assertTrue(doesCover(maxEcc, graph));
-        Assertions.assertTrue(doesCover(minEcc, graph));
-        Assertions.assertTrue(doesCover(exactEcc, graph));
+        Assertions.assertTrue(doesCover(ecc, graph));
+        Assertions.assertTrue(areCliquesMaxSize(ecc, 4));
     }
 
     @Test
-    void areCliquesMaximal() {
-        EdgeCliqueCoverHeuristic heuristic = new EdgeCliqueCoverHeuristic();
-        ExhaustiveSearch exhaustiveSearch = new ExhaustiveSearch();
+    void doesCliqueCoverGraphWithMaximalCliques() throws Exception {
         Graph graph = getGraph();
 
-        List<Clique> seqEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.SEQUENCE);
-        List<Clique> maxEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.MAXIMAL);
-        List<Clique> minEcc = heuristic.getEdgeCliqueCover(graph, new ArrayList<>(), HeuristicType.MINIMAL);
-        List<Clique> exactEcc = exhaustiveSearch.getEdgeCliqueCover(graph, new ArrayList<>());
+        List<Clique> ecc = EdgeCliqueCoverSolver.getEdgeCliqueCover(graph, new HashSet<>());
 
-        Assertions.assertTrue(areCliquesMaxSize(seqEcc, 4));
-        Assertions.assertTrue(areCliquesMaxSize(maxEcc, 4));
-        Assertions.assertTrue(areCliquesMaxSize(minEcc, 4));
-        Assertions.assertTrue(areCliquesMaxSize(exactEcc, 4));
+        Assertions.assertTrue(doesCover(ecc, graph));
+        Assertions.assertTrue(areCliquesMaxSize(ecc, 4));
     }
 
     private boolean areCliquesMaxSize(List<Clique> edgeCliqueCover, int requiredSize) {
@@ -60,8 +51,7 @@ class EdgeCliqueCoverTests {
     private boolean doesCover(List<Clique> edgeCliqueCover, Graph graph) {
         Set<Vertex> vertices = edgeCliqueCover
                 .stream()
-                .flatMap(clique -> clique.getVertices()
-                        .stream())
+                .flatMap(clique -> clique.getVertices().stream())
                 .collect(Collectors.toSet());
 
         return vertices.containsAll(graph.getVertices());

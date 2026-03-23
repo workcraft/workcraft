@@ -7,6 +7,8 @@ import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.graph.Vertex;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 class GraphTests {
 
@@ -35,6 +37,27 @@ class GraphTests {
         graph.addEdge(edge);
 
         Assertions.assertEquals(List.of(edge), graph.getEdges());
+    }
+
+    @Test
+    void getVertexToAllNeighboursReturnsCorrectSetOfNeighbours() {
+        Graph graph = new Graph();
+
+        Vertex a = new Vertex("A");
+        Vertex b = new Vertex("B");
+        Vertex c = new Vertex("C");
+
+        Edge ab = new Edge(a, b);
+        Edge bc = new Edge(b, c);
+
+        graph.addEdge(ab);
+        graph.addEdge(bc);
+
+        Map<Vertex, Set<Vertex>> neighbours = graph.getVertexToAllNeighbours();
+
+        Assertions.assertEquals(Set.of(b), neighbours.get(a));
+        Assertions.assertEquals(Set.of(a, c), neighbours.get(b));
+        Assertions.assertEquals(Set.of(b), neighbours.get(c));
     }
 
     @Test

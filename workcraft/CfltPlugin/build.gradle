@@ -2,6 +2,9 @@ dependencies {
     implementation project(':WorkcraftCore')
     implementation project(':PetriPlugin')
     implementation project(':StgPlugin')
+    
+    // SAT solver (https://mvnrepository.com/artifact/org.ow2.sat4j/org.ow2.sat4j.core)
+    lib 'org.ow2.sat4j:org.ow2.sat4j.core:2.3.6'
 
     // Mock objects library core API (https://mvnrepository.com/artifact/org.mockito/mockito-core)
     testImplementation 'org.mockito:mockito-core:5.23.0' 
