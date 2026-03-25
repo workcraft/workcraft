@@ -2,10 +2,12 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.commands.NodeTransformer;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.RefinementUtils;
 import org.workcraft.plugins.circuit.utils.SelectionUtils;
 import org.workcraft.plugins.circuit.utils.SpaceUtils;
 import org.workcraft.utils.LogUtils;
@@ -13,8 +15,7 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import java.util.Collection;
-import java.util.HashSet;
+import java.util.*;
 
 public class ConnectHangingPinsToPortsTransformationCommand
         extends AbstractTransformationCommand
@@ -89,24 +90,68 @@ public class ConnectHangingPinsToPortsTransformationCommand
         return result;
     }
 
+    private final Map<VisualContact, Boolean> inputPinInitalState = new HashMap<>();
+
+    @Override
+    public void transformNodes(VisualModel model, Collection<? extends VisualNode> nodes) {
+        calcInputPinInitialState(nodes);
+        super.transformNodes(model, nodes);
+    }
+
+    private void calcInputPinInitialState(Collection<? extends VisualNode> nodes) {
+        inputPinInitalState.clear();
+        Map<VisualFunctionComponent, Set<String>> componentInputSignals = new HashMap<>();
+        for (Node node : nodes) {
+            if ((node instanceof VisualContact contact)
+                    && (contact.getParent() instanceof VisualFunctionComponent component)) {
+
+                componentInputSignals.computeIfAbsent(component, c -> new HashSet<>())
+                        .add(contact.getName());
+            }
+        }
+        for (VisualFunctionComponent component : componentInputSignals.keySet()) {
+            Set<String> inputSignals = componentInputSignals.getOrDefault(component, Collections.emptySet());
+            Map<String, Boolean> inputSignalsInitialState = RefinementUtils.getSignalsInitialState(
+                    component.getReferencedComponent(), inputSignals);
+
+            for (VisualContact contact : component.getVisualInputs()) {
+                Boolean initialState = inputSignalsInitialState.get(contact.getName());
+                if (initialState != null) {
+                    inputPinInitalState.put(contact, initialState);
+                }
+            }
+        }
+    }
+
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit circuit) && (node instanceof VisualContact contact)
                 && isApplicableToContact(contact) && circuit.getConnections(contact).isEmpty()) {
 
             String portName = contact.getName();
+            VisualContact existingPort = circuit.getVisualComponentByMathReference(portName, VisualContact.class);
             Contact.IOType portType = contact.getReferencedComponent().getIOType();
-            VisualFunctionContact port = CircuitUtils.getOrCreatePort(circuit, portName, portType, null);
+            VisualFunctionContact port = CircuitUtils.getOrCreatePort(circuit, portName, portType, contact.getDirection());
             if (port != null) {
                 if ((portType == Contact.IOType.OUTPUT) && !circuit.getConnections(port).isEmpty()) {
-                    LogUtils.logError("Skipping output port '" + portName + "' as it is already connected");
+                    LogUtils.logError("Skipping output port " + portName + " as it is already connected");
                 } else {
-                    if (port.isInput()) {
-                        CircuitUtils.connectIfPossible(circuit, port, contact);
-                        SpaceUtils.alignPortWithPin(circuit, port, -1.0);
-                    } else {
+                    if (port != existingPort) {
+                        SpaceUtils.alignPortWithPin(port, contact, contact.getDirection().getGradientX());
+                    }
+                    if (port.isOutput()) {
                         CircuitUtils.connectIfPossible(circuit, contact, port);
-                        SpaceUtils.alignPortWithPin(port, contact, 1.0);
+                    } else {
+                        CircuitUtils.connectIfPossible(circuit, port, contact);
+                        Boolean initialState = inputPinInitalState.get(contact);
+                        if (initialState != null) {
+                            if ((port == existingPort) && (existingPort.getInitToOne() != initialState)) {
+                                String pinRef = circuit.getMathReference(contact);
+                                LogUtils.logWarning("Changing initial state for port " + portName
+                                        + " to match initial state of input pin " + pinRef);
+                            }
+                            port.setInitToOne(initialState);
+                        }
                     }
                 }
             }
