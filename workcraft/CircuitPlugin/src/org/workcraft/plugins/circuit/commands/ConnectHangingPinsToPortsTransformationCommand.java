@@ -51,7 +51,7 @@ public class ConnectHangingPinsToPortsTransformationCommand
     }
 
     public boolean isApplicableToContact(VisualContact contact) {
-        return contact.isPin();
+        return false;
     }
 
     @Override
