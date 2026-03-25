@@ -16,6 +16,7 @@ import org.workcraft.serialisation.XMLDeserialiser;
 import org.workcraft.serialisation.XMLSerialiser;
 import org.workcraft.types.ListMap;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.SortUtils;
 import org.workcraft.workspace.FileHandler;
 
 import java.io.File;
@@ -43,9 +44,12 @@ public class PluginManager implements PluginProvider {
             }
         }
 
-        for (PluginInfo<? extends Plugin> info : getPlugins(Plugin.class)) {
+        List<PluginInfo<? extends Plugin>> orderedPluginInfos = SortUtils.getSortedNatural(getPlugins(Plugin.class),
+                pluginInfo -> pluginInfo.getInstance().getDescription());
+
+        for (PluginInfo<? extends Plugin> pluginInfo : orderedPluginInfos) {
             try {
-                final Plugin plugin = info.getInstance();
+                final Plugin plugin = pluginInfo.getInstance();
                 try {
                     LogUtils.logMessage("  Loading plugin: " + plugin.getDescription());
                     plugin.init();
