@@ -69,6 +69,10 @@ public class RefinementDependencyGraph {
         return topFile;
     }
 
+    public boolean isTopFile(File file) {
+        return (file != null) && file.equals(topFile);
+    }
+
     private Map<String, File> extractInstanceDependencyMap(ModelEntry me) {
         Map<String, File> result = new HashMap<>();
         if (WorkspaceUtils.isApplicable(me, Stg.class)) {
@@ -161,7 +165,7 @@ public class RefinementDependencyGraph {
     }
 
     public String getFileDescription(File file) {
-        if (file == topFile) {
+        if (isTopFile(file)) {
             if (!file.exists()) {
                 return "(top-level circuit not saved in a file)";
             } else {
