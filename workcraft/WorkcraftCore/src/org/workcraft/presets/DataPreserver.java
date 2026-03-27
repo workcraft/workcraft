@@ -43,9 +43,7 @@ public class DataPreserver<T> {
 
     public void saveData(T data) {
         if (data == null) {
-            if (we.removeResource(key) != null) {
-                we.setChanged(true);
-            }
+            clearData();
         } else {
             T oldData = loadData();
             if (!data.equals(oldData)) {
@@ -57,6 +55,12 @@ public class DataPreserver<T> {
                 we.addResource(new Resource(key, os));
                 we.setChanged(true);
             }
+        }
+    }
+
+    public void clearData() {
+        if (we.removeResource(key) != null) {
+            we.setChanged(true);
         }
     }
 

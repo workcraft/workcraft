@@ -255,9 +255,28 @@ public final class RefinementUtils {
         return (aSignals == null) || !aSignals.equals(bSignals);
     }
 
+    public static Map<String, Boolean> getSignalsInitialState(FunctionComponent component, Collection<String> signals) {
+        MathModel model = null;
+        File bestRefinementFile = RefinementUtils.getRefinementCircuitFile(component);
+        if (bestRefinementFile == null) {
+            bestRefinementFile = RefinementUtils.getRefinementStgFile(component);
+        }
+        if (bestRefinementFile != null) {
+            try {
+                ModelEntry me = WorkUtils.loadModel(bestRefinementFile);
+                if (me != null) {
+                    model = me.getMathModel();
+                }
+            } catch (DeserialisationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return getSignalsInitialState(model, signals);
+    }
+
     public static Map<String, Boolean> getSignalsInitialState(MathModel model, Collection<String> signals) {
         Map<String, Boolean> interfaceInitialState = getInterfaceInitialState(model);
-        return filterStates(interfaceInitialState, signals);
+        return filterInitialStatesForSignals(interfaceInitialState, signals);
     }
 
     public static Map<String, Boolean> getInterfaceInitialState(MathModel model) {
@@ -300,13 +319,15 @@ public final class RefinementUtils {
             Collection<String> signals) {
 
         Map<String, Boolean> interfaceInitialState = getComponentInterfaceInitialState(circuit, component);
-        return filterStates(interfaceInitialState, signals);
+        return filterInitialStatesForSignals(interfaceInitialState, signals);
     }
 
-    public static Map<String, Boolean> filterStates(Map<String, Boolean> states, Collection<String> signals) {
+    public static Map<String, Boolean> filterInitialStatesForSignals(
+            Map<String, Boolean> signalInitialStates, Collection<String> signals) {
+
         Map<String, Boolean> result = new HashMap<>();
         for (String signal : signals) {
-            Boolean state = states.get(signal);
+            Boolean state = signalInitialStates.get(signal);
             if (state != null) {
                 result.put(signal, state);
             }

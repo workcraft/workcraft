@@ -22,7 +22,7 @@ public class ConnectHangingOutputPinsToPortsTransformationCommand
 
     @Override
     public boolean isApplicableToContact(VisualContact contact) {
-        return super.isApplicableToContact(contact) && contact.isOutput();
+        return contact.isPin() && contact.isOutput();
     }
 
 }
