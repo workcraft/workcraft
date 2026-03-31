@@ -1,17 +1,21 @@
 package org.workcraft.plugins.cflt.utils;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+
 import org.workcraft.gui.controls.CodePanel;
-import org.workcraft.plugins.cflt.jj.petri.ParseException;
-import org.workcraft.plugins.cflt.jj.petri.PetriStringParser;
-import org.workcraft.plugins.cflt.jj.petri.TokenMgrError;
-import org.workcraft.plugins.cflt.jj.stg.StgStringParser;
+import org.workcraft.plugins.cflt.Model;
+import org.workcraft.plugins.cflt.jj.ParseException;
+import org.workcraft.plugins.cflt.jj.StringParser;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
 import org.workcraft.plugins.cflt.tools.NodeTraversalTool;
 import org.workcraft.plugins.cflt.tools.PetriDrawingTool;
 import org.workcraft.plugins.cflt.tools.StgDrawingTool;
 import org.workcraft.plugins.cflt.tools.VisualModelDrawingTool;
-import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.petri.VisualPetri;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.utils.DialogUtils;
@@ -19,10 +23,6 @@ import org.workcraft.utils.JavaccSyntaxUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 
 public final class ExpressionUtils {
     public static final char PLUS_DIR = '+';
@@ -54,24 +54,18 @@ public final class ExpressionUtils {
 
     private static ParseExpressionResponse getParseExpressionResponse(String data, Model model) {
         InputStream is = new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8));
+        Reader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+
         String errorText = null;
         NodeCollection nodeCollection = null;
 
-        if (model == Model.PETRI_NET) {
-            PetriStringParser parser = new PetriStringParser(is);
-            try {
-                nodeCollection = parser.parse();
-            } catch (TokenMgrError | ParseException e) {
-                errorText = e.getMessage();
-            }
-        } else if (model == Model.STG) {
-            StgStringParser parser = new StgStringParser(is);
-            try {
-                nodeCollection = parser.parse();
-            } catch (org.workcraft.plugins.cflt.jj.stg.TokenMgrError | org.workcraft.plugins.cflt.jj.stg.ParseException e) {
-                errorText = e.getMessage();
-            }
+        StringParser parser = new StringParser(reader, model);
+        try {
+            nodeCollection = parser.parse();
+        } catch (ParseException e) {
+            errorText = e.getMessage();
         }
+
         return new ParseExpressionResponse(nodeCollection, errorText);
     }
 

@@ -4,37 +4,81 @@ options {
     UNICODE_INPUT = true;
 }
 
-PARSER_BEGIN(PetriStringParser)
-package org.workcraft.plugins.cflt.jj.petri;
+PARSER_BEGIN(StringParser)
+package org.workcraft.plugins.cflt.jj;
 
-import java.io.*;
-import java.nio.charset.StandardCharsets;
+import java.io.Reader;
+import org.workcraft.plugins.cflt.Model;
 import org.workcraft.plugins.cflt.node.Node;
 import org.workcraft.plugins.cflt.node.Operator;
 import org.workcraft.plugins.cflt.node.NodeDetails;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 
-public class PetriStringParser {
+public class StringParser {
     private NodeCollection nodeCollection = new NodeCollection();
     private int transitionCounter = 0;
 
+    public StringParser(Reader reader, Model model) {
+        this(reader);
+
+        switch (model) {
+            case PETRI_NET:
+                token_source.SwitchTo(PETRI);
+                break;
+            case STG:
+                token_source.SwitchTo(STG);
+                break;
+            default:
+                throw new IllegalArgumentException("Unsupported model: " + model);
+        }
+    }
+
     public NodeCollection parse() throws ParseException {
-       this.parseOneLine();
-       return nodeCollection;
+        this.parseOneLine();
+        return nodeCollection;
     }
 }
-PARSER_END(PetriStringParser)
+PARSER_END(StringParser)
 
 <*> SKIP:
 {
-    < " " | "\t" | "\r" | "\n" | "\r\n" >
+    <" " | "\t" | "\r" | "\n" | "\r\n">
 |
     <"//" (~["\n","\r"])* ("\n"|"\r"|"\r\n")?>
 }
 
-TOKEN:
+<*> TOKEN:
 {
-    <TRANSITION: ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*>
+    <#IDENTIFIER:
+        ["A"-"Z", "a"-"z", "_"]
+        (["A"-"Z", "a"-"z", "_", "0"-"9"])*
+    >
+|
+    <LPAREN: "(">
+|
+    <RPAREN: ")">
+|
+    <LBRACE: "{">
+|
+    <RBRACE: "}">
+|
+    <PIPE: "|">
+|
+    <HASH: "#">
+|
+    <SEMICOLON: ";">
+}
+
+< PETRI > TOKEN:
+{
+    <PETRI_TRANSITION: <IDENTIFIER>>
+}
+
+< STG > TOKEN:
+{
+    <#STG_SUFFIX: ["+", "-", "~"]>
+|
+    <STG_TRANSITION: <IDENTIFIER> (<STG_SUFFIX>)?>
 }
 
 void parseOneLine():
@@ -61,7 +105,7 @@ String concurrency():
 {
     a = choice()
     (
-        "|" b = concurrency()
+        <PIPE> b = concurrency()
         {
             Node node = new Node(a, b, Operator.CONCURRENCY);
             nodeCollection.addNode(node);
@@ -80,11 +124,11 @@ String choice():
 {
     a = sequence()
     (
-        "#" b = choice()
+        <HASH> b = choice()
         {
-        	Node node = new Node(a, b, Operator.CHOICE);
+            Node node = new Node(a, b, Operator.CHOICE);
             nodeCollection.addNode(node);
-        }	
+        }
     )*
     {
         return a;
@@ -99,7 +143,7 @@ String sequence():
 {
     a = unary()
     (
-        [";"] b = sequence()
+        [<SEMICOLON>] b = sequence()
         {
             Node node = new Node(a, b, Operator.SEQUENCE);
             nodeCollection.addNode(node);
@@ -127,26 +171,31 @@ String element():
     String a;
 }
 {
-    t = <TRANSITION>
+    (
+        t = <PETRI_TRANSITION>
+      |
+        t = <STG_TRANSITION>
+    )
     {
         String uniqueName = "t" + transitionCounter++;
         NodeDetails nodeDetails = new NodeDetails(
-            uniqueName,
-            t.toString()
+              uniqueName,
+              t.toString()
         );
         nodeCollection.addNodeDetails(nodeDetails);
         return uniqueName;
     }
 |
-    "(" a = concurrency() ")"
+    <LPAREN> a = concurrency() <RPAREN>
     {
         return a;
     }
 |
-    "{" a = concurrency() "}"
+    <LBRACE> a = concurrency() <RBRACE>
     {
         nodeCollection.setContainsIteration(true);
         Node node = new Node(a, a, Operator.ITERATION);
-        nodeCollection.addNode(node); return a;
+        nodeCollection.addNode(node);
+        return a;
     }
 }
