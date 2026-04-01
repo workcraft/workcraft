@@ -391,7 +391,9 @@ public class FileUtils {
     public static List<File> getDirectoryFiles(File dir, boolean recursive) {
         List<File> result = new ArrayList<>();
         Queue<File> queue = new ArrayDeque<>();
-        queue.add(dir);
+        if (dir != null) {
+            queue.add(dir);
+        }
         while (!queue.isEmpty()) {
             File curDir = queue.remove();
             if (isReadableDirectory(curDir)) {
