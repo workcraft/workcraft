@@ -16,6 +16,7 @@ import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.refinement.ComponentInterface;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.StgUtils;
+import org.workcraft.types.Pair;
 import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -341,7 +342,11 @@ public final class RefinementUtils {
         pins.addAll(component.getInputs());
         pins.addAll(component.getOutputs());
         for (Contact pin : pins) {
-            result.put(pin.getName(), CircuitUtils.findInitToOneFromDriver(circuit, pin));
+            Pair<Contact, Boolean> pair = CircuitUtils.findDriverAndInversionSkipZeroDelay(circuit, pin);
+            if (pair != null) {
+                boolean initToOne = pair.getFirst().getInitToOne() != pair.getSecond();
+                result.put(pin.getName(), initToOne);
+            }
         }
         return result;
     }
