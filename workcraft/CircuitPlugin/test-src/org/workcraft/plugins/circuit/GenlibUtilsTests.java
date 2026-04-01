@@ -40,8 +40,7 @@ class GenlibUtilsTests {
                 "OA21", "OAI21", "OA211", "OAI211", "OA22", "OAI22", "OA221", "OAI221", "OA222", "OAI222",
                 "OA31", "OAI31", "OA32", "OAI32", "OAI33", "OAI2BB1", "OAI2BB2",
                 "AOA212", "AOAI212", "OAO212", "OAOI212",
-                "LOGIC1", "LOGIC0",
-                "C2", "NC2"));
+                "MAJI3", "MAJ3", "LOGIC1", "LOGIC0", "C2", "NC2"));
 
         Set<String> gateNames = LibraryManager.getLibrary().getNames();
         Assertions.assertEquals(expGateNames, gateNames,
