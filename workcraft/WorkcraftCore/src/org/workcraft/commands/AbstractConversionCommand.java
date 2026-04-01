@@ -22,7 +22,11 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Wor
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
         final ModelEntry me = convert(we.getModelEntry());
-        return me == null ? null : Framework.getInstance().createWork(me, we.getFileName());
+        return me == null ? null : Framework.getInstance().createWork(me, getDesiredWorkName(we));
+    }
+
+    public String getDesiredWorkName(WorkspaceEntry we) {
+        return we.getFileName();
     }
 
     public abstract ModelEntry convert(ModelEntry me);
