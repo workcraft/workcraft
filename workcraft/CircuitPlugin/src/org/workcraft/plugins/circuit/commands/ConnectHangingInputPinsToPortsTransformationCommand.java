@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.workspace.ModelEntry;
 
@@ -21,7 +22,13 @@ public class ConnectHangingInputPinsToPortsTransformationCommand
     }
 
     @Override
-    public boolean isApplicableToContact(VisualContact contact) {
+    public boolean isApplicableTo(VisualNode node) {
+        return (node instanceof VisualFunctionComponent)
+                || ((node instanceof VisualFunctionContact contact) && contact.isPin() && contact.isInput());
+    }
+
+    @Override
+    public boolean isEnabledForContact(VisualContact contact) {
         return contact.isPin() && contact.isInput();
     }
 

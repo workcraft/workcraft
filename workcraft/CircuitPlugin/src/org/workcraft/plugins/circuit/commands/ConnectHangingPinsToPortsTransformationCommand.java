@@ -47,28 +47,27 @@ public class ConnectHangingPinsToPortsTransformationCommand
 
     @Override
     public boolean isApplicableTo(VisualNode node) {
-        return (node instanceof VisualFunctionComponent)
-                || ((node instanceof VisualContact contact) && isApplicableToContact(contact));
-    }
-
-    public boolean isApplicableToContact(VisualContact contact) {
-        return false;
+        return (node instanceof VisualFunctionComponent);
     }
 
     @Override
     public boolean isEnabled(ModelEntry me, VisualNode node) {
         VisualModel visualModel = me.getVisualModel();
-        if ((node instanceof VisualFunctionContact contact) && isApplicableToContact(contact)) {
+        if ((node instanceof VisualFunctionContact contact) && isEnabledForContact(contact)) {
             return visualModel.getConnections(node).isEmpty();
         }
         if (node instanceof VisualFunctionComponent component) {
             for (VisualContact contact : component.getVisualContacts()) {
-                if (isApplicableToContact(contact) && visualModel.getConnections(contact).isEmpty()) {
+                if (isEnabledForContact(contact) && visualModel.getConnections(contact).isEmpty()) {
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    public boolean isEnabledForContact(VisualContact contact) {
+        return contact.isPin();
     }
 
     @Override
@@ -81,7 +80,7 @@ public class ConnectHangingPinsToPortsTransformationCommand
         Collection<VisualContact> result = new HashSet<>();
         if (model instanceof VisualCircuit circuit) {
             for (VisualContact contact : circuit.getVisualFunctionContacts()) {
-                if (isApplicableToContact(contact) && circuit.getConnections(contact).isEmpty()) {
+                if (isEnabledForContact(contact) && circuit.getConnections(contact).isEmpty()) {
                     result.add(contact);
                 }
             }
@@ -126,7 +125,7 @@ public class ConnectHangingPinsToPortsTransformationCommand
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit circuit) && (node instanceof VisualContact contact)
-                && isApplicableToContact(contact) && circuit.getConnections(contact).isEmpty()) {
+                && isEnabledForContact(contact) && circuit.getConnections(contact).isEmpty()) {
 
             String portName = contact.getName();
             VisualContact existingPort = circuit.getVisualComponentByMathReference(portName, VisualContact.class);
