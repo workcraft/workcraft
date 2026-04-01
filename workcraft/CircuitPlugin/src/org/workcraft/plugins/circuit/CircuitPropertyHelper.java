@@ -4,6 +4,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.FileReference;
+import org.workcraft.dom.references.Identifier;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
@@ -220,18 +221,18 @@ public class CircuitPropertyHelper {
     }
 
     public static Collection<PropertyDescriptor<?>> getPortProperties(VisualCircuit circuit, Contact.IOType type) {
-        List<VisualContact> inputPorts = new ArrayList<>(Hierarchy.getChildrenOfType(
+        List<VisualContact> ports = new ArrayList<>(Hierarchy.getChildrenOfType(
                 circuit.getCurrentLevel(), VisualContact.class,
                 port -> port.isPort() && (port.getReferencedComponent().getIOType() == type)));
 
-        SortUtils.sortNatural(inputPorts, VisualContact::getName);
+        SortUtils.sortNatural(ports, VisualContact::getName);
 
         Collection<PropertyDescriptor<?>> result = new ArrayList<>();
-        if (!inputPorts.isEmpty()) {
+        if (!ports.isEmpty()) {
             result.add(PropertyHelper.createSeparatorProperty(type + " ports"));
         }
-        for (VisualContact inputPort : inputPorts) {
-            result.add(getPortProperty(circuit, inputPort));
+        for (VisualContact port : ports) {
+            result.add(getPortProperty(circuit, port));
         }
         return result;
     }
@@ -246,6 +247,7 @@ public class CircuitPropertyHelper {
         return new PropertyDeclaration<>(TextAction.class, null,
                 value -> {
                     String newName = value.getText();
+                    Identifier.validate(newName);
                     if (!name.equals(newName)) {
                         circuit.setMathName(port, newName);
                         port.sendNotification(new PropertyChangedEvent(port, Model.PROPERTY_NAME));
