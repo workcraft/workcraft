@@ -104,11 +104,13 @@ public class VisualComment extends VisualComponent {
     }
     @Override
     public Rectangle2D getLabelBoundingBox() {
-        if ((labelRenderedParagraph != null) && !labelRenderedParagraph.isEmpty()) {
-            return labelRenderedParagraph.getBoundingBox();
-        } else {
+        if ((labelRenderedParagraph == null) || labelRenderedParagraph.isEmpty()) {
+            cacheLabelRenderedText(null);
+        }
+        if ((labelRenderedParagraph == null) || labelRenderedParagraph.isEmpty()) {
             return new Rectangle2D.Double();
         }
+        return labelRenderedParagraph.getBoundingBox();
     }
 
     @Override

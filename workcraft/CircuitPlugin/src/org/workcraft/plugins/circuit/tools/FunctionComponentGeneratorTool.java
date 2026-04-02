@@ -55,6 +55,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
         private final String name;
         private final Type type;
         private final int pinCount;
+        private final String tooltip;
         private final InstancePanel.Instantiator instantiator;
 
         enum Type {
@@ -64,10 +65,11 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             ARBITRATION_PRIMITIVE,
         }
 
-        LibraryItem(String name, Type type, int pinCount, InstancePanel.Instantiator instantiator) {
+        LibraryItem(String name, Type type, int pinCount, String tooltip, InstancePanel.Instantiator instantiator) {
             this.name = name;
             this.type = type;
             this.pinCount = pinCount;
+            this.tooltip = tooltip;
             this.instantiator = instantiator;
         }
 
@@ -218,6 +220,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             if (libraryItem != null) {
                 getTemplateNode().getReferencedComponent().setModule(this.libraryItem.name);
                 instancePanel.setInstantiator(this.libraryItem.instantiator);
+                instancePanel.setToolTipText(this.libraryItem.tooltip);
                 Framework.getInstance().updatePropertyView();
             }
         });
@@ -285,11 +288,12 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                         : LibraryItem.Type.COMBINATIONAL_GATE;
 
                 int pinCount = gate.getPinCount();
+                String tooltip = gate.size > 0 ? "Area: " + gate.size : null;
 
                 InstancePanel.Instantiator instantiator = (componentInCircuit, mouseEvent) ->
                         GenlibUtils.instantiateGate(gate, componentInCircuit.circuit(), componentInCircuit.component());
 
-                libraryItems.add(new LibraryItem(gateName, type, pinCount, instantiator));
+                libraryItems.add(new LibraryItem(gateName, type, pinCount, tooltip, instantiator));
             }
         }
 
@@ -323,7 +327,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
             VisualContact contact = component.createContact(Contact.IOType.OUTPUT);
             component.setPositionByDirection(contact, VisualContact.Direction.EAST, false);
         };
-        return new LibraryItem("", LibraryItem.Type.UNDEFINED, 0, instantiator);
+        return new LibraryItem("", LibraryItem.Type.UNDEFINED, 0, null, instantiator);
     }
 
     private LibraryItem createWaitItem(Wait.Type type) {
@@ -352,7 +356,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
 
             ArbitrationUtils.assignWaitFunctions(type, sigContact, ctrlContact, sanContact);
         };
-        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, instantiator);
+        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 3, null, instantiator);
     }
 
     private LibraryItem createMutexItem(Mutex.Protocol protocol) {
@@ -386,7 +390,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
                     r1Contact.getReferencedComponent(), g1Contact.getReferencedComponent(),
                     r2Contact.getReferencedComponent(), g2Contact.getReferencedComponent());
         };
-        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, instantiator);
+        return new LibraryItem(module.name, LibraryItem.Type.ARBITRATION_PRIMITIVE, 4, null, instantiator);
     }
 
     @Override

@@ -19,7 +19,7 @@ public class ONCycleAlg {
         relationAlg = new RelationAlgorithm(net);
     }
 
-    /**
+    /*
      * create Integer Graph for a nodes set
      * G<(a, b, c, d), (<a, b> <b, c> <c, d> <d, b> <b, d>)> would be
      * a = 0; b = 1, c = 2, d = 3
@@ -59,12 +59,8 @@ public class ONCycleAlg {
      */
     public Collection<Path> cycleTask(Collection<? extends Node> nodes) {
         List<Path> result = new ArrayList<>();
-
-        List<Node> list = new ArrayList<>();
-        list.addAll(nodes);
-
+        List<Node> list = new ArrayList<>(nodes);
         CycleAlgorithm cycleAlg = new CycleAlgorithm();
-
         for (List<Integer> cycleIndex : cycleAlg.getCycles(createGraph(list))) {
             if (cycleIndex.size() > 1) {
                 Path cycle = new Path();
@@ -74,7 +70,6 @@ public class ONCycleAlg {
                 result.add(cycle);
             }
         }
-
         return result;
     }
 
