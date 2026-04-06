@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 
-import org.workcraft.plugins.cflt.utils.GraphUtils;
 import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.node.Node;
@@ -13,6 +13,7 @@ import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.node.NodeIterator;
 import org.workcraft.plugins.cflt.node.Operator;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
+import org.workcraft.plugins.cflt.utils.GraphUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class NodeTraversalTool {
@@ -86,26 +87,26 @@ public class NodeTraversalTool {
     }
 
     private void handleConcurrency(String leftChildName, String rightChildName) {
-        Graph leftEntryGraph = entryGraphs.get(leftChildName);
-        Graph rightEntryGraph = entryGraphs.get(rightChildName);
-        Graph newEntryGraph = GraphUtils.disjointUnion(leftEntryGraph, rightEntryGraph);
-        entryGraphs.replace(leftChildName, newEntryGraph);
-
-        Graph leftExitGraph = exitGraphs.get(leftChildName);
-        Graph rightExitGraph = exitGraphs.get(rightChildName);
-        Graph newExitGraph = GraphUtils.disjointUnion(leftExitGraph, rightExitGraph);
-        exitGraphs.replace(leftChildName, newExitGraph);
+        handleBinaryGraphOp(leftChildName, rightChildName, GraphUtils::disjointUnion);
     }
 
     private void handleChoice(String leftChildName, String rightChildName) {
+        handleBinaryGraphOp(leftChildName, rightChildName, GraphUtils::join);
+    }
+
+    private void handleBinaryGraphOp(
+            String leftChildName, 
+            String rightChildName,
+            BiFunction<Graph, Graph, Graph> operation) {
+
         Graph leftEntryGraph = entryGraphs.get(leftChildName);
         Graph rightEntryGraph = entryGraphs.get(rightChildName);
-        Graph newEntryGraph = GraphUtils.join(leftEntryGraph, rightEntryGraph);
+        Graph newEntryGraph = operation.apply(leftEntryGraph, rightEntryGraph);
         entryGraphs.replace(leftChildName, newEntryGraph);
 
         Graph leftExitGraph = exitGraphs.get(leftChildName);
         Graph rightExitGraph = exitGraphs.get(rightChildName);
-        Graph newExitGraph = GraphUtils.join(leftExitGraph, rightExitGraph);
+        Graph newExitGraph = operation.apply(leftExitGraph, rightExitGraph);
         exitGraphs.replace(leftChildName, newExitGraph);
     }
 
