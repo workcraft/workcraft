@@ -15,7 +15,7 @@ import org.workcraft.plugins.cflt.utils.SatSolverUtils;
 
 public class EdgeCliqueCoverSolver {
 
-    public static List<Clique> getEdgeCliqueCover(
+    public List<Clique> getEdgeCliqueCover(
             Graph graph,
             Set<Edge> optionalEdges) {
 

@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
-
 import org.workcraft.plugins.cflt.algorithms.EdgeCliqueCoverHeuristic;
 import org.workcraft.plugins.cflt.algorithms.EdgeCliqueCoverSolver;
 import org.workcraft.plugins.cflt.algorithms.HeuristicType;
@@ -36,7 +35,7 @@ class EdgeCliqueCoverTests {
     void doesCliqueCoverGraphWithMaximalCliques() throws Exception {
         Graph graph = getGraph();
 
-        List<Clique> ecc = EdgeCliqueCoverSolver.getEdgeCliqueCover(graph, new HashSet<>());
+        List<Clique> ecc = new EdgeCliqueCoverSolver().getEdgeCliqueCover(graph, new HashSet<>());
 
         Assertions.assertTrue(doesCover(ecc, graph));
         Assertions.assertTrue(areCliquesMaxSize(ecc, 4));

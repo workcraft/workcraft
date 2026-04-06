@@ -22,16 +22,22 @@ public class NodeTraversalTool {
     HashMap<String, Graph> entryGraphs = new HashMap<>();
     HashMap<String, Graph> exitGraphs = new HashMap<>();
 
-    VisualModelDrawingTool visualModelDrawingTool;
+    VisualModelDrawingTool drawingTool;
+    GraphInterpreterTool interpreterTool;
 
-    public NodeTraversalTool(VisualModelDrawingTool drawingTool, NodeCollection nodeCollection) {
-        this.visualModelDrawingTool = drawingTool;
+    public NodeTraversalTool(
+            NodeCollection nodeCollection,
+            VisualModelDrawingTool drawingTool,
+            GraphInterpreterTool interpreterTool
+    ) {
         this.nodeCollection = nodeCollection;
+        this.drawingTool = drawingTool;
+        this.interpreterTool = interpreterTool;
     }
 
     public void drawInterpretedGraph(Mode mode, WorkspaceEntry we) {
         if (nodeCollection.isEmpty() && nodeCollection.getSingleTransition() != null) {
-            drawSingleTransition(we);
+            drawingTool.drawSingleTransition(nodeCollection.getSingleTransition(), we);
         }
 
         NodeIterator nodeIterator = nodeCollection.getNodeIterator();
@@ -48,17 +54,18 @@ public class NodeTraversalTool {
             ensureGraphExists(exitGraphs, rightChildName);
 
             switch (operator) {
-                case CONCURRENCY -> this.handleConcurrency(leftChildName, rightChildName);
-                case CHOICE -> this.handleChoice(leftChildName, rightChildName);
-                case SEQUENCE -> this.handleSequence(leftChildName, rightChildName, mode, we);
-                case ITERATION -> this.handleIteration(leftChildName, nodeIterator.getCurrentPosition());
+                case CONCURRENCY -> handleConcurrency(leftChildName, rightChildName);
+                case CHOICE -> handleChoice(leftChildName, rightChildName);
+                case SEQUENCE -> handleSequence(leftChildName, rightChildName, mode, we);
+                case ITERATION -> handleIteration(leftChildName, nodeIterator.getCurrentPosition());
             }
 
             if (nodeIterator.isLastNode()) {
+
                 Graph inputGraph = entryGraphs.get(leftChildName);
                 Graph outputGraph = new Graph();
 
-                DrawVisualObjectsRequest request = new DrawVisualObjectsRequest(
+                RenderGraphRequest request = interpreterTool.buildRenderRequest(
                         inputGraph,
                         outputGraph,
                         false,
@@ -67,13 +74,9 @@ public class NodeTraversalTool {
                         we
                 );
 
-                visualModelDrawingTool.drawVisualObjects(request);
+                drawingTool.renderGraph(request);
             }
         }
-    }
-
-    private void drawSingleTransition(WorkspaceEntry we) {
-        visualModelDrawingTool.drawSingleTransition(nodeCollection.getSingleTransition(), we);
     }
 
     private void ensureGraphExists(Map<String, Graph> graphs, String key) {
@@ -95,7 +98,7 @@ public class NodeTraversalTool {
     }
 
     private void handleBinaryGraphOp(
-            String leftChildName, 
+            String leftChildName,
             String rightChildName,
             BiFunction<Graph, Graph, Graph> operation) {
 
@@ -110,13 +113,14 @@ public class NodeTraversalTool {
         exitGraphs.replace(leftChildName, newExitGraph);
     }
 
-    private void handleSequence(String leftChildName, String rightChildName, Mode mode, WorkspaceEntry we) {
-        Graph inputGraph = exitGraphs.get(leftChildName);
-        Graph outputGraph = entryGraphs.get(rightChildName);
+    private void handleSequence(String left, String right, Mode mode, WorkspaceEntry we) {
 
-        exitGraphs.replace(leftChildName, exitGraphs.get(rightChildName));
+        Graph inputGraph = exitGraphs.get(left);
+        Graph outputGraph = entryGraphs.get(right);
 
-        DrawVisualObjectsRequest request = new DrawVisualObjectsRequest(
+        exitGraphs.replace(left, exitGraphs.get(right));
+
+        RenderGraphRequest request = interpreterTool.buildRenderRequest(
                 inputGraph,
                 outputGraph,
                 true,
@@ -125,7 +129,7 @@ public class NodeTraversalTool {
                 we
         );
 
-        visualModelDrawingTool.drawVisualObjects(request);
+        drawingTool.renderGraph(request);
     }
 
     private void handleIteration(String leftChildName, int nodeCounter) {
