@@ -22,11 +22,11 @@ public class Graph {
     }
 
     public void addVertex(Vertex vertex) {
-        this.vertices.add(vertex);
+        vertices.add(vertex);
     }
 
     public void addEdge(Edge edge) {
-        this.getEdges().add(edge);
+        edges.add(edge);
     }
 
     public List<Vertex> getIsolatedVertices() {
@@ -43,26 +43,18 @@ public class Graph {
         return vertices;
     }
 
-    public void setVertices(List<Vertex> vertices) {
-        this.vertices = vertices;
-    }
-
-    public void setEdges(List<Edge> edges) {
-        this.edges = edges;
-    }
-
     public List<Edge> getEdges() {
         return edges;
     }
 
     public Graph deepClone(int cloneGeneration) {
 
-        List<Vertex> vertices = this.vertices
+        List<Vertex> newVertices = vertices
                 .stream()
                 .map(vertex -> vertex.clone(cloneGeneration))
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        List<Edge> edges = this.getEdges()
+        List<Edge> newEdges = edges
                 .stream()
                 .map(edge -> new Edge(
                         edge.firstVertex().clone(cloneGeneration),
@@ -70,14 +62,14 @@ public class Graph {
                 ))
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        return new Graph(edges, vertices);
+        return new Graph(newEdges, newVertices);
     }
 
     public Map<Vertex, Set<Vertex>> getVertexToAllNeighbours() {
 
         Map<Vertex, Set<Vertex>> vertexToAllNeighbours = new HashMap<>();
 
-        for (Edge edge : this.getEdges()) {
+        for (Edge edge : edges) {
             vertexToAllNeighbours
                     .computeIfAbsent(edge.firstVertex(), k -> new HashSet<>())
                     .add(edge.secondVertex());
