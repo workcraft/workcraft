@@ -63,13 +63,13 @@ public final class GenlibUtils {
         }
         circuit.setMathName(contact, gate.function.name);
         try {
-            contact.setInitToOne(CircuitUtils.cannotFall(contact.getReferencedComponent()));
             contact.setBothFunctions(
                     CircuitUtils.parsePinFunction(circuit, component, gate.getSetExpression()),
                     CircuitUtils.parsePinFunction(circuit, component, gate.getResetExpression()));
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }
+        contact.setInitToOne(CircuitUtils.cannotFall(contact.getReferencedComponent()));
         contact.setDefaultDirection();
     }
 
@@ -412,10 +412,6 @@ public final class GenlibUtils {
 
     private static String getExtendedAssignmentInfo(BooleanFormula formula, String pin, Set<String> invertedPins) {
         return StringGenerator.toString(formula) + RIGHT_ARROW_SYMBOL + pin + (invertedPins.contains(pin) ? "'" : "");
-    }
-
-    public static Gate getNegatedGate(Gate gate) {
-        return null;
     }
 
 }
