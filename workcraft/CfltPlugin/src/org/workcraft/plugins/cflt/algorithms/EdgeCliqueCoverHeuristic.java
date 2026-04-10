@@ -1,13 +1,20 @@
 package org.workcraft.plugins.cflt.algorithms;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.workcraft.plugins.cflt.graph.Clique;
 import org.workcraft.plugins.cflt.graph.Edge;
+import org.workcraft.plugins.cflt.graph.Graph;
 import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.utils.CliqueUtils;
-import org.workcraft.plugins.cflt.graph.Graph;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class EdgeCliqueCoverHeuristic {
 
@@ -114,13 +121,13 @@ public class EdgeCliqueCoverHeuristic {
             edgeToNoOfCliquesItsContainedIn.put(edge, 0);
         }
 
-        for (Vertex vertexName : graph.getVertices()) {
-            Set<Vertex> neighbours = vertexToAllNeighbours.get(vertexName);
+        for (Vertex vertex : graph.getVertices()) {
+            Set<Vertex> neighbours = vertexToAllNeighbours.get(vertex);
             if (neighbours != null && !neighbours.isEmpty()) {
-                vertexToUncoveredDegree.put(vertexName, neighbours.size());
-                uncoveredVertices.add(vertexName);
+                vertexToUncoveredDegree.put(vertex, neighbours.size());
+                uncoveredVertices.add(vertex);
             } else {
-                vertexToUncoveredDegree.put(vertexName, 0);
+                vertexToUncoveredDegree.put(vertex, 0);
             }
         }
     }

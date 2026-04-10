@@ -1,5 +1,10 @@
 package org.workcraft.plugins.cflt.tools;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualNode;
@@ -9,10 +14,6 @@ import org.workcraft.plugins.cflt.graph.Vertex;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-
-import java.util.*;
-
-import static org.workcraft.plugins.cflt.utils.EdgeCliqueCoverUtils.getEdgeCliqueCover;
 
 public abstract class AbstractDrawingTool implements VisualModelDrawingTool {
 
@@ -75,36 +76,22 @@ public abstract class AbstractDrawingTool implements VisualModelDrawingTool {
     }
 
     @Override
-    public void drawVisualObjects(DrawVisualObjectsRequest request) {
-
-        List<Clique> edgeCliqueCover = getEdgeCliqueCover(
-                request.inputGraph(),
-                request.outputGraph(),
-                request.isSequence(),
-                request.mode()
-        );
-
-        Set<Vertex> inputVertices = request.isSequence()
-                ? new HashSet<>(request.inputGraph().getVertices())
-                : new HashSet<>();
+    public void renderGraph(RenderGraphRequest request) {
 
         AbstractVisualModel model = getModel(request.workspaceEntry());
 
-        List<Vertex> isolatedVertices = request.inputGraph().getIsolatedVertices();
-
-        if (isolatedVertices != null && !isolatedVertices.isEmpty()) {
+        if (request.isolatedVertices() != null && !request.isolatedVertices().isEmpty()) {
             drawIsolatedVisualObjects(
-                    isolatedVertices,
+                    request.isolatedVertices(),
                     model,
-                    request.isSequence(),
                     request.isRoot()
             );
         }
 
         drawRemainingVisualObjects(
-                edgeCliqueCover,
+                request.cliques(),
                 model,
-                inputVertices,
+                request.inputVertices(),
                 request.isRoot()
         );
 
@@ -112,12 +99,12 @@ public abstract class AbstractDrawingTool implements VisualModelDrawingTool {
     }
 
     private void drawRemainingVisualObjects(
-            List<Clique> edgeCliqueCover,
+            List<Clique> cliques,
             AbstractVisualModel model,
             Set<Vertex> inputVertices,
             boolean isRoot) {
 
-        for (Clique clique : edgeCliqueCover) {
+        for (Clique clique : cliques) {
 
             VisualNode place = createPlace(model, isRoot, Positioning.LEFT);
 
@@ -144,7 +131,6 @@ public abstract class AbstractDrawingTool implements VisualModelDrawingTool {
     private void drawIsolatedVisualObjects(
             List<Vertex> isolatedVertices,
             AbstractVisualModel model,
-            boolean isSequence,
             boolean isRoot) {
 
         for (Vertex vertex : isolatedVertices) {
@@ -152,16 +138,15 @@ public abstract class AbstractDrawingTool implements VisualModelDrawingTool {
             String name = vertex.name();
 
             boolean transitionExists = transitionMap.containsKey(name);
-            boolean shouldCreateNewTransition = !transitionExists && !isSequence;
 
-            if (!shouldCreateNewTransition && !isRoot) {
+            if (!transitionExists && !isRoot) {
                 continue;
             }
 
             VisualNode place;
             VisualNode transition;
 
-            if (shouldCreateNewTransition) {
+            if (!transitionExists) {
                 place = createPlace(model, true, Positioning.LEFT);
                 transition = createTransition(model, name);
             } else {

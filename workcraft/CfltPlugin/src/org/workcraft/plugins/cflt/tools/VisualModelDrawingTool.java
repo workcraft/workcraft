@@ -5,11 +5,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 public interface VisualModelDrawingTool {
 
     /**
-     * Adds VisualObjects (eg. Visual Place/Transitions)
-     * to VisualModels (eg. VisualPetri/VisualStg)
-     * Relies on Edge Clique Cover Algorithms
+     * Renders a graph based on a precomputed rendering request.
+     * The request contains all necessary structural information
+     * (cliques, vertices, etc.) prepared by GraphInterpreterTool.
      */
-    void drawVisualObjects(DrawVisualObjectsRequest request);
+    void renderGraph(RenderGraphRequest request);
 
     void drawSingleTransition(String name, WorkspaceEntry we);
 }

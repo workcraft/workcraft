@@ -52,9 +52,4 @@ public class PetriDrawingTool extends AbstractDrawingTool {
 
         return transition;
     }
-
-    @Override
-    public void drawSingleTransition(String name, WorkspaceEntry we) {
-        drawSingleTransition(name, we);
-    }
 }

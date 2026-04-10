@@ -8,10 +8,14 @@ import java.nio.charset.StandardCharsets;
 
 import org.workcraft.gui.controls.CodePanel;
 import org.workcraft.plugins.cflt.Model;
+import org.workcraft.plugins.cflt.algorithms.EdgeCliqueCoverHeuristic;
+import org.workcraft.plugins.cflt.algorithms.EdgeCliqueCoverSolver;
 import org.workcraft.plugins.cflt.jj.ParseException;
 import org.workcraft.plugins.cflt.jj.StringParser;
 import org.workcraft.plugins.cflt.node.NodeCollection;
 import org.workcraft.plugins.cflt.presets.ExpressionParameters.Mode;
+import org.workcraft.plugins.cflt.tools.EdgeCliqueCoverTool;
+import org.workcraft.plugins.cflt.tools.GraphInterpreterTool;
 import org.workcraft.plugins.cflt.tools.NodeTraversalTool;
 import org.workcraft.plugins.cflt.tools.PetriDrawingTool;
 import org.workcraft.plugins.cflt.tools.StgDrawingTool;
@@ -81,7 +85,12 @@ public final class ExpressionUtils {
         checkIteration(mode, nodeCollection);
 
         VisualModelDrawingTool drawingTool = getDrawingTool(model, nodeCollection);
-        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool(drawingTool, nodeCollection);
+        EdgeCliqueCoverTool edgeCliqueCoverTool = new EdgeCliqueCoverTool(
+                new EdgeCliqueCoverHeuristic(),
+                new EdgeCliqueCoverSolver()
+        );
+        GraphInterpreterTool interpreterTool = new GraphInterpreterTool(edgeCliqueCoverTool);
+        NodeTraversalTool nodeTraversalTool = new NodeTraversalTool(nodeCollection, drawingTool, interpreterTool);
 
         nodeTraversalTool.drawInterpretedGraph(mode, we);
         return true;
