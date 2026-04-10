@@ -7,7 +7,7 @@ pluginManagement {
         // Plugin for PMD-based Copy-Paste Detection (https://plugins.gradle.org/plugin/org.danilopianini.cpd)
         id 'org.danilopianini.cpd' version '4.0.14'
         // Plugin for analysing licenses of dependencies (https://plugins.gradle.org/plugin/com.github.jk1.dependency-license-report)
-        id 'com.github.jk1.dependency-license-report' version '3.1.1'
+        id 'com.github.jk1.dependency-license-report' version '3.1.2'
     }
 }
 
