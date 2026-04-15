@@ -101,7 +101,7 @@ public class ConnectHangingPinsToPortsTransformationCommand
         inputPinInitalState.clear();
         Map<VisualFunctionComponent, Set<String>> componentInputSignals = new HashMap<>();
         for (Node node : nodes) {
-            if ((node instanceof VisualContact contact)
+            if ((node instanceof VisualContact contact) && contact.isInput() && contact.isPin()
                     && (contact.getParent() instanceof VisualFunctionComponent component)) {
 
                 componentInputSignals.computeIfAbsent(component, c -> new HashSet<>())
