@@ -5,10 +5,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.utils.FileUtils;
-import org.workcraft.utils.LogUtils;
-import org.workcraft.utils.WorkUtils;
-import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.utils.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -39,7 +36,7 @@ public class RefinementDependencyGraph {
         try {
             ModelEntry topMe = WorkUtils.loadModel(topFile);
             Map<String, File> topDependencyMap = extractInstanceDependencyMap(topMe);
-            stack.addAll(topDependencyMap.values());
+            stack.addAll(getReverseOrderedDependencies(topDependencyMap));
             vertexOrderedDataMap.put(topFile, new VertexData(topDependencyMap, topMe));
         } catch (DeserialisationException e) {
             String filePath = FileUtils.getFullPath(topFile);
@@ -47,9 +44,9 @@ public class RefinementDependencyGraph {
         }
 
         Set<File> visited = new HashSet<>();
-        while (!stack.empty()) {
+        while (!stack.isEmpty()) {
             File file = stack.pop();
-            if ((file != null) && !visited.contains(file)) {
+            if (!visited.contains(file)) {
                 visited.add(file);
                 if (!FileUtils.isReadableFile(file)) {
                     vertexOrderedDataMap.put(file, new VertexData(Collections.emptyMap(), null));
@@ -57,7 +54,7 @@ public class RefinementDependencyGraph {
                     try {
                         ModelEntry me = WorkUtils.loadModel(file);
                         Map<String, File> dependencyMap = extractInstanceDependencyMap(me);
-                        stack.addAll(dependencyMap.values());
+                        stack.addAll(getReverseOrderedDependencies(dependencyMap));
                         vertexOrderedDataMap.put(file, new VertexData(dependencyMap, me));
                     } catch (DeserialisationException e) {
                         String filePath = FileUtils.getFullPath(file);
@@ -66,6 +63,16 @@ public class RefinementDependencyGraph {
                 }
             }
         }
+    }
+
+    private static List<File> getReverseOrderedDependencies(Map<String, File> dependencyMap) {
+        List<File> result = new ArrayList<>(dependencyMap.values().stream()
+                .filter(Objects::nonNull)
+                .toList());
+
+        SortUtils.sortNatural(result, File::getPath);
+        Collections.reverse(result);
+        return result;
     }
 
     public File getTopFile() {
