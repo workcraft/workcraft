@@ -19,7 +19,10 @@ public class FileUtils {
     private static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
 
     public static void copyFile(File inFile, File outFile) throws IOException {
-        outFile.getParentFile().mkdirs();
+        File parent = outFile.getParentFile();
+        if (!parent.exists() && !parent.mkdirs()) {
+            throw new RuntimeException("Cannot create parent directory " + parent.getAbsolutePath());
+        }
         try (FileOutputStream os = new FileOutputStream(outFile)) {
             copyFileToStream(inFile, os);
         }
@@ -126,7 +129,9 @@ public class FileUtils {
         } catch (IOException e) {
             throw new RuntimeException(errorMessage);
         }
-        tempDir.delete();
+        if (tempDir.exists() && !tempDir.delete()) {
+            throw new RuntimeException(errorMessage);
+        }
         if (!tempDir.mkdir()) {
             throw new RuntimeException(errorMessage);
         }
@@ -203,7 +208,9 @@ public class FileUtils {
 
     public static void moveFile(File from, File to) throws IOException {
         copyFile(from, to);
-        from.delete();
+        if (from.exists() && !from.delete()) {
+            throw new RuntimeException("Cannot delete " + from.getAbsolutePath());
+        }
     }
 
     public static String readAllTextFromSystemResource(String path) throws IOException {
