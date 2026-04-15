@@ -139,6 +139,21 @@ public class FileUtils {
         return tempDir;
     }
 
+    public static File createDirectory(File parent, String name, boolean deleteOnExit) {
+        File dir = new File(parent, name);
+        String errorMessage = "Cannot create directory " + dir.getAbsolutePath();
+        if (dir.exists() && !dir.delete()) {
+            throw new RuntimeException(errorMessage);
+        }
+        if (!dir.mkdir()) {
+            throw new RuntimeException(errorMessage);
+        }
+        if (deleteOnExit) {
+            dir.deleteOnExit();
+        }
+        return dir;
+    }
+
     public static void copyAll(File source, File targetDir) throws IOException {
         if (!targetDir.isDirectory()) {
             throw new RuntimeException("Cannot copy files to a file that is not a directory.");
