@@ -212,7 +212,7 @@ public final class GenlibUtils {
             Gate.ExtendedMapping invExtendedMapping
                     = getEquivalentExtendedMappingOrNull(notSetFormula, notResetFormula, library, false, true);
 
-            if (invExtendedMapping != null) {
+            if (invExtendedMapping == null) {
                 invExtendedMapping = getEquivalentExtendedMappingOrNull(notSetFormula, notResetFormula, library, true, true);
             }
             if (invExtendedMapping != null) {

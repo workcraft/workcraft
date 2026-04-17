@@ -67,7 +67,7 @@ public class WorkspaceUtils {
 
     private static void setWorkspaceViewAutoExpansion(boolean value) {
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        WorkspacePanel workspaceView = mainWindow == null ? null : mainWindow.getWorkspaceView();
+        WorkspacePanel workspaceView = (mainWindow == null) ? null : mainWindow.getWorkspacePanel();
         if (workspaceView != null) {
             workspaceView.setAutoExpand(value);
             workspaceView.refresh();
