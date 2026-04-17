@@ -106,6 +106,14 @@ public class PluginManager implements PluginProvider {
                 .collect(Collectors.toSet());
     }
 
+    @SuppressWarnings("unchecked")
+    public  <T extends Settings> T getSpecificSettingsOrNull(Class<T> type) {
+        return (T) getSettings().stream()
+                .filter(type::isInstance)
+                .findFirst()
+                .orElse(null);
+    }
+
     public List<Settings> getSortedSettings() {
         return getSettings().stream()
                 .sorted((o1, o2) -> {
