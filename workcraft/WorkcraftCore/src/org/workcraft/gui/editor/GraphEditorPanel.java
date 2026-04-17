@@ -12,6 +12,7 @@ import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.panels.PropertyEditorPanel;
 import org.workcraft.gui.panels.ToolControlsPanel;
 import org.workcraft.gui.properties.*;
+import org.workcraft.gui.properties.Properties;
 import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.tools.GraphEditorTool;
 import org.workcraft.observation.StateEvent;
@@ -23,25 +24,22 @@ import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serial;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
 
-    private static final String RESET_TO_DEFAULTS = "Reset to defaults";
-    private static final String TITLE_PROPERTY_EDITOR = "Property editor";
     private static final String TITLE_SUFFIX_TEMPLATE = "template";
     private static final String TITLE_SUFFIX_MODEL = "model";
     private static final String TITLE_SUFFIX_SINGLE_ITEM = "single item";
     private static final String TITLE_SUFFIX_SELECTED_ITEMS = " selected items";
+    private static final String RESET_TO_DEFAULTS = "Reset to defaults";
     private static final int VIEWPORT_MARGIN = 25;
     private static final int STEP = 20;
 
@@ -379,8 +377,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                 selectedTool.updateControlsToolbar(controlToolbar, this);
 
                 JPanel panel = selectedTool.getControlsPanel(this);
-                ToolControlsPanel controlWindow = mainWindow.getControlsView();
+                ToolControlsPanel controlWindow = mainWindow.getToolControlsPanel();
                 controlWindow.setContent(panel);
+                String toolLabel = selectedTool.getLabel();
+                mainWindow.setToolControlsTitle(MainWindow.TITLE_TOOL_CONTROLS + getTitleSuffix(toolLabel));
             }
         }
     }
@@ -393,26 +393,26 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         ModelProperties properties;
         final VisualNode defaultNode = we.getDefaultNode();
         final VisualNode templateNode = we.getTemplateNode();
-        String title = TITLE_PROPERTY_EDITOR;
+        String title = MainWindow.TITLE_PROPERTY_EDITOR;
         if (templateNode != null) {
             properties = ModelPropertyUtils.getTemplateProperties(getModel(), templateNode);
-            title += " [" + TITLE_SUFFIX_TEMPLATE + "]";
+            title += getTitleSuffix(TITLE_SUFFIX_TEMPLATE);
         } else {
             final VisualModel model = getModel();
             properties = ModelPropertyUtils.getSelectionProperties(model);
             final Collection<? extends VisualNode> selection = model.getSelection();
             if (selection.isEmpty()) {
-                title += " [" + TITLE_SUFFIX_MODEL + "]";
+                title += getTitleSuffix(TITLE_SUFFIX_MODEL);
             } else if (selection.size() == 1) {
-                title += " [" + TITLE_SUFFIX_SINGLE_ITEM + "]";
+                title += getTitleSuffix(TITLE_SUFFIX_SINGLE_ITEM);
             } else {
                 final int nodeCount = selection.size();
-                title += " [" + nodeCount + " " + TITLE_SUFFIX_SELECTED_ITEMS + "]";
+                title += getTitleSuffix(nodeCount + " " + TITLE_SUFFIX_SELECTED_ITEMS);
             }
         }
 
         final MainWindow mainWindow = framework.getMainWindow();
-        final PropertyEditorPanel propertyEditorPanel = mainWindow.getPropertyView();
+        final PropertyEditorPanel propertyEditorPanel = mainWindow.getPropertyEditorPanel();
         GraphEditorTool tool = (toolbox == null) ? null : toolbox.getSelectedTool();
         if ((tool == null) || !tool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
             propertyEditorPanel.clear();
@@ -434,6 +434,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         updatePropertyViewRequested = false;
     }
 
+    private static String getTitleSuffix(String s) {
+        return ((s != null) && !s.isEmpty()) ? (" [" + s.toLowerCase(Locale.ROOT) + ']') : "";
+    }
 
     private void updateEditor() {
         super.repaint();
