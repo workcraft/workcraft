@@ -717,7 +717,7 @@ public final class Framework {
         if (wsTo == null) {
             wsTo = workspace.tempMountExternalFile(file);
         }
-        if (wsFrom != wsTo) {
+        if (!wsFrom.equals(wsTo)) {
             try {
                 workspace.moveEntry(wsFrom, wsTo);
             } catch (IOException e) {

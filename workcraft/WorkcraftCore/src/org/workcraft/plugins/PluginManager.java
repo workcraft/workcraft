@@ -22,6 +22,7 @@ import org.workcraft.workspace.FileHandler;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 public class PluginManager implements PluginProvider {
@@ -64,6 +65,10 @@ public class PluginManager implements PluginProvider {
 
     private LinkedHashSet<Class<?>> getPluginClasses() throws PluginInstantiationException {
         String classPass = System.getProperty("java.class.path");
+        // Suppress replecated file separator that coinsides with escape symbol
+        if (File.separator.equals("\\")) {
+            classPass = classPass.replaceAll("\\\\+", Matcher.quoteReplacement(File.separator));
+        }
         String[] classPathLocations = classPass.split(File.pathSeparator);
 
         LinkedHashSet<Class<?>> classes = new LinkedHashSet<>();
@@ -73,9 +78,9 @@ public class PluginManager implements PluginProvider {
         classes.add(BuiltinCommands.class);
         classes.add(BuiltinSettings.class);
         String requiredPrefix = Plugin.class.getPackage().getName();
-        for (String s : classPathLocations) {
-            LogUtils.logMessage("  Processing class path entry: " + s);
-            classes.addAll(PluginFinder.search(s, requiredPrefix));
+        for (String classPathLocation : classPathLocations) {
+            LogUtils.logMessage("  Processing class path entry: " + classPathLocation);
+            classes.addAll(PluginFinder.search(classPathLocation, requiredPrefix));
         }
         LogUtils.logMessage(classes.size() + " plugin(s) found.");
         return classes;
@@ -99,6 +104,14 @@ public class PluginManager implements PluginProvider {
         return getPlugins(Settings.class).stream()
                 .map(PluginInfo::getInstance)
                 .collect(Collectors.toSet());
+    }
+
+    @SuppressWarnings("unchecked")
+    public  <T extends Settings> T getSpecificSettingsOrNull(Class<T> type) {
+        return (T) getSettings().stream()
+                .filter(type::isInstance)
+                .findFirst()
+                .orElse(null);
     }
 
     public List<Settings> getSortedSettings() {

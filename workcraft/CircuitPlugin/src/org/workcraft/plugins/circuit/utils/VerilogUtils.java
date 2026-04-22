@@ -298,7 +298,7 @@ public final class VerilogUtils {
 
     public static boolean isLibraryGate(String moduleName) {
         Library library = LibraryManager.getLibrary();
-        return library.get(moduleName) != null;
+        return (library != null) && (library.get(moduleName) != null);
     }
 
     public static boolean checkAssignDelay(String value) {

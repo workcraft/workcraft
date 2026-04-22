@@ -73,16 +73,16 @@ public class MainWindow extends JFrame {
     private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_HEIGHT = 450;
 
-    private static final String TITLE_WORKCRAFT = "Workcraft";
-    private static final String TITLE_OUTPUT = "Output";
-    private static final String TITLE_PROBLEMS = "Problems";
-    private static final String TITLE_JAVASCRIPT = "JavaScript";
-    private static final String TITLE_TASKS = "Tasks";
-    private static final String TITLE_WORKSPACE = "Workspace";
-    private static final String TITLE_PROPERTY_EDITOR = "Property editor";
-    private static final String TITLE_MODEL_TOOLS = "Model tools";
-    private static final String TITLE_TOOL_CONTROLS = "Tool controls";
-    private static final String TITLE_PLACEHOLDER = "";
+    public static final String TITLE_WORKCRAFT = "Workcraft";
+    public static final String TITLE_OUTPUT = "Output";
+    public static final String TITLE_PROBLEMS = "Problems";
+    public static final String TITLE_JAVASCRIPT = "JavaScript";
+    public static final String TITLE_TASKS = "Tasks";
+    public static final String TITLE_WORKSPACE = "Workspace";
+    public static final String TITLE_PROPERTY_EDITOR = "Property editor";
+    public static final String TITLE_MODEL_TOOLS = "Model tools";
+    public static final String TITLE_TOOL_CONTROLS = "Tool controls";
+    public static final String TITLE_PLACEHOLDER = "";
     private static final String PREFIX_DOCUMENT = "Document";
     private static final String TITLE_CLOSE_WORK = "Close work";
     private static final String SYMBOL_INFO = Character.toString((char) 0x2709);
@@ -970,6 +970,11 @@ public class MainWindow extends JFrame {
         DockingUtils.updateHeader(propertyEditorDockable);
     }
 
+    public void setToolControlsTitle(String title) {
+        toolControlsDockable.setTitle(title);
+        DockingUtils.updateHeader(toolControlsDockable);
+    }
+
     public GraphEditor getCurrentEditor() {
         return currentEditor;
     }
@@ -1114,7 +1119,9 @@ public class MainWindow extends JFrame {
                 final Framework framework = Framework.getInstance();
                 framework.shutdownGUI();
                 File file = new File(Framework.UILAYOUT_FILE_PATH);
-                file.delete();
+                if (file.exists() && !file.delete()) {
+                    throw new RuntimeException("Unable to delete " + file.getAbsolutePath());
+                }
                 framework.startGUI();
             } catch (OperationCancelledException ignored) {
                 // Operation cancelled by the user
@@ -1122,11 +1129,11 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public PropertyEditorPanel getPropertyView() {
+    public PropertyEditorPanel getPropertyEditorPanel() {
         return propertyEditorPanel;
     }
 
-    public ToolControlsPanel getControlsView() {
+    public ToolControlsPanel getToolControlsPanel() {
         return toolControlsPanel;
     }
 
@@ -1138,7 +1145,7 @@ public class MainWindow extends JFrame {
         return controlToolbar;
     }
 
-    public WorkspacePanel getWorkspaceView() {
+    public WorkspacePanel getWorkspacePanel() {
         return workspacePanel;
     }
 
