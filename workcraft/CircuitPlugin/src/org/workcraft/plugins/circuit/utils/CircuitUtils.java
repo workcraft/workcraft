@@ -802,19 +802,26 @@ public final class CircuitUtils {
         return null;
     }
 
-    public static boolean connectToHangingInputPins(VisualCircuit circuit, VisualContact srcContact,
-            VisualCircuitComponent component, boolean useDriverReplica) {
+    public static Set<VisualFunctionComponent> getZeroDelayComponents(VisualCircuit circuit) {
+        return circuit.getVisualFunctionComponents().stream()
+                .filter(gate -> gate.isGate() && gate.getIsZeroDelay())
+                .collect(Collectors.toSet());
+    }
 
-        boolean result = false;
-        for (VisualContact contact : component.getVisualInputs()) {
-            if (circuit.getPreset(contact).isEmpty()) {
-                result |= (connectIfPossible(circuit, srcContact, contact) != null);
-                if (useDriverReplica) {
-                    ConversionUtils.replicateDriverContact(circuit, contact);
-                }
-            }
+    public static Set<VisualFunctionComponent> getZeroDelayInverters(VisualCircuit circuit) {
+        return circuit.getVisualFunctionComponents().stream()
+                .filter(gate -> gate.isGate() && gate.getIsZeroDelay() && gate.isInverter())
+                .collect(Collectors.toSet());
+    }
+
+    public static void logZeroDelayInverterWarning(VisualCircuit circuit, String prefix) {
+        logZeroDelayInverterWarning(getZeroDelayInverters(circuit).size(), prefix);
+    }
+
+    public static void logZeroDelayInverterWarning(int count, String prefix) {
+        if (count > 0) {
+            LogUtils.logWarning(prefix + count + " zero delay inverter" + (count > 1 ? "s" : ""));
         }
-        return result;
     }
 
 }
