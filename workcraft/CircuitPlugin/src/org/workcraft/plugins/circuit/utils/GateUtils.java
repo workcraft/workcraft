@@ -606,6 +606,7 @@ public final class GateUtils {
             }
         }
 
+        boolean detachInvertersAsZeroDelay = !component.getIsEnvironment();
         for (VisualContact inputPin : component.getVisualInputs()) {
             Contact inputPinVar = inputPin.getReferencedComponent();
             String newInputPinName = pinRenames.get(inputPinVar);
@@ -620,7 +621,7 @@ public final class GateUtils {
                     newInverter.copyStylePreserveMapping(component);
                     SpaceUtils.makeSpaceAroundContact(circuit, inputPin, 2.0);
                     insertGateBefore(circuit, newInverter, inputPin, 1.5);
-                    newInverter.setIsZeroDelay(true);
+                    newInverter.setIsZeroDelay(detachInvertersAsZeroDelay);
                 } else if (trivialDriverComponent.isInverter()) {
                     ContractionUtils.contractComponentIfPossible(circuit, trivialDriverComponent);
                 } else if (trivialDriverComponent.isBuffer()) {
