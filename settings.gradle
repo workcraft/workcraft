@@ -24,7 +24,7 @@ gradle.ext.javaReleaseVersion = 17  /* Must be integer, e.g. 17 for Java 17 */
 // Checkstyle code linter (https://checkstyle.sourceforge.io/) 
 gradle.ext.checkstyleVersion = '13.4.0'  /* CheckStyle v13+ requires Java 21+ */
 // PMD code analyser (https://pmd.github.io/)
-gradle.ext.pmdVersion = '7.23.0'
+gradle.ext.pmdVersion = '7.24.0'
 // Jacoco code coverage (https://www.eclemma.org/jacoco/)
 gradle.ext.jacocoVersion = '0.8.14'
 
