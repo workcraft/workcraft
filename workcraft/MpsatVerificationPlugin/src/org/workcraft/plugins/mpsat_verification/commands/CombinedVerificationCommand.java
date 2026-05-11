@@ -94,7 +94,7 @@ public class CombinedVerificationCommand
         verificationParametersList.add(ReachUtils.getConsistencyParameters());
         verificationParametersList.add(ReachUtils.getDeadlockParameters());
         if (noDummies) {
-            List<String> inputPropernessExceptions = new InputPropernessDataPreserver(we).loadData();
+            List<String> inputPropernessExceptions = new InputPropernessDataPreserver(we).loadValidDataOnly();
             verificationParametersList.add(new InputPropernessParameters(inputPropernessExceptions)
                     .getVerificationParameters());
         }
@@ -107,13 +107,13 @@ public class CombinedVerificationCommand
         }
 
         if (noDummies) {
-            Collection<String> localSelfTriggeringExceptions = new LocalSelfTriggeringDataPreserver(we).loadData();
+            Collection<String> localSelfTriggeringExceptions = new LocalSelfTriggeringDataPreserver(we).loadValidDataOnly();
             verificationParametersList.add(new LocalSelfTriggeringParameters(localSelfTriggeringExceptions)
                     .getVerificationParameters());
         }
 
         if (noDummies) {
-            DiInterfaceParameters diInterfaceParameters = new DiInterfaceDataPreserver(we).loadData();
+            DiInterfaceParameters diInterfaceParameters = new DiInterfaceDataPreserver(we).loadValidDataOnly();
             verificationParametersList.add(diInterfaceParameters.getVerificationParameters());
         }
 
