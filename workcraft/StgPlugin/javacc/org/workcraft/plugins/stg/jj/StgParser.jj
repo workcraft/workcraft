@@ -222,6 +222,10 @@ TOKEN :
 |
     <SILENT_HEADER : ".silent">
 |
+    <INITIAL_STATE : ".initial state"> : IGNORE_LINE
+|
+    <MODE : ".mode"> : IGNORE_LINE
+|
     <GRAPH : ".graph">
 |
     <MARKING : ".marking">
@@ -298,6 +302,10 @@ void header() :
     {
         addDummies(list);
     }
+|
+    <INITIAL_STATE> <REST>
+|
+    <MODE> <REST>
 |
     t = <UNSUPPORTED_HEADER> <REST>
     {
