@@ -37,7 +37,7 @@ public class DataPreserver<T> {
                 LogUtils.logError("Failed loading data from resource '" + resource.getName() + "'");
             }
         }
-        Element root = doc == null ? null : doc.getDocumentElement();
+        Element root = (doc == null) ? null : doc.getDocumentElement();
         return serialiser.fromXML(root, null);
     }
 
@@ -62,6 +62,10 @@ public class DataPreserver<T> {
         if (we.removeResource(key) != null) {
             we.setChanged(true);
         }
+    }
+
+    public T loadValidDataOnly() {
+        return loadData();
     }
 
 }

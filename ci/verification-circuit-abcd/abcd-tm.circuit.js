@@ -1,4 +1,4 @@
-work = load("abcd-bad-tm.circuit.work");
+let work = load("abcd-bad-tm.circuit.work");
 write(
     "Combined check: " + checkCircuitCombined(work) + "\n" +
     "Deadlock-freeness: " + checkCircuitDeadlockFreeness(work) + "\n" +
@@ -8,4 +8,5 @@ write(
     "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n" +
     "Refinement: " + checkCircuitRefinement(work) + "\n" +
     "", "abcd-tm.circuit.result");
+
 exit();

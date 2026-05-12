@@ -1,7 +1,7 @@
 // Get circuit contact by its reference
 function getCircuitContact(work, ref) {
-    circuit = work.getModelEntry().getMathModel();
-    contact = circuit.getNodeByReference(ref);
+    let circuit = work.getModelEntry().getMathModel();
+    let contact = circuit.getNodeByReference(ref);
     if (!(contact instanceof org.workcraft.plugins.circuit.FunctionContact)) {
         throw "Circuit contact '" + ref + "' not found";
     }
@@ -10,7 +10,7 @@ function getCircuitContact(work, ref) {
 
 // Get circuit port by its reference
 function getCircuitPort(work, ref) {
-    contact = getCircuitContact(work, ref);
+    let contact = getCircuitContact(work, ref);
     if (!contact.isPort()) {
         throw "Contact '" + ref + "' is not a port";
     }
@@ -20,7 +20,7 @@ function getCircuitPort(work, ref) {
 
 // Get circuit component pin by its reference
 function getCircuitPin(work, ref) {
-    contact = getCircuitContact(work, ref);
+    let contact = getCircuitContact(work, ref);
     if (!contact.isPin()) {
         throw "Contact '" + ref + "' is not a component pin";
     }
@@ -29,7 +29,7 @@ function getCircuitPin(work, ref) {
 
 // Get circuit driver contact (input port or output pin) by its reference
 function getCircuitDriver(work, ref, value) {
-    driver = getCircuitContact(work, ref);
+    let driver = getCircuitContact(work, ref);
     if (!driver.isDriver()) {
         throw "Contact '" + ref + "' is not a driver";
     }
@@ -40,7 +40,8 @@ framework.addJavaScriptHelp("setCircuitDriverInitToOne", "work, ref, value",
     "set 'value' as Init to one attribute for driver 'ref' (input port or output pin) in Circuit 'work'");
 
 function setCircuitDriverInitToOne(work, ref, value) {
-    getCircuitDriver(work, ref).setInitToOne(value);
+    let driver = getCircuitDriver(work, ref);
+    driver.setInitToOne(value);
 }
 
 
@@ -48,7 +49,8 @@ framework.addJavaScriptHelp("getCircuitDriverInitToOne", "work, ref",
     "get Init to one attribute for driver 'ref' (input port or output pin) in Circuit 'work'");
 
 function getCircuitDriverInitToOne(work, ref) {
-    return getCircuitDriver(work, ref).getInitToOne();
+    let driver = getCircuitDriver(work, ref);
+    return driver.getInitToOne();
 }
 
 
@@ -56,7 +58,8 @@ framework.addJavaScriptHelp("setCircuitDriverForcedInit", "work, ref, value",
     "set 'value' as Forced init attribute for driver 'ref' (input port or output pin) in Circuit 'work'");
 
 function setCircuitDriverForcedInit(work, ref, value) {
-    getCircuitDriver(work, ref).setForcedInit(value);
+    let driver = getCircuitDriver(work, ref);
+    driver.setForcedInit(value);
 }
 
 
@@ -64,7 +67,8 @@ framework.addJavaScriptHelp("getCircuitDriverForcedInit", "work, ref",
     "get Forced init attribute for driver 'ref' (input port or output pin) in Circuit 'work'");
 
 function getCircuitDriverForcedInit(work, ref) {
-    return getCircuitDriver(work, ref).getForcedInit();
+    let driver = getCircuitDriver(work, ref);
+    return driver.getForcedInit();
 }
 
 
@@ -72,7 +76,7 @@ framework.addJavaScriptHelp("setCircuitPinPathBreaker", "work, ref, value",
     "set 'value' as Path breaker attribute for component pin 'ref' in Circuit 'work'");
 
 function setCircuitPinPathBreaker(work, ref, value) {
-    pin = getCircuitPin(work, ref);
+    let pin = getCircuitPin(work, ref);
     pin.setPathBreaker(value);
 }
 
@@ -81,7 +85,7 @@ framework.addJavaScriptHelp("getCircuitPinPathBreaker", "work, ref",
     "get Path breaker attribute for component pin 'ref' in Circuit 'work'");
 
 function getCircuitPinPathBreaker(work, ref) {
-    pin = getCircuitPin(work, ref);
+    let pin = getCircuitPin(work, ref);
     return pin.getPathBreaker();
 }
 
@@ -90,7 +94,7 @@ framework.addJavaScriptHelp("constrainCircuitInputPortRiseOnly", "work, ref",
     "constrain input port 'ref' in Circuit 'work' as rise only");
 
 function constrainCircuitInputPortRiseOnly(work, ref) {
-    port = getCircuitPort(work, ref);
+    let port = getCircuitPort(work, ref);
     if (!port.isInput()) {
         throw "Port '" + ref + "' is not an input and cannot be constrained";
     }
@@ -103,7 +107,7 @@ framework.addJavaScriptHelp("constrainCircuitInputPortFallOnly", "work, ref",
     "constrain input port 'ref' in Circuit 'work' as fall only");
 
 function constrainCircuitInputPortFallOnly(work, ref) {
-    port = getCircuitPort(work, ref);
+    let port = getCircuitPort(work, ref);
     if (!port.isInput()) {
         throw "Port '" + ref + "' is not an input and cannot be constrained";
     }
@@ -116,7 +120,7 @@ framework.addJavaScriptHelp("constrainCircuitInputPortAny", "work, ref",
     "clear constrains from input port 'ref' in Circuit 'work'");
 
 function constrainCircuitInputPortAny(work, ref) {
-    port = getCircuitPort(work, ref);
+    let port = getCircuitPort(work, ref);
     if (!port.isInput()) {
         throw "Port '" + ref + "' is not an input and cannot be constrained";
     }
@@ -129,7 +133,7 @@ framework.addJavaScriptHelp("getCircuitDriverSetFunction", "work, ref",
     "get set function of driver 'ref' in Circuit 'work'");
 
 function getCircuitDriverSetFunction(work, ref) {
-    driver = getCircuitDriver(work, ref);
+    let driver = getCircuitDriver(work, ref);
     return org.workcraft.formula.visitors.StringGenerator.toString(driver.getSetFunction());
 }
 
@@ -138,6 +142,6 @@ framework.addJavaScriptHelp("getCircuitDriverResetFunction", "work, ref",
     "get reset function of driver 'ref' in Circuit 'work'");
 
 function getCircuitDriverResetFunction(work, ref) {
-    driver = getCircuitDriver(work, ref);
+    let driver = getCircuitDriver(work, ref);
     return org.workcraft.formula.visitors.StringGenerator.toString(driver.getResetFunction());
 }

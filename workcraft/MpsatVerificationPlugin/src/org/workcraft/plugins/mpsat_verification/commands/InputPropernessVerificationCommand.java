@@ -16,9 +16,11 @@ import java.util.List;
 public class InputPropernessVerificationCommand
         extends AbstractEssentialVerificationCommand {
 
+    public static final String TITLE = "Input properness";
+
     @Override
     public String getDisplayName() {
-        return "Input properness (without dummies)...";
+        return TITLE + " (without dummies)...";
     }
 
     @Override
@@ -38,7 +40,7 @@ public class InputPropernessVerificationCommand
         }
         StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
         if (!stg.getDummyTransitions().isEmpty()) {
-            DialogUtils.showError("Input properness can currently be checked only for STGs without dummies.");
+            DialogUtils.showError(TITLE + " can currently be checked only for STGs without dummies.");
             return false;
         }
         return true;
@@ -60,7 +62,7 @@ public class InputPropernessVerificationCommand
 
     @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        List<String> data = new InputPropernessDataPreserver(we).loadData();
+        List<String> data = new InputPropernessDataPreserver(we).loadValidDataOnly();
         return new InputPropernessParameters(data).getVerificationParameters();
     }
 

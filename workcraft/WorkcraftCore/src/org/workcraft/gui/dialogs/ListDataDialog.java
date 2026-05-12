@@ -1,5 +1,6 @@
 package org.workcraft.gui.dialogs;
 
+import org.workcraft.gui.lists.ColorListCellRenderer;
 import org.workcraft.gui.lists.MultipleListSelectionModel;
 import org.workcraft.presets.DataPreserver;
 import org.workcraft.utils.GuiUtils;
@@ -9,21 +10,43 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
 
 public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<String>>> {
 
     private ItemList itemList;
+    private Set<String> invalidItems;
 
     class ItemList extends JList<String> {
+        private final DefaultListModel<String> listModel;
 
-        ItemList(Collection<String> items) {
-            super(SortUtils.getSortedNatural(items).toArray(new String[0]));
+        ItemList(Collection<String> validItems, Collection<String> invalidItems) {
+            super();
+            listModel = new DefaultListModel<>();
+            setModel(listModel);
+            listModel.addAll(SortUtils.getSortedNatural(invalidItems));
+            listModel.addAll(SortUtils.getSortedNatural(validItems));
+
             setBorder(GuiUtils.getEmptyBorder());
             setSelectionModel(new MultipleListSelectionModel());
-            setCellRenderer(getItemListCellRenderer());
+
+            ColorListCellRenderer cellRenderer = new ColorListCellRenderer(ListDataDialog.this::getItemColorOrNullForInvalid);
+            cellRenderer.setInvalidItemTooltip("Outdated exception will be ignored if selected and removed if unselected");
+            setCellRenderer(cellRenderer);
+        }
+
+        @Override
+        public DefaultListModel<String> getModel() {
+            return listModel;
+        }
+
+        boolean isEmpty() {
+            return listModel.isEmpty();
+        }
+
+        boolean hasSelectedItems() {
+            return !getSelectedValuesList().isEmpty();
         }
     }
 
@@ -44,15 +67,22 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
         result.setLayout(GuiUtils.createBorderLayout());
         result.setBorder(GuiUtils.getEmptyBorder());
 
-        itemList = new ItemList(getItems());
-        selectListItems(itemList, getUserData().loadData());
+        Collection<String> validItems = getItems();
+        List<String> selectedItems = getUserData().loadData();
+        invalidItems = new HashSet<>(selectedItems);
+        invalidItems.removeAll(validItems);
+        itemList = new ItemList(validItems, invalidItems);
+        loadSelection();
 
-        JButton clearButton = new JButton("Clear selection");
-        clearButton.addActionListener(event -> itemList.clearSelection());
+        JButton clearSelectionButton = new JButton("Clear selection");
+        clearSelectionButton.addActionListener(event -> itemList.clearSelection());
+        clearSelectionButton.setEnabled(itemList.hasSelectedItems());
+        itemList.addListSelectionListener(event ->
+                clearSelectionButton.setEnabled(itemList.hasSelectedItems()));
 
         result.add(new JLabel(getSelectionPrompt()), BorderLayout.NORTH);
         result.add(new JScrollPane(itemList), BorderLayout.CENTER);
-        result.add(clearButton, BorderLayout.SOUTH);
+        result.add(clearSelectionButton, BorderLayout.SOUTH);
         return result;
     }
 
@@ -60,17 +90,18 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
         return "Select exceptions:";
     }
 
-    private void selectListItems(ItemList itemList, List<String> items) {
-        ListModel<String> itemListModel = itemList.getModel();
-        List<Integer> indices = new ArrayList<>();
-        for (int index = 0; index < itemListModel.getSize(); index++) {
-            String item = itemListModel.getElementAt(index);
-            if (items.contains(item)) {
-                indices.add(index);
+    private void loadSelection() {
+        List<String> selectionItems = getUserData().loadData();
+        DefaultListModel<String> listModel = itemList.getModel();
+        List<Integer> selectionIndices = new ArrayList<>();
+        for (int index = 0; index < listModel.getSize(); index++) {
+            String item = listModel.getElementAt(index);
+            if (selectionItems.contains(item)) {
+                selectionIndices.add(index);
             }
         }
         // Convert ArrayList<Integer> to int[]
-        int[] itemsToSelect = indices.stream().mapToInt(i -> i).toArray();
+        int[] itemsToSelect = selectionIndices.stream().mapToInt(i -> i).toArray();
         itemList.setSelectedIndices(itemsToSelect);
     }
 
@@ -83,15 +114,19 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
         return result;
     }
 
-    public DefaultListCellRenderer getItemListCellRenderer() {
-        return new DefaultListCellRenderer();
+    public Color getItemColorOrNullForInvalid(Object item) {
+        return isValidItem(item) ? itemList.getForeground() : null;
     }
 
-    public abstract Collection<String> getItems();
+    public boolean isValidItem(Object item) {
+        return (item instanceof String str) && !invalidItems.contains(str);
+    }
 
     @Override
     public boolean hasData() {
-        return !getItems().isEmpty();
+        return !itemList.isEmpty();
     }
+
+    public abstract Collection<String> getItems();
 
 }

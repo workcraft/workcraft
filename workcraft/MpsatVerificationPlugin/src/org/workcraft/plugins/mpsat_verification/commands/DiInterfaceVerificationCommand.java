@@ -14,9 +14,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class DiInterfaceVerificationCommand
         extends AbstractEssentialVerificationCommand {
 
+    public static final String TITLE = "Delay insensitive interface";
+
     @Override
     public String getDisplayName() {
-        return "Delay insensitive interface (without dummies)...";
+        return TITLE + " (without dummies)...";
     }
 
     @Override
@@ -36,7 +38,7 @@ public class DiInterfaceVerificationCommand
         }
         StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
         if (!stg.getDummyTransitions().isEmpty()) {
-            DialogUtils.showError("Delay insensitive interface can currently be checked only for STGs without dummies.");
+            DialogUtils.showError(TITLE + " can currently be checked only for STGs without dummies.");
             return false;
         }
         return true;
@@ -58,7 +60,7 @@ public class DiInterfaceVerificationCommand
 
     @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        DiInterfaceParameters data = new DiInterfaceDataPreserver(we).loadData();
+        DiInterfaceParameters data = new DiInterfaceDataPreserver(we).loadValidDataOnly();
         return data.getVerificationParameters();
     }
 

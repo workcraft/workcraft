@@ -108,7 +108,7 @@ Library parseGenlib() :
 List<Gate> parseGates() :
 {
     Gate gate;
-    List<Gate> gates = new LinkedList<Gate>();
+    List<Gate> gates = new LinkedList<>();
 }
 {
     (
@@ -131,12 +131,10 @@ Gate parseGate() :
     Function function;
 }
 {
+    <GATE> name = parseModuleName() size = parseSize() function = parseFunction()
     (
-        <GATE> name = parseModuleName() size = parseSize() function = parseFunction()
-        (
-           parsePin()
-        )*
-    )
+       parsePin()
+    )*
     {
         try {
             return new Gate(name, size, function, null, false);
@@ -155,15 +153,13 @@ Gate parseLatch() :
     String next;
 }
 {
+    <LATCH> name = parseModuleName() size = parseSize() function = parseFunction()
     (
-        <LATCH> name = parseModuleName() size = parseSize() function = parseFunction()
-        (
-           parsePin()
-        )*
-        next = parseSeq()
-        [ parseControl() ]
-        [ parseConstraint() ]
-    )
+       parsePin()
+    )*
+    next = parseSeq()
+    [ parseControl() ]
+    [ parseConstraint() ]
     {
     try {
         return new Gate(name, size, function, next, false);
@@ -179,17 +175,15 @@ String parseModuleName() :
     Token nameToken;
 }
 {
-    (
-        nameToken = <MODULE_SIMPLE_NAME>
-        {
-            return nameToken.image;
-        }
-    |   nameToken = <MODULE_QUOTED_NAME>
-        {
-            String s = nameToken.image;
-            return s.substring(1, s.length()-1);
-        }
-    )
+    nameToken = <MODULE_SIMPLE_NAME>
+    {
+        return nameToken.image;
+    }
+|   nameToken = <MODULE_QUOTED_NAME>
+    {
+        String s = nameToken.image;
+        return s.substring(1, s.length()-1);
+    }
 }
 
 double parseSize() :

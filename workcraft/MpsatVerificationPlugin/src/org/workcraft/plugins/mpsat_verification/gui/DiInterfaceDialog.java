@@ -6,6 +6,7 @@ import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.gui.lists.ColorListCellRenderer;
 import org.workcraft.gui.lists.MultipleListSelectionModel;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
+import org.workcraft.plugins.mpsat_verification.commands.DiInterfaceVerificationCommand;
 import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceDataPreserver;
 import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceParameters;
 import org.workcraft.plugins.stg.Signal;
@@ -18,8 +19,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -29,12 +30,33 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
     private ExceptionSetList exceptionSetList;
 
     static class InputSignalList extends JList<String> {
+        private final DefaultListModel<String> listModel;
+        private final Set<String> signals;
 
         InputSignalList(Set<String> signals) {
-            super(SortUtils.getSortedNatural(signals).toArray(new String[0]));
+            super();
+            this.signals = signals;
+            listModel = new DefaultListModel<>();
+            setModel(listModel);
+            listModel.addAll(SortUtils.getSortedNatural(signals));
+
             setBorder(GuiUtils.getEmptyBorder());
             setSelectionModel(new MultipleListSelectionModel());
-            setCellRenderer(new ColorListCellRenderer(signal -> SignalCommonSettings.getInputColor()));
+
+            ColorListCellRenderer cellRenderer = new ColorListCellRenderer(signal -> SignalCommonSettings.getInputColor());
+            setCellRenderer(cellRenderer);
+        }
+
+        boolean isValidItemSet(ItemSet itemSet) {
+            return signals.containsAll(itemSet);
+        }
+
+        boolean isEmpty() {
+            return listModel.isEmpty();
+        }
+
+        boolean hasSelectedItems() {
+            return !getSelectedValuesList().isEmpty();
         }
     }
 
@@ -43,7 +65,7 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
             super(items);
         }
 
-        public String toComparisonString() {
+        String toComparisonString() {
             return String.join(" ", this);
         }
 
@@ -53,42 +75,40 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
         }
     }
 
-    static class ExceptionSetList extends JList<ItemSet> {
+    class ExceptionSetList extends JList<ItemSet> {
+        private final DefaultListModel<ItemSet> listModel = new DefaultListModel<>();
 
-        private final DefaultListModel<ItemSet> model = new DefaultListModel<>();
-
-        ExceptionSetList(Set<ItemSet> exceptionSets) {
+        ExceptionSetList(Collection<ItemSet> validItemSets, Collection<ItemSet> invalidItemSets) {
             super();
-            setModel(model);
-            List<ItemSet> orderedExceptionSets = SortUtils.getSortedNatural(exceptionSets, ItemSet::toComparisonString);
-            model.addAll(orderedExceptionSets);
-            setBorder(GuiUtils.getEmptyBorder());
-            setSelectionModel(new MultipleListSelectionModel());
-            setCellRenderer(new ColorListCellRenderer(signal -> null));
-        }
+            setModel(listModel);
+            listModel.addAll(SortUtils.getSortedNatural(invalidItemSets, ItemSet::toComparisonString));
+            listModel.addAll(SortUtils.getSortedNatural(validItemSets, ItemSet::toComparisonString));
 
-        public void clear() {
-            model.clear();
+            setSelectionModel(new MultipleListSelectionModel());
+            setBorder(GuiUtils.getEmptyBorder());
+            ColorListCellRenderer cellRenderer = new ColorListCellRenderer(DiInterfaceDialog.this::getItemColorOrNullForInvalid);
+            cellRenderer.setInvalidItemTooltip("Outdated exception will be ignored");
+            setCellRenderer(cellRenderer);
         }
 
         void addItemInOrderAndSelect(Collection<String> item) {
             ItemSet itemSet = new ItemSet(item);
             int index = 0;
             Comparator<ItemSet> itemSetComparator = Comparator.comparing(ItemSet::toComparisonString);
-            int count = model.size();
-            while ((index < count) && (itemSetComparator.compare(model.get(index), itemSet) < 0)) {
+            int count = listModel.size();
+            while ((index < count) && (itemSetComparator.compare(listModel.get(index), itemSet) < 0)) {
                 index++;
             }
-            if ((index >= count) || (itemSetComparator.compare(model.get(index), itemSet) > 0)) {
-                model.insertElementAt(itemSet, index);
+            if ((index >= count) || (itemSetComparator.compare(listModel.get(index), itemSet) > 0)) {
+                listModel.insertElementAt(itemSet, index);
             }
             ensureIndexIsVisible(index);
             setSelectedIndices(new int[]{index});
         }
 
         Collection<ItemSet> getItems() {
-            return IntStream.range(0, model.size())
-                    .mapToObj(model::get)
+            return IntStream.range(0, listModel.size())
+                    .mapToObj(listModel::get)
                     .collect(Collectors.toList());
         }
 
@@ -96,14 +116,16 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
             Arrays.stream(getSelectedIndices())
                     .boxed()
                     .sorted((i1, i2) -> Long.compare(i2, i1))
-                    .forEach(model::remove);
+                    .forEach(listModel::remove);
         }
 
+        boolean isEmpty() {
+            return listModel.isEmpty();
+        }
     }
 
     public DiInterfaceDialog(Window owner, DiInterfaceDataPreserver userData) {
-        super(owner, "Delay insensitive interface", userData);
-
+        super(owner, DiInterfaceVerificationCommand.TITLE, userData);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -117,18 +139,26 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
         Stg stg = WorkspaceUtils.getAs(getUserData().getWorkspaceEntry(), Stg.class);
         inputSignalList = new InputSignalList(stg.getSignalReferences(Signal.Type.INPUT));
 
-        DiInterfaceParameters parameters = getUserData().loadData();
-        Set<ItemSet> exceptionSets = parameters.getOrderedExceptionSignalSets().stream()
-                .map(ItemSet::new)
-                .collect(Collectors.toSet());
-
-        exceptionSetList = new ExceptionSetList(exceptionSets);
+        DiInterfaceParameters data = getUserData().loadData();
+        List<ItemSet> validItemSets = new ArrayList<>();
+        List<ItemSet> invalidItemSets = new ArrayList<>();
+        for (TreeSet<String> itemTreeSet : data.getOrderedExceptionSignalSets()) {
+            if (itemTreeSet != null) {
+                ItemSet itemSet = new ItemSet(itemTreeSet);
+                if (inputSignalList.isValidItemSet(itemSet)) {
+                    validItemSets.add(itemSet);
+                } else {
+                    invalidItemSets.add(itemSet);
+                }
+            }
+        }
+        exceptionSetList = new ExceptionSetList(validItemSets, invalidItemSets);
 
         JButton clearInputSignalSelectionButton = new JButton("Clear selection");
         clearInputSignalSelectionButton.addActionListener(event -> inputSignalList.clearSelection());
-        clearInputSignalSelectionButton.setEnabled(false);
+        clearInputSignalSelectionButton.setEnabled(inputSignalList.hasSelectedItems());
         inputSignalList.addListSelectionListener(event ->
-                clearInputSignalSelectionButton.setEnabled(!inputSignalList.getSelectedValuesList().isEmpty()));
+                clearInputSignalSelectionButton.setEnabled(inputSignalList.hasSelectedItems()));
 
         JPanel inputSignalsPanel = new JPanel(GuiUtils.createBorderLayout());
         inputSignalsPanel.add(new JLabel("Input signals:"), BorderLayout.NORTH);
@@ -198,5 +228,19 @@ public class DiInterfaceDialog extends ModalDialog<DiInterfaceDataPreserver> {
         }
         return result;
     }
+
+    public Color getItemColorOrNullForInvalid(Object item) {
+        return isValidItem(item) ? exceptionSetList.getForeground() : null;
+    }
+
+    public boolean isValidItem(Object item) {
+        return (item instanceof ItemSet itemSet) && inputSignalList.isValidItemSet(itemSet);
+    }
+
+    @Override
+    public boolean hasData() {
+        return !inputSignalList.isEmpty() || !exceptionSetList.isEmpty();
+    }
+
 
 }

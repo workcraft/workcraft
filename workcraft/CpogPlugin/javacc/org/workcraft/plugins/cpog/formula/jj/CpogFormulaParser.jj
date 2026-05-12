@@ -47,7 +47,7 @@ public class CpogFormulaParser {
     }
 
     private final CpogWorker worker = new CleverCpogWorker();
-    private final HashMap<String, FreeVariable> map = new HashMap<String, FreeVariable>();
+    private final HashMap<String, FreeVariable> map = new HashMap<>();
 
     private GraphFunc<String, ? extends CpogFormula> vars;
     private String graphName, globalBool = "";
@@ -85,7 +85,7 @@ public class CpogFormulaParser {
     }
 
     public static CpogFormula parse(String text, Collection <? extends CpogFormulaVariable> variables) throws ParseException {
-        final HashMap<String, CpogFormulaVariable> map = new HashMap<String, CpogFormulaVariable>();
+        final HashMap<String, CpogFormulaVariable> map = new HashMap<>();
         for(CpogFormulaVariable var : variables) {
             map.put(var.getLabel(), var);
         }
@@ -97,13 +97,11 @@ public class CpogFormulaParser {
             }
 
             public GraphFunc<String, CpogFormulaVariable> removeGraphName(String graphName) {
-                if (map.containsKey(graphName)) {
-                  map.remove(graphName);
-                }
+                map.remove(graphName);
                 return this;
             }
 
-            public CpogFormula eval(String label, String boolExpression)throws ParseException {
+            public CpogFormula eval(String label, String boolExpression) {
                 return map.get(label);
             }
 
@@ -277,14 +275,9 @@ String stringLiteral() :
     String str = "", exp = "";
 }
 {
-    (
-        t = < VARIABLE >
-        {
-            result = t.image;
-        }
-    )
+    t = < VARIABLE >
     {
-        return result;
+        return t.image;
     }
 }
 
@@ -294,14 +287,9 @@ String boolClose() :
     String result;
 }
 {
-    (
-        t = < BOOLCLOSE >
-        {
-            result = t.image;
-        }
-    )
+    t = < BOOLCLOSE >
     {
-        return result;
+        return t.image;
     }
 }
 

@@ -1,4 +1,4 @@
-work = load("om-tm.circuit.work");
+let work = load("om-tm.circuit.work");
 write(
     "Combined check: " + checkCircuitCombined(work) + "\n" +
     "Deadlock-freeness: " + checkCircuitDeadlockFreeness(work) + "\n" +
@@ -7,4 +7,5 @@ write(
     "Binate function implementation: " + checkCircuitBinateImplementation(work) + "\n" +
     "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n" +
     "", "om-tm.circuit.result");
+
 exit();

@@ -35,7 +35,7 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
         ComponentData data = getComponentData();
         StgModel stg = getStg();
         DiInterfaceDataPreserver diInterfaceDataPreserver = new DiInterfaceDataPreserver(getWorkspaceEntry());
-        DiInterfaceParameters diInterfaceParameters = diInterfaceDataPreserver.loadData();
+        DiInterfaceParameters diInterfaceParameters = diInterfaceDataPreserver.loadValidDataOnly();
         HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
         for (Solution solution : solutions) {
             Trace trace = solution.getMainTrace();

@@ -34,7 +34,7 @@ class LocalSelfTriggeringInterpreter extends ReachabilityOutputInterpreter {
         List<Solution> result = new LinkedList<>();
         ComponentData data = getComponentData();
         StgModel stg = getStg();
-        Collection<String> exceptionSignals = new LocalSelfTriggeringDataPreserver(getWorkspaceEntry()).loadData();
+        Collection<String> exceptionSignals = new LocalSelfTriggeringDataPreserver(getWorkspaceEntry()).loadValidDataOnly();
         LocalSelfTriggeringParameters localSelfTriggeringParameters = new LocalSelfTriggeringParameters(exceptionSignals);
         HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
         for (Solution solution : solutions) {

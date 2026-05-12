@@ -35,8 +35,8 @@ public class SgParser
     private Fst fst;
 
     private void init() {
-        signals = new HashMap<String, Type>();
-        dummies = new HashSet<String>();
+        signals = new HashMap<>();
+        dummies = new HashSet<>();
         fst = new Fst();
     }
 
@@ -93,6 +93,12 @@ TOKEN :
 |
     <DUMMY_HEADER : ".dummy">
 |
+    <SILENT_HEADER : ".silent">
+|
+    <INITIAL_STATE : ".initial state"> : IGNORE_LINE
+|
+    <MODE : ".mode"> : IGNORE_LINE
+|
     <STATE_GRAPH : ".state graph">
 |
     <MARKING : ".marking">
@@ -128,6 +134,7 @@ Fst parse() :
     {
         init();
     }
+    (<LINEBREAK>)?
     (
         header() <LINEBREAK>
     )*
@@ -147,44 +154,50 @@ void header() :
     List<String> list;
 }
 {
-    (<LINEBREAK>)*
-    (
-        <MODEL_NAME> t = <NAME>
-        {
-            fst.setTitle(t.image);
-        }
-    |
-        <INPUT_HEADER> list = stringList()
-        {
-            addSignals(list, Type.INPUT);
-        }
-    |
-        <OUTPUT_HEADER> list = stringList()
-        {
-            addSignals(list, Type.OUTPUT);
-        }
-    |
-        <INTERNAL_HEADER> list = stringList()
-        {
-            addSignals(list, Type.INTERNAL);
-        }
-    |
-        <DUMMY_HEADER> list = stringList()
-        {
-            addSignals(list, Type.DUMMY);
-        }
-    |
-        t = <UNSUPPORTED_HEADER> <REST>
-        {
-            LogUtils.logWarning("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
-        }
-    )
+    <MODEL_NAME> t = <NAME>
+    {
+        fst.setTitle(t.image);
+    }
+|
+    <INPUT_HEADER> list = stringList()
+    {
+        addSignals(list, Type.INPUT);
+    }
+|
+    <OUTPUT_HEADER> list = stringList()
+    {
+        addSignals(list, Type.OUTPUT);
+    }
+|
+    <INTERNAL_HEADER> list = stringList()
+    {
+        addSignals(list, Type.INTERNAL);
+    }
+|
+    <DUMMY_HEADER> list = stringList()
+    {
+        addSignals(list, Type.DUMMY);
+    }
+|
+    <SILENT_HEADER> list = stringList()
+    {
+        addSignals(list, Type.DUMMY);
+    }
+|
+    <INITIAL_STATE> <REST>
+|
+    <MODE> <REST>
+|
+    t = <UNSUPPORTED_HEADER> <REST>
+    {
+        LogUtils.logWarning("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
+    }
 }
 
 List<String> stringList() :
 {
     Token t;
-    List<String> list = new LinkedList<String>();
+    List<String> list = new LinkedList<>();
 }
 {
     (
@@ -214,8 +227,6 @@ void marking() :
     "{" t = <NAME> "}"
     {
         state = fst.getOrCreateState(t.image);
-    }
-    {
         state.setInitial(true);
     }
 }
@@ -239,34 +250,26 @@ void graphLine() :
     State toState;
 }
 {
+    t = <NAME>
+    {
+        fromState = fst.getOrCreateState(t.image);
+    }
     (
         t = <NAME>
         {
-            fromState = fst.getOrCreateState(t.image);
+            Type type = signals.get(t.image);
+            signal = fst.getOrCreateSignal(t.image, type);
+            direction = Direction.TOGGLE;
         }
-    )
-    (
         (
-            t = <NAME>
+            t = <DIRECTION>
             {
-                Type type = signals.get(t.image);
-                signal = fst.getOrCreateSignal(t.image, type);
-                direction = Direction.TOGGLE;
+                direction = EnumUtils.itemFromString(t.image, Direction.class);
             }
-            (
-                t = <DIRECTION>
-                {
-                    direction = EnumUtils.itemFromString(t.image, Direction.class);
-                }
-            )?
-        )
-        (
-            t = <NAME>
-            {
-                toState = fst.getOrCreateState(t.image);
-            }
-        )
+        )?
+        t = <NAME>
         {
+            toState = fst.getOrCreateState(t.image);
             signalEvent = fst.createSignalEvent(fromState, toState, signal);
             signalEvent.setDirection(direction);
             fromState = toState;

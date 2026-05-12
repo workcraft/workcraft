@@ -17,9 +17,11 @@ import java.util.Collection;
 public class LocalSelfTriggeringVerificationCommand
         extends AbstractEssentialVerificationCommand {
 
+    public static final String TITLE = "Absence of local self-triggering";
+
     @Override
     public String getDisplayName() {
-        return "Absence of local self-triggering (without dummies)...";
+        return TITLE + " (without dummies)...";
     }
 
     @Override
@@ -39,7 +41,7 @@ public class LocalSelfTriggeringVerificationCommand
         }
         StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
         if (!stg.getDummyTransitions().isEmpty()) {
-            DialogUtils.showError("Absence of local self-triggering can currently be checked only for STGs without dummies.");
+            DialogUtils.showError(TITLE + " can currently be checked only for STGs without dummies.");
             return false;
         }
         return true;
@@ -61,7 +63,7 @@ public class LocalSelfTriggeringVerificationCommand
 
     @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
-        Collection<String> data = new LocalSelfTriggeringDataPreserver(we).loadData();
+        Collection<String> data = new LocalSelfTriggeringDataPreserver(we).loadValidDataOnly();
         return new LocalSelfTriggeringParameters(data).getVerificationParameters();
     }
 
