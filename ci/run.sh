@@ -97,7 +97,7 @@ case $OSTYPE in
     linux*)
         [[ -e tools ]] || ln -s dist/template/linux/tools
         ;;
-    msys*)
+    msys* | cygwin*)
         [[ -e tools ]] || cp -r dist/template/windows/tools .
         ;;
     *)

@@ -16,7 +16,7 @@ case $OSTYPE in
         dist/run.sh linux --force >/dev/null || error "dist/run.sh did not succeed"
         WORKCRAFT_CORE_JAR="dist/result/linux/workcraft/bin/WorkcraftCore.jar"
         ;;
-    msys*)
+    msys* | cygwin*)
         dist/run.sh windows --force >/dev/null || error "dist/run.sh did not succeed"
         WORKCRAFT_CORE_JAR="dist/result/windows/workcraft/bin/WorkcraftCore.jar"
         ;;
