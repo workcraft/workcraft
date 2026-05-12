@@ -4,9 +4,9 @@ for each (arg in args) {
 exit();
 
 function process(name) {
-    result = name + ".result";
-    s = "";
-    work = load(name + ".work");
+    let result = name + ".result";
+    let s = "";
+    let work = load(name + ".work");
 
     write(
         "Combined check: " + checkStgCombined(work) + "\n" +

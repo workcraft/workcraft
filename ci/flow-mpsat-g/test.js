@@ -8,15 +8,15 @@ write(successCount + " out of " + args.length + " benchmarks passed the test", "
 exit();
 
 function process(name) {
-    log = name + ".result";
-    s = "";
-    stgWork = importStgG(name + ".g");
+    let logFileName = name + ".result";
+    let s = "";
+    let stgWork = importStgG(name + ".g");
 
     s += "Processing STG:\n";
     s += "  - importing: ";
     if (stgWork == null) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
@@ -25,7 +25,7 @@ function process(name) {
     s += "  - verification: ";
     if (checkStgCombined(stgWork) != true) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
@@ -42,7 +42,7 @@ function process(name) {
             cscStgWork = resolveCscConflictPetrify(stgWork);
             if (cscStgWork == null) {
                 s += "FAILED\n";
-                write(s, log);
+                write(s, logFileName);
                 return false;
             }
         }
@@ -53,10 +53,10 @@ function process(name) {
 
     s += "Complex gate:\n";
     s += "  - synthesis: ";
-    cgCircuitWork = synthComplexGateMpsat(cscStgWork);
+    let cgCircuitWork = synthComplexGateMpsat(cscStgWork);
     if (cgCircuitWork == null) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
@@ -64,7 +64,7 @@ function process(name) {
     s += "  - verification: ";
     if (checkCircuitCombined(cgCircuitWork) != true) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
@@ -72,10 +72,10 @@ function process(name) {
 
     s += "Generalised C-element:\n";
     s += "  - synthesis: ";
-    gcCircuitWork = synthGeneralisedCelementMpsat(cscStgWork);
+    let gcCircuitWork = synthGeneralisedCelementMpsat(cscStgWork);
     if (gcCircuitWork == null) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
@@ -83,7 +83,7 @@ function process(name) {
     s += "  - verification: ";
     if (checkCircuitCombined(gcCircuitWork) != true) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
@@ -91,10 +91,10 @@ function process(name) {
 
     s += "Standard C-element:\n";
     s += "  - synthesis: ";
-    stdcCircuitWork = synthStandardCelementMpsat(cscStgWork);
+    let stdcCircuitWork = synthStandardCelementMpsat(cscStgWork);
     if (stdcCircuitWork == null) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
@@ -102,7 +102,7 @@ function process(name) {
     s += "  - verification: ";
     if (checkCircuitCombined(stdcCircuitWork) != true) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
@@ -110,10 +110,10 @@ function process(name) {
 
     s += "Technology mapping:\n";
     s += "  - synthesis: ";
-    tmCircuitWork = synthTechnologyMappingMpsat(cscStgWork);
+    let tmCircuitWork = synthTechnologyMappingMpsat(cscStgWork);
     if (tmCircuitWork == null) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
@@ -121,11 +121,11 @@ function process(name) {
     s += "  - verification: ";
     if (checkCircuitCombined(tmCircuitWork) != true) {
         s += "FAILED\n";
-        write(s, log);
+        write(s, logFileName);
         return false;
     }
     s += "OK\n";
 
-    write(s, log);
+    write(s, logFileName);
     return true;
 }

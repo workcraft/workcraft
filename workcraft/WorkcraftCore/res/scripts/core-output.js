@@ -25,9 +25,9 @@ function write(text, fileName) {
     if (arguments.length < 2) {
         System.out.print(text);
     } else {
-        file = framework.getFileByAbsoluteOrRelativePath(fileName);
-        fileWriter = new FileWriter(file);
-        bufferedWriter = new BufferedWriter(fileWriter);
+        let file = framework.getFileByAbsoluteOrRelativePath(fileName);
+        let fileWriter = new FileWriter(file);
+        let bufferedWriter = new BufferedWriter(fileWriter);
         bufferedWriter.write(text);
         bufferedWriter.close();
     }

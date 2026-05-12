@@ -1,4 +1,4 @@
-work = load("waitx-tm.circuit.work");
+let work = load("waitx-tm.circuit.work");
 write(
     "Combined check: " + checkCircuitCombined(work) + "\n" +
     "Deadlock-freeness: " + checkCircuitDeadlockFreeness(work) + "\n" +
@@ -8,4 +8,5 @@ write(
     "Strict implementation: " + checkCircuitStrictImplementation(work) + "\n" +
     "Refinement: " + checkCircuitRefinement(work) + "\n" +
     "", "waitx-tm.circuit.result");
+
 exit();

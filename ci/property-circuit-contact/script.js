@@ -1,34 +1,34 @@
-work = load("buf.circuit.work");
-inputPortRef = "i";
-driverPinRef = "U0.O";
-drivenPinRef = "U0.I";
+let work = load("buf.circuit.work");
+let inputPortRef = "i";
+let driverPinRef = "U0.O";
+let drivenPinRef = "U0.I";
 
-originalPinInitToOne = getCircuitDriverInitToOne(work, driverPinRef);
+let originalPinInitToOne = getCircuitDriverInitToOne(work, driverPinRef);
 setCircuitDriverInitToOne(work, driverPinRef, !originalPinInitToOne);
-modifiedPinInitToOne = getCircuitDriverInitToOne(work, driverPinRef);
+let modifiedPinInitToOne = getCircuitDriverInitToOne(work, driverPinRef);
 
-originalPortInitToOne = getCircuitDriverInitToOne(work, inputPortRef);
+let originalPortInitToOne = getCircuitDriverInitToOne(work, inputPortRef);
 setCircuitDriverInitToOne(work, inputPortRef, !originalPortInitToOne);
-modifiedPortInitToOne = getCircuitDriverInitToOne(work, inputPortRef);
+let modifiedPortInitToOne = getCircuitDriverInitToOne(work, inputPortRef);
 
-originalPinForcedInit = getCircuitDriverForcedInit(work, driverPinRef);
+let originalPinForcedInit = getCircuitDriverForcedInit(work, driverPinRef);
 setCircuitDriverForcedInit(work, driverPinRef, !originalPinForcedInit);
-modifiedPinForcedInit = getCircuitDriverForcedInit(work, driverPinRef);
+let modifiedPinForcedInit = getCircuitDriverForcedInit(work, driverPinRef);
 
-originalPortForcedInit = getCircuitDriverForcedInit(work, inputPortRef);
+let originalPortForcedInit = getCircuitDriverForcedInit(work, inputPortRef);
 setCircuitDriverForcedInit(work, inputPortRef, !originalPortForcedInit);
-modifiedPortForcedInit = getCircuitDriverForcedInit(work, inputPortRef);
+let modifiedPortForcedInit = getCircuitDriverForcedInit(work, inputPortRef);
 
-originalPinPathBreaker = getCircuitPinPathBreaker(work, drivenPinRef);
+let originalPinPathBreaker = getCircuitPinPathBreaker(work, drivenPinRef);
 setCircuitPinPathBreaker(work, drivenPinRef, !originalPinPathBreaker);
-modifiedPinPathBreaker = getCircuitPinPathBreaker(work, drivenPinRef);
+let modifiedPinPathBreaker = getCircuitPinPathBreaker(work, drivenPinRef);
 
-port = getCircuitPort(work, inputPortRef);
-originalPortConstraints = getPortConstraints(work, inputPortRef);
+let port = getCircuitPort(work, inputPortRef);
+let originalPortConstraints = getPortConstraints(work, inputPortRef);
 constrainCircuitInputPortRiseOnly(work, inputPortRef);
-modifiedPortConstraints = getPortConstraints(work, inputPortRef);
+let modifiedPortConstraints = getPortConstraints(work, inputPortRef);
 constrainCircuitInputPortAny(work, inputPortRef);
-clearedPortConstraints = getPortConstraints(work, inputPortRef);
+let clearedPortConstraints = getPortConstraints(work, inputPortRef);
 
 write(
     "Original Init to one on pin: " + originalPinInitToOne + "\n" +
