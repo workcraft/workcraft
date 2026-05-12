@@ -19,10 +19,10 @@ import java.util.Set;
 
 public class DotParser {
 
-    public class Attributes extends HashMap<String, String> {};
+    public class Attributes extends HashMap<String, String> {}
 
-    private Map<String, Attributes> nodeAttributesMap = new HashMap<String, Attributes>();
-    private Map<Pair<String, String>, Attributes> edgeAttributesMap = new HashMap<Pair<String, String>, Attributes>();
+    private Map<String, Attributes> nodeAttributesMap = new HashMap<>();
+    private Map<Pair<String, String>, Attributes> edgeAttributesMap = new HashMap<>();
 
     public DotParser(String text) {
         this(new StringReader(text.replace("\\\n", "")));
@@ -111,27 +111,25 @@ void parseStatement() :
     String i, j;
 }
 {
+    parseCommonAttributes()
+|
+    "subgraph" id() "{"
     (
-        parseCommonAttributes()
+        parseStatement()
+    )*
+    "}"
+|
+    i = id()
+    (
+        attributes = parseAttributes() ";"
+        {
+            nodeAttributesMap.put(i, attributes);
+        }
     |
-        "subgraph" id() "{"
-        (
-            parseStatement()
-        )*
-        "}"
-    |
-        i = id()
-        (
-            attributes = parseAttributes() ";"
-            {
-                nodeAttributesMap.put(i, attributes);
-            }
-        |
-            "->" j = id() attributes = parseAttributes() ";"
-            {
-                edgeAttributesMap.put(Pair.of(i, j), attributes);
-            }
-        )
+        "->" j = id() attributes = parseAttributes() ";"
+        {
+            edgeAttributesMap.put(Pair.of(i, j), attributes);
+        }
     )
 }
 
