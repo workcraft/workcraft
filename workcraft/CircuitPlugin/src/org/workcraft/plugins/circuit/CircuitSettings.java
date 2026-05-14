@@ -19,7 +19,6 @@ import org.workcraft.utils.DialogUtils;
 import org.workcraft.workspace.FileFilters;
 
 import java.awt.*;
-import java.io.File;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -362,10 +361,10 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(PropertyHelper.createSeparatorProperty("Gates and arbitration primitives"));
 
-        properties.add(new PropertyDeclaration<>(File.class,
+        properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet(GATE_LIBRARY_TITLE),
-                value -> setGateLibrary(BackendUtils.getBaseRelativePath(value)),
-                () -> BackendUtils.getBaseRelativeFile(getGateLibrary())));
+                CircuitSettings::setGateLibrary,
+                CircuitSettings::getGateLibrary));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("WAIT name, dirty input and clean handshake"),
@@ -413,20 +412,20 @@ public class CircuitSettings extends AbstractModelSettings {
 
         properties.add(PropertyHelper.createSeparatorProperty("Verilog import and export"));
 
-        properties.add(new PropertyDeclaration<>(File.class,
+        properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("Substitution rules for export"),
-                value -> setExportSubstitutionLibrary(BackendUtils.getBaseRelativePath(value)),
-                () -> BackendUtils.getBaseRelativeFile(getExportSubstitutionLibrary())));
+                CircuitSettings::setExportSubstitutionLibrary,
+                CircuitSettings::getExportSubstitutionLibrary));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 PropertyHelper.indentWithBullet("Invert substitution rules for export"),
                 CircuitSettings::setInvertExportSubstitutionRules,
                 CircuitSettings::getInvertExportSubstitutionRules));
 
-        properties.add(new PropertyDeclaration<>(File.class,
+        properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("Substitution rules for import"),
-                value -> setImportSubstitutionLibrary(BackendUtils.getBaseRelativePath(value)),
-                () -> BackendUtils.getBaseRelativeFile(getImportSubstitutionLibrary())));
+                CircuitSettings::setImportSubstitutionLibrary,
+                CircuitSettings::getImportSubstitutionLibrary));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 PropertyHelper.indentWithBullet("Invert substitution rules for import"),

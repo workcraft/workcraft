@@ -190,4 +190,28 @@ class FileUtilsTests {
                 FileUtils.getUnixRelativePath("D:\\another\\dir\\file.txt", base));
     }
 
+    @Test
+    void testModtime() {
+        Assertions.assertEquals(0L, FileUtils.getModtimeOrZero(null));
+        File file = new File(BackendUtils.getLibraryPath("workcraft.lib"));
+        if (file.exists()) {
+            Assertions.assertNotEquals(0L, FileUtils.getModtimeOrZero(file));
+        } else {
+            Assertions.assertEquals(0L, FileUtils.getModtimeOrZero(file));
+        }
+    }
+
+    @Test
+    void testEvalPathFile() {
+        Assertions.assertNull(FileUtils.getEvalPathFile(null));
+        Assertions.assertEquals(new File("/basic/path/file"), FileUtils.getEvalPathFile("/basic/path/file"));
+        Assertions.assertEquals(new File("/path/file"), FileUtils.getEvalPathFile("${ENV_VARIABLE_NAME}/path/file"));
+
+        Assertions.assertEquals(new File("/path__/file_"),
+                FileUtils.getEvalPathFile("${ENV_VARIABLE_NAME1}/path_${ENV_VARIABLE_NAME1}_${ENV_VARIABLE_NAME2}/file_${ENV_VARIABLE_NAME2}"));
+
+        Assertions.assertEquals(new File("/path_$ENV_VARIABLE_NAME1}_${ENV_VARIABLE_NAME2/file_${}"),
+                FileUtils.getEvalPathFile("${ENV_VARIABLE_NAME1}/path_$ENV_VARIABLE_NAME1}_${ENV_VARIABLE_NAME2/file_${}"));
+    }
+
 }

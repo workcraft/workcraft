@@ -34,6 +34,8 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
     private static final String LOG_FILE_NAME = "petrify.log";
     private static final String EQN_FILE_NAME = "petrify.eqn";
     private static final String VERILOG_FILE_NAME = "petrify.v";
+    private static final String CHECK_GATE_LIBRARY_MESSAGE =
+            "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences.";
 
     private final WorkspaceEntry we;
     private final List<String> args;
@@ -59,19 +61,18 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
         command.addAll(args);
 
         // Technology mapping library (if needed and accepted)
-        String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
         if (needsGateLibrary) {
-            if ((gateLibrary == null) || gateLibrary.isEmpty()) {
+            File gateLibraryFile = FileUtils.getEvalPathFile(CircuitSettings.getGateLibrary());
+            if (gateLibraryFile == null) {
                 return Result.exception(new IOException("Gate library is not specified.\n" +
-                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+                        CHECK_GATE_LIBRARY_MESSAGE));
             }
-            File gateLibraryFile = new File(gateLibrary);
             if (!FileUtils.checkFileReadability(gateLibraryFile)) {
-                return Result.exception(new IOException("Cannot find gate library file '" + gateLibrary + "'.\n" +
-                        "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences."));
+                return Result.exception(new IOException("Cannot find gate library file '" + gateLibraryFile.getPath() + "'.\n" +
+                        CHECK_GATE_LIBRARY_MESSAGE));
             }
             command.add("-lib");
-            command.add(gateLibraryFile.getAbsolutePath());
+            command.add(FileUtils.getFullPath(gateLibraryFile));
         }
 
         // Extra arguments (should go before the file parameters)

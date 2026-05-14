@@ -11,12 +11,18 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class FileUtils {
 
     private static final String UNIX_FILE_SEPARATOR = "/";
     private static final String WINDOWS_FILE_SEPARATOR = "\\";
     private static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
+
+    private static final Pattern ENV_VAR_PATTERN = Pattern.compile("^.*(\\$\\{([^${}]+)}).*$");
+    private static final int VAR_GROUP = 1;
+    private static final int VAR_NAME_GROUP = 2;
 
     public static void copyFile(File inFile, File outFile) throws IOException {
         File parent = outFile.getParentFile();
@@ -438,14 +444,27 @@ public class FileUtils {
         return ((file == null) || file.isDirectory()) ? file : file.getParentFile();
     }
 
-    public static long getModtimeOrZero(String path) {
-        if (path != null) {
-            File file = new File(path);
-            if (isReadableFile(file)) {
-                return file.lastModified();
+    public static long getModtimeOrZero(File file) {
+        return isReadableFile(file) ? file.lastModified() : 0L;
+    }
+
+    public static File getEvalPathFile(String path) {
+        return (path == null) ? null : new File(evalVarPath(path));
+    }
+
+    private static String evalVarPath(String path) {
+        while (true) {
+            Matcher matcher = ENV_VAR_PATTERN.matcher(path);
+            if (!matcher.find()) break;
+            String var = matcher.group(VAR_GROUP);
+            String varName = matcher.group(VAR_NAME_GROUP);
+            String varValue = System.getenv(varName);
+            if (varValue == null) {
+                varValue = "";
             }
+            path = path.replace(var, varValue);
         }
-        return 0;
+        return path;
     }
 
 }

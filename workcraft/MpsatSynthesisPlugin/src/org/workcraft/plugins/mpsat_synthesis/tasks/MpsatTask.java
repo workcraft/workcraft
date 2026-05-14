@@ -64,17 +64,16 @@ public class MpsatTask implements Task<MpsatOutput> {
         String modeParameter = null;
         // Technology mapping library (if needed and accepted)
         if (mode == SynthesisMode.TECHNOLOGY_MAPPING) {
-            String gateLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
-            if ((gateLibrary == null) || gateLibrary.isEmpty()) {
+            File gateLibraryFile = FileUtils.getEvalPathFile(CircuitSettings.getGateLibrary());
+            if (gateLibraryFile == null) {
                 return Result.exception(new IOException("Gate library is not specified.\n" +
                         CHECK_GATE_LIBRARY_MESSAGE));
             }
-            File gateLibraryFile = new File(gateLibrary);
             if (!FileUtils.checkFileReadability(gateLibraryFile)) {
-                return Result.exception(new IOException("Cannot find gate library file '" + gateLibrary + "'.\n" +
+                return Result.exception(new IOException("Cannot find gate library file '" + gateLibraryFile.getPath() + "'.\n" +
                         CHECK_GATE_LIBRARY_MESSAGE));
             }
-            modeParameter = gateLibraryFile.getAbsolutePath();
+            modeParameter = FileUtils.getFullPath(gateLibraryFile);
         }
 
         // Built-in arguments
