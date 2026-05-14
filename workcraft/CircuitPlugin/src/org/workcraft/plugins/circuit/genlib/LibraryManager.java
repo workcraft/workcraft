@@ -20,16 +20,16 @@ import java.util.Map;
 public final class LibraryManager {
 
     private static Library library;
-    private static String libraryPath = null;
+    private static File libraryFile = null;
     private static long libraryModtime = 0;
 
     private static Map<String, SubstitutionRule> importSubstitutionRules = null;
-    private static String importSubstitutionRulesPath = null;
+    private static File importSubstitutionRulesFile = null;
     private static long importSubstitutionRulesModtime = 0;
     private static Boolean importSubstitutionRulesInvert = null;
 
     private static Map<String, SubstitutionRule> exportSubstitutionRules = null;
-    private static String exportSubstitutionRulesPath = null;
+    private static File exportSubstitutionRulesFile = null;
     private static long exportSubstitutionRulesModtime = 0;
     private static Boolean exportSubstitutionRulesInvert = null;
 
@@ -37,22 +37,21 @@ public final class LibraryManager {
     }
 
     public static Library getLibrary() {
-        String path = CircuitSettings.getGateLibrary();
-        long modtime = FileUtils.getModtimeOrZero(path);
-        if (!path.equals(libraryPath) || (modtime != libraryModtime)) {
-            library = loadLibrary(path);
-            libraryPath = path;
+        File file = FileUtils.getEvalPathFile(CircuitSettings.getGateLibrary());
+        long modtime = FileUtils.getModtimeOrZero(file);
+        if ((libraryFile == null) || !libraryFile.equals(file) || (modtime != libraryModtime)) {
+            library = loadLibrary(file);
+            libraryFile = file;
             libraryModtime = modtime;
         }
         return library;
     }
 
-    private static Library loadLibrary(String path) {
-        if (path.isEmpty()) {
+    private static Library loadLibrary(File file) {
+        if (file == null) {
             LogUtils.logWarning("Gate library is not specified.");
             return new Library();
         }
-        File file = new File(path);
         if (FileUtils.checkFileReadability(file, "Gate library access error")) {
             try {
                 InputStream genlibInputStream = new FileInputStream(file);
@@ -65,22 +64,23 @@ public final class LibraryManager {
                 LogUtils.logInfo("Reading gate library '" + file.getAbsolutePath() + "'");
                 return genlibParser.parseGenlib();
             } catch (FileNotFoundException | org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
-                LogUtils.logWarning("Could not parse gate library '" + path + "'\n" + e.getMessage());
+                LogUtils.logWarning("Could not parse gate library '" + file.getPath() + "'\n" + e.getMessage());
             }
         }
         return null;
     }
 
     public static Map<String, SubstitutionRule> getImportSubstitutionRules() {
-        String path = CircuitSettings.getImportSubstitutionLibrary();
-        long modtime = FileUtils.getModtimeOrZero(path);
+        File file = FileUtils.getEvalPathFile(CircuitSettings.getImportSubstitutionLibrary());
+        long modtime = FileUtils.getModtimeOrZero(file);
         boolean inversion = CircuitSettings.getInvertImportSubstitutionRules();
-        if (!path.equals(importSubstitutionRulesPath)
+        if ((importSubstitutionRulesFile == null)
+                || !importSubstitutionRulesFile.equals(file)
                 || (modtime != importSubstitutionRulesModtime)
                 || (inversion != importSubstitutionRulesInvert)) {
 
-            importSubstitutionRules = readSubstitutionRules(path, inversion);
-            importSubstitutionRulesPath = path;
+            importSubstitutionRules = readSubstitutionRules(file, inversion);
+            importSubstitutionRulesFile = file;
             importSubstitutionRulesModtime = modtime;
             importSubstitutionRulesInvert = inversion;
         }
@@ -88,46 +88,45 @@ public final class LibraryManager {
     }
 
     public static Map<String, SubstitutionRule> getExportSubstitutionRules() {
-        String path = CircuitSettings.getExportSubstitutionLibrary();
-        long modtime = FileUtils.getModtimeOrZero(path);
+        File file = FileUtils.getEvalPathFile(CircuitSettings.getExportSubstitutionLibrary());
+        long modtime = FileUtils.getModtimeOrZero(file);
         boolean invert = CircuitSettings.getInvertExportSubstitutionRules();
-        if (!path.equals(exportSubstitutionRulesPath)
+        if ((exportSubstitutionRulesFile == null)
+                || !exportSubstitutionRulesFile.equals(file)
                 || (modtime != exportSubstitutionRulesModtime)
                 || (invert != exportSubstitutionRulesInvert)) {
 
-            exportSubstitutionRules = readSubstitutionRules(path, invert);
-            exportSubstitutionRulesPath = path;
+            exportSubstitutionRules = readSubstitutionRules(file, invert);
+            exportSubstitutionRulesFile = file;
             exportSubstitutionRulesModtime = modtime;
             exportSubstitutionRulesInvert = invert;
         }
         return exportSubstitutionRules;
     }
 
-    private static HashMap<String, SubstitutionRule> readSubstitutionRules(String path, boolean invert) {
+    private static HashMap<String, SubstitutionRule> readSubstitutionRules(File file, boolean invert) {
         HashMap<String, SubstitutionRule> result = new HashMap<>();
-        if ((path != null) && !path.isEmpty()) {
-            File libraryFile = new File(path);
-            if (FileUtils.checkFileReadability(libraryFile, "Access error for the file of substitutions")) {
-                try {
-                    InputStream substitutionInputStream = new FileInputStream(path);
-                    SubstitutionParser substitutionParser = new SubstitutionParser(substitutionInputStream, invert);
-                    if (DebugCommonSettings.getParserTracing()) {
-                        substitutionParser.enable_tracing();
-                    } else {
-                        substitutionParser.disable_tracing();
-                    }
-                    List<SubstitutionRule> rules = substitutionParser.parseSubstitutionRules();
-                    for (SubstitutionRule rule: rules) {
-                        result.put(rule.oldName, rule);
-                    }
-                    LogUtils.logInfo("Renaming gates and pins using "
-                            + (invert ? "inverted" : "direct")
-                            + " rules in the file of substitutions '"
-                            + path + "'");
-
-                } catch (FileNotFoundException | ParseException e) {
-                    LogUtils.logWarning("Could not parse the file of substitutions '" + path + "'\n" + e.getMessage());
+        if ((file != null) && FileUtils.checkFileReadability(file, "Access error for the file of substitutions")) {
+            try {
+                InputStream substitutionInputStream = new FileInputStream(file);
+                SubstitutionParser substitutionParser = new SubstitutionParser(substitutionInputStream, invert);
+                if (DebugCommonSettings.getParserTracing()) {
+                    substitutionParser.enable_tracing();
+                } else {
+                    substitutionParser.disable_tracing();
                 }
+                List<SubstitutionRule> rules = substitutionParser.parseSubstitutionRules();
+                for (SubstitutionRule rule : rules) {
+                    result.put(rule.oldName, rule);
+                }
+                LogUtils.logInfo("Renaming gates and pins using "
+                        + (invert ? "inverted" : "direct")
+                        + " rules in the file of substitutions '"
+                        + file.getPath() + "'");
+
+            } catch (FileNotFoundException | ParseException e) {
+                LogUtils.logWarning("Could not parse the file of substitutions '" + file.getPath() + "'\n"
+                        + e.getMessage());
             }
         }
         return result;

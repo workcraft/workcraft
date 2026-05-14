@@ -5,7 +5,10 @@ import java.io.File;
 public class ExecutableUtils {
 
     public static String getAbsoluteCommandPath(String path) {
-        File file = new File(path);
+        return getAbsoluteCommandPath(new File(path));
+    }
+
+    public static String getAbsoluteCommandPath(File file) {
         return file.exists() ? file.getAbsolutePath() : file.getPath();
     }
 

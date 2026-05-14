@@ -15,15 +15,6 @@ public class BackendUtils {
     private static final String COMPONENTS_DIR_NAME = "components";
     private static final String EXE_EXTENSION = ".exe";
 
-    public static String getBaseRelativePath(File file) {
-        return (file == null) ? "" : FileUtils.stripBase(file.getPath(), DesktopApi.getUserWorkingDirectoryPath());
-    }
-
-    public static File getBaseRelativeFile(String path) {
-        return (path == null) || path.isEmpty()
-                ? null : new File(FileUtils.stripBase(path, DesktopApi.getUserWorkingDirectoryPath()));
-    }
-
     public static String getLibraryDirectory() {
         return LIBRARIES_DIR_NAME + File.separator;
     }

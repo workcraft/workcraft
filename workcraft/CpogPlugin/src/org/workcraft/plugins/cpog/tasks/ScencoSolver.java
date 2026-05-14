@@ -460,7 +460,7 @@ public class ScencoSolver {
         scencoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         espressoCommand = ExecutableUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
         abcTool = CpogSettings.getAbcTool();
-        gatesLibrary = ExecutableUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
+        gatesLibrary = FileUtils.getFullPath(FileUtils.getEvalPathFile(CircuitSettings.getGateLibrary()));
         espressoFlag = "-e";
     }
 
