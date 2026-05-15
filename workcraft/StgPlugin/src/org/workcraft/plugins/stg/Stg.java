@@ -267,6 +267,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         getReferenceManager().setName(node, name, true);
     }
 
+    @Override
     public Collection<SignalTransition> getSignalTransitions(String signalReference) {
         String parentReference = NamespaceHelper.getParentReference(signalReference);
         Node parent = getNodeByReference(null, parentReference);

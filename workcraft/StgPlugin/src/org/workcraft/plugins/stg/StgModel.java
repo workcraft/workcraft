@@ -9,6 +9,7 @@ public interface StgModel extends PetriModel {
     Collection<DummyTransition> getDummyTransitions();
     Collection<SignalTransition> getSignalTransitions();
     Collection<SignalTransition> getSignalTransitions(Signal.Type type);
+    Collection<SignalTransition> getSignalTransitions(String signalRef);
     Collection<StgPlace> getMutexPlaces();
 
     Set<String> getDummyReferences();

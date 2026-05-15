@@ -253,7 +253,7 @@ public class StgUtils {
         return taskManager.execute(exportTask, description, subtaskMonitor);
     }
 
-    public static HashMap<String, Boolean> guessInitialStateFromSignalPlaces(Stg stg) {
+    public static HashMap<String, Boolean> guessInitialStateFromSignalPlaces(StgModel stg) {
         HashMap<String, Boolean> result = new HashMap<>();
         // Try to figure out signal states from ZERO and ONE places of circuit STG.
         Set<String> signalRefs = stg.getSignalReferences();
@@ -266,7 +266,7 @@ public class StgUtils {
         return result;
     }
 
-    private static Boolean guessInitialStateFromSignalPlaces(Stg stg, String signalRef) {
+    private static Boolean guessInitialStateFromSignalPlaces(StgModel stg, String signalRef) {
         Node zeroNode = stg.getNodeByReference(SignalStg.appendLowSuffix(signalRef));
         Node oneNode = stg.getNodeByReference(SignalStg.appendHighSuffix(signalRef));
         if (zeroNode instanceof StgPlace zeroPlace && oneNode instanceof StgPlace onePlace) {

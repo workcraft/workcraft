@@ -45,9 +45,11 @@ public class SerialiserUtils {
         writeIntro(writer, petri, file, style);
         if (petri instanceof StgModel stg) {
             writeSignalDeclarations(writer, stg);
-            if (needsInitialState) {
-                writeInitialState(writer, stg, style);
-            }
+            Map<String, Boolean> initialState = needsInitialState
+                    ? StgUtils.getInitialState(stg, 1000)
+                    : StgUtils.guessInitialStateFromSignalPlaces(stg);
+
+            writeInitialState(writer, stg, initialState, style);
             boolean needsInstanceNumbers = (style == Style.LPN) && hasInstanceNumbers(petri);
             writeStg(writer, stg, needsInstanceNumbers);
         } else {
@@ -66,14 +68,30 @@ public class SerialiserUtils {
         writer.write(keyword + ' ' + title + '\n');
     }
 
-    private static void writeInitialState(PrintWriter writer, StgModel stg, Style style) {
-        Map<String, Boolean> initialState = StgUtils.getInitialState(stg, 1000);
-        if (!initialState.isEmpty()) {
+    private static void writeInitialState(PrintWriter writer, StgModel stg, Map<String, Boolean> initialState, Style style) {
+        if ((initialState != null) && !initialState.isEmpty()) {
             switch (style) {
                 case STG -> writeInitialStateStg(writer, stg, initialState);
                 case LPN -> writeInitialStateLpn(writer, stg, initialState);
             }
         }
+    }
+
+    private static void writeInitialStateStg(PrintWriter writer, StgModel stg, Map<String, Boolean> initialState) {
+        writer.write(".initial state");
+        for (final Signal.Type type : Signal.Type.values()) {
+            for (String signal : sort(stg.getSignalReferences(type))) {
+                Boolean signalState = initialState.get(signal);
+                if (signalState != null) {
+                    writer.write(' ');
+                    if (!signalState) {
+                        writer.write('!');
+                    }
+                    writer.write(signal);
+                }
+            }
+        }
+        writer.write('\n');
     }
 
     private static void writeInitialStateLpn(PrintWriter writer, StgModel stg, Map<String, Boolean> initialState) {
@@ -89,21 +107,6 @@ public class SerialiserUtils {
             }
         }
         writer.write("]\n");
-    }
-
-    private static void writeInitialStateStg(PrintWriter writer, StgModel stg, Map<String, Boolean> initialState) {
-        writer.write(".initial state");
-        for (final Signal.Type type : Signal.Type.values()) {
-            for (String signal : sort(stg.getSignalReferences(type))) {
-                Boolean signalState = initialState.get(signal);
-                writer.write(' ');
-                if ((signalState == null) || !signalState) {
-                    writer.write('!');
-                }
-                writer.write(signal);
-            }
-        }
-        writer.write('\n');
     }
 
     private static boolean hasInstanceNumbers(PetriModel petri) {
