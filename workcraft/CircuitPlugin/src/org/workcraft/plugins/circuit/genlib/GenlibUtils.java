@@ -143,8 +143,14 @@ public final class GenlibUtils {
         return result;
     }
 
-    public static Gate.ExtendedMapping findExtendedMapping(BooleanFormula formula, Library library) {
+    public static Gate.ExtendedMapping findFlexibleExtendedMapping(BooleanFormula formula, Library library) {
         return findExtendedMapping(formula, null, library, true, true, true);
+    }
+
+    public static Gate.ExtendedMapping findConservativeExtendedMapping(BooleanFormula formula, Library library,
+            boolean allowOutputInversion) {
+
+        return findExtendedMapping(formula, null, library, allowOutputInversion, false, false);
     }
 
     public static Gate.ExtendedMapping findExtendedMapping(
