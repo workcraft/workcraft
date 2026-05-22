@@ -167,8 +167,15 @@ public final class GenlibUtils {
             return new Gate.ExtendedMapping(mapping.gate(), mapping.pinRenamining(), Set.of());
         }
         // Try 2: match inverted gates
-        BooleanFormula notSetFormula = (setFormula == null) ? null : new Not(setFormula);
-        BooleanFormula notResetFormula = (resetFormula == null) ? null : new Not(resetFormula);
+        BooleanFormula notSetFormula = null;
+        BooleanFormula notResetFormula = null;
+        if ((setFormula != null) && (resetFormula != null)) {
+            notSetFormula = resetFormula;
+            notResetFormula = setFormula;
+        } else {
+            notSetFormula = FormulaUtils.invert(setFormula);
+            notResetFormula = FormulaUtils.invert(resetFormula);
+        }
         if (allowOutputInversion) {
             Gate.Mapping invMapping = findMapping(notSetFormula, notResetFormula, library);
             if (invMapping != null) {

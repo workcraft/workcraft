@@ -9,8 +9,6 @@ import java.awt.*;
 
 public class ColorCellRenderer extends FlatComboBox implements TableCellRenderer {
 
-    private static final Color PANEL_BACKGROUND = UIManager.getColor("Panel.background");
-
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
@@ -24,8 +22,10 @@ public class ColorCellRenderer extends FlatComboBox implements TableCellRenderer
 
     @Override
     public void paintComponent(Graphics g) {
-        GuiUtils.paintBackgroundColor(g, getValueRectangle(),
-                isOpaque() ? PANEL_BACKGROUND : getBackground());
+        super.paintComponent(g);
+        if (!isOpaque()) {
+            GuiUtils.paintBackgroundColor(g, getValueRectangle(), getBackground());
+        }
     }
 
 }

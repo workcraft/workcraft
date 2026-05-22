@@ -26,6 +26,57 @@ import java.util.regex.Pattern;
 
 public class CircuitSettings extends AbstractModelSettings {
 
+    public static final String ENV_BASE = "${WORKCRAFT_BASE}";
+    public static final String DEFAULT_LIBRARY = BackendUtils.getLibraryPath("workcraft.lib");
+    public static final Map<String, String> PREDEFINED_LIBRARY_PARAMETERS = new LinkedHashMap<>();
+    static {
+        PREDEFINED_LIBRARY_PARAMETERS.put(DEFAULT_LIBRARY, "");
+        PREDEFINED_LIBRARY_PARAMETERS.put(ENV_BASE + DEFAULT_LIBRARY, "");
+    }
+
+    public static final String DEFAULT_WAIT = "WAIT (sig, (ctrl, san))";
+    public static final Map<String, String> PREDEFINED_WAIT_PARAMETERS = new LinkedHashMap<>();
+    static {
+        PREDEFINED_WAIT_PARAMETERS.put(DEFAULT_WAIT, "");
+    }
+
+    public static final String DEFAULT_WAIT0 = "WAIT0 (sig, (ctrl, san))";
+    public static final Map<String, String> PREDEFINED_WAIT0_PARAMETERS = new LinkedHashMap<>();
+    static {
+        PREDEFINED_WAIT0_PARAMETERS.put(DEFAULT_WAIT0, "");
+    }
+
+    public static final String DEFAULT_MUTEX = "MUTEX ((r1, g1), (r2, g2))";
+    public static final Map<String, String> PREDEFINED_MUTEX_PARAMETERS = new LinkedHashMap<>();
+    static {
+        PREDEFINED_MUTEX_PARAMETERS.put(DEFAULT_MUTEX, "");
+    }
+
+    public static final String DEFAULT_MUTEX_LATE = "MUTEX_late ((r1, g1), (r2, g2))";
+    public static final Map<String, String> PREDEFINED_MUTEX_LATE_PARAMETERS = new LinkedHashMap<>();
+    static {
+        PREDEFINED_MUTEX_LATE_PARAMETERS.put(DEFAULT_MUTEX_LATE, "");
+    }
+
+    public static final String DEFAULT_SUBSTITUTION_TSMC_BCD = BackendUtils.getLibraryPath("workcraft-tsmc_bcd.cnv");
+    public static final String DEFAULT_SUBSTITUTION_TSMC_GHP = BackendUtils.getLibraryPath("workcraft-tsmc_ghp.cnv");
+    public static final Map<String, String> PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS = new LinkedHashMap<>();
+    public static final Map<String, String> PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS = new LinkedHashMap<>();
+    static {
+        PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS.put("", "No substitution");
+        PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS.put(DEFAULT_SUBSTITUTION_TSMC_BCD, "");
+        PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS.put(DEFAULT_SUBSTITUTION_TSMC_GHP, "");
+        PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS.put(ENV_BASE + DEFAULT_SUBSTITUTION_TSMC_GHP, "");
+        PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS.put(ENV_BASE + DEFAULT_SUBSTITUTION_TSMC_GHP, "");
+    }
+    static {
+        PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS.put("", "No substitution");
+        PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS.put(DEFAULT_SUBSTITUTION_TSMC_BCD, "");
+        PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS.put(DEFAULT_SUBSTITUTION_TSMC_GHP, "");
+        PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS.put(ENV_BASE + DEFAULT_SUBSTITUTION_TSMC_BCD, "");
+        PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS.put(ENV_BASE + DEFAULT_SUBSTITUTION_TSMC_GHP, "");
+    }
+
     public static final String DEFAULT_RANDOM_DELAY = "(1ps * $urandom_range(0, 50))";
     public static final String DEFAULT_RANDOM_DELAY_INTERVAL = "(1ps * $urandom_range(20, 50))";
     public static final Map<String, String> PREDEFINED_DELAY_PARAMETERS = new LinkedHashMap<>();
@@ -208,11 +259,11 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
     private static final boolean defaultSimplifyStg = true;
     // Gate library
-    private static final String defaultGateLibrary = BackendUtils.getLibraryPath("workcraft.lib");
-    private static final String defaultWaitData = "WAIT (sig, (ctrl, san))";
-    private static final String defaultWait0Data = "WAIT0 (sig, (ctrl, san))";
-    private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
-    private static final String defaultMutexLateData = "MUTEX_late ((r1, g1), (r2, g2))";
+    private static final String defaultGateLibrary = DEFAULT_LIBRARY;
+    private static final String defaultWaitData = DEFAULT_WAIT;
+    private static final String defaultWait0Data = DEFAULT_WAIT0;
+    private static final String defaultMutexData = DEFAULT_MUTEX;
+    private static final String defaultMutexLateData = DEFAULT_MUTEX_LATE;
     // Import/export
     private static final String defaultExportSubstitutionLibrary = "";
     private static final boolean defaultInvertExportSubstitutionRules = false;
@@ -364,7 +415,12 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet(GATE_LIBRARY_TITLE),
                 CircuitSettings::setGateLibrary,
-                CircuitSettings::getGateLibrary));
+                CircuitSettings::getGateLibrary) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_LIBRARY_PARAMETERS;
+            }
+        });
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("WAIT name, dirty input and clean handshake"),
@@ -375,7 +431,13 @@ public class CircuitSettings extends AbstractModelSettings {
                         errorDescriptionFormat("WAIT", defaultWaitData, true);
                     }
                 },
-                CircuitSettings::getWaitData));
+                CircuitSettings::getWaitData) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_WAIT_PARAMETERS;
+            }
+        });
+
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("WAIT0 name, dirty input and clean handshake"),
@@ -386,7 +448,13 @@ public class CircuitSettings extends AbstractModelSettings {
                         errorDescriptionFormat("WAIT0", defaultWait0Data, true);
                     }
                 },
-                CircuitSettings::getWait0Data));
+                CircuitSettings::getWait0Data) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_WAIT0_PARAMETERS;
+            }
+        });
+
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("Early protocol MUTEX name and request-grant pairs"),
@@ -397,7 +465,13 @@ public class CircuitSettings extends AbstractModelSettings {
                         errorDescriptionFormat("MUTEX", defaultMutexData, true);
                     }
                 },
-                CircuitSettings::getMutexData));
+                CircuitSettings::getMutexData) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_MUTEX_PARAMETERS;
+            }
+        });
+
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("Late protocol MUTEX name and request-grant pairs"),
@@ -408,14 +482,24 @@ public class CircuitSettings extends AbstractModelSettings {
                         errorDescriptionFormat("MUTEX", defaultMutexData, true);
                     }
                 },
-                CircuitSettings::getMutexLateData));
+                CircuitSettings::getMutexLateData) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_MUTEX_LATE_PARAMETERS;
+            }
+        });
 
         properties.add(PropertyHelper.createSeparatorProperty("Verilog import and export"));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("Substitution rules for export"),
                 CircuitSettings::setExportSubstitutionLibrary,
-                CircuitSettings::getExportSubstitutionLibrary));
+                CircuitSettings::getExportSubstitutionLibrary) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS;
+            }
+        });
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 PropertyHelper.indentWithBullet("Invert substitution rules for export"),
@@ -425,7 +509,12 @@ public class CircuitSettings extends AbstractModelSettings {
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("Substitution rules for import"),
                 CircuitSettings::setImportSubstitutionLibrary,
-                CircuitSettings::getImportSubstitutionLibrary));
+                CircuitSettings::getImportSubstitutionLibrary) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS;
+            }
+        });
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 PropertyHelper.indentWithBullet("Invert substitution rules for import"),

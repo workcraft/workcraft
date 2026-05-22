@@ -13,7 +13,6 @@ import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
-import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.*;
 import org.workcraft.types.Pair;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 
 public final class GateUtils {
 
-    private static final BooleanWorker DUMB_WORKER = DumbBooleanWorker.getInstance();
     private static final BooleanWorker CLEVER_WORKER = CleverBooleanWorker.getInstance();
 
     private GateUtils() {
@@ -205,49 +203,49 @@ public final class GateUtils {
     public static VisualFunctionComponent createAnd2Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B"), "O"),
-                vars -> FormulaUtils.createAnd(vars, DUMB_WORKER));
+                FormulaUtils::createAnd);
     }
 
     public static VisualFunctionComponent createAnd3Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B", "C"), "O"),
-                vars -> FormulaUtils.createAnd(vars, DUMB_WORKER));
+                FormulaUtils::createAnd);
     }
 
     public static VisualFunctionComponent createOr2Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B"), "O"),
-                vars -> FormulaUtils.createOr(vars, DUMB_WORKER));
+                FormulaUtils::createOr);
     }
 
     public static VisualFunctionComponent createOr3Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B", "C"), "O"),
-                vars -> FormulaUtils.createOr(vars, DUMB_WORKER));
+                FormulaUtils::createOr);
     }
 
     public static VisualFunctionComponent createNand2Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B"), "ON"),
-                vars -> new Not(FormulaUtils.createAnd(vars, DUMB_WORKER)));
+                vars -> new Not(FormulaUtils.createAnd(vars)));
     }
 
     public static VisualFunctionComponent createNand3Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B", "C"), "ON"),
-                vars -> new Not(FormulaUtils.createAnd(vars, DUMB_WORKER)));
+                vars -> new Not(FormulaUtils.createAnd(vars)));
     }
 
     public static VisualFunctionComponent createNor2Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B"), "ON"),
-                vars -> new Not(FormulaUtils.createOr(vars, DUMB_WORKER)));
+                vars -> new Not(FormulaUtils.createOr(vars)));
     }
 
     public static VisualFunctionComponent createNor3Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B", "C"), "ON"),
-                vars -> new Not(FormulaUtils.createOr(vars, DUMB_WORKER)));
+                vars -> new Not(FormulaUtils.createOr(vars)));
     }
 
     public static VisualFunctionComponent createNand2bGate(VisualCircuit circuit) {
@@ -262,36 +260,55 @@ public final class GateUtils {
                 vars -> new Not(new Or(new Not(vars.get(0)), vars.get(1))));
     }
 
-    public static VisualFunctionComponent createGate(VisualCircuit circuit, GateInterface defaultGateInterface,
+    public static VisualFunctionComponent createGate(VisualCircuit circuit, GateInterface gateInterface,
             Function<List<FreeVariable>, BooleanFormula> func) {
+
+        String outputName = gateInterface.getOutput();
+        List<FreeVariable> inputVars = gateInterface.getInputs().stream()
+                .map(FreeVariable::new)
+                .toList();
+
+        BooleanFormula desiredGateFunction = func.apply(inputVars);
+        return createGate(circuit, inputVars, outputName, desiredGateFunction);
+    }
+
+    public static VisualFunctionComponent createGate(VisualCircuit circuit, List<FreeVariable> inputVars,
+            String desiredOutputName, BooleanFormula desiredGateFunction) {
+
+        Gate.Mapping mapping = GenlibUtils.findMapping(desiredGateFunction, LibraryManager.getLibrary());
+        if (mapping != null) {
+            return createGate(circuit, inputVars, mapping);
+        }
+
+        String functionString = StringGenerator.toString(desiredGateFunction);
+        List<String> inputNames = inputVars.stream()
+                    .map(FreeVariable::getLabel)
+                    .toList();
+
+        return createGate(circuit, inputNames, desiredOutputName, functionString);
+    }
+
+    public static VisualFunctionComponent createGate(VisualCircuit circuit, List<FreeVariable> inputVars,
+            Gate.Mapping mapping) {
+
+        Gate gate = mapping.gate();
+        String functionString = gate.function.formula;
+        String outputName = gate.function.name;
+        Gate.PinRenamining pinRenamining = mapping.pinRenamining();
+        List<String> inputNames = inputVars.stream()
+                .map(pinRenamining::get)
+                .toList();
+
+        VisualFunctionComponent component = createGate(circuit, inputNames, outputName, functionString);
+        component.setLabel(gate.name);
+        return component;
+    }
+
+    public static VisualFunctionComponent createGate(VisualCircuit circuit, List<String> inputNames,
+            String outputName, String functionString) {
 
         VisualFunctionComponent component = circuit.createVisualComponent(
                 new FunctionComponent(), VisualFunctionComponent.class);
-
-        String outputName = defaultGateInterface.getOutput();
-        List<FreeVariable> inputVars = defaultGateInterface.getInputs().stream()
-                .map(FreeVariable::new)
-                .collect(Collectors.toList());
-
-        BooleanFormula desiredGateFunction = func.apply(inputVars);
-        Gate.Mapping mapping = GenlibUtils.findMapping(desiredGateFunction,
-                LibraryManager.getLibrary());
-
-        String functionString;
-        List<String> inputNames;
-        if (mapping == null) {
-            functionString = StringGenerator.toString(desiredGateFunction);
-            inputNames = new ArrayList<>(defaultGateInterface.getInputs());
-        } else {
-            Gate gate = mapping.gate();
-            component.setLabel(gate.name);
-            functionString = gate.function.formula;
-            outputName = gate.function.name;
-            Gate.PinRenamining pinRenamining = mapping.pinRenamining();
-            inputNames = inputVars.stream()
-                    .map(pinRenamining::get)
-                    .collect(Collectors.toList());
-        }
 
         double y = -0.5 * (inputNames.size() - 1);
         for (String inputName : inputNames) {
@@ -411,8 +428,7 @@ public final class GateUtils {
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         List<Contact> vars = createGateInputs(circuit, component, count);
-        BooleanFormula function = FormulaUtils.createAnd(vars, DUMB_WORKER);
-        outputContact.setSetFunction(function);
+        outputContact.setSetFunction(FormulaUtils.createAnd(vars));
         return component;
     }
 
@@ -424,8 +440,7 @@ public final class GateUtils {
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         List<Contact> vars = createGateInputs(circuit, component, count);
-        BooleanFormula function = FormulaUtils.createOr(vars, DUMB_WORKER);
-        outputContact.setSetFunction(function);
+        outputContact.setSetFunction(FormulaUtils.createOr(vars));
         return component;
     }
 
@@ -483,6 +498,31 @@ public final class GateUtils {
         VisualFunctionContact outputContact = circuit.getOrCreateContact(component, outputName, Contact.IOType.OUTPUT);
         outputContact.setPosition(new Point2D.Double(2.0, 0.0));
         outputContact.setSetFunction(gateFunction);
+        return component;
+    }
+
+
+    public static VisualFunctionComponent createComplexGateComponent(VisualCircuit circuit,
+            String outputName, BooleanFormula setFunction, BooleanFormula resetFunction) {
+
+        VisualFunctionComponent component = circuit.createVisualComponent(
+                new FunctionComponent(), VisualFunctionComponent.class);
+
+        List<BooleanVariable> orderedVars = FormulaUtils.extractOrderedVariables(setFunction, resetFunction);
+        List<BooleanVariable> gateVars = new ArrayList<>();
+        double y = -0.5 * (orderedVars.size() - 1);
+        for (BooleanVariable variable : orderedVars) {
+            VisualContact inputPin = circuit.getOrCreateContact(component, variable.getLabel(), Contact.IOType.INPUT);
+            inputPin.setPosition(new Point2D.Double(-2.0, y));
+            gateVars.add(inputPin.getReferencedComponent());
+            y += 1.0;
+        }
+        BooleanFormula gateSetFunction = FormulaUtils.replace(setFunction, orderedVars, gateVars);
+        BooleanFormula gateResetFunction = FormulaUtils.replace(resetFunction, orderedVars, gateVars);
+
+        VisualFunctionContact outputContact = circuit.getOrCreateContact(component, outputName, Contact.IOType.OUTPUT);
+        outputContact.setPosition(new Point2D.Double(2.0, 0.0));
+        outputContact.setBothFunctions(gateSetFunction, gateResetFunction);
         return component;
     }
 
@@ -737,8 +777,14 @@ public final class GateUtils {
                     inputVarReplacements, CleverBooleanWorker.getInstance());
 
             if (extendedMapping.invertedPinNames().contains(outputPin.getName())) {
-                newSetFunction = FormulaUtils.invert(newSetFunction);
-                newResetFunction = FormulaUtils.invert(newResetFunction);
+                if ((newSetFunction != null) && (newResetFunction != null)) {
+                    BooleanFormula tmpFunction = newSetFunction;
+                    newSetFunction = newResetFunction;
+                    newResetFunction = tmpFunction;
+                } else {
+                    newSetFunction = FormulaUtils.invert(newSetFunction);
+                    newResetFunction = FormulaUtils.invert(newResetFunction);
+                }
             }
         }
 
@@ -849,8 +895,17 @@ public final class GateUtils {
             BooleanFormula setFunction = contact.getSetFunction();
             BooleanFormula resetFunction = contact.getResetFunction();
             Gate.Mapping posMapping = GenlibUtils.findMapping(setFunction, resetFunction, gateLibrary);
-            BooleanFormula notSetFunction = FormulaUtils.invert(setFunction);
-            BooleanFormula notResetFunction = FormulaUtils.invert(resetFunction);
+
+            BooleanFormula notSetFunction = null;
+            BooleanFormula notResetFunction = null;
+            if (setFunction != null && resetFunction != null) {
+                notSetFunction = resetFunction;
+                notResetFunction = setFunction;
+            } else {
+                notSetFunction = FormulaUtils.invert(setFunction);
+                notResetFunction = FormulaUtils.invert(resetFunction);
+            }
+
             Gate.Mapping negMapping = GenlibUtils.findMapping(notSetFunction, notResetFunction, gateLibrary);
             boolean isMapped = component.isMapped();
             if ((posMapping != null) && (negMapping != null) && (posMapping.gate().size > negMapping.gate().size)) {

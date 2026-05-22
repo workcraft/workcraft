@@ -69,11 +69,11 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
 
     @Override
     public Object getCellEditorValue() {
-        if (component instanceof FlatTextField) {
-            return ((FlatTextField) component).getText();
+        if (component instanceof FlatTextField textField) {
+            return textField.getText();
         }
-        if (component instanceof FlatComboBox) {
-            Object item = ((FlatComboBox) component).getSelectedItem();
+        if (component instanceof FlatComboBox comboBox) {
+            Object item = comboBox.getSelectedItem();
             if (item instanceof ChoiceWrapper wrapper) {
                 return wrapper.object.toString();
             } else {
@@ -85,11 +85,11 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        if (component instanceof FlatTextField) {
-            ((FlatTextField) component).setText((String) value);
+        if ((component instanceof FlatTextField textField) && (value instanceof String text)) {
+            textField.setText(text);
         }
-        if (component instanceof FlatComboBox) {
-            ((FlatComboBox) component).setSelectedItem(value);
+        if (component instanceof FlatComboBox comboBox) {
+            comboBox.setSelectedItem(value);
         }
         component.setOpaque(value == null);
         component.setFont(table.getFont());

@@ -132,6 +132,19 @@ public class FormulaUtils {
         return new Xor(zeroSubFormula, oneSubFormula);
     }
 
+    public static List<FreeVariable> createVariables(int count, String prefix, int startIndex) {
+        List<FreeVariable> result = new ArrayList<>(count);
+        for (int index = 0; index < count; index++) {
+            FreeVariable var = new FreeVariable(prefix + (startIndex + index));
+            result.add(var);
+        }
+        return result;
+    }
+
+    public static BooleanFormula createAnd(List<? extends BooleanFormula> operands) {
+        return createAnd(operands, DumbBooleanWorker.getInstance());
+    }
+
     public static BooleanFormula createAnd(List<? extends BooleanFormula> operands, BooleanWorker worker) {
         return createAnd(operands, 0, operands.size(), worker);
     }
@@ -148,6 +161,10 @@ public class FormulaUtils {
                 return worker.and(createAnd(operands, start, split, worker), createAnd(operands, split, end, worker));
             }
         }
+    }
+
+    public static BooleanFormula createOr(List<? extends BooleanFormula> operands) {
+        return  createOr(operands, DumbBooleanWorker.getInstance());
     }
 
     public static BooleanFormula createOr(List<? extends BooleanFormula> operands, BooleanWorker worker) {

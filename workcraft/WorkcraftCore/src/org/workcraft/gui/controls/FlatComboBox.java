@@ -9,6 +9,7 @@ import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
 import java.awt.*;
+import java.awt.event.ActionListener;
 
 public class FlatComboBox extends JComboBox<Object> {
 
@@ -44,9 +45,47 @@ public class FlatComboBox extends JComboBox<Object> {
         }
     }
 
+    static class FlatTextComboBoxEditor implements ComboBoxEditor {
+        private final FlatTextField textEditor = new FlatTextField();
+
+        @Override
+        public Component getEditorComponent() {
+            return textEditor;
+        }
+
+        @Override
+        public Object getItem() {
+            return textEditor.getText();
+        }
+
+        @Override
+        public void setItem(Object value) {
+            if (value instanceof String text) {
+                textEditor.setText(text);
+            }
+        }
+
+        @Override
+        public void selectAll() {
+            textEditor.selectAll();
+        }
+
+        @Override
+        public void addActionListener(ActionListener l) {
+            textEditor.addActionListener(l);
+        }
+
+        @Override
+        public void removeActionListener(ActionListener l) {
+            textEditor.removeActionListener(l);
+        }
+    }
+
     public FlatComboBox() {
+        super();
         setUI(new FlatComboBoxUI());
         setRenderer(new FlatListCellRenderer());
+        setEditor(new FlatTextComboBoxEditor());
         setFocusable(false);
         setMaximumRowCount(25);
         for (int i = 0; i < getComponentCount(); i++) {
@@ -62,8 +101,8 @@ public class FlatComboBox extends JComboBox<Object> {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         if (isOpaque()) {
-            g.setColor(PANEL_BACKGROUND);
             Rectangle rect = getValueRectangle();
+            g.setColor(PANEL_BACKGROUND);
             g.fillRect(rect.x, rect.y, rect.width, rect.height);
         }
     }

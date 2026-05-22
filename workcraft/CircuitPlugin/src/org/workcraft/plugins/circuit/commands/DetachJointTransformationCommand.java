@@ -72,7 +72,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualCircuit circuit) && (node instanceof VisualContact driver)) {
-            VisualJoint joint = CircuitUtils.detachJoint(circuit, driver);
+            VisualJoint joint = CircuitUtils.detachJoint(circuit, driver, 2);
             if (joint != null) {
                 model.addToSelection(joint);
             }
