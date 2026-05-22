@@ -406,7 +406,11 @@ public final class CircuitUtils {
     }
 
     public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver, double offset) {
-        VisualJoint joint = detachJoint(circuit, driver);
+        return detachJoint(circuit, driver, offset, 2);
+    }
+
+    public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver, double offset, int minFanout) {
+        VisualJoint joint = detachJoint(circuit, driver, minFanout);
         if (joint != null) {
             Point2D jointPos = SpaceUtils.getOffsetContactPosition(driver, offset);
             joint.setRootSpacePosition(jointPos);
@@ -422,9 +426,9 @@ public final class CircuitUtils {
         return joint;
     }
 
-    public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver) {
+    public static VisualJoint detachJoint(VisualCircuit circuit, VisualContact driver, int minFanout) {
         Set<VisualConnection> connections = new HashSet<>(circuit.getConnections(driver));
-        if (!driver.isDriver() || (connections.size() <= 1)) {
+        if (!driver.isDriver() || (connections.size() < minFanout)) {
             return null;
         }
 
@@ -786,14 +790,12 @@ public final class CircuitUtils {
         return result;
     }
 
-    public static VisualConnection connectIfPossible(VisualCircuit circuit,
-            VisualContact fromContact, VisualContact toContact) {
-
-        if ((fromContact != null) && (toContact != null)) {
-            VisualConnection connection = circuit.getConnection(fromContact, toContact);
+    public static VisualConnection connectIfPossible(VisualCircuit circuit, VisualNode fromNode, VisualNode toNode) {
+        if ((fromNode != null) && (toNode != null)) {
+            VisualConnection connection = circuit.getConnection(fromNode, toNode);
             if (connection == null) {
                 try {
-                    return circuit.connect(fromContact, toContact);
+                    return circuit.connect(fromNode, toNode);
                 } catch (InvalidConnectionException e) {
                     LogUtils.logWarning(e.getMessage());
                 }
