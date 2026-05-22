@@ -13,7 +13,6 @@ import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
-import org.workcraft.formula.workers.DumbBooleanWorker;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.*;
 import org.workcraft.types.Pair;
@@ -28,7 +27,6 @@ import java.util.stream.Collectors;
 
 public final class GateUtils {
 
-    private static final BooleanWorker DUMB_WORKER = DumbBooleanWorker.getInstance();
     private static final BooleanWorker CLEVER_WORKER = CleverBooleanWorker.getInstance();
 
     private GateUtils() {
@@ -205,49 +203,49 @@ public final class GateUtils {
     public static VisualFunctionComponent createAnd2Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B"), "O"),
-                vars -> FormulaUtils.createAnd(vars, DUMB_WORKER));
+                FormulaUtils::createAnd);
     }
 
     public static VisualFunctionComponent createAnd3Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B", "C"), "O"),
-                vars -> FormulaUtils.createAnd(vars, DUMB_WORKER));
+                FormulaUtils::createAnd);
     }
 
     public static VisualFunctionComponent createOr2Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B"), "O"),
-                vars -> FormulaUtils.createOr(vars, DUMB_WORKER));
+                FormulaUtils::createOr);
     }
 
     public static VisualFunctionComponent createOr3Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B", "C"), "O"),
-                vars -> FormulaUtils.createOr(vars, DUMB_WORKER));
+                FormulaUtils::createOr);
     }
 
     public static VisualFunctionComponent createNand2Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B"), "ON"),
-                vars -> new Not(FormulaUtils.createAnd(vars, DUMB_WORKER)));
+                vars -> new Not(FormulaUtils.createAnd(vars)));
     }
 
     public static VisualFunctionComponent createNand3Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B", "C"), "ON"),
-                vars -> new Not(FormulaUtils.createAnd(vars, DUMB_WORKER)));
+                vars -> new Not(FormulaUtils.createAnd(vars)));
     }
 
     public static VisualFunctionComponent createNor2Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B"), "ON"),
-                vars -> new Not(FormulaUtils.createOr(vars, DUMB_WORKER)));
+                vars -> new Not(FormulaUtils.createOr(vars)));
     }
 
     public static VisualFunctionComponent createNor3Gate(VisualCircuit circuit) {
         return createGate(circuit,
                 new GateInterface(Arrays.asList("A", "B", "C"), "ON"),
-                vars -> new Not(FormulaUtils.createOr(vars, DUMB_WORKER)));
+                vars -> new Not(FormulaUtils.createOr(vars)));
     }
 
     public static VisualFunctionComponent createNand2bGate(VisualCircuit circuit) {
@@ -411,8 +409,7 @@ public final class GateUtils {
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         List<Contact> vars = createGateInputs(circuit, component, count);
-        BooleanFormula function = FormulaUtils.createAnd(vars, DUMB_WORKER);
-        outputContact.setSetFunction(function);
+        outputContact.setSetFunction(FormulaUtils.createAnd(vars));
         return component;
     }
 
@@ -424,8 +421,7 @@ public final class GateUtils {
         outputContact.setPosition(new Point2D.Double(1.5, 0.0));
 
         List<Contact> vars = createGateInputs(circuit, component, count);
-        BooleanFormula function = FormulaUtils.createOr(vars, DUMB_WORKER);
-        outputContact.setSetFunction(function);
+        outputContact.setSetFunction(FormulaUtils.createOr(vars));
         return component;
     }
 

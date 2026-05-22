@@ -3,10 +3,10 @@ package org.workcraft.formula;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.workcraft.formula.visitors.StringGenerator;
-import org.workcraft.formula.workers.DumbBooleanWorker;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 class FormulaUtilsTests {
@@ -18,8 +18,8 @@ class FormulaUtilsTests {
         BooleanVariable cVar = new FreeVariable("c");
         BooleanVariable dVar = new FreeVariable("d");
 
-        BooleanFormula andFormula = createAnd(aVar, bVar, cVar);
-        BooleanFormula expectedAndFormula = createAnd(aVar, bVar, aVar);
+        BooleanFormula andFormula = FormulaUtils.createAnd(List.of(aVar, bVar, cVar));
+        BooleanFormula expectedAndFormula = FormulaUtils.createAnd(List.of(aVar, bVar, aVar));
         checkReplacement(andFormula, cVar, aVar, expectedAndFormula);
 
         BooleanFormula majFormula = FormulaUtils.createMaj(aVar, bVar, cVar);
@@ -29,10 +29,6 @@ class FormulaUtilsTests {
         BooleanFormula muxFormula = FormulaUtils.createMux(aVar, bVar, cVar);
         BooleanFormula expectedMuxFormula = FormulaUtils.createMux(aVar, bVar, dVar);
         checkReplacement(muxFormula, cVar, dVar, expectedMuxFormula);
-    }
-
-    private BooleanFormula createAnd(BooleanVariable... variables) {
-        return FormulaUtils.createAnd(Arrays.asList(variables), DumbBooleanWorker.getInstance());
     }
 
     private void checkReplacement(BooleanFormula formula, BooleanVariable variable, BooleanFormula replacement, BooleanFormula expectedFormula) {
