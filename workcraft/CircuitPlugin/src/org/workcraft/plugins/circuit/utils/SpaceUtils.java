@@ -29,7 +29,7 @@ public final class SpaceUtils {
         HashMap<VisualConnection, VisualConnection.ScaleMode> connectionToScaleModeMap
                 = ConnectionUtils.replaceConnectionScaleMode(connections, VisualConnection.ScaleMode.NONE);
 
-        SpaceUtils.offsetComponentsFromContact(circuit, contact, space + 1.0);
+        SpaceUtils.offsetComponentsFromContact(circuit, contact, space);
         CircuitUtils.detachJoint(circuit, contact, space);
         // Restore connection scale mode
         ConnectionUtils.restoreConnectionScaleMode(connectionToScaleModeMap);
@@ -56,12 +56,12 @@ public final class SpaceUtils {
             double x = transformableNode.getRootSpaceX();
             double xBorder = x + bb.getX() + ((dx < 0) ? bb.getWidth() : 0.0);
             if ((xBorder - x0) * dx > 0) {
-                transformableNode.setRootSpaceX(x + xSpace);
+                transformableNode.setRootSpaceX(TransformHelper.snapP5(x + xSpace + 0.5));
             }
             double y = transformableNode.getRootSpaceY();
             double yBorder = y + bb.getY() + ((dy < 0) ? bb.getHeight() : 0.0);
             if ((yBorder - y0) * dy > 0) {
-                transformableNode.setRootSpaceY(y + ySpace);
+                transformableNode.setRootSpaceY(TransformHelper.snapP5(y + ySpace + 0.5));
             }
         }
     }
