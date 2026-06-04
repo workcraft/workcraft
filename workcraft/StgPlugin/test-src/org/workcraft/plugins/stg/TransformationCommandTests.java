@@ -3,6 +3,7 @@ package org.workcraft.plugins.stg;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -22,6 +23,9 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.jupiter.api.parallel.ExecutionMode.SAME_THREAD;
+
+@Execution(SAME_THREAD)
 class TransformationCommandTests {
 
     @BeforeAll

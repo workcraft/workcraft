@@ -9,12 +9,14 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,7 +79,7 @@ public class IncrementSignalTransformationCommand extends AbstractTransformation
 
     @Override
     public Collection<VisualNode> collectNodes(VisualModel model) {
-        Collection<VisualNode> signalTransitions = new HashSet<>();
+        Set<VisualNode> signalTransitions = new HashSet<>();
         if (model instanceof VisualStg stg) {
             signalTransitions.addAll(stg.getVisualSignalTransitions());
             Collection<VisualNode> selection = stg.getSelection();
@@ -85,7 +87,7 @@ public class IncrementSignalTransformationCommand extends AbstractTransformation
                 signalTransitions.retainAll(selection);
             }
         }
-        return signalTransitions;
+        return SortUtils.getSortedNatural(signalTransitions, model::getMathReference);
     }
 
     @Override
