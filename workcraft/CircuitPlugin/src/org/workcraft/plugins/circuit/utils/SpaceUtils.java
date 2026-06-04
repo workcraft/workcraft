@@ -164,6 +164,50 @@ public final class SpaceUtils {
         }
     }
 
+    public static void alignOrderedPortsWithPins(VisualCircuit circuit, List<VisualContact> ports, double dx) {
+        Double minTotalX = null;
+        Double minOrderedY = null;
+        for (VisualContact port : ports) {
+            VisualContact bestPin = null;
+            if (port.isOutput()) {
+                bestPin = CircuitUtils.findDriver(circuit, port, false);
+            } else {
+                Collection<VisualContact> drivenContacts = CircuitUtils.findDriven(circuit, port, false);
+                VisualContact fallbackPin = null;
+                for (VisualContact drivenContact : drivenContacts) {
+                    double y = drivenContact.getRootSpaceY();
+                    if ((fallbackPin == null) || (y < fallbackPin.getRootSpaceY())) {
+                        fallbackPin = drivenContact;
+                    }
+                    if (((bestPin == null) || (y < bestPin.getRootSpaceY()))
+                            && ((minOrderedY == null) || (y > minOrderedY))) {
+
+                        bestPin = drivenContact;
+                    }
+                }
+                if (bestPin == null) {
+                    bestPin = fallbackPin;
+                }
+            }
+            if (bestPin != null) {
+                double x = bestPin.getRootSpaceX();
+                if ((minTotalX == null) || (x < minTotalX)) {
+                    minTotalX = x;
+                }
+                double y = bestPin.getRootSpaceY();
+                if ((minOrderedY == null) || (y > minOrderedY)) {
+                    minOrderedY = y;
+                }
+                port.setRootSpaceY(y);
+            }
+        }
+        if (minTotalX != null) {
+            for (VisualContact port : ports) {
+                port.setRootSpaceX(minTotalX + dx);
+            }
+        }
+    }
+
     public static List<VisualFunctionComponent> orderComponentsByPosition(List<VisualFunctionComponent> components) {
         return components.stream()
                 .sorted((o1, o2) -> {
