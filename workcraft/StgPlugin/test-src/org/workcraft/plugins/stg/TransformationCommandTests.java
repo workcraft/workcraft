@@ -12,6 +12,7 @@ import org.workcraft.plugins.petri.commands.MergePlaceTransformationCommand;
 import org.workcraft.plugins.petri.commands.ProxyDirectedArcPlaceTransformationCommand;
 import org.workcraft.plugins.petri.utils.ConnectionUtils;
 import org.workcraft.plugins.stg.commands.*;
+import org.workcraft.types.Triple;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -19,6 +20,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 class TransformationCommandTests {
 
@@ -416,6 +418,68 @@ class TransformationCommandTests {
         Assertions.assertEquals(producingArcCount, ConnectionUtils.getVisualProducingArcs(stg).size());
         Assertions.assertEquals(consumingArcCount, ConnectionUtils.getVisualConsumingArcs(stg).size());
         Assertions.assertEquals(readArcCount, ConnectionUtils.getVisualReadArcs(stg).size());
+    }
+
+    @Test
+    void testIncrementSignalTransitionTransformationCommand() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        URL url = classLoader.getResource(workName);
+
+        WorkspaceEntry we = framework.loadWork(url.getFile());
+        VisualStg stg = WorkspaceUtils.getAs(we, VisualStg.class);
+        Assertions.assertEquals(
+                Triple.of(
+                        Set.of("in1+", "in1-", "in2+", "in2-"),
+                        Set.of("out+", "out-"),
+                        Set.of()),
+                calcSignalTransitionRefs(stg));
+
+        IncrementSignalTransformationCommand transformationCommand = new IncrementSignalTransformationCommand();
+
+        stg.selectAll();
+        transformationCommand.execute(we);
+        stg = WorkspaceUtils.getAs(we, VisualStg.class);
+        Assertions.assertEquals(
+                Triple.of(
+                        Set.of("in2+/1", "in2-/1", "in3+", "in3-"),
+                        Set.of("out+", "out-"),
+                        Set.of()),
+                calcSignalTransitionRefs(stg));
+
+        stg.selectAll();
+        stg.createVisualSignalTransition("in4", Signal.Type.INTERNAL, SignalTransition.Direction.TOGGLE);
+        transformationCommand.execute(we);
+        stg = WorkspaceUtils.getAs(we, VisualStg.class);
+        Assertions.assertEquals(
+                Triple.of(
+                        Set.of("in3+/1", "in3-/1"),
+                        Set.of("out+", "out-"),
+                        Set.of("in4+", "in4-", "in4~")),
+                calcSignalTransitionRefs(stg));
+
+        stg.selectAll();
+        stg.createVisualPlace("in5");
+        transformationCommand.execute(we);
+        stg = WorkspaceUtils.getAs(we, VisualStg.class);
+        Assertions.assertEquals(
+                Triple.of(
+                        Set.of("in3+/1", "in3-/1"),
+                        Set.of("out+", "out-"),
+                        Set.of("in4+", "in4-", "in4~")),
+                calcSignalTransitionRefs(stg));
+
+        framework.closeWork(we);
+    }
+
+    private static Triple<Set<String>, Set<String>, Set<String>> calcSignalTransitionRefs(VisualStg visualStg) {
+        Stg stg = visualStg.getMathModel();
+        return Triple.of(
+                stg.getSignalTransitions(Signal.Type.INPUT).stream().map(stg::getNodeReference).collect(Collectors.toSet()),
+                stg.getSignalTransitions(Signal.Type.OUTPUT).stream().map(stg::getNodeReference).collect(Collectors.toSet()),
+                stg.getSignalTransitions(Signal.Type.INTERNAL).stream().map(stg::getNodeReference).collect(Collectors.toSet())
+        );
     }
 
 }
