@@ -1,6 +1,6 @@
 package org.workcraft.exceptions;
 
-public class VisualModelInstantiationException extends java.lang.Exception {
+public class VisualModelInstantiationException extends Exception {
 
     public VisualModelInstantiationException() {
         super();

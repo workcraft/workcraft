@@ -20,7 +20,6 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -72,10 +71,12 @@ public final class ConversionUtils {
     }
 
     public static VisualConnection replicateDriverContact(VisualCircuit circuit, VisualContact drivenContact) {
-        return replicateDriverContact(circuit, drivenContact, 0.5);
+        return replicateDriverContact(circuit, drivenContact, 0.5, true);
     }
 
-    public static VisualConnection replicateDriverContact(VisualCircuit circuit, VisualContact drivenContact, double offset) {
+    public static VisualConnection replicateDriverContact(VisualCircuit circuit, VisualContact drivenContact,
+            double offset, boolean dissolveJoints) {
+
         VisualConnection result = null;
         Set<VisualConnection> connections = circuit.getConnections(drivenContact);
         if (connections.size() == 1) {
@@ -100,12 +101,12 @@ public final class ConversionUtils {
 
                 VisualNode firstNode = connection.getFirst();
                 circuit.remove(connection);
-                if (firstNode instanceof VisualJoint) {
-                    int size = circuit.getConnections(firstNode).size();
+                if (dissolveJoints && (firstNode instanceof VisualJoint fromJoint)) {
+                    int size = circuit.getConnections(fromJoint).size();
                     if (size < 2) {
-                        circuit.remove(firstNode);
+                        circuit.remove(fromJoint);
                     } else if (size == 2) {
-                        new DissolveJointTransformationCommand().transformNodes(circuit, Collections.singleton(firstNode));
+                        new DissolveJointTransformationCommand().transformNode(circuit, fromJoint);
                     }
                 }
 

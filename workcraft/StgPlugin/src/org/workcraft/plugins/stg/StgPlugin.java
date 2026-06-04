@@ -43,10 +43,13 @@ public class StgPlugin implements Plugin {
         pm.registerExporter(LpnExporter.class);
         pm.registerImporter(LpnImporter.class);
 
+        ScriptableCommandUtils.registerCommand(IncrementSignalTransformationCommand.class, "transformStgIncrementSignals",
+                "transform the STG 'work' by incrementing last number in selected (or all) signals");
         ScriptableCommandUtils.registerCommand(MirrorSignalTransformationCommand.class, "transformStgMirrorSignal",
                 "transform the STG 'work' by mirroring selected (or all) signals");
         ScriptableCommandUtils.registerCommand(MirrorTransitionTransformationCommand.class, "transformStgMirrorTransition",
                 "transform the STG 'work' by mirroring selected (or all) transition sign");
+
         ScriptableCommandUtils.registerCommand(ImplicitPlaceTransformationCommand.class, "transformStgImplicitPlace",
                 "transform the STG 'work' by making selected (or all) places implicit");
         ScriptableCommandUtils.registerCommand(ExplicitPlaceTransformationCommand.class, "transformStgExplicitPlace",
