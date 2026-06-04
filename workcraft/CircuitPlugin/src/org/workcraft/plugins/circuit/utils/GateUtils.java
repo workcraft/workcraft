@@ -248,18 +248,6 @@ public final class GateUtils {
                 vars -> new Not(FormulaUtils.createOr(vars)));
     }
 
-    public static VisualFunctionComponent createNand2bGate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("AN", "B"), "ON"),
-                vars -> new Not(new And(new Not(vars.get(0)), vars.get(1))));
-    }
-
-    public static VisualFunctionComponent createNor2bGate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("AN", "B"), "ON"),
-                vars -> new Not(new Or(new Not(vars.get(0)), vars.get(1))));
-    }
-
     public static VisualFunctionComponent createGate(VisualCircuit circuit, GateInterface gateInterface,
             Function<List<FreeVariable>, BooleanFormula> func) {
 
@@ -540,13 +528,13 @@ public final class GateUtils {
         }
     }
 
-    public static VisualContact convertGate(VisualCircuit circuit, VisualFunctionComponent component,
+    public static VisualFunctionContact convertGate(VisualCircuit circuit, VisualFunctionComponent component,
             Gate.ExtendedMapping extendedMapping) {
 
         insertExtraInputPin(circuit, component, extendedMapping);
         Map<BooleanVariable, BooleanFormula> inputVarReplacements = convertInputPins(circuit, component, extendedMapping);
         VisualFunctionContact outputPin = component.getGateOutput();
-        VisualContact result = convertOutputPin(circuit, outputPin, extendedMapping);
+        VisualFunctionContact result = convertOutputPin(circuit, outputPin, extendedMapping);
         updateFunction(circuit, outputPin, inputVarReplacements, extendedMapping);
         component.getReferencedComponent().setModule(extendedMapping.gate().name);
         return result;
@@ -696,10 +684,10 @@ public final class GateUtils {
         return null;
     }
 
-    private static VisualContact convertOutputPin(VisualCircuit circuit, VisualFunctionContact outputPin,
+    private static VisualFunctionContact convertOutputPin(VisualCircuit circuit, VisualFunctionContact outputPin,
             Gate.ExtendedMapping extendedMapping) {
 
-        VisualContact result = outputPin;
+        VisualFunctionContact result = outputPin;
         String newOutputPinName = extendedMapping.gate().function.name;
         circuit.setMathName(outputPin, newOutputPinName);
 
