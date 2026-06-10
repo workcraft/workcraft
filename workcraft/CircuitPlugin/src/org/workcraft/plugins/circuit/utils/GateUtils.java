@@ -14,7 +14,10 @@ import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.formula.workers.BooleanWorker;
 import org.workcraft.formula.workers.CleverBooleanWorker;
 import org.workcraft.plugins.circuit.*;
-import org.workcraft.plugins.circuit.genlib.*;
+import org.workcraft.plugins.circuit.genlib.Gate;
+import org.workcraft.plugins.circuit.genlib.GenlibUtils;
+import org.workcraft.plugins.circuit.genlib.Library;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
@@ -22,7 +25,6 @@ import org.workcraft.utils.SortUtils;
 
 import java.awt.geom.Point2D;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public final class GateUtils {
@@ -177,87 +179,21 @@ public final class GateUtils {
     }
 
     public static VisualFunctionComponent createConst1Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Collections.emptyList(), "O"),
-                vars -> One.getInstance());
+        return createGate(circuit, List.of(), "O", One.getInstance());
     }
 
     public static VisualFunctionComponent createConst0Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Collections.emptyList(), "O"),
-                vars -> Zero.getInstance());
+        return createGate(circuit, List.of(), "O", Zero.getInstance());
     }
 
     public static VisualFunctionComponent createBufferGate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Collections.singletonList("I"), "O"),
-                vars -> vars.get(0));
+        FreeVariable var = new FreeVariable("I");
+        return createGate(circuit, List.of(), "O", var);
     }
 
     public static VisualFunctionComponent createInverterGate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Collections.singletonList("I"), "ON"),
-                vars -> new Not(vars.get(0)));
-    }
-
-    public static VisualFunctionComponent createAnd2Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("A", "B"), "O"),
-                FormulaUtils::createAnd);
-    }
-
-    public static VisualFunctionComponent createAnd3Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("A", "B", "C"), "O"),
-                FormulaUtils::createAnd);
-    }
-
-    public static VisualFunctionComponent createOr2Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("A", "B"), "O"),
-                FormulaUtils::createOr);
-    }
-
-    public static VisualFunctionComponent createOr3Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("A", "B", "C"), "O"),
-                FormulaUtils::createOr);
-    }
-
-    public static VisualFunctionComponent createNand2Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("A", "B"), "ON"),
-                vars -> new Not(FormulaUtils.createAnd(vars)));
-    }
-
-    public static VisualFunctionComponent createNand3Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("A", "B", "C"), "ON"),
-                vars -> new Not(FormulaUtils.createAnd(vars)));
-    }
-
-    public static VisualFunctionComponent createNor2Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("A", "B"), "ON"),
-                vars -> new Not(FormulaUtils.createOr(vars)));
-    }
-
-    public static VisualFunctionComponent createNor3Gate(VisualCircuit circuit) {
-        return createGate(circuit,
-                new GateInterface(Arrays.asList("A", "B", "C"), "ON"),
-                vars -> new Not(FormulaUtils.createOr(vars)));
-    }
-
-    public static VisualFunctionComponent createGate(VisualCircuit circuit, GateInterface gateInterface,
-            Function<List<FreeVariable>, BooleanFormula> func) {
-
-        String outputName = gateInterface.getOutput();
-        List<FreeVariable> inputVars = gateInterface.getInputs().stream()
-                .map(FreeVariable::new)
-                .toList();
-
-        BooleanFormula desiredGateFunction = func.apply(inputVars);
-        return createGate(circuit, inputVars, outputName, desiredGateFunction);
+        FreeVariable var = new FreeVariable("I");
+        return createGate(circuit, List.of(), "O", new Not(var));
     }
 
     public static VisualFunctionComponent createGate(VisualCircuit circuit, List<FreeVariable> inputVars,
@@ -292,7 +228,7 @@ public final class GateUtils {
         return component;
     }
 
-    public static VisualFunctionComponent createGate(VisualCircuit circuit, List<String> inputNames,
+    private static VisualFunctionComponent createGate(VisualCircuit circuit, List<String> inputNames,
             String outputName, String functionString) {
 
         VisualFunctionComponent component = circuit.createVisualComponent(
