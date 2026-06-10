@@ -89,8 +89,12 @@ public final class CircuitUtils {
         return (pair == null) ? contact.getInitToOne() : (pair.getFirst().getInitToOne() != pair.getSecond());
     }
 
-    public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Contact mathDriver = findDriver(circuit.getMathModel(), contact.getReferencedComponent(), transparentZeroDelayComponents);
+    public static VisualContact findDriver(VisualCircuit circuit, VisualComponent contactOrJoint,
+            boolean transparentZeroDelayComponents) {
+
+        Contact mathDriver = findDriver(circuit.getMathModel(), contactOrJoint.getReferencedComponent(),
+                transparentZeroDelayComponents);
+
         return circuit.getVisualComponent(mathDriver, VisualContact.class);
     }
 
@@ -148,12 +152,16 @@ public final class CircuitUtils {
         return zeroDelayInput;
     }
 
-    public static Set<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact) {
-        return findDriven(circuit, contact, true);
+    public static Set<VisualContact> findDriven(VisualCircuit circuit, VisualComponent contactorJoint) {
+        return findDriven(circuit, contactorJoint, true);
     }
 
-    public static Set<VisualContact> findDriven(VisualCircuit circuit, VisualContact contact, boolean transparentZeroDelayComponents) {
-        Collection<Contact> drivenContacts = findDriven(circuit.getMathModel(), contact.getReferencedComponent(), transparentZeroDelayComponents);
+    public static Set<VisualContact> findDriven(VisualCircuit circuit, VisualComponent contactOrJoint,
+            boolean transparentZeroDelayComponents) {
+
+        Collection<Contact> drivenContacts = findDriven(circuit.getMathModel(), contactOrJoint.getReferencedComponent(),
+                transparentZeroDelayComponents);
+
         return getVisualContacts(circuit, drivenContacts);
     }
 
