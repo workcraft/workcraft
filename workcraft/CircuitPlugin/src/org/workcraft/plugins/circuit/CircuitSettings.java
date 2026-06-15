@@ -26,42 +26,42 @@ import java.util.regex.Pattern;
 
 public class CircuitSettings extends AbstractModelSettings {
 
-    public static final String ENV_BASE = "${WORKCRAFT_BASE}";
-    public static final String DEFAULT_LIBRARY = BackendUtils.getLibraryPath("workcraft.lib");
-    public static final Map<String, String> PREDEFINED_LIBRARY_PARAMETERS = new LinkedHashMap<>();
+    private static final String ENV_BASE = "${WORKCRAFT_BASE}";
+    private static final String DEFAULT_LIBRARY = BackendUtils.getLibraryPath("workcraft.lib");
+    private static final Map<String, String> PREDEFINED_LIBRARY_PARAMETERS = new LinkedHashMap<>();
     static {
         PREDEFINED_LIBRARY_PARAMETERS.put(DEFAULT_LIBRARY, "");
         PREDEFINED_LIBRARY_PARAMETERS.put(ENV_BASE + DEFAULT_LIBRARY, "");
     }
 
-    public static final String DEFAULT_WAIT = "WAIT (sig, (ctrl, san))";
-    public static final Map<String, String> PREDEFINED_WAIT_PARAMETERS = new LinkedHashMap<>();
+    private static final String DEFAULT_WAIT = "WAIT (sig, (ctrl, san))";
+    private static final Map<String, String> PREDEFINED_WAIT_PARAMETERS = new LinkedHashMap<>();
     static {
         PREDEFINED_WAIT_PARAMETERS.put(DEFAULT_WAIT, "");
     }
 
-    public static final String DEFAULT_WAIT0 = "WAIT0 (sig, (ctrl, san))";
-    public static final Map<String, String> PREDEFINED_WAIT0_PARAMETERS = new LinkedHashMap<>();
+    private static final String DEFAULT_WAIT0 = "WAIT0 (sig, (ctrl, san))";
+    private static final Map<String, String> PREDEFINED_WAIT0_PARAMETERS = new LinkedHashMap<>();
     static {
         PREDEFINED_WAIT0_PARAMETERS.put(DEFAULT_WAIT0, "");
     }
 
-    public static final String DEFAULT_MUTEX = "MUTEX ((r1, g1), (r2, g2))";
-    public static final Map<String, String> PREDEFINED_MUTEX_PARAMETERS = new LinkedHashMap<>();
+    private static final String DEFAULT_MUTEX = "MUTEX ((r1, g1), (r2, g2))";
+    private static final Map<String, String> PREDEFINED_MUTEX_PARAMETERS = new LinkedHashMap<>();
     static {
         PREDEFINED_MUTEX_PARAMETERS.put(DEFAULT_MUTEX, "");
     }
 
-    public static final String DEFAULT_MUTEX_LATE = "MUTEX_late ((r1, g1), (r2, g2))";
-    public static final Map<String, String> PREDEFINED_MUTEX_LATE_PARAMETERS = new LinkedHashMap<>();
+    private static final String DEFAULT_MUTEX_LATE = "MUTEX_late ((r1, g1), (r2, g2))";
+    private static final Map<String, String> PREDEFINED_MUTEX_LATE_PARAMETERS = new LinkedHashMap<>();
     static {
         PREDEFINED_MUTEX_LATE_PARAMETERS.put(DEFAULT_MUTEX_LATE, "");
     }
 
-    public static final String DEFAULT_SUBSTITUTION_TSMC_BCD = BackendUtils.getLibraryPath("workcraft-tsmc_bcd.cnv");
-    public static final String DEFAULT_SUBSTITUTION_TSMC_GHP = BackendUtils.getLibraryPath("workcraft-tsmc_ghp.cnv");
-    public static final Map<String, String> PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS = new LinkedHashMap<>();
-    public static final Map<String, String> PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS = new LinkedHashMap<>();
+    private static final String DEFAULT_SUBSTITUTION_TSMC_BCD = BackendUtils.getLibraryPath("workcraft-tsmc_bcd.cnv");
+    private static final String DEFAULT_SUBSTITUTION_TSMC_GHP = BackendUtils.getLibraryPath("workcraft-tsmc_ghp.cnv");
+    private static final Map<String, String> PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS = new LinkedHashMap<>();
+    private static final Map<String, String> PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS = new LinkedHashMap<>();
     static {
         PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS.put("", "No substitution");
         PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS.put(DEFAULT_SUBSTITUTION_TSMC_BCD, "");
@@ -77,10 +77,9 @@ public class CircuitSettings extends AbstractModelSettings {
         PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS.put(ENV_BASE + DEFAULT_SUBSTITUTION_TSMC_GHP, "");
     }
 
-    public static final String DEFAULT_RANDOM_DELAY = "(1ps * $urandom_range(0, 50))";
+    private static final String DEFAULT_RANDOM_DELAY = "(1ps * $urandom_range(0, 50))";
     public static final String DEFAULT_RANDOM_DELAY_INTERVAL = "(1ps * $urandom_range(20, 50))";
-    public static final Map<String, String> PREDEFINED_DELAY_PARAMETERS = new LinkedHashMap<>();
-
+    private static final Map<String, String> PREDEFINED_DELAY_PARAMETERS = new LinkedHashMap<>();
     static {
         PREDEFINED_DELAY_PARAMETERS.put("", "No delay");
         PREDEFINED_DELAY_PARAMETERS.put("1", "One unit delay (time unit and precision should be defined)");
@@ -88,11 +87,29 @@ public class CircuitSettings extends AbstractModelSettings {
         PREDEFINED_DELAY_PARAMETERS.put(DEFAULT_RANDOM_DELAY_INTERVAL, "Random delay between 20ps and 50ps");
     }
 
-    public static final Map<String, String> PREDEFINED_TIMESCALE_PARAMETERS = new LinkedHashMap<>();
-
+    private static final Map<String, String> PREDEFINED_TIMESCALE_PARAMETERS = new LinkedHashMap<>();
     static {
         PREDEFINED_TIMESCALE_PARAMETERS.put("", "No delay");
         PREDEFINED_TIMESCALE_PARAMETERS.put("1ns / 1ps", "1ns per unit with 1ps precision");
+    }
+
+    private static final String MODULE_NAME_PLACEHOLDER = "$";
+    private static final String CKT_SUBEXT = ".ckt";
+    private static final String SCH_SUBEXT = ".sch";
+    public static final String DEFAULT_CKT_FILE_PATTERN = MODULE_NAME_PLACEHOLDER + CKT_SUBEXT + FileFilters.DOCUMENT_EXTENSION;
+    public static final String DEFAULT_SCH_FILE_PATTERN = MODULE_NAME_PLACEHOLDER + SCH_SUBEXT + FileFilters.DOCUMENT_EXTENSION;
+    public static final String DEFAULT_WORK_FILE_PATTERN = MODULE_NAME_PLACEHOLDER + FileFilters.DOCUMENT_EXTENSION;
+
+    private static final Map<String, String> PREDEFINED_CKT_FILE_PATTERNS = new LinkedHashMap<>();
+    static {
+        PREDEFINED_CKT_FILE_PATTERNS.put(DEFAULT_CKT_FILE_PATTERN, "");
+        PREDEFINED_CKT_FILE_PATTERNS.put(DEFAULT_WORK_FILE_PATTERN, "");
+    }
+
+    private static final Map<String, String> PREDEFINED_SCH_FILE_PATTERNS = new LinkedHashMap<>();
+    static {
+        PREDEFINED_SCH_FILE_PATTERNS.put(DEFAULT_SCH_FILE_PATTERN, "");
+        PREDEFINED_SCH_FILE_PATTERNS.put(DEFAULT_WORK_FILE_PATTERN, "");
     }
 
     public enum WaitUndefinedInterpretation {
@@ -181,7 +198,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final int GATE_OUTPUT_GROUP = 3;
 
     private static final String BUS_INDEX_PLACEHOLDER = "$";
-    private static final String MODULE_NAME_PLACEHOLDER = "$";
     private static final String FORK_FUNOUT_PLACEHOLDER = "$";
     private static final String INITIAL_STATE_PLACEHOLDER = "$";
 
@@ -220,7 +236,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyBusSuffix = prefix + ".busSuffix";
     private static final String keyDissolveSingletonBus = prefix + ".dissolveSingletonBus";
     private static final String keyAcceptInoutPort = prefix + ".acceptInoutPort";
-    private static final String keyModuleFilePattern = prefix + ".moduleFilePattern";
+    private static final String keyCktFilePattern = prefix + ".cktFilePattern";
+    private static final String keySchFilePattern = prefix + ".schFilePattern";
     // Reset
     private static final String keyResetActiveHighPort = prefix + ".resetActiveHighPort";
     private static final String keyResetActiveLowPort = prefix + ".resetActiveLowPort";
@@ -278,7 +295,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String defaultBusSuffix = "__" + BUS_INDEX_PLACEHOLDER;
     private static final boolean defaultDissolveSingletonBus = true;
     private static final boolean defaultAcceptInoutPort = true;
-    private static final String defaultModuleFilePattern = MODULE_NAME_PLACEHOLDER + FileFilters.DOCUMENT_EXTENSION;
+    private static final String defaultCktFilePattern = DEFAULT_CKT_FILE_PATTERN;
+    private static final String defaultSchFilePattern = DEFAULT_SCH_FILE_PATTERN;
     // Reset
     private static final String defaultResetActiveHighPort = "rst";
     private static final String defaultResetActiveLowPort = "rst_n";
@@ -336,7 +354,8 @@ public class CircuitSettings extends AbstractModelSettings {
     private static String busSuffix = defaultBusSuffix;
     private static boolean dissolveSingletonBus = defaultDissolveSingletonBus;
     private static boolean acceptInoutPort = defaultAcceptInoutPort;
-    private static String moduleFilePattern = defaultModuleFilePattern;
+    private static String cktFilePattern = defaultCktFilePattern;
+    private static String schFilePattern = defaultSchFilePattern;
     // Reset
     private static String resetActiveHighPort = defaultResetActiveHighPort;
     private static String resetActiveLowPort = defaultResetActiveLowPort;
@@ -588,10 +607,26 @@ public class CircuitSettings extends AbstractModelSettings {
                 CircuitSettings::getAcceptInoutPort));
 
         properties.add(new PropertyDeclaration<>(String.class,
+                PropertyHelper.indentWithBullet("File pattern for import of non-hierarchical Verilog modules ("
+                        + MODULE_NAME_PLACEHOLDER + " denotes module name)"),
+                CircuitSettings::setCktFilePattern,
+                CircuitSettings::getCktFilePattern) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_CKT_FILE_PATTERNS;
+            }
+        });
+
+        properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("File pattern for import of hierarchical Verilog modules ("
                         + MODULE_NAME_PLACEHOLDER + " denotes module name)"),
-                CircuitSettings::setModuleFilePattern,
-                CircuitSettings::getModuleFilePattern));
+                CircuitSettings::setSchFilePattern,
+                CircuitSettings::getSchFilePattern) {
+            @Override
+            public Map<String, String> getChoice() {
+                return PREDEFINED_SCH_FILE_PATTERNS;
+            }
+        });
 
         properties.add(PropertyHelper.createSeparatorProperty("Initialisation"));
 
@@ -757,7 +792,8 @@ public class CircuitSettings extends AbstractModelSettings {
         setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
         setDissolveSingletonBus(config.getBoolean(keyDissolveSingletonBus, defaultDissolveSingletonBus));
         setAcceptInoutPort(config.getBoolean(keyAcceptInoutPort, defaultAcceptInoutPort));
-        setModuleFilePattern(config.getString(keyModuleFilePattern, defaultModuleFilePattern));
+        setCktFilePattern(config.getString(keyCktFilePattern, defaultCktFilePattern));
+        setSchFilePattern(config.getString(keySchFilePattern, defaultSchFilePattern));
         // Reset
         setResetActiveHighPort(config.getString(keyResetActiveHighPort, defaultResetActiveHighPort));
         setResetActiveLowPort(config.getString(keyResetActiveLowPort, defaultResetActiveLowPort));
@@ -815,7 +851,8 @@ public class CircuitSettings extends AbstractModelSettings {
         config.set(keyBusSuffix, getBusSuffix());
         config.setBoolean(keyDissolveSingletonBus, getDissolveSingletonBus());
         config.setBoolean(keyAcceptInoutPort, getAcceptInoutPort());
-        config.set(keyModuleFilePattern, getModuleFilePattern());
+        config.set(keyCktFilePattern, getCktFilePattern());
+        config.set(keySchFilePattern, getSchFilePattern());
         // Reset
         config.set(keyResetActiveHighPort, getResetActiveHighPort());
         config.set(keyResetActiveLowPort, getResetActiveLowPort());
@@ -1097,15 +1134,27 @@ public class CircuitSettings extends AbstractModelSettings {
         acceptInoutPort = value;
     }
 
-    public static String getModuleFilePattern() {
-        return moduleFilePattern;
+    public static String getCktFilePattern() {
+        return cktFilePattern;
     }
 
-    public static void setModuleFilePattern(String value) {
+    public static void setCktFilePattern(String value) {
         if ((value == null) || !value.contains(MODULE_NAME_PLACEHOLDER)) {
             DialogUtils.showError("File pattern must have module name placeholder " + MODULE_NAME_PLACEHOLDER);
         } else {
-            moduleFilePattern = value;
+            cktFilePattern = value;
+        }
+    }
+
+    public static String getSchFilePattern() {
+        return schFilePattern;
+    }
+
+    public static void setSchFilePattern(String value) {
+        if ((value == null) || !value.contains(MODULE_NAME_PLACEHOLDER)) {
+            DialogUtils.showError("File pattern must have module name placeholder " + MODULE_NAME_PLACEHOLDER);
+        } else {
+            schFilePattern = value;
         }
     }
 
@@ -1473,12 +1522,12 @@ public class CircuitSettings extends AbstractModelSettings {
         return result;
     }
 
-    public static String getModuleFileName(String moduleName) {
-        return getProcessedModuleFilePattern().replace(MODULE_NAME_PLACEHOLDER, moduleName);
+    public static String getModuleFileName(String moduleName, boolean isHierarchical) {
+        return getProcessedModuleFilePattern(isHierarchical).replace(MODULE_NAME_PLACEHOLDER, moduleName);
     }
 
-    private static String getProcessedModuleFilePattern() {
-        String result = getModuleFilePattern();
+    private static String getProcessedModuleFilePattern(boolean isHierarchical) {
+        String result = isHierarchical ? getSchFilePattern() : getCktFilePattern();
         if (result == null) {
             result = MODULE_NAME_PLACEHOLDER;
         }

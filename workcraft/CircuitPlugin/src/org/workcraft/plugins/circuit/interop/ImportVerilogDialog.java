@@ -99,7 +99,6 @@ public class ImportVerilogDialog extends ModalDialog<Pair<Collection<VerilogModu
         PropertyEditorTable modulesTable = new PropertyEditorTable(
                 "Verilog modules to import", "File name");
 
-
         Map<VerilogModule, ModuleFileProperties> moduleToPropertiesMap = createModuleToPropertyMap(modules);
         // First add action listener, then populate the ComboBox
         topModuleCombo.addActionListener(l -> {

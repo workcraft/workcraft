@@ -11,6 +11,7 @@ import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.PackageUtils;
+import org.workcraft.workspace.FileFilters;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -31,7 +32,13 @@ class ImportHierarchyTests {
     @Test
     void testImportExportHierBuckControl() throws DeserialisationException, SerialisationException, IOException {
         testImportExport("hier_buck_control.v", "CTRL",
-                new HashSet<>(Arrays.asList("CHARGE.work", "CYCLE.work", "CYCLE_CTRL.work", "CHARGE_CTRL.work", "WAIT2.work")));
+                new HashSet<>(Arrays.asList(
+                        "CHARGE.ckt.work",
+                        "CYCLE.ckt.work",
+                        "CYCLE_CTRL.sch.work",
+                        "CHARGE_CTRL.sch.work",
+                        "WAIT2.ckt.work"
+                )));
     }
 
     private void testImportExport(String fileName, String topModuleName, Set<String> expectedFileNames)
@@ -50,7 +57,13 @@ class ImportHierarchyTests {
         WorkspaceEntry we = framework.importWork(vFile, topModuleName);
         framework.setWorkingDirectory(workingDirectory);
         Assertions.assertNotNull(we);
-        Assertions.assertEquals(we.getTitle(), topModuleName);
+
+        String expTopFileName = CircuitSettings.getModuleFileName(topModuleName, !expectedFileNames.isEmpty());
+        String topFileName = we.getFileName();
+        if (!topFileName.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            topFileName =  topFileName + FileFilters.DOCUMENT_EXTENSION;
+        }
+        Assertions.assertEquals(expTopFileName, topFileName);
 
         List<File> directoryFiles = FileUtils.getDirectoryFiles(tmpDirectory);
         Set<String> actualFileNames = directoryFiles.stream().map(File::getName).collect(Collectors.toSet());
