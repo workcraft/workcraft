@@ -103,8 +103,11 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getAcceptInoutPort()),
                 framework.getConfigVar(prefix + ".acceptInoutPort", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getModuleFilePattern()),
-                framework.getConfigVar(prefix + ".moduleFilePattern", false));
+        Assertions.assertEquals(Config.toString(CircuitSettings.getCktFilePattern()),
+                framework.getConfigVar(prefix + ".cktFilePattern", false));
+
+        Assertions.assertEquals(Config.toString(CircuitSettings.getSchFilePattern()),
+                framework.getConfigVar(prefix + ".schFilePattern", false));
 
         // Reset
         Assertions.assertEquals(Config.toString(CircuitSettings.getResetActiveHighPort()),

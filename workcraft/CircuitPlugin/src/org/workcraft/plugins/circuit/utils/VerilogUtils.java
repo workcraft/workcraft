@@ -32,6 +32,7 @@ public final class VerilogUtils {
     private static final Pattern STRING_DELAY_PATTERN = Pattern.compile("^\\(.*\\)$");
 
     private static final Map<String, Pair<Boolean, String>> PRIMITIVE_OPERATOR_MAP = new HashMap<>();
+
     static {
         PRIMITIVE_OPERATOR_MAP.put("buf", Pair.of(true, ""));
         PRIMITIVE_OPERATOR_MAP.put("not", Pair.of(false, ""));
@@ -48,8 +49,11 @@ public final class VerilogUtils {
 
     public static Map<VerilogModule, String> getModuleToFileMap(Collection<VerilogModule> modules) {
         Map<VerilogModule, String> result = new HashMap<>();
+        Map<VerilogModule, Set<VerilogModule>> moduleToDescendantsMap = VerilogUtils.getModuleToDescendantsMap(modules);
         for (VerilogModule module : modules) {
-            result.put(module, CircuitSettings.getModuleFileName(module.name));
+            Set<VerilogModule> descendants = moduleToDescendantsMap.getOrDefault(module, new HashSet<>());
+            String fileName = CircuitSettings.getModuleFileName(module.name, !descendants.isEmpty());
+            result.put(module, fileName);
         }
         return result;
     }

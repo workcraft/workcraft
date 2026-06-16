@@ -449,7 +449,7 @@ public class FileUtils {
     }
 
     public static File getEvalPathFile(String path) {
-        return (path == null) ? null : new File(evalVarPath(path));
+        return ((path == null) || path.isEmpty()) ? null : new File(evalVarPath(path));
     }
 
     private static String evalVarPath(String path) {
