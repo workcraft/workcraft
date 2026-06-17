@@ -111,7 +111,7 @@ class GenlibUtilsTests {
             Gate gate = mapping.gate();
             Assertions.assertEquals(expGate, gate, expGate.name + "!=" + gate.name);
             System.out.print(funcInfo + " == " + gate.name + " [" + gate.function.formula + "]");
-            Map<BooleanVariable, String> assignments = mapping.pinRenamining();
+            Map<BooleanVariable, String> assignments = mapping.pinRenaming();
             boolean isFirstEntry = true;
             for (Map.Entry<BooleanVariable, String> entry : assignments.entrySet()) {
                 if (isFirstEntry) {
@@ -215,7 +215,7 @@ class GenlibUtilsTests {
             System.out.println(funcInfo + " == ?");
         } else {
             Gate gate = extendedMapping.gate();
-            Map<BooleanVariable, String> assignments = extendedMapping.pinRenamining();
+            Map<BooleanVariable, String> assignments = extendedMapping.pinRenaming();
             Set<String> invertedPins = extendedMapping.invertedPinNames();
             Assertions.assertEquals(expGate, gate, expGate.name + "!=" + gate.name);
             Assertions.assertEquals(expInvertedPins, invertedPins);

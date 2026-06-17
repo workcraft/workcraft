@@ -562,7 +562,7 @@ public final class CircuitUtils {
         Gate.Mapping mapping = GenlibUtils.findMapping(inVar, LibraryManager.getLibrary());
         if (mapping != null) {
             Gate buf = mapping.gate();
-            Gate.PinRenamining assignments = mapping.pinRenamining();
+            Gate.PinRenaming assignments = mapping.pinRenaming();
             String inName = assignments.get(inVar);
             String outName = buf.function.name;
             for (FunctionComponent component : circuit.getFunctionComponents()) {
