@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.references.Identifier;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
@@ -21,6 +20,7 @@ import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.utils.LogUtils;
+import org.workcraft.utils.ModelUtils;
 import org.workcraft.utils.SortUtils;
 
 import java.awt.geom.Point2D;
@@ -218,9 +218,9 @@ public final class GateUtils {
         Gate gate = mapping.gate();
         String functionString = gate.function.formula;
         String outputName = gate.function.name;
-        Gate.PinRenamining pinRenamining = mapping.pinRenamining();
+        Gate.PinRenaming pinRenaming = mapping.pinRenaming();
         List<String> inputNames = inputVars.stream()
-                .map(pinRenamining::get)
+                .map(pinRenaming::get)
                 .toList();
 
         VisualFunctionComponent component = createGate(circuit, inputNames, outputName, functionString);
@@ -450,13 +450,19 @@ public final class GateUtils {
         return component;
     }
 
-    public static void renameGatePins(VisualCircuit circuit, VisualFunctionComponent component, Gate.Mapping mapping) {
-        Map<BooleanVariable, String> pinRenamining = mapping.pinRenamining();
-        for (VisualContact inpitPin : component.getVisualInputs()) {
-            String pinName = pinRenamining.get(inpitPin.getReferencedComponent());
-            if (pinName != null) {
-                circuit.setMathName(inpitPin, pinName);
+    private static void renameGatePins(VisualCircuit circuit, VisualFunctionComponent component, Gate.Mapping mapping) {
+        Map<BooleanVariable, String> pinRenaming = mapping.pinRenaming();
+        for (VisualContact inputPin : component.getVisualInputs()) {
+            String newPinName = pinRenaming.get(inputPin.getReferencedComponent());
+            if (newPinName == null) {
+                continue;
             }
+            // If there is another pin with the desired new name, then rename it first using derived name
+            VisualFunctionContact existingPin = circuit.getPin(component, newPinName);
+            if ((existingPin != null) && (existingPin != inputPin)) {
+                ModelUtils.setNameOrDerivedName(circuit, existingPin, newPinName);
+            }
+            circuit.setMathName(inputPin, newPinName);
         }
         VisualFunctionContact outputPin = component.getGateOutput();
         if (outputPin != null) {
@@ -479,7 +485,7 @@ public final class GateUtils {
     private static void insertExtraInputPin(VisualCircuit circuit, VisualFunctionComponent component,
             Gate.ExtendedMapping extendedMapping) {
 
-        Map<BooleanVariable, String> pinRenames = extendedMapping.pinRenamining();
+        Map<BooleanVariable, String> pinRenames = extendedMapping.pinRenaming();
         Set<String> invertedPinNames = extendedMapping.invertedPinNames();
         Map<String, BooleanVariable> extraPinAssignment = extendedMapping.extraPinAssignment();
 
@@ -555,30 +561,25 @@ public final class GateUtils {
             VisualFunctionComponent component, Gate.ExtendedMapping extendedMapping) {
 
         Map<BooleanVariable, BooleanFormula> result = new HashMap<>();
-        Map<BooleanVariable, String> pinRenames = extendedMapping.pinRenamining();
+        Map<BooleanVariable, String> pinRenames = extendedMapping.pinRenaming();
         Set<String> invertedPinNames = extendedMapping.invertedPinNames();
-
-        for (VisualContact inputPin : component.getVisualInputs()) {
-            Contact inputPinVar = inputPin.getReferencedComponent();
-            String newInputPinName = pinRenames.get(inputPinVar);
-            if (newInputPinName == null) {
-                continue;
-            }
-            circuit.setMathName(inputPin, Identifier.addInternalPrefix(newInputPinName));
-            if (invertedPinNames.contains(newInputPinName)) {
-                result.put(inputPinVar, new Not(inputPinVar));
-            }
-        }
-
         boolean detachInvertersAsZeroDelay = !component.getIsEnvironment();
         for (VisualContact inputPin : component.getVisualInputs()) {
             Contact inputPinVar = inputPin.getReferencedComponent();
-            String newInputPinName = pinRenames.get(inputPinVar);
-            if (newInputPinName == null) {
+            String newPinName = pinRenames.get(inputPinVar);
+            if (newPinName == null) {
                 continue;
             }
-            circuit.setMathName(inputPin, newInputPinName);
-            if (invertedPinNames.contains(newInputPinName)) {
+            // If there is another pin with the desired new name, then rename it first using derived name
+            VisualFunctionContact existingPin = circuit.getPin(component, newPinName);
+            if ((existingPin != null) && (existingPin != inputPin)) {
+                ModelUtils.setNameOrDerivedName(circuit, existingPin, newPinName);
+            }
+            circuit.setMathName(inputPin, newPinName);
+
+            // Insert inverter in front of inverted input pins and add var remapping into result
+            if (invertedPinNames.contains(newPinName)) {
+                result.put(inputPinVar, new Not(inputPinVar));
                 VisualFunctionComponent trivialDriverComponent = getDedicatedTrivialDriverOrNull(circuit, inputPin);
                 if (trivialDriverComponent == null) {
                     VisualFunctionComponent newInverter = createInverterGate(circuit);
@@ -738,7 +739,7 @@ public final class GateUtils {
         VisualFunctionContact outputPin = component.getFirstVisualOutput();
         circuit.setMathName(outputPin, gate.function.name);
 
-        Map<BooleanVariable, String> inputRenames = mapping.pinRenamining();
+        Map<BooleanVariable, String> inputRenames = mapping.pinRenaming();
         String inputName = inputRenames.get(inputVar);
         if (inputName != null) {
             circuit.setMathName(component.getFirstVisualInput(), inputName);
