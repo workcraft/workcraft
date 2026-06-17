@@ -386,7 +386,7 @@ public final class ResetUtils {
             for (VisualFunctionContact contact : forcedInitOutputs) {
                 // First, try to reuse adjacent buffer/inverter first as a testable one
                 VisualFunctionComponent initComponent = GateUtils.reuseAdjacentInverterOrBuffer(circuit, contact);
-                // If no adjacent buffer/inverter fond then insert buffer/inverter after the gate
+                // If no adjacent buffer/inverter found, then insert buffer/inverter after the gate
                 if (initComponent == null) {
                     initComponent = GateUtils.detachInverterOrBuffer(circuit, contact);
                 }

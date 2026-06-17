@@ -51,7 +51,7 @@ public final class ScanUtils {
     private static VisualFunctionComponent insertTestableGate(VisualCircuit circuit, VisualFunctionContact contact) {
         // First, try to reuse adjacent buffer/inverter first as a testable one
         VisualFunctionComponent result = GateUtils.reuseAdjacentInverterOrBuffer(circuit, contact);
-        // If no adjacent buffer/inverter fond then insert buffer/inverter after the gate
+        // If no adjacent buffer/inverter is found, then insert buffer/inverter after the gate
         if (result == null) {
             result = GateUtils.detachInverterOrBuffer(circuit, contact);
         }
