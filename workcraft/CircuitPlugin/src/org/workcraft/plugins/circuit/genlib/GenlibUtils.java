@@ -88,21 +88,21 @@ public final class GenlibUtils {
         List<BooleanVariable> inputPins = FormulaUtils.extractOrderedVariables(setFormula, resetFormula);
         List<Gate> orderedCandidateGates = library.getGatesOrderedBySize(inputPins.size() + 1, (resetFormula != null));
         for (Gate gate : orderedCandidateGates) {
-            Gate.PinRenamining pinRenamining = getVariableMappingIfEquivalentOrNull(setFormula, gate.getSetFormula());
+            Gate.PinRenaming pinRenaming = getVariableMappingIfEquivalentOrNull(setFormula, gate.getSetFormula());
             if (resetFormula != null) {
-                Gate.PinRenamining resetPinRenamining
+                Gate.PinRenaming resetPinRenaming
                         = getVariableMappingIfEquivalentOrNull(resetFormula, gate.getResetFormula());
 
-                pinRenamining = mergePinRenamingsIfCompatibleOrNull(pinRenamining, resetPinRenamining);
+                pinRenaming = mergePinRenamingsIfCompatibleOrNull(pinRenaming, resetPinRenaming);
             }
-            if (pinRenamining != null) {
-                return new Gate.Mapping(gate, pinRenamining);
+            if (pinRenaming != null) {
+                return new Gate.Mapping(gate, pinRenaming);
             }
         }
         return null;
     }
 
-    public static Gate.PinRenamining getVariableMappingIfEquivalentOrNull(
+    public static Gate.PinRenaming getVariableMappingIfEquivalentOrNull(
             BooleanFormula formula, BooleanFormula candidateFormula) {
 
         List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(formula);
@@ -112,7 +112,7 @@ public final class GenlibUtils {
             for (List<BooleanVariable> permutatedVars : ListUtils.permutate(vars)) {
                 BooleanFormula mappedFormula = FormulaUtils.replace(formula, permutatedVars, candidateVars);
                 if (bdd.isEquivalent(mappedFormula, candidateFormula)) {
-                    Gate.PinRenamining result = new Gate.PinRenamining();
+                    Gate.PinRenaming result = new Gate.PinRenaming();
                     for (int i = 0; i < permutatedVars.size(); i++) {
                         result.put(permutatedVars.get(i), candidateVars.get(i).getLabel());
                     }
@@ -123,17 +123,17 @@ public final class GenlibUtils {
         return null;
     }
 
-    private static Gate.PinRenamining mergePinRenamingsIfCompatibleOrNull(
-            Gate.PinRenamining setPinRenamining, Gate.PinRenamining resetPinRenamining) {
+    private static Gate.PinRenaming mergePinRenamingsIfCompatibleOrNull(
+            Gate.PinRenaming setPinRenaming, Gate.PinRenaming resetPinRenaming) {
 
-        if ((setPinRenamining == null) || (resetPinRenamining == null)) {
+        if ((setPinRenaming == null) || (resetPinRenaming == null)) {
             return null;
         }
-        Gate.PinRenamining result = new Gate.PinRenamining();
-        result.putAll(setPinRenamining);
-        for (BooleanVariable variable : resetPinRenamining.keySet()) {
-            String variableName = setPinRenamining.get(variable);
-            String resetVariableName = resetPinRenamining.get(variable);
+        Gate.PinRenaming result = new Gate.PinRenaming();
+        result.putAll(setPinRenaming);
+        for (BooleanVariable variable : resetPinRenaming.keySet()) {
+            String variableName = setPinRenaming.get(variable);
+            String resetVariableName = resetPinRenaming.get(variable);
             if (variableName == null) {
                 result.put(variable, resetVariableName);
             } else if (!variableName.equals(resetVariableName)) {
@@ -170,7 +170,7 @@ public final class GenlibUtils {
         // Try 1: match gates directly
         Gate.Mapping mapping = findMapping(setFormula, resetFormula, library);
         if (mapping != null) {
-            return new Gate.ExtendedMapping(mapping.gate(), mapping.pinRenamining(), Set.of());
+            return new Gate.ExtendedMapping(mapping.gate(), mapping.pinRenaming(), Set.of());
         }
         // Try 2: match inverted gates
         BooleanFormula notSetFormula = null;
@@ -186,7 +186,7 @@ public final class GenlibUtils {
             Gate.Mapping invMapping = findMapping(notSetFormula, notResetFormula, library);
             if (invMapping != null) {
                 Gate gate = invMapping.gate();
-                return new Gate.ExtendedMapping(gate, invMapping.pinRenamining(), Set.of(gate.function.name));
+                return new Gate.ExtendedMapping(gate, invMapping.pinRenaming(), Set.of(gate.function.name));
             }
         }
         // Try 3: match gates with extra pin
@@ -334,22 +334,22 @@ public final class GenlibUtils {
                     = FormulaUtils.replace(candidateFormula, candidateVars, invPermutatedVars);
 
             if (bdd.isEquivalent(formula, substitutedCandidateFormula)) {
-                Gate.PinRenamining pinRenamining = new Gate.PinRenamining();
+                Gate.PinRenaming pinRenaming = new Gate.PinRenaming();
                 Set<String> invertedPinNames = new HashSet<>();
                 Map<String, BooleanVariable> extraPinAssignment = new HashMap<>();
                 for (int varIndex = 0; varIndex < varCount; varIndex++) {
                     String varLabel = candidateVars.get(varIndex).getLabel();
                     BooleanVariable var = permutatedVars.get(varIndex);
-                    if (pinRenamining.containsKey(var)) {
+                    if (pinRenaming.containsKey(var)) {
                         extraPinAssignment.put(varLabel, var);
                     } else {
-                        pinRenamining.put(var, varLabel);
+                        pinRenaming.put(var, varLabel);
                     }
                     if (inversionCombination.get(varIndex)) {
                         invertedPinNames.add(varLabel);
                     }
                 }
-                return new Gate.ExtendedMapping(null, pinRenamining, invertedPinNames, extraPinAssignment);
+                return new Gate.ExtendedMapping(null, pinRenaming, invertedPinNames, extraPinAssignment);
             }
         }
         return null;
@@ -365,15 +365,15 @@ public final class GenlibUtils {
         if (!extraPinAssignment.equals(resetExtendedMapping.extraPinAssignment())) {
             return null;
         }
-        Gate.PinRenamining pinRenamining = new Gate.PinRenamining();
-        pinRenamining.putAll(setExtendedMapping.pinRenamining());
+        Gate.PinRenaming pinRenaming = new Gate.PinRenaming();
+        pinRenaming.putAll(setExtendedMapping.pinRenaming());
         Set<String> invertedPinNames = new HashSet<>(setExtendedMapping.invertedPinNames());
-        for (BooleanVariable variable : resetExtendedMapping.pinRenamining().keySet()) {
-            String pinRename = pinRenamining.get(variable);
-            String resetPinRename = resetExtendedMapping.pinRenamining().get(variable);
+        for (BooleanVariable variable : resetExtendedMapping.pinRenaming().keySet()) {
+            String pinRename = pinRenaming.get(variable);
+            String resetPinRename = resetExtendedMapping.pinRenaming().get(variable);
             Set<String> resetInvertedPinNames = resetExtendedMapping.invertedPinNames();
             if (pinRename == null) {
-                pinRenamining.put(variable, resetPinRename);
+                pinRenaming.put(variable, resetPinRename);
                 if (resetInvertedPinNames.contains(resetPinRename)) {
                     invertedPinNames.add(resetPinRename);
                 }
@@ -383,14 +383,14 @@ public final class GenlibUtils {
                 return null;
             }
         }
-        return new Gate.ExtendedMapping(null, pinRenamining, invertedPinNames, extraPinAssignment);
+        return new Gate.ExtendedMapping(null, pinRenaming, invertedPinNames, extraPinAssignment);
     }
 
     public static String getExtendedMappingInfo(Gate.ExtendedMapping extendedMapping,
             List<BooleanVariable> inputVars, BooleanVariable outputVar) {
 
         Gate gate = extendedMapping.gate();
-        Map<BooleanVariable, String> pinRenamining = extendedMapping.pinRenamining();
+        Map<BooleanVariable, String> pinRenaming = extendedMapping.pinRenaming();
         Set<String> invertedPins = extendedMapping.invertedPinNames();
         StringBuilder s = new StringBuilder(gateToString(gate));
         boolean isFirstAssignment = true;
@@ -401,7 +401,7 @@ public final class GenlibUtils {
         }
         for (BooleanVariable inputVar : inputVars) {
             s.append(isFirstAssignment ? " : " : ", ");
-            s.append(getExtendedAssignmentInfo(inputVar, pinRenamining.get(inputVar), invertedPins));
+            s.append(getExtendedAssignmentInfo(inputVar, pinRenaming.get(inputVar), invertedPins));
             isFirstAssignment = false;
         }
         Map<String, BooleanVariable> extraPinAssignment = extendedMapping.extraPinAssignment();

@@ -14,21 +14,21 @@ import java.util.Set;
 
 public class Gate {
 
-    public static class PinRenamining extends HashMap<BooleanVariable, String> {
+    public static class PinRenaming extends HashMap<BooleanVariable, String> {
     }
 
-    public record Mapping(Gate gate, PinRenamining pinRenamining) {
+    public record Mapping(Gate gate, PinRenaming pinRenaming) {
     }
 
-    public record ExtendedMapping(Gate gate, PinRenamining pinRenamining, Set<String> invertedPinNames,
-            Map<String, BooleanVariable> extraPinAssignment) {
+    public record ExtendedMapping(Gate gate, PinRenaming pinRenaming, Set<String> invertedPinNames,
+                                  Map<String, BooleanVariable> extraPinAssignment) {
 
-        public ExtendedMapping(Gate gate, PinRenamining pinRenamining, Set<String> invertedPinNames) {
-            this(gate, pinRenamining, invertedPinNames, new HashMap<>());
+        public ExtendedMapping(Gate gate, PinRenaming pinRenaming, Set<String> invertedPinNames) {
+            this(gate, pinRenaming, invertedPinNames, new HashMap<>());
         }
 
         public ExtendedMapping(Gate gate, ExtendedMapping extendedMapping) {
-            this(gate, extendedMapping.pinRenamining, extendedMapping.invertedPinNames, extendedMapping.extraPinAssignment);
+            this(gate, extendedMapping.pinRenaming, extendedMapping.invertedPinNames, extendedMapping.extraPinAssignment);
         }
 
         public void addGateOutputToInvertedPinNames() {
