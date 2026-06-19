@@ -3,7 +3,6 @@ plugins {
     id 'org.javacc.javacc'
     id 'com.github.kt3k.coveralls'
     id 'org.danilopianini.cpd'
-    id 'com.github.jk1.dependency-license-report'
 }
 
 repositories {
@@ -254,25 +253,6 @@ tasks.coveralls {
     description = 'Generate coverage report for all subprojects with tests.'
     dependsOn jacocoRootReport
 }
-
-
-apply plugin: 'com.github.jk1.dependency-license-report'
-
-import com.github.jk1.license.filter.*
-import com.github.jk1.license.render.*
-
-licenseReport {
-    configurations = ['runtimeClasspath', 'compileClasspath']
-    renderers = [new InventoryHtmlReportRenderer()]
-    allowedLicensesFile = new File("${project.rootDir}/config/license/allowed.json")
-    filters = [new ReduceDuplicateLicensesFilter(), new LicenseBundleNormalizer()]
-}
-
-checkLicense.group = 'Verification'
-generateLicenseReport.group = 'Verification'
-checkLicensePreparation.group = null
-// License checking takes too long (>2min), has deprecated calls and may run out of memory
-/* check.dependsOn checkLicense */
 
 
 apply plugin: 'idea'
