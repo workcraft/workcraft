@@ -55,6 +55,7 @@
         <exclude name="ShortClassName"/> <!-- Too restrictive -->
         <exclude name="ShortMethodName"/> <!-- Too restrictive -->
         <exclude name="ShortVariable"/> <!-- Too restrictive -->
+        <exclude name="VariableDeclarationUsageDistance"/> <!-- Too restrictive -->
         <exclude name="UnnecessaryFullyQualifiedName"/> <!-- Too restrictive as forbids reference to nested classes -->
         <exclude name="UseUnderscoresInNumericLiterals"/> <!-- Interesting to enforce -->
         <exclude name="UselessParentheses"/> <!-- Too restrictive -->
