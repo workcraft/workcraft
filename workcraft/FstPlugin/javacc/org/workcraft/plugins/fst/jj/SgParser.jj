@@ -81,7 +81,7 @@ TOKEN :
 {
     <COMMENT : "#" (~["\r", "\n"])*>
 |
-    <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
+    <LINEBREAK : (([" ", "\t"])* (<COMMENT>)? ["\r", "\n"])+>
 |
     <MODEL_NAME : ".model" | ".name">
 |
