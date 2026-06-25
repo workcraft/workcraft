@@ -9,6 +9,10 @@ import org.workcraft.gui.workspace.Path;
 
 public class MountTree {
 
+    public final File mountTo;
+    public final Map<String, MountTree> subDirs;
+    public final Path<String> path;
+
     @Override
     public boolean equals(Object obj) {
         if (obj == this) {
@@ -21,27 +25,21 @@ public class MountTree {
     }
 
     public MountTree(File defaultPath, Map<Path<String>, File> mounts, Path<String> workspacePath) {
-        path = workspacePath;
-
         if (defaultPath == null) {
             throw new IllegalArgumentException("defaultPath is null");
         }
         File tmpMountTo = defaultPath;
-
+        path = workspacePath;
         subDirs = new HashMap<>();
-
         if (mounts != null) {
             Map<String, Map<Path<String>, File>> perSubDir = new HashMap<>();
-
             for (Path<String> s : mounts.keySet()) {
                 File file = mounts.get(s);
-
                 if (file == null) {
                     throw new IllegalArgumentException("file is null");
                 }
 
                 List<String> pathItems = Path.getPath(s);
-
                 if (pathItems.isEmpty()) {
                     tmpMountTo = file;
                 } else {
@@ -60,15 +58,12 @@ public class MountTree {
             }
 
             for (String prefix : perSubDir.keySet()) {
-                subDirs.put(prefix, new MountTree(new File(tmpMountTo, prefix), perSubDir.get(prefix), Path.append(path, prefix)));
+                subDirs.put(prefix,
+                        new MountTree(new File(tmpMountTo, prefix), perSubDir.get(prefix), Path.append(path, prefix)));
             }
         }
         mountTo = tmpMountTo;
     }
-
-    public final File mountTo;
-    public final Map<String, MountTree> subDirs;
-    public final Path<String> path;
 
     public MountTree getSubtree(String name) {
         if (name.isEmpty()) {

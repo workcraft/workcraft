@@ -19,7 +19,9 @@ import java.util.*;
 import java.util.Map.Entry;
 
 public class Workspace {
+
     public static final String EXTERNAL_PATH = "!External";
+
     private boolean temporary = true;
     private boolean changed = false;
     private File workspaceFile;
@@ -31,10 +33,10 @@ public class Workspace {
 
     public Workspace() {
         try {
+            // Create temporary file, then remove it and create directory with the same name
             File baseDir = File.createTempFile("workspace", "");
-            baseDir.delete();
-            if (!baseDir.mkdir()) {
-                throw new RuntimeException("Could not create a temporary workspace directory.");
+            if (!baseDir.delete() || !baseDir.mkdir()) {
+                throw new RuntimeException("Cannot create temporary workspace directory " + baseDir.getAbsolutePath());
             }
             workspaceFile = new File(baseDir, "workspace.works");
             baseDir.deleteOnExit();
@@ -69,11 +71,15 @@ public class Workspace {
     public Path<String> getPath(File file) {
         Entry<Path<String>, File> bestMount = null;
         Path<String> bestRel = null;
-        for (Entry<Path<String>, File> e : mounts.entrySet()) {
-            Path<String> relative = getRelative(e.getValue(), file);
-            if ((relative != null) && ((bestRel == null) || (Path.getPath(relative).size() < Path.getPath(bestRel).size()))) {
-                bestRel = relative;
-                bestMount = e;
+        synchronized (mounts) {
+            for (Entry<Path<String>, File> e : mounts.entrySet()) {
+                Path<String> relative = getRelative(e.getValue(), file);
+                if ((relative != null) && ((bestRel == null)
+                        || (Path.getPath(relative).size() < Path.getPath(bestRel).size()))) {
+
+                    bestRel = relative;
+                    bestMount = e;
+                }
             }
         }
         if (bestMount == null) {
@@ -106,7 +112,9 @@ public class Workspace {
         if (wsPath != null) {
             throw new RuntimeException("Path already in the workspace: " + wsPath);
         }
-        mounts.put(path, file.getAbsoluteFile());
+        synchronized (mounts) {
+            mounts.put(path, file.getAbsoluteFile());
+        }
         if (!temporary) {
             final Path<String> relative = getRelative(getBaseDir(), file);
             if (relative != null) {
@@ -118,13 +126,14 @@ public class Workspace {
     }
 
     public void removeMount(Path<String> path) {
-        mounts.remove(path);
+        synchronized (mounts) {
+            mounts.remove(path);
+        }
         permanentMounts.remove(path);
-
     }
 
     public void fireWorkspaceChanged() {
-        // TODO : categorise and route events
+        // TODO: categorise and route events
         for (WorkspaceListener listener : workspaceListeners) {
             listener.workspaceLoaded();
         }
@@ -153,7 +162,9 @@ public class Workspace {
     }
 
     private boolean isFreePath(Path<String> path) {
-        return !mounts.containsKey(path) && !openFiles.containsKey(path) && !getFile(path).exists();
+        synchronized (mounts) {
+            return !mounts.containsKey(path) && !openFiles.containsKey(path) && !getFile(path).exists();
+        }
     }
 
     public void addWork(Path<String> path, WorkspaceEntry we) {
@@ -214,7 +225,9 @@ public class Workspace {
         if (!openFiles.isEmpty()) {
             throw new RuntimeException("Current Workspace has some open files. Must close them before loading.");
         }
-        mounts.clear();
+        synchronized (mounts) {
+            mounts.clear();
+        }
         permanentMounts.clear();
         fireWorkspaceChanged();
     }
@@ -249,7 +262,9 @@ public class Workspace {
     private void setWorkspaceFile(File file) {
         workspaceFile = file;
         Path<String> empty = Path.empty();
-        mounts.remove(empty);
+        synchronized (mounts) {
+            mounts.remove(empty);
+        }
         addMount(empty, getBaseDir(), temporary);
     }
 
@@ -322,11 +337,16 @@ public class Workspace {
     }
 
     private MountTree getHardMountsRoot() {
-        return new MountTree(getBaseDir(), mounts, Path.empty());
+        synchronized (mounts) {
+            return new MountTree(getBaseDir(), mounts, Path.empty());
+        }
     }
 
     public MountTree getRoot() {
-        final Map<Path<String>, File> allMounts = new HashMap<>(mounts);
+        Map<Path<String>, File> allMounts;
+        synchronized (mounts) {
+            allMounts = new HashMap<>(mounts);
+        }
         for (WorkspaceEntry we : new HashSet<>(openFiles.values())) {
             final File file = getFile(we.getWorkspacePath());
             if (!file.exists()) {
@@ -352,14 +372,16 @@ public class Workspace {
             FileUtils.moveFile(fileFrom, fileTo);
         }
         moveEntry(from, to);
-        File mountFrom = mounts.get(from);
-        if (mountFrom != null) {
-            mounts.remove(from);
-            final File perm = permanentMounts.get(from);
-            mounts.put(to, mountFrom);
-            if (perm != null) {
-                permanentMounts.remove(from);
-                permanentMounts.put(to, perm);
+        synchronized (mounts) {
+            File mountFrom = mounts.get(from);
+            if (mountFrom != null) {
+                mounts.remove(from);
+                final File perm = permanentMounts.get(from);
+                mounts.put(to, mountFrom);
+                if (perm != null) {
+                    permanentMounts.remove(from);
+                    permanentMounts.put(to, perm);
+                }
             }
         }
     }
