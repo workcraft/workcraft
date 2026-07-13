@@ -15,12 +15,12 @@ pluginManagement {
  */
 
 // Java version for source code and target bytecode compatibility
-gradle.ext.javaSourceVersion = JavaVersion.VERSION_17
-gradle.ext.javaTargetVersion = JavaVersion.VERSION_17
-gradle.ext.javaReleaseVersion = 17  /* Must be integer, e.g. 17 for Java 17 */
+gradle.ext.javaSourceVersion = JavaVersion.VERSION_21
+gradle.ext.javaTargetVersion = JavaVersion.VERSION_21
+gradle.ext.javaReleaseVersion = 21  /* Must be integer, e.g. 21 for Java 21 */
 
 // Checkstyle code linter (https://checkstyle.sourceforge.io/) 
-gradle.ext.checkstyleVersion = '13.6.0'  /* CheckStyle v13+ requires Java 21+ */
+gradle.ext.checkstyleVersion = '13.6.0'
 // PMD code analyser (https://pmd.github.io/)
 gradle.ext.pmdVersion = '7.25.0'
 // Jacoco code coverage (https://www.eclemma.org/jacoco/)
