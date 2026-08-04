@@ -67,4 +67,21 @@ public class RenderedText implements RenderingResult {
         return text.isEmpty();
     }
 
+    public Rectangle2D getGlyphBoundingBox(int fromIndex, int toIndex) {
+        Rectangle2D result = null;
+        int glyphCount = glyphVector.getNumGlyphs();
+        if (fromIndex < 0) {
+            fromIndex = 0;
+        }
+        if (toIndex > glyphCount) {
+            toIndex = glyphCount;
+        }
+        for (int index = fromIndex; index < toIndex; index++) {
+            Point2D glyphPos = glyphVector.getGlyphPosition(index);
+            Rectangle2D glyphBox = glyphVector.getGlyphMetrics(index).getBounds2D();
+            result = BoundingBoxHelper.union(result, BoundingBoxHelper.move(glyphBox, glyphPos));
+        }
+        return result;
+    }
+
 }
