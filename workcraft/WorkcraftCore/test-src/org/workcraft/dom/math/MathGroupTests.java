@@ -44,14 +44,14 @@ class MathGroupTests {
         group.add(n2);
         Assertions.assertTrue(receivedAddNotification2);
 
-        Assertions.assertEquals(group.getChildren().size(), 2);
+        Assertions.assertEquals(2, group.getChildren().size());
 
         group.remove(n2);
         Assertions.assertTrue(receivedRemoveNotification2);
         group.remove(n1);
         Assertions.assertTrue(receivedRemoveNotification1);
 
-        Assertions.assertEquals(group.getChildren().size(), 0);
+        Assertions.assertEquals(0, group.getChildren().size());
 
         receivedAddNotification1 = false;
         receivedAddNotification2 = false;

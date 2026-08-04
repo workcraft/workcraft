@@ -9,7 +9,6 @@ import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
 // This is not a test class, the matching name pattern is just a coincidence
-@SuppressWarnings("PMD.TestClassWithoutTestCases")
 // This only works with MINISAT solver which is not supported in Travis OSX
 @Disabled
 class CnfSolverTests extends SolverTests {
