@@ -10,7 +10,7 @@ import java.util.function.Predicate;
 
 public class SetUtils {
 
-    public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
+    public static <T> Set<T> intersection(Collection<T> set1, Collection<T> set2) {
         Set<T> result = new HashSet<>();
         if ((set1 != null) && (set2 != null)) {
             result.addAll(set1);
@@ -19,7 +19,7 @@ public class SetUtils {
         return result;
     }
 
-    public static <T> Set<T> union(Set<T> set1, Set<T> set2) {
+    public static <T> Set<T> union(Collection<T> set1, Collection<T> set2) {
         Set<T> result = new HashSet<>();
         if (set1 != null) {
             result.addAll(set1);
@@ -30,7 +30,7 @@ public class SetUtils {
         return result;
     }
 
-    public static <T> Set<T> difference(Set<T> set1, Set<T> set2) {
+    public static <T> Set<T> difference(Collection<T> set1, Collection<T> set2) {
         Set<T> result = new HashSet<>();
         if (set1 != null) {
             result.addAll(set1);
@@ -41,7 +41,7 @@ public class SetUtils {
         return result;
     }
 
-    public static <T> Set<T> symmetricDifference(Set<T> set1, Set<T> set2) {
+    public static <T> Set<T> symmetricDifference(Collection<T> set1, Collection<T> set2) {
         Set<T> result = new HashSet<>();
         Set<T> tmp = new HashSet<>();
         if (set1 != null) {
