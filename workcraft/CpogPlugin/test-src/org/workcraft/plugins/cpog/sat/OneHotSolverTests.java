@@ -8,7 +8,6 @@ import org.workcraft.utils.BackendUtils;
 import org.workcraft.utils.DesktopApi;
 
 // Test methods are defined in the base SolverTests class
-@SuppressWarnings("PMD.TestClassWithoutTestCases")
 class OneHotSolverTests extends SolverTests {
 
     @BeforeAll

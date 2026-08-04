@@ -123,17 +123,16 @@ public class CompositionTransformer {
     }
 
     public StgPlace insertShadowEnablerPlace(Collection<SignalTransition> shadowTransitions) {
-        if ((shadowTransitions == null) || shadowTransitions.isEmpty()) {
-            return null;
-        }
-        Container container = Hierarchy.getNearestContainer(shadowTransitions);
+        Container container = (shadowTransitions == null) ? null : Hierarchy.getNearestContainer(shadowTransitions);
         StgPlace result = compositionStg.createPlace("shadow", container);
         result.setTokens(1);
-        for (SignalTransition shadowTransition : shadowTransitions) {
-            try {
-                compositionStg.connect(result, shadowTransition);
-            } catch (InvalidConnectionException e) {
-                throw new RuntimeException(e);
+        if (shadowTransitions != null) {
+            for (SignalTransition shadowTransition : shadowTransitions) {
+                try {
+                    compositionStg.connect(result, shadowTransition);
+                } catch (InvalidConnectionException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
         return result;

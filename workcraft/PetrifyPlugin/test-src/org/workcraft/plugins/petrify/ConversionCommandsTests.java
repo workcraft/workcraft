@@ -74,7 +74,7 @@ class ConversionCommandsTests {
         Assertions.assertEquals(srcInputs, dstInputs);
         Assertions.assertEquals(srcOutputs, dstOutputs);
         Assertions.assertEquals(srcInternals, dstInternals);
-        Assertions.assertEquals(dstToggleCount, 0);
+        Assertions.assertEquals(0, dstToggleCount);
     }
 
     @Test
