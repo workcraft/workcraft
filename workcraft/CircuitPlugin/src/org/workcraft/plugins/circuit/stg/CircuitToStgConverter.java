@@ -320,7 +320,8 @@ public class CircuitToStgConverter {
 
         VisualPlace predPlace = direction == SignalTransition.Direction.PLUS ? driverStg.zero : driverStg.one;
         VisualPlace succPlace = direction == SignalTransition.Direction.PLUS ? driverStg.one : driverStg.zero;
-        Collection<VisualSignalTransition> transitions = direction == SignalTransition.Direction.PLUS ? driverStg.riseList : driverStg.fallList;
+        Collection<VisualSignalTransition> transitions = (direction == SignalTransition.Direction.PLUS)
+                ? driverStg.riseList : driverStg.fallList;
 
         TreeSet<DnfClause> clauses = new TreeSet<>(
                 (arg0, arg1) -> {
@@ -361,7 +362,9 @@ public class CircuitToStgConverter {
                 }
             }
 
-            if (!isDeadTransition) {
+            if (isDeadTransition) {
+                createSignalStgDeadTransition(signal, driverStg, signalType, direction);
+            } else {
                 VisualSignalTransition transition = stg.createVisualSignalTransition(signalName, signalType, direction, container);
                 transitions.add(transition);
                 // Create read-arcs.
