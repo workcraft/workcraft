@@ -179,7 +179,12 @@ public final class GateUtils {
     }
 
     public static VisualFunctionComponent createConst1Gate(VisualCircuit circuit) {
-        return createGate(circuit, List.of(), "O", One.getInstance());
+        VisualFunctionComponent gate = createGate(circuit, List.of(), "O", One.getInstance());
+        VisualFunctionContact gateOutput = gate.getGateOutput();
+        if (gateOutput != null) {
+            gateOutput.setInitToOne(true);
+        }
+        return gate;
     }
 
     public static VisualFunctionComponent createConst0Gate(VisualCircuit circuit) {

@@ -46,8 +46,7 @@ public class RefinementDependencyGraph {
         Set<File> visited = new HashSet<>();
         while (!stack.isEmpty()) {
             File file = stack.pop();
-            if (!visited.contains(file)) {
-                visited.add(file);
+            if (visited.add(file)) {
                 if (!FileUtils.isReadableFile(file)) {
                     vertexOrderedDataMap.put(file, new VertexData(Collections.emptyMap(), null));
                 } else {

@@ -12,6 +12,14 @@ import org.workcraft.plugins.petri.utils.ConversionUtils;
 
 public class PetriConnectionTool extends ConnectionTool {
 
+    public PetriConnectionTool() {
+        this(true);
+    }
+
+    public PetriConnectionTool(boolean forbidSelfLoops) {
+        super(forbidSelfLoops, true, true);
+    }
+
     @Override
     public boolean isConnectable(Node node) {
         return (node instanceof VisualPlace)

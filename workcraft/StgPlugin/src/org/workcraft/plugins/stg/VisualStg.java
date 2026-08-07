@@ -70,14 +70,16 @@ public class VisualStg extends AbstractVisualModel {
 
     @Override
     public void validateConnection(VisualNode first, VisualNode second) throws InvalidConnectionException {
-        if (first == second) {
-            throw new InvalidConnectionException("Self-loops are not allowed.");
-        }
-        if (((first instanceof VisualStgPlace) || (first instanceof VisualReplicaPlace) || (first instanceof VisualImplicitPlaceArc))
-                && ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace) || (second instanceof VisualImplicitPlaceArc))) {
+        if (((first instanceof VisualStgPlace) || (first instanceof VisualReplicaPlace)
+                || (first instanceof VisualImplicitPlaceArc))
+                && ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace)
+                || (second instanceof VisualImplicitPlaceArc))) {
+
             throw new InvalidConnectionException("Arcs between places are not allowed.");
         }
-        if (ConnectionUtils.hasReadArcConnection(this, first, second) || ConnectionUtils.hasReadArcConnection(this, second, first)) {
+        if (ConnectionUtils.hasReadArcConnection(this, first, second)
+                || ConnectionUtils.hasReadArcConnection(this, second, first)) {
+
             throw new InvalidConnectionException("Nodes are already connected by a read-arc.");
         }
         if (ConnectionUtils.hasProducingArcConnection(this, first, second)) {
@@ -344,10 +346,6 @@ public class VisualStg extends AbstractVisualModel {
 
     public Collection<VisualStgPlace> getVisualPlaces() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualStgPlace.class);
-    }
-
-    public Collection<VisualTransition> getVisualTransitions() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualTransition.class);
     }
 
     public Collection<VisualSignalTransition> getVisualSignalTransitions() {
