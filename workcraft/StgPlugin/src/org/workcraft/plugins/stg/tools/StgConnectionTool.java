@@ -9,6 +9,10 @@ import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 
 public class StgConnectionTool extends PetriConnectionTool {
 
+    public StgConnectionTool() {
+        super(false);
+    }
+
     @Override
     public boolean isConnectable(Node node) {
         return (node instanceof VisualPlace)
