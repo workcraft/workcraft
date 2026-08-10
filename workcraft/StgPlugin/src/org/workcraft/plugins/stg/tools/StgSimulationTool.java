@@ -431,7 +431,11 @@ public class StgSimulationTool extends PetriSimulationTool {
             List<String> typedSignals = SortUtils.getSortedNatural(stg.getSignalReferences(type));
             allSignals.addAll(typedSignals);
             for (String signal : typedSignals) {
-                SignalData signalData = signalDataMap.getOrDefault(signal, new SignalData(signal, type));
+                SignalData signalData = new SignalData(signal, type);
+                SignalData existingSignalData = signalDataMap.get(signal);
+                if (existingSignalData != null) {
+                    signalData.color = existingSignalData.color;
+                }
                 newStateMap.put(signal, signalData);
             }
         }

@@ -105,7 +105,7 @@ public class StgToDtdConverter {
                 if (refToSignalMap.containsKey(signalRef)) {
                     VisualSignal signal = refToSignalMap.get(signalRef);
                     TransitionEvent.Direction direction = getDirection(transition.getDirection());
-                    signal.setInitialState(DtdUtils.getPreviousState(direction));
+                    signal.setInitialState((direction == null) ? Signal.State.STABLE : DtdUtils.getPreviousState(direction));
                 }
             }
         }

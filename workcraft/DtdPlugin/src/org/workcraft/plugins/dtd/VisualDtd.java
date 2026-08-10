@@ -23,8 +23,8 @@ import org.workcraft.utils.ModelUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
-import java.util.Queue;
 import java.util.*;
+import java.util.Queue;
 
 @DisplayName("Digital Timing Diagram")
 public class VisualDtd extends AbstractVisualModel {
@@ -94,17 +94,16 @@ public class VisualDtd extends AbstractVisualModel {
                 throw new InvalidConnectionException("Loops are not allowed.");
             }
         }
-        if ((first instanceof VisualTransitionEvent firstTransition) && (second instanceof VisualTransitionEvent secondTransition)) {
+        if ((first instanceof VisualTransitionEvent firstTransition)
+                && (second instanceof VisualTransitionEvent secondTransition)) {
+
             if (firstTransition.getParent() == secondTransition.getParent()) {
-                if ((firstTransition.getDirection() == TransitionEvent.Direction.STABILISE)
-                        && (secondTransition.getDirection() != TransitionEvent.Direction.DESTABILISE)) {
-                    throw new InvalidConnectionException("Signal at unknown state can only destabilise.");
-                }
-                if ((firstTransition.getDirection() != TransitionEvent.Direction.DESTABILISE)
-                        && (secondTransition.getDirection() == TransitionEvent.Direction.STABILISE)) {
-                    throw new InvalidConnectionException("Only unstable signal can stabilise.");
-                }
-                if (firstTransition.getDirection() == secondTransition.getDirection()) {
+                TransitionEvent.Direction firstDirection = firstTransition.getDirection();
+                TransitionEvent.Direction secondDirection = secondTransition.getDirection();
+                if ((firstDirection == secondDirection)
+                        && (firstDirection != TransitionEvent.Direction.STABILISE)
+                        && (firstDirection != TransitionEvent.Direction.DESTABILISE)) {
+
                     throw new InvalidConnectionException("Cannot connect transitions of the same signal and direction.");
                 }
             }
@@ -118,34 +117,28 @@ public class VisualDtd extends AbstractVisualModel {
             }
         }
 
-        if ((first instanceof VisualEntryEvent firstEntry) && (second instanceof VisualTransitionEvent secondTransition)) {
+        if ((first instanceof VisualEntryEvent firstEntry)
+                && (second instanceof VisualTransitionEvent secondTransition)) {
+
             VisualSignal firstSignal = firstEntry.getVisualSignal();
             VisualSignal secondSignal = secondTransition.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and transition of different signals.");
             }
-            if ((firstSignal.getInitialState() == Signal.State.STABLE)
-                    && (secondTransition.getDirection() != TransitionEvent.Direction.DESTABILISE)) {
-                throw new InvalidConnectionException("Signal at unknown state can only destabilise.");
-            }
-            if ((firstSignal.getInitialState() != Signal.State.UNSTABLE)
-                    && (secondTransition.getDirection() == TransitionEvent.Direction.STABILISE)) {
-                throw new InvalidConnectionException("Only unstable signal can stabilise.");
-            }
-            if ((firstSignal.getInitialState() == Signal.State.HIGH)
-                    && (secondTransition.getDirection() == TransitionEvent.Direction.RISE)) {
+            Signal.State initialState = firstSignal.getInitialState();
+            TransitionEvent.Direction secondDirection = secondTransition.getDirection();
+            if ((initialState == Signal.State.HIGH) && (secondDirection == TransitionEvent.Direction.RISE)) {
                 throw new InvalidConnectionException("Signal is already high.");
             }
-            if ((firstSignal.getInitialState() == Signal.State.LOW)
-                    && (secondTransition.getDirection() == TransitionEvent.Direction.FALL)) {
+            if ((initialState == Signal.State.LOW) && (secondDirection == TransitionEvent.Direction.FALL)) {
                 throw new InvalidConnectionException("Signal is already low.");
             }
         }
 
-        if ((first instanceof VisualTransitionEvent firstTransition) && (second instanceof VisualExitEvent secondExit)) {
-            VisualSignal firstSignal = firstTransition.getVisualSignal();
-            VisualSignal secondSignal = secondExit.getVisualSignal();
-            if (firstSignal != secondSignal) {
+        if ((first instanceof VisualTransitionEvent firstTransition)
+                && (second instanceof VisualExitEvent secondExit)) {
+
+            if (firstTransition.getVisualSignal() != secondExit.getVisualSignal()) {
                 throw new InvalidConnectionException("Cannot relate transition and exit of different signals.");
             }
         }
@@ -340,26 +333,34 @@ public class VisualDtd extends AbstractVisualModel {
                 event = transition;
             }
         }
-        if ((event instanceof VisualEntryEvent)
+        if (((event instanceof VisualEntryEvent)
                 && (signal.getInitialState() == Signal.State.STABLE)
-                && (direction != TransitionEvent.Direction.DESTABILISE)) {
-            throw new RuntimeException("Signal at unknown state can only destabilise.");
-        }
-        if ((event instanceof VisualTransitionEvent)
-                && (((VisualTransitionEvent) event).getDirection() == TransitionEvent.Direction.STABILISE)
-                && (direction != TransitionEvent.Direction.DESTABILISE)) {
-            throw new RuntimeException("Signal at unknown state can only destabilise.");
+                && (direction != null) && (direction != TransitionEvent.Direction.DESTABILISE))
+                || ((event instanceof VisualTransitionEvent transitionEvent)
+                && (transitionEvent.getDirection() == TransitionEvent.Direction.STABILISE)
+                && (direction != null) && (direction != TransitionEvent.Direction.DESTABILISE))) {
+
+            throw new RuntimeException("Signal at unknown state can only remain unknown or destabilise.");
         }
         VisualExitEvent exit = signal.getVisualSignalExit();
         VisualConnection connection = getConnection(event, exit);
         if (connection != null) {
             remove(connection);
         }
-        if (direction == null) {
+        VisualTransitionEvent edge = null;
+        if (direction != null) {
+            edge = createVisualTransition(signal, direction);
+        } else {
             Signal.State state = DtdUtils.getNextState(event.getReferencedComponent());
-            direction = DtdUtils.getNextDirection(state);
+            // If direction is unknown (null) in unknown state, then preserve that state (stable or unstable)
+            if (state == Signal.State.STABLE) {
+                edge = createVisualTransition(signal, TransitionEvent.Direction.STABILISE);
+            } else if (state == Signal.State.UNSTABLE) {
+                edge = createVisualTransition(signal, TransitionEvent.Direction.DESTABILISE);
+            } else {
+                edge = createVisualTransition(signal, DtdUtils.getNextDirection(state));
+            }
         }
-        VisualTransitionEvent edge = createVisualTransition(signal, direction);
         double x = signal.getX();
         double y = signal.getY();
         if (event != null) {

@@ -13,8 +13,8 @@ import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.builtin.settings.VisualCommonSettings;
-import org.workcraft.plugins.dtd.Event;
 import org.workcraft.plugins.dtd.*;
+import org.workcraft.plugins.dtd.Event;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -108,12 +108,13 @@ public class DtdUtils {
         polyline.resetControlPoints();
 
         Signal.State state = null;
-        if (v1 instanceof VisualEvent) {
-            VisualSignal s1 = ((VisualEvent) v1).getVisualSignal();
+        if (v1 instanceof VisualEvent e1) {
+            VisualSignal s1 = e1.getVisualSignal();
             state = s1.getInitialState();
-            if (v1 instanceof VisualTransitionEvent t1) {
+            if (e1 instanceof VisualTransitionEvent t1) {
                 TransitionEvent.Direction direction = t1.getReferencedComponent().getDirection();
-                state = getNextState(direction);
+                // Interpret unknown direction (null) as toggle event and transition into unknown (yet stable) state
+                state = (direction == null) ? Signal.State.STABLE : getNextState(direction);
             }
         }
         if ((state == Signal.State.HIGH) || (state == Signal.State.LOW)) {
@@ -126,8 +127,8 @@ public class DtdUtils {
     public static VisualLevelConnection decorateVisualLevelConnection(VisualDtd dtd, VisualEvent first, VisualEvent second) {
         VisualLevelConnection level = null;
         Connection connection = dtd.getConnection(first, second);
-        if (connection instanceof VisualLevelConnection) {
-            level = (VisualLevelConnection) connection;
+        if (connection instanceof VisualLevelConnection levelConnection) {
+            level = levelConnection;
             decorateVisualLevelConnection(level);
         }
         return level;
