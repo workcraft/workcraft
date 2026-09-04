@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.utils;
 
 import org.workcraft.formula.*;
 import org.workcraft.formula.bdd.BddManager;
+import org.workcraft.formula.bdd.JddBddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
@@ -126,7 +127,7 @@ public final class ExpressionUtils {
         literalToVariableMap.put(seqLiteral, seqVariable);
 
         BooleanFormula resultFormula = null;
-        try {
+        try (BddManager bddManager = new JddBddManager()) {
             BooleanFormula formula = BooleanFormulaParser.parse(expression,
                     literal -> literalToVariableMap.computeIfAbsent(literal, FreeVariable::new),
                     CleverBooleanWorker.getInstance());
@@ -145,8 +146,8 @@ public final class ExpressionUtils {
                     if (heuristicFormula == null) {
                         resultFormula = exactFormula;
                     } else {
-                        BddManager bddManager = new BddManager();
-                        resultFormula = bddManager.isEquivalent(heuristicFormula, exactFormula) ? heuristicFormula : exactFormula;
+                        resultFormula = bddManager.isEquivalent(heuristicFormula, exactFormula)
+                                ? heuristicFormula : exactFormula;
                     }
                 }
             }

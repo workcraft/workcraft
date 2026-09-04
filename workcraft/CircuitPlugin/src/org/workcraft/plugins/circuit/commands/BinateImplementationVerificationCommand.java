@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.formula.*;
 import org.workcraft.formula.bdd.BddManager;
+import org.workcraft.formula.bdd.JddBddManager;
 import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -110,19 +111,21 @@ public class BinateImplementationVerificationCommand extends org.workcraft.comma
     }
 
     private Collection<BinateData> getBinateData(Circuit circuit) {
-        List<BinateData> result = new ArrayList<>();
-        for (FunctionComponent component : circuit.getFunctionComponents()) {
-            for (FunctionContact outputContact : component.getFunctionOutputs()) {
-                if (outputContact.isSequential()) continue;
-                BooleanFormula formula = CircuitUtils.getDriverFormula(circuit, outputContact.getSetFunction());
-                for (BooleanVariable variable : FormulaUtils.extractOrderedVariables(formula)) {
-                    if (new BddManager().isBinate(formula, variable)) {
-                        result.add(new BinateData(outputContact, formula, variable));
+        try (BddManager bddManager = new JddBddManager()) {
+            List<BinateData> result = new ArrayList<>();
+            for (FunctionComponent component : circuit.getFunctionComponents()) {
+                for (FunctionContact outputContact : component.getFunctionOutputs()) {
+                    if (outputContact.isSequential()) continue;
+                    BooleanFormula formula = CircuitUtils.getDriverFormula(circuit, outputContact.getSetFunction());
+                    for (BooleanVariable variable : FormulaUtils.extractOrderedVariables(formula)) {
+                        if (bddManager.isBinate(formula, variable)) {
+                            result.add(new BinateData(outputContact, formula, variable));
+                        }
                     }
                 }
             }
+            return result;
         }
-        return result;
     }
 
     private VerificationParameters getBinateImplementationReachSettings(String signal, BooleanFormula formula,

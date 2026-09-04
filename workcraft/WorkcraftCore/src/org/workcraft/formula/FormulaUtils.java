@@ -193,4 +193,13 @@ public class FormulaUtils {
         return new Or(new And(a, b), new Or(new And(a, c), new And(b, c)));
     }
 
+    @SafeVarargs
+    public static BooleanFormula createSop(List<? extends BooleanFormula>... cubeLiteralsList) {
+        List<BooleanFormula> cubeList = new ArrayList<>(cubeLiteralsList.length);
+        for (List<? extends BooleanFormula> cubeLiterals : cubeLiteralsList) {
+            cubeList.add(createAnd(cubeLiterals));
+        }
+        return createOr(cubeList);
+    }
+
 }

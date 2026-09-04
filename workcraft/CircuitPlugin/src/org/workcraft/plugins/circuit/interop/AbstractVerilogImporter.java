@@ -9,6 +9,7 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.*;
 import org.workcraft.formula.*;
 import org.workcraft.formula.bdd.BddManager;
+import org.workcraft.formula.bdd.JddBddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.gui.MainWindow;
@@ -275,8 +276,10 @@ public abstract class AbstractVerilogImporter implements Importer {
         circuit.setTitle(verilogModule.name);
         HashMap<VerilogInstance, FunctionComponent> instanceComponentMap = new HashMap<>();
         HashMap<String, Net> signalToNetMap = createPorts(circuit, verilogModule, mutexes);
-        for (VerilogAssign verilogAssign : verilogModule.assigns) {
-            createAssignGate(circuit, verilogAssign, signalToNetMap);
+        try (BddManager bddManager = new JddBddManager()) {
+            for (VerilogAssign verilogAssign : verilogModule.assigns) {
+                createAssignGate(circuit, verilogAssign, signalToNetMap, bddManager);
+            }
         }
         for (VerilogInstance verilogInstance : verilogModule.instances) {
             SubstitutionRule substitutionRule = null;
@@ -469,14 +472,14 @@ public abstract class AbstractVerilogImporter implements Importer {
             verilogConnection = verilogInstance.connections.get(portIndexIfNoPortName);
         }
         VerilogNet verilogNet = (verilogConnection == null) || verilogConnection.nets.isEmpty()
-                ? null : verilogConnection.nets.get(0);
+                ? null : verilogConnection.nets.getFirst();
 
         return verilogNet == null ? null
                 : new Signal(VerilogUtils.getNetBusSuffixName(verilogNet), Signal.Type.INTERNAL);
     }
 
     private FunctionComponent createAssignGate(Circuit circuit, VerilogAssign verilogAssign,
-            HashMap<String, Net> signalToNetMap) throws DeserialisationException {
+            HashMap<String, Net> signalToNetMap, BddManager bddManager) throws DeserialisationException {
 
         final FunctionComponent component = new FunctionComponent();
         circuit.add(component);
@@ -484,7 +487,7 @@ public abstract class AbstractVerilogImporter implements Importer {
         reparentAndRenameComponent(circuit, component, netName);
 
         AssignGate assignGate;
-        if ((celementAssign && isCelementAssign(verilogAssign))
+        if ((celementAssign && isCelementAssign(verilogAssign, bddManager))
                 || (sequentialAssign && isSequentialAssign(verilogAssign))) {
 
             assignGate = createSequentialAssignGate(verilogAssign);
@@ -537,7 +540,7 @@ public abstract class AbstractVerilogImporter implements Importer {
         return literals.stream().anyMatch(literal -> (netName != null) && netName.equals(literal.name));
     }
 
-    private boolean isCelementAssign(VerilogAssign verilogAssign) {
+    private boolean isCelementAssign(VerilogAssign verilogAssign, BddManager bddManager) {
         try {
             BooleanFormula formula = BooleanFormulaParser.parse(VerilogUtils.getFormulaWithBusSuffixNames(verilogAssign.formula));
             List<BooleanVariable> variables = FormulaUtils.extractOrderedVariables(formula);
@@ -564,7 +567,6 @@ public abstract class AbstractVerilogImporter implements Importer {
             if ((aVar == null) || (bVar == null) || (seqVar == null)) {
                 return false;
             }
-            BddManager bddManager = new BddManager();
             return bddManager.isEquivalent(FormulaUtils.createMaj(aVar, bVar, seqVar), formula)
                     || bddManager.isEquivalent(FormulaUtils.createMaj(new Not(aVar), bVar, seqVar), formula)
                     || bddManager.isEquivalent(FormulaUtils.createMaj(aVar, new Not(bVar), seqVar), formula)
@@ -798,7 +800,7 @@ public abstract class AbstractVerilogImporter implements Importer {
             if (verilogConnection == null) {
                 continue;
             }
-            VerilogNet verilogNet = verilogConnection.nets.get(0);
+            VerilogNet verilogNet = verilogConnection.nets.getFirst();
             Net net = getOrCreateNet(VerilogUtils.getNetBusSuffixName(verilogNet), signalToNetMap);
             if (net == null) {
                 continue;
@@ -877,7 +879,7 @@ public abstract class AbstractVerilogImporter implements Importer {
             List<VerilogNet> verilogNets = new ArrayList<>(verilogConnection.nets);
             int netCount = verilogNets.size();
             if (netCount == 1) {
-                VerilogNet verilogNet = verilogNets.get(0);
+                VerilogNet verilogNet = verilogNets.getFirst();
                 Net net = getOrCreateNet(VerilogUtils.getNetBusSuffixName(verilogNet), signalToNetMap);
                 if (net != null) {
                     FunctionContact contact = new FunctionContact();
