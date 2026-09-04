@@ -210,10 +210,10 @@ public final class RefinementUtils {
             Set<String> missingOutputSignals, Set<String> extraOutputSignals) {
 
         return messageIntro
-                + TextUtils.getBulletpointPair("missing input signal", missingInputSignals)
-                + TextUtils.getBulletpointPair("unexpected input signal", extraInputSignals)
-                + TextUtils.getBulletpointPair("missing output signal", missingOutputSignals)
-                + TextUtils.getBulletpointPair("unexpected output signal", extraOutputSignals);
+                + TextUtils.getBulletpointPair("missing input signal", SortUtils.getSortedNatural(missingInputSignals))
+                + TextUtils.getBulletpointPair("unexpected input signal", SortUtils.getSortedNatural(extraInputSignals))
+                + TextUtils.getBulletpointPair("missing output signal", SortUtils.getSortedNatural(missingOutputSignals))
+                + TextUtils.getBulletpointPair("unexpected output signal", SortUtils.getSortedNatural(extraOutputSignals));
     }
 
     public static boolean hasInconsistentSignalNames(CircuitComponent component, Circuit refinementCircuit) {
