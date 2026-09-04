@@ -91,7 +91,7 @@
         <exclude name="SingularField"/> <!-- Interesting to enforce, but used often -->
         <exclude name="TooManyFields"/> <!-- Too restrictive -->
         <exclude name="TooManyMethods"/> <!-- Too restrictive -->
-        <exclude name="UseUtilityClass"/> <!-- Interesting to enforce -->
+        <exclude name="InstantiableUtilityClass"/> <!-- Interesting to enforce -->
     </rule>
 
     <rule ref="category/java/design.xml/AvoidDeeplyNestedIfStmts">
@@ -114,6 +114,7 @@
         <exclude name="OverrideBothEqualsAndHashcode"/> <!-- Too restrictive -->
         <exclude name="OverrideBothEqualsAndHashCodeOnComparable"/> <!-- Interesting to enforce -->
         <exclude name="ReturnEmptyCollectionRatherThanNull"/> <!-- Too restrictive -->
+        <exclude name="UnusedReturnValue"/> <!-- Too restrictive -->
     </rule>
 
     <rule ref="category/java/errorprone.xml/AssignmentInOperand">

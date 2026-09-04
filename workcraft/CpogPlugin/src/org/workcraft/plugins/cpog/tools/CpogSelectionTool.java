@@ -103,7 +103,6 @@ public class CpogSelectionTool extends SelectionTool {
             return this;
         }
 
-        @SuppressWarnings("PMD.AvoidThrowingNewInstanceOfSameException")
         @Override
         public CpogFormula eval(String label, String boolExpression) throws ParseException {
             VisualVertex vertex = null;
