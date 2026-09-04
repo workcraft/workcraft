@@ -163,7 +163,7 @@ public class SONMainTask implements Task<VerificationResult> {
 
     private static void clearConsole() {
         try {
-            Runtime.getRuntime().exec("cls");
+            Runtime.getRuntime().exec(new String[]{"cls"});
         } catch (Exception ignored) {
         }
     }

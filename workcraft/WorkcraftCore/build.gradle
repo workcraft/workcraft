@@ -11,6 +11,14 @@ dependencies {
     lib 'commons-io:commons-io:2.22.0'
     // Needed for logging in Batik PDF Transcoder (https://mvnrepository.com/artifact/commons-logging/commons-logging)
     lib 'commons-logging:commons-logging:1.4.0'
+    // Logging provider that silently discards all messages (https://mvnrepository.com/artifact/org.slf4j/slf4j-nop)
+    lib 'org.slf4j:slf4j-nop:2.0.18'
+    // JDD implementation of BDDs (https://mvnrepository.com/artifact/org.bitbucket.vahidi/jdd)
+    lib 'org.bitbucket.vahidi:jdd:113'
+    // ADDLib core for BDDs (https://mvnrepository.com/artifact/info.scce/addlib-core)
+    lib 'info.scce:addlib-core:4.0.1'
+    // ADDLib wrapper for CUDD (https://mvnrepository.com/artifact/info.scce/addlib-cudd)
+    lib 'info.scce:addlib-cudd:4.0.1'
 }
 
 ext.excludeFromCoverage = [

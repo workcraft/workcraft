@@ -62,6 +62,8 @@ public class StgNameManager extends DefaultNameManager {
             st.setDirectionQuiet(direction);
 
             String oldSignalName = st.getSignalName();
+            // TODO: Can this ListMap.remove and the subsequent ListMap.add + notification be moved into the if statemet?
+            //  (this speeds up transition renaming, but breaks StgReparentTests)
             signalTransitions.remove(oldSignalName, st);
             if (!signalName.equals(oldSignalName)) {
                 st.setSignalNameQuiet(signalName);

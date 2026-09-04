@@ -6,6 +6,7 @@ import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FormulaUtils;
 import org.workcraft.formula.Not;
 import org.workcraft.formula.bdd.BddManager;
+import org.workcraft.formula.bdd.JddBddManager;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.visitors.StringGenerator;
@@ -23,6 +24,11 @@ public final class GenlibUtils {
     private static final String RIGHT_ARROW_SYMBOL = Character.toString((char) 0x2192);
 
     private GenlibUtils() {
+    }
+
+    private static BddManager createBddManager() {
+        return new JddBddManager();
+        //return new CuddBddManager();
     }
 
     public static FunctionComponent instantiateGate(Gate gate, String instanceName, Circuit circuit) {
@@ -78,20 +84,29 @@ public final class GenlibUtils {
     }
 
     public static Gate.Mapping findMapping(BooleanFormula setFormula, BooleanFormula resetFormula, Library library) {
+        try (BddManager bddManager = createBddManager()) {
+            return getMapping(setFormula, resetFormula, library, bddManager);
+        }
+    }
+
+    private static Gate.Mapping getMapping(BooleanFormula setFormula, BooleanFormula resetFormula, Library library,
+            BddManager bddManager) {
+
         // Ignore resetFormula if it is complementary to setFormula
         if ((setFormula != null) && (resetFormula != null)) {
-            BddManager bdd = new BddManager();
-            if (bdd.isEquivalent(setFormula, new Not(resetFormula))) {
+            if (bddManager.isEquivalent(setFormula, new Not(resetFormula))) {
                 resetFormula = null;
             }
         }
         List<BooleanVariable> inputPins = FormulaUtils.extractOrderedVariables(setFormula, resetFormula);
         List<Gate> orderedCandidateGates = library.getGatesOrderedBySize(inputPins.size() + 1, (resetFormula != null));
         for (Gate gate : orderedCandidateGates) {
-            Gate.PinRenaming pinRenaming = getVariableMappingIfEquivalentOrNull(setFormula, gate.getSetFormula());
+            Gate.PinRenaming pinRenaming = getVariableMappingIfEquivalentOrNull(
+                    setFormula, gate.getSetFormula(), bddManager);
+
             if (resetFormula != null) {
-                Gate.PinRenaming resetPinRenaming
-                        = getVariableMappingIfEquivalentOrNull(resetFormula, gate.getResetFormula());
+                Gate.PinRenaming resetPinRenaming = getVariableMappingIfEquivalentOrNull(
+                        resetFormula, gate.getResetFormula(), bddManager);
 
                 pinRenaming = mergePinRenamingsIfCompatibleOrNull(pinRenaming, resetPinRenaming);
             }
@@ -105,13 +120,20 @@ public final class GenlibUtils {
     public static Gate.PinRenaming getVariableMappingIfEquivalentOrNull(
             BooleanFormula formula, BooleanFormula candidateFormula) {
 
+        try (BddManager bddManager = createBddManager()) {
+            return getVariableMappingIfEquivalentOrNull(formula, candidateFormula, bddManager);
+        }
+    }
+
+    private static Gate.PinRenaming getVariableMappingIfEquivalentOrNull(
+            BooleanFormula formula, BooleanFormula candidateFormula, BddManager bddManager) {
+
         List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(formula);
         List<BooleanVariable> candidateVars = FormulaUtils.extractOrderedVariables(candidateFormula);
         if (vars.size() == candidateVars.size()) {
-            BddManager bdd = new BddManager();
             for (List<BooleanVariable> permutatedVars : ListUtils.permutate(vars)) {
                 BooleanFormula mappedFormula = FormulaUtils.replace(formula, permutatedVars, candidateVars);
-                if (bdd.isEquivalent(mappedFormula, candidateFormula)) {
+                if (bddManager.isEquivalent(mappedFormula, candidateFormula)) {
                     Gate.PinRenaming result = new Gate.PinRenaming();
                     for (int i = 0; i < permutatedVars.size(); i++) {
                         result.put(permutatedVars.get(i), candidateVars.get(i).getLabel());
@@ -160,10 +182,19 @@ public final class GenlibUtils {
         if (library == null) {
             return null;
         }
+        try (BddManager bddManager = createBddManager()) {
+            return getExtendedMapping(setFormula, resetFormula, library, bddManager,
+                    allowOutputInversion, allowExtraPin, allowInputInversion);
+        }
+    }
+
+    private static Gate.ExtendedMapping getExtendedMapping(BooleanFormula setFormula, BooleanFormula resetFormula,
+            Library library, BddManager bddManager,
+            boolean allowOutputInversion, boolean allowExtraPin, boolean allowInputInversion) {
+
         // Ignore resetFormula if it is complementary to setFormula
         if ((setFormula != null) && (resetFormula != null)) {
-            BddManager bdd = new BddManager();
-            if (bdd.isEquivalent(setFormula, new Not(resetFormula))) {
+            if (bddManager.isEquivalent(setFormula, new Not(resetFormula))) {
                 resetFormula = null;
             }
         }
@@ -191,8 +222,8 @@ public final class GenlibUtils {
         }
         // Try 3: match gates with extra pin
         if (allowExtraPin) {
-            Gate.ExtendedMapping extendedMapping
-                    = getEquivalentExtendedMappingOrNull(setFormula, resetFormula, library, true, false);
+            Gate.ExtendedMapping extendedMapping = getEquivalentExtendedMappingOrNull(
+                    setFormula, resetFormula, library, bddManager, true, false);
 
             if (extendedMapping != null) {
                 return extendedMapping;
@@ -200,8 +231,8 @@ public final class GenlibUtils {
         }
         // Try 4: match inverted gates with extra pin
         if (allowExtraPin && allowOutputInversion) {
-            Gate.ExtendedMapping invExtendedMapping
-                    = getEquivalentExtendedMappingOrNull(notSetFormula, notResetFormula, library, true, false);
+            Gate.ExtendedMapping invExtendedMapping = getEquivalentExtendedMappingOrNull(
+                    notSetFormula, notResetFormula, library, bddManager, true, false);
 
             if (invExtendedMapping != null) {
                 invExtendedMapping.addGateOutputToInvertedPinNames();
@@ -210,11 +241,12 @@ public final class GenlibUtils {
         }
         // Try 5: match gates with input inverters, possibly with extra pin
         if (allowInputInversion) {
-            Gate.ExtendedMapping extendedMapping
-                    = getEquivalentExtendedMappingOrNull(setFormula, resetFormula, library, false, true);
+            Gate.ExtendedMapping extendedMapping = getEquivalentExtendedMappingOrNull(
+                    setFormula, resetFormula, library, bddManager, false, true);
 
             if (extendedMapping == null) {
-                extendedMapping = getEquivalentExtendedMappingOrNull(setFormula, resetFormula, library, true, true);
+                extendedMapping = getEquivalentExtendedMappingOrNull(
+                        setFormula, resetFormula, library, bddManager, true, true);
             }
             if (extendedMapping != null) {
                 return extendedMapping;
@@ -223,10 +255,12 @@ public final class GenlibUtils {
         // Try 6: match inverted gates with input inverters, possibly with extra pin
         if (allowOutputInversion && allowInputInversion) {
             Gate.ExtendedMapping invExtendedMapping
-                    = getEquivalentExtendedMappingOrNull(notSetFormula, notResetFormula, library, false, true);
+                    = getEquivalentExtendedMappingOrNull(notSetFormula, notResetFormula, library, bddManager,
+                    false, true);
 
             if (invExtendedMapping == null) {
-                invExtendedMapping = getEquivalentExtendedMappingOrNull(notSetFormula, notResetFormula, library, true, true);
+                invExtendedMapping = getEquivalentExtendedMappingOrNull(notSetFormula, notResetFormula, library, bddManager,
+                        true, true);
             }
             if (invExtendedMapping != null) {
                 invExtendedMapping.addGateOutputToInvertedPinNames();
@@ -237,7 +271,7 @@ public final class GenlibUtils {
     }
 
     private static Gate.ExtendedMapping getEquivalentExtendedMappingOrNull(
-            BooleanFormula setFormula, BooleanFormula resetFormula, Library library,
+            BooleanFormula setFormula, BooleanFormula resetFormula, Library library, BddManager bddManager,
             boolean withExtraPin, boolean withInputInversion) {
 
         List<BooleanVariable> inputPins = FormulaUtils.extractOrderedVariables(setFormula, resetFormula);
@@ -245,11 +279,11 @@ public final class GenlibUtils {
         List<Gate> orderedCandidateGates = library.getGatesOrderedBySize(pinCount, (resetFormula != null));
         for (Gate gate : orderedCandidateGates) {
             Gate.ExtendedMapping extendedMapping = getEquivalentExtendedMappingOrNull(
-                    setFormula, gate.getSetFormula(), withExtraPin, withInputInversion);
+                    setFormula, gate.getSetFormula(), withExtraPin, withInputInversion, bddManager);
 
             if (resetFormula != null) {
                 Gate.ExtendedMapping resetExtendedMapping = getEquivalentExtendedMappingOrNull(
-                        resetFormula, gate.getResetFormula(), withExtraPin, withInputInversion);
+                        resetFormula, gate.getResetFormula(), withExtraPin, withInputInversion, bddManager);
 
                 extendedMapping = mergeCompatibleExtendedMappingsOrNull(extendedMapping, resetExtendedMapping);
             }
@@ -264,14 +298,13 @@ public final class GenlibUtils {
 
     private static Gate.ExtendedMapping getEquivalentExtendedMappingOrNull(
             BooleanFormula formula, BooleanFormula candidateFormula,
-            boolean withExtraPin, boolean withInputInversion) {
+            boolean withExtraPin, boolean withInputInversion, BddManager bddManager) {
 
         List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(formula);
         List<BooleanVariable> candidateVars = FormulaUtils.extractOrderedVariables(candidateFormula);
         if (vars.size() + (withExtraPin ? 1 : 0) != candidateVars.size()) {
             return null;
         }
-        BddManager bdd = new BddManager();
         int varCount = candidateVars.size();
         List<List<Boolean>> inversionCombinations = withInputInversion
                 ? ListUtils.combine(List.of(false, true), varCount)
@@ -282,7 +315,8 @@ public final class GenlibUtils {
             inversionCombinations = inversionCombinations.subList(1, inversionCombinations.size());
         }
         if (!withExtraPin) {
-            return getEquivalentExtendedMappingOrNull(formula, vars, candidateFormula, candidateVars, inversionCombinations, bdd);
+            return getEquivalentExtendedMappingOrNull(formula, vars, candidateFormula, candidateVars,
+                    inversionCombinations, bddManager);
         } else {
             // Insert extra input pin before its replica
             int varIndex = 0;
@@ -290,7 +324,7 @@ public final class GenlibUtils {
                 List<BooleanVariable> extendedVars = new ArrayList<>(vars);
                 extendedVars.add(varIndex, replicaVar);
                 Gate.ExtendedMapping extendedMapping = getEquivalentExtendedMappingOrNull(
-                        formula, extendedVars, candidateFormula, candidateVars, inversionCombinations, bdd);
+                        formula, extendedVars, candidateFormula, candidateVars, inversionCombinations, bddManager);
 
                 if (extendedMapping != null) {
                     return extendedMapping;
@@ -304,11 +338,11 @@ public final class GenlibUtils {
     private static Gate.ExtendedMapping getEquivalentExtendedMappingOrNull(
             BooleanFormula formula, List<BooleanVariable> vars,
             BooleanFormula candidateFormula, List<BooleanVariable> candidateVars,
-            List<List<Boolean>> inversionCombinations, BddManager bdd) {
+            List<List<Boolean>> inversionCombinations, BddManager bddManager) {
 
         for (List<BooleanVariable> permutatedVars : ListUtils.permutate(vars)) {
             Gate.ExtendedMapping extendedMapping = getPermutationEquivalentExtendedMappingOrNull(
-                    formula, permutatedVars, candidateFormula, candidateVars, inversionCombinations, bdd);
+                    formula, permutatedVars, candidateFormula, candidateVars, inversionCombinations, bddManager);
 
             if (extendedMapping != null) {
                 return extendedMapping;

@@ -59,7 +59,8 @@ public final class Framework {
     private static final int JAVASCRIPT_FUNCTION_NAME_GROUP = 1;
     private static final int JAVASCRIPT_FUNCTION_PARAMS_GROUP = 2;
 
-    private static Framework instance = null;
+    private static final Framework instance = new Framework();
+
     private final Config defaultConfig = new Config();
     private final Config config = new Config();
     private final PluginManager pluginManager = new PluginManager();
@@ -187,9 +188,6 @@ public final class Framework {
     }
 
     public static Framework getInstance() {
-        if (instance == null) {
-            instance = new Framework();
-        }
         return instance;
     }
 
