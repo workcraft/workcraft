@@ -16,13 +16,15 @@ Each template directory may have the following subdirectories:
   * `osx/` -- content specific for OSX
   * `windows/` -- content specific for Windows
 
-A template directory may also contain a set of scripts to be executed before
-(`*-intro.sh`) and after (`*-outro.sh`) each distribution build:
+A template directory may contain a set of scripts to be executed
+initially before all templates (`*-init.sh`),
+before applying the template (`*-intro.sh`),
+and after applying the template (`*-outro.sh`):
 
-  * `common-intro.sh`, `common-outro.sh` -- for all platforms
-  * `linux-intro.sh`, `linux-outro.sh`  -- only for Linux
-  * `osx-intro.sh`, `osx-outro.sh` -- only for OSX
-  * `windows-intro.sh`, `windows-outro.sh` -- only for Windows
+  * `common-init.sh`, `common-intro.sh`, `common-outro.sh` -- for all platforms
+  * `linux-init.sh`, `linux-intro.sh`, `linux-outro.sh`  -- only for Linux
+  * `osx-init.sh`, `osx-intro.sh`, `osx-outro.sh` -- only for OSX
+  * `windows-init.sh`, `windows-intro.sh`, `windows-outro.sh` -- only for Windows
 
 Distribution archives can be automatically generated with `dist/run.sh`
 script as follows:

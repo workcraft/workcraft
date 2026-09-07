@@ -43,24 +43,23 @@ public class PluginFinder {
         if (currentFile.exists()) {
             if (currentFile.isDirectory()) {
                 File[] list = currentFile.listFiles(classFilter);
-                for (File nextFile : list) {
-                    if (nextFile.isDirectory()) {
-                        result.addAll(search(startingFile, nextFile, requiredPrefix));
-                    } else {
-                        String path = nextFile.getPath().substring(startingFile.getPath().length());
-                        result.addAll(processPathEntry(path, requiredPrefix));
+                if (list != null) {
+                    for (File nextFile : list) {
+                        if (nextFile.isDirectory()) {
+                            result.addAll(search(startingFile, nextFile, requiredPrefix));
+                        } else {
+                            String path = nextFile.getPath().substring(startingFile.getPath().length());
+                            result.addAll(processPathEntry(path, requiredPrefix));
+                        }
                     }
                 }
             } else if (currentFile.isFile() && currentFile.getPath().endsWith(".jar")) {
-                try {
-                    JarFile jf = new JarFile(currentFile);
+                try (JarFile jf = new JarFile(currentFile)) {
                     Enumeration<JarEntry> entries = jf.entries();
-
                     while (entries.hasMoreElements()) {
                         JarEntry entry = entries.nextElement();
                         result.addAll(processPathEntry(entry.getName(), requiredPrefix));
                     }
-
                 } catch (IOException e) {
                     throw new PluginInstantiationException(e);
                 }
