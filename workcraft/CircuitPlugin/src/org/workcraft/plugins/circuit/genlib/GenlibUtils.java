@@ -14,6 +14,7 @@ import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.utils.ListPermutationIterator;
 import org.workcraft.utils.ListUtils;
 import org.workcraft.utils.LogUtils;
 
@@ -131,16 +132,19 @@ public final class GenlibUtils {
         List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(formula);
         List<BooleanVariable> candidateVars = FormulaUtils.extractOrderedVariables(candidateFormula);
         if (vars.size() == candidateVars.size()) {
-            for (List<BooleanVariable> permutatedVars : ListUtils.permutate(vars)) {
+            Gate.PinRenaming result = null;
+            ListPermutationIterator<BooleanVariable> permutationIterator = new ListPermutationIterator<>(vars, true);
+            while ((result == null) && permutationIterator.hasNext()) {
+                List<BooleanVariable> permutatedVars = permutationIterator.next();
                 BooleanFormula mappedFormula = FormulaUtils.replace(formula, permutatedVars, candidateVars);
                 if (bddManager.isEquivalent(mappedFormula, candidateFormula)) {
-                    Gate.PinRenaming result = new Gate.PinRenaming();
+                    result = new Gate.PinRenaming();
                     for (int i = 0; i < permutatedVars.size(); i++) {
                         result.put(permutatedVars.get(i), candidateVars.get(i).getLabel());
                     }
-                    return result;
                 }
             }
+            return result;
         }
         return null;
     }
@@ -340,15 +344,15 @@ public final class GenlibUtils {
             BooleanFormula candidateFormula, List<BooleanVariable> candidateVars,
             List<List<Boolean>> inversionCombinations, BddManager bddManager) {
 
-        for (List<BooleanVariable> permutatedVars : ListUtils.permutate(vars)) {
-            Gate.ExtendedMapping extendedMapping = getPermutationEquivalentExtendedMappingOrNull(
-                    formula, permutatedVars, candidateFormula, candidateVars, inversionCombinations, bddManager);
+        Gate.ExtendedMapping result = null;
+        ListPermutationIterator<BooleanVariable> permutationIterator = new ListPermutationIterator<>(vars, true);
+        while ((result == null) && permutationIterator.hasNext()) {
+            List<BooleanVariable> permutatedVars = permutationIterator.next();
 
-            if (extendedMapping != null) {
-                return extendedMapping;
-            }
+            result = getPermutationEquivalentExtendedMappingOrNull(
+                    formula, permutatedVars, candidateFormula, candidateVars, inversionCombinations, bddManager);
         }
-        return null;
+        return result;
     }
 
     private static Gate.ExtendedMapping getPermutationEquivalentExtendedMappingOrNull(

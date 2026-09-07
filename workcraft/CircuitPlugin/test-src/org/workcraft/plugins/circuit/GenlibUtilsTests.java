@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.formula.*;
@@ -176,20 +175,6 @@ class GenlibUtilsTests {
 
         checkExtendedMapping(new And(a, b), new Not(new And(a, b)),
                 gateLibrary, gateLibrary.get("AND2"), Set.of());
-    }
-
-    @Test @Disabled
-    void testExtraPinExtendedMapping() throws ParseException {
-        Library gateLibrary;
-
-        CircuitSettings.setGateLibrary(BackendUtils.getLibraryPath("workcraft.lib"));
-        gateLibrary = LibraryManager.getLibrary();
-        checkExtendedMapping(BooleanFormulaParser.parse("(a+b)*c+d*e"), gateLibrary, gateLibrary.get("OAO212"), Set.of());
-        checkExtendedMapping(BooleanFormulaParser.parse("((a+b)*c+d*e)'"), gateLibrary, gateLibrary.get("OAOI212"), Set.of());
-
-        CircuitSettings.setGateLibrary(BackendUtils.getLibraryPath("a.lib"));
-        gateLibrary = LibraryManager.getLibrary();
-        checkExtendedMapping(BooleanFormulaParser.parse("(a+b)*c+d*e"), gateLibrary, gateLibrary.get("AOI222"), Set.of("ON"));
     }
 
     private void checkExtendedMapping(BooleanFormula func,
