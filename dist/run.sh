@@ -8,6 +8,7 @@ PLATFORM_COMMON="common"
 PLATFORM_LINUX="linux"
 PLATFORM_OSX="osx"
 PLATFORM_WINDOWS="windows"
+SCRIPT_INIT="init.sh"
 SCRIPT_INTRO="intro.sh"
 SCRIPT_OUTRO="outro.sh"
 PLATFORMS="$PLATFORM_LINUX $PLATFORM_OSX $PLATFORM_WINDOWS"
@@ -41,7 +42,7 @@ err() {
 # Usage: source_if_present FILE_PATH
 source_if_present() {
     if [ -e "$1" ]; then
-        echo "    + $1"
+        echo "    $ $1"
         source $1
     fi
 }
@@ -161,18 +162,12 @@ for platform in $platforms; do
         fi
     fi
 
-    echo "  * Executing intro scripts..."
+    echo "  * Preparing..."
     workcraft="workcraft"
     common=""
     for template in $templates; do
-        source_if_present "$DIR/$template/$PLATFORM_COMMON-$SCRIPT_INTRO"
-        source_if_present "$DIR/$template/$platform-$SCRIPT_INTRO"
-    done
-
-    echo "  * Copying templates..."
-    for template in $templates; do
-        copy_content "$DIR/$template/$PLATFORM_COMMON" "$platform_path/$workcraft/$common"
-        copy_content "$DIR/$template/$platform" "$platform_path/$workcraft"
+        source_if_present "$DIR/$template/$PLATFORM_COMMON-$SCRIPT_INIT"
+        source_if_present "$DIR/$template/$platform-$SCRIPT_INIT"
     done
 
     echo "  * Copying plugins..."
@@ -184,8 +179,12 @@ for platform in $platforms; do
         done
     done
 
-    echo "  * Executing outro scripts..."
+    echo "  * Applying templates..."
     for template in $templates; do
+        source_if_present "$DIR/$template/$PLATFORM_COMMON-$SCRIPT_INTRO"
+        source_if_present "$DIR/$template/$platform-$SCRIPT_INTRO"
+        copy_content "$DIR/$template/$PLATFORM_COMMON" "$platform_path/$workcraft/$common"
+        copy_content "$DIR/$template/$platform" "$platform_path/$workcraft"
         source_if_present "$DIR/$template/$PLATFORM_COMMON-$SCRIPT_OUTRO"
         source_if_present "$DIR/$template/$platform-$SCRIPT_OUTRO"
     done
