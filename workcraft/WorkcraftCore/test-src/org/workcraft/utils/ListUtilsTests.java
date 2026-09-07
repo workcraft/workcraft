@@ -3,6 +3,7 @@ package org.workcraft.utils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -38,16 +39,26 @@ class ListUtilsTests {
     @Test
     void permutateTest() {
         Assertions.assertEquals(List.of(List.of()),
-                ListUtils.permutate(List.of()));
+                calcAllPermutations(List.of()));
 
         Assertions.assertEquals(List.of(List.of(true, false), List.of(false, true)),
-                ListUtils.permutate(List.of(true, false)));
+                calcAllPermutations(List.of(true, false)));
 
         Assertions.assertEquals(List.of(
-                        List.of("a", "b", "c"), List.of("b", "a", "c"), List.of("b", "c", "a"),
-                        List.of("a", "c", "b"),  List.of("c", "a", "b"), List.of("c", "b", "a")),
-                ListUtils.permutate(List.of("a", "b", "c")));
+                        List.of("a", "b", "c"), List.of("a", "c", "b"), List.of("c", "a", "b"),
+                        List.of("c", "b", "a"),  List.of("b", "c", "a"), List.of("b", "a", "c")),
+                calcAllPermutations(List.of("a", "b", "c")));
 
+    }
+
+    private static <T> List<List<T>> calcAllPermutations(List<T> list) {
+        List<List<T>> result = new ArrayList<>();
+        ListPermutationIterator<T> permutationIterator = new ListPermutationIterator<>(list, false);
+        while (permutationIterator.hasNext()) {
+            List<T> permutatedList = permutationIterator.next();
+            result.add(permutatedList);
+        }
+        return result;
     }
 
     @Test

@@ -31,25 +31,6 @@ public class ListUtils {
         return result;
     }
 
-    public static <T> List<List<T>> permutate(List<T> list) {
-        List<List<T>> result = new ArrayList<>();
-        if (list.isEmpty()) {
-            result.add(new ArrayList<>());
-        } else {
-            T firstElement = list.get(0);
-            List<T> remainingList = list.subList(1, list.size());
-            List<List<T>> permutations = permutate(remainingList);
-            for (List<T> permutation : permutations) {
-                for (int index = 0; index <= permutation.size(); index++) {
-                    List<T> tmp = new ArrayList<>(permutation);
-                    tmp.add(index, firstElement);
-                    result.add(tmp);
-                }
-            }
-        }
-        return result;
-    }
-
     public static <T> List<List<T>> combine(List<T> values, int itemCount) {
         int combinationCount = 1;
         int valueCount = values.size();
