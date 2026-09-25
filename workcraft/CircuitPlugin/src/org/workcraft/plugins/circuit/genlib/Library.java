@@ -41,6 +41,8 @@ public class Library {
     }
 
     public List<Gate> getGatesOrderedBySize(int pinCount, boolean sequential) {
+        // Sorting order is guaranteed to be stable: equal elements will not be reordered as a result of the sort.
+        // As a result, the gates of the same size are ordered according to their appearance in the GenLib file.
         return gates.values().stream()
                 .filter(gate -> (gate.getPinCount() == pinCount) && (gate.isSequential() == sequential))
                 .sorted(Comparator.comparingDouble(gate -> gate.size))

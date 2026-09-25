@@ -19,6 +19,9 @@ import java.util.Map;
 
 public final class LibraryManager {
 
+    private static final String CHECK_GATE_LIBRARY_MESSAGE =
+            "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences.";
+
     private static Library library;
     private static File libraryFile = null;
     private static long libraryModtime = 0;
@@ -36,8 +39,22 @@ public final class LibraryManager {
     private LibraryManager() {
     }
 
+    public static File getCircuitSettingsEvaluatedLibraryFile() {
+        return FileUtils.getEvalPathFile(CircuitSettings.getGateLibrary());
+    }
+
+    public static String getLibraryAccessErrorOrNull(File file) {
+        if (file == null) {
+            return "Gate library is not specified.\n" + CHECK_GATE_LIBRARY_MESSAGE;
+        }
+        if (!FileUtils.checkFileReadability(file)) {
+            return "Cannot read gate library file '" + file.getPath() + "'.\n" + CHECK_GATE_LIBRARY_MESSAGE;
+        }
+        return null;
+    }
+
     public static Library getLibrary() {
-        File file = FileUtils.getEvalPathFile(CircuitSettings.getGateLibrary());
+        File file = getCircuitSettingsEvaluatedLibraryFile();
         long modtime = FileUtils.getModtimeOrZero(file);
         if ((libraryFile == null) || !libraryFile.equals(file) || (modtime != libraryModtime)) {
             library = loadLibrary(file);
@@ -48,6 +65,7 @@ public final class LibraryManager {
     }
 
     private static Library loadLibrary(File file) {
+        getLibraryAccessErrorOrNull(file);
         if (file == null) {
             LogUtils.logWarning("Gate library is not specified.");
             return new Library();

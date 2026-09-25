@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat_synthesis.tasks;
 
-import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.mpsat_synthesis.MpsatSynthesisSettings;
@@ -23,8 +23,6 @@ public class MpsatTask implements Task<MpsatOutput> {
     // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
     private static final String STG_FILE_NAME = "mpsat.g";
     private static final String VERILOG_FILE_NAME = "mpsat.v";
-    private static final String CHECK_GATE_LIBRARY_MESSAGE =
-            "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences.";
 
     private static final Pattern SUCCESS_PATTERN = Pattern.compile(
             "(" +
@@ -64,14 +62,10 @@ public class MpsatTask implements Task<MpsatOutput> {
         String modeParameter = null;
         // Technology mapping library (if needed and accepted)
         if (mode == SynthesisMode.TECHNOLOGY_MAPPING) {
-            File gateLibraryFile = FileUtils.getEvalPathFile(CircuitSettings.getGateLibrary());
-            if (gateLibraryFile == null) {
-                return Result.exception(new IOException("Gate library is not specified.\n" +
-                        CHECK_GATE_LIBRARY_MESSAGE));
-            }
-            if (!FileUtils.checkFileReadability(gateLibraryFile)) {
-                return Result.exception(new IOException("Cannot find gate library file '" + gateLibraryFile.getPath() + "'.\n" +
-                        CHECK_GATE_LIBRARY_MESSAGE));
+            File gateLibraryFile = LibraryManager.getCircuitSettingsEvaluatedLibraryFile();
+            String error = LibraryManager.getLibraryAccessErrorOrNull(gateLibraryFile);
+            if (error != null) {
+                return Result.exception(new IOException(error));
             }
             modeParameter = FileUtils.getFullPath(gateLibraryFile);
         }

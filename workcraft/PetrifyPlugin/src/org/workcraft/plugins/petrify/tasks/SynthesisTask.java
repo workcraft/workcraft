@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.circuit.utils.VerilogUtils;
 import org.workcraft.plugins.circuit.verilog.VerilogModule;
 import org.workcraft.plugins.petri.Place;
@@ -34,8 +34,6 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
     private static final String LOG_FILE_NAME = "petrify.log";
     private static final String EQN_FILE_NAME = "petrify.eqn";
     private static final String VERILOG_FILE_NAME = "petrify.v";
-    private static final String CHECK_GATE_LIBRARY_MESSAGE =
-            "Check '" + CircuitSettings.GATE_LIBRARY_TITLE + "' item in Digital Circuit preferences.";
 
     private final WorkspaceEntry we;
     private final List<String> args;
@@ -62,14 +60,10 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
 
         // Technology mapping library (if needed and accepted)
         if (needsGateLibrary) {
-            File gateLibraryFile = FileUtils.getEvalPathFile(CircuitSettings.getGateLibrary());
-            if (gateLibraryFile == null) {
-                return Result.exception(new IOException("Gate library is not specified.\n" +
-                        CHECK_GATE_LIBRARY_MESSAGE));
-            }
-            if (!FileUtils.checkFileReadability(gateLibraryFile)) {
-                return Result.exception(new IOException("Cannot find gate library file '" + gateLibraryFile.getPath() + "'.\n" +
-                        CHECK_GATE_LIBRARY_MESSAGE));
+            File gateLibraryFile = LibraryManager.getCircuitSettingsEvaluatedLibraryFile();
+            String error = LibraryManager.getLibraryAccessErrorOrNull(gateLibraryFile);
+            if (error != null) {
+                return Result.exception(new IOException(error));
             }
             command.add("-lib");
             command.add(FileUtils.getFullPath(gateLibraryFile));
