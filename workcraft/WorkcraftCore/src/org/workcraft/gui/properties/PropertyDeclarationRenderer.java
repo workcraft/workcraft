@@ -21,15 +21,17 @@ public class PropertyDeclarationRenderer extends DefaultTableCellRenderer {
 
     public PropertyDeclarationRenderer(PropertyDescriptor<?> descriptor) {
         label.setHorizontalAlignment(LEADING);
-
-        if ((descriptor != null) && (descriptor.getValue() == null) && descriptor.isCombinable()) {
-            label.setFont(label.getFont().deriveFont(Font.BOLD));
+        if (descriptor != null) {
+            label.setEnabled(descriptor.isEditable());
+            if ((descriptor.getValue() == null) && descriptor.isCombinable()) {
+                label.setFont(label.getFont().deriveFont(Font.BOLD));
+            }
         }
     }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int col) {
+            boolean isSelected, boolean hasFocus, int row, int column) {
 
         JTableHeader tableHeader = table.getTableHeader();
         if (tableHeader != null) {
@@ -39,8 +41,10 @@ public class PropertyDeclarationRenderer extends DefaultTableCellRenderer {
 
         label.setText((value == null) ? "" : value.toString());
 
-        boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, col);
+        boolean fits = GuiUtils.getLabelTextWidth(label) < GuiUtils.getTableColumnTextWidth(table, column);
         label.setToolTipText(fits ? null : label.getText());
+
+        label.setEnabled(table.isEnabled());
         return label;
     }
 

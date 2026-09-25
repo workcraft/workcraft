@@ -23,6 +23,8 @@ public class ChoiceCellRenderer extends FlatComboBox implements TableCellRendere
         }
         setSelectedItem(value);
         setOpaque(value == null);
+        boolean isEnabled = table.isEnabled() && table.isCellEditable(row, column);
+        setEnabled(isEnabled);
         return this;
     }
 

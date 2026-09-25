@@ -18,6 +18,8 @@ public class BooleanCellRenderer extends JCheckBox implements TableCellRenderer 
             setSelected((Boolean) value);
         }
         setOpaque(value == null);
+        boolean isEnabled = table.isEnabled() && table.isCellEditable(row, column);
+        setEnabled(isEnabled);
         return this;
     }
 

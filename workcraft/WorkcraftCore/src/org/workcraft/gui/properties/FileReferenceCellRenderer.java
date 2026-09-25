@@ -75,6 +75,10 @@ public class FileReferenceCellRenderer extends JPanel implements TableCellRender
             Color background = isSelected ? table.getSelectionBackground() : table.getBackground();
             setBorder(new MatteBorder(0, 0, 0, 0, background));
         }
+        boolean isEnabled = table.isEnabled() && table.isCellEditable(row, column);
+        enterButton.setEnabled(isEnabled);
+        chooseButton.setEnabled(isEnabled);
+        clearButton.setEnabled(isEnabled);
         return this;
     }
 
