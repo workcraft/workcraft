@@ -8,8 +8,8 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.LabelParser;
-import org.workcraft.types.ListMap;
 import org.workcraft.types.Pair;
+import org.workcraft.types.SetMultiMap;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.DialogUtils;
 
@@ -21,8 +21,8 @@ public class StgNameManager extends DefaultNameManager {
     public static final String DUMMY_PREFIX = "dum";
 
     private final InstanceManager instancedNameManager = new InstanceManager();
-    private final ListMap<String, SignalTransition> signalTransitions = new ListMap<>();
-    private final ListMap<String, DummyTransition> dummyTransitions = new ListMap<>();
+    private final SetMultiMap<String, SignalTransition> signalTransitions = new SetMultiMap<>();
+    private final SetMultiMap<String, DummyTransition> dummyTransitions = new SetMultiMap<>();
 
     @Override
     public String getPrefix(Node node) {
