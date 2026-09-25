@@ -38,6 +38,7 @@ public class PropertyEditorTable extends JTable {
         propertyClasses.put(Action.class, new ActionProperty());
         propertyClasses.put(TextAction.class, new TextActionProperty());
         propertyClasses.put(ActionList.class, new ActionListProperty());
+        propertyClasses.put(Toggle.class, new ToggleProperty());
         propertyClasses.put(LegendList.class, new LegendListProperty());
 
         PluginManager pm = Framework.getInstance().getPluginManager();
