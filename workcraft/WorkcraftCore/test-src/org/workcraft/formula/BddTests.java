@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.workcraft.formula.bdd.BddManager;
 import org.workcraft.formula.bdd.CuddBddManager;
 import org.workcraft.formula.bdd.JddBddManager;
+import org.workcraft.formula.visitors.StringGenerator;
 
 import java.util.List;
 import java.util.Map;
@@ -134,35 +135,45 @@ class BddTests {
     void testProjection(BddManager bddManager) {
         BooleanVariable m0Var = new FreeVariable("m0");
         BooleanVariable m1Var = new FreeVariable("m1");
-        BooleanVariable cond01Var = new FreeVariable("cond01");
-        BooleanVariable cond11Var = new FreeVariable("cond11");
+        BooleanVariable c01Var = new FreeVariable("c01");
+        BooleanVariable c11Var = new FreeVariable("c11");
 
-        // func = m0' * m1 * cond01 + m0 * m1 * cond11
+        // func = m0' * m1 * c01 + m0 * m1 * c11
         BooleanFormula funcFormula = FormulaUtils.createSop(
-                List.of(new Not(m0Var), m1Var, cond01Var),
-                List.of(m0Var, m1Var, cond11Var));
+                List.of(new Not(m0Var), m1Var, c01Var),
+                List.of(m0Var, m1Var, c11Var));
 
-        // proj(func, m0 * m1) = cond11
-        checkProjection(bddManager, funcFormula, new And(m0Var, m1Var), cond11Var);
+        // proj(func, m0 * m1) = c11
+        checkProjection(bddManager, funcFormula, new And(m0Var, m1Var), c11Var);
 
-        // proj(func, m0) = cond11 * m1
-        checkProjection(bddManager, funcFormula, m0Var, new And(m1Var, cond11Var));
+        // proj(func, m0) = c11 * m1
+        checkProjection(bddManager, funcFormula, m0Var, new And(m1Var, c11Var));
 
-        // proj(func, m1) = m0' * cond01 + cond11 * m0
-        checkProjection(bddManager, funcFormula, m1Var, new Or(new And(new Not(m0Var), cond01Var), new And(m0Var, cond11Var)));
+        // proj(func, m1) = m0' * c01 + c11 * m0
+        checkProjection(bddManager, funcFormula, m1Var, new Or(new And(new Not(m0Var), c01Var), new And(m0Var, c11Var)));
 
-        // Note: Jdd only supports projection on a set of variables, so cannot be used for the following care-sets
-        if (bddManager instanceof CuddBddManager) {
-            // proj(func, m0' * m1') = 0
-            checkProjection(bddManager, funcFormula, new And(new Not(m0Var), new Not(m1Var)), Zero.getInstance());
+        // proj(func, m0') = m1 * c01
+        checkProjection(bddManager, funcFormula, new Not(m0Var), new And(m1Var, c01Var));
 
-            // proj(func, m0 * m1' + m0' * m1) = m0' * cond01
-            checkProjection(bddManager, funcFormula, new Or(new And(m0Var, new Not(m1Var)), new And(new Not(m0Var), m1Var)),
-                    new And(new Not(m0Var), cond01Var));
+        // proj(func, m1') = 0
+        checkProjection(bddManager, funcFormula, new Not(m1Var), Zero.getInstance());
 
-            // proj(func, m0 ^ m1) = m0' * cond01
-            checkProjection(bddManager, funcFormula, new Xor(m0Var, m1Var), new And(new Not(m0Var), cond01Var));
-        }
+        // proj(func, m0' * m1) = c01
+        checkProjection(bddManager, funcFormula, new And(new Not(m0Var), m1Var), c01Var);
+
+        // proj(func, m0 * m1') = 0
+        checkProjection(bddManager, funcFormula, new And(m0Var, new Not(m1Var)), Zero.getInstance());
+
+        // proj(func, m0' * m1') = 0
+        checkProjection(bddManager, funcFormula, new And(new Not(m0Var), new Not(m1Var)), Zero.getInstance());
+
+        // proj(func, m0 * m1' + m0' * m1) = m1 * c01 [alternatively = m0' * c01]
+        checkProjection(bddManager, funcFormula, new Or(new And(m0Var, new Not(m1Var)), new And(new Not(m0Var), m1Var)),
+                new And(m1Var, c01Var));
+
+        // proj(func, m0 ^ m1) = m1 * c01 [alternatively = m0' * c01]
+        checkProjection(bddManager, funcFormula, new Xor(m0Var, m1Var), new And(m1Var, c01Var));
+
         checkStats(bddManager, 0, 4);
     }
 
@@ -170,7 +181,64 @@ class BddTests {
             BooleanFormula funcFormula, BooleanFormula modeFormula, BooleanFormula expProjectionFormula) {
 
         BooleanFormula projectionFormula = bddManager.calcProjectionFormula(funcFormula, modeFormula);
+        System.out.println("projectionFormula = " + StringGenerator.toString(projectionFormula));
         Assertions.assertTrue(bddManager.isEquivalent(projectionFormula, expProjectionFormula));
+    }
+
+    @Test
+    void testJddBuildIsopFormula() {
+        try (BddManager bddManager = createJddBddManager()) {
+            testBuildIsopFormula(bddManager);
+        }
+    }
+
+    @Test
+    void testCuddBuildIsopFormula() {
+        try (BddManager bddManager = createCuddBddManager()) {
+            testBuildIsopFormula(bddManager);
+        }
+    }
+
+    void testBuildIsopFormula(BddManager bddManager) {
+        BooleanVariable aVar = new FreeVariable("a");
+        BooleanVariable bVar = new FreeVariable("b");
+        BooleanVariable cVar = new FreeVariable("c");
+        BooleanVariable dVar = new FreeVariable("d");
+        BooleanVariable eVar = new FreeVariable("e");
+        BooleanVariable fVar = new FreeVariable("f");
+
+        // func = a * b * c * d
+        checkBuildIsopFormula(bddManager, FormulaUtils.createSop(List.of(aVar, bVar, cVar, dVar)));
+
+        // func = a * b + c * d
+        checkBuildIsopFormula(bddManager, FormulaUtils.createSop(List.of(aVar, bVar), List.of(cVar, dVar)));
+
+        // func = a * b + b * c + c * a
+        checkBuildIsopFormula(bddManager, FormulaUtils.createSop(List.of(aVar, bVar), List.of(bVar, cVar), List.of(cVar, aVar)));
+
+        // func = a * b + a' * c + a' * d'
+        checkBuildIsopFormula(bddManager, FormulaUtils.createSop(List.of(aVar, bVar), List.of(new Not(aVar), cVar), List.of(new Not(aVar), new Not(dVar))));
+
+        // func = a * b' + a' * b
+        checkBuildIsopFormula(bddManager, FormulaUtils.createSop(List.of(aVar, new Not(bVar)), List.of(new Not(aVar), bVar)));
+
+        // func = a ^ b
+        checkBuildIsopFormula(bddManager, new Xor(aVar, bVar));
+
+        // func = a ^ b ^ c
+        checkBuildIsopFormula(bddManager, new Xor(new Xor(aVar, bVar), cVar));
+
+        // func = a ^ b ^ c ^ d
+        checkBuildIsopFormula(bddManager, new Xor(new Xor(aVar, bVar), new Xor(cVar, dVar)));
+
+        // func = (a + b) * (c + d) * (e + f)
+        checkBuildIsopFormula(bddManager, FormulaUtils.createPos(List.of(aVar, bVar), List.of(cVar, dVar), List.of(eVar, fVar)));
+    }
+
+    private void checkBuildIsopFormula(BddManager bddManager, BooleanFormula funcFormula) {
+        BooleanFormula projectionFormula = bddManager.calcProjectionFormula(funcFormula, One.getInstance());
+        System.out.println(StringGenerator.toString(funcFormula) + " == " + StringGenerator.toString(projectionFormula));
+        Assertions.assertTrue(bddManager.isEquivalent(funcFormula, projectionFormula));
     }
 
 }

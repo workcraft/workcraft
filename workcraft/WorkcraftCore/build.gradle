@@ -14,7 +14,7 @@ dependencies {
     // Logging provider that silently discards all messages (https://mvnrepository.com/artifact/org.slf4j/slf4j-nop)
     lib 'org.slf4j:slf4j-nop:2.0.18'
     // JDD implementation of BDDs (https://mvnrepository.com/artifact/org.bitbucket.vahidi/jdd)
-    lib 'org.bitbucket.vahidi:jdd:113'
+    lib 'org.bitbucket.vahidi:jdd:114'
     // ADDLib core for BDDs (https://mvnrepository.com/artifact/info.scce/addlib-core)
     lib 'info.scce:addlib-core:4.0.1'
     // ADDLib wrapper for CUDD (https://mvnrepository.com/artifact/info.scce/addlib-cudd)

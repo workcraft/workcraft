@@ -40,4 +40,5 @@ public interface BddManager extends AutoCloseable {
             System.out.println("* " + entry.getKey() + ": " + entry.getValue());
         }
     }
+
 }
