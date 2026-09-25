@@ -94,7 +94,6 @@ public class Options {
         noConfigSaveFlag = args.contains(NOCONFIG_SAVE_OPTION) || args.contains(NOCONFIG_OPTION);
         helpFlag = args.contains(HELP_OPTION);
         versionFlag = args.contains(VERSION_OPTION);
-
     }
 
     private String getOptionLastValueOrEnvValue(List<String> args, String optionPrefix, String envName) {
