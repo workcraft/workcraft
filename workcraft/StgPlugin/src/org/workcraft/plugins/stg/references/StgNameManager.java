@@ -8,8 +8,8 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.utils.LabelParser;
-import org.workcraft.types.ListMap;
 import org.workcraft.types.Pair;
+import org.workcraft.types.SetMultiMap;
 import org.workcraft.types.Triple;
 import org.workcraft.utils.DialogUtils;
 
@@ -21,8 +21,8 @@ public class StgNameManager extends DefaultNameManager {
     public static final String DUMMY_PREFIX = "dum";
 
     private final InstanceManager instancedNameManager = new InstanceManager();
-    private final ListMap<String, SignalTransition> signalTransitions = new ListMap<>();
-    private final ListMap<String, DummyTransition> dummyTransitions = new ListMap<>();
+    private final SetMultiMap<String, SignalTransition> signalTransitions = new SetMultiMap<>();
+    private final SetMultiMap<String, DummyTransition> dummyTransitions = new SetMultiMap<>();
 
     @Override
     public String getPrefix(Node node) {
@@ -50,7 +50,7 @@ public class StgNameManager extends DefaultNameManager {
         Integer instance = null;
         if (!Identifier.isValid(name)) {
             final Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(name);
-            signalName = r == null ? null : r.getFirst();
+            signalName = (r == null) ? null : r.getFirst();
             if (!Identifier.isValid(signalName)) {
                 throw new ArgumentException("Name '" + name + "' is not a valid signal transition label.");
             }
@@ -59,35 +59,47 @@ public class StgNameManager extends DefaultNameManager {
         }
         if (isSignalName(signalName) || isUnusedName(signalName) || renameOccupantIfDifferent(st, signalName)) {
             instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
-            st.setDirectionQuiet(direction);
 
             String oldSignalName = st.getSignalName();
-            // TODO: Can this ListMap.remove and the subsequent ListMap.add + notification be moved into the if statemet?
-            //  (this speeds up transition renaming, but breaks StgReparentTests)
-            signalTransitions.remove(oldSignalName, st);
-            if (!signalName.equals(oldSignalName)) {
+            boolean isSignalNameChanged = !signalName.equals(oldSignalName);
+            if (isSignalNameChanged) {
+                signalTransitions.remove(oldSignalName, st);
                 st.setSignalNameQuiet(signalName);
+
+                // Inherit signal type from existing transitions of with the same signal name (if any)
                 signalTransitions.get(signalName).stream()
                         .findFirst()
-                        .ifPresent(tt -> st.setSignalTypeQuiet(tt.getSignalType()));
+                        .ifPresent(t -> st.setSignalTypeQuiet(t.getSignalType()));
+
+                signalTransitions.put(signalName, st);
+            } else if (!signalTransitions.get(signalName).contains(st)) {
+                signalTransitions.put(signalName, st);
             }
-            signalTransitions.put(signalName, st);
-            st.sendNotification(new PropertyChangedEvent(st, Model.PROPERTY_NAME));
+
+            SignalTransition.Direction oldDirection = st.getDirection();
+            st.setDirectionQuiet(direction);
+            boolean isDirectionChanged = (direction == oldDirection);
+            if (isSignalNameChanged || isDirectionChanged) {
+                st.sendNotification(new PropertyChangedEvent(st, Model.PROPERTY_NAME));
+            }
         }
     }
 
     private void setDummyTransitionName(DummyTransition dt, String name, boolean forceInstance) {
         final Pair<String, Integer> r = LabelParser.parseDummyTransition(name);
-        String dummyName = r == null ? null : r.getFirst();
+        String dummyName = (r == null) ? null : r.getFirst();
         if (!Identifier.isValid(dummyName)) {
             throw new ArgumentException("Name '" + name + "' is not a valid dummy label.");
         }
         if (isDummyName(dummyName) || isUnusedName(dummyName) || renameOccupantIfDifferent(dt, dummyName)) {
             instancedNameManager.assign(dt, r, forceInstance);
-            dummyTransitions.remove(dt.getName(), dt);
-            dt.setNameQuiet(dummyName);
-            dummyTransitions.put(dt.getName(), dt);
-            dt.sendNotification(new PropertyChangedEvent(dt, Model.PROPERTY_NAME));
+            String oldDummyName = dt.getName();
+            if (!dummyName.equals(oldDummyName)) {
+                dummyTransitions.remove(oldDummyName, dt);
+                dt.setNameQuiet(dummyName);
+                dummyTransitions.put(dummyName, dt);
+                dt.sendNotification(new PropertyChangedEvent(dt, Model.PROPERTY_NAME));
+            }
         }
     }
 
@@ -118,14 +130,11 @@ public class StgNameManager extends DefaultNameManager {
 
     @Override
     public void setName(Node node, String name, boolean force) {
-        if (node instanceof StgPlace) {
-            setPlaceName((StgPlace) node, name);
-        } else if (node instanceof SignalTransition) {
-            setSignalTransitionName((SignalTransition) node, name, force);
-        } else if (node instanceof DummyTransition) {
-            setDummyTransitionName((DummyTransition) node, name, force);
-        } else {
-            super.setName(node, name, force);
+        switch (node) {
+            case StgPlace stgPlace -> setPlaceName(stgPlace, name);
+            case SignalTransition signalTransition -> setSignalTransitionName(signalTransition, name, force);
+            case DummyTransition dummyTransition -> setDummyTransitionName(dummyTransition, name, force);
+            default -> super.setName(node, name, force);
         }
     }
 
@@ -183,6 +192,11 @@ public class StgNameManager extends DefaultNameManager {
         super.remove(node);
         if (instancedNameManager.getInstance(node) != null) {
             instancedNameManager.remove(node);
+            if (node instanceof SignalTransition st) {
+                signalTransitions.remove(st.getSignalName(), st);
+            } else if (node instanceof DummyTransition dt) {
+                dummyTransitions.remove(dt.getName(), dt);
+            }
         }
     }
 

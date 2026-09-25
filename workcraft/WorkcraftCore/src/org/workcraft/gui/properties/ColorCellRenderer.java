@@ -17,6 +17,8 @@ public class ColorCellRenderer extends FlatComboBox implements TableCellRenderer
             setBackground((Color) value);
         }
         setOpaque(value == null);
+        boolean isEnabled = table.isEnabled() && table.isCellEditable(row, column);
+        setEnabled(isEnabled);
         return this;
     }
 

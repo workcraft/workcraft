@@ -29,7 +29,7 @@ public class FlatComboBox extends JComboBox<Object> {
         }
     }
 
-    static class FlatListCellRenderer implements ListCellRenderer<Object> {
+    class FlatListCellRenderer implements ListCellRenderer<Object> {
         private final Border insetBorder = GuiUtils.getTableCellBorder();
         private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
 
@@ -41,6 +41,7 @@ public class FlatComboBox extends JComboBox<Object> {
                     list, value, index, isSelected, cellHasFocus);
 
             renderer.setBorder(insetBorder);
+            renderer.setEnabled(FlatComboBox.this.isEnabled());
             return renderer;
         }
     }
@@ -88,12 +89,11 @@ public class FlatComboBox extends JComboBox<Object> {
         setEditor(new FlatTextComboBoxEditor());
         setFocusable(false);
         setMaximumRowCount(25);
-        for (int i = 0; i < getComponentCount(); i++) {
-            Component component = getComponent(i);
-            if (component instanceof AbstractButton button) {
-                button.setBorderPainted(false);
-                button.setBorder(new EmptyBorder(0, 0, 0, 0));
-            }
+
+        AbstractButton arrowButton = getArrowButton();
+        if (arrowButton != null) {
+            arrowButton.setBorderPainted(false);
+            arrowButton.setBorder(new EmptyBorder(0, 0, 0, 0));
         }
     }
 
@@ -116,10 +116,10 @@ public class FlatComboBox extends JComboBox<Object> {
         return new Rectangle(d);
     }
 
-    public AbstractButton getArrowButton() {
+    private AbstractButton getArrowButton() {
         for (Component component : getComponents()) {
-            if (component instanceof AbstractButton) {
-                return (AbstractButton) component;
+            if (component instanceof AbstractButton arrowButton) {
+                return arrowButton;
             }
         }
         return null;

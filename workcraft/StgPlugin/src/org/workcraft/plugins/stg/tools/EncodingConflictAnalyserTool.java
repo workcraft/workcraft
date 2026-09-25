@@ -40,10 +40,36 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             return panel;
         }
 
-        coresRadio = new JRadioButton("<html>Show cores for selected conflicts (filled)" +
-                "<br>and traces overlap for 1 conflict (unfilled)</html>");
+        densityRadio = new JRadioButton("<html>Show core density map</html>");
+        densityRadio.setFocusPainted(false);
 
+        densityTable = new JTable(new HeightmapTableModel());
+        densityTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        densityTable.setRowHeight(SizeHelper.getComponentHeightFromFont(densityTable.getFont()));
+        densityTable.setDefaultRenderer(Object.class, new HeightmapTableCellRenderer());
+        densityTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        densityTable.setToolTipText("Core density colors");
+        densityTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!densityRadio.isSelected()) {
+                    densityRadio.setSelected(true);
+                }
+            }
+        });
+
+        JPanel densityPanel = new JPanel();
+        densityPanel.setLayout(new BorderLayout());
+        densityPanel.add(densityRadio, BorderLayout.NORTH);
+        densityPanel.add(densityTable, BorderLayout.CENTER);
+        densityPanel.add(new JPanel(), BorderLayout.SOUTH);
+
+        coresRadio = new JRadioButton("<html>Show cores for selected conflicts (filled)" +
+                " and traces overlap for 1 conflict (unfilled)</html>");
+
+        coresRadio.setFocusPainted(false);
         coresRadio.addItemListener(e -> updateCoreVisualisationMode(editor, e));
+
         coresTable = new JTable(new CoreTableModel());
         coresTable.getTableHeader().setDefaultRenderer(new FlatHeaderRenderer());
         coresTable.getTableHeader().setReorderingAllowed(false);
@@ -70,7 +96,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             }
 
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
                 if (!coresRadio.isSelected()) {
                     coresRadio.setSelected(true);
                 }
@@ -87,37 +113,16 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         coresPanel.add(coresRadio, BorderLayout.NORTH);
         coresPanel.add(coresScroll, BorderLayout.CENTER);
 
-        densityRadio = new JRadioButton("Show core density map");
-        densityTable = new JTable(new HeightmapTableModel());
-        densityTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        densityTable.setRowHeight(SizeHelper.getComponentHeightFromFont(coresTable.getFont()));
-        densityTable.setDefaultRenderer(Object.class, new HeightmapTableCellRenderer());
-        densityTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        densityTable.setToolTipText("Core density colors");
-        densityTable.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!densityRadio.isSelected()) {
-                    densityRadio.setSelected(true);
-                }
-            }
-        });
-
-        JPanel densityPanel = new JPanel();
-        densityPanel.setLayout(new BorderLayout());
-        densityPanel.add(densityRadio, BorderLayout.NORTH);
-        densityPanel.add(densityTable, BorderLayout.SOUTH);
-
         ButtonGroup radioGroup = new ButtonGroup();
-        radioGroup.add(coresRadio);
         radioGroup.add(densityRadio);
+        radioGroup.add(coresRadio);
         coresRadio.setSelected(true);
         densityRadio.setSelected(true);
 
-        panel = new JPanel();
-        panel.setLayout(new BorderLayout());
+        panel = new JPanel(new BorderLayout());
+        panel.setBorder(GuiUtils.getGapBorder());
+        panel.add(densityPanel, BorderLayout.NORTH);
         panel.add(coresPanel, BorderLayout.CENTER);
-        panel.add(densityPanel, BorderLayout.SOUTH);
         panel.setPreferredSize(new Dimension(0, 0));
         return panel;
     }
@@ -185,7 +190,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
                     }
                 } else {
                     if (selectedEncodingConflicts.size() == 1) {
-                        EncodingConflict encodingConflict = selectedEncodingConflicts.iterator().next();
+                        EncodingConflict encodingConflict = selectedEncodingConflicts.getFirst();
                         if (encodingConflict.getCore().contains(name)) {
                             singleConflictCoreColor = encodingConflict.getColor();
                         }

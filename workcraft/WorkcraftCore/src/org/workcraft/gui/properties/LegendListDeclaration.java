@@ -28,9 +28,4 @@ public class LegendListDeclaration extends PropertyDeclaration<LegendList> {
         return legendList;
     }
 
-    @Override
-    public boolean isSpan() {
-        return getName() == null;
-    }
-
 }

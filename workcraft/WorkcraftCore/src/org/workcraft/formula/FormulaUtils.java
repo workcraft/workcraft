@@ -195,11 +195,30 @@ public class FormulaUtils {
 
     @SafeVarargs
     public static BooleanFormula createSop(List<? extends BooleanFormula>... cubeLiteralsList) {
+        return createSop(DumbBooleanWorker.getInstance(), cubeLiteralsList);
+    }
+
+    @SafeVarargs
+    public static BooleanFormula createSop(BooleanWorker worker, List<? extends BooleanFormula>... cubeLiteralsList) {
         List<BooleanFormula> cubeList = new ArrayList<>(cubeLiteralsList.length);
         for (List<? extends BooleanFormula> cubeLiterals : cubeLiteralsList) {
-            cubeList.add(createAnd(cubeLiterals));
+            cubeList.add(createAnd(cubeLiterals, worker));
         }
-        return createOr(cubeList);
+        return createOr(cubeList, worker);
+    }
+
+    @SafeVarargs
+    public static BooleanFormula createPos(List<? extends BooleanFormula>... cubeLiteralsList) {
+        return createPos(DumbBooleanWorker.getInstance(), cubeLiteralsList);
+    }
+
+    @SafeVarargs
+    public static BooleanFormula createPos(BooleanWorker worker, List<? extends BooleanFormula>... clauseLiteralsList) {
+        List<BooleanFormula> clauseList = new ArrayList<>(clauseLiteralsList.length);
+        for (List<? extends BooleanFormula> clauseLiterals : clauseLiteralsList) {
+            clauseList.add(createOr(clauseLiterals, worker));
+        }
+        return createAnd(clauseList, worker);
     }
 
 }

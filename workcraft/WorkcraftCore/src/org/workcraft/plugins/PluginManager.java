@@ -14,7 +14,7 @@ import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.XMLDeserialiser;
 import org.workcraft.serialisation.XMLSerialiser;
-import org.workcraft.types.ListMap;
+import org.workcraft.types.ListMultiMap;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
 import org.workcraft.workspace.FileHandler;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 public class PluginManager implements PluginProvider {
 
-    private final ListMap<Class<?>, PluginInfo<?>> plugins = new ListMap<>();
+    private final ListMultiMap<Class<?>, PluginInfo<?>> plugins = new ListMultiMap<>();
 
     public void initPlugins() throws PluginInstantiationException {
         LogUtils.logMessage("Initialising plugins...");

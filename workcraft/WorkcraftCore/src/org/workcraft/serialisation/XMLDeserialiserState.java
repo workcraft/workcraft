@@ -5,7 +5,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.types.GeneralTwoWayMap;
-import org.workcraft.types.ListMap;
+import org.workcraft.types.ListMultiMap;
 import org.workcraft.types.TwoWayMap;
 
 import java.util.HashMap;
@@ -17,7 +17,7 @@ class XMLDeserialiserState implements References {
     private final ReferenceResolver externalReferences;
     private final GeneralTwoWayMap<String, Object> internalReferenceMap = new TwoWayMap<>();
     public HashMap<Object, Element> instanceElements = new HashMap<>();
-    private final ListMap<Container, Node> children = new ListMap<>();
+    private final ListMultiMap<Container, Node> children = new ListMultiMap<>();
 
     XMLDeserialiserState(ReferenceResolver externalReferences) {
         this.externalReferences = externalReferences;
