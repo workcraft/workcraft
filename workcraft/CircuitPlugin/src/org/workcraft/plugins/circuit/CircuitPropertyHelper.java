@@ -172,7 +172,7 @@ public class CircuitPropertyHelper {
                 .addLegend("STG", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getClearColor()))
                 .addLegend("circuit", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getFixerColor()))
                 .addLegend("error", ColorUtils.colorise(cellColor, AnalysisDecorationSettings.getProblemColor()))
-                .setReadonly();
+                .setReadonly().setSpan();
     }
 
     private static PropertyDescriptor<?> getComponentProperty(VisualCircuit circuit, VisualFunctionComponent component) {
