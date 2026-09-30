@@ -18,6 +18,7 @@
         <exclude name="LiteralsFirstInComparisons" />  <!-- Interesting to enforce -->
         <exclude name="LooseCoupling"/> <!-- Interesting to enforce, but used often -->
         <exclude name="MethodReturnsInternalArray"/> <!-- Interesting to enforce, but used often -->
+        <exclude name="OnDemandImport"/> <!-- Interesting to enforce, but used often -->
         <exclude name="PreserveStackTrace"/> <!-- Interesting to enforce, but used often -->
         <exclude name="RelianceOnDefaultCharset" /> <!-- Interesting to enforce -->
         <exclude name="SystemPrintln"/> <!-- Too restrictive -->
