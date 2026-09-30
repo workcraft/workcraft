@@ -50,19 +50,19 @@ gradle.ext.libDir = 'lib'
 
 // Include subprojects, set their directories, and define coverage
 gradle.ext.coverageProjects = []
-rootDir.eachDirMatch(~/workcraft.*/) {
-    file(it).eachDir {
-        if (new File(it, 'build.gradle').exists()) {
-            def existingProject = findProject(":${it.name}")
+rootDir.eachDirMatch(~/workcraft.*/) { rootDirMatch ->
+    rootDirMatch.eachDir { projectDir ->
+        if (new File(projectDir, 'build.gradle').exists()) {
+            def existingProject = findProject(":${projectDir.name}")
             if (existingProject != null) {
-                throw new GradleException("Project ${it.name} already exists!\n" +
-                    "Old path: ${it}\n" +
+                throw new GradleException("Project ${projectDir.name} already exists!\n" +
+                    "Old path: ${projectDir}\n" +
                     "New path: ${existingProject.projectDir}")
             }
-            include it.name
-            project(":${it.name}").projectDir = it
-            if (new File(it, 'test-src').exists()) {
-                gradle.coverageProjects.add(it.name)
+            include projectDir.name
+            project(":${projectDir.name}").projectDir = projectDir
+            if (new File(projectDir, 'test-src').exists()) {
+                gradle.coverageProjects.add(projectDir.name)
             }
         }
     }
