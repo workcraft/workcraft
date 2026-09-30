@@ -19,7 +19,7 @@ gradle.ext.javaSourceVersion = JavaVersion.VERSION_21
 gradle.ext.javaTargetVersion = JavaVersion.VERSION_21
 gradle.ext.javaReleaseVersion = 21  /* Must be integer, e.g. 21 for Java 21 */
 
-// Checkstyle code linter (https://checkstyle.sourceforge.io/) 
+// Checkstyle code linter (https://checkstyle.sourceforge.io/)
 gradle.ext.checkstyleVersion = '14.3.0'
 // PMD code analyser (https://pmd.github.io/)
 gradle.ext.pmdVersion = '7.28.0'
@@ -52,16 +52,16 @@ gradle.ext.libDir = 'lib'
 gradle.ext.coverageProjects = []
 rootDir.eachDirMatch(~/workcraft.*/) {
     file(it).eachDir {
-        if (file(it.path + '/build.gradle').exists()) {
-            def project1 = findProject(':' + it.name)
+        if (new File(it, 'build.gradle').exists()) {
+            def project1 = findProject(":${it.name}")
             if (project1 != null) {
-                throw new GradleException('Project ' + it.name + ' already exists!\n' +
-                    'Old path: ' + it + '\n' +
-                    'New path: ' + project1.projectDir)
+                throw new GradleException("Project ${it.name} already exists!\n" +
+                    "Old path: ${it}\n" +
+                    "New path: ${project1.projectDir}")
             }
             include it.name
-            project(":" + it.name).projectDir = it
-            if (file(it.path + '/test-src/').exists()) {
+            project(":${it.name}").projectDir = it
+            if (new File(it, 'test-src').exists()) {
                 gradle.coverageProjects.add(it.name)
             }
         }
