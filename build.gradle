@@ -95,6 +95,7 @@ subprojects {
 
     tasks.register('checkstyle') {
         group = 'Verification'
+        description = 'Run Checkstyle analysis for all sources'
         dependsOn tasks.withType(Checkstyle)
     }
 
@@ -120,6 +121,7 @@ subprojects {
 
     tasks.register('pmd') {
         group = 'Verification'
+        description = 'Run PMD analysis for all sources'
         dependsOn tasks.withType(Pmd)
     }
 
@@ -302,7 +304,7 @@ def workcraftRunConfiguration = '''<component name="ProjectRunConfigurationManag
 
 tasks.register('ideaRunConfiguration') {
     group = 'Build Setup'
-    description = 'Generate IntelliJ run configuration for Workcraft'
+    description = 'Generate IntelliJ run configuration for Workcraft.'
     doLast {
         workcraftRunConfigurationFile.parentFile.mkdirs()
         workcraftRunConfigurationFile.text = workcraftRunConfiguration
