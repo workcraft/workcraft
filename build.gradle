@@ -192,7 +192,9 @@ subprojects {
 
     ideaModule.dependsOn compileJavacc
 
-    task cleanAll(dependsOn: ['clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'])
+    tasks.register('cleanAll') {
+        dependsOn 'clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'
+    }
 }
 
 
