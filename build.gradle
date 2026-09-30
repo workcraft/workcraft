@@ -265,27 +265,33 @@ idea.module {
     outputDir = file('build/idea/')
 }
 
-def workcraftRunConfiguration = '''
+def workcraftRunConfigurationFile = file('.idea/runConfigurations/Workcraft.xml')
+
+def workcraftRunConfiguration = '''<component name="ProjectRunConfigurationManager">
     <configuration default="false" name="Workcraft" type="Application" factoryName="Application" singleton="true">
         <option name="MAIN_CLASS_NAME" value="org.workcraft.Console" />
         <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
         <module name="WorkcraftRunner" />
+        <method v="2" />
     </configuration>
+</component>
 '''
 
-import groovy.xml.XmlParser
-
-idea.workspace.iws {
-    withXml { workspace ->
-        def runManagerNode = workspace.node.component.find { it.@name == 'RunManager' }
-        def workcraftRunNode = runManagerNode.find { it.@name == 'Workcraft' }
-        if (workcraftRunNode != null) runManagerNode?.remove(workcraftRunNode)
-        runManagerNode?.append(new XmlParser().parseText(workcraftRunConfiguration))
+tasks.register('ideaRunConfigurations') {
+    group = 'IDE'
+    description = 'Generate the shared "Workcraft" IntelliJ run configuration.'
+    doLast {
+        workcraftRunConfigurationFile.parentFile.mkdirs()
+        workcraftRunConfigurationFile.text = workcraftRunConfiguration
     }
 }
 
+tasks.named('idea') {
+    dependsOn tasks.ideaRunConfigurations
+}
+
 tasks.cleanIdea.doLast {
-    delete 'workcraft.iws'
+    delete workcraftRunConfigurationFile
 }
 
 tasks.register('cleanAll') {
@@ -297,6 +303,5 @@ allprojects {
 }
 
 tasks.cleanAll.doLast {
-    delete 'workcraft.iws'
     delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
 }
