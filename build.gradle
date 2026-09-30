@@ -209,6 +209,7 @@ subprojects {
     }
 
     tasks.register('cleanAll') {
+        group = 'Build'
         dependsOn 'clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'
     }
 }
@@ -309,15 +310,18 @@ tasks.register('ideaRunConfiguration') {
 }
 
 tasks.register('cleanAll') {
+    group = 'Build'
+    description = 'Deletes build directory and generated source files.'
     doLast {
         delete workcraftRunConfigurationFile
     }
 }
 
-allprojects {
-    javadoc.group = null  // Exclude javadoc from the list of tasks
-}
-
 tasks.cleanAll.doLast {
     delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
+}
+
+allprojects {
+    javadoc.group = null  // Exclude javadoc from the list of tasks
+    jar.group = null      // Exclude jar from the list of tasks
 }
