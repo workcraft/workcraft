@@ -296,7 +296,7 @@ def workcraftRunConfiguration = '''<component name="ProjectRunConfigurationManag
     <configuration default="false" name="Workcraft" type="Application" factoryName="Application" singleton="true">
         <option name="MAIN_CLASS_NAME" value="org.workcraft.Console" />
         <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-        <module name="WorkcraftRunner" />
+        <module name="workcraft.WorkcraftRunner.main" />
         <method v="2" />
     </configuration>
 </component>
