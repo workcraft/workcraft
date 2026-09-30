@@ -14,6 +14,13 @@ java {
     targetCompatibility = gradle.javaTargetVersion
 }
 
+def configureCpdCheck = {
+    group = 'Verification'
+    dependsOn compileJavacc
+    source = sourceSets.main.allJava
+    exclude gradle.javaccExclude
+}
+
 subprojects {
     repositories {
         mavenCentral()
@@ -133,12 +140,7 @@ subprojects {
         minimumTokenCount = 250
     }
 
-    cpdCheck {
-        group = 'Verification'
-        dependsOn compileJavacc
-        source = sourceSets.main.allJava
-        exclude gradle.javaccExclude
-    }
+    cpdCheck configureCpdCheck
 
 
     apply plugin: 'jacoco'
@@ -217,12 +219,7 @@ subprojects {
     }
 }
 
-cpdCheck {
-    group = 'Verification'
-    dependsOn compileJavacc
-    source = sourceSets.main.allJava
-    exclude gradle.javaccExclude
-}
+cpdCheck configureCpdCheck
 
 
 apply plugin: 'jacoco'
