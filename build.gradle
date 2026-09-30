@@ -143,13 +143,13 @@ subprojects {
     afterEvaluate {project ->
         tasks.register('copyLibs', Copy) {
             from configurations.lib
-            into "$buildDir/$gradle.libDir"
+            into layout.buildDirectory.dir(gradle.libDir as String)
             include '*.jar'
         }
 
         jar {
             dependsOn copyLibs
-            destinationDirectory = file("$buildDir/bin")
+            destinationDirectory = layout.buildDirectory.dir('bin')
             manifest {
                 attributes 'Class-Path': configurations.lib.collect {
                     "../$gradle.libDir/" + it.name
@@ -253,7 +253,7 @@ afterEvaluate {
 
 coveralls {
     sourceDirs = coverageProjects.sourceSets.main.allSource.srcDirs.flatten()
-    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+    jacocoReportPath = layout.buildDirectory.file('reports/jacoco/jacocoRootReport/jacocoRootReport.xml').get().asFile.path
 }
 
 tasks.coveralls {
