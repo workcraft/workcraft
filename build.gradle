@@ -104,6 +104,10 @@ subprojects {
 
     pmdMain.exclude gradle.javaccExclude
 
+    tasks.withType(Pmd).configureEach {
+        classpath += files("${System.getProperty('java.home')}/lib/jrt-fs.jar")
+    }
+
     tasks.register('pmd') {
         dependsOn tasks.withType(Pmd)*.name
     }
