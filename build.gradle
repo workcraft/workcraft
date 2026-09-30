@@ -237,7 +237,7 @@ def coverageProjects = subprojects.findAll {
 evaluationDependsOnChildren()
 
 tasks.register('jacocoRootReport', JacocoReport) {
-    dependsOn(coverageProjects.test)
+    dependsOn(coverageProjects*.test)
 
     sourceDirectories.from = coverageProjects.sourceSets.main.allSource.srcDirs
     additionalSourceDirs.from = coverageProjects.sourceSets.main.allSource.srcDirs
