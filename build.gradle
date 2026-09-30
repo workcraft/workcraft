@@ -251,10 +251,10 @@ tasks.register('jacocoRootReport', JacocoReport) {
 }
 
 afterEvaluate {
-    def jacocoExclude = [gradle.javaccExclude]
+    List<String> jacocoExclude = [gradle.javaccExclude as String]
     subprojects {
         if (it.hasProperty('excludeFromCoverage')) {
-            jacocoExclude += it.excludeFromCoverage
+            jacocoExclude += it.excludeFromCoverage as List<String>
         }
     }
     tasks.named('jacocoRootReport').configure {
