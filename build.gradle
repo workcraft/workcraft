@@ -140,7 +140,7 @@ subprojects {
         }
     }
 
-    afterEvaluate {project ->
+    afterEvaluate {
         tasks.register('copyLibs', Copy) {
             from configurations.lib
             into layout.buildDirectory.dir(gradle.libDir as String)
