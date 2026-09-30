@@ -304,7 +304,7 @@ tasks.register('cleanAll') {
 }
 
 allprojects {
-	javadoc.group = null  // Exclude javadoc from the list of tasks
+    javadoc.group = null  // Exclude javadoc from the list of tasks
 }
 
 tasks.cleanAll.doLast {
