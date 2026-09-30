@@ -155,9 +155,9 @@ subprojects {
             dependsOn copyLibs
             destinationDirectory = layout.buildDirectory.dir('bin')
             manifest {
-                attributes 'Class-Path': configurations.lib.collect {
-                    "../$gradle.libDir/" + it.name
-                }.join(' ')
+                attributes 'Class-Path': provider {
+                    configurations.lib.collect { "../$gradle.libDir/" + it.name }.join(' ')
+                }
             }
         }
     }
