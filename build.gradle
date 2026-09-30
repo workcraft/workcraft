@@ -59,9 +59,9 @@ subprojects {
     dependencies {
         lib fileTree(dir: gradle.libDir, include: ['**/*.jar'])
         configurations.api.extendsFrom(configurations.lib)
-        testImplementation gradle.junit
-        testRuntimeOnly gradle.junitPlatformLauncher
-        javacc gradle.javacc
+        testImplementation gradle.junit as String
+        testRuntimeOnly gradle.junitPlatformLauncher as String
+        javacc gradle.javacc as String
     }
 
 
