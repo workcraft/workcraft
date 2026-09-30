@@ -85,11 +85,16 @@ subprojects {
         configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
 
+    tasks.withType(Checkstyle).configureEach {
+        group = 'Verification'
+    }
+
     tasks.named('checkstyleMain') {
         exclude gradle.javaccExclude
     }
 
     tasks.register('checkstyle') {
+        group = 'Verification'
         dependsOn tasks.withType(Checkstyle)
     }
 
@@ -109,10 +114,12 @@ subprojects {
     }
 
     tasks.withType(Pmd).configureEach {
+        group = 'Verification'
         classpath += files("${System.getProperty('java.home')}/lib/jrt-fs.jar")
     }
 
     tasks.register('pmd') {
+        group = 'Verification'
         dependsOn tasks.withType(Pmd)
     }
 
@@ -125,6 +132,7 @@ subprojects {
     }
 
     cpdCheck {
+        group = 'Verification'
         dependsOn compileJavacc
         source = sourceSets.main.allJava
         exclude gradle.javaccExclude
@@ -209,6 +217,7 @@ subprojects {
 apply plugin: 'java'
 
 cpdCheck {
+    group = 'Verification'
     dependsOn compileJavacc
     source = sourceSets.main.allJava
     exclude gradle.javaccExclude
