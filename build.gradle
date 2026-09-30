@@ -21,6 +21,8 @@ def configureCpdCheck = {
     exclude gradle.javaccExclude
 }
 
+import org.gradle.plugins.ide.eclipse.model.SourceFolder
+
 subprojects {
     repositories {
         mavenCentral()
@@ -182,7 +184,7 @@ subprojects {
             defaultOutputDir = file('build/eclipse/bin/')
             file.whenMerged {
                 entries.each {
-                    if (it.kind == 'src' && it.hasProperty('output') && it.output.startsWith('bin/')) {
+                    if (it instanceof SourceFolder && it.output.startsWith('bin/')) {
                         it.output = 'build/eclipse/' + it.output.substring('bin/'.length())
                     }
                 }
