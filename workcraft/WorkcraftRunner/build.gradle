@@ -1,7 +1,7 @@
 dependencies {
-    rootProject.subprojects {
-        if (it.name != this.name) {
-            implementation it
+    rootProject.subprojects.each { subproject ->
+        if (subproject.name != project.name) {
+            implementation project(subproject.path)
         }
     }
 }
