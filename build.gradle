@@ -85,7 +85,9 @@ subprojects {
         configFile = file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
 
-    checkstyleMain.exclude gradle.javaccExclude
+    tasks.named('checkstyleMain') {
+        exclude gradle.javaccExclude
+    }
 
     tasks.register('checkstyle') {
         dependsOn tasks.withType(Checkstyle)
@@ -102,7 +104,9 @@ subprojects {
         ruleSets = []
     }
 
-    pmdMain.exclude gradle.javaccExclude
+    tasks.named('pmdMain') {
+        exclude gradle.javaccExclude
+    }
 
     tasks.withType(Pmd).configureEach {
         classpath += files("${System.getProperty('java.home')}/lib/jrt-fs.jar")
@@ -174,7 +178,9 @@ subprojects {
         }
     }
 
-    eclipseClasspath.dependsOn compileJavacc
+    tasks.named('eclipseClasspath') {
+        dependsOn 'compileJavacc'
+    }
 
 
     apply plugin: 'idea'
@@ -190,7 +196,9 @@ subprojects {
         testResources.setFrom(file('test-res'))
     }
 
-    ideaModule.dependsOn compileJavacc
+    tasks.named('ideaModule') {
+        dependsOn 'compileJavacc'
+    }
 
     tasks.register('cleanAll') {
         dependsOn 'clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'
