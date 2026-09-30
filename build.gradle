@@ -217,9 +217,10 @@ def coverageProjects = subprojects.findAll {
     it.name ==~ ~(gradle.coverageProjects.join('|'))
 }
 
-task jacocoRootReport(type: JacocoReport) {
+evaluationDependsOnChildren()
+
+tasks.register('jacocoRootReport', JacocoReport) {
     dependsOn(coverageProjects.test)
-    evaluationDependsOnChildren()
 
     sourceDirectories.from = coverageProjects.sourceSets.main.allSource.srcDirs
     additionalSourceDirs.from = coverageProjects.sourceSets.main.allSource.srcDirs
@@ -230,21 +231,23 @@ task jacocoRootReport(type: JacocoReport) {
         xml.required = true   // XML report for coveralls
         html.required = true  // human readable report
     }
+}
 
-    afterEvaluate {
-        ext.jacocoExclude = [gradle.javaccExclude]
-        subprojects {
-            if (it.hasProperty('excludeFromCoverage')) {
-                jacocoExclude += it.excludeFromCoverage
-            }
+afterEvaluate {
+    def jacocoExclude = [gradle.javaccExclude]
+    subprojects {
+        if (it.hasProperty('excludeFromCoverage')) {
+            jacocoExclude += it.excludeFromCoverage
         }
+    }
+    tasks.named('jacocoRootReport').configure {
         classDirectories.from = classDirectories.files.collect {
             fileTree(dir: it, exclude: jacocoExclude)
         }
-    }
-    doLast {
-        println 'Excluding from coverage:'
-        jacocoExclude.each { println "  - " + it }
+        doLast {
+            println 'Excluding from coverage:'
+            jacocoExclude.each { println "  - " + it }
+        }
     }
 }
 
