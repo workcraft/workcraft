@@ -35,7 +35,7 @@ subprojects {
         test.resources.srcDirs = ['test-res']
     }
 
-    compileJava {
+    tasks.named('compileJava') {
         options.encoding = 'UTF-8'
         options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
         if (JavaVersion.current().isJava9Compatible()) {
@@ -45,7 +45,7 @@ subprojects {
 
     apply plugin: 'org.javacc.javacc'
 
-    compileJavacc {
+    tasks.named('compileJavacc') {
         inputDirectory = file('javacc')
         outputDirectory = file('src-gen')
         include '**/*.jj'
@@ -140,7 +140,7 @@ subprojects {
         minimumTokenCount = 250
     }
 
-    cpdCheck configureCpdCheck
+    tasks.named('cpdCheck', configureCpdCheck)
 
 
     apply plugin: 'jacoco'
@@ -149,7 +149,7 @@ subprojects {
         toolVersion = gradle.jacocoVersion
     }
 
-    jacocoTestReport {
+    tasks.named('jacocoTestReport') {
         reports {
             xml.required = true    /* XML report for coveralls */
             html.required = false  /* skip human readable report */
@@ -163,7 +163,7 @@ subprojects {
             include '*.jar'
         }
 
-        jar {
+        tasks.named('jar') {
             dependsOn copyLibs
             destinationDirectory = layout.buildDirectory.dir('bin')
             manifest {
@@ -271,7 +271,7 @@ coveralls {
     jacocoReportPath = layout.buildDirectory.file('reports/jacoco/jacocoRootReport/jacocoRootReport.xml').get().asFile.path
 }
 
-tasks.coveralls {
+tasks.named('coveralls') {
     group = 'Verification'
     description = 'Generate coverage report for all subprojects with tests.'
     dependsOn jacocoRootReport
