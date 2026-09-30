@@ -299,25 +299,19 @@ def workcraftRunConfiguration = '''<component name="ProjectRunConfigurationManag
 </component>
 '''
 
-tasks.register('ideaRunConfigurations') {
-    group = 'IDE'
-    description = 'Generate the shared "Workcraft" IntelliJ run configuration.'
+tasks.register('ideaRunConfiguration') {
+    group = 'Build Setup'
+    description = 'Generate IntelliJ run configuration for Workcraft'
     doLast {
         workcraftRunConfigurationFile.parentFile.mkdirs()
         workcraftRunConfigurationFile.text = workcraftRunConfiguration
     }
 }
 
-tasks.named('idea') {
-    dependsOn tasks.ideaRunConfigurations
-}
-
-tasks.cleanIdea.doLast {
-    delete workcraftRunConfigurationFile
-}
-
 tasks.register('cleanAll') {
-    dependsOn 'cleanIdea'
+    doLast {
+        delete workcraftRunConfigurationFile
+    }
 }
 
 allprojects {
