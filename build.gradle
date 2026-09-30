@@ -282,6 +282,7 @@ apply plugin: 'idea'
 
 idea.module {
     excludeDirs = [file('.gradle'), file('config'), file('dist-template'), file('doc'), file('gradle')]
+    inheritOutputDirs = false
     outputDir = file('build/idea/')
 }
 
