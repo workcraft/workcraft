@@ -212,6 +212,7 @@ subprojects {
 
     tasks.register('cleanAll') {
         group = 'Build'
+        description = 'Deletes build directory and generated source files.'
         dependsOn 'clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'
     }
 }
@@ -316,11 +317,8 @@ tasks.register('cleanAll') {
     description = 'Deletes build directory and generated source files.'
     doLast {
         delete workcraftRunConfigurationFile
+        delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
     }
-}
-
-tasks.cleanAll.doLast {
-    delete 'build/'  // Remove root build directory (left untouched by other clean tasks)
 }
 
 allprojects {
