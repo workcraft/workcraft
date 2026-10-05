@@ -2,6 +2,7 @@ package org.workcraft.gui;
 
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
+import org.flexdock.docking.defaults.DefaultDockingStrategy;
 import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.GhostPreview;
 import org.flexdock.docking.props.PropertyManager;
@@ -95,9 +96,11 @@ public class MainWindow extends JFrame {
     private PanelDockable documentPlaceholder;
     private UtilityPanelDockable outputLogDockable;
     private UtilityPanelDockable errorLogDockable;
+    private UtilityPanelDockable javaScriptDockable;
     private UtilityPanelDockable taskManagerDockable;
     private UtilityPanelDockable propertyEditorDockable;
     private UtilityPanelDockable toolControlsDockable;
+    private UtilityPanelDockable workspaceDockable;
 
     private OutputLogPanel outputLogPanel;
     private ErrorLogPanel errorLogPanel;
@@ -282,18 +285,18 @@ public class MainWindow extends JFrame {
         menu.registerToolbar(modelToolbar);
         menu.registerToolbar(controlToolbar);
         loadToolbarParametersFromConfig();
+        loadWindowGeometryFromConfig();
 
         // Create dockable panels
         createPanels();
         createDockingLayout();
-        loadWindowGeometryFromConfig();
 
         // Display window in its default state
         setVisible(true);
         DockingUtils.updateHeaders(defaultDockingPort);
-        DockingManager.display(outputLogDockable);
         setWorkActionsEnabledness(false);
         updateUtilityPanelDockableVisibility();
+        SwingUtilities.invokeLater(this::restoreDockingLayout);
 
         new Thread(() -> {
             // Hack to fix the annoying delay occurring when createGlyphVector is called for the first time
@@ -473,22 +476,14 @@ public class MainWindow extends JFrame {
         DockingManager.setAutoPersist(true);
         PropertyManager.getDockingPortRoot().setTabPlacement(SwingConstants.TOP);
 
+        // Keep split dividers at their intended percentage on resize (prevents size drifting on layout restore)
+        DefaultDockingStrategy.keepConstantPercentage(true);
+
         // Set default perspective
         PerspectiveManager pm = PerspectiveManager.getInstance();
         pm.add(new Perspective(FLEXDOCK_WORKSPACE, FLEXDOCK_WORKSPACE));
         pm.setCurrentPerspective(FLEXDOCK_WORKSPACE, true);
-
-        // Configure perspective manager (should go after docking manager for correctly restoring window layout)
         PerspectiveManager.setRestoreFloatingOnLoad(true);
-        File file = new File(Framework.UILAYOUT_FILE_PATH);
-        PersistenceHandler persistenceHandler = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
-        PerspectiveManager.setPersistenceHandler(persistenceHandler);
-
-        try {
-            DockingManager.loadLayoutModel();
-        } catch (IOException | PersistenceException e) {
-            LogUtils.logWarning("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
-        }
 
         float xSplit = 0.87f;
         float ySplit = 0.8f;
@@ -496,7 +491,7 @@ public class MainWindow extends JFrame {
         documentPlaceholder = DockingUtils.createPlaceholderDockable(new DocumentPlaceholderPanel(),
                 TITLE_PLACEHOLDER, defaultDockingPort);
 
-        UtilityPanelDockable workspaceDockable = DockingUtils.createUtilityDockable(workspacePanel,
+        workspaceDockable = DockingUtils.createUtilityDockable(workspacePanel,
                 TITLE_WORKSPACE, documentPlaceholder, DockingManager.EAST_REGION, xSplit);
 
         propertyEditorDockable = DockingUtils.createUtilityDockable(propertyEditorPanel,
@@ -513,7 +508,7 @@ public class MainWindow extends JFrame {
         errorLogDockable = DockingUtils.createUtilityDockable(errorLogPanel, TITLE_PROBLEMS, outputLogDockable);
         errorLogDockable.registerUpdater(this::updateErrorTitle);
 
-        UtilityPanelDockable javaScriptDockable = DockingUtils.createUtilityDockable(new JavaScriptPanel(),
+        javaScriptDockable = DockingUtils.createUtilityDockable(new JavaScriptPanel(),
                 TITLE_JAVASCRIPT, outputLogDockable);
 
         taskManagerDockable = DockingUtils.createUtilityDockable(taskManagerPanel, TITLE_TASKS, outputLogDockable);
@@ -526,10 +521,42 @@ public class MainWindow extends JFrame {
         registerUtilityPanelDockable(propertyEditorDockable);
         registerUtilityPanelDockable(toolControlsDockable);
         registerUtilityPanelDockable(workspaceDockable);
+    }
 
-        // FIXME: Restoring previously saved layout does not work as expected:
-        // "default" and "restored" layouts interfere with each other, which does not look nice.
-        //DockingManager.restoreLayout();
+    private void restoreDockingLayout() {
+        // Load and apply the saved layout once the default layout is built (loading earlier would let it
+        // overwrite the loaded docking state). Called via invokeLater to let Flexdock deferred listeners
+        // settle, otherwise restoreLayout() rebuilds the dock tree while they record corrupted split ratios.
+        File file = new File(Framework.UILAYOUT_FILE_PATH);
+        PersistenceHandler persistenceHandler = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
+        PerspectiveManager.setPersistenceHandler(persistenceHandler);
+        boolean layoutLoaded;
+        try {
+            layoutLoaded = DockingManager.loadLayoutModel();
+        } catch (IOException | PersistenceException e) {
+            LogUtils.logWarning("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
+            layoutLoaded = false;
+        }
+
+        if (layoutLoaded) {
+            DockingManager.restoreLayout();
+            // The restored dock tree has new tab/split containers, so headers need to be updated
+            DockingUtils.updateHeaders(defaultDockingPort);
+        }
+
+        syncUtilityPanelDockableVisibility(outputLogDockable);
+        syncUtilityPanelDockableVisibility(errorLogDockable);
+        syncUtilityPanelDockableVisibility(javaScriptDockable);
+        syncUtilityPanelDockableVisibility(taskManagerDockable);
+        syncUtilityPanelDockableVisibility(propertyEditorDockable);
+        syncUtilityPanelDockableVisibility(toolControlsDockable);
+        syncUtilityPanelDockableVisibility(workspaceDockable);
+    }
+
+    private void syncUtilityPanelDockableVisibility(UtilityPanelDockable utilityPanelDockable) {
+        boolean docked = isDocked(utilityPanelDockable);
+        utilityPanelDockable.setClosed(!docked);
+        menu.setUtilityPanelDockableVisibility(utilityPanelDockable, docked);
     }
 
     public void shutdown() throws OperationCancelledException {
@@ -549,12 +576,24 @@ public class MainWindow extends JFrame {
         }
         saveWindowGeometryToConfig();
         saveToolbarParametersToConfig();
+        // Capture the window layout while the dock tree is still fully attached and visible.
+        saveDockingLayout();
 
+        // Disable Flexdock auto-persist before content.remove() has detached the dock tree
+        // (otherwise its JVM shutdown hook would save corrupted layout data).
+        DockingManager.setAutoPersist(false);
         content.remove(defaultDockingPort);
-
         outputLogPanel.releaseStream();
         errorLogPanel.releaseStream();
         setVisible(false);
+    }
+
+    private static void saveDockingLayout() {
+        try {
+            DockingManager.storeLayoutModel();
+        } catch (IOException | PersistenceException e) {
+            LogUtils.logWarning("Window layout could not be saved to '" + Framework.UILAYOUT_FILE_PATH + "'.");
+        }
     }
 
     private void loadToolbarParametersFromConfig() {
@@ -722,6 +761,10 @@ public class MainWindow extends JFrame {
         } else if (propertyEditorPanel.isEmpty()) {
             closeUtilityPanelDockable(propertyEditorDockable);
         }
+    }
+
+    private boolean isDocked(UtilityPanelDockable utilityPanelDockable) {
+        return SwingUtilities.isDescendingFrom(utilityPanelDockable.getComponent(), defaultDockingPort);
     }
 
     public void openWork() {
