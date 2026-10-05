@@ -1,5 +1,6 @@
 package org.workcraft.gui;
 
+import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
 import org.flexdock.docking.defaults.DefaultDockingStrategy;
@@ -56,6 +57,7 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 public class MainWindow extends JFrame {
 
@@ -70,6 +72,7 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_TOOLBAR_MODEL_POSITION = "toolbar.model.position";
     private static final String CONFIG_TOOLBAR_CONTROL_VISIBILITY = "toolbar.tool.visibility";
     private static final String CONFIG_TOOLBAR_CONTROL_POSITION = "toolbar.tool.position";
+    private static final String CONFIG_ACTIVE_TABS = "window.activeTabs";
 
     private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_HEIGHT = 450;
@@ -521,6 +524,12 @@ public class MainWindow extends JFrame {
         registerUtilityPanelDockable(propertyEditorDockable);
         registerUtilityPanelDockable(toolControlsDockable);
         registerUtilityPanelDockable(workspaceDockable);
+
+        // Make Output the active tab in the default layout (docking each subsequent tab normally
+        // activates that tab, so without this measure the last docked Tasks tab would end up active).
+        if (outputLogDockable.getComponent().getParent() instanceof JTabbedPane tabbedPane) {
+            tabbedPane.setSelectedComponent(outputLogDockable.getComponent());
+        }
     }
 
     private void restoreDockingLayout() {
@@ -542,6 +551,7 @@ public class MainWindow extends JFrame {
             DockingManager.restoreLayout();
             // The restored dock tree has new tab/split containers, so headers need to be updated
             DockingUtils.updateHeaders(defaultDockingPort);
+            restoreActiveTabsFromConfig();
         }
 
         syncUtilityPanelDockableVisibility(outputLogDockable);
@@ -551,6 +561,52 @@ public class MainWindow extends JFrame {
         syncUtilityPanelDockableVisibility(propertyEditorDockable);
         syncUtilityPanelDockableVisibility(toolControlsDockable);
         syncUtilityPanelDockableVisibility(workspaceDockable);
+    }
+
+    private void restoreActiveTabsFromConfig() {
+        String value = Framework.getInstance().getConfigVar(CONFIG_ACTIVE_TABS, false);
+        if ((value == null) || value.isEmpty()) {
+            return;
+        }
+        Map<String, String> activeIdByGroupKey = new HashMap<>();
+        for (String entry : value.split("\\|")) {
+            int index = entry.lastIndexOf('=');
+            if (index > 0) {
+                activeIdByGroupKey.put(entry.substring(0, index), entry.substring(index + 1));
+            }
+        }
+        restoreActiveTabs(defaultDockingPort, activeIdByGroupKey);
+    }
+
+    private void restoreActiveTabs(Container container, Map<String, String> activeIdByGroupKey) {
+        if (container instanceof JTabbedPane tabbedPane) {
+            String activeId = activeIdByGroupKey.get(getTabGroupKey(tabbedPane));
+            Dockable activeDockable = activeId == null ? null : DockingManager.getDockable(activeId);
+            Component activeComponent = activeDockable == null ? null : activeDockable.getComponent();
+            if ((activeComponent != null) && (activeComponent.getParent() == tabbedPane)) {
+                tabbedPane.setSelectedComponent(activeComponent);
+            }
+        }
+        for (Component child : container.getComponents()) {
+            if (child instanceof Container childContainer) {
+                restoreActiveTabs(childContainer, activeIdByGroupKey);
+            }
+        }
+    }
+
+    private String getTabGroupKey(JTabbedPane tabbedPane) {
+        List<String> memberIds = new ArrayList<>();
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+            Dockable dockable = DockingManager.getDockable(tabbedPane.getComponentAt(i));
+            if (dockable != null) {
+                memberIds.add(dockable.getPersistentId());
+            }
+        }
+        if (memberIds.isEmpty()) {
+            return null;
+        }
+        Collections.sort(memberIds);
+        return String.join(",", memberIds);
     }
 
     private void syncUtilityPanelDockableVisibility(UtilityPanelDockable utilityPanelDockable) {
@@ -576,6 +632,7 @@ public class MainWindow extends JFrame {
         }
         saveWindowGeometryToConfig();
         saveToolbarParametersToConfig();
+        saveActiveTabsToConfig();
         // Capture the window layout while the dock tree is still fully attached and visible.
         saveDockingLayout();
 
@@ -586,6 +643,30 @@ public class MainWindow extends JFrame {
         outputLogPanel.releaseStream();
         errorLogPanel.releaseStream();
         setVisible(false);
+    }
+
+    private void saveActiveTabsToConfig() {
+        // Flexdock does not persist which tab was active in a tabbed group.
+        // Instead, save them in global config for every tabbed group currently in the dock tree.
+        List<String> entries = new ArrayList<>();
+        collectActiveTabEntries(defaultDockingPort, entries);
+        Framework.getInstance().setConfigVar(CONFIG_ACTIVE_TABS, String.join("|", entries), false);
+    }
+
+    private void collectActiveTabEntries(Container container, List<String> entries) {
+        if (container instanceof JTabbedPane tabbedPane) {
+            String groupKey = getTabGroupKey(tabbedPane);
+            Component selected = tabbedPane.getSelectedComponent();
+            Dockable selectedDockable = selected == null ? null : DockingManager.getDockable(selected);
+            if ((groupKey != null) && (selectedDockable != null)) {
+                entries.add(groupKey + "=" + selectedDockable.getPersistentId());
+            }
+        }
+        for (Component child : container.getComponents()) {
+            if (child instanceof Container childContainer) {
+                collectActiveTabEntries(childContainer, entries);
+            }
+        }
     }
 
     private static void saveDockingLayout() {
