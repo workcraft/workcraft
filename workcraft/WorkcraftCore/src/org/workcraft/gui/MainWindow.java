@@ -166,7 +166,7 @@ public class MainWindow extends JFrame {
         errorLogPanel = new ErrorLogPanel(this::updateErrorTitle);
         errorLogPanel.captureStream();
 
-        taskManagerPanel = new TaskManagerPanel(this::updatTaskManagerTitle);
+        taskManagerPanel = new TaskManagerPanel(this::updateTaskManagerTitle);
 
         propertyEditorPanel = new PropertyEditorPanel();
         toolControlsPanel = new ToolControlsPanel();
@@ -191,7 +191,7 @@ public class MainWindow extends JFrame {
         DockingUtils.updateHeader(errorLogDockable);
     }
 
-    private void updatTaskManagerTitle() {
+    private void updateTaskManagerTitle() {
         if (taskManagerDockable.isHiddenTab() && !taskManagerPanel.isEmpty()) {
             if (!taskManagerTimer.isRunning()) {
                 taskManagerTimer.start();
@@ -406,7 +406,7 @@ public class MainWindow extends JFrame {
                 closeUtilityPanelDockable(toolControlsDockable);
                 setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
             }
-            // Unregister editor panale dockable from docking manager
+            // Unregister editor panel dockable from docking manager
             DockingManager.close(editorPanelDockable);
             DockingManager.unregisterDockable(editorPanelDockable);
             editorPanelDockable.setClosed(true);
@@ -517,7 +517,7 @@ public class MainWindow extends JFrame {
                 TITLE_JAVASCRIPT, outputLogDockable);
 
         taskManagerDockable = DockingUtils.createUtilityDockable(taskManagerPanel, TITLE_TASKS, outputLogDockable);
-        taskManagerDockable.registerUpdater(this::updatTaskManagerTitle);
+        taskManagerDockable.registerUpdater(this::updateTaskManagerTitle);
 
         registerUtilityPanelDockable(outputLogDockable);
         registerUtilityPanelDockable(errorLogDockable);
