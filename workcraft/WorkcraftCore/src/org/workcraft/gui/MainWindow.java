@@ -3,10 +3,13 @@ package org.workcraft.gui;
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
+import org.flexdock.docking.DockingPort;
+import org.flexdock.docking.defaults.DockingSplitPane;
 import org.flexdock.docking.defaults.DefaultDockingStrategy;
 import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.GhostPreview;
 import org.flexdock.docking.props.PropertyManager;
+import org.flexdock.docking.state.DockingState;
 import org.flexdock.docking.state.PersistenceException;
 import org.flexdock.perspective.Perspective;
 import org.flexdock.perspective.PerspectiveManager;
@@ -74,6 +77,9 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_TOOLBAR_CONTROL_POSITION = "toolbar.tool.position";
     private static final String CONFIG_ACTIVE_TABS = "window.activeTabs";
 
+    private static final float DEFAULT_COLUMN_SPLIT = 0.8f;
+    private static final String KEY_ABOVE_WORKSPACE = "above|Workspace";
+
     private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_HEIGHT = 450;
 
@@ -111,6 +117,9 @@ public class MainWindow extends JFrame {
     private PropertyEditorPanel propertyEditorPanel;
     private ToolControlsPanel toolControlsPanel;
     private WorkspacePanel workspacePanel;
+
+    private float columnRatio = 0.87f;
+    private final Map<String, Float> columnSplits = new HashMap<>();
 
     private GraphEditorPanel currentEditor;
     private Menu menu;
@@ -440,14 +449,125 @@ public class MainWindow extends JFrame {
 
     private void closeUtilityPanelDockable(UtilityPanelDockable utilityPanelDockable) {
         menu.setUtilityPanelDockableVisibility(utilityPanelDockable, false);
+        if (isColumnPanel(utilityPanelDockable)) {
+            rememberColumnRatio();
+            rememberColumnSplit(utilityPanelDockable);
+        }
         DockingManager.close(utilityPanelDockable);
         utilityPanelDockable.setClosed(true);
     }
 
     public void displayUtilityPanelDockable(UtilityPanelDockable utilityPanelDockable) {
-        DockingManager.display(utilityPanelDockable);
-        utilityPanelDockable.setClosed(false);
-        menu.setUtilityPanelDockableVisibility(utilityPanelDockable, true);
+        if (isColumnPanel(utilityPanelDockable) && !isColumnDocked()) {
+            // Flexdock cannot restore the first panel of the empty column (the recorded relative parents are closed)
+            boolean displayed = DockingManager.dock(utilityPanelDockable, defaultDockingPort, DockingConstants.EAST_REGION);
+            if (displayed) {
+                DockingManager.setSplitProportion(utilityPanelDockable, columnRatio);
+            }
+            utilityPanelDockable.setClosed(!displayed);
+            menu.setUtilityPanelDockableVisibility(utilityPanelDockable, displayed);
+        } else if ((utilityPanelDockable == workspaceDockable) && (getColumnPort() != null)) {
+            // Dock below the whole column (not relative to a single panel, which would give up part of its space)
+            boolean displayed = DockingManager.dock(utilityPanelDockable, getColumnPort(), DockingConstants.SOUTH_REGION);
+            if (displayed) {
+                DockingManager.setSplitProportion(utilityPanelDockable, columnSplits.getOrDefault(KEY_ABOVE_WORKSPACE, DEFAULT_COLUMN_SPLIT));
+            }
+            utilityPanelDockable.setClosed(!displayed);
+            menu.setUtilityPanelDockableVisibility(utilityPanelDockable, displayed);
+        } else {
+            updateColumnRelativeParent(utilityPanelDockable);
+            boolean displayed = DockingManager.display(utilityPanelDockable);
+            utilityPanelDockable.setClosed(!displayed);
+            menu.setUtilityPanelDockableVisibility(utilityPanelDockable, displayed);
+        }
+    }
+
+    private boolean isColumnPanel(UtilityPanelDockable utilityPanelDockable) {
+        return (utilityPanelDockable == propertyEditorDockable) || (utilityPanelDockable == toolControlsDockable)
+                || (utilityPanelDockable == workspaceDockable);
+    }
+
+    private boolean isColumnDocked() {
+        return isDocked(propertyEditorDockable) || isDocked(toolControlsDockable) || isDocked(workspaceDockable);
+    }
+
+    private DockingPort getColumnPort() {
+        // Docking port containing the open Property editor or Tool controls panels
+        if (defaultDockingPort.getDockedComponent() instanceof DockingSplitPane splitPane) {
+            for (Component component : new Component[] {splitPane.getLeftComponent(), splitPane.getRightComponent()}) {
+                if ((component instanceof DockingPort dockingPort)
+                        && (SwingUtilities.isDescendingFrom(propertyEditorDockable.getComponent(), component)
+                        || SwingUtilities.isDescendingFrom(toolControlsDockable.getComponent(), component))) {
+
+                    return dockingPort;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void rememberColumnRatio() {
+        if ((defaultDockingPort.getDockedComponent() instanceof DockingSplitPane splitPane)
+                && (splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT)
+                && (splitPane.getPercent() > 0.0) && (splitPane.getPercent() < 1.0)) {
+
+            columnRatio = (float) splitPane.getPercent();
+        }
+    }
+
+    private void rememberColumnSplit(UtilityPanelDockable utilityPanelDockable) {
+        // Remember the divider position between the panel and its neighbour in the column, as Flexdock loses it
+        Component component = utilityPanelDockable.getComponent();
+        if ((SwingUtilities.getAncestorOfClass(DockingSplitPane.class, component) instanceof DockingSplitPane splitPane)
+                && (splitPane.getOrientation() == JSplitPane.VERTICAL_SPLIT)
+                && (splitPane.getPercent() > 0.0) && (splitPane.getPercent() < 1.0)) {
+
+            Dockable top = getSingleDockable(splitPane.getTopComponent());
+            Dockable bottom = getSingleDockable(splitPane.getBottomComponent());
+            if (bottom == workspaceDockable) {
+                columnSplits.put(KEY_ABOVE_WORKSPACE, (float) splitPane.getPercent());
+            }
+            if ((top != null) && (bottom != null)) {
+                columnSplits.put(top.getPersistentId() + "|" + bottom.getPersistentId(), (float) splitPane.getPercent());
+            }
+        }
+    }
+
+    private Dockable getSingleDockable(Component component) {
+        if (component instanceof DockingPort dockingPort) {
+            Set<?> dockables = dockingPort.getDockables();
+            if ((dockables.size() == 1) && (dockables.iterator().next() instanceof Dockable dockable)) {
+                return dockable;
+            }
+        }
+        return null;
+    }
+
+    private void updateColumnRelativeParent(UtilityPanelDockable utilityPanelDockable) {
+        // Property editor, Tool controls and Workspace form a column (in this order, top to bottom) on the right.
+        // Flexdock records the relative parent at the time of closing, which may be a panel that is closed
+        // now or the one that would give up its space, so dock next to the nearest open neighbour in the column.
+        UtilityPanelDockable relativeParent = null;
+        String region = DockingConstants.NORTH_REGION;
+        if (utilityPanelDockable == propertyEditorDockable) {
+            relativeParent = isDocked(toolControlsDockable) ? toolControlsDockable : workspaceDockable;
+        } else if (utilityPanelDockable == toolControlsDockable) {
+            relativeParent = isDocked(propertyEditorDockable) ? propertyEditorDockable : workspaceDockable;
+            region = isDocked(propertyEditorDockable) ? DockingConstants.SOUTH_REGION : DockingConstants.NORTH_REGION;
+        }
+        DockingState dockingState = PerspectiveManager.getInstance().getDockingState(utilityPanelDockable);
+        if ((relativeParent != null) && isDocked(relativeParent) && (dockingState != null)
+                && ((dockingState.getRelativeParent() != relativeParent) || !region.equals(dockingState.getRegion()))) {
+
+            dockingState.setRelativeParent(relativeParent);
+            dockingState.setRegion(region);
+            boolean isTop = DockingConstants.NORTH_REGION.equals(region);
+            String key = isTop
+                    ? utilityPanelDockable.getPersistentId() + "|" + relativeParent.getPersistentId()
+                    : relativeParent.getPersistentId() + "|" + utilityPanelDockable.getPersistentId();
+
+            dockingState.setSplitRatio(columnSplits.getOrDefault(key, DEFAULT_COLUMN_SPLIT));
+        }
     }
 
     public void toggleUtilityPanelDockable(UtilityPanelDockable utilityPanelDockable) {
@@ -832,14 +952,22 @@ public class MainWindow extends JFrame {
     }
 
     public void updateUtilityPanelDockableVisibility() {
-        // In order to preserve the layout, display both the Property
-        // editor and the Tool controls, and then close the empty one.
-        displayUtilityPanelDockable(propertyEditorDockable);
-        displayUtilityPanelDockable(toolControlsDockable);
-        DockingManager.setSplitProportion(toolControlsDockable, 0.3f);
-        if (toolControlsPanel.isEmpty()) {
+        // Show Tool controls unless empty, and Property editor unless empty while Tool controls are shown.
+        // Change only panels that are not in the desired state, as opening/closing rebuilds the split tree.
+        boolean showToolControls = !toolControlsPanel.isEmpty();
+        boolean showPropertyEditor = !showToolControls || !propertyEditorPanel.isEmpty();
+        boolean propertyEditorDocked = isDocked(propertyEditorDockable);
+        // Tool controls are docked relative to the Property editor, so it is needed for displaying them
+        if ((showPropertyEditor || showToolControls) && !propertyEditorDocked) {
+            displayUtilityPanelDockable(propertyEditorDockable);
+        }
+        if (showToolControls && !isDocked(toolControlsDockable)) {
+            displayUtilityPanelDockable(toolControlsDockable);
+        }
+        if (!showToolControls && isDocked(toolControlsDockable)) {
             closeUtilityPanelDockable(toolControlsDockable);
-        } else if (propertyEditorPanel.isEmpty()) {
+        }
+        if (!showPropertyEditor && isDocked(propertyEditorDockable)) {
             closeUtilityPanelDockable(propertyEditorDockable);
         }
     }
