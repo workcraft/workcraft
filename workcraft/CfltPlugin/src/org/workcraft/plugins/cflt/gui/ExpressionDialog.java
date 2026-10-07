@@ -56,11 +56,11 @@ public class ExpressionDialog extends PresetDialog<ExpressionParameters> {
 
         addExample(presetManager, "General information",
                 "// '//' denotes a comment till the end of the line"
-                + "\n// 'A | B' - concurrency of A and B"
-                + "\n// 'A # B' - choice between A and B"
+                + "\n// '{ A }' - iteration"
                 + "\n// 'A ; B' or 'A B' - sequential composition of A and B"
-                + "\n// '{ A }' - iteration (experimental)"
-                + "\n// Operators ';', '#', and '|' are given in the order of decreasing precedences"
+                + "\n// 'A # B' - choice between A and B"
+                + "\n// 'A | B' - concurrency of A and B"
+                + "\n// Operators are given in the order of decreasing precedence"
                 + "\n// Parentheses '( ... )' can be used to override the default precedence");
 
         addExample(presetManager, "Concurrency between transitions",
