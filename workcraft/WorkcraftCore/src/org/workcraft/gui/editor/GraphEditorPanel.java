@@ -417,18 +417,15 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         if ((tool == null) || !tool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
             propertyEditorPanel.clear();
         } else {
-            propertyEditorPanel.set(wrapProperties(properties));
+            JButton resetButton = null;
             if ((templateNode != null) && (defaultNode != null)) {
-                JButton resetButton = new JButton(RESET_TO_DEFAULTS);
+                resetButton = new JButton(RESET_TO_DEFAULTS);
                 resetButton.addActionListener(event -> {
                     templateNode.copyStyle(defaultNode);
                     updatePropertyViewRequested = true;
                 });
-                propertyEditorPanel.add(resetButton, BorderLayout.SOUTH);
-                // A hack to display reset button: toggle its visibility a couple of times.
-                resetButton.setVisible(false);
-                resetButton.setVisible(true);
             }
+            propertyEditorPanel.set(wrapProperties(properties), resetButton);
         }
         mainWindow.setPropertyEditorTitle(title);
         updatePropertyViewRequested = false;
