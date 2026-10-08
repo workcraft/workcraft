@@ -86,10 +86,23 @@ class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
         }
     };
 
+    private boolean colorAccepted = false;
+    private boolean dialogOpen = false;
+    private Runnable dialogDismissedHandler = null;
+
     ColorComboBoxEditor(Color color) {
         button.setBackground(color);
         button.setActionCommand(TAG_EDIT);
         button.addActionListener(this);
+    }
+
+    boolean isDialogOpen() {
+        return dialogOpen;
+    }
+
+    // Handler is called when the colour dialog is closed without accepting a colour (e.g. cancelled)
+    void setDialogDismissedHandler(Runnable handler) {
+        dialogDismissedHandler = handler;
     }
 
     @Override
@@ -130,9 +143,20 @@ class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
             approx.target = this;
             Color color = button.getBackground();
             chooser.setColor(color);
-            dialog.setVisible(true);
+            colorAccepted = false;
+            // Modal dialog, so this returns after it has been closed
+            dialogOpen = true;
+            try {
+                dialog.setVisible(true);
+            } finally {
+                dialogOpen = false;
+            }
+            if (!colorAccepted && (dialogDismissedHandler != null)) {
+                dialogDismissedHandler.run();
+            }
         } else {
             // User pressed dialog's "OK" button.
+            colorAccepted = true;
             Color color = chooser.getColor();
             button.setBackground(color);
             fireActionEvent(color);
