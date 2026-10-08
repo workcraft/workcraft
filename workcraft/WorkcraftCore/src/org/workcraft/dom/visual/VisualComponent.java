@@ -452,24 +452,24 @@ public class VisualComponent extends VisualTransformableNode implements Dependen
         LinkedList<Color> foregroundColors = new LinkedList<>();
         LinkedList<Color> fillColors = new LinkedList<>();
         LinkedList<Color> nameColors = new LinkedList<>();
-        LinkedList<Color> labelColors = new LinkedList<>();
         LinkedList<Positioning> namePositioning = new LinkedList<>();
+        LinkedList<Color> labelColors = new LinkedList<>();
         LinkedList<Positioning> labelPositioning = new LinkedList<>();
         for (Stylable src: srcs) {
             if (src instanceof VisualComponent srcComponent) {
                 foregroundColors.add(srcComponent.getForegroundColor());
                 fillColors.add(srcComponent.getFillColor());
                 nameColors.add(srcComponent.getNameColor());
-                labelColors.add(srcComponent.getLabelColor());
                 namePositioning.add(srcComponent.getNamePositioning());
+                labelColors.add(srcComponent.getLabelColor());
                 labelPositioning.add(srcComponent.getLabelPositioning());
             }
         }
         setForegroundColor(ColorUtils.mix(foregroundColors));
         setFillColor(ColorUtils.mix(fillColors));
         setNameColor(ColorUtils.mix(nameColors));
-        setLabelColor(ColorUtils.mix(labelColors));
         setNamePositioning(MixUtils.vote(namePositioning, Positioning.CENTER));
+        setLabelColor(ColorUtils.mix(labelColors));
         setLabelPositioning(MixUtils.vote(labelPositioning, Positioning.CENTER));
     }
 

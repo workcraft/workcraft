@@ -13,9 +13,11 @@ import java.util.Map;
 
 public class EditorCommonSettings extends AbstractCommonSettings {
 
-    public static final Map<Double, String> PREDEFINED_SCREEN_DPI = new LinkedHashMap<>();
+    private static final Map<Double, String> PREDEFINED_SCREEN_DPI = new LinkedHashMap<>();
+    private static final double DEFAULT_SCREEN_DPI = 96.0;
 
     static {
+        PREDEFINED_SCREEN_DPI.put(DEFAULT_SCREEN_DPI, "default");
         PREDEFINED_SCREEN_DPI.put(81.6, "27\" 1920 x 1080 (or 3840 x 2160 @ 200%)");
         PREDEFINED_SCREEN_DPI.put(91.8, "24\" 1920 x 1080");
         PREDEFINED_SCREEN_DPI.put(94.3, "24\" 1920 x 1200");
@@ -136,7 +138,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
      * Defaults
      */
     // GUI
-    private static final double defaultScreenDpi = 96.0;
+    private static final double defaultScreenDpi = DEFAULT_SCREEN_DPI;
     private static final double defaultFontSize = 10.0;
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final TabStyle defaultTabStyle = TabStyle.SCROLL;
