@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.function.BiPredicate;
 
 public class FlatComboBox extends JComboBox<Object> {
 
@@ -27,6 +28,8 @@ public class FlatComboBox extends JComboBox<Object> {
 
     // Text in editor was typed by user after the last programmatic update or list navigation
     private boolean textTyped = false;
+
+    private BiPredicate<Object, Object> currentItemMatcher = null;
 
     static class FlatComboBoxUI extends BasicComboBoxUI {
 
@@ -129,6 +132,11 @@ public class FlatComboBox extends JComboBox<Object> {
         private final JPanel separatorPanel = new JPanel(new BorderLayout());
         private final JLabel separatorLabel = new JLabel();
 
+        // Item is the current value of the combo box (as opposed to the item highlighted in the list)
+        private boolean current = false;
+        private int checkWidth = 0;
+        private Border listItemBorder = INSET_BORDER;
+
         FlatListCellRenderer() {
             separatorPanel.setBorder(new EmptyBorder(2, 0, 2, 0));
             // Separator draws its line at the top of its area, so centre it vertically within the row
@@ -139,6 +147,32 @@ public class FlatComboBox extends JComboBox<Object> {
             separatorPanel.add(lineWrapper, BorderLayout.CENTER);
             separatorLabel.setBorder(new EmptyBorder(0, 4, 0, 4));
             separatorPanel.add(separatorLabel, BorderLayout.EAST);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            if (current && (g instanceof Graphics2D g2)) {
+                paintCheckMark(g2);
+            }
+        }
+
+        private void paintCheckMark(Graphics2D g2) {
+            // Check mark is in the space reserved at the right edge, after the insets
+            int size = Math.max(checkWidth / 4, 2);
+            int x = getWidth() - getInsets().right + checkWidth / 2;
+            int y = getHeight() / 2;
+            Stroke stroke = g2.getStroke();
+            Object antialiasing = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setColor(getForeground());
+            g2.setStroke(new BasicStroke(Math.max(checkWidth / 8f, 1f)));
+            g2.drawPolyline(
+                    new int[]{x - size, x - size / 3, x + size},
+                    new int[]{y, y + size * 2 / 3, y - size * 2 / 3},
+                    3);
+            g2.setStroke(stroke);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
         }
 
         @Override
@@ -161,7 +195,21 @@ public class FlatComboBox extends JComboBox<Object> {
             JComponent renderer = (JComponent) super.getListCellRendererComponent(
                     list, value, index, isSelected, cellHasFocus);
 
-            renderer.setBorder(INSET_BORDER);
+            // Index is negative when the renderer is used for the value displayed in the combo box itself
+            Object selected = getSelectedItem();
+            current = (index >= 0) && (selected != null) && isCurrentItem(value, selected);
+            if (index >= 0) {
+                // Space for the check mark is reserved in all items of the list
+                int width = renderer.getFontMetrics(renderer.getFont()).getHeight();
+                if ((width != checkWidth) || (listItemBorder == INSET_BORDER)) {
+                    checkWidth = width;
+                    Insets insets = INSET_BORDER.getBorderInsets(renderer);
+                    listItemBorder = new EmptyBorder(insets.top, insets.left, insets.bottom, insets.right + width);
+                }
+                renderer.setBorder(listItemBorder);
+            } else {
+                renderer.setBorder(INSET_BORDER);
+            }
             renderer.setEnabled(FlatComboBox.this.isEnabled());
             return renderer;
         }
@@ -243,8 +291,26 @@ public class FlatComboBox extends JComboBox<Object> {
         super();
         setRenderer(new FlatListCellRenderer());
         setEditor(new FlatTextComboBoxEditor());
-        setFocusable(false);
         setMaximumRowCount(25);
+    }
+
+    // Apply text typed by user (if any), e.g. when editing is finished by other means than Enter
+    public void commitTypedText() {
+        if (textTyped && (getEditor() instanceof FlatTextComboBoxEditor flatEditor)) {
+            setPopupVisible(false);
+            flatEditor.commit();
+        }
+    }
+
+    // Custom check whether a list item corresponds to the selected item (e.g. when selected item is a text
+    // that stands for a more complex item). By default, the items are compared for equality.
+    public void setCurrentItemMatcher(BiPredicate<Object, Object> matcher) {
+        currentItemMatcher = matcher;
+    }
+
+    private boolean isCurrentItem(Object item, Object selected) {
+        return (item != null) && (item.equals(selected)
+                || ((currentItemMatcher != null) && currentItemMatcher.test(item, selected)));
     }
 
     private void commitEditorText() {
@@ -253,7 +319,14 @@ public class FlatComboBox extends JComboBox<Object> {
             if (!textTyped && (getUI() instanceof FlatComboBoxUI flatComboBoxUI)) {
                 Object item = flatComboBoxUI.getPopupList().getSelectedValue();
                 if ((item != null) && !(item instanceof Separator)) {
-                    getEditor().setItem(item);
+                    // Select the item itself, as editor text field cannot represent non-text items
+                    boolean changed = !item.equals(getSelectedItem());
+                    setPopupVisible(false);
+                    setSelectedItem(item);
+                    if (!changed) {
+                        fireActionEvent();
+                    }
+                    return;
                 }
             }
             setPopupVisible(false);

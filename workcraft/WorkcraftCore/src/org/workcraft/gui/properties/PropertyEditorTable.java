@@ -15,7 +15,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +52,11 @@ public class PropertyEditorTable extends JTable {
 
     private TableCellRenderer[] cellRenderers;
     private TableCellEditor[] cellEditors;
+
+    private Runnable editingFinishedHandler = null;
+
+    // Component that had focus before editing started. Kept while switching between cells.
+    private Component previousFocusOwner = null;
 
     public PropertyEditorTable() {
         this("", "");
@@ -87,11 +95,94 @@ public class PropertyEditorTable extends JTable {
     public void assign(Properties properties) {
         model.assign(properties);
         update();
+        // Structure change resets column widths, and they are only fixed by a later layout. Do it now, as
+        // otherwise a click in the same event (e.g. that stopped the edit) is mapped to a wrong column.
+        doLayout();
     }
 
     public void clear() {
+        // Clearing removes the active editor without finishing the edit
+        previousFocusOwner = null;
         model.clear();
         update();
+    }
+
+    // Handler is called when an edit is finished (stopped or cancelled)
+    public void setEditingFinishedHandler(Runnable handler) {
+        editingFinishedHandler = handler;
+    }
+
+    private void notifyEditingFinished() {
+        if (editingFinishedHandler != null) {
+            editingFinishedHandler.run();
+        }
+    }
+
+    @Override
+    public void editingCanceled(ChangeEvent event) {
+        super.editingCanceled(event);
+        restoreFocus();
+        notifyEditingFinished();
+    }
+
+    @Override
+    public boolean editCellAt(int row, int column, EventObject e) {
+        // When switching from another cell the original owner is kept: the current focus owner is either that
+        // editor or a component that has just got the focus after the editor was removed
+        Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
+        // (the previous edit is already stopped here, but it has kept the owner as it was a cell switch)
+        boolean switching = (previousFocusOwner != null) && previousFocusOwner.isShowing();
+        boolean result = super.editCellAt(row, column, e);
+        if (result && !switching && (focusOwner != null) && !SwingUtilities.isDescendingFrom(focusOwner, this)) {
+            previousFocusOwner = focusOwner;
+        }
+        return result;
+    }
+
+    /**
+     * Focus listener helper for editors with a focusable component: stops the edit when the focus has left it.
+     * Does nothing if the editor is no longer the active one (e.g. replaced by an editor of another cell),
+     * and if the focus has gone outside the table on purpose, it is not taken back.
+     */
+    public static void stopEditingOnFocusLost(JTable table, TableCellEditor editor, FocusEvent e) {
+        if (e.isTemporary() || (table == null) || (table.getCellEditor() != editor)) {
+            return;
+        }
+        Component opposite = e.getOppositeComponent();
+        if ((opposite != null) && !SwingUtilities.isDescendingFrom(opposite, table)
+                && (table instanceof PropertyEditorTable propertyTable)) {
+
+            propertyTable.previousFocusOwner = null;
+        }
+        editor.stopCellEditing();
+    }
+
+    /**
+     * Cancels the edit, but only if the editor is still the active one of the table (i.e. the edit has not been
+     * stopped or replaced by an editor of another cell in the meantime).
+     */
+    public static void cancelEditingIfActive(JTable table, TableCellEditor editor) {
+        if ((table != null) && (table.getCellEditor() == editor)) {
+            editor.cancelCellEditing();
+        }
+    }
+
+    private void restoreFocus() {
+        // Click on another table cell stops the current edit and starts a new one that must keep the focus
+        // and inherit the previous focus owner
+        if ((EventQueue.getCurrentEvent() instanceof MouseEvent mouseEvent) && (mouseEvent.getSource() == this)) {
+            return;
+        }
+        Component owner = previousFocusOwner;
+        previousFocusOwner = null;
+        // Deferred, as stopping the edit makes the table request focus for itself
+        if (owner != null) {
+            SwingUtilities.invokeLater(() -> {
+                if (owner.isShowing()) {
+                    owner.requestFocusInWindow();
+                }
+            });
+        }
     }
 
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -151,6 +242,8 @@ public class PropertyEditorTable extends JTable {
             } finally {
                 removeEditor();
                 update();
+                restoreFocus();
+                notifyEditingFinished();
             }
         }
     }

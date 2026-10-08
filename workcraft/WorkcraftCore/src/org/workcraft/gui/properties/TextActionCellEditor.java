@@ -17,6 +17,9 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
     private final JTextField text = new FlatTextField();
     private final JButton rightButton = new JButton();
 
+    // Table this editor was last activated in
+    private JTable table = null;
+
     public TextActionCellEditor() {
         leftButton.setFocusable(false);
         leftButton.setVisible(false);
@@ -26,9 +29,7 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
         text.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
-                if (!e.isTemporary()) {
-                    stopCellEditing();
-                }
+                PropertyEditorTable.stopEditingOnFocusLost(table, TextActionCellEditor.this, e);
             }
         });
 
@@ -49,6 +50,7 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        this.table = table;
         if (value instanceof TextAction textAction) {
             int buttonSize = table.getRowHeight(row);
             Dimension buttonDimension = new Dimension(buttonSize, buttonSize);
