@@ -18,7 +18,9 @@ public class LegendListDeclaration extends PropertyDeclaration<LegendList> {
         return addLegend(title, null, null, background, null);
     }
 
-    public LegendListDeclaration addLegend(String title, String tooltip, Color foreground, Color background, Runnable runnable) {
+    public LegendListDeclaration addLegend(String title, String tooltip, Color foreground, Color background,
+            Runnable runnable) {
+
         legendList.add(new Legend(title, tooltip, foreground, background, runnable));
         return this;
     }

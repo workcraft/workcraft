@@ -39,19 +39,19 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
         chooseButton.setText(null);
         chooseButton.setToolTipText(null);
 
-        if (value instanceof File file) {
+        if (value instanceof File fileValue) {
             int buttonSize = table.getRowHeight(row);
             Dimension buttonDimension = new Dimension(buttonSize, buttonSize);
             clearButton.setPreferredSize(buttonDimension);
 
-            if (file.exists()) {
+            if (fileValue.exists()) {
                 chooseButton.setForeground(Color.BLACK);
             } else {
                 chooseButton.setForeground(Color.RED);
             }
 
-            chooseButton.setText(file.getPath());
-            chooseButton.setToolTipText(file.getAbsolutePath());
+            chooseButton.setText(fileValue.getPath());
+            chooseButton.setToolTipText(fileValue.getAbsolutePath());
 
             Color background = isSelected ? table.getSelectionBackground() : table.getBackground();
             setBorder(new MatteBorder(0, 0, 0, 0, background));

@@ -52,13 +52,13 @@ public class FileReferenceCellRenderer extends JPanel implements TableCellRender
         clearButton.setEnabled(false);
         chooseButton.setToolTipText(null);
 
-        if (value instanceof FileReference fileReference) {
+        if (value instanceof FileReference fileReferenceValue) {
             int buttonSize = table.getRowHeight(row);
             Dimension buttonDimension = new Dimension(buttonSize, buttonSize);
             enterButton.setPreferredSize(buttonDimension);
             clearButton.setPreferredSize(buttonDimension);
 
-            File file = fileReference.getFile();
+            File file = fileReferenceValue.getFile();
             if (file != null) {
                 if (file.exists()) {
                     enterButton.setEnabled(true);

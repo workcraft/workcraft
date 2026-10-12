@@ -36,13 +36,14 @@ public class SilverOceanTheme extends OceanTheme {
             ButtonModel buttonModel = abstractButton.getModel();
             int w = getIconWidth();
             int h = getIconHeight();
-            if (g instanceof Graphics2D g2) {
+            if (g instanceof Graphics2D g2d) {
                 RenderingHints rh = new RenderingHints(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setRenderingHints(rh);
+
+                g2d.setRenderingHints(rh);
                 float s = SizeHelper.getMinimalStrokeWidth();
-                g2.setStroke(new BasicStroke(s));
+                g2d.setStroke(new BasicStroke(s));
             }
             g.setColor(Color.WHITE);
             g.fillRect(x, y, w, h);
@@ -78,13 +79,14 @@ public class SilverOceanTheme extends OceanTheme {
             ButtonModel buttonModel = abstractButton.getModel();
             int w = getIconWidth();
             int h = getIconHeight();
-            if (g instanceof Graphics2D g2) {
+            if (g instanceof Graphics2D g2d) {
                 RenderingHints rh = new RenderingHints(
                         RenderingHints.KEY_ANTIALIASING,
                         RenderingHints.VALUE_ANTIALIAS_ON);
-                g2.setRenderingHints(rh);
+
+                g2d.setRenderingHints(rh);
                 float s = SizeHelper.getMinimalStrokeWidth();
-                g2.setStroke(new BasicStroke(s));
+                g2d.setStroke(new BasicStroke(s));
             }
             g.setColor(Color.WHITE);
             g.fillOval(x, y, w - 1, h - 1);

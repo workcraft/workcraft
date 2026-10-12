@@ -83,8 +83,8 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
     @Override
     public Object getCellEditorValue() {
         Object selectedItem = comboBox.getSelectedItem();
-        if (selectedItem instanceof ChoiceWrapper) {
-            return ((ChoiceWrapper) selectedItem).object;
+        if (selectedItem instanceof ChoiceWrapper choiceWrapper) {
+            return choiceWrapper.object;
         }
         return null;
     }

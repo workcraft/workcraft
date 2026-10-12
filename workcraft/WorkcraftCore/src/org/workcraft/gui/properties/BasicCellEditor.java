@@ -113,8 +113,8 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
         }
         if (component instanceof FlatComboBox comboBox) {
             Object item = comboBox.getSelectedItem();
-            if (item instanceof ChoiceWrapper wrapper) {
-                return wrapper.object.toString();
+            if (item instanceof ChoiceWrapper choiceWrapper) {
+                return choiceWrapper.object.toString();
             } else {
                 return item;
             }
@@ -126,8 +126,8 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         this.table = table;
 
-        if ((component instanceof FlatTextField textField) && (value instanceof String text)) {
-            textField.setText(text);
+        if ((component instanceof FlatTextField textField) && (value instanceof String stringValue)) {
+            textField.setText(stringValue);
         }
         if (component instanceof FlatComboBox comboBox) {
             initialising = true;

@@ -79,14 +79,13 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
     public Component getTableCellEditorComponent(JTable table, Object value,
             boolean isSelected, int row, int column) {
 
-        if (value instanceof File) {
-            file = (File) value;
+        if (value instanceof File fileValue) {
+            file = fileValue;
         }
         if (table != null) {
             int buttonSize = table.getRowHeight(row);
             Dimension buttonDimension = new Dimension(buttonSize, buttonSize);
             clearButton.setPreferredSize(buttonDimension);
-
             panel.setFont(table.getFont());
         }
         return panel;

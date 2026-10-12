@@ -205,27 +205,28 @@ public class FlatComboBox extends JComboBox<Object> {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (current && (g instanceof Graphics2D g2)) {
-                paintCheckMark(g2);
+            if (current && (g instanceof Graphics2D g2d)) {
+                paintCheckMark(g2d);
             }
         }
 
-        private void paintCheckMark(Graphics2D g2) {
+        private void paintCheckMark(Graphics2D g2d) {
             // Check mark is in the space reserved at the right edge, after the insets
             int size = Math.max(checkWidth / 4, 2);
             int x = getWidth() - getInsets().right + checkWidth / 2;
             int y = getHeight() / 2;
-            Stroke stroke = g2.getStroke();
-            Object antialiasing = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(getForeground());
-            g2.setStroke(new BasicStroke(Math.max(checkWidth / 8f, 1f)));
-            g2.drawPolyline(
+            Stroke stroke = g2d.getStroke();
+            Object antialiasing = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setColor(getForeground());
+            g2d.setStroke(new BasicStroke(Math.max(checkWidth / 8f, 1f)));
+            g2d.drawPolyline(
                     new int[]{x - size, x - size / 3, x + size},
                     new int[]{y, y + size * 2 / 3, y - size * 2 / 3},
                     3);
-            g2.setStroke(stroke);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+
+            g2d.setStroke(stroke);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
         }
 
         @Override

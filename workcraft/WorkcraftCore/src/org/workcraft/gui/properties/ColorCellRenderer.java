@@ -13,8 +13,8 @@ public class ColorCellRenderer extends FlatComboBox implements TableCellRenderer
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
 
-        if (value instanceof Color) {
-            setBackground((Color) value);
+        if (value instanceof Color colorValue) {
+            setBackground(colorValue);
         }
         setOpaque(value == null);
         boolean isEnabled = table.isEnabled() && table.isCellEditable(row, column);

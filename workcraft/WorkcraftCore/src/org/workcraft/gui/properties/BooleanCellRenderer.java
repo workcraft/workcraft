@@ -14,8 +14,8 @@ public class BooleanCellRenderer extends JCheckBox implements TableCellRenderer 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof Boolean) {
-            setSelected((Boolean) value);
+        if (value instanceof Boolean boolValue) {
+            setSelected(boolValue);
         }
         setOpaque(value == null);
         boolean isEnabled = table.isEnabled() && table.isCellEditable(row, column);
