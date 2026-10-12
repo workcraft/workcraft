@@ -43,6 +43,7 @@ public class PropertyEditorTable extends JTable {
         propertyClasses.put(ActionList.class, new ActionListProperty());
         propertyClasses.put(Toggle.class, new ToggleProperty());
         propertyClasses.put(LegendList.class, new LegendListProperty());
+        propertyClasses.put(Separator.class, new SeparatorProperty());
 
         PluginManager pm = Framework.getInstance().getPluginManager();
         for (PropertyClassProvider p : pm.getPropertyProviders()) {
@@ -185,30 +186,37 @@ public class PropertyEditorTable extends JTable {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     private void update() {
         cellRenderers = new TableCellRenderer[model.getRowCount()];
         cellEditors = new TableCellEditor[model.getRowCount()];
         for (int i = 0; i < model.getRowCount(); i++) {
-            PropertyDescriptor decl = model.getDeclaration(i);
-            Class<?> type = decl.getType();
-            if (type.isEnum()) {
-                model.setRowClass(i, null);
-                cellRenderers[i] = new ChoiceCellRenderer();
-                cellEditors[i] = new ChoiceCellEditor(decl);
+            update(i);
+        }
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private void update(int row) {
+        PropertyDescriptor decl = model.getDeclaration(row);
+        Class<?> type = decl.getType();
+        if (type == Separator.class) {
+            setRowHeight(row, (int) Math.round(getRowHeight() * SeparatorCellRenderer.ROW_HEIGHT_FACTOR));
+        }
+        if (type.isEnum()) {
+            model.setRowClass(row, null);
+            cellRenderers[row] = new ChoiceCellRenderer();
+            cellEditors[row] = new ChoiceCellEditor(decl);
+        } else {
+            PropertyClass cls = propertyClasses.get(type);
+            model.setRowClass(row, cls);
+            if (cls != null) {
+                Map<?, String> predefinedValues = decl.getChoice();
+                cellRenderers[row] = cls.getCellRenderer(predefinedValues != null);
+                cellEditors[row] = cls.getCellEditor(predefinedValues);
             } else {
-                PropertyClass cls = propertyClasses.get(type);
-                model.setRowClass(i, cls);
-                if (cls != null) {
-                    Map<?, String> predefinedValues = decl.getChoice();
-                    cellRenderers[i] = cls.getCellRenderer(predefinedValues != null);
-                    cellEditors[i] = cls.getCellEditor(predefinedValues);
-                } else {
-                    // no PropertyClass exists for this class, fall back to read-only mode using Object.toString()
-                    System.err.println("Data class '" + type.getName() + "' is not supported by the Property editor.");
-                    cellRenderers[i] = new DefaultTableCellRenderer();
-                    cellEditors[i] = null;
-                }
+                // no PropertyClass exists for this class, fall back to read-only mode using Object.toString()
+                System.err.println("Data class '" + type.getName() + "' is not supported by the Property editor.");
+                cellRenderers[row] = new DefaultTableCellRenderer();
+                cellEditors[row] = null;
             }
         }
     }
@@ -231,6 +239,8 @@ public class PropertyEditorTable extends JTable {
     public void editingStopped(ChangeEvent event) {
         TableCellEditor editor = getCellEditor();
         if (editor != null) {
+            // The editing row is reset by removeEditor()
+            int row = editingRow;
             Object value = editor.getCellEditorValue();
             try {
                 setValueAt(value, editingRow, editingColumn);
@@ -241,7 +251,10 @@ public class PropertyEditorTable extends JTable {
                 }
             } finally {
                 removeEditor();
-                update();
+                // Only the edited row needs fresh renderer and editor
+                if ((row >= 0) && (row < model.getRowCount())) {
+                    update(row);
+                }
                 restoreFocus();
                 notifyEditingFinished();
             }

@@ -23,9 +23,9 @@ public class PropertyHelper {
 
     public static final Insets BUTTON_INSETS = new Insets(1, 1, 1, 1);
 
-    public static PropertyDescriptor<String> createSeparatorProperty(String text) {
-        return new PropertyDeclaration<>(String.class, text,
-                value -> { }, () -> text).setReadonly().setSpan();
+    public static PropertyDescriptor<Separator> createSeparatorProperty(String text) {
+        return new PropertyDeclaration<>(Separator.class, text,
+                value -> { }, () -> new Separator(text)).setReadonly().setSpan();
     }
 
     public static PropertyDescriptor<?> getSignalSectionProperty(VisualModel visualModel) {
