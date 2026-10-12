@@ -65,6 +65,11 @@ public class PropertyEditorTableUI extends BasicTableUI {
             for (int column = minColumn; column <= maxColumn; column++) {
                 int verticalMargin = table.getRowMargin();
                 int horizontalMargin = table.getColumnModel().getColumnMargin();
+                // No vertical grid lines in spanning rows, so there is no margin to leave for them
+                PropertyDescriptor<?> declaration = model.getDeclaration(row);
+                if ((declaration != null) && declaration.isSpan()) {
+                    horizontalMargin = 0;
+                }
                 Rectangle rect = table.getCellRect(row, column, true);
                 rect.setBounds(rect.x + horizontalMargin / 2, rect.y + verticalMargin / 2,
                         rect.width - horizontalMargin, rect.height - verticalMargin);

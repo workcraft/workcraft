@@ -43,6 +43,7 @@ public class PropertyEditorTable extends JTable {
         propertyClasses.put(ActionList.class, new ActionListProperty());
         propertyClasses.put(Toggle.class, new ToggleProperty());
         propertyClasses.put(LegendList.class, new LegendListProperty());
+        propertyClasses.put(Separator.class, new SeparatorProperty());
 
         PluginManager pm = Framework.getInstance().getPluginManager();
         for (PropertyClassProvider p : pm.getPropertyProviders()) {
@@ -192,6 +193,9 @@ public class PropertyEditorTable extends JTable {
         for (int i = 0; i < model.getRowCount(); i++) {
             PropertyDescriptor decl = model.getDeclaration(i);
             Class<?> type = decl.getType();
+            if (type == Separator.class) {
+                setRowHeight(i, (int) Math.round(getRowHeight() * SeparatorCellRenderer.ROW_HEIGHT_FACTOR));
+            }
             if (type.isEnum()) {
                 model.setRowClass(i, null);
                 cellRenderers[i] = new ChoiceCellRenderer();
