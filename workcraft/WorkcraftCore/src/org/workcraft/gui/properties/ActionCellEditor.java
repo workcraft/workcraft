@@ -14,7 +14,11 @@ public class ActionCellEditor extends AbstractCellEditor implements TableCellEdi
         actionButton.setMargin(PropertyHelper.BUTTON_INSETS);
         if (value instanceof Action action) {
             actionButton.setText(action.getTitle());
-            actionButton.addActionListener(e -> action.run());
+            actionButton.addActionListener(e -> {
+                // Stop editing before the action, so the Property editor update it triggers is not postponed
+                fireEditingStopped();
+                action.run();
+            });
         }
         return actionButton;
     }

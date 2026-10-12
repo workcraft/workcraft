@@ -20,7 +20,11 @@ public class ToggleCellEditor extends AbstractCellEditor implements TableCellEdi
                 if (toggle.isSelectedOption(option)) {
                     toggleButton.setSelected(true);
                 }
-                toggleButton.addActionListener(e -> toggle.apply(option));
+                toggleButton.addActionListener(e -> {
+                    // Stop editing before applying, so the Property editor update it triggers is not postponed
+                    fireEditingStopped();
+                    toggle.apply(option);
+                });
                 result.add(toggleButton);
             }
         }

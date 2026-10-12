@@ -20,7 +20,11 @@ public class ActionListCellEditor extends AbstractCellEditor implements TableCel
                 button.setMargin(PropertyHelper.BUTTON_INSETS);
                 button.setToolTipText(ActionUtils.getActionTooltip(action));
                 button.setEnabled(action.isEnabled());
-                button.addActionListener(e -> action.run());
+                button.addActionListener(e -> {
+                    // Stop editing before the action, so the Property editor update it triggers is not postponed
+                    fireEditingStopped();
+                    action.run();
+                });
                 result.add(button);
             }
         }
