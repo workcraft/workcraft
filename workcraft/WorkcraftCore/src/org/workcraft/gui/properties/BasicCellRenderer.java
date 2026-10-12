@@ -20,11 +20,12 @@ public class BasicCellRenderer implements TableCellRenderer {
     }
 
     private void setText(String text) {
-        if (component instanceof FlatLabel) {
-            ((FlatLabel) component).setText(text);
+        if (component instanceof FlatLabel flatLabel) {
+            flatLabel.setText(text);
         }
-        if (component instanceof FlatComboBox) {
-            ((FlatComboBox) component).addItem(text);
+        if (component instanceof FlatComboBox comboBox) {
+            comboBox.removeAllItems();
+            comboBox.addItem(text);
         }
         component.setOpaque(text.isEmpty());
     }

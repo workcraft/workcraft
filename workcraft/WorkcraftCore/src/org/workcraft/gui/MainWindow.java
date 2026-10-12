@@ -1,10 +1,15 @@
 package org.workcraft.gui;
 
+import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
 import org.flexdock.docking.DockingManager;
+import org.flexdock.docking.DockingPort;
+import org.flexdock.docking.defaults.DockingSplitPane;
+import org.flexdock.docking.defaults.DefaultDockingStrategy;
 import org.flexdock.docking.drag.effects.EffectsManager;
 import org.flexdock.docking.drag.preview.GhostPreview;
 import org.flexdock.docking.props.PropertyManager;
+import org.flexdock.docking.state.DockingState;
 import org.flexdock.docking.state.PersistenceException;
 import org.flexdock.perspective.Perspective;
 import org.flexdock.perspective.PerspectiveManager;
@@ -55,6 +60,7 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 
 public class MainWindow extends JFrame {
 
@@ -69,6 +75,10 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_TOOLBAR_MODEL_POSITION = "toolbar.model.position";
     private static final String CONFIG_TOOLBAR_CONTROL_VISIBILITY = "toolbar.tool.visibility";
     private static final String CONFIG_TOOLBAR_CONTROL_POSITION = "toolbar.tool.position";
+    private static final String CONFIG_ACTIVE_TABS = "window.activeTabs";
+
+    private static final float DEFAULT_COLUMN_SPLIT = 0.8f;
+    private static final String KEY_ABOVE_WORKSPACE = "above|Workspace";
 
     private static final int DEFAULT_WIDTH = 800;
     private static final int DEFAULT_HEIGHT = 450;
@@ -95,9 +105,11 @@ public class MainWindow extends JFrame {
     private PanelDockable documentPlaceholder;
     private UtilityPanelDockable outputLogDockable;
     private UtilityPanelDockable errorLogDockable;
+    private UtilityPanelDockable javaScriptDockable;
     private UtilityPanelDockable taskManagerDockable;
     private UtilityPanelDockable propertyEditorDockable;
     private UtilityPanelDockable toolControlsDockable;
+    private UtilityPanelDockable workspaceDockable;
 
     private OutputLogPanel outputLogPanel;
     private ErrorLogPanel errorLogPanel;
@@ -105,6 +117,9 @@ public class MainWindow extends JFrame {
     private PropertyEditorPanel propertyEditorPanel;
     private ToolControlsPanel toolControlsPanel;
     private WorkspacePanel workspacePanel;
+
+    private float columnRatio = 0.87f;
+    private final Map<String, Float> columnSplits = new HashMap<>();
 
     private GraphEditorPanel currentEditor;
     private Menu menu;
@@ -166,7 +181,7 @@ public class MainWindow extends JFrame {
         errorLogPanel = new ErrorLogPanel(this::updateErrorTitle);
         errorLogPanel.captureStream();
 
-        taskManagerPanel = new TaskManagerPanel(this::updatTaskManagerTitle);
+        taskManagerPanel = new TaskManagerPanel(this::updateTaskManagerTitle);
 
         propertyEditorPanel = new PropertyEditorPanel();
         toolControlsPanel = new ToolControlsPanel();
@@ -191,7 +206,7 @@ public class MainWindow extends JFrame {
         DockingUtils.updateHeader(errorLogDockable);
     }
 
-    private void updatTaskManagerTitle() {
+    private void updateTaskManagerTitle() {
         if (taskManagerDockable.isHiddenTab() && !taskManagerPanel.isEmpty()) {
             if (!taskManagerTimer.isRunning()) {
                 taskManagerTimer.start();
@@ -282,18 +297,18 @@ public class MainWindow extends JFrame {
         menu.registerToolbar(modelToolbar);
         menu.registerToolbar(controlToolbar);
         loadToolbarParametersFromConfig();
+        loadWindowGeometryFromConfig();
 
         // Create dockable panels
         createPanels();
         createDockingLayout();
-        loadWindowGeometryFromConfig();
 
         // Display window in its default state
         setVisible(true);
         DockingUtils.updateHeaders(defaultDockingPort);
-        DockingManager.display(outputLogDockable);
         setWorkActionsEnabledness(false);
         updateUtilityPanelDockableVisibility();
+        SwingUtilities.invokeLater(this::restoreDockingLayout);
 
         new Thread(() -> {
             // Hack to fix the annoying delay occurring when createGlyphVector is called for the first time
@@ -406,7 +421,7 @@ public class MainWindow extends JFrame {
                 closeUtilityPanelDockable(toolControlsDockable);
                 setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
             }
-            // Unregister editor panale dockable from docking manager
+            // Unregister editor panel dockable from docking manager
             DockingManager.close(editorPanelDockable);
             DockingManager.unregisterDockable(editorPanelDockable);
             editorPanelDockable.setClosed(true);
@@ -434,14 +449,125 @@ public class MainWindow extends JFrame {
 
     private void closeUtilityPanelDockable(UtilityPanelDockable utilityPanelDockable) {
         menu.setUtilityPanelDockableVisibility(utilityPanelDockable, false);
+        if (isColumnPanel(utilityPanelDockable)) {
+            rememberColumnRatio();
+            rememberColumnSplit(utilityPanelDockable);
+        }
         DockingManager.close(utilityPanelDockable);
         utilityPanelDockable.setClosed(true);
     }
 
     public void displayUtilityPanelDockable(UtilityPanelDockable utilityPanelDockable) {
-        DockingManager.display(utilityPanelDockable);
-        utilityPanelDockable.setClosed(false);
-        menu.setUtilityPanelDockableVisibility(utilityPanelDockable, true);
+        if (isColumnPanel(utilityPanelDockable) && !isColumnDocked()) {
+            // Flexdock cannot restore the first panel of the empty column (the recorded relative parents are closed)
+            boolean displayed = DockingManager.dock(utilityPanelDockable, defaultDockingPort, DockingConstants.EAST_REGION);
+            if (displayed) {
+                DockingManager.setSplitProportion(utilityPanelDockable, columnRatio);
+            }
+            utilityPanelDockable.setClosed(!displayed);
+            menu.setUtilityPanelDockableVisibility(utilityPanelDockable, displayed);
+        } else if ((utilityPanelDockable == workspaceDockable) && (getColumnPort() != null)) {
+            // Dock below the whole column (not relative to a single panel, which would give up part of its space)
+            boolean displayed = DockingManager.dock(utilityPanelDockable, getColumnPort(), DockingConstants.SOUTH_REGION);
+            if (displayed) {
+                DockingManager.setSplitProportion(utilityPanelDockable, columnSplits.getOrDefault(KEY_ABOVE_WORKSPACE, DEFAULT_COLUMN_SPLIT));
+            }
+            utilityPanelDockable.setClosed(!displayed);
+            menu.setUtilityPanelDockableVisibility(utilityPanelDockable, displayed);
+        } else {
+            updateColumnRelativeParent(utilityPanelDockable);
+            boolean displayed = DockingManager.display(utilityPanelDockable);
+            utilityPanelDockable.setClosed(!displayed);
+            menu.setUtilityPanelDockableVisibility(utilityPanelDockable, displayed);
+        }
+    }
+
+    private boolean isColumnPanel(UtilityPanelDockable utilityPanelDockable) {
+        return (utilityPanelDockable == propertyEditorDockable) || (utilityPanelDockable == toolControlsDockable)
+                || (utilityPanelDockable == workspaceDockable);
+    }
+
+    private boolean isColumnDocked() {
+        return isDocked(propertyEditorDockable) || isDocked(toolControlsDockable) || isDocked(workspaceDockable);
+    }
+
+    private DockingPort getColumnPort() {
+        // Docking port containing the open Property editor or Tool controls panels
+        if (defaultDockingPort.getDockedComponent() instanceof DockingSplitPane splitPane) {
+            for (Component component : new Component[] {splitPane.getLeftComponent(), splitPane.getRightComponent()}) {
+                if ((component instanceof DockingPort dockingPort)
+                        && (SwingUtilities.isDescendingFrom(propertyEditorDockable.getComponent(), component)
+                        || SwingUtilities.isDescendingFrom(toolControlsDockable.getComponent(), component))) {
+
+                    return dockingPort;
+                }
+            }
+        }
+        return null;
+    }
+
+    private void rememberColumnRatio() {
+        if ((defaultDockingPort.getDockedComponent() instanceof DockingSplitPane splitPane)
+                && (splitPane.getOrientation() == JSplitPane.HORIZONTAL_SPLIT)
+                && (splitPane.getPercent() > 0.0) && (splitPane.getPercent() < 1.0)) {
+
+            columnRatio = (float) splitPane.getPercent();
+        }
+    }
+
+    private void rememberColumnSplit(UtilityPanelDockable utilityPanelDockable) {
+        // Remember the divider position between the panel and its neighbour in the column, as Flexdock loses it
+        Component component = utilityPanelDockable.getComponent();
+        if ((SwingUtilities.getAncestorOfClass(DockingSplitPane.class, component) instanceof DockingSplitPane splitPane)
+                && (splitPane.getOrientation() == JSplitPane.VERTICAL_SPLIT)
+                && (splitPane.getPercent() > 0.0) && (splitPane.getPercent() < 1.0)) {
+
+            Dockable top = getSingleDockable(splitPane.getTopComponent());
+            Dockable bottom = getSingleDockable(splitPane.getBottomComponent());
+            if (bottom == workspaceDockable) {
+                columnSplits.put(KEY_ABOVE_WORKSPACE, (float) splitPane.getPercent());
+            }
+            if ((top != null) && (bottom != null)) {
+                columnSplits.put(top.getPersistentId() + "|" + bottom.getPersistentId(), (float) splitPane.getPercent());
+            }
+        }
+    }
+
+    private Dockable getSingleDockable(Component component) {
+        if (component instanceof DockingPort dockingPort) {
+            Set<?> dockables = dockingPort.getDockables();
+            if ((dockables.size() == 1) && (dockables.iterator().next() instanceof Dockable dockable)) {
+                return dockable;
+            }
+        }
+        return null;
+    }
+
+    private void updateColumnRelativeParent(UtilityPanelDockable utilityPanelDockable) {
+        // Property editor, Tool controls and Workspace form a column (in this order, top to bottom) on the right.
+        // Flexdock records the relative parent at the time of closing, which may be a panel that is closed
+        // now or the one that would give up its space, so dock next to the nearest open neighbour in the column.
+        UtilityPanelDockable relativeParent = null;
+        String region = DockingConstants.NORTH_REGION;
+        if (utilityPanelDockable == propertyEditorDockable) {
+            relativeParent = isDocked(toolControlsDockable) ? toolControlsDockable : workspaceDockable;
+        } else if (utilityPanelDockable == toolControlsDockable) {
+            relativeParent = isDocked(propertyEditorDockable) ? propertyEditorDockable : workspaceDockable;
+            region = isDocked(propertyEditorDockable) ? DockingConstants.SOUTH_REGION : DockingConstants.NORTH_REGION;
+        }
+        DockingState dockingState = PerspectiveManager.getInstance().getDockingState(utilityPanelDockable);
+        if ((relativeParent != null) && isDocked(relativeParent) && (dockingState != null)
+                && ((dockingState.getRelativeParent() != relativeParent) || !region.equals(dockingState.getRegion()))) {
+
+            dockingState.setRelativeParent(relativeParent);
+            dockingState.setRegion(region);
+            boolean isTop = DockingConstants.NORTH_REGION.equals(region);
+            String key = isTop
+                    ? utilityPanelDockable.getPersistentId() + "|" + relativeParent.getPersistentId()
+                    : relativeParent.getPersistentId() + "|" + utilityPanelDockable.getPersistentId();
+
+            dockingState.setSplitRatio(columnSplits.getOrDefault(key, DEFAULT_COLUMN_SPLIT));
+        }
     }
 
     public void toggleUtilityPanelDockable(UtilityPanelDockable utilityPanelDockable) {
@@ -473,22 +599,14 @@ public class MainWindow extends JFrame {
         DockingManager.setAutoPersist(true);
         PropertyManager.getDockingPortRoot().setTabPlacement(SwingConstants.TOP);
 
+        // Keep split dividers at their intended percentage on resize (prevents size drifting on layout restore)
+        DefaultDockingStrategy.keepConstantPercentage(true);
+
         // Set default perspective
         PerspectiveManager pm = PerspectiveManager.getInstance();
         pm.add(new Perspective(FLEXDOCK_WORKSPACE, FLEXDOCK_WORKSPACE));
         pm.setCurrentPerspective(FLEXDOCK_WORKSPACE, true);
-
-        // Configure perspective manager (should go after docking manager for correctly restoring window layout)
         PerspectiveManager.setRestoreFloatingOnLoad(true);
-        File file = new File(Framework.UILAYOUT_FILE_PATH);
-        PersistenceHandler persistenceHandler = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
-        PerspectiveManager.setPersistenceHandler(persistenceHandler);
-
-        try {
-            DockingManager.loadLayoutModel();
-        } catch (IOException | PersistenceException e) {
-            LogUtils.logWarning("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
-        }
 
         float xSplit = 0.87f;
         float ySplit = 0.8f;
@@ -496,7 +614,7 @@ public class MainWindow extends JFrame {
         documentPlaceholder = DockingUtils.createPlaceholderDockable(new DocumentPlaceholderPanel(),
                 TITLE_PLACEHOLDER, defaultDockingPort);
 
-        UtilityPanelDockable workspaceDockable = DockingUtils.createUtilityDockable(workspacePanel,
+        workspaceDockable = DockingUtils.createUtilityDockable(workspacePanel,
                 TITLE_WORKSPACE, documentPlaceholder, DockingManager.EAST_REGION, xSplit);
 
         propertyEditorDockable = DockingUtils.createUtilityDockable(propertyEditorPanel,
@@ -513,11 +631,11 @@ public class MainWindow extends JFrame {
         errorLogDockable = DockingUtils.createUtilityDockable(errorLogPanel, TITLE_PROBLEMS, outputLogDockable);
         errorLogDockable.registerUpdater(this::updateErrorTitle);
 
-        UtilityPanelDockable javaScriptDockable = DockingUtils.createUtilityDockable(new JavaScriptPanel(),
+        javaScriptDockable = DockingUtils.createUtilityDockable(new JavaScriptPanel(),
                 TITLE_JAVASCRIPT, outputLogDockable);
 
         taskManagerDockable = DockingUtils.createUtilityDockable(taskManagerPanel, TITLE_TASKS, outputLogDockable);
-        taskManagerDockable.registerUpdater(this::updatTaskManagerTitle);
+        taskManagerDockable.registerUpdater(this::updateTaskManagerTitle);
 
         registerUtilityPanelDockable(outputLogDockable);
         registerUtilityPanelDockable(errorLogDockable);
@@ -527,9 +645,94 @@ public class MainWindow extends JFrame {
         registerUtilityPanelDockable(toolControlsDockable);
         registerUtilityPanelDockable(workspaceDockable);
 
-        // FIXME: Restoring previously saved layout does not work as expected:
-        // "default" and "restored" layouts interfere with each other, which does not look nice.
-        //DockingManager.restoreLayout();
+        // Make Output the active tab in the default layout (docking each subsequent tab normally
+        // activates that tab, so without this measure the last docked Tasks tab would end up active).
+        if (outputLogDockable.getComponent().getParent() instanceof JTabbedPane tabbedPane) {
+            tabbedPane.setSelectedComponent(outputLogDockable.getComponent());
+        }
+    }
+
+    private void restoreDockingLayout() {
+        // Load and apply the saved layout once the default layout is built (loading earlier would let it
+        // overwrite the loaded docking state). Called via invokeLater to let Flexdock deferred listeners
+        // settle, otherwise restoreLayout() rebuilds the dock tree while they record corrupted split ratios.
+        File file = new File(Framework.UILAYOUT_FILE_PATH);
+        PersistenceHandler persistenceHandler = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
+        PerspectiveManager.setPersistenceHandler(persistenceHandler);
+        boolean layoutLoaded;
+        try {
+            layoutLoaded = DockingManager.loadLayoutModel();
+        } catch (IOException | PersistenceException e) {
+            LogUtils.logWarning("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
+            layoutLoaded = false;
+        }
+
+        if (layoutLoaded) {
+            DockingManager.restoreLayout();
+            // The restored dock tree has new tab/split containers, so headers need to be updated
+            DockingUtils.updateHeaders(defaultDockingPort);
+            restoreActiveTabsFromConfig();
+        }
+
+        syncUtilityPanelDockableVisibility(outputLogDockable);
+        syncUtilityPanelDockableVisibility(errorLogDockable);
+        syncUtilityPanelDockableVisibility(javaScriptDockable);
+        syncUtilityPanelDockableVisibility(taskManagerDockable);
+        syncUtilityPanelDockableVisibility(propertyEditorDockable);
+        syncUtilityPanelDockableVisibility(toolControlsDockable);
+        syncUtilityPanelDockableVisibility(workspaceDockable);
+    }
+
+    private void restoreActiveTabsFromConfig() {
+        String value = Framework.getInstance().getConfigVar(CONFIG_ACTIVE_TABS, false);
+        if ((value == null) || value.isEmpty()) {
+            return;
+        }
+        Map<String, String> activeIdByGroupKey = new HashMap<>();
+        for (String entry : value.split("\\|")) {
+            int index = entry.lastIndexOf('=');
+            if (index > 0) {
+                activeIdByGroupKey.put(entry.substring(0, index), entry.substring(index + 1));
+            }
+        }
+        restoreActiveTabs(defaultDockingPort, activeIdByGroupKey);
+    }
+
+    private void restoreActiveTabs(Container container, Map<String, String> activeIdByGroupKey) {
+        if (container instanceof JTabbedPane tabbedPane) {
+            String activeId = activeIdByGroupKey.get(getTabGroupKey(tabbedPane));
+            Dockable activeDockable = activeId == null ? null : DockingManager.getDockable(activeId);
+            Component activeComponent = activeDockable == null ? null : activeDockable.getComponent();
+            if ((activeComponent != null) && (activeComponent.getParent() == tabbedPane)) {
+                tabbedPane.setSelectedComponent(activeComponent);
+            }
+        }
+        for (Component child : container.getComponents()) {
+            if (child instanceof Container childContainer) {
+                restoreActiveTabs(childContainer, activeIdByGroupKey);
+            }
+        }
+    }
+
+    private String getTabGroupKey(JTabbedPane tabbedPane) {
+        List<String> memberIds = new ArrayList<>();
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+            Dockable dockable = DockingManager.getDockable(tabbedPane.getComponentAt(i));
+            if (dockable != null) {
+                memberIds.add(dockable.getPersistentId());
+            }
+        }
+        if (memberIds.isEmpty()) {
+            return null;
+        }
+        Collections.sort(memberIds);
+        return String.join(",", memberIds);
+    }
+
+    private void syncUtilityPanelDockableVisibility(UtilityPanelDockable utilityPanelDockable) {
+        boolean docked = isDocked(utilityPanelDockable);
+        utilityPanelDockable.setClosed(!docked);
+        menu.setUtilityPanelDockableVisibility(utilityPanelDockable, docked);
     }
 
     public void shutdown() throws OperationCancelledException {
@@ -549,12 +752,49 @@ public class MainWindow extends JFrame {
         }
         saveWindowGeometryToConfig();
         saveToolbarParametersToConfig();
+        saveActiveTabsToConfig();
+        // Capture the window layout while the dock tree is still fully attached and visible.
+        saveDockingLayout();
 
+        // Disable Flexdock auto-persist before content.remove() has detached the dock tree
+        // (otherwise its JVM shutdown hook would save corrupted layout data).
+        DockingManager.setAutoPersist(false);
         content.remove(defaultDockingPort);
-
         outputLogPanel.releaseStream();
         errorLogPanel.releaseStream();
         setVisible(false);
+    }
+
+    private void saveActiveTabsToConfig() {
+        // Flexdock does not persist which tab was active in a tabbed group.
+        // Instead, save them in global config for every tabbed group currently in the dock tree.
+        List<String> entries = new ArrayList<>();
+        collectActiveTabEntries(defaultDockingPort, entries);
+        Framework.getInstance().setConfigVar(CONFIG_ACTIVE_TABS, String.join("|", entries), false);
+    }
+
+    private void collectActiveTabEntries(Container container, List<String> entries) {
+        if (container instanceof JTabbedPane tabbedPane) {
+            String groupKey = getTabGroupKey(tabbedPane);
+            Component selected = tabbedPane.getSelectedComponent();
+            Dockable selectedDockable = selected == null ? null : DockingManager.getDockable(selected);
+            if ((groupKey != null) && (selectedDockable != null)) {
+                entries.add(groupKey + "=" + selectedDockable.getPersistentId());
+            }
+        }
+        for (Component child : container.getComponents()) {
+            if (child instanceof Container childContainer) {
+                collectActiveTabEntries(childContainer, entries);
+            }
+        }
+    }
+
+    private static void saveDockingLayout() {
+        try {
+            DockingManager.storeLayoutModel();
+        } catch (IOException | PersistenceException e) {
+            LogUtils.logWarning("Window layout could not be saved to '" + Framework.UILAYOUT_FILE_PATH + "'.");
+        }
     }
 
     private void loadToolbarParametersFromConfig() {
@@ -712,16 +952,28 @@ public class MainWindow extends JFrame {
     }
 
     public void updateUtilityPanelDockableVisibility() {
-        // In order to preserve the layout, display both the Property
-        // editor and the Tool controls, and then close the empty one.
-        displayUtilityPanelDockable(propertyEditorDockable);
-        displayUtilityPanelDockable(toolControlsDockable);
-        DockingManager.setSplitProportion(toolControlsDockable, 0.3f);
-        if (toolControlsPanel.isEmpty()) {
+        // Show Tool controls unless empty, and Property editor unless empty while Tool controls are shown.
+        // Change only panels that are not in the desired state, as opening/closing rebuilds the split tree.
+        boolean showToolControls = !toolControlsPanel.isEmpty();
+        boolean showPropertyEditor = !showToolControls || !propertyEditorPanel.isEmpty();
+        boolean propertyEditorDocked = isDocked(propertyEditorDockable);
+        // Tool controls are docked relative to the Property editor, so it is needed for displaying them
+        if ((showPropertyEditor || showToolControls) && !propertyEditorDocked) {
+            displayUtilityPanelDockable(propertyEditorDockable);
+        }
+        if (showToolControls && !isDocked(toolControlsDockable)) {
+            displayUtilityPanelDockable(toolControlsDockable);
+        }
+        if (!showToolControls && isDocked(toolControlsDockable)) {
             closeUtilityPanelDockable(toolControlsDockable);
-        } else if (propertyEditorPanel.isEmpty()) {
+        }
+        if (!showPropertyEditor && isDocked(propertyEditorDockable)) {
             closeUtilityPanelDockable(propertyEditorDockable);
         }
+    }
+
+    private boolean isDocked(UtilityPanelDockable utilityPanelDockable) {
+        return SwingUtilities.isDescendingFrom(utilityPanelDockable.getComponent(), defaultDockingPort);
     }
 
     public void openWork() {

@@ -7,6 +7,7 @@ import org.workcraft.gui.controls.FlatTextField;
 import javax.swing.*;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
@@ -43,6 +44,13 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
         panel.setFocusable(false);
     }
 
+    // Action that does not modify model may change the properties shown (e.g. select another node), so the
+    // edit is cancelled to let the table be refreshed (deferred, as the refresh may be requested by the action).
+    private void finishEditingAfterAction() {
+        JTable editedTable = table;
+        SwingUtilities.invokeLater(() -> PropertyEditorTable.cancelEditingIfActive(editedTable, this));
+    }
+
     @Override
     public TextAction getCellEditorValue() {
         return new TextAction(text.getText());
@@ -61,12 +69,18 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
                 leftButton.setVisible(true);
                 leftButton.setText(leftAction.getTitle());
                 leftButton.setToolTipText(ActionUtils.getActionTooltip(leftAction));
+                for (ActionListener listener : leftButton.getActionListeners()) {
+                    leftButton.removeActionListener(listener);
+                }
                 leftButton.addActionListener(e -> {
                     // Call fireEditingStopped() before model modifying action to save memento
                     if (textAction.isModelModifyingLeftAction()) {
                         fireEditingStopped();
+                        leftAction.run();
+                    } else {
+                        leftAction.run();
+                        finishEditingAfterAction();
                     }
-                    leftAction.run();
                 });
             }
 
@@ -89,12 +103,18 @@ public class TextActionCellEditor extends AbstractCellEditor implements TableCel
                 rightButton.setVisible(true);
                 rightButton.setText(rightAction.getTitle());
                 rightButton.setToolTipText(ActionUtils.getActionTooltip(rightAction));
+                for (ActionListener listener : rightButton.getActionListeners()) {
+                    rightButton.removeActionListener(listener);
+                }
                 rightButton.addActionListener(e -> {
                     // Call fireEditingStopped() before model modifying action to save memento
                     if (textAction.isModelModifyingRightAction()) {
                         fireEditingStopped();
+                        rightAction.run();
+                    } else {
+                        rightAction.run();
+                        finishEditingAfterAction();
                     }
-                    rightAction.run();
                 });
             }
         }

@@ -7,6 +7,8 @@ import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
@@ -15,6 +17,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.function.BiPredicate;
 
 public class FlatComboBox extends JComboBox<Object> {
@@ -30,6 +34,9 @@ public class FlatComboBox extends JComboBox<Object> {
     private boolean textTyped = false;
 
     private BiPredicate<Object, Object> currentItemMatcher = null;
+
+    private boolean buttonStyle = false;
+    private boolean hovered = false;
 
     static class FlatComboBoxUI extends BasicComboBoxUI {
 
@@ -49,6 +56,14 @@ public class FlatComboBox extends JComboBox<Object> {
         }
 
         @Override
+        public void paintCurrentValueBackground(Graphics g, Rectangle bounds, boolean hasFocus) {
+            // Default fills the value area with combo box background (white), which hides the button colour
+            if (!((comboBox instanceof FlatComboBox flat) && flat.buttonStyle)) {
+                super.paintCurrentValueBackground(g, bounds, hasFocus);
+            }
+        }
+
+        @Override
         protected JButton createArrowButton() {
             // Default arrow button paints a 3D bevel on hover and when pressed
             BasicArrowButton button = new BasicArrowButton(SwingConstants.SOUTH,
@@ -65,10 +80,12 @@ public class FlatComboBox extends JComboBox<Object> {
                     if ((color == null) || (model == null)) {
                         return color;
                     }
-                    if (model.isPressed()) {
+                    // Open list is shown as pressed button, whether it was opened from arrow or from value area
+                    if (model.isPressed() || ((comboBox != null) && comboBox.isPopupVisible())) {
                         return color.darker();
                     }
-                    if (model.isRollover()) {
+                    boolean hovered = (comboBox instanceof FlatComboBox flat) && flat.buttonStyle && flat.hovered;
+                    if (model.isRollover() || hovered) {
                         return new Color(color.getRed() * 9 / 10, color.getGreen() * 9 / 10, color.getBlue() * 9 / 10);
                     }
                     return color;
@@ -80,10 +97,38 @@ public class FlatComboBox extends JComboBox<Object> {
                     g.setColor(getBackground());
                     g.fillRect(0, 0, getWidth(), getHeight());
                     super.paint(g);
+                    // Outline as that of button-style combo box (which outlines the whole control instead)
+                    Color outline = UIManager.getColor("ComboBox.buttonShadow");
+                    if ((outline != null) && !((comboBox instanceof FlatComboBox flat) && flat.buttonStyle)) {
+                        g.setColor(outline);
+                        g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+                    }
                 }
             };
             button.setName("ComboBox.arrowButton");
             button.setRolloverEnabled(true);
+            // Whole button-style combo box is highlighted when mouse is over any part of it
+            MouseAdapter hoverTracker = new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    updateHovered(e);
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    updateHovered(e);
+                }
+
+                private void updateHovered(MouseEvent e) {
+                    if (comboBox instanceof FlatComboBox flat) {
+                        Point point = SwingUtilities.convertPoint(e.getComponent(), e.getPoint(), flat);
+                        flat.hovered = flat.contains(point);
+                        flat.repaint();
+                    }
+                }
+            };
+            button.addMouseListener(hoverTracker);
+            comboBox.addMouseListener(hoverTracker);
             // Non-UIResource border makes super.paint() skip the 3D bevel
             button.setBorder(new EmptyBorder(0, 0, 0, 0));
             return button;
@@ -134,6 +179,7 @@ public class FlatComboBox extends JComboBox<Object> {
 
         // Item is the current value of the combo box (as opposed to the item highlighted in the list)
         private boolean current = false;
+        private boolean showingValue = false;
         private int checkWidth = 0;
         private Border listItemBorder = INSET_BORDER;
 
@@ -150,29 +196,37 @@ public class FlatComboBox extends JComboBox<Object> {
         }
 
         @Override
+        public boolean isOpaque() {
+            // Value of button-style combo box is drawn on the button background (UI resets the renderer
+            // background to the white one of combo box)
+            return !(buttonStyle && showingValue) && super.isOpaque();
+        }
+
+        @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            if (current && (g instanceof Graphics2D g2)) {
-                paintCheckMark(g2);
+            if (current && (g instanceof Graphics2D g2d)) {
+                paintCheckMark(g2d);
             }
         }
 
-        private void paintCheckMark(Graphics2D g2) {
+        private void paintCheckMark(Graphics2D g2d) {
             // Check mark is in the space reserved at the right edge, after the insets
             int size = Math.max(checkWidth / 4, 2);
             int x = getWidth() - getInsets().right + checkWidth / 2;
             int y = getHeight() / 2;
-            Stroke stroke = g2.getStroke();
-            Object antialiasing = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(getForeground());
-            g2.setStroke(new BasicStroke(Math.max(checkWidth / 8f, 1f)));
-            g2.drawPolyline(
+            Stroke stroke = g2d.getStroke();
+            Object antialiasing = g2d.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setColor(getForeground());
+            g2d.setStroke(new BasicStroke(Math.max(checkWidth / 8f, 1f)));
+            g2d.drawPolyline(
                     new int[]{x - size, x - size / 3, x + size},
                     new int[]{y, y + size * 2 / 3, y - size * 2 / 3},
                     3);
-            g2.setStroke(stroke);
-            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
+
+            g2d.setStroke(stroke);
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, antialiasing);
         }
 
         @Override
@@ -211,6 +265,7 @@ public class FlatComboBox extends JComboBox<Object> {
                 renderer.setBorder(INSET_BORDER);
             }
             renderer.setEnabled(FlatComboBox.this.isEnabled());
+            showingValue = (index < 0);
             return renderer;
         }
     }
@@ -292,6 +347,22 @@ public class FlatComboBox extends JComboBox<Object> {
         setRenderer(new FlatListCellRenderer());
         setEditor(new FlatTextComboBoxEditor());
         setMaximumRowCount(25);
+        addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+                repaint();
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                repaint();
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+                repaint();
+            }
+        });
     }
 
     // Apply text typed by user (if any), e.g. when editing is finished by other means than Enter
@@ -371,13 +442,55 @@ public class FlatComboBox extends JComboBox<Object> {
         setUI(new FlatComboBoxUI());
     }
 
+    // Button style is for a combo box that only allows choosing from the list, so that it looks like a button
+    public void setButtonStyle(boolean value) {
+        buttonStyle = value;
+        repaint();
+    }
+
+    @Override
+    public boolean isOpaque() {
+        return !buttonStyle && super.isOpaque();
+    }
+
     @Override
     public void paintComponent(Graphics g) {
+        if (buttonStyle) {
+            paintButtonBackground(g);
+        }
         super.paintComponent(g);
         if (isOpaque()) {
             Rectangle rect = getValueRectangle();
             g.setColor(UIManager.getColor("Panel.background"));
             g.fillRect(rect.x, rect.y, rect.width, rect.height);
+        }
+    }
+
+    // Value area gets the colour of the arrow button, so that they make up a single button
+    private Color getButtonColor() {
+        if ((getUI() instanceof FlatComboBoxUI flatComboBoxUI) && (flatComboBoxUI.getArrowButton() != null)) {
+            return flatComboBoxUI.getArrowButton().getBackground();
+        }
+        return UIManager.getColor("ComboBox.buttonBackground");
+    }
+
+    private void paintButtonBackground(Graphics g) {
+        Color background = getButtonColor();
+        if (background != null) {
+            Rectangle rect = getValueRectangle();
+            g.setColor(background);
+            g.fillRect(rect.x, rect.y, rect.width, rect.height);
+        }
+    }
+
+    @Override
+    protected void paintChildren(Graphics g) {
+        super.paintChildren(g);
+        // Outline is drawn over the arrow button
+        Color border = UIManager.getColor("ComboBox.buttonShadow");
+        if (buttonStyle && (border != null)) {
+            g.setColor(border);
+            g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
         }
     }
 

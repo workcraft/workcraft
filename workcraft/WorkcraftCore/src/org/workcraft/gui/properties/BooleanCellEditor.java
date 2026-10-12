@@ -19,8 +19,8 @@ public class BooleanCellEditor extends AbstractCellEditor implements TableCellEd
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        if (value instanceof Boolean) {
-            checkBox.setSelected((Boolean) value);
+        if (value instanceof Boolean boolValue) {
+            checkBox.setSelected(boolValue);
         }
         checkBox.setOpaque(value == null);
         checkBox.setFont(table.getFont());

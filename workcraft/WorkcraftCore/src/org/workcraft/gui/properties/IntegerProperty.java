@@ -2,8 +2,6 @@ package org.workcraft.gui.properties;
 
 import org.workcraft.utils.ParseUtils;
 
-import java.util.IllegalFormatException;
-
 public class IntegerProperty extends AbstractBasicProperty<Integer> {
 
     @Override
@@ -13,15 +11,7 @@ public class IntegerProperty extends AbstractBasicProperty<Integer> {
 
     @Override
     public String toCellRendererValue(Integer value) {
-        String result = "";
-        if (value != null) {
-            try {
-                result = String.format("%d", value);
-            } catch (IllegalFormatException e) {
-                result = "#getter did not return an int";
-            }
-        }
-        return result;
+        return (value == null) ? "" : Integer.toString(value);
     }
 
 }

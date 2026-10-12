@@ -47,10 +47,10 @@ public class HandleCellRenderer extends JLabel implements TableCellRenderer {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (g instanceof Graphics2D g2) {
+        if (g instanceof Graphics2D g2d) {
             g.setColor(Color.GRAY);
             g.translate(getWidth() / 2, getHeight() / 2);
-            g2.draw(SHAPE);
+            g2d.draw(SHAPE);
         }
     }
 

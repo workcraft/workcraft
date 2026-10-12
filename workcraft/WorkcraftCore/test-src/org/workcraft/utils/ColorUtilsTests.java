@@ -61,4 +61,24 @@ class ColorUtilsTests {
         Assertions.assertEquals("#ff0000ff", ColorUtils.getHexARGB(Color.BLUE));
     }
 
+    @Test
+    void isDarkTest() {
+        Assertions.assertTrue(ColorUtils.isDark(Color.BLACK));
+        Assertions.assertFalse(ColorUtils.isDark(Color.WHITE));
+        Assertions.assertTrue(ColorUtils.isDark(Color.DARK_GRAY));
+        Assertions.assertFalse(ColorUtils.isDark(Color.LIGHT_GRAY));
+        Assertions.assertTrue(ColorUtils.isDark(Color.RED));
+        Assertions.assertFalse(ColorUtils.isDark(Color.GREEN));
+        Assertions.assertTrue(ColorUtils.isDark(Color.BLUE));
+        Assertions.assertFalse(ColorUtils.isDark(Color.YELLOW));
+        Assertions.assertFalse(ColorUtils.isDark(Color.ORANGE));
+        Assertions.assertFalse(ColorUtils.isDark(Color.CYAN));
+        Assertions.assertTrue(ColorUtils.isDark(Color.MAGENTA));
+        Assertions.assertFalse(ColorUtils.isDark(Color.PINK));
+        Assertions.assertFalse(ColorUtils.isDark(new Color(0, 0, 0, 0)));
+        Assertions.assertFalse(ColorUtils.isDark(new Color(255, 255, 255, 0)));
+        Assertions.assertTrue(ColorUtils.isDark(new Color(0, 0, 0, 128)));
+        Assertions.assertFalse(ColorUtils.isDark(new Color(255, 255, 255, 128)));
+    }
+
 }

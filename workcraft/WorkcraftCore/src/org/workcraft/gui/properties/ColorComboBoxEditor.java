@@ -86,7 +86,6 @@ class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
         }
     };
 
-    private boolean colorAccepted = false;
     private boolean dialogOpen = false;
     private Runnable dialogDismissedHandler = null;
 
@@ -143,7 +142,6 @@ class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
             approx.target = this;
             Color color = button.getBackground();
             chooser.setColor(color);
-            colorAccepted = false;
             // Modal dialog, so this returns after it has been closed
             dialogOpen = true;
             try {
@@ -151,12 +149,11 @@ class ColorComboBoxEditor implements ComboBoxEditor, ActionListener {
             } finally {
                 dialogOpen = false;
             }
-            if (!colorAccepted && (dialogDismissedHandler != null)) {
+            if (dialogDismissedHandler != null) {
                 dialogDismissedHandler.run();
             }
         } else {
             // User pressed dialog's "OK" button.
-            colorAccepted = true;
             Color color = chooser.getColor();
             button.setBackground(color);
             fireActionEvent(color);

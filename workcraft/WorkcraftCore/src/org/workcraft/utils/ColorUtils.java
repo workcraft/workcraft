@@ -118,4 +118,18 @@ public class ColorUtils {
         return String.format("#%08x", color.getRGB());
     }
 
+    public static boolean isDark(Color color) {
+        // Transparent colour (alpha==0) is not dark, as it shows whatever is behind it.
+        // Otherwise, use perceived brightness (luma).
+        return (color.getAlpha() > 0) && (getLuma(color) < 0.5f);
+    }
+
+    public static float getLuma(Color color) {
+        // Luma is a weighted sum of the RGB components with ITU-R BT.601 coefficients:
+        //   L = 0.299 * R + 0.587 * G + 0.114 * B
+        // This reflects the human eye higher sensitivity to green, less to red and even least to blue.
+        color.getComponents(COMP_1);
+        return 0.299f * COMP_1[0] + 0.587f * COMP_1[1] + 0.114f * COMP_1[2];
+    }
+
 }
