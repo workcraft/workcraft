@@ -24,7 +24,9 @@ public class BasicCellRenderer implements TableCellRenderer {
             ((FlatLabel) component).setText(text);
         }
         if (component instanceof FlatComboBox) {
-            ((FlatComboBox) component).addItem(text);
+            FlatComboBox comboBox = (FlatComboBox) component;
+            comboBox.removeAllItems();
+            comboBox.addItem(text);
         }
         component.setOpaque(text.isEmpty());
     }

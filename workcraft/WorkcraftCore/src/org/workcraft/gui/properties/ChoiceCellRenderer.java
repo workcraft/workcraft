@@ -12,18 +12,19 @@ public class ChoiceCellRenderer extends FlatComboBox implements TableCellRendere
     public ChoiceCellRenderer() {
         super();
         setEditable(false);
+        setButtonStyle(true);
     }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
 
+        removeAllItems();
         if (value != null) {
             addItem(value);
         }
         setSelectedItem(value);
         setFont(table.getFont());
-        setOpaque(value == null);
         boolean isEnabled = table.isEnabled() && table.isCellEditable(row, column);
         setEnabled(isEnabled);
         return this;

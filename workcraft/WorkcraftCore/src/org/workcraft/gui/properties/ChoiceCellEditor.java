@@ -39,6 +39,7 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
     public ChoiceCellEditor(PropertyDescriptor<Object> descriptor) {
         comboBox = new FlatComboBox();
         comboBox.setFocusable(false);
+        comboBox.setButtonStyle(true);
         // Arrow keys move the highlight in the list without changing the selected item (as in DefaultCellEditor)
         comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
         // Take focus only while the drop-down list is visible, so that it can be navigated by keyboard
