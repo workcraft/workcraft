@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
+import org.workcraft.commands.TimeConsumingCommand;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.stg.StgModel;
@@ -7,7 +8,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.utils.WorkspaceUtils;
 
 public class ConsistencyVerificationCommand
-        extends AbstractEssentialVerificationCommand {
+        extends AbstractEssentialVerificationCommand
+        implements TimeConsumingCommand {
 
     @Override
     public String getDisplayName() {

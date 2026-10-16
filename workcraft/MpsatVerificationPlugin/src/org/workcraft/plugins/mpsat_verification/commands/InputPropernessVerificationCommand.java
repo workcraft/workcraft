@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.TimeConsumingCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat_verification.gui.InputPropernessDialog;
 import org.workcraft.plugins.mpsat_verification.presets.InputPropernessDataPreserver;
@@ -14,7 +15,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.List;
 
 public class InputPropernessVerificationCommand
-        extends AbstractEssentialVerificationCommand {
+        extends AbstractEssentialVerificationCommand
+        implements TimeConsumingCommand {
 
     public static final String TITLE = "Input properness";
 

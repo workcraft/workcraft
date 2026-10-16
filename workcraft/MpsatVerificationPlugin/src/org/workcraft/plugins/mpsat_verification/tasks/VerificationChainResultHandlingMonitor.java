@@ -35,6 +35,15 @@ public class VerificationChainResultHandlingMonitor extends AbstractChainResultH
     }
 
     @Override
+    public String getOutcomeMessage(Result<? extends VerificationChainOutput> result, boolean outcome) {
+        VerificationChainOutput chainOutput = result.getPayload();
+        VerificationParameters verificationParameters = (chainOutput == null) ? null
+                : chainOutput.getVerificationParameters();
+
+        return verificationParameters == null ? null : verificationParameters.getPropertyCheckMessage(outcome);
+    }
+
+    @Override
     public boolean isConsistencyCheckMode(VerificationChainOutput chainOutput) {
         VerificationParameters verificationParameters = chainOutput.getVerificationParameters();
         return (verificationParameters != null)

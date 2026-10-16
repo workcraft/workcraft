@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
+import org.workcraft.commands.TimeConsumingCommand;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.stg.Stg;
@@ -12,7 +13,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.LinkedList;
 
 public class OutputPersistencyVerificationCommand
-        extends AbstractEssentialVerificationCommand {
+        extends AbstractEssentialVerificationCommand
+        implements TimeConsumingCommand {
 
     @Override
     public String getDisplayName() {

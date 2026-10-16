@@ -5,6 +5,7 @@ import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainTask;
+import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.petri.PetriModel;
 import org.workcraft.plugins.petri.utils.PetriUtils;
@@ -29,16 +30,24 @@ public abstract class AbstractVerificationCommand
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = queueTask(we);
-        monitor.setInteractive(false);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, false, true);
         return monitor.waitForHandledResult();
     }
 
     private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        return queueTask(we, true, true);
+    }
+
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, boolean interactive,
+            boolean reuseCachedResults) {
+
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
+        monitor.setInteractive(interactive);
         if (!checkPrerequisites(we)) {
             monitor.isFinished(Result.cancel());
-        } else {
+        } else if (!CachedVerificationUtils.tryReuse(monitor, CachedVerificationUtils.create(we, this),
+                reuseCachedResults, () -> queueTask(we, true, false))) {
+
             TaskManager manager = Framework.getInstance().getTaskManager();
             VerificationParameters verificationParameters = getVerificationParameters(we);
             VerificationChainTask task = new VerificationChainTask(we, verificationParameters);

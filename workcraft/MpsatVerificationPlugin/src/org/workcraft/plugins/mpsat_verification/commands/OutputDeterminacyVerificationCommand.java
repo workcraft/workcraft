@@ -2,8 +2,10 @@ package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.commands.TimeConsumingCommand;
 import org.workcraft.plugins.mpsat_verification.tasks.OutputDeterminacyTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.Result;
@@ -13,7 +15,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class OutputDeterminacyVerificationCommand
         extends org.workcraft.commands.AbstractVerificationCommand
-        implements ScriptableCommand<Boolean> {
+        implements ScriptableCommand<Boolean>, TimeConsumingCommand {
 
     @Override
     public Section getSection() {
@@ -47,16 +49,24 @@ public class OutputDeterminacyVerificationCommand
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = queueTask(we);
-        monitor.setInteractive(false);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, false, true);
         return monitor.waitForHandledResult();
     }
 
     private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        return queueTask(we, true, true);
+    }
+
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, boolean interactive,
+            boolean reuseCachedResults) {
+
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
+        monitor.setInteractive(interactive);
         if (!isApplicableTo(we)) {
             monitor.isFinished(Result.cancel());
-        } else {
+        } else if (!CachedVerificationUtils.tryReuse(monitor, CachedVerificationUtils.create(we, this),
+                reuseCachedResults, () -> queueTask(we, true, false))) {
+
             OutputDeterminacyTask task = new OutputDeterminacyTask(we);
             TaskManager manager = Framework.getInstance().getTaskManager();
             String description = MpsatUtils.getToolchainDescription(we.getTitle());

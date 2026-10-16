@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.TimeConsumingCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat_verification.gui.DiInterfaceDialog;
 import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceDataPreserver;
@@ -12,7 +13,8 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class DiInterfaceVerificationCommand
-        extends AbstractEssentialVerificationCommand {
+        extends AbstractEssentialVerificationCommand
+        implements TimeConsumingCommand {
 
     public static final String TITLE = "Delay insensitive interface";
 

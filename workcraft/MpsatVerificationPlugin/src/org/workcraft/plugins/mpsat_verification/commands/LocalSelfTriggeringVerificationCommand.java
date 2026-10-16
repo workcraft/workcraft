@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.TimeConsumingCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat_verification.gui.LocalSelfTriggeringDialog;
 import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringDataPreserver;
@@ -15,7 +16,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.Collection;
 
 public class LocalSelfTriggeringVerificationCommand
-        extends AbstractEssentialVerificationCommand {
+        extends AbstractEssentialVerificationCommand
+        implements TimeConsumingCommand {
 
     public static final String TITLE = "Absence of local self-triggering";
 

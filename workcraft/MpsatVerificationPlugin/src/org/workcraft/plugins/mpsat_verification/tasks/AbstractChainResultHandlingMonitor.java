@@ -13,6 +13,7 @@ import org.workcraft.traces.Solution;
 import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.TraceUtils;
+import org.workcraft.verification.CachedVerification;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
@@ -25,6 +26,7 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     private final WorkspaceEntry we;
+    private CachedVerification cachedVerification = null;
 
     public AbstractChainResultHandlingMonitor(WorkspaceEntry we) {
         this.we = we;
@@ -34,8 +36,28 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
         return we;
     }
 
+    /**
+     * Enable reuse and caching of verification results. If the cached verification has reusable results, then
+     * the monitor is expected to be finished without running the verification, and it reports the cached outcome.
+     */
+    public void setCachedVerification(CachedVerification value) {
+        cachedVerification = value;
+    }
+
     @Override
     public final Boolean handle(Result<? extends T> result) {
+        if ((cachedVerification != null) && cachedVerification.hasReusableResult()) {
+            return cachedVerification.reportReusedResult(isInteractive());
+        }
+        Boolean outcome = handleResult(result);
+        if (cachedVerification != null) {
+            // Only a definite outcome is cached, which excludes cancellation and tool errors
+            cachedVerification.store(outcome, outcome == null ? null : getOutcomeMessage(result, outcome));
+        }
+        return outcome;
+    }
+
+    private Boolean handleResult(Result<? extends T> result) {
         if (result.isSuccess()) {
             return handleSuccess(result);
         }
@@ -44,6 +66,13 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
             return handleFailure(result);
         }
 
+        return null;
+    }
+
+    /**
+     * Summary of the outcome to be stored in the cache, or null for a generic message.
+     */
+    public String getOutcomeMessage(Result<? extends T> result, boolean outcome) {
         return null;
     }
 
