@@ -9,7 +9,11 @@ import org.workcraft.plugins.circuit.commands.*;
 import org.workcraft.plugins.circuit.interop.*;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
+import org.workcraft.plugins.circuit.utils.CircuitVerificationGoals;
 import org.workcraft.utils.ScriptableCommandUtils;
+import org.workcraft.verification.VerificationGoalRegistry;
+
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class CircuitPlugin implements Plugin {
@@ -32,6 +36,20 @@ public class CircuitPlugin implements Plugin {
         pm.registerXmlSerialiser(FunctionSerialiser.class);
         pm.registerXmlDeserialiser(FunctionDeserialiser.class);
         pm.registerSettings(CircuitSettings.class);
+
+        // Verification goals of circuit model, with the commands that perform them (the combined command
+        // performs all of them)
+        VerificationGoalRegistry goalRegistry = VerificationGoalRegistry.getInstance();
+        goalRegistry.registerGoal(CircuitVerificationGoals.CONFORMATION,
+                List.of(ConformationVerificationCommand.class, CombinedVerificationCommand.class));
+        goalRegistry.registerGoal(CircuitVerificationGoals.OUTPUT_PERSISTENCY,
+                List.of(OutputPersistencyVerificationCommand.class, CombinedVerificationCommand.class));
+        goalRegistry.registerGoal(CircuitVerificationGoals.DEADLOCK_FREENESS,
+                List.of(DeadlockFreenessVerificationCommand.class, CombinedVerificationCommand.class));
+        goalRegistry.registerGoal(CircuitVerificationGoals.REFINEMENT,
+                List.of(RefinementVerificationCommand.class));
+        goalRegistry.registerGoal(CircuitVerificationGoals.STRICT_IMPLEMENTATION,
+                List.of(StrictImplementationVerificationCommand.class));
 
         pm.registerExporter(VerilogNetlistExporter.class);
         pm.registerExporter(SystemVerilogAssignExporter.class);

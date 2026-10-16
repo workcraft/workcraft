@@ -3,14 +3,17 @@ package org.workcraft.plugins.circuit.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.commands.TimeConsumingCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.tasks.StrictImplementationCheckTask;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
+import org.workcraft.plugins.circuit.utils.CircuitVerificationGoals;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
@@ -25,10 +28,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class StrictImplementationVerificationCommand extends AbstractVerificationCommand
-        implements ScriptableCommand<Boolean> {
+        implements ScriptableCommand<Boolean>, TimeConsumingCommand {
 
     @Override
     public String getDisplayName() {
@@ -52,16 +56,26 @@ public class StrictImplementationVerificationCommand extends AbstractVerificatio
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = queueTask(we);
-        monitor.setInteractive(false);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, false, true);
         return monitor.waitForHandledResult();
     }
 
     private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        return queueTask(we, true, true);
+    }
+
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, boolean interactive,
+            boolean reuseCachedResults) {
+
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
+        monitor.setInteractive(interactive);
         if (!checkPrerequisites(we)) {
             monitor.isFinished(Result.cancel());
-        } else {
+        } else if (!CachedVerificationUtils.tryReuse(monitor,
+                CachedVerificationUtils.create(we, List.of(CircuitVerificationGoals.STRICT_IMPLEMENTATION),
+                        CircuitVerificationGoals.getDependencies(we)),
+                reuseCachedResults, () -> queueTask(we, true, false))) {
+
             Framework framework = Framework.getInstance();
             TaskManager manager = framework.getTaskManager();
             StrictImplementationCheckTask task = new StrictImplementationCheckTask(we);
