@@ -167,8 +167,7 @@ public class CompatibilityManager {
 
     public InputStream process(File file) throws DeserialisationException, OperationCancelledException {
         InputStream result = null;
-        try {
-            ZipFile zipFile = new ZipFile(file, StandardCharsets.UTF_8);
+        try (ZipFile zipFile = new ZipFile(file, StandardCharsets.UTF_8)) {
             Version compatibilityVersion = WorkUtils.extractCompatibilityVersion(zipFile);
             Version currentVersion = Info.getVersion();
             Version currentReleaseVersion = new Version(currentVersion.major, currentVersion.minor,
@@ -183,9 +182,9 @@ public class CompatibilityManager {
                     throw new OperationCancelledException();
                 }
             }
-            FileInputStream fis = new FileInputStream(file);
-            result = process(fis, compatibilityVersion);
-            zipFile.close();
+            try (FileInputStream fis = new FileInputStream(file)) {
+                result = process(fis, compatibilityVersion);
+            }
         } catch (IOException e) {
             throw new DeserialisationException(e);
         }
