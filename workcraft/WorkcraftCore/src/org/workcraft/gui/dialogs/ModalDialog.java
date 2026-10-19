@@ -22,8 +22,12 @@ public class ModalDialog<T> extends JDialog {
 
         leftButtonsPanel = GuiUtils.createDialogButtonsPanel();
         rightButtonsPanel = GuiUtils.createDialogButtonsPanel();
-        okButton = addButton("OK", event -> okAction(), true);
-        addButton("Cancel", event -> cancelAction(), true);
+        String okButtonName = getOkButtonName();
+        okButton = addButton(okButtonName, event -> okAction(), true);
+        String cancelButtonName = getCancelButtonNameOrNull();
+        if ((cancelButtonName != null) && !cancelButtonName.isEmpty()) {
+            addButton(cancelButtonName, event -> cancelAction(), true);
+        }
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.add(leftButtonsPanel, BorderLayout.WEST);
         bottomPanel.add(rightButtonsPanel, BorderLayout.EAST);
@@ -75,6 +79,10 @@ public class ModalDialog<T> extends JDialog {
         okButton.setEnabled(value);
     }
 
+    public String getOkButtonName() {
+        return "OK";
+    }
+
     public boolean okAction() {
         if (okButton.isEnabled()) {
             modalResult = true;
@@ -82,6 +90,11 @@ public class ModalDialog<T> extends JDialog {
             return true;
         }
         return false;
+    }
+
+    // Redefine to return null to suppress insertion of Cancel button
+    public String getCancelButtonNameOrNull() {
+        return "Cancel";
     }
 
     public void cancelAction() {
