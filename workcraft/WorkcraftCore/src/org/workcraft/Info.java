@@ -91,4 +91,17 @@ public class Info {
         return HOMEPAGE;
     }
 
+    public static String getOperatingSystemDescription() {
+        StringBuilder result = new StringBuilder();
+        String osName = System.getProperty("os.name");
+        if ((osName != null) && !osName.isEmpty()) {
+            result.append(osName);
+            String osArch = System.getProperty("os.arch");
+            if ((osArch != null) && !osArch.isEmpty()) {
+                result.append(" ").append(osArch);
+            }
+        }
+        return result.toString();
+    }
+
 }
