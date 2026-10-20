@@ -14,17 +14,30 @@ import java.util.TreeMap;
  * @param goalId id of the verified goal
  * @param outcome definite outcome of the verification
  * @param tool name of the tool that produced the result
+ * @param version version and edition of Workcraft
+ * @param os OS description
  * @param message summary of the result
  * @param exceptions text of the exceptions that were in effect for the verification
  * @param modelHash hash of the model math layer
  * @param exceptionsHash hash of the exceptions text
  * @param validityHash hash that combines the model hash and the exceptions hash
- * @param dependencies the other models that the result depends on (their files and hashes), by their names
+ * @param dependencies the other models that the result depends on (their files and hashes), by the references of the
+ *                     circuit components that use them (empty for the environment)
  * @param timestamp time when the verification was completed
  */
-public record VerificationRecord(String goalId, Outcome outcome, String tool, String message, String exceptions,
-        String modelHash, String exceptionsHash, String validityHash, Map<String, Dependency> dependencies,
-        String timestamp) {
+public record VerificationRecord(
+        String goalId,
+        Outcome outcome,
+        String timestamp,
+        String tool,
+        String version,
+        String os,
+        String message,
+        String exceptions,
+        String modelHash,
+        String exceptionsHash,
+        String validityHash,
+        Map<String, Dependency> dependencies) {
 
     /**
      * Model that a result depends on.
@@ -64,14 +77,6 @@ public record VerificationRecord(String goalId, Outcome outcome, String tool, St
 
     public static String formatTime(ZonedDateTime time) {
         return TIME_FORMATTER.format(time);
-    }
-
-    /**
-     * Time when the verification was completed in a human-readable form.
-     */
-    public String getFormattedTime() {
-        ZonedDateTime time = getTime();
-        return time == null ? "" : formatTime(time);
     }
 
 }

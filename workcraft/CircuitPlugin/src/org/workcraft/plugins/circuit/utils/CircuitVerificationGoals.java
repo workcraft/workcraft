@@ -10,7 +10,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 
 /**
@@ -18,9 +20,6 @@ import java.util.function.Predicate;
  * (e.g. MPSat and Determinator) may perform the same goal.
  */
 public final class CircuitVerificationGoals {
-
-    private static final String ENVIRONMENT_DEPENDENCY = "environment";
-    private static final String REFINEMENT_DEPENDENCY_PREFIX = "refinement:";
 
     private static final Predicate<WorkspaceEntry> CIRCUIT_APPLICABILITY
             = we -> WorkspaceUtils.isApplicable(we, Circuit.class);
@@ -74,6 +73,10 @@ public final class CircuitVerificationGoals {
             CircuitVerificationGoals::isHierarchical, null)
             .setOrder(50).setDependencies(CircuitVerificationGoals::getHierarchyDependencies);
 
+    static {
+        DEADLOCK_FREENESS.setFallback(DETERMINISED_DEADLOCK_FREENESS);
+    }
+
     private CircuitVerificationGoals() {
     }
 
@@ -97,22 +100,28 @@ public final class CircuitVerificationGoals {
      */
     public static List<VerificationDependency> getDependencies(WorkspaceEntry we) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        return List.of(new VerificationDependency(ENVIRONMENT_DEPENDENCY, circuit.getEnvironmentFile()));
+        return List.of(new VerificationDependency(circuit.getEnvironmentFile()));
     }
 
     /**
      * Results of verifying a hierarchical circuit depend on the environment STG and on the refinement model of
      * each component. The composition is two-level, i.e. it does not look into the models referenced by refinements.
+     * A refinement model that is used by several components is a single dependency, which lists these components.
      */
     public static List<VerificationDependency> getHierarchyDependencies(WorkspaceEntry we) {
         List<VerificationDependency> result = new ArrayList<>(getDependencies(we));
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        Map<File, List<String>> fileToComponents = new LinkedHashMap<>();
         for (FunctionComponent component : circuit.getFunctionComponents()) {
             File file = component.getRefinementFile();
             if (file != null) {
-                String name = REFINEMENT_DEPENDENCY_PREFIX + circuit.getComponentReference(component);
-                result.add(new VerificationDependency(name, file));
+                fileToComponents.computeIfAbsent(file.getAbsoluteFile(), key -> new ArrayList<>())
+                        .add(circuit.getComponentReference(component));
             }
+        }
+        for (Map.Entry<File, List<String>> entry : fileToComponents.entrySet()) {
+            List<String> components = SortUtils.getSortedNatural(entry.getValue());
+            result.add(new VerificationDependency(entry.getKey(), components));
         }
         return result;
     }

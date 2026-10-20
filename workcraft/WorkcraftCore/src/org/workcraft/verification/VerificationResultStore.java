@@ -1,6 +1,8 @@
 package org.workcraft.verification;
 
+import org.workcraft.Info;
 import org.workcraft.presets.DataPreserver;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.ModelHasher;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -89,6 +91,27 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
         }
     }
 
+    /**
+     * Hashes of the models that a result depends on, by the keys of the dependencies, at the time of the call.
+     *
+     * @return null if a hash of some dependency cannot be obtained, and therefore the result cannot be validated later
+     */
+    public static Map<String, VerificationRecord.Dependency> getDependencySnapshot(
+            Collection<VerificationDependency> dependencies) {
+
+        Map<String, VerificationRecord.Dependency> result = new TreeMap<>();
+        for (VerificationDependency dependency : dependencies) {
+            String hash = dependency.getHash();
+            if (hash == null) {
+                return null;
+            }
+            File file = dependency.file();
+            result.put(dependency.getKey(),
+                    new VerificationRecord.Dependency(file == null ? null : FileUtils.getFullPath(file), hash));
+        }
+        return result;
+    }
+
     public Snapshot takeSnapshot(Collection<VerificationGoal> goals) {
         WorkspaceEntry we = getWorkspaceEntry();
         Snapshot snapshot = new Snapshot(ModelHasher.getMathHash(we));
@@ -133,9 +156,10 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
         }
         String modelHash = snapshot.modelHash;
         String exceptionsHash = ModelHasher.getHash(exceptions);
-        return new VerificationRecord(goal.getId(), outcome, tool, message, exceptions,
-                modelHash, exceptionsHash, ModelHasher.getHash(modelHash, exceptionsHash),
-                dependencies, TextUtils.getCurrentTimestamp());
+        return new VerificationRecord(goal.getId(), outcome, TextUtils.getCurrentTimestamp(),
+                tool, Info.getVersionAndEdition(), Info.getOperatingSystemDescription(),
+                message, exceptions, modelHash, exceptionsHash, ModelHasher.getHash(modelHash, exceptionsHash),
+                dependencies);
     }
 
     /**
@@ -184,15 +208,15 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
 
         VerificationRecord record = getRecord(goal);
         if (record == null) {
-            return new Lookup(Status.MISSING, null, "no verification result is stored");
+            return new Lookup(Status.MISSING, null, "No verification result is stored");
         }
         String exceptionsHash = ModelHasher.getHash(exceptionsSupplier.get());
         if (!exceptionsHash.equals(record.exceptionsHash())) {
-            return stale(record, "verification exceptions were changed after the result was obtained");
+            return stale(record, "Verification exceptions were changed after the result was obtained");
         }
         String modelHash = modelHashSupplier.get();
         if (!ModelHasher.getHash(modelHash, exceptionsHash).equals(record.validityHash())) {
-            return stale(record, "model was changed after the result was obtained");
+            return stale(record, "Model was changed after the result was obtained");
         }
         for (Map.Entry<String, VerificationRecord.Dependency> dependency : record.dependencies().entrySet()) {
             String currentHash = (dependencyHasher == null) ? null : dependencyHasher.apply(dependency.getKey());
@@ -214,7 +238,7 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
     public Lookup lookup(VerificationGoal goal) {
         Map<String, VerificationDependency> dependencies = new TreeMap<>();
         for (VerificationDependency dependency : goal.getDependencies(getWorkspaceEntry())) {
-            dependencies.put(dependency.name(), dependency);
+            dependencies.put(dependency.getKey(), dependency);
         }
         Lookup result = lookup(goal, name -> {
             VerificationDependency dependency = dependencies.get(name);
@@ -222,15 +246,18 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
         });
         // The result must be obtained with the same set of dependencies as the one that the goal has now
         if (result.isValid() && !result.getRecord().dependencies().keySet().equals(dependencies.keySet())) {
-            return stale(result.getRecord(), "dependencies of the verification were changed");
+            return stale(result.getRecord(), "verification dependencies were changed");
         }
         return result;
     }
 
-    private String getDependencyDescription(String name, VerificationRecord.Dependency dependency) {
+    private String getDependencyDescription(String key, VerificationRecord.Dependency dependency) {
         String file = dependency.file();
-        String fileName = ((file == null) || file.isEmpty()) ? null : new File(file).getName();
-        return "dependency '" + name + "'" + (fileName == null ? "" : " (" + fileName + ")");
+        String fileName = ((file == null) || file.isEmpty()) ? "" : new File(file).getName();
+        int count = key.length() - key.replace(",", "").length();
+        return (key.isEmpty() ? "Environment" : "Refinement")
+                + (fileName.isEmpty() ? "" : " file ") + fileName
+                + (key.isEmpty() ? "" : (" for component" + (count < 2 ? ' ' : "s "))) + key;
     }
 
     private Lookup stale(VerificationRecord record, String reason) {

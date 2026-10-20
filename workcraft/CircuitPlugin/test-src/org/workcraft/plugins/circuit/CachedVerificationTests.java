@@ -75,7 +75,7 @@ class CachedVerificationTests {
         VerificationRecord record = new VerificationResultStore(we).getRecord(goal);
         Assertions.assertNotNull(record, goal.getId());
         Assertions.assertEquals(outcome, record.outcome(), goal.getId());
-        VerificationRecord.Dependency environment = record.dependencies().get("environment");
+        VerificationRecord.Dependency environment = record.dependencies().get("");
         Assertions.assertNotNull(environment, goal.getId());
         Assertions.assertTrue(environment.file().endsWith("celement.stg.work"), goal.getId());
     }

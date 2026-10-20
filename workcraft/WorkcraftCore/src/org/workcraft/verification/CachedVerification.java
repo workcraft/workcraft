@@ -2,22 +2,13 @@ package org.workcraft.verification;
 
 import org.workcraft.Framework;
 import org.workcraft.utils.DialogUtils;
-import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import java.io.File;
+import javax.swing.*;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +35,7 @@ public class CachedVerification {
     private final List<VerificationRecord> reusableRecords = new ArrayList<>();
     private final Map<String, VerificationDependency> dependencies;
     private final Map<String, VerificationRecord.Dependency> dependencySnapshot;
-    private boolean dependenciesResolved;
+    private final boolean dependenciesResolved;
 
     private Runnable rerunAction = null;
 
@@ -56,20 +47,11 @@ public class CachedVerification {
         this.tool = tool;
         this.snapshot = resultStore.takeSnapshot(this.goals);
         this.dependencies = new TreeMap<>();
+        dependencies.forEach(dependency -> this.dependencies.put(dependency.getKey(), dependency));
         // Hashes of dependencies are captured before the verification, as the files may be edited during it
-        this.dependencySnapshot = new TreeMap<>();
-        this.dependenciesResolved = true;
-        for (VerificationDependency dependency : dependencies) {
-            this.dependencies.put(dependency.name(), dependency);
-            String hash = dependency.getHash();
-            if (hash == null) {
-                dependenciesResolved = false;
-            } else {
-                File file = dependency.file();
-                dependencySnapshot.put(dependency.name(),
-                        new VerificationRecord.Dependency(file == null ? null : FileUtils.getFullPath(file), hash));
-            }
-        }
+        Map<String, VerificationRecord.Dependency> snapshot = VerificationResultStore.getDependencySnapshot(dependencies);
+        this.dependenciesResolved = (snapshot != null);
+        this.dependencySnapshot = dependenciesResolved ? snapshot : Collections.emptyMap();
     }
 
     /**
@@ -217,7 +199,7 @@ public class CachedVerification {
                         goals.get(i).getDescription(reusableRecords.get(i).exceptions())));
             }
         } else {
-            result.append(reusableRecords.get(0).message());
+            result.append(reusableRecords.getFirst().message());
         }
         return result.toString();
     }
@@ -231,8 +213,8 @@ public class CachedVerification {
 
         String when = "";
         if (!times.isEmpty()) {
-            String first = VerificationRecord.formatTime(times.get(0));
-            String last = VerificationRecord.formatTime(times.get(times.size() - 1));
+            String first = VerificationRecord.formatTime(times.getFirst());
+            String last = VerificationRecord.formatTime(times.getLast());
             when = first.equals(last) ? " on " + first : " between " + first + " and " + last;
         }
         String tools = reusableRecords.stream()
@@ -265,8 +247,7 @@ public class CachedVerification {
             if (isCombined() || (message == null)) {
                 goalMessage = goal.getTitle() + (outcome ? " holds." : " is violated.");
             }
-            records.add(resultStore.createRecord(snapshot, goal, recordOutcome, tool, goalMessage,
-                    dependencySnapshot));
+            records.add(resultStore.createRecord(snapshot, goal, recordOutcome, tool, goalMessage, dependencySnapshot));
         }
         // The results are stored with a single update. In GUI mode the storage belongs to the editor thread, as
         // the update marks the model as changed, while verification is completed by a thread of the task manager.

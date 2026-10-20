@@ -154,7 +154,7 @@ class VerificationResultStoreTests {
         lookup = store.lookup(plainGoal);
         Assertions.assertEquals(VerificationResultStore.Status.STALE, lookup.getStatus());
         Assertions.assertNotNull(lookup.getRecord());
-        Assertions.assertTrue(lookup.getReason().contains("model was changed"));
+        Assertions.assertTrue(lookup.getReason().contains("Model was changed"));
 
         Framework.getInstance().closeWork(we);
     }
@@ -180,11 +180,13 @@ class VerificationResultStoreTests {
         Framework.getInstance().closeWork(we);
     }
 
+    private static final String REFS = "a3, page1.a1, u2, x1";
+
     @Test
     void testDependencies() throws DeserialisationException {
         WorkspaceEntry we = loadVmeWork();
         VerificationResultStore store = new VerificationResultStore(we);
-        store.put(plainGoal, VerificationRecord.Outcome.PASS, "Test command", "Passed", Map.of("env", new VerificationRecord.Dependency("env.stg.work", "h1")));
+        store.put(plainGoal, VerificationRecord.Outcome.PASS, "Test command", "Passed", Map.of("", new VerificationRecord.Dependency("env.stg.work", "h1")));
 
         Assertions.assertEquals(VerificationResultStore.Status.STALE, store.lookup(plainGoal).getStatus());
         Assertions.assertTrue(store.lookup(plainGoal, path -> "h1").isValid());
@@ -206,7 +208,8 @@ class VerificationResultStoreTests {
         File dependencyFile = new File(new File(directory, "dependencies"), "env.stg.work");
         exceptions.set("x");
         store.put(exceptionsGoal, VerificationRecord.Outcome.FAIL, "Test command", "Violated <&> \"quoted\"",
-                Map.of("env", new VerificationRecord.Dependency(dependencyFile.getAbsolutePath(), "h1")));
+                Map.of(REFS, new VerificationRecord.Dependency(dependencyFile.getAbsolutePath(), "h1"),
+                        "", new VerificationRecord.Dependency(null, "h1")));
 
         VerificationRecord record = store.getRecord(exceptionsGoal);
         File file = new File(directory, "saved.stg.work");
@@ -216,7 +219,9 @@ class VerificationResultStoreTests {
         try (ZipFile zipFile = new ZipFile(file)) {
             ZipEntry entry = zipFile.getEntry("resources/" + VerificationResultStore.KEY);
             String text = new String(zipFile.getInputStream(entry).readAllBytes(), StandardCharsets.UTF_8);
-            Assertions.assertTrue(text.matches("(?s).*reference-file=\"dependencies[/\\\\]env\\.stg\\.work\".*"), text);
+            Assertions.assertTrue(text.matches("(?s).*work-file=\"dependencies[/\\\\]env\\.stg\\.work\".*"), text);
+            Assertions.assertTrue(text.contains("refs=\"a3, page1.a1, u2, x1\""), text);
+            Assertions.assertTrue(text.contains("refs=\"\""), text);
             Assertions.assertFalse(text.contains(directory.getAbsolutePath()), text);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -228,8 +233,9 @@ class VerificationResultStoreTests {
         VerificationRecord savedRecord = savedStore.getRecord(exceptionsGoal);
         Assertions.assertEquals(record.message(), savedRecord.message());
         Assertions.assertEquals(record.validityHash(), savedRecord.validityHash());
-        Assertions.assertEquals(dependencyFile, new File(savedRecord.dependencies().get("env").file()));
-        Assertions.assertEquals("h1", savedRecord.dependencies().get("env").hash());
+        Assertions.assertEquals(dependencyFile, new File(savedRecord.dependencies().get(REFS).file()));
+        Assertions.assertEquals("h1", savedRecord.dependencies().get(REFS).hash());
+        Assertions.assertEquals("h1", savedRecord.dependencies().get("").hash());
         Assertions.assertTrue(savedStore.lookup(exceptionsGoal, path -> "h1").isValid());
 
         exceptions.set("");

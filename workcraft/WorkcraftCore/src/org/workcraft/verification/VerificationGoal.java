@@ -27,6 +27,9 @@ public class VerificationGoal {
     private final Function<WorkspaceEntry, String> exceptionsProvider;
     private int order = Integer.MAX_VALUE;
     private boolean reported = true;
+    private VerificationGoal fallback = null;
+    private Predicate<WorkspaceEntry> vacuity = null;
+    private String vacuityReason = null;
     private Function<WorkspaceEntry, Collection<VerificationDependency>> dependencyProvider = null;
 
     public VerificationGoal(String id, String title, Scope scope, boolean cacheable,
@@ -68,6 +71,42 @@ public class VerificationGoal {
 
     public boolean isReported() {
         return reported;
+    }
+
+    /**
+     * Goal whose result is reported in place of the result of this goal, if the latter is missing or stale. It is
+     * meant for initialisation of the goal.
+     */
+    public VerificationGoal setFallback(VerificationGoal value) {
+        fallback = value;
+        return this;
+    }
+
+    public VerificationGoal getFallback() {
+        return fallback;
+    }
+
+    /**
+     * Condition under which the goal holds vacuously, i.e. without verification (e.g. there are no mutex places for
+     * the mutex protocol). It is meant for initialisation of the goal.
+     *
+     * @param reason explanation of the vacuity, e.g. "no mutex places"
+     */
+    public VerificationGoal setVacuity(Predicate<WorkspaceEntry> condition, String reason) {
+        vacuity = condition;
+        vacuityReason = reason;
+        return this;
+    }
+
+    public boolean isVacuousFor(WorkspaceEntry we) {
+        return (vacuity != null) && vacuity.test(we);
+    }
+
+    /**
+     * Message of the result of the goal that holds vacuously.
+     */
+    public String getVacuityMessage() {
+        return title + " holds vacuously" + ((vacuityReason == null) ? "." : " (" + vacuityReason + ").");
     }
 
     /**

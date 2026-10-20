@@ -33,7 +33,8 @@ public final class StgVerificationGoals {
             we -> getCanonicalText(new InputPropernessDataPreserver(we).loadData())).setOrder(30);
 
     public static final VerificationGoal MUTEX_PROTOCOL = new VerificationGoal(
-            "stg.mutex-protocol", "Mutex protocol", STG_APPLICABILITY).setOrder(40);
+            "stg.mutex-protocol", "Mutex protocol", STG_APPLICABILITY).setOrder(40)
+            .setVacuity(we -> WorkspaceUtils.getAs(we, StgModel.class).getMutexPlaces().isEmpty(), "no mutex places");
 
     public static final VerificationGoal OUTPUT_PERSISTENCY = new VerificationGoal(
             "stg.output-persistency", "Output persistency", STG_APPLICABILITY).setOrder(50);
@@ -53,6 +54,10 @@ public final class StgVerificationGoals {
     public static final VerificationGoal DI_INTERFACE = new VerificationGoal(
             "stg.di-interface", "Delay insensitive interface", VerificationGoal.Scope.MODEL, true,
             STG_APPLICABILITY, StgVerificationGoals::getDiInterfaceExceptions).setOrder(90);
+
+    static {
+        DEADLOCK_FREENESS.setFallback(DETERMINISED_DEADLOCK_FREENESS);
+    }
 
     private StgVerificationGoals() {
     }
