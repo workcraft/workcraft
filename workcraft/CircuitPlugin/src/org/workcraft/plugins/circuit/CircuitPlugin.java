@@ -41,11 +41,14 @@ public class CircuitPlugin implements Plugin {
         // performs all of them)
         VerificationGoalRegistry goalRegistry = VerificationGoalRegistry.getInstance();
         goalRegistry.registerGoal(CircuitVerificationGoals.CONFORMATION,
-                List.of(ConformationVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(ConformationVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
         goalRegistry.registerGoal(CircuitVerificationGoals.OUTPUT_PERSISTENCY,
-                List.of(OutputPersistencyVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(OutputPersistencyVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
         goalRegistry.registerGoal(CircuitVerificationGoals.DEADLOCK_FREENESS,
-                List.of(DeadlockFreenessVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(DeadlockFreenessVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
         goalRegistry.registerGoal(CircuitVerificationGoals.REFINEMENT,
                 List.of(RefinementVerificationCommand.class));
         goalRegistry.registerGoal(CircuitVerificationGoals.STRICT_IMPLEMENTATION,

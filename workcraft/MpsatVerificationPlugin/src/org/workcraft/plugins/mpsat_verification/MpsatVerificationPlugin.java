@@ -28,28 +28,36 @@ public class MpsatVerificationPlugin implements Plugin {
         VerificationGoalRegistry verificationGoalRegistry = VerificationGoalRegistry.getInstance();
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.CONSISTENCY,
-                List.of(ConsistencyVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(ConsistencyVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.OUTPUT_DETERMINACY,
-                List.of(OutputDeterminacyVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(OutputDeterminacyVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.INPUT_PROPERNESS,
-                List.of(InputPropernessVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(InputPropernessVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.MUTEX_PROTOCOL,
-                List.of(MutexProtocolVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(MutexProtocolVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.OUTPUT_PERSISTENCY,
-                List.of(OutputPersistencyVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(OutputPersistencyVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.LOCAL_SELF_TRIGGERING,
-                List.of(LocalSelfTriggeringVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(LocalSelfTriggeringVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.DEADLOCK_FREENESS,
-                List.of(DeadlockFreenessVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(DeadlockFreenessVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.DI_INTERFACE,
-                List.of(DiInterfaceVerificationCommand.class, CombinedVerificationCommand.class));
+                List.of(DiInterfaceVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
 
         // Core verification commands
         ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkStgCombined",

@@ -25,6 +25,10 @@ public class VerificationGoalRegistry {
     private final Map<String, VerificationGoal> goals = new LinkedHashMap<>();
     private final Map<String, Set<Class<? extends Command>>> goalCommands = new LinkedHashMap<>();
     private final Map<Class<? extends Command>, List<VerificationGoal>> commandGoals = new LinkedHashMap<>();
+    private final Map<String, PreferredCommand> preferredCommands = new LinkedHashMap<>();
+
+    private record PreferredCommand(Class<? extends Command> command, int priority) {
+    }
 
     public static VerificationGoalRegistry getInstance() {
         return INSTANCE;
@@ -44,6 +48,39 @@ public class VerificationGoalRegistry {
                 commandGoals.computeIfAbsent(command, c -> new ArrayList<>()).add(knownGoal);
             }
         }
+    }
+
+    /**
+     * Register a goal together with commands that perform it, and the command that is preferred for achieving it,
+     * which is usually a combined verification command. A preference of higher priority replaces the one of lower
+     * priority, so a plugin of a better tool can take over the default one. Of equal priorities the first wins.
+     */
+    public synchronized void registerGoal(VerificationGoal goal, List<Class<? extends Command>> commands,
+            Class<? extends Command> preferredCommand, int priority) {
+
+        if (!commands.contains(preferredCommand)) {
+            throw new IllegalArgumentException("Preferred command '" + preferredCommand.getSimpleName()
+                    + "' does not perform goal '" + goal.getId() + "'");
+        }
+        registerGoal(goal, commands);
+        PreferredCommand known = preferredCommands.get(goal.getId());
+        if ((known == null) || (known.priority() < priority)) {
+            preferredCommands.put(goal.getId(), new PreferredCommand(preferredCommand, priority));
+        }
+    }
+
+    public void registerGoal(VerificationGoal goal, List<Class<? extends Command>> commands,
+            Class<? extends Command> preferredCommand) {
+
+        registerGoal(goal, commands, preferredCommand, 0);
+    }
+
+    /**
+     * Command that is preferred for achieving the goal, or null if no preference is declared.
+     */
+    public synchronized Class<? extends Command> getPreferredCommand(VerificationGoal goal) {
+        PreferredCommand result = preferredCommands.get(goal.getId());
+        return result == null ? null : result.command();
     }
 
     public synchronized VerificationGoal getGoal(String id) {
@@ -76,6 +113,19 @@ public class VerificationGoalRegistry {
         return result == null ? Collections.emptyList() : new ArrayList<>(result);
     }
 
+    /**
+     * Commands that perform the goal, starting with the preferred one (if it is declared).
+     */
+    public synchronized List<Class<? extends Command>> getCommandsInPreferenceOrder(VerificationGoal goal) {
+        Set<Class<? extends Command>> result = new LinkedHashSet<>();
+        PreferredCommand preferred = preferredCommands.get(goal.getId());
+        if (preferred != null) {
+            result.add(preferred.command());
+        }
+        result.addAll(getCommands(goal));
+        return new ArrayList<>(result);
+    }
+
     public synchronized List<Class<? extends Command>> getCommands(VerificationGoal goal) {
         Set<Class<? extends Command>> result = goalCommands.get(goal.getId());
         return result == null ? Collections.emptyList() : new ArrayList<>(result);
@@ -85,6 +135,7 @@ public class VerificationGoalRegistry {
         goals.clear();
         goalCommands.clear();
         commandGoals.clear();
+        preferredCommands.clear();
     }
 
 }
