@@ -188,8 +188,11 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
     private void showSolutionMessage(Solution solution, String prefix, String suffix) {
         String message = prefix + solution.getComment() + suffix + ":\n" + solution;
         if (canProcessSolution()) {
+            // The trace is offered for simulation to the user only, and not in the non-interactive mode
             String question = "\n\nSimulate the problematic trace?";
-            if (DialogUtils.showConfirmError(message, question)) {
+            if (!isInteractive()) {
+                DialogUtils.showError(message);
+            } else if (DialogUtils.showConfirmError(message, question)) {
                 TraceUtils.playSolution(we, solution, suffix);
             }
         } else {
