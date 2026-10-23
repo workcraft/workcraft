@@ -3,12 +3,14 @@ package org.workcraft.plugins.mpsat_verification.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.commands.TimeConsumingCommand;
+import org.workcraft.plugins.mpsat_verification.StgVerificationGoals;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainTask;
 import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
+import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
@@ -76,7 +78,14 @@ public class MutexProtocolVerificationCommand
         }
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        if (!MutexUtils.mutexStructuralCheck(stg, false)) {
+        // There is nothing to verify, and therefore no need to question the soundness of the model, if the property
+        // holds vacuously
+        if (!StgVerificationGoals.MUTEX_PROTOCOL.isVacuousFor(we) && !PetriUtils.checkSoundness(stg, true)) {
+            monitor.isFinished(Result.cancel());
+            return monitor;
+        }
+        // Absence of mutex places is not an issue, as the property then holds vacuously and its result is cached
+        if (!MutexUtils.mutexStructuralCheck(stg, true)) {
             monitor.isFinished(Result.cancel());
             return monitor;
         }

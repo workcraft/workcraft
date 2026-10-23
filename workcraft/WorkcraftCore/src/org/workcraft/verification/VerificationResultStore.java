@@ -24,6 +24,11 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
 
     public static final String KEY = "verification-results.xml";
 
+    /**
+     * Tool of the result of a goal that holds vacuously: no backend tool is used to obtain such a result.
+     */
+    public static final String VACUOUS_TOOL = "";
+
     public enum Status {
         VALID,
         STALE,
@@ -141,6 +146,24 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
         VerificationRecord record = createRecord(snapshot, goal, outcome, tool, message, dependencies);
         putRecords(Collections.singleton(record));
         return record;
+    }
+
+    /**
+     * Create a record of the goal that holds vacuously for the current state of the model and store it.
+     */
+    public void putVacuous(VerificationGoal goal, Map<String, VerificationRecord.Dependency> dependencies) {
+        putRecords(Collections.singleton(createVacuousRecord(takeSnapshot(Collections.singleton(goal)), goal,
+                dependencies)));
+    }
+
+    /**
+     * Create a record of the goal that holds vacuously for the snapshot state, without storing it.
+     */
+    public VerificationRecord createVacuousRecord(Snapshot snapshot, VerificationGoal goal,
+            Map<String, VerificationRecord.Dependency> dependencies) {
+
+        return createRecord(snapshot, goal, VerificationRecord.Outcome.PASS, VACUOUS_TOOL,
+                goal.getVacuityMessage(), dependencies);
     }
 
     /**

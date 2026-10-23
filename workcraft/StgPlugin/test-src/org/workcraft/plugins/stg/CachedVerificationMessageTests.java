@@ -73,4 +73,18 @@ class CachedVerificationMessageTests {
         Framework.getInstance().closeWork(we);
     }
 
+    @Test
+    void testVacuousGoalMessageHasNoNoteAboutCachedResult() throws DeserialisationException {
+        WorkspaceEntry we = loadVmeWork();
+        VerificationGoal vacuousGoal = new VerificationGoal("test.vacuous", "Vacuous goal", we1 -> true)
+                .setVacuity(we1 -> true, "nothing to check");
+
+        CachedVerification cachedVerification = CachedVerification.create(we, List.of(vacuousGoal), "MPSat");
+        Assertions.assertTrue(cachedVerification.prepare(false, null));
+        Assertions.assertTrue(cachedVerification.getReusableOutcome());
+        Assertions.assertEquals("Vacuous goal holds vacuously (nothing to check).", cachedVerification.getReusableMessage());
+
+        Framework.getInstance().closeWork(we);
+    }
+
 }

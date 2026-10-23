@@ -114,25 +114,19 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
                     if (canProcessSolution()) {
                         solution = getProcessedSolution(interpreter, solution);
                     }
-                    String message = "Cannot build unfolding prefix";
+                    String problem = "Cannot build unfolding prefix for the " + switch (cause) {
+                        case INCONSISTENT -> "inconsistent STG";
+                        case NOT_SAFE -> "unsafe net";
+                        case EMPTY_PRESET -> "malformed net";
+                    };
+                    String message = problem + ".\n\n";
                     switch (cause) {
-                        case INCONSISTENT -> {
-                            message += " for the inconsistent STG.\n\n";
-                            showSolutionMessage(solution, message, "");
-                            return null;
-                        }
-                        case NOT_SAFE -> {
-                            message += " for the unsafe net.\n\n";
-                            showSolutionMessage(solution, message, " after trace");
-                            return null;
-                        }
-                        case EMPTY_PRESET -> {
-                            message += " for the malformed net.\n\n";
-                            message += solution.getComment();
-                            DialogUtils.showError(message);
-                            return null;
-                        }
+                        case INCONSISTENT -> showSolutionMessage(solution, message, "");
+                        case NOT_SAFE -> showSolutionMessage(solution, message, " after trace");
+                        case EMPTY_PRESET -> DialogUtils.showError(message + solution.getComment());
                     }
+                    storeUndetermined(problem, solution.getComment());
+                    return null;
                 }
             }
         }
@@ -183,6 +177,19 @@ public abstract class AbstractChainResultHandlingMonitor<T extends ChainOutput>
         }
         DialogUtils.showError(errorMessage);
         return null;
+    }
+
+    /**
+     * The verification cannot be performed because of the model, which is a property of the model rather than of
+     * the environment, so it is cached (unlike a failure of the toolchain). The reason is a single line, which
+     * describes the problem but does not include a trace.
+     */
+    private void storeUndetermined(String problem, String details) {
+        if (cachedVerification != null) {
+            String detail = details.replaceFirst(" in trace$", "");
+            cachedVerification.storeUndetermined(detail.isEmpty() ? problem
+                    : problem + ": " + Character.toLowerCase(detail.charAt(0)) + detail.substring(1));
+        }
     }
 
     private void showSolutionMessage(Solution solution, String prefix, String suffix) {

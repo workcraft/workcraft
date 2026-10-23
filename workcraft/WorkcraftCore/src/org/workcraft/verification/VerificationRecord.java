@@ -12,7 +12,8 @@ import java.util.TreeMap;
  * math layer and the goal exceptions) and the hashes of the models that the result depends on are unchanged.
  *
  * @param goalId id of the verified goal
- * @param outcome definite outcome of the verification
+ * @param outcome outcome of the verification: PASS or FAIL, or UNDETERMINED if the verification cannot be
+ *                performed on the model (e.g. the model is unsafe)
  * @param tool name of the tool that produced the result
  * @param version version and edition of Workcraft
  * @param os OS description
@@ -53,6 +54,7 @@ public record VerificationRecord(
     public enum Outcome {
         PASS,
         FAIL,
+        UNDETERMINED,
     }
 
     public VerificationRecord {
@@ -62,6 +64,13 @@ public record VerificationRecord(
 
     public boolean isPass() {
         return outcome == Outcome.PASS;
+    }
+
+    /**
+     * The outcome tells whether the property holds, and therefore can be reused instead of verification.
+     */
+    public boolean isDefinite() {
+        return outcome != Outcome.UNDETERMINED;
     }
 
     /**

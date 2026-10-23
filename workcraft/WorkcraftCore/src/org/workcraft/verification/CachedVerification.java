@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
  * goals in one go (combined command). The state of the model is captured when this object is created, i.e. before
  * the verification starts, so that a result is never associated with a model edited during a long verification.
  * <p>
- * Reuse rules: a command with a single goal reuses its valid result, whatever the outcome. A combined command
+ * Reuse rules: a command with a single goal reuses its valid PASS or FAIL result. A combined command
  * is skipped only if all its goals have valid PASS results, otherwise it is re-run as a whole.
  * Likewise, a combined command stores results only if it passes, as a failure does not say which goal failed.
  * <p>
@@ -28,6 +28,7 @@ public class CachedVerification {
 
     private static final String RESULT_TITLE = "Verification results";
 
+    private final WorkspaceEntry we;
     private final VerificationResultStore resultStore;
     private final List<VerificationGoal> goals;
     private final String tool;
@@ -42,6 +43,7 @@ public class CachedVerification {
     public CachedVerification(WorkspaceEntry we, List<VerificationGoal> goals, String tool,
             Collection<VerificationDependency> dependencies) {
 
+        this.we = we;
         this.resultStore = new VerificationResultStore(we);
         this.goals = new ArrayList<>(goals);
         this.tool = tool;
@@ -103,7 +105,9 @@ public class CachedVerification {
         List<VerificationRecord> records = new ArrayList<>();
         for (VerificationGoal goal : goals) {
             VerificationResultStore.Lookup lookup = resultStore.lookup(goal, snapshot, this::getDependencyHash);
-            if (!lookup.isValid() || (isCombined() && !lookup.getRecord().isPass())) {
+            // An undetermined result is not reused, as the user may choose to override the reason for it
+            if (!lookup.isValid() || !lookup.getRecord().isDefinite()
+                    || (isCombined() && !lookup.getRecord().isPass())) {
                 return false;
             }
             // The result must be obtained with the same set of dependencies as the one that the command has now
@@ -142,8 +146,35 @@ public class CachedVerification {
      * @return true if the verification is not needed, and the reusable results are to be reported instead
      */
     public boolean prepare(boolean reuse, Runnable rerun) {
+        if (holdsVacuously()) {
+            // There is nothing to verify and, therefore, to re-run
+            setRerunAction(null);
+            return findReusableRecords() || storeVacuousRecords();
+        }
         setRerunAction(rerun);
         return reuse && findReusableRecords();
+    }
+
+    private boolean holdsVacuously() {
+        return !goals.isEmpty() && goals.stream().allMatch(goal -> goal.isVacuousFor(we));
+    }
+
+    /**
+     * Store the results of the goals that hold vacuously, and make them reusable. The records are used directly
+     * rather than looked up, as in GUI mode they may be stored later by the editor thread.
+     */
+    private boolean storeVacuousRecords() {
+        if (!dependenciesResolved) {
+            return false;
+        }
+        List<VerificationRecord> records = new ArrayList<>();
+        for (VerificationGoal goal : goals) {
+            records.add(resultStore.createVacuousRecord(snapshot, goal, dependencySnapshot));
+        }
+        putRecords(records);
+        reusableRecords.clear();
+        reusableRecords.addAll(records);
+        return true;
     }
 
     /**
@@ -177,10 +208,17 @@ public class CachedVerification {
 
     /**
      * Description of the reusable results for the user: the message of the original report, followed by the note
-     * with the time (and the tool) when the results were obtained.
+     * with the time (and the tool) when the results were obtained. A result that holds vacuously is not worth such
+     * a note, as it is established without verification.
      */
     public String getReusableMessage() {
-        return reusableRecords.isEmpty() ? "" : getReusableBody() + "\n\n" + getReusableNote();
+        if (reusableRecords.isEmpty()) {
+            return "";
+        }
+        boolean vacuous = reusableRecords.stream()
+                .allMatch(record -> VerificationResultStore.VACUOUS_TOOL.equals(record.tool()));
+
+        return vacuous ? getReusableBody() : getReusableBody() + "\n\n" + getReusableNote();
     }
 
     /**
@@ -249,6 +287,37 @@ public class CachedVerification {
             }
             records.add(resultStore.createRecord(snapshot, goal, recordOutcome, tool, goalMessage, dependencySnapshot));
         }
+        putRecords(records);
+    }
+
+    /**
+     * Store the undetermined result of the verification run, i.e. the verification cannot be performed on the model
+     * and this is the property of the model (e.g. it is unsafe). Failures that depend on the environment (e.g. a tool
+     * crash or an unreadable file) must not be stored. As a failure of a combined command, the undetermined result
+     * does not say which goal is affected, hence it is stored for a single goal only.
+     *
+     * @param reason explanation of why the verification cannot be performed, of which only the first paragraph
+     *               is stored as a single line
+     */
+    public void storeUndetermined(String reason) {
+        if (isCombined() || !dependenciesResolved) {
+            return;
+        }
+        putRecords(List.of(resultStore.createRecord(snapshot, goals.getFirst(),
+                VerificationRecord.Outcome.UNDETERMINED, tool, getSummary(reason), dependencySnapshot)));
+    }
+
+    /**
+     * The first paragraph of the text as a single line without the full stop at the end, i.e. a summary without
+     * the details, such as the list of problematic items.
+     */
+    private static String getSummary(String text) {
+        String paragraph = text.strip().split("\\R\\s*\\R", 2)[0];
+        String result = paragraph.replaceAll("\\s+", " ");
+        return result.endsWith(".") ? result.substring(0, result.length() - 1) : result;
+    }
+
+    private void putRecords(List<VerificationRecord> records) {
         // The results are stored with a single update. In GUI mode the storage belongs to the editor thread, as
         // the update marks the model as changed, while verification is completed by a thread of the task manager.
         if (Framework.getInstance().isInGuiMode() && !SwingUtilities.isEventDispatchThread()) {
