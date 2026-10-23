@@ -114,7 +114,8 @@ public final class PetriUtils {
             message = "The model has the following issues:" + message;
             if (ask) {
                 String question = "\n\n Proceed anyway?";
-                return DialogUtils.showConfirmWarning(message, question, "Model validation", false);
+                // The issues are logged and do not stop the silent verification, e.g. an update of cached results
+                return DialogUtils.showConfirmWarning(message, question, "Model validation", DialogUtils.isSilent());
             } else {
                 DialogUtils.showWarning(message);
             }
