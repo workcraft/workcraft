@@ -21,6 +21,9 @@ jobs:
       matrix:
         os: [ubuntu-26.04, ubuntu-24.04]
         java-version: [21, 25]
+        include:
+          - os: ubuntu-26.04
+            java-version: 27
 
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
