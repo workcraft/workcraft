@@ -19,10 +19,14 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.awt.*;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -233,19 +237,25 @@ public class Config {
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
 
-            File parentDir = file.getParentFile();
-            if ((parentDir != null) && !parentDir.exists() && !parentDir.mkdirs()) {
+            File parentDir = file.getAbsoluteFile().getParentFile();
+            if (!parentDir.exists() && !parentDir.mkdirs()) {
                 throw new IOException("Cannot create parent directory for config file " + file.getAbsolutePath());
             }
-            if (!file.exists() && !file.createNewFile()) {
-                throw new IOException("Cannot create config file " + file.getAbsolutePath());
+            // Write to a temporary file first, to keep the existing config intact on failure
+            Path target = file.toPath();
+            Path temp = Files.createTempFile(parentDir.toPath(), file.getName(), ".tmp");
+            try {
+                try (Writer writer = new OutputStreamWriter(Files.newOutputStream(temp), StandardCharsets.UTF_8)) {
+                    transformer.transform(new DOMSource(doc), new StreamResult(writer));
+                }
+                try {
+                    Files.move(temp, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                } catch (AtomicMoveNotSupportedException e) {
+                    Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING);
+                }
+            } finally {
+                Files.deleteIfExists(temp);
             }
-            FileOutputStream fos = new FileOutputStream(file);
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new OutputStreamWriter(fos, StandardCharsets.UTF_8));
-
-            transformer.transform(source, result);
-            fos.close();
         } catch (TransformerException | IOException e) {
             e.printStackTrace();
         }

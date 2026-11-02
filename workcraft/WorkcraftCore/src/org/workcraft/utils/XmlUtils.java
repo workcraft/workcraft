@@ -19,6 +19,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -117,27 +121,47 @@ public class XmlUtils {
         return createDocumentBuilder().parse(is);
     }
 
+    // The stream is not closed here as it may be shared (e.g. a zip entry), the caller is responsible for that.
     public static void writeDocument(Document doc, OutputStream os) {
         try {
-            TransformerFactory tFactory = TransformerFactory.newInstance();
-            Transformer transformer = tFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
-
-            DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new OutputStreamWriter(os, StandardCharsets.UTF_8));
-            transformer.transform(source, result);
-        } catch (TransformerException e) {
+            transformDocument(doc, new OutputStreamWriter(os, StandardCharsets.UTF_8));
+        } catch (TransformerException | IOException e) {
             System.err.println(e.getMessage());
         }
     }
 
     public static void saveDocument(Document doc, File file) throws IOException {
-        File parentDir = file.getParentFile();
-        if ((parentDir != null) && !parentDir.exists()) {
-            parentDir.mkdirs();
+        File parentDir = file.getAbsoluteFile().getParentFile();
+        if (!parentDir.exists() && !parentDir.mkdirs()) {
+            throw new IOException("Cannot create parent directory for file " + file.getAbsolutePath());
         }
-        writeDocument(doc, new FileOutputStream(file));
+        // Write to a temporary file first, to keep the existing file intact on failure
+        Path target = file.toPath();
+        Path temp = Files.createTempFile(parentDir.toPath(), file.getName(), ".tmp");
+        try {
+            try (Writer writer = new OutputStreamWriter(Files.newOutputStream(temp), StandardCharsets.UTF_8)) {
+                transformDocument(doc, writer);
+            } catch (TransformerException e) {
+                throw new IOException(e.getMessage(), e);
+            }
+            try {
+                Files.move(temp, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally {
+            Files.deleteIfExists(temp);
+        }
+    }
+
+    private static void transformDocument(Document doc, Writer writer) throws TransformerException, IOException {
+        TransformerFactory tFactory = TransformerFactory.newInstance();
+        Transformer transformer = tFactory.newTransformer();
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
+
+        transformer.transform(new DOMSource(doc), new StreamResult(writer));
+        writer.flush();
     }
 
     public static List<String> readItems(Element parent) {

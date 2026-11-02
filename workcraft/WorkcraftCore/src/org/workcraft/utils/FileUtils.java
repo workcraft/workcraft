@@ -6,6 +6,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -31,6 +32,36 @@ public class FileUtils {
         }
         try (FileOutputStream os = new FileOutputStream(outFile)) {
             copyFileToStream(inFile, os);
+        }
+    }
+
+    @FunctionalInterface
+    public interface StreamWriter<E extends Exception> {
+        void write(OutputStream os) throws E;
+    }
+
+    /**
+     * Write to a temporary file first and then move it over the target, so that the existing file is kept intact
+     * if writing fails half-way. The stream is closed by this method after the writer returns.
+     */
+    public static <E extends Exception> void writeAtomically(File file, StreamWriter<E> writer) throws IOException, E {
+        File parentDir = file.getAbsoluteFile().getParentFile();
+        if (!parentDir.exists() && !parentDir.mkdirs()) {
+            throw new IOException("Cannot create parent directory for file " + file.getAbsolutePath());
+        }
+        Path target = file.toPath();
+        Path temp = Files.createTempFile(parentDir.toPath(), file.getName(), ".tmp");
+        try {
+            try (OutputStream os = Files.newOutputStream(temp)) {
+                writer.write(os);
+            }
+            try {
+                Files.move(temp, target, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+            } catch (AtomicMoveNotSupportedException e) {
+                Files.move(temp, target, StandardCopyOption.REPLACE_EXISTING);
+            }
+        } finally {
+            Files.deleteIfExists(temp);
         }
     }
 
