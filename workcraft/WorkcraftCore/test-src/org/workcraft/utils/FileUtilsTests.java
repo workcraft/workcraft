@@ -2,9 +2,14 @@ package org.workcraft.utils;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 
 class FileUtilsTests {
 
@@ -212,6 +217,27 @@ class FileUtilsTests {
 
         Assertions.assertEquals(new File("/path_$ENV_VARIABLE_NAME1}_${ENV_VARIABLE_NAME2/file_${}"),
                 FileUtils.getEvalPathFile("${ENV_VARIABLE_NAME1}/path_$ENV_VARIABLE_NAME1}_${ENV_VARIABLE_NAME2/file_${}"));
+    }
+
+    @Test
+    void testWriteAtomically(@TempDir Path dir) throws IOException {
+        File file = dir.resolve("sub").resolve("data.txt").toFile();
+
+        FileUtils.writeAtomically(file, os -> os.write("old".getBytes(StandardCharsets.UTF_8)));
+        Assertions.assertEquals("old", Files.readString(file.toPath()));
+
+        FileUtils.writeAtomically(file, os -> os.write("new".getBytes(StandardCharsets.UTF_8)));
+        Assertions.assertEquals("new", Files.readString(file.toPath()));
+
+        // Failure half-way through keeps the existing content and leaves no temporary files behind
+        Assertions.assertThrows(IllegalStateException.class, () -> FileUtils.writeAtomically(file, os -> {
+            os.write("partial".getBytes(StandardCharsets.UTF_8));
+            throw new IllegalStateException("Serialisation failure");
+        }));
+        Assertions.assertEquals("new", Files.readString(file.toPath()));
+        try (Stream<Path> files = Files.list(file.getParentFile().toPath())) {
+            Assertions.assertEquals(1, files.count());
+        }
     }
 
 }

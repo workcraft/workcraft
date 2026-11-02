@@ -334,11 +334,12 @@ public final class WorkUtils {
                 throw new SerialisationException(e);
             }
         }
-        try (FileOutputStream os = new FileOutputStream(file)) {
+        try {
             String base = FileUtils.getBasePath(file);
             adjustPropertyFilePaths(me.getVisualModel(), base, false);
             Collection<Resource> adjustedResources = adjustResourceFilePaths(resources, base, false);
-            saveModel(me, adjustedResources, os);
+            // Keep the existing file intact if serialisation fails half-way
+            FileUtils.writeAtomically(file, os -> saveModel(me, adjustedResources, os));
         } catch (IOException e) {
             throw new SerialisationException(e);
         } finally {
