@@ -17,6 +17,8 @@ import java.util.function.Function;
 
 public class CommandUtils {
 
+    private static final String SUBMENU_SEPARATOR = " / ";
+
     public static List<Command> getCommands(Function<Command, Boolean> filter) {
         List<Command> result = new ArrayList<>();
         final PluginManager pm = Framework.getInstance().getPluginManager();
@@ -291,6 +293,19 @@ public class CommandUtils {
             }
         }
         throw new RuntimeException("Command '" + className + "' is not found.");
+    }
+
+    public static String getCommandFullDisplayName(Command command) {
+        String sectionPrefix = "";
+        Command.Section section = command.getSection();
+        if ((section != null) && (section.getDisplayName() != null)) {
+            sectionPrefix += section.getDisplayName();
+        }
+        if (!sectionPrefix.isEmpty()) {
+            sectionPrefix += SUBMENU_SEPARATOR;
+        }
+        String commandName = command.getDisplayName();
+        return sectionPrefix + commandName;
     }
 
 }

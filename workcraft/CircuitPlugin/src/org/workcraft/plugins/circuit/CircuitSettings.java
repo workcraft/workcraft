@@ -215,7 +215,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final String keyWireWidth = prefix + ".wireWidth";
     private static final String keyActiveWireColor = prefix + ".activeWireColor";
     private static final String keyInactiveWireColor = prefix + ".inactiveWireColor";
-    private static final String keySimplifyStg = prefix + ".simplifyStg";
     // Gate library
     private static final String keyGateLibrary = prefix + ".gateLibrary";
     private static final String keyWaitData = prefix + ".waitData";
@@ -274,7 +273,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static final Double defaultWireWidth = 0.04;
     private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
     private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
-    private static final boolean defaultSimplifyStg = true;
     // Gate library
     private static final String defaultGateLibrary = DEFAULT_LIBRARY;
     private static final String defaultWaitData = DEFAULT_WAIT;
@@ -333,7 +331,6 @@ public class CircuitSettings extends AbstractModelSettings {
     private static Double wireWidth = defaultWireWidth;
     private static Color activeWireColor = defaultActiveWireColor;
     private static Color inactiveWireColor = defaultInactiveWireColor;
-    private static boolean simplifyStg = defaultSimplifyStg;
     // Gate library
     private static String gateLibrary = defaultGateLibrary;
     private static String waitData = defaultWaitData;
@@ -423,11 +420,6 @@ public class CircuitSettings extends AbstractModelSettings {
                 PropertyHelper.indentWithBullet("Inactive wire"),
                 CircuitSettings::setInactiveWireColor,
                 CircuitSettings::getInactiveWireColor));
-
-        properties.add(new PropertyDeclaration<>(Boolean.class,
-                PropertyHelper.indentWithBullet("Simplify generated circuit STG"),
-                CircuitSettings::setSimplifyStg,
-                CircuitSettings::getSimplifyStg));
 
         properties.add(PropertyHelper.createSeparatorProperty("Gates and arbitration primitives"));
 
@@ -771,7 +763,6 @@ public class CircuitSettings extends AbstractModelSettings {
         setWireWidth(config.getDouble(keyWireWidth, defaultWireWidth));
         setActiveWireColor(config.getColor(keyActiveWireColor, defaultActiveWireColor));
         setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
-        setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
         // Gate library
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
         setWaitData(config.getString(keyWaitData, defaultWaitData));
@@ -830,7 +821,6 @@ public class CircuitSettings extends AbstractModelSettings {
         config.setDouble(keyWireWidth, getWireWidth());
         config.setColor(keyActiveWireColor, getActiveWireColor());
         config.setColor(keyInactiveWireColor, getInactiveWireColor());
-        config.setBoolean(keySimplifyStg, getSimplifyStg());
         // Gate library
         config.set(keyGateLibrary, getGateLibrary());
         config.set(keyWaitData, getWaitData());
@@ -941,14 +931,6 @@ public class CircuitSettings extends AbstractModelSettings {
 
     public static void setInactiveWireColor(Color value) {
         inactiveWireColor = value;
-    }
-
-    public static boolean getSimplifyStg() {
-        return simplifyStg;
-    }
-
-    public static void setSimplifyStg(boolean value) {
-        simplifyStg = value;
     }
 
     public static String getGateLibrary() {

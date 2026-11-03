@@ -3,10 +3,13 @@ package org.workcraft.plugins.circuit.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.commands.TimeConsumingCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.tasks.CheckTask;
+import org.workcraft.plugins.circuit.utils.CircuitVerificationGoals;
 import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
+import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -14,13 +17,14 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.verification.CachedVerification;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
 
 public class CombinedVerificationCommand
         extends AbstractVerificationCommand
-        implements ScriptableCommand<Boolean> {
+        implements ScriptableCommand<Boolean>, TimeConsumingCommand {
 
     public static final Section SECTION
             = new Section("Individual essential properties [MPSat]", Position.TOP, 10);
@@ -52,13 +56,19 @@ public class CombinedVerificationCommand
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        VerificationChainResultHandlingMonitor monitor = queueTask(we);
-        monitor.setInteractive(false);
+        VerificationChainResultHandlingMonitor monitor = queueTask(we, false, true);
         return monitor.waitForHandledResult();
     }
 
     private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        return queueTask(we, true, true);
+    }
+
+    private VerificationChainResultHandlingMonitor queueTask(WorkspaceEntry we, boolean interactive,
+            boolean reuseCachedResults) {
+
         VerificationChainResultHandlingMonitor monitor = new VerificationChainResultHandlingMonitor(we);
+        monitor.setInteractive(interactive);
         if (!checkPrerequisites(we)) {
             monitor.isFinished(Result.cancel());
             return monitor;
@@ -108,6 +118,17 @@ public class CombinedVerificationCommand
         }
         if (!checkConformation && !checkDeadlock && !checkPersistency) {
             monitor.isFinished(Result.cancel());
+            return monitor;
+        }
+
+        // Goals that are verified in this run depend on the adjustments above
+        CachedVerification cachedVerification = CachedVerificationUtils.create(we,
+                CircuitVerificationGoals.getGoals(checkConformation, checkPersistency, checkDeadlock, false),
+                CircuitVerificationGoals.getDependencies(we));
+
+        if (CachedVerificationUtils.tryReuse(monitor, cachedVerification,
+                reuseCachedResults, () -> queueTask(we, true, false))) {
+
             return monitor;
         }
 

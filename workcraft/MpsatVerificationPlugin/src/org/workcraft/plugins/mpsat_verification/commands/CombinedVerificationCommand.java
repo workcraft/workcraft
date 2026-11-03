@@ -2,10 +2,13 @@ package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.commands.TimeConsumingCommand;
+import org.workcraft.plugins.mpsat_verification.StgVerificationGoals;
 import org.workcraft.plugins.mpsat_verification.presets.*;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainTask;
 import org.workcraft.plugins.mpsat_verification.tasks.OutputDeterminacyTask;
+import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
 import org.workcraft.plugins.petri.utils.PetriUtils;
@@ -18,6 +21,7 @@ import org.workcraft.types.Pair;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
+import org.workcraft.verification.CachedVerification;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
@@ -27,7 +31,7 @@ import java.util.List;
 
 public class CombinedVerificationCommand
         extends org.workcraft.commands.AbstractVerificationCommand
-        implements ScriptableCommand<Boolean> {
+        implements ScriptableCommand<Boolean>, TimeConsumingCommand {
 
     @Override
     public String getDisplayName() {
@@ -56,13 +60,19 @@ public class CombinedVerificationCommand
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        CombinedChainResultHandlingMonitor monitor = queueTask(we);
-        monitor.setInteractive(false);
+        CombinedChainResultHandlingMonitor monitor = queueTask(we, false, true);
         return monitor.waitForHandledResult();
     }
 
     private CombinedChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        return queueTask(we, true, true);
+    }
+
+    private CombinedChainResultHandlingMonitor queueTask(WorkspaceEntry we, boolean interactive,
+            boolean reuseCachedResults) {
+
         CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we);
+        monitor.setInteractive(interactive);
         if (!checkPrerequisites(we)) {
             monitor.isFinished(Result.cancel());
             return monitor;
@@ -71,6 +81,17 @@ public class CombinedVerificationCommand
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
 
         boolean noDummies = stg.getDummyTransitions().isEmpty();
+
+        // Goals that are verified in this run depend on the presence of dummies
+        CachedVerification cachedVerification = CachedVerificationUtils.create(we,
+                StgVerificationGoals.getCombinedGoals(noDummies));
+
+        if (CachedVerificationUtils.tryReuse(monitor, cachedVerification,
+                reuseCachedResults, () -> queueTask(we, true, false))) {
+
+            return monitor;
+        }
+
         if (!noDummies) {
             String message = "The following properties can currently be checked only for STGs without dummies:"
                     + TextUtils.getBulletpoint("Input properness")

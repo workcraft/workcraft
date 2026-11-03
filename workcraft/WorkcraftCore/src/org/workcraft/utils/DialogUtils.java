@@ -11,6 +11,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Supplier;
 
 public class DialogUtils {
 
@@ -25,6 +27,37 @@ public class DialogUtils {
     private static final String YES_BUTTON_LABEL = "Yes";
     private static final String NO_BUTTON_LABEL = "No";
     private static final String CANCEL_BUTTON_LABEL = "Cancel";
+
+    private static final AtomicInteger SILENT_COUNT = new AtomicInteger();
+
+    /**
+     * Run the action without showing message and confirmation dialogs, as in the mode without GUI: the messages are
+     * only logged, and the questions are answered with their default choices. The mode is global rather than
+     * per-thread, as dialogs of a command are usually raised by the threads of its tasks.
+     */
+    public static void runSilently(Runnable action) {
+        callSilently(() -> {
+            action.run();
+            return null;
+        });
+    }
+
+    public static <T> T callSilently(Supplier<T> action) {
+        SILENT_COUNT.incrementAndGet();
+        try {
+            return action.get();
+        } finally {
+            SILENT_COUNT.decrementAndGet();
+        }
+    }
+
+    public static boolean isSilent() {
+        return SILENT_COUNT.get() > 0;
+    }
+
+    private static boolean isInteractive(Framework framework) {
+        return framework.isInGuiMode() && !isSilent();
+    }
 
     private static void logMessage(String message, int messageType) {
         if ((message != null) && !message.isEmpty()) {
@@ -42,7 +75,7 @@ public class DialogUtils {
             logMessage(message, messageType);
         }
         Framework framework = Framework.getInstance();
-        if (framework.isInGuiMode()) {
+        if (isInteractive(framework)) {
             MainWindow mainWindow = framework.getMainWindow();
             String text = TextUtils.truncateLines(message);
             JOptionPane.showMessageDialog(mainWindow, text, title, messageType);
@@ -117,7 +150,7 @@ public class DialogUtils {
             logMessage(message, messageType);
         }
         Framework framework = Framework.getInstance();
-        if (framework.isInGuiMode()) {
+        if (isInteractive(framework)) {
             JButton yesButton = new JButton();
             JButton noButton = new JButton();
             JButton[] options = {yesButton, noButton};
@@ -148,7 +181,7 @@ public class DialogUtils {
     public static int showYesNoCancel(String message, String title, int defaultChoice, int messageType) {
         int result = JOptionPane.CANCEL_OPTION;
         Framework framework = Framework.getInstance();
-        if (framework.isInGuiMode()) {
+        if (isInteractive(framework)) {
             JButton yesButton = new JButton();
             JButton noButton = new JButton();
             JButton cancelButton = new JButton();
@@ -192,7 +225,7 @@ public class DialogUtils {
 
     private static boolean showOkCancel(String message, String title, boolean defaultChoice, int messageType) {
         Framework framework = Framework.getInstance();
-        if (framework.isInGuiMode()) {
+        if (isInteractive(framework)) {
             MainWindow mainWindow = framework.getMainWindow();
             int result = JOptionPane.showConfirmDialog(mainWindow, message, title, JOptionPane.OK_CANCEL_OPTION, messageType);
             return result == JOptionPane.OK_OPTION;

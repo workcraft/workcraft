@@ -64,6 +64,16 @@ public abstract class AbstractVisualModel extends AbstractModel<VisualNode, Visu
 
         new StateSupervisor() {
             @Override
+            public void handleHierarchyEvent(HierarchyEvent e) {
+                if ((e instanceof NodesAddedEvent)
+                        || (e instanceof NodesDeletedEvent)
+                        || (e instanceof NodesReparentedEvent)) {
+
+                    observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));
+                }
+            }
+
+            @Override
             public void handleEvent(StateEvent e) {
                 observableState.sendNotification(new ModelModifiedEvent(AbstractVisualModel.this));
             }

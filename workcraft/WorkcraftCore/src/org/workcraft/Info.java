@@ -17,7 +17,7 @@ public class Info {
     private static final String SUBTITLE_3 = "Return of the Hazard";
     private static final String SUBTITLE_4 = "Revenge of the Timing Assumption";
 
-    private static final Version VERSION = new Version(3, 5, 6, Status.RC3);
+    private static final Version VERSION = new Version(3, 5, 6, Status.RC6);
 
     private static final int START_YEAR = 2006;
     private static final int CURRENT_YEAR = Calendar.getInstance().get(Calendar.YEAR);
@@ -89,6 +89,19 @@ public class Info {
 
     public static String getHomepage() {
         return HOMEPAGE;
+    }
+
+    public static String getOperatingSystemDescription() {
+        StringBuilder result = new StringBuilder();
+        String osName = System.getProperty("os.name");
+        if ((osName != null) && !osName.isEmpty()) {
+            result.append(osName);
+            String osArch = System.getProperty("os.arch");
+            if ((osArch != null) && !osArch.isEmpty()) {
+                result.append(" ").append(osArch);
+            }
+        }
+        return result.toString();
     }
 
 }

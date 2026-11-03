@@ -3,7 +3,7 @@ Consistency: false
 Output determinacy: true
 Deadlock freeness: null
 Input properness: null
-Mutex protocol: null
+Mutex protocol: true
 Output persistency: null
 Absence of local self-triggering: null
 DI interface: null

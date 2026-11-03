@@ -2,11 +2,15 @@ package org.workcraft.plugins.mpsat_verification.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
+import org.workcraft.commands.TimeConsumingCommand;
+import org.workcraft.plugins.mpsat_verification.StgVerificationGoals;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainTask;
+import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
+import org.workcraft.plugins.petri.utils.PetriUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
@@ -21,7 +25,7 @@ import java.util.List;
 
 public class MutexProtocolVerificationCommand
         extends org.workcraft.commands.AbstractVerificationCommand
-        implements ScriptableCommand<Boolean> {
+        implements ScriptableCommand<Boolean>, TimeConsumingCommand {
 
     @Override
     public Section getSection() {
@@ -55,21 +59,40 @@ public class MutexProtocolVerificationCommand
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        CombinedChainResultHandlingMonitor monitor = queueTask(we);
-        monitor.setInteractive(false);
+        CombinedChainResultHandlingMonitor monitor = queueTask(we, false, true);
         return monitor.waitForHandledResult();
     }
 
     private CombinedChainResultHandlingMonitor queueTask(WorkspaceEntry we) {
+        return queueTask(we, true, true);
+    }
+
+    private CombinedChainResultHandlingMonitor queueTask(WorkspaceEntry we, boolean interactive,
+            boolean reuseCachedResults) {
+
         CombinedChainResultHandlingMonitor monitor = new CombinedChainResultHandlingMonitor(we);
+        monitor.setInteractive(interactive);
         if (!isApplicableTo(we)) {
             monitor.isFinished(Result.cancel());
             return monitor;
         }
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        if (!MutexUtils.mutexStructuralCheck(stg, false)) {
+        // There is nothing to verify, and therefore no need to question the soundness of the model, if the property
+        // holds vacuously
+        if (!StgVerificationGoals.MUTEX_PROTOCOL.isVacuousFor(we) && !PetriUtils.checkSoundness(stg, true)) {
             monitor.isFinished(Result.cancel());
+            return monitor;
+        }
+        // Absence of mutex places is not an issue, as the property then holds vacuously and its result is cached
+        if (!MutexUtils.mutexStructuralCheck(stg, true)) {
+            monitor.isFinished(Result.cancel());
+            return monitor;
+        }
+
+        if (CachedVerificationUtils.tryReuse(monitor, CachedVerificationUtils.create(we, this),
+                reuseCachedResults, () -> queueTask(we, true, false))) {
+
             return monitor;
         }
 

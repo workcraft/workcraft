@@ -65,10 +65,8 @@ public class CircuitToStgConverter {
         this.nodeToDriverMap = associateNodesToDrivers(drivers);
         this.driverToStgMap = convertDriversToStgs(drivers);
         connectDriverStgs(drivers);
-        if (CircuitSettings.getSimplifyStg()) {
-            // Remove redundant transitions (except the last ones for each phase)
-            simplifyDriverStgs(drivers);
-        }
+        // Remove redundant transitions (except the last ones for each phase)
+        simplifyDriverStgs(drivers);
         positionDriverStgs(drivers);
         if (StgSettings.getGroupSignalConversion()) {
             groupDriverStgs(drivers);

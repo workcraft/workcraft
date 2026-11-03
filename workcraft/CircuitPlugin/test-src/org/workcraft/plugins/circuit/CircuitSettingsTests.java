@@ -44,9 +44,6 @@ class CircuitSettingsTests {
         Assertions.assertEquals(Config.toString(CircuitSettings.getInactiveWireColor()),
                 framework.getConfigVar(prefix + ".inactiveWireColor", false));
 
-        Assertions.assertEquals(Config.toString(CircuitSettings.getSimplifyStg()),
-                framework.getConfigVar(prefix + ".simplifyStg", false));
-
         // Gate library
         Assertions.assertEquals(Config.toString(CircuitSettings.getGateLibrary()),
                 framework.getConfigVar(prefix + ".gateLibrary", false));

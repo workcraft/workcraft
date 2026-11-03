@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat_verification;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
@@ -28,6 +29,12 @@ class VerificationCommandTests {
         framework.init();
         PcompSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "pcomp"));
         MpsatVerificationSettings.setCommand(BackendUtils.getTemplateToolPath("UnfoldingTools", "mpsat"));
+    }
+
+    @AfterEach
+    void closeWorks() {
+        // The cached results of a work that is left open are reused by the tests that load it later
+        Framework.getInstance().closeAllWorks();
     }
 
     @Test
@@ -76,7 +83,7 @@ class VerificationCommandTests {
                 true,  // consistency
                 true,  // output determinacy
                 true,  // input properness
-                null,  // mutex protocol
+                true,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // deadlock freeness
@@ -114,7 +121,7 @@ class VerificationCommandTests {
                 true,  // consistency
                 true,  // output determinacy
                 true,  // input properness
-                null,  // mutex protocol
+                true,  // mutex protocol
                 false, // output persistency
                 true,  // absence of self-triggering local signals
                 false, // deadlock freeness
@@ -190,7 +197,7 @@ class VerificationCommandTests {
                 false, // consistency
                 true,  // output determinacy
                 null,  // input properness
-                null,  // mutex protocol
+                true,  // mutex protocol
                 null,  // output persistency
                 null,  // absence of self-triggering local signals
                 null,  // deadlock freeness
@@ -209,7 +216,7 @@ class VerificationCommandTests {
                 false, // consistency
                 true,  // output determinacy
                 null,  // input properness
-                null,  // mutex protocol
+                true,  // mutex protocol
                 null,  // output persistency
                 null,  // absence of self-triggering local signals
                 null,  // deadlock freeness
@@ -230,7 +237,7 @@ class VerificationCommandTests {
                 true,  // consistency
                 false, // output determinacy
                 false, // input properness
-                null,  // mutex protocol
+                true,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // deadlock freeness
@@ -249,7 +256,7 @@ class VerificationCommandTests {
                 true,  // consistency
                 true,  // output determinacy
                 true,  // input properness
-                null,  // mutex protocol
+                true,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // deadlock freeness
@@ -268,7 +275,7 @@ class VerificationCommandTests {
                 true,  // consistency
                 true,  // output determinacy
                 true,  // input properness
-                null,  // mutex protocol
+                true,  // mutex protocol
                 true,  // output persistency
                 false, // absence of self-triggering local signals
                 true,  // deadlock freeness
@@ -287,7 +294,7 @@ class VerificationCommandTests {
                 true,  // consistency
                 true,  // output determinacy
                 true,  // input properness
-                null,  // mutex protocol
+                true,  // mutex protocol
                 true,  // output persistency
                 true,  // absence of self-triggering local signals
                 true,  // deadlock freeness

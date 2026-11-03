@@ -5,6 +5,9 @@ import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.mpsat_verification.commands.*;
 import org.workcraft.utils.ScriptableCommandUtils;
+import org.workcraft.verification.VerificationGoalRegistry;
+
+import java.util.List;
 
 @SuppressWarnings("unused")
 public class MpsatVerificationPlugin implements Plugin {
@@ -20,6 +23,41 @@ public class MpsatVerificationPlugin implements Plugin {
         PluginManager pm = framework.getPluginManager();
 
         pm.registerSettings(MpsatVerificationSettings.class);
+
+        // Verification goals for STG with commands that perform them (combined command performs all of them)
+        VerificationGoalRegistry verificationGoalRegistry = VerificationGoalRegistry.getInstance();
+
+        verificationGoalRegistry.registerGoal(StgVerificationGoals.CONSISTENCY,
+                List.of(ConsistencyVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
+
+        verificationGoalRegistry.registerGoal(StgVerificationGoals.OUTPUT_DETERMINACY,
+                List.of(OutputDeterminacyVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
+
+        verificationGoalRegistry.registerGoal(StgVerificationGoals.INPUT_PROPERNESS,
+                List.of(InputPropernessVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
+
+        verificationGoalRegistry.registerGoal(StgVerificationGoals.MUTEX_PROTOCOL,
+                List.of(MutexProtocolVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
+
+        verificationGoalRegistry.registerGoal(StgVerificationGoals.OUTPUT_PERSISTENCY,
+                List.of(OutputPersistencyVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
+
+        verificationGoalRegistry.registerGoal(StgVerificationGoals.LOCAL_SELF_TRIGGERING,
+                List.of(LocalSelfTriggeringVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
+
+        verificationGoalRegistry.registerGoal(StgVerificationGoals.DEADLOCK_FREENESS,
+                List.of(DeadlockFreenessVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
+
+        verificationGoalRegistry.registerGoal(StgVerificationGoals.DI_INTERFACE,
+                List.of(DiInterfaceVerificationCommand.class, CombinedVerificationCommand.class),
+                CombinedVerificationCommand.class);
 
         // Core verification commands
         ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkStgCombined",
