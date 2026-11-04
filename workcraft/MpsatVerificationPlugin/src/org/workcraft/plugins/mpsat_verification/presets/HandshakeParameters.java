@@ -51,116 +51,124 @@ public class HandshakeParameters {
     private static final String ACK_INITIALLY_ASSERTED_REPLACEMENT =
             "/* insert acknowledgment initial assertion state here */"; // true or false
 
-    private static final String INITIAL_HANDSHAKE_REACH =
-            "// Handshake protocol initial state check.\n" +
-            "let\n" +
-            "    // Non-empty set of request signals.\n" +
-            "    REQS = S {" + REQ_NAMES_REPLACEMENT + "},\n" +
-            "    // Non-empty set of acknowledgement signals.\n" +
-            "    ACKS = S {" + ACK_NAMES_REPLACEMENT + "},\n" +
-            "    // The following two values specify the initial state of the handshake.\n" +
-            "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + '\n' +
-            "{\n" +
-            "    // Check that either inversions are allowed or the initial values of requests are equal to REQ_INITIALLY_ASSERTED.\n" +
-            "    exists req in REQS { is_init req ^ REQ_INITIALLY_ASSERTED }\n" +
-            "    |\n" +
-            "    // Check that either inversions are allowed or the initial values of acknowledgements are equal to ACK_INITIALLY_ASSERTED.\n" +
-            "    exists ack in ACKS { is_init ack ^ ACK_INITIALLY_ASSERTED }\n" +
-            "}\n";
+    private static final String INITIAL_HANDSHAKE_REACH = """
+            // Handshake protocol initial state check.
+            let
+                // Non-empty set of request signals.
+                REQS = S {%s},
+                // Non-empty set of acknowledgement signals.
+                ACKS = S {%s},
+                // The following two values specify the initial state of the handshake.
+                REQ_INITIALLY_ASSERTED = %s,
+                ACK_INITIALLY_ASSERTED = %s
+            {
+                // Check that either inversions are allowed or the initial values of requests are equal to REQ_INITIALLY_ASSERTED.
+                exists req in REQS { is_init req ^ REQ_INITIALLY_ASSERTED }
+                |
+                // Check that either inversions are allowed or the initial values of acknowledgements are equal to ACK_INITIALLY_ASSERTED.
+                exists ack in ACKS { is_init ack ^ ACK_INITIALLY_ASSERTED }
+            }
+            """.formatted(REQ_NAMES_REPLACEMENT, ACK_NAMES_REPLACEMENT, REQ_INITIALLY_ASSERTED_REPLACEMENT, ACK_INITIALLY_ASSERTED_REPLACEMENT);
 
-    private static final String ONEHOT_HANDSHAKE_REACH =
-            "// Handshake protocol one-hotness check.\n" +
-            "let\n" +
-            "    // Non-empty set of request signals.\n" +
-            "    REQS = S {" + REQ_NAMES_REPLACEMENT + "},\n" +
-            "    // Non-empty set of acknowledgement signals.\n" +
-            "    ACKS = S {" + ACK_NAMES_REPLACEMENT + "},\n" +
-            "    // The following two values specify the initial state of the handshake.\n" +
-            "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + '\n' +
-            "{\n" +
-            "    // Check that the requests are 1-hot (correcting for the polarity and initial state of handshake).\n" +
-            "    threshold req in REQS { $ req ^ (is_init req ^ REQ_INITIALLY_ASSERTED) }\n" +
-            "    |\n" +
-            "    // Check that the acknowledgement are 1-hot (correcting for the polarity and initial state of handshake).\n" +
-            "    threshold ack in ACKS { $ ack ^ (is_init ack ^ ACK_INITIALLY_ASSERTED) }\n" +
-            "}\n";
+    private static final String ONEHOT_HANDSHAKE_REACH = """
+            // Handshake protocol one-hotness check.
+            let
+                // Non-empty set of request signals.
+                REQS = S {%s},
+                // Non-empty set of acknowledgement signals.
+                ACKS = S {%s},
+                // The following two values specify the initial state of the handshake.
+                REQ_INITIALLY_ASSERTED = %s,
+                ACK_INITIALLY_ASSERTED = %s
+            {
+                // Check that the requests are 1-hot (correcting for the polarity and initial state of handshake).
+                threshold req in REQS { $ req ^ (is_init req ^ REQ_INITIALLY_ASSERTED) }
+                |
+                // Check that the acknowledgement are 1-hot (correcting for the polarity and initial state of handshake).
+                threshold ack in ACKS { $ ack ^ (is_init ack ^ ACK_INITIALLY_ASSERTED) }
+            }
+            """.formatted(REQ_NAMES_REPLACEMENT, ACK_NAMES_REPLACEMENT,
+            REQ_INITIALLY_ASSERTED_REPLACEMENT, ACK_INITIALLY_ASSERTED_REPLACEMENT);
 
 
-    private static final String ORDERING_HANDSHAKE_REACH =
-            "// Handshake protocol ordering check.\n" +
-            "let\n" +
-            "    // Non-empty set of request signals.\n" +
-            "    REQS = S {" + REQ_NAMES_REPLACEMENT + "},\n" +
-            "    // Non-empty set of acknowledgement signals.\n" +
-            "    ACKS = S {" + ACK_NAMES_REPLACEMENT + "},\n" +
-            "    // The following two values specify the initial state of the handshake.\n" +
-            "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "\n" +
-            "    // Some request is asserted (correcting for the polarity and initial state of handshake).\n" +
-            "    req = exists s in REQS { $ s ^ (is_init s ^ REQ_INITIALLY_ASSERTED) },\n" +
-            "    // Some acknowledgement is asserted (correcting for the polarity and initial state of handshake).\n" +
-            "    ack = exists s in ACKS { $ s ^ (is_init s ^ ACK_INITIALLY_ASSERTED) },\n" +
-            "\n" +
-            "    // Request assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).\n" +
-            "    en_req_assert = exists e in E REQS s.t. (is_init S e ^ REQ_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },\n" +
-            "    en_req_withdraw = exists e in E REQS s.t. (is_init S e ^ REQ_INITIALLY_ASSERTED)  ? is_plus e : is_minus e { @e },\n" +
-            "    en_req = en_req_assert | en_req_withdraw,\n" +
-            "    // Acknowledgement assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).\n" +
-            "    en_ack_assert = exists e in E ACKS s.t. (is_init S e ^ ACK_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },\n" +
-            "    en_ack_withdraw = exists e in E ACKS s.t. (is_init S e ^ ACK_INITIALLY_ASSERTED) ? is_plus e : is_minus e { @e },\n" +
-            "    en_ack = en_ack_assert | en_ack_withdraw\n" +
-            "{\n" +
-            "    // Check that the handshake progresses as expected, i.e. signals are not enabled unexpectedly.\n" +
-            "    ~req & ~ack & (en_req_withdraw | en_ack)\n" +
-            "    |\n" +
-            "     req & ~ack & (en_req | en_ack_withdraw)\n" +
-            "    |\n" +
-            "     req &  ack & (en_req_assert | en_ack)\n" +
-            "    |\n" +
-            "    ~req &  ack & (en_req | en_ack_assert)\n" +
-            "}\n";
+    private static final String ORDERING_HANDSHAKE_REACH = """
+            // Handshake protocol ordering check.
+            let
+                // Non-empty set of request signals.
+                REQS = S {%s},
+                // Non-empty set of acknowledgement signals.
+                ACKS = S {%s},
+                // The following two values specify the initial state of the handshake.
+                REQ_INITIALLY_ASSERTED = %s,
+                ACK_INITIALLY_ASSERTED = %s,
 
-    private static final String RECEPTIVENESS_HANDSHAKE_REACH =
-            "// Handshake protocol receptiveness check\n" +
-            "let\n" +
-            "    // Non-empty set of request signals.\n" +
-            "    REQS = S {" + REQ_NAMES_REPLACEMENT + "},\n" +
-            "    // Non-empty set of acknowledgement signals.\n" +
-            "    ACKS = S {" + ACK_NAMES_REPLACEMENT + "},\n" +
-            "    // If true then check assertion/withdrawal receptiveness.\n" +
-            "    CHECK_ASSERT_ENABLED = " + CHECK_ASSERT_ENABLED_REPLACEMENT + ",\n" +
-            "    CHECK_WITHDRAW_ENABLED = " + CHECK_WITHDRAW_ENABLED_REPLACEMENT + ",\n" +
-            "    // The following two values specify the initial state of the handshake.\n" +
-            "    REQ_INITIALLY_ASSERTED = " + REQ_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "    ACK_INITIALLY_ASSERTED = " + ACK_INITIALLY_ASSERTED_REPLACEMENT + ",\n" +
-            "\n" +
-            "    // Handshake is active if the request is an output;\n" +
-            "    // if there are several requests, they must all be of the same type.\n" +
-            "    active = exists s in REQS { is_output s },\n" +
-            "\n" +
-            "    // Some request is asserted (correcting for the polarity and initial state of handshake).\n" +
-            "    req = exists s in REQS { $ s ^ (is_init s ^ REQ_INITIALLY_ASSERTED) },\n" +
-            "    // Some acknowledgement is asserted (correcting for the polarity and initial state of handshake).\n" +
-            "    ack = exists s in ACKS { $ s ^ (is_init s ^ ACK_INITIALLY_ASSERTED) },\n" +
-            "\n" +
-            "    // Request assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).\n" +
-            "    en_req_assert = exists e in E REQS s.t. (is_init S e ^ REQ_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },\n" +
-            "    en_req_withdraw = exists e in E REQS s.t. (is_init S e ^ REQ_INITIALLY_ASSERTED)  ? is_plus e : is_minus e { @e },\n" +
-            "    // Acknowledgement assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).\n" +
-            "    en_ack_assert = exists e in E ACKS s.t. (is_init S e ^ ACK_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },\n" +
-            "    en_ack_withdraw = exists e in E ACKS s.t. (is_init S e ^ ACK_INITIALLY_ASSERTED) ? is_plus e : is_minus e { @e }\n" +
-            "{\n" +
-            "    // If the handshake is active, check that the appropriate acknowledgement edge\n" +
-            "    // is enabled after request changes, unless this check is disabled.\n" +
-            "    active & (CHECK_ASSERT_ENABLED & req & ~ack & ~en_ack_assert | CHECK_WITHDRAW_ENABLED & ~req & ack & ~en_ack_withdraw)\n" +
-            "    |\n" +
-            "    // If the handshake is passive, check that the appropriate request edge\n" +
-            "    // is enabled after acknowledgement changes, unless this check is disabled.\n" +
-            "    ~active & (CHECK_WITHDRAW_ENABLED & req & ack & ~en_req_withdraw | CHECK_ASSERT_ENABLED & ~req & ~ack & ~en_req_assert)\n" +
-            "}\n";
+                // Some request is asserted (correcting for the polarity and initial state of handshake).
+                req = exists s in REQS { $ s ^ (is_init s ^ REQ_INITIALLY_ASSERTED) },
+                // Some acknowledgement is asserted (correcting for the polarity and initial state of handshake).
+                ack = exists s in ACKS { $ s ^ (is_init s ^ ACK_INITIALLY_ASSERTED) },
+
+                // Request assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).
+                en_req_assert = exists e in E REQS s.t. (is_init S e ^ REQ_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },
+                en_req_withdraw = exists e in E REQS s.t. (is_init S e ^ REQ_INITIALLY_ASSERTED)  ? is_plus e : is_minus e { @e },
+                en_req = en_req_assert | en_req_withdraw,
+                // Acknowledgement assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).
+                en_ack_assert = exists e in E ACKS s.t. (is_init S e ^ ACK_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },
+                en_ack_withdraw = exists e in E ACKS s.t. (is_init S e ^ ACK_INITIALLY_ASSERTED) ? is_plus e : is_minus e { @e },
+                en_ack = en_ack_assert | en_ack_withdraw
+            {
+                // Check that the handshake progresses as expected, i.e. signals are not enabled unexpectedly.
+                ~req & ~ack & (en_req_withdraw | en_ack)
+                |
+                 req & ~ack & (en_req | en_ack_withdraw)
+                |
+                 req &  ack & (en_req_assert | en_ack)
+                |
+                ~req &  ack & (en_req | en_ack_assert)
+            }
+            """.formatted(REQ_NAMES_REPLACEMENT, ACK_NAMES_REPLACEMENT,
+            REQ_INITIALLY_ASSERTED_REPLACEMENT, ACK_INITIALLY_ASSERTED_REPLACEMENT);
+
+    private static final String RECEPTIVENESS_HANDSHAKE_REACH = """
+            // Handshake protocol receptiveness check
+            let
+                // Non-empty set of request signals.
+                REQS = S {%s},
+                // Non-empty set of acknowledgement signals.
+                ACKS = S {%s},
+                // If true then check assertion/withdrawal receptiveness.
+                CHECK_ASSERT_ENABLED = %s,
+                CHECK_WITHDRAW_ENABLED = %s,
+                // The following two values specify the initial state of the handshake.
+                REQ_INITIALLY_ASSERTED = %s,
+                ACK_INITIALLY_ASSERTED = %s,
+
+                // Handshake is active if the request is an output;
+                // if there are several requests, they must all be of the same type.
+                active = exists s in REQS { is_output s },
+
+                // Some request is asserted (correcting for the polarity and initial state of handshake).
+                req = exists s in REQS { $ s ^ (is_init s ^ REQ_INITIALLY_ASSERTED) },
+                // Some acknowledgement is asserted (correcting for the polarity and initial state of handshake).
+                ack = exists s in ACKS { $ s ^ (is_init s ^ ACK_INITIALLY_ASSERTED) },
+
+                // Request assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).
+                en_req_assert = exists e in E REQS s.t. (is_init S e ^ REQ_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },
+                en_req_withdraw = exists e in E REQS s.t. (is_init S e ^ REQ_INITIALLY_ASSERTED)  ? is_plus e : is_minus e { @e },
+                // Acknowledgement assert/withdraw/change is enabled (correcting for the polarity and initial state of handshake).
+                en_ack_assert = exists e in E ACKS s.t. (is_init S e ^ ACK_INITIALLY_ASSERTED) ? is_minus e : is_plus e { @e },
+                en_ack_withdraw = exists e in E ACKS s.t. (is_init S e ^ ACK_INITIALLY_ASSERTED) ? is_plus e : is_minus e { @e }
+            {
+                // If the handshake is active, check that the appropriate acknowledgement edge
+                // is enabled after request changes, unless this check is disabled.
+                active & (CHECK_ASSERT_ENABLED & req & ~ack & ~en_ack_assert | CHECK_WITHDRAW_ENABLED & ~req & ack & ~en_ack_withdraw)
+                |
+                // If the handshake is passive, check that the appropriate request edge
+                // is enabled after acknowledgement changes, unless this check is disabled.
+                ~active & (CHECK_WITHDRAW_ENABLED & req & ack & ~en_req_withdraw | CHECK_ASSERT_ENABLED & ~req & ~ack & ~en_req_assert)
+            }
+            """.formatted(REQ_NAMES_REPLACEMENT, ACK_NAMES_REPLACEMENT,
+            CHECK_ASSERT_ENABLED_REPLACEMENT, CHECK_WITHDRAW_ENABLED_REPLACEMENT,
+            REQ_INITIALLY_ASSERTED_REPLACEMENT, ACK_INITIALLY_ASSERTED_REPLACEMENT);
 
     private final Set<String> reqs;
     private final Set<String> acks;
