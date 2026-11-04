@@ -61,7 +61,7 @@ public class MpsatLtlxOutputInterpreter extends AbstractOutputInterpreter<MpsatO
                 String traceInfo = "Violation trace in <i>PREFIX</i>{<i>LOOP</i>} form:";
                 String extendedMessage = "<html>" + message + "<br><br>" + traceInfo + "</html>";
                 ReachabilityDialog solutionsDialog = new ReachabilityDialog(mainWindow, getWorkspaceEntry(),
-                        TITLE, extendedMessage, Collections.singletonList(solution));
+                        TITLE, extendedMessage, Collections.singletonList(solution), " after trace");
 
                 solutionsDialog.reveal();
             }

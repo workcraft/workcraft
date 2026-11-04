@@ -11,31 +11,32 @@ public class LocalSelfTriggeringParameters {
     private static final String EXCEPTION_NAMES =
             "/* insert names of output and internal signals to waive */"; // For example: "out1", "sig2"
 
-    private static final String REACH_EXPRESSION =
-            "// Checks whether the STG is free of self-triggering output and internal signals.\n" +
-            "card DUMMY != 0 ? fail \"Absence of local self-triggering can currently be checked only for STGs without dummies\" :\n" +
-            "let\n" +
-            "    EXCEPTION_NAMES = {" + EXCEPTION_NAMES + "\"\"} \\ {\"\"},\n" +
-            "    EXCEPTIONS = S EXCEPTION_NAMES\n" +
-            "{\n" +
-            "    exists s in LOCAL \\ EXCEPTIONS {\n" +
-            "        let s_tran=T s {\n" +
-            "            exists t1 in s_tran, t2 in s_tran s.t.\n" +
-            "                t1!=t2\n" +
-            "                &\n" +
-            "                ~ is_empty (pre t2 * (post t1 \\ pre t1))  // t1 structurally triggers t2\n" +
-            "                &\n" +
-            "                is_empty (pre t2 * (pre t1 \\ post t1))    // t2 is not disabled by t1\n" +
-            "            {\n" +
-            "                @t1 & ~@t2\n" +
-            "                &\n" +
-            "                forall p in pre t2 s.t. ~(p in post t1) {\n" +
-            "                    ~(p in pre t1) & $p\n" +
-            "                }\n" +
-            "            }\n" +
-            "        }\n" +
-            "    }\n" +
-            "}\n";
+    private static final String REACH_EXPRESSION = """
+            // Checks whether the STG is free of self-triggering output and internal signals.
+            card DUMMY != 0 ? fail "Absence of local self-triggering can currently be checked only for STGs without dummies" :
+            let
+                EXCEPTION_NAMES = {%s""} \\ {""},
+                EXCEPTIONS = S EXCEPTION_NAMES
+            {
+                exists s in LOCAL \\ EXCEPTIONS {
+                    let s_tran=T s {
+                        exists t1 in s_tran, t2 in s_tran s.t.
+                            t1!=t2
+                            &
+                            ~ is_empty (pre t2 * (post t1 \\ pre t1))  // t1 structurally triggers t2
+                            &
+                            is_empty (pre t2 * (pre t1 \\ post t1))    // t2 is not disabled by t1
+                        {
+                            @t1 & ~@t2
+                            &
+                            forall p in pre t2 s.t. ~(p in post t1) {
+                                ~(p in pre t1) & $p
+                            }
+                        }
+                    }
+                }
+            }
+            """.formatted(EXCEPTION_NAMES);
 
     private final Set<String> exceptionSignals;
 

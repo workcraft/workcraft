@@ -49,7 +49,7 @@ public class CompositionOutputInterpreter extends AbstractCompositionOutputInter
                     mainWindow.requestFocus(we);
                     String title = OutcomeUtils.TITLE + " for model '" + we.getTitle() + "'";
                     ReachabilityDialog solutionsDialog = new ReachabilityDialog(
-                            mainWindow, we, title, message, processedSolutions);
+                            mainWindow, we, title, message, processedSolutions, " after trace");
 
                     solutionsDialog.reveal();
                 }
