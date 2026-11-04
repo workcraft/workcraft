@@ -2,8 +2,6 @@ package org.workcraft.plugins.mpsat_verification.tasks;
 
 import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceDataPreserver;
 import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceParameters;
-import org.workcraft.plugins.mpsat_verification.utils.CompositionUtils;
-import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -15,7 +13,8 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.ExportOutput;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
-import org.workcraft.utils.LogUtils;
+import org.workcraft.types.Pair;
+import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -32,18 +31,12 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
     @Override
     public List<Solution> processSolutions(List<Solution> solutions) {
         List<Solution> result = new LinkedList<>();
-        ComponentData data = getComponentData();
         StgModel stg = getStg();
         DiInterfaceDataPreserver diInterfaceDataPreserver = new DiInterfaceDataPreserver(getWorkspaceEntry());
         DiInterfaceParameters diInterfaceParameters = diInterfaceDataPreserver.loadValidDataOnly();
         HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
         for (Solution solution : solutions) {
             Trace trace = solution.getMainTrace();
-            LogUtils.logMessage("Violation trace: " + trace);
-            if (data != null) {
-                trace = CompositionUtils.projectTrace(trace, data);
-                LogUtils.logMessage("Projection trace: " + trace);
-            }
             if (!PetriUtils.fireTrace(stg, trace)) {
                 PetriUtils.setMarking(stg, initialMarking);
                 throw new RuntimeException("Cannot execute trace: " + trace);
@@ -61,23 +54,46 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
         return result;
     }
 
-    private HashSet<String> getNonDiInputSignals(StgModel stg, DiInterfaceParameters diInterfaceParameters) {
-        HashSet<String> result = new HashSet<>();
-        HashSet<SignalTransition> enabledInputSignalTransitions = getEnabledInputSignalTransitions(stg);
+    private Set<String> getNonDiInputSignals(StgModel stg, DiInterfaceParameters diInterfaceParameters) {
+        Set<String> result = new HashSet<>();
+        Set<String> selfTriggeringInputSignals = new HashSet<>();
+        Set<Pair<String, String>> possibleInputSignalPairs = new HashSet<>();
+        Set<SignalTransition> enabledInputSignalTransitions = getEnabledInputSignalTransitions(stg);
         for (SignalTransition enabledInputSignalTransition : enabledInputSignalTransitions) {
             String enabledInputSignal = stg.getSignalReference(enabledInputSignalTransition);
             stg.fire(enabledInputSignalTransition);
             HashSet<SignalTransition> nextEnabledInputSignalTransitions = getEnabledInputSignalTransitions(stg);
-            nextEnabledInputSignalTransitions.removeAll(enabledInputSignalTransitions);
             stg.unFire(enabledInputSignalTransition);
-            // Check which newly enabled transitions are of input signal
-            Set<String> nonDiInputSignals = new TreeSet<>();
-            nonDiInputSignals.add(enabledInputSignal);
-            for (SignalTransition nextEnabledLocalSignalTransition : nextEnabledInputSignalTransitions) {
-                nonDiInputSignals.add(stg.getSignalReference(nextEnabledLocalSignalTransition));
+            for (SignalTransition nextEnabledInputSignalTransition : nextEnabledInputSignalTransitions) {
+                String nextEnabledInputSignal = stg.getSignalReference(nextEnabledInputSignalTransition);
+                if (enabledInputSignal.equals(nextEnabledInputSignal)) {
+                    selfTriggeringInputSignals.add(enabledInputSignal);
+                } else {
+                    possibleInputSignalPairs.add(new Pair<>(enabledInputSignal, nextEnabledInputSignal));
+                }
             }
-            if (!diInterfaceParameters.isException(nonDiInputSignals)) {
-                result.add("{" + String.join(", ", nonDiInputSignals) + "}");
+        }
+        // Check for exceptions
+        Set<String> addedSignals = new HashSet<>();
+        for (Pair<String, String> possibleInputSignalPair : possibleInputSignalPairs) {
+            String firstSignal = possibleInputSignalPair.getFirst();
+            String secondSignal = possibleInputSignalPair.getSecond();
+            Pair<String, String> reverseInputSignalPair = Pair.of(secondSignal, firstSignal);
+            if (!possibleInputSignalPairs.contains(reverseInputSignalPair)) {
+                Set<String> violationInputSignals = new HashSet<>();
+                violationInputSignals.add(firstSignal);
+                violationInputSignals.add(secondSignal);
+                if (!diInterfaceParameters.isException(violationInputSignals)) {
+                    result.add("{" + String.join(", ", SortUtils.getSortedNatural(violationInputSignals)) + "}");
+                    addedSignals.addAll(violationInputSignals);
+                }
+            }
+        }
+        for (String selfTriggeringInputSignal : selfTriggeringInputSignals) {
+            if (!addedSignals.contains(selfTriggeringInputSignal)
+                    && !diInterfaceParameters.isException(Set.of(selfTriggeringInputSignal))) {
+
+                result.add("{" + selfTriggeringInputSignal + "}");
             }
         }
         return result;
@@ -88,7 +104,7 @@ class DiInterfaceInterpreter extends ReachabilityOutputInterpreter {
         for (Transition transition: stg.getTransitions()) {
             if (transition instanceof DummyTransition) {
                 String ref = stg.getNodeReference(transition);
-                throw new RuntimeException("Dummies are not supported in local self-triggering check: " + ref);
+                throw new RuntimeException("Dummies are not supported in delay insensitive interface check: " + ref);
             }
             if ((transition instanceof SignalTransition signalTransition) && stg.isEnabled(transition)) {
                 if (signalTransition.getSignalType() == Signal.Type.INPUT) {
