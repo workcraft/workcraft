@@ -18,7 +18,13 @@ public class ReachabilityDialog extends JDialog {
     public ReachabilityDialog(Window owner, WorkspaceEntry we, String title,
             String message, List<Solution> solutions) {
 
-        this(owner, title, message, solutions, solution -> TraceUtils.playSolution(we, solution, " after trace"));
+        this(owner, title, message, solutions, solution -> TraceUtils.playSolution(we, solution, ""));
+    }
+
+    public ReachabilityDialog(Window owner, WorkspaceEntry we, String title,
+            String message, List<Solution> solutions, String messageSuffix) {
+
+        this(owner, title, message, solutions, solution -> TraceUtils.playSolution(we, solution, messageSuffix));
     }
 
     public ReachabilityDialog(Window owner, String title, String message,

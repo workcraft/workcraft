@@ -50,7 +50,7 @@ class ReachabilityOutputInterpreter extends AbstractOutputInterpreter<MpsatOutpu
         if (isInteractive() && framework.isInGuiMode()) {
             MainWindow mainWindow = framework.getMainWindow();
             ReachabilityDialog solutionsDialog = new ReachabilityDialog(
-                    mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, processedSolutions);
+                    mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, processedSolutions, " after trace");
 
             solutionsDialog.reveal();
         }

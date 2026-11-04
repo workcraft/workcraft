@@ -41,7 +41,7 @@ class DeadlockFreenessOutputInterpreter extends ReachabilityOutputInterpreter {
         if (isInteractive() && framework.isInGuiMode()) {
             MainWindow mainWindow = framework.getMainWindow();
             ReachabilityDialog solutionsDialog = new ReachabilityDialog(
-                    mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, solutions);
+                    mainWindow, getWorkspaceEntry(), OutcomeUtils.TITLE, message, solutions, " after trace");
 
             solutionsDialog.reveal();
         }
