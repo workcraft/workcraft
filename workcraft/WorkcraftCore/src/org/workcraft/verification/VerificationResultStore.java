@@ -173,16 +173,18 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
             VerificationRecord.Outcome outcome, String tool, String message,
             Map<String, VerificationRecord.Dependency> dependencies) {
 
-        String exceptions = snapshot.exceptions.get(goal.getId());
-        if (exceptions == null) {
-            throw new IllegalArgumentException("Snapshot does not include goal '" + goal.getId() + "'");
-        }
-        String modelHash = snapshot.modelHash;
-        String exceptionsHash = ModelHasher.getHash(exceptions);
+        String exceptions = getSnapshotExceptions(snapshot, goal);
         return new VerificationRecord(goal.getId(), outcome, TextUtils.getCurrentTimestamp(),
                 tool, Info.getVersionAndEdition(), Info.getOperatingSystemDescription(),
-                message, exceptions, modelHash, exceptionsHash, ModelHasher.getHash(modelHash, exceptionsHash),
-                dependencies);
+                message, exceptions, snapshot.modelHash, dependencies);
+    }
+
+    private static String getSnapshotExceptions(Snapshot snapshot, VerificationGoal goal) {
+        String result = snapshot.exceptions.get(goal.getId());
+        if (result == null) {
+            throw new IllegalArgumentException("Snapshot does not include goal '" + goal.getId() + "'");
+        }
+        return result;
     }
 
     /**
@@ -223,7 +225,7 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
      * the snapshot. This avoids repeated hashing of the model if the results of several goals are looked up.
      */
     public Lookup lookup(VerificationGoal goal, Snapshot snapshot, Function<String, String> dependencyHasher) {
-        return lookup(goal, () -> snapshot.modelHash, () -> snapshot.exceptions.get(goal.getId()), dependencyHasher);
+        return lookup(goal, () -> snapshot.modelHash, () -> getSnapshotExceptions(snapshot, goal), dependencyHasher);
     }
 
     private Lookup lookup(VerificationGoal goal, Supplier<String> modelHashSupplier,
@@ -233,12 +235,10 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
         if (record == null) {
             return new Lookup(Status.MISSING, null, "No verification result is stored");
         }
-        String exceptionsHash = ModelHasher.getHash(exceptionsSupplier.get());
-        if (!exceptionsHash.equals(record.exceptionsHash())) {
+        if (!record.exceptions().equals(exceptionsSupplier.get())) {
             return stale(record, "Verification exceptions were changed after the result was obtained");
         }
-        String modelHash = modelHashSupplier.get();
-        if (!ModelHasher.getHash(modelHash, exceptionsHash).equals(record.validityHash())) {
+        if (!modelHashSupplier.get().equals(record.modelHash())) {
             return stale(record, "Model was changed after the result was obtained");
         }
         for (Map.Entry<String, VerificationRecord.Dependency> dependency : record.dependencies().entrySet()) {
@@ -275,12 +275,16 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
     }
 
     private String getDependencyDescription(String key, VerificationRecord.Dependency dependency) {
+        // The key of a dependency is empty for the environment, otherwise it is a list of component references
+        StringBuilder result = new StringBuilder(key.isEmpty() ? "Environment" : "Refinement");
         String file = dependency.file();
-        String fileName = ((file == null) || file.isEmpty()) ? "" : new File(file).getName();
-        int count = key.length() - key.replace(",", "").length();
-        return (key.isEmpty() ? "Environment" : "Refinement")
-                + (fileName.isEmpty() ? "" : " file ") + fileName
-                + (key.isEmpty() ? "" : (" for component" + (count < 2 ? ' ' : "s "))) + key;
+        if ((file != null) && !file.isEmpty()) {
+            result.append(" file ").append(new File(file).getName());
+        }
+        if (!key.isEmpty()) {
+            result.append(key.contains(",") ? " for components " : " for component ").append(key);
+        }
+        return result.toString();
     }
 
     private Lookup stale(VerificationRecord record, String reason) {

@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Serialiser of cached verification records. The format is versioned, and unknown or missing optional
- * attributes and elements are ignored, so that it can be extended without invalidating stored records.
+ * Serialiser of cached verification records. Unknown or missing optional attributes and elements are ignored,
+ * so that the format can be extended without invalidating stored records.
  * Note that an attribute name ending with "file" is treated as a file reference, and its value is stored relative
  * to the work file. Only the dependency file attribute is meant to have such a name.
  */
@@ -30,8 +30,6 @@ public class VerificationRecordSerialiser implements DataSerialiser<Map<String, 
     private static final String WORKCRAFT_VERSION_ATTRIBUTE = "workcraft-version";
     private static final String OS_DESCRIPTION_ATTRIBUTE = "os-description";
     private static final String MODEL_HASH_ATTRIBUTE = "model-hash";
-    private static final String EXCEPTIONS_HASH_ATTRIBUTE = "exceptions-hash";
-    private static final String VALIDITY_HASH_ATTRIBUTE = "validity-hash";
     private static final String REFS_ATTRIBUTE = "refs";
     private static final String HASH_ATTRIBUTE = "hash";
 
@@ -83,8 +81,6 @@ public class VerificationRecordSerialiser implements DataSerialiser<Map<String, 
                 readText(recordElement, MESSAGE_ELEMENT),
                 readText(recordElement, EXCEPTIONS_ELEMENT),
                 XmlUtils.readTextAttribute(recordElement, MODEL_HASH_ATTRIBUTE, ""),
-                XmlUtils.readTextAttribute(recordElement, EXCEPTIONS_HASH_ATTRIBUTE, ""),
-                XmlUtils.readTextAttribute(recordElement, VALIDITY_HASH_ATTRIBUTE, ""),
                 dependencies);
     }
 
@@ -105,10 +101,10 @@ public class VerificationRecordSerialiser implements DataSerialiser<Map<String, 
             recordElement.setAttribute(WORKCRAFT_VERSION_ATTRIBUTE, record.version());
             recordElement.setAttribute(OS_DESCRIPTION_ATTRIBUTE, record.os());
             recordElement.setAttribute(MODEL_HASH_ATTRIBUTE, record.modelHash());
-            recordElement.setAttribute(EXCEPTIONS_HASH_ATTRIBUTE, record.exceptionsHash());
-            recordElement.setAttribute(VALIDITY_HASH_ATTRIBUTE, record.validityHash());
             XmlUtils.createChildElement(MESSAGE_ELEMENT, recordElement).setTextContent(record.message());
-            XmlUtils.createChildElement(EXCEPTIONS_ELEMENT, recordElement).setTextContent(record.exceptions());
+            if (!record.exceptions().isEmpty()) {
+                XmlUtils.createChildElement(EXCEPTIONS_ELEMENT, recordElement).setTextContent(record.exceptions());
+            }
             record.dependencies().forEach((refs, dependency) -> {
                 Element dependencyElement = XmlUtils.createChildElement(DEPENDENCY_ELEMENT, recordElement);
                 dependencyElement.setAttribute(HASH_ATTRIBUTE, dependency.hash());

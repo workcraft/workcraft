@@ -34,7 +34,6 @@ public class CachedVerification {
     private final String tool;
     private final VerificationResultStore.Snapshot snapshot;
     private final List<VerificationRecord> reusableRecords = new ArrayList<>();
-    private final Map<String, VerificationDependency> dependencies;
     private final Map<String, VerificationRecord.Dependency> dependencySnapshot;
     private final boolean dependenciesResolved;
 
@@ -48,12 +47,11 @@ public class CachedVerification {
         this.goals = new ArrayList<>(goals);
         this.tool = tool;
         this.snapshot = resultStore.takeSnapshot(this.goals);
-        this.dependencies = new TreeMap<>();
-        dependencies.forEach(dependency -> this.dependencies.put(dependency.getKey(), dependency));
         // Hashes of dependencies are captured before the verification, as the files may be edited during it
-        Map<String, VerificationRecord.Dependency> snapshot = VerificationResultStore.getDependencySnapshot(dependencies);
-        this.dependenciesResolved = (snapshot != null);
-        this.dependencySnapshot = dependenciesResolved ? snapshot : Collections.emptyMap();
+        Map<String, VerificationRecord.Dependency> resolvedDependencies =
+                VerificationResultStore.getDependencySnapshot(dependencies);
+        this.dependenciesResolved = (resolvedDependencies != null);
+        this.dependencySnapshot = dependenciesResolved ? resolvedDependencies : Collections.emptyMap();
     }
 
     /**
@@ -111,7 +109,7 @@ public class CachedVerification {
                 return false;
             }
             // The result must be obtained with the same set of dependencies as the one that the command has now
-            if (!lookup.getRecord().dependencies().keySet().equals(dependencies.keySet())) {
+            if (!lookup.getRecord().dependencies().keySet().equals(dependencySnapshot.keySet())) {
                 return false;
             }
             records.add(lookup.getRecord());

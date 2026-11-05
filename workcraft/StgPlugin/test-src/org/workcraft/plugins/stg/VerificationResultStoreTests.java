@@ -232,7 +232,8 @@ class VerificationResultStoreTests {
         VerificationResultStore savedStore = new VerificationResultStore(savedWe);
         VerificationRecord savedRecord = savedStore.getRecord(exceptionsGoal);
         Assertions.assertEquals(record.message(), savedRecord.message());
-        Assertions.assertEquals(record.validityHash(), savedRecord.validityHash());
+        Assertions.assertEquals(record.modelHash(), savedRecord.modelHash());
+        Assertions.assertEquals(record.exceptions(), savedRecord.exceptions());
         Assertions.assertEquals(dependencyFile, new File(savedRecord.dependencies().get(REFS).file()));
         Assertions.assertEquals("h1", savedRecord.dependencies().get(REFS).hash());
         Assertions.assertEquals("h1", savedRecord.dependencies().get("").hash());
