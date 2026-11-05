@@ -8,8 +8,8 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * Cached result of verifying a goal. The record is valid as long as the validity hash (that covers the model
- * math layer and the goal exceptions) and the hashes of the models that the result depends on are unchanged.
+ * Cached result of verifying a goal. The record is valid as long as the model math layer, the goal exceptions
+ * and the hashes of the models that the result depends on are unchanged.
  *
  * @param goalId id of the verified goal
  * @param outcome outcome of the verification: PASS or FAIL, or UNDETERMINED if the verification cannot be
@@ -20,8 +20,6 @@ import java.util.TreeMap;
  * @param message summary of the result
  * @param exceptions text of the exceptions that were in effect for the verification
  * @param modelHash hash of the model math layer
- * @param exceptionsHash hash of the exceptions text
- * @param validityHash hash that combines the model hash and the exceptions hash
  * @param dependencies the other models that the result depends on (their files and hashes), by the references of the
  *                     circuit components that use them (empty for the environment)
  * @param timestamp time when the verification was completed
@@ -36,8 +34,6 @@ public record VerificationRecord(
         String message,
         String exceptions,
         String modelHash,
-        String exceptionsHash,
-        String validityHash,
         Map<String, Dependency> dependencies) {
 
     /**
