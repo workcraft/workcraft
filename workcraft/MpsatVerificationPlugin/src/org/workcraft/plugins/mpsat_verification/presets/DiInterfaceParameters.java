@@ -100,15 +100,14 @@ public class DiInterfaceParameters {
     private final Set<TreeSet<String>> exceptionSignalSets;
 
     public DiInterfaceParameters(Collection<? extends Collection<String>> exceptionSignalSets) {
-        this.exceptionSignalSets = exceptionSignalSets == null
-                ? Collections.emptySet()
+        this.exceptionSignalSets = (exceptionSignalSets == null) ? Collections.emptySet()
                 : exceptionSignalSets.stream().map(TreeSet::new).collect(Collectors.toSet());
     }
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof DiInterfaceParameters) {
-            return exceptionSignalSets.equals(((DiInterfaceParameters) other).exceptionSignalSets);
+        if (other instanceof DiInterfaceParameters otherDiInterfaceParameters) {
+            return exceptionSignalSets.equals(otherDiInterfaceParameters.exceptionSignalSets);
         }
         return false;
     }
