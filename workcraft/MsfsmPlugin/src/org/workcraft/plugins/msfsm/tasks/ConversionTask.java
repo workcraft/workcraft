@@ -92,17 +92,13 @@ public class ConversionTask implements Task<ConversionOutput>, ExternalProcessLi
 
     private File getScriptFile(String[] script, File directory) {
         File file = new File(directory, "script.tcl");
-        FileWriter out;
-        try {
-            out = new FileWriter(file);
+        try (PrintWriter writer = new PrintWriter(new FileWriter(file))) {
+            for (String s : script) {
+                writer.println(s);
+            }
         } catch (IOException e) {
             throw new RuntimeException("Unable to write out conversion script.");
         }
-        PrintWriter writer = new PrintWriter(out);
-        for (String s : script) {
-            writer.println(s);
-        }
-        writer.close();
         return file;
     }
 
