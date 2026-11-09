@@ -103,16 +103,16 @@ public final class DirectedGraphUtils {
     }
 
     private static <T> Set<List<T>> findSimpleCycles(Map<T, Set<T>> graph, T startVertex) {
-        Stack<T> stack = new Stack<>();
+        Deque<T> stack = new ArrayDeque<>();
         Block<T> block = new Block<>();
         return findSimpleCycles(graph, startVertex, startVertex, stack, block);
     }
 
     private static <T> Set<List<T>> findSimpleCycles(Map<T, Set<T>> graph, T startVertex,
-            T currentVertex, Stack<T> stack, Block<T> block) {
+            T currentVertex, Deque<T> stack, Block<T> block) {
 
         Set<List<T>> result = new HashSet<>();
-        stack.push(currentVertex);
+        stack.addLast(currentVertex);
         block.set.add(currentVertex);
 
         for (T nextVertex : graph.get(currentVertex)) {
@@ -132,7 +132,7 @@ public final class DirectedGraphUtils {
             }
         }
 
-        stack.pop();
+        stack.removeLast();
         return result;
     }
 
@@ -156,7 +156,7 @@ public final class DirectedGraphUtils {
             return null;
         }
         Set<T> visited = new HashSet<>();
-        Stack<T> stack = new Stack<>();
+        Deque<T> stack = new ArrayDeque<>();
         for (T vertex : graph.keySet()) {
             if (!visited.contains(vertex)) {
                 fillStack(graph, vertex, visited, stack);
@@ -177,7 +177,7 @@ public final class DirectedGraphUtils {
         return result;
     }
 
-    private static <T> void fillStack(Map<T, Set<T>> graph, T startVertex, Set<T> visited, Stack<T> stack) {
+    private static <T> void fillStack(Map<T, Set<T>> graph, T startVertex, Set<T> visited, Deque<T> stack) {
         visited.add(startVertex);
         for (T vertex : graph.get(startVertex)) {
             if (!visited.contains(vertex)) {
