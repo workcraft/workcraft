@@ -396,8 +396,15 @@ public final class Framework {
      */
     @SuppressWarnings("unused")
     public Object execJavaScript(File file) throws FileNotFoundException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
-        return execJavaScript(compileJavaScript(reader, file.getPath()));
+        Script script;
+        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+            script = compileJavaScript(reader, file.getPath());
+        } catch (FileNotFoundException e) {
+            throw e;
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return execJavaScript(script);
     }
 
     public Object execJavaScript(Script script) {

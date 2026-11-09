@@ -11,7 +11,7 @@ import org.workcraft.utils.LogUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
@@ -71,8 +71,7 @@ public final class LibraryManager {
             return new Library();
         }
         if (FileUtils.checkFileReadability(file, "Gate library access error")) {
-            try {
-                InputStream genlibInputStream = new FileInputStream(file);
+            try (InputStream genlibInputStream = new FileInputStream(file)) {
                 GenlibParser genlibParser = new GenlibParser(genlibInputStream);
                 if (DebugCommonSettings.getParserTracing()) {
                     genlibParser.enable_tracing();
@@ -81,7 +80,7 @@ public final class LibraryManager {
                 }
                 LogUtils.logInfo("Reading gate library '" + file.getAbsolutePath() + "'");
                 return genlibParser.parseGenlib();
-            } catch (FileNotFoundException | org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
+            } catch (IOException | org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
                 LogUtils.logWarning("Could not parse gate library '" + file.getPath() + "'\n" + e.getMessage());
             }
         }
@@ -125,8 +124,7 @@ public final class LibraryManager {
     private static HashMap<String, SubstitutionRule> readSubstitutionRules(File file, boolean invert) {
         HashMap<String, SubstitutionRule> result = new HashMap<>();
         if ((file != null) && FileUtils.checkFileReadability(file, "Access error for the file of substitutions")) {
-            try {
-                InputStream substitutionInputStream = new FileInputStream(file);
+            try (InputStream substitutionInputStream = new FileInputStream(file)) {
                 SubstitutionParser substitutionParser = new SubstitutionParser(substitutionInputStream, invert);
                 if (DebugCommonSettings.getParserTracing()) {
                     substitutionParser.enable_tracing();
@@ -142,7 +140,7 @@ public final class LibraryManager {
                         + " rules in the file of substitutions '"
                         + file.getPath() + "'");
 
-            } catch (FileNotFoundException | ParseException e) {
+            } catch (IOException | ParseException e) {
                 LogUtils.logWarning("Could not parse the file of substitutions '" + file.getPath() + "'\n"
                         + e.getMessage());
             }

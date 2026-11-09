@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.XmlUtils;
 import org.xml.sax.SAXException;
 
@@ -27,7 +28,7 @@ public class CompositionData {
     private final LinkedHashMap<String, ComponentData> fileToComponent = new LinkedHashMap<>();
 
     public CompositionData(File file) throws FileNotFoundException {
-        this(new FileInputStream(file));
+        this(FileUtils.readIntoStream(file));
     }
 
     public CompositionData(InputStream is) {

@@ -4,6 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.workcraft.traces.Solution;
 import org.workcraft.traces.Trace;
+import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.XmlUtils;
 import org.xml.sax.SAXException;
 
@@ -11,7 +12,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -32,7 +32,7 @@ public class SolutionReader {
     private final List<Solution> solutions;
 
     public SolutionReader(File file) throws ParserConfigurationException, SAXException, IOException {
-        this(new FileInputStream(file));
+        this(FileUtils.readIntoStream(file));
     }
 
     public SolutionReader(InputStream is) throws ParserConfigurationException, IOException, SAXException {
