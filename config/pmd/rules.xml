@@ -21,6 +21,7 @@
         <exclude name="OnDemandImport"/> <!-- Interesting to enforce, but used often -->
         <exclude name="PreserveStackTrace"/> <!-- Interesting to enforce, but used often -->
         <exclude name="RelianceOnDefaultCharset" /> <!-- Interesting to enforce -->
+        <exclude name="SimplifiableTestAssertion"/> <!-- Interesting to enforce -->
         <exclude name="SystemPrintln"/> <!-- Too restrictive -->
         <exclude name="UnitTestShouldIncludeAssert"/>  <!-- Too restrictive, as forbids test delegation -->
         <exclude name="UnusedAssignment"/> <!-- Too restrictive as forbids initialisation to null -->
@@ -50,6 +51,7 @@
         <exclude name="FieldNamingConventions"/> <!-- Interesting to enforce -->
         <exclude name="LinguisticNaming"/> <!-- Too restrictive -->
         <exclude name="LocalVariableCouldBeFinal"/> <!-- Too restrictive -->
+        <exclude name="LocalVariableDeclarationShouldBeAtStartOfBlock" /> <!-- Too restrictive -->
         <exclude name="LongVariable"/> <!-- Too restrictive -->
         <exclude name="MethodArgumentCouldBeFinal"/> <!-- Too restrictive -->
         <exclude name="OnlyOneReturn"/> <!-- Too restrictive -->

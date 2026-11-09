@@ -86,12 +86,12 @@ public class SimulationAlg extends RelationAlgorithm {
     private Step getForwordMinFire(TransitionNode e, Collection<Path> sync, Step step) {
         Step result = new Step();
         Step u = new Step();
-        Stack<TransitionNode> stack = new Stack<>();
+        Deque<TransitionNode> stack = new ArrayDeque<>();
         u.addAll(step);
 
         if (e != null) {
             stack.push(e);
-            while (!stack.empty()) {
+            while (!stack.isEmpty()) {
                 e = stack.pop();
                 if (!result.contains(e)) {
                     result.add(e);
@@ -127,12 +127,12 @@ public class SimulationAlg extends RelationAlgorithm {
     private Step getRevMinFire(TransitionNode e, Collection<Path> sync, Step step) {
         Step result = new Step();
         Step u = new Step();
-        Stack<TransitionNode> stack = new Stack<>();
+        Deque<TransitionNode> stack = new ArrayDeque<>();
         u.addAll(step);
 
         if (e != null) {
             stack.push(e);
-            while (!stack.empty()) {
+            while (!stack.isEmpty()) {
                 e = stack.pop();
                 if (!result.contains(e)) {
                     result.add(e);
@@ -238,7 +238,7 @@ public class SimulationAlg extends RelationAlgorithm {
     private Step getEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases) {
         Step result = new Step();
         Collection<Node> del = new HashSet<>();
-        Stack<TransitionNode> stack = new Stack<>();
+        Deque<TransitionNode> stack = new ArrayDeque<>();
 
         //ON and BSON enabled
         for (TransitionNode e : net.getTransitionNodes()) {
@@ -355,7 +355,7 @@ public class SimulationAlg extends RelationAlgorithm {
     private Step getRevEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases) {
         Step result = new Step();
         Collection<Node> del = new HashSet<>();
-        Stack<TransitionNode> stack = new Stack<>();
+        Deque<TransitionNode> stack = new ArrayDeque<>();
 
         //ON and BSON enabled
         for (TransitionNode e : net.getTransitionNodes()) {

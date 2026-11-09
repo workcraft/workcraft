@@ -1,13 +1,14 @@
 package org.workcraft.plugins.son.algorithm;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import javax.swing.JOptionPane;
 
@@ -249,7 +250,7 @@ public class BSONAlg extends RelationAlgorithm {
 
     private Collection<Condition> forwardSearch(Node node) {
         Collection<Condition> result = new HashSet<>();
-        Stack<Node> stack = new Stack<>();
+        Deque<Node> stack = new ArrayDeque<>();
         Collection<Node> visit = new HashSet<>();
 
         stack.push(node);
@@ -276,7 +277,7 @@ public class BSONAlg extends RelationAlgorithm {
 
     private Collection<Condition> backWardSearch(Node node) {
         Collection<Condition> result = new HashSet<>();
-        Stack<Node> stack = new Stack<>();
+        Deque<Node> stack = new ArrayDeque<>();
         Collection<Node> visit = new HashSet<>();
 
         stack.push(node);

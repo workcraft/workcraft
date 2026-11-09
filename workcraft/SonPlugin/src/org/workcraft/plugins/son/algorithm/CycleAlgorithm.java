@@ -1,8 +1,9 @@
 package org.workcraft.plugins.son.algorithm;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
-import java.util.Stack;
 
 public class CycleAlgorithm {
     /** number of vertices **/
@@ -17,7 +18,7 @@ public class CycleAlgorithm {
     private List<Integer>[] graph;
     /** to store all scc **/
     private List<List<Integer>> sccComp;
-    private Stack<Integer> stack;
+    private Deque<Integer> stack;
 
     /** function to get all strongly connected components - Tarjan algorithm **/
     public List<List<Integer>> getCycles(List<Integer>[] graph) {
@@ -25,7 +26,7 @@ public class CycleAlgorithm {
         this.graph = graph;
         low = new int[mV];
         visited = new boolean[mV];
-        stack = new Stack<>();
+        stack = new ArrayDeque<>();
         sccComp = new ArrayList<>();
 
         for (int v = 0; v < mV; v++) {

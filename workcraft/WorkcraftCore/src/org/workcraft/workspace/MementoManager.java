@@ -1,10 +1,11 @@
 package org.workcraft.workspace;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 public class MementoManager {
-    private final Stack<Resource> undoStack = new Stack<>();
-    private final Stack<Resource> redoStack = new Stack<>();
+    private final Deque<Resource> undoStack = new ArrayDeque<>();
+    private final Deque<Resource> redoStack = new ArrayDeque<>();
 
     public void pushUndo(Resource memento) {
         this.undoStack.push(memento);
@@ -15,7 +16,7 @@ public class MementoManager {
     }
 
     public boolean canUndo() {
-        return !undoStack.empty();
+        return !undoStack.isEmpty();
     }
 
     public void pushRedo(Resource memento) {
@@ -27,7 +28,7 @@ public class MementoManager {
     }
 
     public boolean canRedo() {
-        return !redoStack.empty();
+        return !redoStack.isEmpty();
     }
 
     public Resource undo(Resource memento) {
