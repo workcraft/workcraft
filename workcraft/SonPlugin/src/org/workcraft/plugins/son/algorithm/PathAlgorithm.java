@@ -99,14 +99,14 @@ public class PathAlgorithm {
     public static Collection<Node> dfs2(Marking s, Marking v, SON net) {
         Collection<Node> result = new HashSet<>();
         RelationAlgorithm relation = new RelationAlgorithm(net);
-        Stack<Node> stack = new Stack<>();
+        Deque<Node> stack = new ArrayDeque<>();
 
         for (Node s1 : s) {
             Collection<Node> visit = new ArrayList<>();
             stack.push(s1);
             visit.add(s1);
 
-            while (!stack.empty()) {
+            while (!stack.isEmpty()) {
                 Node s2 = stack.peek();
                 if (v.contains(s2)) {
                     result.add(s2);
