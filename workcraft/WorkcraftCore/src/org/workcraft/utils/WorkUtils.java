@@ -595,8 +595,7 @@ public final class WorkUtils {
         if (we != null) {
             return we.getModelEntry().getDescriptor();
         }
-        try {
-            FileInputStream fis = new FileInputStream(file);
+        try (FileInputStream fis = new FileInputStream(file)) {
             byte[] bytes = DataAccumulator.loadStream(fis);
             Document metaDocument = loadMetaDoc(bytes);
             return loadMetaDescriptor(metaDocument);
