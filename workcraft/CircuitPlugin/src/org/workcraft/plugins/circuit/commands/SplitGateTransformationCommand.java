@@ -88,7 +88,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
         VisualFunctionContact complexOutputContact = complexGate.getGateOutput();
         circuit.remove(circuit.getConnections(complexOutputContact));
 
-        Stack<Set<NodeConnectionPair>> toNodeConnectionsStack = new Stack<>();
+        Deque<Set<NodeConnectionPair>> toNodeConnectionsStack = new ArrayDeque<>();
         toNodeConnectionsStack.push(toNodeConnections);
 
         Iterator<NodeConnectionPair> fromNodeConnectionIterator = fromNodeConnections.iterator();
@@ -126,7 +126,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
     }
 
     private static void connectTerminal(VisualCircuit circuit, Iterator<NodeConnectionPair> fromNodeConnectionIterator,
-            Stack<Set<NodeConnectionPair>> toNodeConnectionsStack) {
+            Deque<Set<NodeConnectionPair>> toNodeConnectionsStack) {
 
         NodeConnectionPair fromNodeConnection = fromNodeConnectionIterator.next();
         if (!toNodeConnectionsStack.isEmpty()) {
@@ -136,7 +136,7 @@ public class SplitGateTransformationCommand extends AbstractGateTransformationCo
     }
 
     private static VisualFunctionComponent insertGate(VisualCircuit circuit, BooleanFormula function, Container container,
-            Stack<Set<NodeConnectionPair>> toNodeConnectionsStack, VisualContact.Direction direction) {
+            Deque<Set<NodeConnectionPair>> toNodeConnectionsStack, VisualContact.Direction direction) {
 
         FunctionComponent mathGate = new FunctionComponent();
         Container mathContainer = NamespaceHelper.getMathContainer(circuit, container);

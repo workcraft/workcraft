@@ -440,10 +440,10 @@ public final class RefinementUtils {
 
     public static List<File> getOrderedCircuitRefinementFiles(ModelEntry me) {
         List<File> result = new ArrayList<>();
-        Stack<File> stack = new Stack<>();
-        stack.addAll(getRefinementFiles(me));
+        Deque<File> stack = new ArrayDeque<>();
+        getRefinementFiles(me).forEach(stack::push);
         Set<File> processed = new HashSet<>();
-        while (!stack.empty()) {
+        while (!stack.isEmpty()) {
             File curFile = stack.pop();
             try {
                 ModelEntry curMe = WorkUtils.loadModel(curFile);
@@ -456,7 +456,7 @@ public final class RefinementUtils {
                     processed.add(curFile);
                 } else {
                     stack.push(curFile);
-                    stack.addAll(refinementFiles);
+                    refinementFiles.forEach(stack::push);
                 }
             } catch (DeserialisationException e) {
                 LogUtils.logError("Cannot refinement read model from file '" + FileUtils.getFullPath(curFile) + "':\n"

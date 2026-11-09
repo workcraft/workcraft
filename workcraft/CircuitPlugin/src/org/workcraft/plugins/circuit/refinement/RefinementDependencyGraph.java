@@ -32,11 +32,11 @@ public class RefinementDependencyGraph {
 
     public RefinementDependencyGraph(File topFile) {
         this.topFile = topFile;
-        Stack<File> stack = new Stack<>();
+        Deque<File> stack = new ArrayDeque<>();
         try {
             ModelEntry topMe = WorkUtils.loadModel(topFile);
             Map<String, File> topDependencyMap = extractInstanceDependencyMap(topMe);
-            stack.addAll(getReverseOrderedDependencies(topDependencyMap));
+            getReverseOrderedDependencies(topDependencyMap).forEach(stack::push);
             vertexOrderedDataMap.put(topFile, new VertexData(topDependencyMap, topMe));
         } catch (DeserialisationException e) {
             String filePath = FileUtils.getFullPath(topFile);
@@ -53,7 +53,7 @@ public class RefinementDependencyGraph {
                     try {
                         ModelEntry me = WorkUtils.loadModel(file);
                         Map<String, File> dependencyMap = extractInstanceDependencyMap(me);
-                        stack.addAll(getReverseOrderedDependencies(dependencyMap));
+                        getReverseOrderedDependencies(dependencyMap).forEach(stack::push);
                         vertexOrderedDataMap.put(file, new VertexData(dependencyMap, me));
                     } catch (DeserialisationException e) {
                         String filePath = FileUtils.getFullPath(file);
