@@ -10,7 +10,10 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.controls.FlatHeaderRenderer;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.gui.tools.*;
+import org.workcraft.gui.tools.AbstractGraphEditorTool;
+import org.workcraft.gui.tools.ColorLegendTable;
+import org.workcraft.gui.tools.Decorator;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.builtin.settings.AnalysisDecorationSettings;
 import org.workcraft.plugins.circuit.*;
@@ -279,16 +282,16 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     public Decorator getDecorator(final GraphEditor editor) {
         return node -> {
             Node mathNode = null;
-            if (node instanceof VisualComponent) {
-                mathNode = ((VisualComponent) node).getReferencedComponent();
+            if (node instanceof VisualComponent visualComponent) {
+                mathNode = visualComponent.getReferencedComponent();
             }
 
             if (mathNode != null) {
-                if (mathNode instanceof Contact) {
-                    return getContactDecoration((Contact) mathNode);
+                if (mathNode instanceof Contact contact) {
+                    return new CycleDecoration(getCycleStatusColor(contact));
                 }
-                if (mathNode instanceof FunctionComponent) {
-                    return getComponentDecoration((FunctionComponent) mathNode);
+                if (mathNode instanceof FunctionComponent component) {
+                    return new CycleDecoration(getCycleStatusColor(component));
                 }
             }
             return null;
@@ -302,39 +305,11 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
                 : contact.isPin() ? AnalysisDecorationSettings.getClearColor() : null;
     }
 
-    private Decoration getContactDecoration(Contact contact) {
-        final Color color = getCycleStatusColor(contact);
-
-        return new Decoration() {
-            @Override
-            public Color getColorisation() {
-                return color;
-            }
-
-            @Override
-            public Color getBackground() {
-                return color;
-            }
-        };
-    }
-
-    private Decoration getComponentDecoration(FunctionComponent component) {
-        final Color color = component.getIsZeroDelay() ? AnalysisDecorationSettings.getDontTouchColor()
+    private Color getCycleStatusColor(FunctionComponent component) {
+        return component.getIsZeroDelay() ? AnalysisDecorationSettings.getDontTouchColor()
                 : cycleState.isInCycle(component) ? AnalysisDecorationSettings.getProblemColor()
                 : ScanUtils.hasPathBreakerOutput(component) ? AnalysisDecorationSettings.getFixerColor()
                 : AnalysisDecorationSettings.getClearColor();
-
-        return new Decoration() {
-            @Override
-            public Color getColorisation() {
-                return color;
-            }
-
-            @Override
-            public Color getBackground() {
-                return color;
-            }
-        };
     }
 
     private class DriverPinTable extends JTable {

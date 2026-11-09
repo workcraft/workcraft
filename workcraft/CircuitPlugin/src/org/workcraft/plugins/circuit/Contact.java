@@ -157,7 +157,7 @@ public class Contact extends MathNode implements BooleanVariable {
     }
 
     public boolean isCellPin() {
-        return (getParent() instanceof FunctionComponent) && ((FunctionComponent) getParent()).isCell();
+        return (getParent() instanceof FunctionComponent component) && component.isCell();
     }
 
 }

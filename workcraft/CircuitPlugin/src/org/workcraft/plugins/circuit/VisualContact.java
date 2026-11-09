@@ -8,6 +8,7 @@ import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
+import org.workcraft.plugins.circuit.tools.CycleDecoration;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.serialisation.NoAutoSerialisation;
@@ -258,13 +259,13 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         g.transform(rotateTransform);
 
         boolean isDisconnected = r.getModel().getMathModel().getConnections(this.getReferencedComponent()).isEmpty();
-        boolean showContact = isDisconnected || (d instanceof StateDecoration)
+        boolean showContact = isDisconnected || (d instanceof StateDecoration) || (d instanceof CycleDecoration)
                 || (d == Decoration.Highlighted.INSTANCE) || (d == Decoration.Selected.INSTANCE);
 
         if (showContact || isPort()) {
-            boolean showForcedInit = (d instanceof StateDecoration) && ((StateDecoration) d).showForcedInit();
+            boolean showForcedInit = (d instanceof StateDecoration stateDecoration) && stateDecoration.showForcedInit();
             Shape shape = showForcedInit && isForcedDriver() ? getForcedShape() : getShape();
-            boolean useBoldOutline = (d instanceof StateDecoration) && ((StateDecoration) d).useBoldOutline();
+            boolean useBoldOutline = (d instanceof StateDecoration stateDecoration) && stateDecoration.useBoldOutline();
             float width = (float) CircuitSettings.getBorderWidth();
             if (useBoldOutline) {
                 g.setStroke(new BasicStroke(2.5f * width));
