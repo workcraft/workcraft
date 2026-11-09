@@ -126,9 +126,9 @@ public class SpotChainTask implements Task<SpotChainOutput> {
             // Add initial states to the system STG
             Stg sysModStg = StgUtils.loadOrImportStg(sysStgFile);
             File sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + StgUtils.MODIFIED_FILE_SUFFIX + stgFileExtension);
-            FileOutputStream sysModStgStream = new FileOutputStream(sysModStgFile);
-            SerialiserUtils.writeModel(sysModStg, sysModStgStream, sysModStgFile, SerialiserUtils.Style.STG, true);
-            sysModStgStream.close();
+            try (FileOutputStream sysModStgStream = new FileOutputStream(sysModStgFile)) {
+                SerialiserUtils.writeModel(sysModStg, sysModStgStream, sysModStgFile, SerialiserUtils.Style.STG, true);
+            }
             monitor.progressUpdate(0.30);
 
             // Generate unfolding

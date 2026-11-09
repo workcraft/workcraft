@@ -36,7 +36,7 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Queue;
@@ -223,10 +223,9 @@ public class StgUtils {
         if (file == null) {
             return null;
         }
-        try {
-            FileInputStream is = new FileInputStream(file);
+        try (FileInputStream is = new FileInputStream(file)) {
             return importStg(is);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

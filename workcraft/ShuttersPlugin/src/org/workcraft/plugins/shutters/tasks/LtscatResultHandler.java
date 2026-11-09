@@ -47,11 +47,9 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatOutput>  {
                 Path<String> directory = path.getParent();
                 String name = FileUtils.getFileNameWithoutExtension(file);
                 StgImporter importer = new StgImporter();
-                InputStream inputStream = null;
                 StgModel model = null;
 
-                try {
-                    inputStream = new FileInputStream(file);
+                try (InputStream inputStream = new FileInputStream(file)) {
                     model = importer.deserialiseStg(inputStream);
                 } catch (Exception e1) {
                     FileUtils.deleteOnExitRecursively(tmpDir);

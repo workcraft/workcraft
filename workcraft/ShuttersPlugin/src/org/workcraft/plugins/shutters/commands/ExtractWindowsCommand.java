@@ -83,8 +83,7 @@ public class ExtractWindowsCommand implements Command {
         File ltscatPath = new File(ExecutableUtils.getAbsoluteCommandPath(ShuttersSettings.getLtscatFolder()));
         String ltscatModule = ShuttersSettings.getLtscatModuleName();
 
-        try {
-            PrintWriter writer = new PrintWriter(script);
+        try (PrintWriter writer = new PrintWriter(script)) {
             writer.println("import sys");
             writer.println("sys.path.append('" + ltscatPath.getAbsolutePath() + "')");
             writer.println("from " + ltscatModule + " import *");
@@ -93,7 +92,6 @@ public class ExtractWindowsCommand implements Command {
             writer.println("l = lts('" + sgName + "')");
             writer.println("l.extractWindows(prefix='" + dir.getAbsolutePath() + File.separator + title + "')");
             writer.println("exit");
-            writer.close();
         } catch (IOException e) {
             FileUtils.deleteOnExitRecursively(dir);
             e.printStackTrace();

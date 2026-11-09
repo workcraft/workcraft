@@ -223,17 +223,17 @@ public class WriterDialog extends JDialog {
     }
 
     private String readFile(File file) throws FileNotFoundException {
-        Scanner scanner = new Scanner(file);
         StringBuilder fileText = new StringBuilder();
-        if (scanner.hasNextLine()) {
-            do {
-                fileText.append(scanner.nextLine()).append('\n');
-            } while (scanner.hasNextLine());
-            scanner.close();
-            conceptsText.setText(fileText.toString());
+        try (Scanner scanner = new Scanner(file)) {
+            if (scanner.hasNextLine()) {
+                do {
+                    fileText.append(scanner.nextLine()).append('\n');
+                } while (scanner.hasNextLine());
+                conceptsText.setText(fileText.toString());
 
-            lastFileUsed = file;
-            changed = false;
+                lastFileUsed = file;
+                changed = false;
+            }
         }
         return fileText.toString();
     }
@@ -245,9 +245,9 @@ public class WriterDialog extends JDialog {
             try {
                 lastFileUsed = File.createTempFile("plato-", ".hs");
                 lastFileUsed.deleteOnExit();
-                PrintWriter writer = new PrintWriter(lastFileUsed);
-                writer.print(conceptsText.getText());
-                writer.close();
+                try (PrintWriter writer = new PrintWriter(lastFileUsed)) {
+                    writer.print(conceptsText.getText());
+                }
             } catch (IOException ignored) {
             }
         }

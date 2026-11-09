@@ -37,16 +37,16 @@ public class ImportEventLogPGMinerCommand extends AbstractPGMinerCommand {
                     PGMinerResultHandler result = new PGMinerResultHandler(visualCpog, we, false);
                     taskManager.queue(task, "PGMiner", result);
                 } else {
-                    Scanner k = new Scanner(inputFile);
-                    int i = 0;
-                    double yPos = tool.getLowestVertex(visualCpog).getY() + 3;
-                    we.captureMemento();
-                    while (k.hasNext()) {
-                        String line = k.nextLine();
-                        tool.insertEventLog(visualCpog, i++, line.split(" "), yPos);
-                        yPos += 5;
+                    try (Scanner k = new Scanner(inputFile)) {
+                        int i = 0;
+                        double yPos = tool.getLowestVertex(visualCpog).getY() + 3;
+                        we.captureMemento();
+                        while (k.hasNext()) {
+                            String line = k.nextLine();
+                            tool.insertEventLog(visualCpog, i++, line.split(" "), yPos);
+                            yPos += 5;
+                        }
                     }
-                    k.close();
                     we.saveMemento();
                 }
             } catch (Exception e) {

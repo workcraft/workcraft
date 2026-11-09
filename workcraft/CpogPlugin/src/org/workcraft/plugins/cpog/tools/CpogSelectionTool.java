@@ -865,9 +865,11 @@ public class CpogSelectionTool extends SelectionTool {
     }
 
     public boolean insertCpogFromFile(File f) {
-        Scanner fileIn;
-        try {
-            fileIn = new Scanner(f);
+        StringBuilder expression = new StringBuilder();
+        try (Scanner fileIn = new Scanner(f)) {
+            while (fileIn.hasNextLine()) {
+                expression.append(fileIn.nextLine()).append('\n');
+            }
         } catch (FileNotFoundException e1) {
             DialogUtils.showError(e1.getMessage());
             return false;
@@ -875,17 +877,6 @@ public class CpogSelectionTool extends SelectionTool {
 
         WorkspaceEntry we = editor.getWorkspaceEntry();
         VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
-
-        coordinate = getLowestVertex(visualCpog);
-        coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
-
-        StringBuilder expression = new StringBuilder();
-
-        while (fileIn.hasNextLine()) {
-            expression.append(fileIn.nextLine()).append('\n');
-        }
-        fileIn.close();
-
 
         StringBuilder exp = new StringBuilder();
         coordinate = getLowestVertex(visualCpog);

@@ -88,16 +88,15 @@ public class ScencoExecutionSupport {
         File f = new File(fileName);
         if (f.exists() && !f.isDirectory()) {
             System.out.println("Boolean controller:");
-            try {
-                DataInputStream in = new DataInputStream(new FileInputStream(fileName));
-                BufferedReader bre = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8));
+            try (BufferedReader bre = new BufferedReader(
+                    new InputStreamReader(new FileInputStream(fileName), StandardCharsets.UTF_8))) {
+
                 String strLine;
                 bre.readLine();
                 bre.readLine();
                 while ((strLine = bre.readLine()) != null) {
                     System.out.println(strLine);
                 }
-                in.close();
             } catch (Exception e) { //Catch exception if any
                 System.err.println("Error: " + e.getMessage());
             }

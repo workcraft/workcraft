@@ -221,6 +221,22 @@ public class FileUtils {
     }
 
     /**
+     * Reads the whole file into memory and returns it as a stream, so that the file is not kept open.
+     * Failure to read an existing file is reported as FileNotFoundException with the original cause.
+     */
+    public static InputStream readIntoStream(File file) throws FileNotFoundException {
+        try (FileInputStream is = new FileInputStream(file)) {
+            return new ByteArrayInputStream(is.readAllBytes());
+        } catch (FileNotFoundException e) {
+            throw e;
+        } catch (IOException e) {
+            FileNotFoundException result = new FileNotFoundException(e.getMessage());
+            result.initCause(e);
+            throw result;
+        }
+    }
+
+    /**
      * Reads all text from the file using the default charset.
      */
     public static String readAllText(File file) throws IOException {
