@@ -31,10 +31,15 @@ public class RefinementDependencyGraph {
     }
 
     public RefinementDependencyGraph(File topFile) {
+        this(topFile, null);
+    }
+
+    // Top model is used as is (not cloned), so it must not be changed. If null, it is loaded from the file.
+    public RefinementDependencyGraph(File topFile, ModelEntry topModel) {
         this.topFile = topFile;
         Deque<File> stack = new ArrayDeque<>();
         try {
-            ModelEntry topMe = WorkUtils.loadModel(topFile);
+            ModelEntry topMe = (topModel != null) ? topModel : WorkUtils.loadModel(topFile);
             Map<String, File> topDependencyMap = extractInstanceDependencyMap(topMe);
             getReverseOrderedDependencies(topDependencyMap).forEach(stack::push);
             vertexOrderedDataMap.put(topFile, new VertexData(topDependencyMap, topMe));
