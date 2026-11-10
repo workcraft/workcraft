@@ -259,13 +259,33 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
      * other models that the goal depends on.
      */
     public Lookup lookup(VerificationGoal goal) {
+        return lookup(goal, VerificationDependency::getHash,
+                dependencyHasher -> lookup(goal, dependencyHasher));
+    }
+
+    /**
+     * Find a result of the goal and check that it is still valid for the state of the model that was captured in
+     * the snapshot and for the other models that the goal depends on. This avoids repeated hashing of the model,
+     * and, if the hasher of dependencies caches its results, of the dependencies if several goals are looked up.
+     *
+     * @param dependencyHasher gives the current hash of a dependency, or null if it cannot be obtained
+     */
+    public Lookup lookupWithDependencies(VerificationGoal goal, Snapshot snapshot,
+            Function<VerificationDependency, String> dependencyHasher) {
+
+        return lookup(goal, dependencyHasher, nameHasher -> lookup(goal, snapshot, nameHasher));
+    }
+
+    private Lookup lookup(VerificationGoal goal, Function<VerificationDependency, String> dependencyHasher,
+            Function<Function<String, String>, Lookup> lookupFunction) {
+
         Map<String, VerificationDependency> dependencies = new TreeMap<>();
         for (VerificationDependency dependency : goal.getDependencies(getWorkspaceEntry())) {
             dependencies.put(dependency.getKey(), dependency);
         }
-        Lookup result = lookup(goal, name -> {
+        Lookup result = lookupFunction.apply(name -> {
             VerificationDependency dependency = dependencies.get(name);
-            return dependency == null ? null : dependency.getHash();
+            return dependency == null ? null : dependencyHasher.apply(dependency);
         });
         // The result must be obtained with the same set of dependencies as the one that the goal has now
         if (result.isValid() && !result.getRecord().dependencies().keySet().equals(dependencies.keySet())) {
