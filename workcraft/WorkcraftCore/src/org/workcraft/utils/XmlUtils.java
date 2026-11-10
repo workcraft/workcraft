@@ -30,6 +30,8 @@ import java.util.stream.Collectors;
 
 public class XmlUtils {
 
+    private static final DocumentBuilderFactory DOCUMENT_BUILDER_FACTORY = DocumentBuilderFactory.newInstance();
+
     private static final String LIST_ELEMENT = "list";
     private static final String ITEM_ELEMENT = "item";
     private static final String PAIR_ELEMENT = "pair";
@@ -98,10 +100,13 @@ public class XmlUtils {
     }
 
     private static DocumentBuilder createDocumentBuilder() {
-        try {
-            return DocumentBuilderFactory.newInstance().newDocumentBuilder();
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
+        // Creation of the factory is slow, and the same one is used for all documents
+        synchronized (DOCUMENT_BUILDER_FACTORY) {
+            try {
+                return DOCUMENT_BUILDER_FACTORY.newDocumentBuilder();
+            } catch (ParserConfigurationException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

@@ -27,10 +27,13 @@ import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GuiUtils {
 
     private static final float BUTTON_PREFERRED_ASPECT_RATIO = 4.0f;
+    private static final Map<String, ImageIcon> SVG_ICON_CACHE = new ConcurrentHashMap<>();
 
     public static JPanel createLabeledComponent(JComponent component, String labelText) {
         return createLabeledComponent(component, labelText, BorderLayout.WEST);
@@ -95,7 +98,23 @@ public class GuiUtils {
         return ImageIO.read(res);
     }
 
+    /**
+     * Rendering of an SVG file is slow, and the same icons are requested again for every model that is loaded.
+     * The icons are not modified, so they are shared.
+     */
     private static ImageIcon createIconFromSVG(String path, int width, int height) {
+        String key = path + "@" + width + "x" + height;
+        ImageIcon result = SVG_ICON_CACHE.get(key);
+        if (result == null) {
+            result = renderIconFromSVG(path, width, height);
+            if (result != null) {
+                SVG_ICON_CACHE.put(key, result);
+            }
+        }
+        return result;
+    }
+
+    private static ImageIcon renderIconFromSVG(String path, int width, int height) {
         try {
             System.setProperty("org.apache.batik.warn_destination", "false");
             Document document;
