@@ -46,6 +46,9 @@ import java.util.zip.ZipOutputStream;
 
 public final class WorkUtils {
 
+    private static final FileValueCache<ModelDescriptor> DESCRIPTOR_CACHE = new FileValueCache<>();
+    private static final FileValueCache<String> TITLE_CACHE = new FileValueCache<>();
+
     private static final String META_WORK_ENTRY = "meta";
     private static final String STATE_WORK_ENTRY = "state.xml";
     private static final String MATH_MODEL_WORK_ENTRY = "model.xml";
@@ -595,10 +598,16 @@ public final class WorkUtils {
         if (we != null) {
             return we.getModelEntry().getDescriptor();
         }
+        ModelDescriptor cachedDescriptor = DESCRIPTOR_CACHE.get(file);
+        if (cachedDescriptor != null) {
+            return cachedDescriptor;
+        }
         try (FileInputStream fis = new FileInputStream(file)) {
             byte[] bytes = DataAccumulator.loadStream(fis);
             Document metaDocument = loadMetaDoc(bytes);
-            return loadMetaDescriptor(metaDocument);
+            ModelDescriptor result = loadMetaDescriptor(metaDocument);
+            DESCRIPTOR_CACHE.put(file, result);
+            return result;
         } catch (IOException e) {
             throw new DeserialisationException(e);
         }
@@ -606,13 +615,21 @@ public final class WorkUtils {
 
     public static String extractModelTitle(File file) {
         WorkspaceEntry we = Framework.getInstance().getWorkspace().getWork(file);
-        ModelEntry me;
+        if (we != null) {
+            return we.getModelEntry().getVisualModel().getTitle();
+        }
+        String cachedTitle = TITLE_CACHE.get(file);
+        if (cachedTitle != null) {
+            return cachedTitle;
+        }
         try {
-            me = we == null ? loadModel(file) : we.getModelEntry();
+            ModelEntry me = loadModel(file);
+            String result = (me == null) ? null : me.getVisualModel().getTitle();
+            TITLE_CACHE.put(file, result);
+            return result;
         } catch (DeserialisationException e) {
             throw new RuntimeException(e);
         }
-        return me == null ? null : me.getVisualModel().getTitle();
     }
 
 }

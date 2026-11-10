@@ -27,6 +27,11 @@ import java.util.stream.Collectors;
 
 public final class RefinementUtils {
 
+    private record StgRefinement(File file) {
+    }
+
+    private static final FileValueCache<StgRefinement> STG_REFINEMENT_CACHE = new FileValueCache<>();
+
     private RefinementUtils() {
     }
 
@@ -90,6 +95,22 @@ public final class RefinementUtils {
         return null;
     }
 
+    /**
+     * Refinement file of the STG in the file, or null if there is none. Loading of the STG is slow, and the same
+     * files are examined again and again when the refinement hierarchy is checked, so the results are cached.
+     */
+    private static File getStgRefinementFile(File file) throws DeserialisationException {
+        StgRefinement cachedResult = STG_REFINEMENT_CACHE.get(file);
+        if (cachedResult != null) {
+            return cachedResult.file();
+        }
+        ModelEntry me = WorkUtils.loadModel(file);
+        Stg stg = WorkspaceUtils.getAs(me, Stg.class);
+        File result = stg.getRefinementFile();
+        STG_REFINEMENT_CACHE.put(file, new StgRefinement(result));
+        return result;
+    }
+
     public static File getRefinementCircuitFile(CircuitComponent component) {
         File file = component.getRefinementFile();
         Set<File> visited = new HashSet<>();
@@ -106,9 +127,7 @@ public final class RefinementUtils {
                     return file;
                 }
                 if (modelDescriptor instanceof StgDescriptor) {
-                    ModelEntry me = WorkUtils.loadModel(file);
-                    Stg stg = WorkspaceUtils.getAs(me, Stg.class);
-                    file = stg.getRefinementFile();
+                    file = getStgRefinementFile(file);
                 } else {
                     LogUtils.logError("Unexpected model type in file " + fileDescription);
                     return null;
