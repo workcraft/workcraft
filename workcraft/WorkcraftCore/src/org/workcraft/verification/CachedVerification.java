@@ -9,7 +9,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 import javax.swing.*;
 import java.time.ZonedDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Reuse and caching of the results of one verification command run. The command performs one goal, or several
@@ -241,26 +240,34 @@ public class CachedVerification {
     }
 
     private String getReusableNote() {
+        StringBuilder result = new StringBuilder(isCombined()
+                ? "These verification results are cached."
+                : "This verification result is cached.");
+
         List<ZonedDateTime> times = reusableRecords.stream()
                 .map(VerificationRecord::getTime)
                 .filter(Objects::nonNull)
                 .sorted()
                 .toList();
 
-        String when = "";
         if (!times.isEmpty()) {
             String first = VerificationRecord.formatTime(times.getFirst());
             String last = VerificationRecord.formatTime(times.getLast());
-            when = first.equals(last) ? " on " + first : " between " + first + " and " + last;
+            result.append("\n- Timestamp: ").append(first.equals(last) ? first : first + " - " + last);
         }
-        String tools = reusableRecords.stream()
-                .map(VerificationRecord::tool)
-                .filter(name -> (name != null) && !name.isEmpty())
-                .distinct()
-                .collect(Collectors.joining(", "));
 
-        return (isCombined() ? "These are cached results obtained" : "This is a cached result obtained")
-                + when + (tools.isEmpty() ? "" : " using " + tools) + ".";
+        List<String> toolchains = reusableRecords.stream()
+                .map(VerificationRecord::getToolchain)
+                .filter(toolchain -> !toolchain.isEmpty())
+                .distinct()
+                .toList();
+
+        if (toolchains.size() == 1) {
+            result.append("\n- Toolchain: ").append(toolchains.getFirst());
+        } else if (!toolchains.isEmpty()) {
+            result.append("\n- Toolchains:\n   ").append(String.join(",\n   ", toolchains));
+        }
+        return result.toString();
     }
 
     /**

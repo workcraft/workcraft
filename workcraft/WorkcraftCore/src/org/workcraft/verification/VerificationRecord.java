@@ -80,6 +80,29 @@ public record VerificationRecord(
         }
     }
 
+    /**
+     * Description of the tool, Workcraft and OS that produced the result, or empty text if there is none.
+     * No tool is used for a result that holds vacuously, so the toolchain is just Workcraft.
+     */
+    public String getToolchain() {
+        boolean hasTool = (tool != null) && !tool.isEmpty();
+        boolean hasVersion = (version != null) && !version.isEmpty();
+        if (!hasTool && !hasVersion) {
+            return "";
+        }
+        StringBuilder result = new StringBuilder();
+        if (hasTool) {
+            result.append(tool).append(hasVersion ? " in " : "");
+        }
+        if (hasVersion) {
+            result.append("Workcraft ").append(version);
+        }
+        if ((os != null) && !os.isEmpty()) {
+            result.append(" (").append(os).append(')');
+        }
+        return result.toString();
+    }
+
     public static String formatTime(ZonedDateTime time) {
         return TIME_FORMATTER.format(time);
     }
