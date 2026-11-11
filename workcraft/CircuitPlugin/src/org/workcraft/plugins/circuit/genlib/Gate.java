@@ -31,6 +31,15 @@ public class Gate {
             this(gate, extendedMapping.pinRenaming, extendedMapping.invertedPinNames, extendedMapping.extraPinAssignment);
         }
 
+        public boolean isIdentity() {
+            return invertedPinNames.isEmpty() && extraPinAssignment.isEmpty()
+                    && pinRenaming.entrySet().stream().allMatch(ExtendedMapping::isIdentity);
+        }
+
+        private static boolean isIdentity(Map.Entry<BooleanVariable, String> e) {
+            return e.getValue().equals(e.getKey().getLabel());
+        }
+
         public void addGateOutputToInvertedPinNames() {
             invertedPinNames.add(gate.function.name);
         }
