@@ -15,7 +15,8 @@ import java.util.List;
 
 class CachedVerificationMessageTests {
 
-    private static final String NOTE_REGEX = "(These are cached results|This is a cached result) obtained on \\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2} using %s\\.";
+    private static final String TIMESTAMP_REGEX = "- Timestamp: \\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}";
+    private static final String TOOLCHAIN_REGEX = "- Toolchain: %s in Workcraft .*";
 
     private final VerificationGoal plainGoal = new VerificationGoal("test.plain", "Plain goal", we -> true);
 
@@ -44,10 +45,12 @@ class CachedVerificationMessageTests {
         Assertions.assertFalse(cachedVerification.getReusableOutcome());
 
         String[] lines = cachedVerification.getReusableMessage().split("\n");
-        Assertions.assertEquals(3, lines.length);
+        Assertions.assertEquals(5, lines.length);
         Assertions.assertEquals("Goal with exceptions (a, b) is violated.", lines[0]);
         Assertions.assertEquals("", lines[1]);
-        Assertions.assertTrue(lines[2].matches(String.format(NOTE_REGEX, "MPSat")), lines[2]);
+        Assertions.assertEquals("This verification result is cached.", lines[2]);
+        Assertions.assertTrue(lines[3].matches(TIMESTAMP_REGEX), lines[3]);
+        Assertions.assertTrue(lines[4].matches(String.format(TOOLCHAIN_REGEX, "MPSat")), lines[4]);
 
         Framework.getInstance().closeWork(we);
     }
@@ -63,12 +66,14 @@ class CachedVerificationMessageTests {
         Assertions.assertTrue(cachedVerification.getReusableOutcome());
 
         String[] lines = cachedVerification.getReusableMessage().split("\n");
-        Assertions.assertEquals(5, lines.length);
+        Assertions.assertEquals(7, lines.length);
         Assertions.assertEquals("The following properties have been successfully verified:", lines[0]);
         Assertions.assertTrue(lines[1].endsWith("Plain goal"), lines[1]);
         Assertions.assertTrue(lines[2].endsWith("Goal with exceptions with exceptions (a, b)"), lines[2]);
         Assertions.assertEquals("", lines[3]);
-        Assertions.assertTrue(lines[4].matches(String.format(NOTE_REGEX, "Determinator")), lines[4]);
+        Assertions.assertEquals("These verification results are cached.", lines[4]);
+        Assertions.assertTrue(lines[5].matches(TIMESTAMP_REGEX), lines[5]);
+        Assertions.assertTrue(lines[6].matches(String.format(TOOLCHAIN_REGEX, "Determinator")), lines[6]);
 
         Framework.getInstance().closeWork(we);
     }

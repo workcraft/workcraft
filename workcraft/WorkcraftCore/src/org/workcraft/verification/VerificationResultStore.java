@@ -236,19 +236,20 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
             return new Lookup(Status.MISSING, null, "No verification result is stored");
         }
         if (!record.exceptions().equals(exceptionsSupplier.get())) {
-            return stale(record, "Verification exceptions were changed after the result was obtained");
+            return stale(record, "Verification exceptions were changed " + getObtainedText(record));
         }
         if (!modelHashSupplier.get().equals(record.modelHash())) {
-            return stale(record, "Model was changed after the result was obtained");
+            return stale(record, "Model was changed " + getObtainedText(record));
         }
         for (Map.Entry<String, VerificationRecord.Dependency> dependency : record.dependencies().entrySet()) {
             String currentHash = (dependencyHasher == null) ? null : dependencyHasher.apply(dependency.getKey());
             String description = getDependencyDescription(dependency.getKey(), dependency.getValue());
             if (currentHash == null) {
-                return stale(record, description + " is not available");
+                return stale(record, description + " is not available for the previous " + record.outcome()
+                        + " result");
             }
             if (!currentHash.equals(dependency.getValue().hash())) {
-                return stale(record, description + " was changed after the result was obtained");
+                return stale(record, description + " was changed " + getObtainedText(record));
             }
         }
         return new Lookup(Status.VALID, record, null);
@@ -289,7 +290,8 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
         });
         // The result must be obtained with the same set of dependencies as the one that the goal has now
         if (result.isValid() && !result.getRecord().dependencies().keySet().equals(dependencies.keySet())) {
-            return stale(result.getRecord(), "verification dependencies were changed");
+            return stale(result.getRecord(), "Verification dependencies were changed "
+                    + getObtainedText(result.getRecord()));
         }
         return result;
     }
@@ -305,6 +307,10 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
             result.append(key.contains(",") ? " for components " : " for component ").append(key);
         }
         return result.toString();
+    }
+
+    private String getObtainedText(VerificationRecord record) {
+        return "after the previous " + record.outcome() + " result was obtained";
     }
 
     private Lookup stale(VerificationRecord record, String reason) {

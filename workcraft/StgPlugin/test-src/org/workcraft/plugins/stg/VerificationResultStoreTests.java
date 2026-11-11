@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
+import org.workcraft.dom.math.CommentNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.utils.FileUtils;
@@ -99,6 +100,23 @@ class VerificationResultStoreTests {
         Assertions.assertEquals("Some other title", stg.getTitle());
         Assertions.assertEquals(hash, ModelHasher.getMathHash(we));
         Assertions.assertTrue(store.lookup(plainGoal).isValid());
+
+        Framework.getInstance().closeWork(we);
+    }
+
+    @Test
+    void testHashIgnoresCommentsAndFileReferencePaths() throws DeserialisationException {
+        WorkspaceEntry we = loadVmeWork();
+        String hash = ModelHasher.getMathHash(we);
+
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        stg.createNode("comment1", null, CommentNode.class);
+        Assertions.assertEquals(hash, ModelHasher.getMathHash(we));
+
+        stg.setRefinementFile("some/path/refinement.circuit.work");
+        String refinementHash = ModelHasher.getMathHash(we);
+        stg.setRefinementFile("other/path/refinement.circuit.work");
+        Assertions.assertEquals(refinementHash, ModelHasher.getMathHash(we));
 
         Framework.getInstance().closeWork(we);
     }

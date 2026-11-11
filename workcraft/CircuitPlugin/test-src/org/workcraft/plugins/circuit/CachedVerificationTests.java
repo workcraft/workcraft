@@ -67,6 +67,29 @@ class CachedVerificationTests {
         return new File(url.toURI());
     }
 
+    @Test
+    void testHashesDoNotDependOnLocation() throws DeserialisationException, URISyntaxException, IOException {
+        Framework framework = Framework.getInstance();
+        String[] circuitHashes = new String[2];
+        String[] environmentHashes = new String[2];
+        for (int i = 0; i < 2; i++) {
+            File directory = FileUtils.createTempDirectory("verification-cache-test-");
+            FileUtils.deleteOnExitRecursively(directory);
+            File circuitFile = new File(directory, "celement.circuit.work");
+            copyResource("celement.circuit.work", circuitFile);
+            copyResource("celement.stg.work", new File(directory, "celement.stg.work"));
+
+            WorkspaceEntry we = framework.loadWork(circuitFile);
+            Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+            Assertions.assertNotNull(circuit.getEnvironmentFile());
+            circuitHashes[i] = ModelHasher.getMathHash(we);
+            environmentHashes[i] = ModelHasher.getFileHash(circuit.getEnvironmentFile());
+            framework.closeWork(we);
+        }
+        Assertions.assertEquals(circuitHashes[0], circuitHashes[1]);
+        Assertions.assertEquals(environmentHashes[0], environmentHashes[1]);
+    }
+
     private void copyResource(String name, File target) throws URISyntaxException, IOException {
         Files.copy(getResourceFile(name).toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
