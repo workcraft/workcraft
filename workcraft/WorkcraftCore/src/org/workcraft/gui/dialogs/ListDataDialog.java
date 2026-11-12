@@ -32,7 +32,7 @@ public abstract class ListDataDialog extends ModalDialog<DataPreserver<List<Stri
             setSelectionModel(new MultipleListSelectionModel());
 
             ColorListCellRenderer cellRenderer = new ColorListCellRenderer(ListDataDialog.this::getItemColorOrNullForInvalid);
-            cellRenderer.setInvalidItemTooltip("Outdated exception will be ignored if selected and removed if unselected");
+            cellRenderer.setInvalidItemTooltip("Outdated exception will be ignored if selected, and removed if unselected");
             setCellRenderer(cellRenderer);
         }
 
