@@ -6,9 +6,9 @@ import org.workcraft.gui.dialogs.ModalDialog;
 import org.workcraft.gui.lists.ColorListCellRenderer;
 import org.workcraft.gui.lists.MultipleListSelectionModel;
 import org.workcraft.plugins.builtin.settings.SignalCommonSettings;
-import org.workcraft.plugins.mpsat_verification.commands.DiInterfaceVerificationCommand;
-import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceDataPreserver;
-import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceParameters;
+import org.workcraft.plugins.mpsat_verification.commands.OutputPersistencyVerificationCommand;
+import org.workcraft.plugins.mpsat_verification.presets.OutputPersistencyDataPreserver;
+import org.workcraft.plugins.mpsat_verification.presets.OutputPersistencyParameters;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.GuiUtils;
@@ -24,18 +24,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserver> {
+public class OutputPersistencyDialog extends ModalDialog<OutputPersistencyDataPreserver> {
 
-    private InputSignalList inputSignalList;
+    private LocalSignalList localSignalList;
     private ExceptionSetList exceptionSetList;
 
-    static class InputSignalList extends JList<String> {
+    static class LocalSignalList extends JList<String> {
         private final DefaultListModel<String> listModel;
         private final Set<String> signals;
 
-        InputSignalList(Set<String> signals) {
+        LocalSignalList(Set<String> outputSignals, Set<String> internalSignals) {
             super();
-            this.signals = signals;
+            this.signals = new HashSet<>();
+            signals.addAll(outputSignals);
+            signals.addAll(internalSignals);
+
             listModel = new DefaultListModel<>();
             setModel(listModel);
             listModel.addAll(SortUtils.getSortedNatural(signals));
@@ -43,7 +46,10 @@ public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserve
             setBorder(GuiUtils.getEmptyBorder());
             setSelectionModel(new MultipleListSelectionModel());
 
-            ColorListCellRenderer cellRenderer = new ColorListCellRenderer(signal -> SignalCommonSettings.getInputColor());
+            ColorListCellRenderer cellRenderer = new ColorListCellRenderer(signal ->
+                    outputSignals.contains(signal) ? SignalCommonSettings.getOutputColor()
+                            : internalSignals.contains(signal) ? SignalCommonSettings.getInternalColor() : null);
+
             setCellRenderer(cellRenderer);
         }
 
@@ -124,8 +130,8 @@ public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserve
         }
     }
 
-    public OutputPersistencyDialog(Window owner, DiInterfaceDataPreserver userData) {
-        super(owner, DiInterfaceVerificationCommand.TITLE, userData);
+    public OutputPersistencyDialog(Window owner, OutputPersistencyDataPreserver userData) {
+        super(owner, OutputPersistencyVerificationCommand.TITLE, userData);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowOpened(WindowEvent e) {
@@ -137,15 +143,17 @@ public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserve
     @Override
     public JPanel createContentPanel() {
         Stg stg = WorkspaceUtils.getAs(getUserData().getWorkspaceEntry(), Stg.class);
-        inputSignalList = new InputSignalList(stg.getSignalReferences(Signal.Type.INPUT));
+        localSignalList = new LocalSignalList(
+                stg.getSignalReferences(Signal.Type.OUTPUT),
+                stg.getSignalReferences(Signal.Type.INTERNAL));
 
-        DiInterfaceParameters data = getUserData().loadData();
+        OutputPersistencyParameters data = getUserData().loadData();
         List<ItemSet> validItemSets = new ArrayList<>();
         List<ItemSet> invalidItemSets = new ArrayList<>();
         for (TreeSet<String> itemTreeSet : data.getOrderedExceptionSignalSets()) {
             if (itemTreeSet != null) {
                 ItemSet itemSet = new ItemSet(itemTreeSet);
-                if (inputSignalList.isValidItemSet(itemSet)) {
+                if (localSignalList.isValidItemSet(itemSet)) {
                     validItemSets.add(itemSet);
                 } else {
                     invalidItemSets.add(itemSet);
@@ -154,16 +162,16 @@ public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserve
         }
         exceptionSetList = new ExceptionSetList(validItemSets, invalidItemSets);
 
-        JButton clearInputSignalSelectionButton = new JButton("Clear selection");
-        clearInputSignalSelectionButton.addActionListener(event -> inputSignalList.clearSelection());
-        clearInputSignalSelectionButton.setEnabled(inputSignalList.hasSelectedItems());
-        inputSignalList.addListSelectionListener(event ->
-                clearInputSignalSelectionButton.setEnabled(inputSignalList.hasSelectedItems()));
+        JButton clearSignalSelectionButton = new JButton("Clear selection");
+        clearSignalSelectionButton.addActionListener(event -> localSignalList.clearSelection());
+        clearSignalSelectionButton.setEnabled(localSignalList.hasSelectedItems());
+        localSignalList.addListSelectionListener(event ->
+                clearSignalSelectionButton.setEnabled(localSignalList.hasSelectedItems()));
 
-        JPanel inputSignalsPanel = new JPanel(GuiUtils.createBorderLayout());
-        inputSignalsPanel.add(new JLabel("Input signals:"), BorderLayout.NORTH);
-        inputSignalsPanel.add(new JScrollPane(inputSignalList), BorderLayout.CENTER);
-        inputSignalsPanel.add(clearInputSignalSelectionButton, BorderLayout.SOUTH);
+        JPanel localSignalsPanel = new JPanel(GuiUtils.createBorderLayout());
+        localSignalsPanel.add(new JLabel("Local signals:"), BorderLayout.NORTH);
+        localSignalsPanel.add(new JScrollPane(localSignalList), BorderLayout.CENTER);
+        localSignalsPanel.add(clearSignalSelectionButton, BorderLayout.SOUTH);
 
         JButton removeSelectedExceptionSetsButton = new JButton("Remove selected sets");
         removeSelectedExceptionSetsButton.addActionListener(event -> exceptionSetList.removeSelectedElements());
@@ -178,15 +186,15 @@ public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserve
 
         JButton addExceptionSetButton = GuiUtils.createIconButton(
                 GuiUtils.createIconFromSVG("images/double-right-arrow.svg"),
-                "Add selected inputs as an exception set");
+                "Add selected signals as an exception set");
 
         addExceptionSetButton.addActionListener(event -> {
-            exceptionSetList.addItemInOrderAndSelect(inputSignalList.getSelectedValuesList());
-            inputSignalList.clearSelection();
+            exceptionSetList.addItemInOrderAndSelect(localSignalList.getSelectedValuesList());
+            localSignalList.clearSelection();
         });
         addExceptionSetButton.setEnabled(false);
-        inputSignalList.addListSelectionListener(event ->
-                addExceptionSetButton.setEnabled(!inputSignalList.getSelectedValuesList().isEmpty()));
+        localSignalList.addListSelectionListener(event ->
+                addExceptionSetButton.setEnabled(!localSignalList.getSelectedValuesList().isEmpty()));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
@@ -198,7 +206,7 @@ public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserve
                 new double[]{TableLayout.FILL, TableLayout.PREFERRED, TableLayout.FILL},
                 new double[]{TableLayout.FILL}));
 
-        signalPanel.add(inputSignalsPanel, new TableLayoutConstraints(0, 0));
+        signalPanel.add(localSignalsPanel, new TableLayoutConstraints(0, 0));
         signalPanel.add(buttonPanel, new TableLayoutConstraints(1, 0));
         signalPanel.add(exceptionSetsPanel, new TableLayoutConstraints(2, 0));
 
@@ -206,8 +214,7 @@ public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserve
         result.setLayout(GuiUtils.createBorderLayout());
         result.setBorder(GuiUtils.getEmptyBorder());
         result.add(new JLabel("<html>" +
-                        "Define sets of input signals to be excluded from delay insensitivity verification.<br>" +
-                        "Note: self-triggering input is considered a violation; use singleton set to waive.<br>" +
+                        "Define sets of local signals that are allowed to disable each other.<br>" +
                         "</html>"),
                 BorderLayout.NORTH);
 
@@ -223,7 +230,7 @@ public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserve
                     .filter(exceptionSet -> !exceptionSet.isEmpty())
                     .collect(Collectors.toList());
 
-            DiInterfaceParameters parameters = new DiInterfaceParameters(exceptionSignalSets);
+            OutputPersistencyParameters parameters = new OutputPersistencyParameters(exceptionSignalSets);
             getUserData().saveData(parameters);
         }
         return result;
@@ -234,12 +241,12 @@ public class OutputPersistencyDialog extends ModalDialog<DiInterfaceDataPreserve
     }
 
     public boolean isValidItem(Object item) {
-        return (item instanceof ItemSet itemSet) && inputSignalList.isValidItemSet(itemSet);
+        return (item instanceof ItemSet itemSet) && localSignalList.isValidItemSet(itemSet);
     }
 
     @Override
     public boolean hasData() {
-        return !inputSignalList.isEmpty() || !exceptionSetList.isEmpty();
+        return !localSignalList.isEmpty() || !exceptionSetList.isEmpty();
     }
 
 

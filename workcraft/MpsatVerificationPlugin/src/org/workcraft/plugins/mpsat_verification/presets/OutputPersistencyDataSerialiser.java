@@ -4,15 +4,15 @@ import org.w3c.dom.Element;
 import org.workcraft.presets.DataSerialiser;
 import org.workcraft.utils.XmlUtils;
 
-public class OutputPersistencyDataSerialiser implements DataSerialiser<DiInterfaceParameters> {
+public class OutputPersistencyDataSerialiser implements DataSerialiser<OutputPersistencyParameters> {
 
     @Override
-    public DiInterfaceParameters fromXML(Element parent, DiInterfaceParameters defaultParameters) {
-        return new DiInterfaceParameters(XmlUtils.readItemLists(parent));
+    public OutputPersistencyParameters fromXML(Element parent, OutputPersistencyParameters defaultParameters) {
+        return new OutputPersistencyParameters(XmlUtils.readItemLists(parent));
     }
 
     @Override
-    public void toXML(DiInterfaceParameters parameters, Element parent) {
+    public void toXML(OutputPersistencyParameters parameters, Element parent) {
         XmlUtils.writeItemLists(parameters.getOrderedExceptionSignalSets(), parent);
     }
 

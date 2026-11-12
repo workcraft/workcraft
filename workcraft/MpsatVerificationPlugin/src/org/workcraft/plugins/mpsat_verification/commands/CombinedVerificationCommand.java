@@ -124,7 +124,8 @@ public class CombinedVerificationCommand
         verificationParametersList.addAll(ReachUtils.getMutexProtocolParameters(mutexes));
         if (noDummies) {
             LinkedList<Pair<String, String>> mutexExceptions = MutexUtils.getMutexGrantPersistencyExceptions(stg);
-            verificationParametersList.add(ReachUtils.getOutputPersistencyParameters(mutexExceptions));
+            OutputPersistencyParameters outputPersistencyParameters = new OutputPersistencyDataPreserver(we).loadValidDataOnly();
+            verificationParametersList.add(outputPersistencyParameters.getVerificationParameters(mutexExceptions));
         }
 
         if (noDummies) {

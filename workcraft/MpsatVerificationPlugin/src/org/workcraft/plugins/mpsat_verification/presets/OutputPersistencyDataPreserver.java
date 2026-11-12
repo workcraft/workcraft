@@ -1,5 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.presets;
 
+import org.workcraft.plugins.mpsat_verification.commands.OutputPersistencyVerificationCommand;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.DataPreserver;
@@ -9,26 +11,28 @@ import org.workcraft.utils.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class OutputPersistencyDataPreserver extends DataPreserver<DiInterfaceParameters> {
+public class OutputPersistencyDataPreserver extends DataPreserver<OutputPersistencyParameters> {
 
     public OutputPersistencyDataPreserver(WorkspaceEntry we) {
-        super(we, "delay-insensitive-interface.xml", new DiInterfaceDataSerialiser());
+        super(we, "output-persistency.xml", new OutputPersistencyDataSerialiser());
     }
 
     @Override
-    public DiInterfaceParameters loadValidDataOnly() {
-        DiInterfaceParameters data = super.loadValidDataOnly();
+    public OutputPersistencyParameters loadValidDataOnly() {
+        OutputPersistencyParameters data = super.loadValidDataOnly();
         Stg stg = WorkspaceUtils.getAs(getWorkspaceEntry(), Stg.class);
-        Set<String> inputSignals = stg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> localSignals = new HashSet<>(stg.getSignalReferences(Signal.Type.OUTPUT));
+        localSignals.addAll(stg.getSignalReferences(Signal.Type.INTERNAL));
         List<Set<String>> validSignalSets = new ArrayList<>();
         List<String> invalidItems = new ArrayList<>();
         for (TreeSet<String> itemTreeSet : data.getOrderedExceptionSignalSets()) {
             if (itemTreeSet != null) {
-                if (inputSignals.containsAll(itemTreeSet)) {
+                if (localSignals.containsAll(itemTreeSet)) {
                     validSignalSets.add(itemTreeSet);
                 } else {
                     invalidItems.add("{" + String.join(", ", itemTreeSet) + "}");
@@ -36,10 +40,10 @@ public class OutputPersistencyDataPreserver extends DataPreserver<DiInterfacePar
             }
         }
         if (!invalidItems.isEmpty()) {
-            String message = "Input properness is checked without outdated exception";
+            String message = MpsatUtils.getPropertyOutdatedExceptionWarning(OutputPersistencyVerificationCommand.TITLE);
             LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, invalidItems));
         }
-        return new DiInterfaceParameters(validSignalSets);
+        return new OutputPersistencyParameters(validSignalSets);
     }
 
 }

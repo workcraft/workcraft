@@ -1,8 +1,11 @@
 package org.workcraft.plugins.mpsat_verification.commands;
 
+import org.workcraft.Framework;
 import org.workcraft.commands.TimeConsumingCommand;
-import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.mpsat_verification.utils.ReachUtils;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.mpsat_verification.gui.OutputPersistencyDialog;
+import org.workcraft.plugins.mpsat_verification.presets.*;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.MutexUtils;
 import org.workcraft.types.Pair;
@@ -16,9 +19,11 @@ public class OutputPersistencyVerificationCommand
         extends AbstractEssentialVerificationCommand
         implements TimeConsumingCommand {
 
+    public static final String TITLE = "Output persistency";
+
     @Override
     public String getDisplayName() {
-        return "Output persistency (without dummies)";
+        return TITLE + " (without dummies)...";
     }
 
     @Override
@@ -38,17 +43,32 @@ public class OutputPersistencyVerificationCommand
         }
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (!stg.getDummyTransitions().isEmpty()) {
-            DialogUtils.showError("Output persistency can currently be checked only for STGs without dummies.");
+            DialogUtils.showError(MpsatUtils.getPropertyUnsupportedDummyWarning(TITLE));
             return false;
         }
         return MutexUtils.mutexStructuralCheck(stg, true);
     }
 
     @Override
+    public void run(WorkspaceEntry we) {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        if (mainWindow == null) {
+            super.run(we);
+        } else {
+            OutputPersistencyDataPreserver dataPreserver = new OutputPersistencyDataPreserver(we);
+            OutputPersistencyDialog dialog = new OutputPersistencyDialog(mainWindow, dataPreserver);
+            if (dialog.reveal()) {
+                super.run(we);
+            }
+        }
+    }
+
+    @Override
     public VerificationParameters getVerificationParameters(WorkspaceEntry we) {
+        OutputPersistencyParameters data = new OutputPersistencyDataPreserver(we).loadValidDataOnly();
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPersistencyExceptions(stg);
-        return ReachUtils.getOutputPersistencyParameters(exceptions);
+        LinkedList<Pair<String, String>> mutexGrantExceptions = MutexUtils.getMutexGrantPersistencyExceptions(stg);
+        return data.getVerificationParameters(mutexGrantExceptions);
     }
 
 }
