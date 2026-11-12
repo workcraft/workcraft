@@ -85,13 +85,19 @@ public final class GenlibUtils {
     }
 
     public static Gate.Mapping findMapping(BooleanFormula setFormula, BooleanFormula resetFormula, Library library) {
+        return findMapping(setFormula, resetFormula, library, null);
+    }
+
+    public static Gate.Mapping findMapping(BooleanFormula setFormula, BooleanFormula resetFormula, Library library,
+            Gate preferredGate) {
+
         try (BddManager bddManager = createBddManager()) {
-            return getMapping(setFormula, resetFormula, library, bddManager);
+            return getMapping(setFormula, resetFormula, library, preferredGate, bddManager);
         }
     }
 
-    private static Gate.Mapping getMapping(BooleanFormula setFormula, BooleanFormula resetFormula, Library library,
-            BddManager bddManager) {
+    private static Gate.Mapping getMapping(BooleanFormula setFormula, BooleanFormula resetFormula,
+            Library library, Gate preferredGate, BddManager bddManager) {
 
         // Ignore resetFormula if it is complementary to setFormula
         if ((setFormula != null) && (resetFormula != null)) {
@@ -100,7 +106,12 @@ public final class GenlibUtils {
             }
         }
         List<BooleanVariable> inputPins = FormulaUtils.extractOrderedVariables(setFormula, resetFormula);
-        List<Gate> orderedCandidateGates = library.getGatesOrderedBySize(inputPins.size() + 1, (resetFormula != null));
+        int pinCount = inputPins.size() + 1;
+        List<Gate> orderedCandidateGates = new ArrayList<>(library.getGatesOrderedBySize(pinCount, (resetFormula != null)));
+        // Try the preferred gate first
+        if ((preferredGate != null) && orderedCandidateGates.remove(preferredGate)) {
+            orderedCandidateGates.addFirst(preferredGate);
+        }
         for (Gate gate : orderedCandidateGates) {
             Gate.PinRenaming pinRenaming = getVariableMappingIfEquivalentOrNull(
                     setFormula, gate.getSetFormula(), bddManager);
@@ -132,7 +143,13 @@ public final class GenlibUtils {
         List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(formula);
         List<BooleanVariable> candidateVars = FormulaUtils.extractOrderedVariables(candidateFormula);
         if (vars.size() == candidateVars.size()) {
-            Gate.PinRenaming result = null;
+            // Try to keep pins intact (match variables to pins with the same name) before permuting
+            Gate.PinRenaming result = getIdenticalVariableMappingIfEquivalentOrNull(
+                    formula, candidateFormula, vars, candidateVars, bddManager);
+
+            if (result != null) {
+                return result;
+            }
             ListPermutationIterator<BooleanVariable> permutationIterator = new ListPermutationIterator<>(vars, true);
             while ((result == null) && permutationIterator.hasNext()) {
                 List<BooleanVariable> permutatedVars = permutationIterator.next();
@@ -147,6 +164,32 @@ public final class GenlibUtils {
             return result;
         }
         return null;
+    }
+
+    private static Gate.PinRenaming getIdenticalVariableMappingIfEquivalentOrNull(
+            BooleanFormula formula, BooleanFormula candidateFormula,
+            List<BooleanVariable> vars, List<BooleanVariable> candidateVars, BddManager bddManager) {
+
+        List<BooleanVariable> alignedVars = new ArrayList<>();
+        for (BooleanVariable candidateVar : candidateVars) {
+            BooleanVariable var = vars.stream()
+                    .filter(v -> v.getLabel().equals(candidateVar.getLabel()))
+                    .findFirst().orElse(null);
+
+            if (var == null) {
+                return null;
+            }
+            alignedVars.add(var);
+        }
+        BooleanFormula mappedFormula = FormulaUtils.replace(formula, alignedVars, candidateVars);
+        if (!bddManager.isEquivalent(mappedFormula, candidateFormula)) {
+            return null;
+        }
+        Gate.PinRenaming result = new Gate.PinRenaming();
+        for (int i = 0; i < alignedVars.size(); i++) {
+            result.put(alignedVars.get(i), candidateVars.get(i).getLabel());
+        }
+        return result;
     }
 
     private static Gate.PinRenaming mergePinRenamingsIfCompatibleOrNull(
@@ -179,21 +222,28 @@ public final class GenlibUtils {
         return findExtendedMapping(formula, null, library, allowOutputInversion, false, false);
     }
 
-    public static Gate.ExtendedMapping findExtendedMapping(
-            BooleanFormula setFormula, BooleanFormula resetFormula, Library library,
+    public static Gate.ExtendedMapping findExtendedMapping(BooleanFormula setFormula, BooleanFormula resetFormula,
+            Library library, boolean allowOutputInversion, boolean allowExtraPin, boolean allowInputInversion) {
+
+        return findExtendedMapping(setFormula, resetFormula, library, null,
+                allowOutputInversion, allowExtraPin, allowInputInversion);
+    }
+
+    public static Gate.ExtendedMapping findExtendedMapping(BooleanFormula setFormula, BooleanFormula resetFormula,
+            Library library, Gate preferredGate,
             boolean allowOutputInversion, boolean allowExtraPin, boolean allowInputInversion) {
 
         if (library == null) {
             return null;
         }
         try (BddManager bddManager = createBddManager()) {
-            return getExtendedMapping(setFormula, resetFormula, library, bddManager,
+            return getExtendedMapping(setFormula, resetFormula, library, preferredGate, bddManager,
                     allowOutputInversion, allowExtraPin, allowInputInversion);
         }
     }
 
     private static Gate.ExtendedMapping getExtendedMapping(BooleanFormula setFormula, BooleanFormula resetFormula,
-            Library library, BddManager bddManager,
+            Library library, Gate preferredGate, BddManager bddManager,
             boolean allowOutputInversion, boolean allowExtraPin, boolean allowInputInversion) {
 
         // Ignore resetFormula if it is complementary to setFormula
@@ -203,7 +253,7 @@ public final class GenlibUtils {
             }
         }
         // Try 1: match gates directly
-        Gate.Mapping mapping = findMapping(setFormula, resetFormula, library);
+        Gate.Mapping mapping = getMapping(setFormula, resetFormula, library, preferredGate, bddManager);
         if (mapping != null) {
             return new Gate.ExtendedMapping(mapping.gate(), mapping.pinRenaming(), Set.of());
         }

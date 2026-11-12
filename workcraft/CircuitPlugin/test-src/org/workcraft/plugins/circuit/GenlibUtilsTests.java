@@ -7,6 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.formula.*;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
+import org.workcraft.plugins.circuit.genlib.Function;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
@@ -213,6 +214,81 @@ class GenlibUtilsTests {
             List<BooleanVariable> vars = FormulaUtils.extractOrderedVariables(setFunc);
             System.out.println(funcInfo + " == " + GenlibUtils.getExtendedMappingInfo(extendedMapping, vars, null));
         }
+    }
+
+    @Test
+    void testMappingPreservesPins() throws ParseException {
+        Library gateLibrary = LibraryManager.getLibrary();
+        // Commutative pins must not be swapped if the formula already uses the pin names of the gate
+        checkPinsPreserved(BooleanFormulaParser.parse("B*A"), null, gateLibrary);
+        checkPinsPreserved(BooleanFormulaParser.parse("B+A"), null, gateLibrary);
+        checkPinsPreserved(BooleanFormulaParser.parse("!(B*A)"), null, gateLibrary);
+        checkPinsPreserved(BooleanFormulaParser.parse("(B2+B1)*(A2+A1)"), null, gateLibrary);
+        checkPinsPreserved(BooleanFormulaParser.parse("!(A2*A1+B2*B1)"), null, gateLibrary);
+
+        FreeVariable a = new FreeVariable("A");
+        FreeVariable b = new FreeVariable("B");
+        checkPinsPreserved(new And(b, a), new Not(new Or(b, a)), gateLibrary);
+    }
+
+    private void checkPinsPreserved(BooleanFormula setFunc, BooleanFormula resetFunc, Library gateLibrary) {
+        Gate.Mapping mapping = GenlibUtils.findMapping(setFunc, resetFunc, gateLibrary);
+        Assertions.assertNotNull(mapping);
+        assertPinRenamingIsIdentity(mapping.pinRenaming());
+
+        Gate.ExtendedMapping extendedMapping = GenlibUtils.findExtendedMapping(
+                setFunc, resetFunc, gateLibrary, true, true, true);
+
+        Assertions.assertNotNull(extendedMapping);
+        assertPinRenamingIsIdentity(extendedMapping.pinRenaming());
+        Assertions.assertTrue(extendedMapping.isIdentity());
+    }
+
+    @Test
+    void testExtendedMappingIsIdentity() throws ParseException {
+        Library gateLibrary = LibraryManager.getLibrary();
+        // Variables are renamed to pins of the gate
+        Gate.ExtendedMapping renamed = GenlibUtils.findExtendedMapping(
+                BooleanFormulaParser.parse("x*y"), null, gateLibrary, true, true, true);
+
+        Assertions.assertFalse(renamed.isIdentity());
+
+        // Input inverter is required
+        Gate.ExtendedMapping inverted = GenlibUtils.findExtendedMapping(
+                BooleanFormulaParser.parse("!(!A*!B*C)"), null, gateLibrary, true, true, true);
+
+        Assertions.assertFalse(inverted.isIdentity());
+    }
+
+    private void assertPinRenamingIsIdentity(Map<BooleanVariable, String> pinRenaming) {
+        for (Map.Entry<BooleanVariable, String> entry : pinRenaming.entrySet()) {
+            Assertions.assertEquals(entry.getKey().getLabel(), entry.getValue());
+        }
+    }
+
+    @Test
+    void testPreferredGate() throws ParseException {
+        Gate and2 = new Gate("AND2", 16, new Function("O", "A*B"), null, true);
+        Gate and2x2 = new Gate("AND2_X2", 32, new Function("O", "A*B"), null, true);
+        Gate or2 = new Gate("OR2", 16, new Function("O", "A+B"), null, true);
+        Library gateLibrary = new Library(List.of(and2, and2x2, or2));
+        BooleanFormula func = BooleanFormulaParser.parse("B*A");
+
+        // Smallest gate is used by default
+        Assertions.assertEquals(and2, GenlibUtils.findMapping(func, null, gateLibrary).gate());
+        Assertions.assertEquals(and2, GenlibUtils.findMapping(func, null, gateLibrary, null).gate());
+        Assertions.assertEquals(and2, GenlibUtils.findExtendedMapping(
+                func, null, gateLibrary, true, true, true).gate());
+
+        // Equivalent preferred gate is used even if it is not the smallest
+        Assertions.assertEquals(and2x2, GenlibUtils.findMapping(func, null, gateLibrary, and2x2).gate());
+        Assertions.assertEquals(and2x2, GenlibUtils.findExtendedMapping(
+                func, null, gateLibrary, and2x2, true, true, true).gate());
+
+        // Non-equivalent preferred gate is ignored
+        Assertions.assertEquals(and2, GenlibUtils.findMapping(func, null, gateLibrary, or2).gate());
+        Assertions.assertEquals(and2, GenlibUtils.findExtendedMapping(
+                func, null, gateLibrary, or2, true, true, true).gate());
     }
 
     @Test
