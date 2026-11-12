@@ -11,6 +11,8 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.mpsat_verification.commands.*;
 import org.workcraft.plugins.mpsat_verification.presets.InputPropernessDataPreserver;
+import org.workcraft.plugins.mpsat_verification.presets.OutputPersistencyDataPreserver;
+import org.workcraft.plugins.mpsat_verification.presets.OutputPersistencyParameters;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.utils.BackendUtils;
@@ -221,6 +223,23 @@ class CachedVerificationTests {
         Assertions.assertTrue(new ConsistencyVerificationCommand().execute(we));
         // Combined command is re-run as a whole if any of its goals is stale
         Assertions.assertNull(new CombinedVerificationCommand().execute(we));
+
+        Framework.getInstance().closeWork(we);
+    }
+
+    @Test
+    void testOutputPersistencyExceptionsInvalidateResult() throws DeserialisationException {
+        WorkspaceEntry we = loadWork("vme.stg.work");
+        Assertions.assertTrue(new CombinedVerificationCommand().execute(we));
+
+        new OutputPersistencyDataPreserver(we).saveData(new OutputPersistencyParameters(List.of(List.of("lds", "d"))));
+        VerificationResultStore store = new VerificationResultStore(we);
+        Assertions.assertEquals(VerificationResultStore.Status.STALE,
+                store.lookup(StgVerificationGoals.OUTPUT_PERSISTENCY).getStatus());
+        Assertions.assertTrue(store.lookup(StgVerificationGoals.CONSISTENCY).isValid());
+
+        disableTools();
+        Assertions.assertNull(new OutputPersistencyVerificationCommand().execute(we));
 
         Framework.getInstance().closeWork(we);
     }
