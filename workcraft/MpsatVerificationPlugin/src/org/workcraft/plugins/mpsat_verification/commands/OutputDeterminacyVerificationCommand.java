@@ -7,7 +7,7 @@ import org.workcraft.plugins.mpsat_verification.tasks.OutputDeterminacyTask;
 import org.workcraft.plugins.mpsat_verification.tasks.VerificationChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
-import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.WorkspaceUtils;
@@ -29,7 +29,7 @@ public class OutputDeterminacyVerificationCommand
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Stg.class);
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
