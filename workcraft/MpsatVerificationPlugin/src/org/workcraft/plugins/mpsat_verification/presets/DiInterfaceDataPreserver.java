@@ -1,5 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.presets;
 
+import org.workcraft.plugins.mpsat_verification.commands.DiInterfaceVerificationCommand;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.DataPreserver;
@@ -36,7 +38,7 @@ public class DiInterfaceDataPreserver extends DataPreserver<DiInterfaceParameter
             }
         }
         if (!invalidItems.isEmpty()) {
-            String message = "Input properness is checked without outdated exception";
+            String message = MpsatUtils.getPropertyOutdatedExceptionWarning(DiInterfaceVerificationCommand.TITLE);
             LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, invalidItems));
         }
         return new DiInterfaceParameters(validSignalSets);

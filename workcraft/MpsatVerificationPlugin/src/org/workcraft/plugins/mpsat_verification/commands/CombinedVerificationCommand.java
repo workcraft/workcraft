@@ -93,7 +93,7 @@ public class CombinedVerificationCommand
         }
 
         if (!noDummies) {
-            String message = "The following properties can currently be checked only for STGs without dummies:"
+            String message = MpsatUtils.getPropertyUnsupportedDummyWarning("The following properties", ":")
                     + TextUtils.getBulletpoint("Input properness")
                     + TextUtils.getBulletpoint("Output persistency")
                     + TextUtils.getBulletpoint("Absence of local self-triggering")

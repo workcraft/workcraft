@@ -44,4 +44,16 @@ public final class MpsatUtils {
         }
     }
 
+    public static String getPropertyUnsupportedDummyWarning(String propertyName) {
+        return getPropertyUnsupportedDummyWarning(propertyName, ".");
+    }
+
+    public static String getPropertyUnsupportedDummyWarning(String propertyName, String suffix) {
+        return propertyName + " can currently be checked only for STGs without dummies" + suffix;
+    }
+
+    public static String getPropertyOutdatedExceptionWarning(String propertyName) {
+        return propertyName + " is checked without outdated exception";
+    }
+
 }

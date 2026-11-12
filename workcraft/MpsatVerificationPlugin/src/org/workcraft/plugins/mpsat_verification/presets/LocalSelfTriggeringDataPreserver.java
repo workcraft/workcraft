@@ -1,5 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.presets;
 
+import org.workcraft.plugins.mpsat_verification.commands.LocalSelfTriggeringVerificationCommand;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.ListDataPreserver;
@@ -28,7 +30,7 @@ public class LocalSelfTriggeringDataPreserver extends ListDataPreserver {
         invalidSignals.removeAll(stg.getSignalReferences(Signal.Type.INTERNAL));
         if (!invalidSignals.isEmpty()) {
             data.removeAll(invalidSignals);
-            String message = "Absence of local self-triggering is checked without outdated exception";
+            String message = MpsatUtils.getPropertyOutdatedExceptionWarning(LocalSelfTriggeringVerificationCommand.TITLE);
             LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, SortUtils.getSortedNatural(invalidSignals)));
         }
         return data;

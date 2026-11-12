@@ -7,7 +7,7 @@ import org.workcraft.plugins.mpsat_verification.gui.LocalSelfTriggeringDialog;
 import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringDataPreserver;
 import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringParameters;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
-import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -28,7 +28,7 @@ public class LocalSelfTriggeringVerificationCommand
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Stg.class);
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class LocalSelfTriggeringVerificationCommand
         }
         StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
         if (!stg.getDummyTransitions().isEmpty()) {
-            DialogUtils.showError(TITLE + " can currently be checked only for STGs without dummies.");
+            DialogUtils.showError(MpsatUtils.getPropertyUnsupportedDummyWarning(TITLE));
             return false;
         }
         return true;
