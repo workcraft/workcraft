@@ -1,9 +1,11 @@
 package org.workcraft.verification;
 
+import org.workcraft.utils.TextUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -166,7 +168,8 @@ public class VerificationGoal {
         if ((exceptions == null) || exceptions.isEmpty()) {
             return title;
         }
-        return title + " with exceptions (" + String.join(", ", exceptions.split("\n")) + ")";
+        List<String> items = List.of(exceptions.split("\n"));
+        return title + " with exceptions (" + TextUtils.getShortenedItems(items) + ")";
     }
 
     @Override
