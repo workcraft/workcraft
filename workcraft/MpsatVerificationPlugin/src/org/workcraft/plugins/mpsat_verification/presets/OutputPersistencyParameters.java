@@ -87,9 +87,14 @@ public class OutputPersistencyParameters {
     public static VerificationParameters getVerificationParameters(Collection<Pair<String, String>> mutexGrantPairs,
             Collection<String> skipSignals, Collection<? extends Collection<String>> exceptionSignalSets) {
 
+        // Mutex grants and skip signals are implied by the model and the settings, so only user-defined are reported
         String description = "Output persistency";
-        if (!mutexGrantPairs.isEmpty() || !skipSignals.isEmpty() || !exceptionSignalSets.isEmpty()) {
-            description += " with exceptions";
+        if (!exceptionSignalSets.isEmpty()) {
+            description += " with exceptions (" + exceptionSignalSets.stream()
+                    .map(TreeSet::new)
+                    .sorted(Comparator.comparing(signals -> String.join(" ", signals)))
+                    .map(signals -> "{" + String.join(", ", signals) + "}")
+                    .collect(Collectors.joining(", ")) + ")";
         }
 
         StringBuilder sb = new StringBuilder();
