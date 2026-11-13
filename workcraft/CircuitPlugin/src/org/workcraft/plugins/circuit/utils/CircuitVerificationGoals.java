@@ -91,7 +91,7 @@ public final class CircuitVerificationGoals {
         if (circuit == null) {
             return "";
         }
-        return String.join("\n", SortUtils.getSortedNatural(ScanUtils.getScanoutAndAuxiliarySignals(circuit)));
+        return String.join(", ", SortUtils.getSortedNatural(ScanUtils.getScanoutAndAuxiliarySignals(circuit)));
     }
 
     /**

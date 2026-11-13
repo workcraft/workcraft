@@ -21,7 +21,7 @@ class CachedVerificationMessageTests {
     private final VerificationGoal plainGoal = new VerificationGoal("test.plain", "Plain goal", we -> true);
 
     private final VerificationGoal exceptionsGoal = new VerificationGoal("test.exceptions", "Goal with exceptions",
-            VerificationGoal.Scope.MODEL, true, we -> true, we -> "a\nb");
+            VerificationGoal.Scope.MODEL, true, we -> true, we -> "a, b");
 
     @BeforeAll
     static void init() {
@@ -51,6 +51,19 @@ class CachedVerificationMessageTests {
         Assertions.assertEquals("This verification result is cached.", lines[2]);
         Assertions.assertTrue(lines[3].matches(TIMESTAMP_REGEX), lines[3]);
         Assertions.assertTrue(lines[4].matches(String.format(TOOLCHAIN_REGEX, "MPSat")), lines[4]);
+
+        Framework.getInstance().closeWork(we);
+    }
+
+    @Test
+    void testDefaultSingleGoalMessageMentionsExceptions() throws DeserialisationException {
+        WorkspaceEntry we = loadVmeWork();
+        CachedVerification.create(we, List.of(exceptionsGoal), "Determinator").store(true, null);
+
+        CachedVerification cachedVerification = CachedVerification.create(we, List.of(exceptionsGoal), "Determinator");
+        Assertions.assertTrue(cachedVerification.prepare(true, null));
+        Assertions.assertTrue(cachedVerification.getReusableMessage()
+                .startsWith("Goal with exceptions with exceptions (a, b) holds.\n"));
 
         Framework.getInstance().closeWork(we);
     }

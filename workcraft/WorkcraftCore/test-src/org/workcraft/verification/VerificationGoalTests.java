@@ -10,17 +10,24 @@ class VerificationGoalTests {
     @Test
     void testShortExceptionsAreListed() {
         Assertions.assertEquals("Property", goal.getDescription(""));
-        Assertions.assertEquals("Property with exceptions (a, b)", goal.getDescription("a\nb"));
-        Assertions.assertEquals("Property with exceptions (a, b, c, d, e)", goal.getDescription("a\nb\nc\nd\ne"));
+        Assertions.assertEquals("Property with exceptions (a, b)", goal.getDescription("a, b"));
+        Assertions.assertEquals("Property with exceptions (a, b, c, d, e)", goal.getDescription("a, b, c, d, e"));
         // A single item beyond the limit is listed, as "and 1 more" is not shorter
         Assertions.assertEquals("Property with exceptions (a, b, c, d, e, f)",
-                goal.getDescription("a\nb\nc\nd\ne\nf"));
+                goal.getDescription("a, b, c, d, e, f"));
     }
 
     @Test
     void testLongExceptionsAreShortened() {
         Assertions.assertEquals("Property with exceptions (a, b, c, d, e and 2 more)",
-                goal.getDescription("a\nb\nc\nd\ne\nf\ng"));
+                goal.getDescription("a, b, c, d, e, f, g"));
+    }
+
+    @Test
+    void testSetsAreNotSplit() {
+        Assertions.assertEquals("Property with exceptions ({a, b}, {c, d})", goal.getDescription("{a, b}, {c, d}"));
+        Assertions.assertEquals("Property with exceptions ({a, b}, {c}, {d}, {e}, {f} and 2 more)",
+                goal.getDescription("{a, b}, {c}, {d}, {e}, {f}, {g}, {h}"));
     }
 
 }

@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -156,6 +157,33 @@ public class TextUtils {
             index++;
         }
         return result.toString();
+    }
+
+    /**
+     * Split comma-separated items, ignoring commas inside braces, e.g. "{a, b}, {c}" gives "{a, b}" and "{c}".
+     */
+    public static List<String> splitItems(String text) {
+        List<String> result = new ArrayList<>();
+        StringBuilder item = new StringBuilder();
+        int depth = 0;
+        for (char ch : text.toCharArray()) {
+            if (ch == '{') {
+                depth++;
+            } else if (ch == '}') {
+                depth--;
+            }
+            if ((ch == ',') && (depth <= 0)) {
+                result.add(item.toString().trim());
+                item.setLength(0);
+            } else {
+                item.append(ch);
+            }
+        }
+        String last = item.toString().trim();
+        if (!last.isEmpty() || !result.isEmpty()) {
+            result.add(last);
+        }
+        return result;
     }
 
     public static String getShortenedItems(List<String> items) {

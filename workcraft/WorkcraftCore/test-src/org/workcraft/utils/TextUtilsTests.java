@@ -323,6 +323,15 @@ class TextUtilsTests {
     }
 
     @Test
+    void splitItemsTest() {
+        Assertions.assertEquals(List.of(), TextUtils.splitItems(""));
+        Assertions.assertEquals(List.of("a"), TextUtils.splitItems("a"));
+        Assertions.assertEquals(List.of("a", "b", "c"), TextUtils.splitItems("a, b,c"));
+        Assertions.assertEquals(List.of("{a, b}", "{c}"), TextUtils.splitItems("{a, b}, {c}"));
+        Assertions.assertEquals(List.of("{a, b}"), TextUtils.splitItems("{a, b}"));
+    }
+
+    @Test
     void getShortenedItemsTest() {
         Assertions.assertEquals("", TextUtils.getShortenedItems(List.of(), 2));
         Assertions.assertEquals("a, b", TextUtils.getShortenedItems(List.of("a", "b"), 2));

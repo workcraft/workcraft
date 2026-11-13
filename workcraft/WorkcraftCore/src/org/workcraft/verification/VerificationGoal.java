@@ -168,7 +168,7 @@ public class VerificationGoal {
         if ((exceptions == null) || exceptions.isEmpty()) {
             return title;
         }
-        List<String> items = List.of(exceptions.split("\n"));
+        List<String> items = TextUtils.splitItems(exceptions);
         return title + " with exceptions (" + TextUtils.getShortenedItems(items) + ")";
     }
 
