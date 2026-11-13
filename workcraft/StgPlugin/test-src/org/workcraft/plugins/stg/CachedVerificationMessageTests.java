@@ -21,7 +21,7 @@ class CachedVerificationMessageTests {
     private final VerificationGoal plainGoal = new VerificationGoal("test.plain", "Plain goal", we -> true);
 
     private final VerificationGoal exceptionsGoal = new VerificationGoal("test.exceptions", "Goal with exceptions",
-            VerificationGoal.Scope.MODEL, true, we -> true, we -> "a\nb");
+            VerificationGoal.Scope.MODEL, true, we -> true, we -> "a, b");
 
     @BeforeAll
     static void init() {

@@ -15,6 +15,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Verification goals for STG models. Different commands (e.g. MPSat and Determinator) may perform the same goal.
@@ -70,27 +71,23 @@ public final class StgVerificationGoals {
      * only when the user edits them, and any change of the model invalidates cached results anyway.
      */
     private static String getCanonicalText(Collection<String> items) {
-        return items == null ? "" : String.join("\n", SortUtils.getSortedNatural(items));
+        return items == null ? "" : String.join(", ", SortUtils.getSortedNatural(items));
+    }
+
+    private static String getCanonicalSetsText(Collection<? extends Collection<String>> signalSets) {
+        return signalSets.stream()
+                .map(signals -> "{" + String.join(", ", signals) + "}")
+                .collect(Collectors.joining(", "));
     }
 
     private static String getDiInterfaceExceptions(WorkspaceEntry we) {
         DiInterfaceParameters data = new DiInterfaceDataPreserver(we).loadData();
-        if (data == null) {
-            return "";
-        }
-        return data.getOrderedExceptionSignalSets().stream()
-                .map(signals -> "{" + String.join(", ", signals) + "}")
-                .reduce((a, b) -> a + "\n" + b).orElse("");
+        return data == null ? "" : getCanonicalSetsText(data.getOrderedExceptionSignalSets());
     }
 
     private static String getOutputPersistencyExceptions(WorkspaceEntry we) {
         OutputPersistencyParameters data = new OutputPersistencyDataPreserver(we).loadData();
-        if (data == null) {
-            return "";
-        }
-        return data.getOrderedExceptionSignalSets().stream()
-                .map(signals -> "{" + String.join(", ", signals) + "}")
-                .reduce((a, b) -> a + "\n" + b).orElse("");
+        return data == null ? "" : getCanonicalSetsText(data.getOrderedExceptionSignalSets());
     }
 
     /**
