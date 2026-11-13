@@ -87,16 +87,6 @@ public class OutputPersistencyParameters {
     public static VerificationParameters getVerificationParameters(Collection<Pair<String, String>> mutexGrantPairs,
             Collection<String> skipSignals, Collection<? extends Collection<String>> exceptionSignalSets) {
 
-        // Mutex grants and skip signals are implied by the model and the settings, so only user-defined are reported
-        String description = "Output persistency";
-        if (!exceptionSignalSets.isEmpty()) {
-            description += " with exceptions (" + exceptionSignalSets.stream()
-                    .map(TreeSet::new)
-                    .sorted(Comparator.comparing(signals -> String.join(" ", signals)))
-                    .map(signals -> "{" + String.join(", ", signals) + "}")
-                    .collect(Collectors.joining(", ")) + ")";
-        }
-
         StringBuilder sb = new StringBuilder();
         for (Pair<String, String> pair : mutexGrantPairs) {
             sb.append(genReachPair(pair.getFirst(), pair.getSecond()));
@@ -120,7 +110,7 @@ public class OutputPersistencyParameters {
                 .replace(EXCEPTION_PAIRS_REPLACEMENT, exceptionPairsString)
                 .replace(SKIP_NAMES_REPLACEMENT, skipSignalsString);
 
-        return new VerificationParameters(description,
+        return new VerificationParameters(getDescription(exceptionSignalSets),
                 VerificationMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
                 MpsatVerificationSettings.getSolutionMode(),
                 MpsatVerificationSettings.getSolutionCount(),
@@ -131,6 +121,26 @@ public class OutputPersistencyParameters {
                 return "Output_persistency" + (exceptionSignalSets.isEmpty() ? "" : "_with_exceptions");
             }
         };
+    }
+
+    public String getDescription() {
+        return getDescription(exceptionSignalSets);
+    }
+
+    /**
+     * Mutex grants and skip signals are implied by the model and the settings, so only user-defined exceptions
+     * are reported.
+     */
+    public static String getDescription(Collection<? extends Collection<String>> exceptionSignalSets) {
+        String result = "Output persistency";
+        if (!exceptionSignalSets.isEmpty()) {
+            result += " with exceptions (" + exceptionSignalSets.stream()
+                    .map(TreeSet::new)
+                    .sorted(Comparator.comparing(signals -> String.join(" ", signals)))
+                    .map(signals -> "{" + String.join(", ", signals) + "}")
+                    .collect(Collectors.joining(", ")) + ")";
+        }
+        return result;
     }
 
     private static String genReachPair(String first, String second) {
