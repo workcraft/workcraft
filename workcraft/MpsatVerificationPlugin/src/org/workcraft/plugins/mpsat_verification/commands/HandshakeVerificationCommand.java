@@ -11,7 +11,7 @@ import org.workcraft.plugins.mpsat_verification.presets.HandshakePresetManager;
 import org.workcraft.plugins.mpsat_verification.tasks.CombinedChainResultHandlingMonitor;
 import org.workcraft.plugins.mpsat_verification.tasks.HandshakeChainTask;
 import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
-import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.presets.PresetManager;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.utils.TextUtils;
@@ -41,7 +41,7 @@ public class HandshakeVerificationCommand
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Stg.class);
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override

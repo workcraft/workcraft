@@ -7,6 +7,7 @@ import org.workcraft.plugins.mpsat_verification.gui.DiInterfaceDialog;
 import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceDataPreserver;
 import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceParameters;
 import org.workcraft.plugins.mpsat_verification.presets.VerificationParameters;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.utils.DialogUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -40,7 +41,7 @@ public class DiInterfaceVerificationCommand
         }
         StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
         if (!stg.getDummyTransitions().isEmpty()) {
-            DialogUtils.showError(TITLE + " can currently be checked only for STGs without dummies.");
+            DialogUtils.showError(MpsatUtils.getPropertyUnsupportedDummyWarning(TITLE));
             return false;
         }
         return true;

@@ -322,4 +322,18 @@ class TextUtilsTests {
         Assertions.assertEquals("text (details)", TextUtils.getTextWithOptionalDetails("text", "details"));
     }
 
+    @Test
+    void getShortenedItemsTest() {
+        Assertions.assertEquals("", TextUtils.getShortenedItems(List.of(), 2));
+        Assertions.assertEquals("a, b", TextUtils.getShortenedItems(List.of("a", "b"), 2));
+        // A single item beyond the limit is listed, as "and 1 more" is not shorter
+        Assertions.assertEquals("a, b, c", TextUtils.getShortenedItems(List.of("a", "b", "c"), 2));
+        Assertions.assertEquals("a, b and 2 more", TextUtils.getShortenedItems(List.of("a", "b", "c", "d"), 2));
+        Assertions.assertEquals("a and 4 more",
+                TextUtils.getShortenedItems(List.of("a", "b", "c", "d", "e"), 1));
+        Assertions.assertEquals("a, b, c, d, e, f", TextUtils.getShortenedItems(List.of("a", "b", "c", "d", "e", "f")));
+        Assertions.assertEquals("a, b, c, d, e and 2 more",
+                TextUtils.getShortenedItems(List.of("a", "b", "c", "d", "e", "f", "g")));
+    }
+
 }

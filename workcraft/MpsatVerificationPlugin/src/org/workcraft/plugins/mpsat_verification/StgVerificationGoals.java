@@ -4,6 +4,8 @@ import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceDataPreserver
 import org.workcraft.plugins.mpsat_verification.presets.DiInterfaceParameters;
 import org.workcraft.plugins.mpsat_verification.presets.InputPropernessDataPreserver;
 import org.workcraft.plugins.mpsat_verification.presets.LocalSelfTriggeringDataPreserver;
+import org.workcraft.plugins.mpsat_verification.presets.OutputPersistencyDataPreserver;
+import org.workcraft.plugins.mpsat_verification.presets.OutputPersistencyParameters;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -37,7 +39,8 @@ public final class StgVerificationGoals {
             .setVacuity(we -> WorkspaceUtils.getAs(we, StgModel.class).getMutexPlaces().isEmpty(), "no mutex places");
 
     public static final VerificationGoal OUTPUT_PERSISTENCY = new VerificationGoal(
-            "stg.output-persistency", "Output persistency", STG_APPLICABILITY).setOrder(50);
+            "stg.output-persistency", "Output persistency", VerificationGoal.Scope.MODEL, true,
+            STG_APPLICABILITY, StgVerificationGoals::getOutputPersistencyExceptions).setOrder(50);
 
     public static final VerificationGoal LOCAL_SELF_TRIGGERING = new VerificationGoal(
             "stg.local-self-triggering", "Absence of local self-triggering", VerificationGoal.Scope.MODEL, true,
@@ -72,6 +75,16 @@ public final class StgVerificationGoals {
 
     private static String getDiInterfaceExceptions(WorkspaceEntry we) {
         DiInterfaceParameters data = new DiInterfaceDataPreserver(we).loadData();
+        if (data == null) {
+            return "";
+        }
+        return data.getOrderedExceptionSignalSets().stream()
+                .map(signals -> "{" + String.join(", ", signals) + "}")
+                .reduce((a, b) -> a + "\n" + b).orElse("");
+    }
+
+    private static String getOutputPersistencyExceptions(WorkspaceEntry we) {
+        OutputPersistencyParameters data = new OutputPersistencyDataPreserver(we).loadData();
         if (data == null) {
             return "";
         }

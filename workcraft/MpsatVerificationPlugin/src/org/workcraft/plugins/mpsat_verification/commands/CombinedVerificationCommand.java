@@ -93,7 +93,7 @@ public class CombinedVerificationCommand
         }
 
         if (!noDummies) {
-            String message = "The following properties can currently be checked only for STGs without dummies:"
+            String message = MpsatUtils.getPropertyUnsupportedDummyWarning("The following properties", ":")
                     + TextUtils.getBulletpoint("Input properness")
                     + TextUtils.getBulletpoint("Output persistency")
                     + TextUtils.getBulletpoint("Absence of local self-triggering")
@@ -124,7 +124,8 @@ public class CombinedVerificationCommand
         verificationParametersList.addAll(ReachUtils.getMutexProtocolParameters(mutexes));
         if (noDummies) {
             LinkedList<Pair<String, String>> mutexExceptions = MutexUtils.getMutexGrantPersistencyExceptions(stg);
-            verificationParametersList.add(ReachUtils.getOutputPersistencyParameters(mutexExceptions));
+            OutputPersistencyParameters outputPersistencyParameters = new OutputPersistencyDataPreserver(we).loadValidDataOnly();
+            verificationParametersList.add(outputPersistencyParameters.getVerificationParameters(mutexExceptions));
         }
 
         if (noDummies) {

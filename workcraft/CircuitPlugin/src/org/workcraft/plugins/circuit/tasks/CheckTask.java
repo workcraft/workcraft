@@ -305,7 +305,7 @@ public class CheckTask implements Task<VerificationChainOutput> {
             String detail = "Output persistency";
             List<String> skipSignals = getOutputPersistencyOrderedSkipSignals();
             if (!skipSignals.isEmpty()) {
-                detail += " with exceptions (" + String.join(", ", skipSignals) + ")";
+                detail += " with exceptions (" + TextUtils.getShortenedItems(skipSignals) + ")";
             }
             details.add(detail);
 

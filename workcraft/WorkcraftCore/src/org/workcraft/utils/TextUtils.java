@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 public class TextUtils {
 
     public static final int DEFAULT_WRAP_LENGTH = 120;
+    public static final int DEFAULT_MAX_COUNT = 5;
     private static final int DEFAULT_TRUNCATE_LENGTH = 120;
 
     // Bullet symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
@@ -155,6 +156,21 @@ public class TextUtils {
             index++;
         }
         return result.toString();
+    }
+
+    public static String getShortenedItems(List<String> items) {
+        return getShortenedItems(items, DEFAULT_MAX_COUNT);
+    }
+
+    /**
+     * Comma-separated items, with the items beyond the limit replaced by their count. A single item beyond the
+     * limit is listed, as "and 1 more" is not shorter.
+     */
+    public static String getShortenedItems(List<String> items, int maxCount) {
+        if (items.size() <= maxCount + 1) {
+            return String.join(", ", items);
+        }
+        return String.join(", ", items.subList(0, maxCount)) + " and " + (items.size() - maxCount) + " more";
     }
 
     public static String wrapItems(Collection<String> items) {

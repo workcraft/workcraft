@@ -1,5 +1,7 @@
 package org.workcraft.plugins.mpsat_verification.presets;
 
+import org.workcraft.plugins.mpsat_verification.commands.InputPropernessVerificationCommand;
+import org.workcraft.plugins.mpsat_verification.utils.MpsatUtils;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.presets.ListDataPreserver;
@@ -27,7 +29,7 @@ public class InputPropernessDataPreserver extends ListDataPreserver {
         invalidSignals.removeAll(stg.getSignalReferences(Signal.Type.INPUT));
         if (!invalidSignals.isEmpty()) {
             data.removeAll(invalidSignals);
-            String message = "Input properness is checked without outdated exception";
+            String message = MpsatUtils.getPropertyOutdatedExceptionWarning(InputPropernessVerificationCommand.TITLE);
             LogUtils.logWarning(TextUtils.wrapMessageWithItems(message, SortUtils.getSortedNatural(invalidSignals)));
         }
         return data;
