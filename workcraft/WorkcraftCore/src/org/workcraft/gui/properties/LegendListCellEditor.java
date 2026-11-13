@@ -17,7 +17,11 @@ public class LegendListCellEditor extends AbstractCellEditor implements TableCel
                 button.setForeground(legend.getForeground());
                 button.setBackground(legend.getBackground());
                 button.setFocusable(false);
-                button.addActionListener(e -> legend.run());
+                button.addActionListener(e -> {
+                    // Stop editing before the action, so the Property editor update it triggers is not postponed
+                    fireEditingStopped();
+                    legend.run();
+                });
                 result.add(button);
             }
         }
