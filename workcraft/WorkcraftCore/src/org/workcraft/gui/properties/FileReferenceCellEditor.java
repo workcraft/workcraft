@@ -72,6 +72,8 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
         if (fileReference != null) {
             File file = fileReference.getFile();
             if (file != null) {
+                // Finish the edit, otherwise the Property editor postpones refresh for the opened work
+                fireEditingCanceled();
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 WorkspaceEntry we = mainWindow.openWork(file);
                 mainWindow.requestFocus(we);
@@ -101,6 +103,9 @@ public class FileReferenceCellEditor extends AbstractCellEditor implements Table
             fileReference = new FileReference(FileUtils.getFullPath(file));
             update();
             fireEditingStopped();
+        } else {
+            // Buttons are not focusable, so the edit would otherwise stay active and block Property editor refresh
+            fireEditingCanceled();
         }
     }
 
