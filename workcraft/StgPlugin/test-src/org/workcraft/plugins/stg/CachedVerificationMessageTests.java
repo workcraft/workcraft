@@ -56,6 +56,19 @@ class CachedVerificationMessageTests {
     }
 
     @Test
+    void testDefaultSingleGoalMessageMentionsExceptions() throws DeserialisationException {
+        WorkspaceEntry we = loadVmeWork();
+        CachedVerification.create(we, List.of(exceptionsGoal), "Determinator").store(true, null);
+
+        CachedVerification cachedVerification = CachedVerification.create(we, List.of(exceptionsGoal), "Determinator");
+        Assertions.assertTrue(cachedVerification.prepare(true, null));
+        Assertions.assertTrue(cachedVerification.getReusableMessage()
+                .startsWith("Goal with exceptions with exceptions (a, b) holds.\n"));
+
+        Framework.getInstance().closeWork(we);
+    }
+
+    @Test
     void testCombinedMessageListsPassedPropertiesWithExceptions() throws DeserialisationException {
         WorkspaceEntry we = loadVmeWork();
         List<VerificationGoal> goals = List.of(plainGoal, exceptionsGoal);

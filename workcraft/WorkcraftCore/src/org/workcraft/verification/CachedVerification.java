@@ -287,8 +287,10 @@ public class CachedVerification {
         List<VerificationRecord> records = new ArrayList<>();
         for (VerificationGoal goal : goals) {
             String goalMessage = message;
+            // TODO: Exceptions are stored both in the message and in the record, compose generic messages on display
             if (isCombined() || (message == null)) {
-                goalMessage = goal.getTitle() + (outcome ? " holds." : " is violated.");
+                String exceptions = VerificationResultStore.getSnapshotExceptions(snapshot, goal);
+                goalMessage = goal.getDescription(exceptions) + (outcome ? " holds." : " is violated.");
             }
             records.add(resultStore.createRecord(snapshot, goal, recordOutcome, tool, goalMessage, dependencySnapshot));
         }

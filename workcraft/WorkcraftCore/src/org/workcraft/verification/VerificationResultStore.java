@@ -179,7 +179,7 @@ public class VerificationResultStore extends DataPreserver<Map<String, Verificat
                 message, exceptions, snapshot.modelHash, dependencies);
     }
 
-    private static String getSnapshotExceptions(Snapshot snapshot, VerificationGoal goal) {
+    static String getSnapshotExceptions(Snapshot snapshot, VerificationGoal goal) {
         String result = snapshot.exceptions.get(goal.getId());
         if (result == null) {
             throw new IllegalArgumentException("Snapshot does not include goal '" + goal.getId() + "'");
