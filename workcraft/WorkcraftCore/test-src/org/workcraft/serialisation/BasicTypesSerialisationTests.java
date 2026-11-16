@@ -25,10 +25,13 @@ class BasicTypesSerialisationTests {
             EnumSerialiser s = new EnumSerialiser();
             EnumDeserialiser ds = new EnumDeserialiser();
 
+            // Property class is set by the node serialiser, not by the enum serialiser
             Element e = doc.createElement("property");
+            e.setAttribute("class", TestEnum.class.getName());
             s.serialise(e, TestEnum.ONE);
 
             Element e2 = doc.createElement("property");
+            e2.setAttribute("class", TestEnum.class.getName());
             s.serialise(e2, TestEnum.TWO);
 
             Assertions.assertEquals(TestEnum.ONE, ds.deserialise(e));
@@ -36,6 +39,18 @@ class BasicTypesSerialisationTests {
         } catch (SerialisationException | DeserialisationException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    void enumWithoutEnumClassTest() throws DeserialisationException {
+        Document doc = XmlUtils.createDocument();
+        EnumDeserialiser ds = new EnumDeserialiser();
+
+        Element e = doc.createElement("property");
+        e.setAttribute("class", TestEnum.class.getName());
+        e.setAttribute("value", "TWO");
+
+        Assertions.assertEquals(TestEnum.TWO, ds.deserialise(e));
     }
 
     @Test
