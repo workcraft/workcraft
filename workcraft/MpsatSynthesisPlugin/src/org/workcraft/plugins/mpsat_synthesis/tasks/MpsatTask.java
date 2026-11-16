@@ -62,11 +62,11 @@ public class MpsatTask implements Task<MpsatOutput> {
         String modeParameter = null;
         // Technology mapping library (if needed and accepted)
         if (mode == SynthesisMode.TECHNOLOGY_MAPPING) {
-            File gateLibraryFile = LibraryManager.getCircuitSettingsEvaluatedLibraryFile();
-            String error = LibraryManager.getLibraryAccessErrorOrNull(gateLibraryFile);
+            String error = LibraryManager.getLibraryLoadErrorOrNull();
             if (error != null) {
                 return Result.exception(new IOException(error));
             }
+            File gateLibraryFile = LibraryManager.getCircuitSettingsEvaluatedLibraryFile();
             modeParameter = FileUtils.getFullPath(gateLibraryFile);
         }
 

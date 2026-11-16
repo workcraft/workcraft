@@ -73,7 +73,6 @@ public class Toolbox implements GraphEditorKeyListener {
                 } else {
                     orderedTools.add(tool);
                 }
-                orderedTools.add(tool);
             }
         }
         // Add ordered tools and select default tool

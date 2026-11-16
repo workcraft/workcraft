@@ -10,7 +10,9 @@ public abstract class AbstractResetInsertionCommand extends AbstractInsertionCom
 
     @Override
     public void insert(WorkspaceEntry we) {
-        if (isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we)) {
+        if (isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we)
+                && VerificationUtils.checkGateLibrary()) {
+
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             we.captureMemento();
             boolean isModified = ResetUtils.insertReset(circuit, isActiveLow());

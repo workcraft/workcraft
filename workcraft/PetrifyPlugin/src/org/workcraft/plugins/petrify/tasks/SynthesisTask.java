@@ -60,11 +60,11 @@ public class SynthesisTask implements Task<SynthesisOutput>, ExternalProcessList
 
         // Technology mapping library (if needed and accepted)
         if (needsGateLibrary) {
-            File gateLibraryFile = LibraryManager.getCircuitSettingsEvaluatedLibraryFile();
-            String error = LibraryManager.getLibraryAccessErrorOrNull(gateLibraryFile);
+            String error = LibraryManager.getLibraryLoadErrorOrNull();
             if (error != null) {
                 return Result.exception(new IOException(error));
             }
+            File gateLibraryFile = LibraryManager.getCircuitSettingsEvaluatedLibraryFile();
             command.add("-lib");
             command.add(FileUtils.getFullPath(gateLibraryFile));
         }

@@ -4,7 +4,3 @@ dependencies {
     implementation project(':StgPlugin')
     implementation project(':PcompPlugin')
 }
-
-ext.excludeFromCoverage = [
-    'org/workcraft/plugins/mpsat_verification/gui/',
-]

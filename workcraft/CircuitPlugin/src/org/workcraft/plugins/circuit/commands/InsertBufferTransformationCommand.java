@@ -8,6 +8,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.utils.GateUtils;
+import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.utils.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -31,6 +32,13 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
+    }
+
+    @Override
+    public void transform(WorkspaceEntry we) {
+        if (VerificationUtils.checkGateLibrary()) {
+            super.transform(we);
+        }
     }
 
     @Override
