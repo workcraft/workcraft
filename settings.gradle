@@ -24,7 +24,7 @@ gradle.ext.checkstyleVersion = '14.4.0'
 // PMD code analyser (https://pmd.github.io/)
 gradle.ext.pmdVersion = '7.29.0'
 // Jacoco code coverage (https://www.eclemma.org/jacoco/)
-gradle.ext.jacocoVersion = '0.8.15'
+gradle.ext.jacocoVersion = '0.8.16'
 
 
 /*
