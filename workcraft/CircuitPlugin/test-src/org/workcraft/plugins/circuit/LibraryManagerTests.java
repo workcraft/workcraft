@@ -58,6 +58,16 @@ class LibraryManagerTests {
     }
 
     @Test
+    void testUnspecifiedLibraryIsLoadedOnce() {
+        CircuitSettings.setGateLibrary("");
+
+        Library library = LibraryManager.getLibrary();
+        Assertions.assertTrue(library.getNames().isEmpty());
+        Assertions.assertSame(library, LibraryManager.getLibrary());
+        Assertions.assertNotNull(LibraryManager.getLibraryLoadErrorOrNull());
+    }
+
+    @Test
     void testMissingLibraryGivesEmptyLibraryAndError(@TempDir File dir) {
         CircuitSettings.setGateLibrary(new File(dir, "missing.lib").getAbsolutePath());
 

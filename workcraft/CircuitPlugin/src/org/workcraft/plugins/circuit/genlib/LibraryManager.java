@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public final class LibraryManager {
 
@@ -69,7 +70,8 @@ public final class LibraryManager {
     public static Library getLibrary() {
         File file = getCircuitSettingsEvaluatedLibraryFile();
         long modtime = FileUtils.getModtimeOrZero(file);
-        if ((libraryFile == null) || !libraryFile.equals(file) || (modtime != libraryModtime)) {
+        // Library file is null if gate library is not specified, so check the library itself
+        if ((library == null) || !Objects.equals(libraryFile, file) || (modtime != libraryModtime)) {
             library = loadLibrary(file);
             libraryFile = file;
             libraryModtime = modtime;
