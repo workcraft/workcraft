@@ -6,6 +6,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.utils.CircuitUtils;
 import org.workcraft.plugins.circuit.utils.GateUtils;
+import org.workcraft.plugins.circuit.utils.VerificationUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.TextUtils;
 import org.workcraft.utils.WorkspaceUtils;
@@ -25,6 +26,13 @@ public class BufferHighFanoutTransformationCommand extends AbstractTransformatio
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
+    }
+
+    @Override
+    public void transform(WorkspaceEntry we) {
+        if (VerificationUtils.checkGateLibrary()) {
+            super.transform(we);
+        }
     }
 
     @Override

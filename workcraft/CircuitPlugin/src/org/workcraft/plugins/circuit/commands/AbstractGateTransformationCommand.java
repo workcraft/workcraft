@@ -3,6 +3,8 @@ package org.workcraft.plugins.circuit.commands;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.utils.VerificationUtils;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractGateTransformationCommand extends AbstractComponentTransformationCommand {
 
@@ -12,6 +14,13 @@ public abstract class AbstractGateTransformationCommand extends AbstractComponen
     @Override
     public Section getSection() {
         return SECTION;
+    }
+
+    @Override
+    public void transform(WorkspaceEntry we) {
+        if (VerificationUtils.checkGateLibrary()) {
+            super.transform(we);
+        }
     }
 
     @Override

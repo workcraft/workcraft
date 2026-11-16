@@ -15,7 +15,9 @@ public class ScanInsertionCommand extends AbstractInsertionCommand {
 
     @Override
     public void insert(WorkspaceEntry we) {
-        if (isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we)) {
+        if (isApplicableTo(we) && VerificationUtils.checkCircuitHasComponents(we)
+                && VerificationUtils.checkGateLibrary()) {
+
             VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             we.captureMemento();
             boolean isModified = ScanUtils.insertScan(circuit);

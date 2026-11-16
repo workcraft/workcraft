@@ -25,6 +25,7 @@ public final class LibraryManager {
     private static Library library;
     private static File libraryFile = null;
     private static long libraryModtime = 0;
+    private static String libraryParseError = null;
 
     private static Map<String, SubstitutionRule> importSubstitutionRules = null;
     private static File importSubstitutionRulesFile = null;
@@ -53,6 +54,18 @@ public final class LibraryManager {
         return null;
     }
 
+    // Error message if the current gate library cannot be used, or null if it is fine
+    public static String getLibraryLoadErrorOrNull() {
+        String error = getLibraryAccessErrorOrNull(getCircuitSettingsEvaluatedLibraryFile());
+        if (error == null) {
+            // Make sure the library is (re)loaded before checking for parse error
+            getLibrary();
+            error = libraryParseError;
+        }
+        return error;
+    }
+
+    // Never returns null: an empty library is returned if the gate library cannot be loaded
     public static Library getLibrary() {
         File file = getCircuitSettingsEvaluatedLibraryFile();
         long modtime = FileUtils.getModtimeOrZero(file);
@@ -65,7 +78,7 @@ public final class LibraryManager {
     }
 
     private static Library loadLibrary(File file) {
-        getLibraryAccessErrorOrNull(file);
+        libraryParseError = null;
         if (file == null) {
             LogUtils.logWarning("Gate library is not specified.");
             return new Library();
@@ -81,10 +94,13 @@ public final class LibraryManager {
                 LogUtils.logInfo("Reading gate library '" + file.getAbsolutePath() + "'");
                 return genlibParser.parseGenlib();
             } catch (IOException | org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
-                LogUtils.logWarning("Could not parse gate library '" + file.getPath() + "'\n" + e.getMessage());
+                libraryParseError = "Could not parse gate library '" + file.getPath() + "'.\n"
+                        + e.getMessage() + "\n" + CHECK_GATE_LIBRARY_MESSAGE;
+
+                LogUtils.logWarning(libraryParseError);
             }
         }
-        return null;
+        return new Library();
     }
 
     public static Map<String, SubstitutionRule> getImportSubstitutionRules() {

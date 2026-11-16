@@ -7,6 +7,7 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.genlib.LibraryManager;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.utils.StgUtils;
@@ -38,6 +39,15 @@ public final class VerificationUtils {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (circuit.getFunctionComponents().isEmpty()) {
             DialogUtils.showError("The circuit must have components.");
+            return false;
+        }
+        return true;
+    }
+
+    public static boolean checkGateLibrary() {
+        String error = LibraryManager.getLibraryLoadErrorOrNull();
+        if (error != null) {
+            DialogUtils.showError(error);
             return false;
         }
         return true;
