@@ -13,6 +13,7 @@ public class EnumSerialiser implements BasicXMLSerialiser<Enum<?>> {
 
     @Override
     public void serialise(Element element, Enum<?> object) throws SerialisationException {
+        // TODO: Stop writing "enum-class" in a future release; it is only kept for older releases that require it
         element.setAttribute("enum-class", object.getClass().getName());
         element.setAttribute("value", object.name());
 

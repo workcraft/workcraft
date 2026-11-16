@@ -15,7 +15,8 @@ public class EnumDeserialiser implements BasicXMLDeserialiser<Enum<?>> {
     @Override
     public Enum<?> deserialise(Element element) throws DeserialisationException {
         try {
-            Class<? extends Enum> cls = Class.forName(element.getAttribute("enum-class")).asSubclass(Enum.class);
+            // The property class is the enum class; "enum-class" attribute is redundant and ignored
+            Class<? extends Enum> cls = Class.forName(element.getAttribute("class")).asSubclass(Enum.class);
             return Enum.valueOf(cls, element.getAttribute("value"));
         } catch (ClassNotFoundException e) {
             throw new DeserialisationException(e);
