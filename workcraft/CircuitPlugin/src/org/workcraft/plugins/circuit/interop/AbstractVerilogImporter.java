@@ -615,8 +615,16 @@ public abstract class AbstractVerilogImporter implements Importer {
             setFunction = ExpressionUtils.extractSetFunction(function, netName);
             resetFunction = ExpressionUtils.extractResetFunction(function, netName);
         }
+        if (setFunction.isEmpty()) {
+            throw new DeserialisationException("Could not extract SET function from assign "
+                    + netName + " = " + formula);
+        }
         Expression setExpression = convertFormulaToExpression(setFunction);
 
+        if (resetFunction.isEmpty()) {
+            throw new DeserialisationException("Could not extract RESET function from assign "
+                    + netName + " = " + formula);
+        }
         Expression resetExpression = convertFormulaToExpression(resetFunction);
         if (DebugCommonSettings.getVerboseImport()) {
             LogUtils.logMessage("Extracting SET and RESET from assign " + netName + " = " + formula
