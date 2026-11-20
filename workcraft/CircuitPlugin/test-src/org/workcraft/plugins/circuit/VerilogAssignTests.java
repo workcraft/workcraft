@@ -6,15 +6,20 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
+import org.workcraft.formula.visitors.StringGenerator;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
+import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.utils.FileUtils;
 import org.workcraft.utils.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 class VerilogAssignTests {
@@ -168,6 +173,30 @@ class VerilogAssignTests {
         String stringErrorName = PackageUtils.getPackagePath(getClass(), "assign-delay-string-error.v");
         Assertions.assertThrows(org.workcraft.exceptions.DeserialisationException.class,
                 () -> framework.importWork(classLoader.getResource(stringErrorName).getFile()));
+    }
+
+    @Test
+    void testNestedSequentialAssignImport() throws DeserialisationException {
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+
+        String name = PackageUtils.getPackagePath(getClass(), "assign-nested-seq.v");
+        Assertions.assertNotNull(framework.importWork(classLoader.getResource(name).getFile()));
+    }
+
+    @Test
+    void testGeneralisedCelementAssignImport() throws DeserialisationException, OperationCancelledException, IOException {
+        String name = PackageUtils.getPackagePath(getClass(), "assign-gc.v");
+        File file = new File(ClassLoader.getSystemClassLoader().getResource(name).getFile());
+        VerilogImporter importer = new VerilogImporter(false, true);
+        try (InputStream is = new FileInputStream(file)) {
+            Circuit circuit = (Circuit) importer.deserialise(is, null).getMathModel();
+            FunctionContact output = circuit.getFunctionComponents().iterator().next().getGateOutput();
+
+            // Heuristic functions are kept, as the exact RESET would be !a * b
+            Assertions.assertEquals("i2", StringGenerator.toString(output.getSetFunction()));
+            Assertions.assertEquals("i1", StringGenerator.toString(output.getResetFunction()));
+        }
     }
 
     @Test
