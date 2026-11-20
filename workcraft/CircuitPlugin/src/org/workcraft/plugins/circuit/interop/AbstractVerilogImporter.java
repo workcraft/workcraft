@@ -607,9 +607,24 @@ public abstract class AbstractVerilogImporter implements Importer {
 
         String netName = VerilogUtils.getNetBusSuffixName(verilogAssign.net);
         String setFunction = ExpressionUtils.extractHeuristicSetFunction(function, netName);
+        String resetFunction = ExpressionUtils.extractHeuristicResetFunction(function, netName);
+        if (resetFunction.isEmpty()) {
+            // Not in the form SET + seq * RESET', e.g. a nested expression, so extract the exact functions.
+            // Keep the heuristic ones otherwise: they are simpler than the exact ones, as SET and RESET of a
+            // generalised C-element are not logically exclusive.
+            setFunction = ExpressionUtils.extractSetFunction(function, netName);
+            resetFunction = ExpressionUtils.extractResetFunction(function, netName);
+        }
+        if (setFunction.isEmpty()) {
+            throw new DeserialisationException("Could not extract SET function from assign "
+                    + netName + " = " + formula);
+        }
         Expression setExpression = convertFormulaToExpression(setFunction);
 
-        String resetFunction = ExpressionUtils.extractHeuristicResetFunction(function, netName);
+        if (resetFunction.isEmpty()) {
+            throw new DeserialisationException("Could not extract RESET function from assign "
+                    + netName + " = " + formula);
+        }
         Expression resetExpression = convertFormulaToExpression(resetFunction);
         if (DebugCommonSettings.getVerboseImport()) {
             LogUtils.logMessage("Extracting SET and RESET from assign " + netName + " = " + formula
