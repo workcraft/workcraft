@@ -200,6 +200,20 @@ class VerilogAssignTests {
     }
 
     @Test
+    void testUnexpectedSymbolImport() {
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+
+        String name = PackageUtils.getPackagePath(getClass(), "unexpected-symbol-error.v");
+        DeserialisationException e = Assertions.assertThrows(DeserialisationException.class,
+                () -> framework.importWork(classLoader.getResource(name).getFile()));
+
+        Assertions.assertTrue(e.getMessage().contains("line 5, column 2"));
+        Assertions.assertFalse(e.getMessage().contains("Exception"));
+        Assertions.assertFalse(e.getMessage().contains("Error"));
+    }
+
+    @Test
     void testArbLateRandomAssignExport() throws DeserialisationException {
         String workName = PackageUtils.getPackagePath(getClass(), "arb-late.circuit.work");
         String svRandomisedName = PackageUtils.getPackagePath(getClass(), "arb-late-randomised.circuit.sv");

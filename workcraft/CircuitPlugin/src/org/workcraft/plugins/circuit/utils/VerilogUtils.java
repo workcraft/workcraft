@@ -8,9 +8,13 @@ import org.workcraft.plugins.builtin.settings.DebugCommonSettings;
 import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.genlib.LibraryManager;
+import org.workcraft.plugins.circuit.jj.verilog.ParseException;
+import org.workcraft.plugins.circuit.jj.verilog.Token;
+import org.workcraft.plugins.circuit.jj.verilog.TokenMgrError;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.verilog.*;
 import org.workcraft.types.Pair;
+import org.workcraft.utils.JavaccSyntaxUtils;
 import org.workcraft.utils.LogUtils;
 import org.workcraft.utils.SortUtils;
 import org.workcraft.utils.TextUtils;
@@ -152,16 +156,16 @@ public final class VerilogUtils {
             throws DeserialisationException {
 
         Collection<VerilogModule> result;
+        VerilogParser parser = new VerilogParser(in);
         try {
-            VerilogParser parser = new VerilogParser(in);
             if (DebugCommonSettings.getParserTracing()) {
                 parser.enable_tracing();
             } else {
                 parser.disable_tracing();
             }
             result = parser.parseCircuit();
-        } catch (FormatException | org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
-            throw new DeserialisationException(e);
+        } catch (FormatException | ParseException | TokenMgrError e) {
+            throw new DeserialisationException(getParserErrorMessage(e, parser), e);
         }
         if (DebugCommonSettings.getVerboseImport()) {
             LogUtils.logInfo("Parsed Verilog modules");
@@ -172,6 +176,27 @@ public final class VerilogUtils {
             }
         }
         return result;
+    }
+
+    private static String getParserErrorMessage(Throwable e, VerilogParser parser) {
+        JavaccSyntaxUtils.SyntaxError error = JavaccSyntaxUtils.parseSyntaxError(e.getMessage());
+        if (error != null) {
+            return getSyntaxErrorMessage(error);
+        }
+        // Errors thrown from parser actions do not know their location, use the last consumed token
+        Token token = parser.token;
+        String location = (token != null) && (token.beginLine > 0)
+                ? getLocation(token.beginLine, token.beginColumn) : "";
+
+        return e.getMessage() + location;
+    }
+
+    private static String getSyntaxErrorMessage(JavaccSyntaxUtils.SyntaxError error) {
+        return "Syntax error: " + error.message() + getLocation(error.row(), error.col());
+    }
+
+    private static String getLocation(int line, int column) {
+        return " (line " + line + ", column " + column + ")";
     }
 
     public static void printModule(VerilogModule verilogModule) {
