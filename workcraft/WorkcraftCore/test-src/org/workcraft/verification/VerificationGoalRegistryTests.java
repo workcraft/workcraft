@@ -17,6 +17,9 @@ class VerificationGoalRegistryTests {
     private interface BetterCombinedCommand extends Command {
     }
 
+    private interface BetterIndividualCommand extends Command {
+    }
+
     private static VerificationGoal createGoal(String id) {
         return new VerificationGoal(id, id, we -> true);
     }
@@ -42,6 +45,22 @@ class VerificationGoalRegistryTests {
         registry.registerGoal(otherGoal, List.of(IndividualCommand.class, CombinedCommand.class));
         Assertions.assertEquals(List.of(IndividualCommand.class, CombinedCommand.class),
                 registry.getCommandsInPreferenceOrder(otherGoal));
+    }
+
+    @Test
+    void testCommandsFollowPreferredOneByPriority() {
+        VerificationGoalRegistry registry = VerificationGoalRegistry.getInstance();
+        VerificationGoal goal = createGoal("test.command-priority");
+        // The plugin of lower priority is registered first, but its individual command must not come first
+        registry.registerGoal(goal, List.of(BetterIndividualCommand.class, BetterCombinedCommand.class),
+                BetterCombinedCommand.class, 10);
+
+        registry.registerGoal(goal, List.of(IndividualCommand.class, CombinedCommand.class),
+                CombinedCommand.class, 20);
+
+        Assertions.assertEquals(List.of(CombinedCommand.class, IndividualCommand.class,
+                BetterIndividualCommand.class, BetterCombinedCommand.class),
+                registry.getCommandsInPreferenceOrder(goal));
     }
 
     @Test

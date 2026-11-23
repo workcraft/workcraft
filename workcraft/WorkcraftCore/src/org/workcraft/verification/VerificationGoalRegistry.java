@@ -26,6 +26,7 @@ public class VerificationGoalRegistry {
     private final Map<String, Set<Class<? extends Command>>> goalCommands = new LinkedHashMap<>();
     private final Map<Class<? extends Command>, List<VerificationGoal>> commandGoals = new LinkedHashMap<>();
     private final Map<String, PreferredCommand> preferredCommands = new LinkedHashMap<>();
+    private final Map<String, Map<Class<? extends Command>, Integer>> commandPriorities = new LinkedHashMap<>();
 
     private record PreferredCommand(Class<? extends Command> command, int priority) {
     }
@@ -39,14 +40,22 @@ public class VerificationGoalRegistry {
      * only adds the commands, so that plugins can add alternative commands for the same goal.
      */
     public synchronized void registerGoal(VerificationGoal goal, List<Class<? extends Command>> commands) {
+        registerGoal(goal, commands, 0);
+    }
+
+    private void registerGoal(VerificationGoal goal, List<Class<? extends Command>> commands, int priority) {
         VerificationGoal knownGoal = goals.computeIfAbsent(goal.getId(), id -> goal);
         Set<Class<? extends Command>> knownCommands = goalCommands.computeIfAbsent(
                 knownGoal.getId(), id -> new LinkedHashSet<>());
+
+        Map<Class<? extends Command>, Integer> knownPriorities = commandPriorities.computeIfAbsent(
+                knownGoal.getId(), id -> new LinkedHashMap<>());
 
         for (Class<? extends Command> command : commands) {
             if (knownCommands.add(command)) {
                 commandGoals.computeIfAbsent(command, c -> new ArrayList<>()).add(knownGoal);
             }
+            knownPriorities.merge(command, priority, Math::max);
         }
     }
 
@@ -62,7 +71,7 @@ public class VerificationGoalRegistry {
             throw new IllegalArgumentException("Preferred command '" + preferredCommand.getSimpleName()
                     + "' does not perform goal '" + goal.getId() + "'");
         }
-        registerGoal(goal, commands);
+        registerGoal(goal, commands, priority);
         PreferredCommand known = preferredCommands.get(goal.getId());
         if ((known == null) || (known.priority() < priority)) {
             preferredCommands.put(goal.getId(), new PreferredCommand(preferredCommand, priority));
@@ -114,7 +123,8 @@ public class VerificationGoalRegistry {
     }
 
     /**
-     * Commands that perform the goal, starting with the preferred one (if it is declared).
+     * Commands that perform the goal, starting with the preferred one (if it is declared). The other commands follow
+     * by the priority they were registered with, and then in the order of registration.
      */
     public synchronized List<Class<? extends Command>> getCommandsInPreferenceOrder(VerificationGoal goal) {
         Set<Class<? extends Command>> result = new LinkedHashSet<>();
@@ -122,7 +132,12 @@ public class VerificationGoalRegistry {
         if (preferred != null) {
             result.add(preferred.command());
         }
-        result.addAll(getCommands(goal));
+        Map<Class<? extends Command>, Integer> priorities = commandPriorities.getOrDefault(goal.getId(), Map.of());
+        List<Class<? extends Command>> others = getCommands(goal);
+        others.sort(Comparator.comparingInt((Class<? extends Command> command) -> priorities.getOrDefault(command, 0))
+                .reversed());
+
+        result.addAll(others);
         return new ArrayList<>(result);
     }
 
@@ -136,6 +151,7 @@ public class VerificationGoalRegistry {
         goalCommands.clear();
         commandGoals.clear();
         preferredCommands.clear();
+        commandPriorities.clear();
     }
 
 }
