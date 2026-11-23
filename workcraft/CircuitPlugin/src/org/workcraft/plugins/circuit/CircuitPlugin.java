@@ -42,17 +42,19 @@ public class CircuitPlugin implements Plugin {
         VerificationGoalRegistry goalRegistry = VerificationGoalRegistry.getInstance();
         goalRegistry.registerGoal(CircuitVerificationGoals.CONFORMATION,
                 List.of(ConformationVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class);
+                CombinedVerificationCommand.class, 20);
         goalRegistry.registerGoal(CircuitVerificationGoals.OUTPUT_PERSISTENCY,
                 List.of(OutputPersistencyVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class);
+                CombinedVerificationCommand.class, 20);
         goalRegistry.registerGoal(CircuitVerificationGoals.DEADLOCK_FREENESS,
                 List.of(DeadlockFreenessVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class);
+                CombinedVerificationCommand.class, 20);
         goalRegistry.registerGoal(CircuitVerificationGoals.REFINEMENT,
-                List.of(RefinementVerificationCommand.class));
+                List.of(RefinementVerificationCommand.class),
+                RefinementVerificationCommand.class, 20);
         goalRegistry.registerGoal(CircuitVerificationGoals.STRICT_IMPLEMENTATION,
-                List.of(StrictImplementationVerificationCommand.class));
+                List.of(StrictImplementationVerificationCommand.class),
+                StrictImplementationVerificationCommand.class, 20);
 
         pm.registerExporter(VerilogNetlistExporter.class);
         pm.registerExporter(SystemVerilogAssignExporter.class);
