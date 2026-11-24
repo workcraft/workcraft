@@ -121,12 +121,16 @@ public class WorkspacePanel extends JPanel {
         throw new OperationCancelledException();
     }
 
-    public void setAutoExpand(boolean value) {
-        workspaceTree.setAutoExpand(value);
-    }
-
     public void refresh() {
         workspaceTree.refresh();
+    }
+
+    public void pauseUpdates() {
+        workspaceTree.pauseUpdates();
+    }
+
+    public void resumeUpdates() {
+        workspaceTree.resumeUpdates();
     }
 
 }

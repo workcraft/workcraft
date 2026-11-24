@@ -18,6 +18,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public class TreeWindow<T> extends JPanel {
@@ -37,6 +39,10 @@ public class TreeWindow<T> extends JPanel {
     private DecorationTreeSourceAdapter sourceWithRestructuredTrapped;
     private boolean autoExpand = true;
 
+    // Pausing may be requested and the tree restructured from a background thread (e.g. by a task loading works)
+    private final AtomicInteger pauseCount = new AtomicInteger();
+    private final AtomicBoolean restructuredWhilePaused = new AtomicBoolean();
+
     private final class ExpandTreeListenerAdapter extends TreeListenerAdapter<T> {
         ExpandTreeListenerAdapter(TreeListener<T> chain) {
             super(chain);
@@ -44,7 +50,9 @@ public class TreeWindow<T> extends JPanel {
 
         @Override
         public void restructured(Path<T> path) {
-            if (!autoExpand) {
+            if (pauseCount.get() > 0) {
+                restructuredWhilePaused.set(true);
+            } else if (!autoExpand) {
                 super.restructured(path);
             } else {
                 List<TreePath> treePaths = calcExpandPaths();
@@ -291,6 +299,35 @@ public class TreeWindow<T> extends JPanel {
 
     public void setAutoExpand(boolean value) {
         autoExpand = value;
+    }
+
+    /**
+     * Stop restructuring the tree until updates are resumed (calls can be nested), so that a sequence of changes to the
+     * source does not make the tree flicker. The tree is disabled meanwhile, as its nodes may be out of date.
+     */
+    public void pauseUpdates() {
+        pauseCount.incrementAndGet();
+        SwingUtilities.invokeLater(() -> {
+            if (pauseCount.get() > 0) {
+                tree.setEnabled(false);
+            }
+        });
+    }
+
+    /**
+     * Restructure the tree once for all the changes since the outermost pause.
+     */
+    public void resumeUpdates() {
+        if (pauseCount.updateAndGet(count -> Math.max(count - 1, 0)) == 0) {
+            SwingUtilities.invokeLater(() -> {
+                if (pauseCount.get() == 0) {
+                    tree.setEnabled(true);
+                    if (restructuredWhilePaused.getAndSet(false)) {
+                        refresh();
+                    }
+                }
+            });
+        }
     }
 
     private List<TreePath> calcExpandPaths() {

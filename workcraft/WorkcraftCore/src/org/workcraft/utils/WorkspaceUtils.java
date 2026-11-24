@@ -57,21 +57,28 @@ public class WorkspaceUtils {
         return result;
     }
 
-    public static void pauseWorkspaceViewAutoExpansion() {
-        setWorkspaceViewAutoExpansion(false);
-    }
-
-    public static void resumeWorkspaceViewAutoExpansion() {
-        setWorkspaceViewAutoExpansion(true);
-    }
-
-    private static void setWorkspaceViewAutoExpansion(boolean value) {
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        WorkspacePanel workspaceView = (mainWindow == null) ? null : mainWindow.getWorkspacePanel();
+    /**
+     * Pause updates of the workspace view while works are loaded, saved and closed in a sequence (e.g. by a task),
+     * so that it does not flicker. Each call must be paired with {@link #resumeWorkspaceViewUpdates()}, e.g. in a
+     * finally block.
+     */
+    public static void pauseWorkspaceViewUpdates() {
+        WorkspacePanel workspaceView = getWorkspaceView();
         if (workspaceView != null) {
-            workspaceView.setAutoExpand(value);
-            workspaceView.refresh();
+            workspaceView.pauseUpdates();
         }
+    }
+
+    public static void resumeWorkspaceViewUpdates() {
+        WorkspacePanel workspaceView = getWorkspaceView();
+        if (workspaceView != null) {
+            workspaceView.resumeUpdates();
+        }
+    }
+
+    private static WorkspacePanel getWorkspaceView() {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        return (mainWindow == null) ? null : mainWindow.getWorkspacePanel();
     }
 
     public static boolean closeFileIfOpen(File file) {
