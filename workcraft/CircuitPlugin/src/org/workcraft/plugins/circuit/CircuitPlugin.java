@@ -10,6 +10,7 @@ import org.workcraft.plugins.circuit.interop.*;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.plugins.circuit.utils.CircuitVerificationGoals;
+import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.verification.VerificationGoalRegistry;
 
@@ -42,19 +43,24 @@ public class CircuitPlugin implements Plugin {
         VerificationGoalRegistry goalRegistry = VerificationGoalRegistry.getInstance();
         goalRegistry.registerGoal(CircuitVerificationGoals.CONFORMATION,
                 List.of(ConformationVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
         goalRegistry.registerGoal(CircuitVerificationGoals.OUTPUT_PERSISTENCY,
                 List.of(OutputPersistencyVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
         goalRegistry.registerGoal(CircuitVerificationGoals.DEADLOCK_FREENESS,
                 List.of(DeadlockFreenessVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
         goalRegistry.registerGoal(CircuitVerificationGoals.REFINEMENT,
                 List.of(RefinementVerificationCommand.class),
-                RefinementVerificationCommand.class, 20);
+                RefinementVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
         goalRegistry.registerGoal(CircuitVerificationGoals.STRICT_IMPLEMENTATION,
                 List.of(StrictImplementationVerificationCommand.class),
-                StrictImplementationVerificationCommand.class, 20);
+                StrictImplementationVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
 
         pm.registerExporter(VerilogNetlistExporter.class);
         pm.registerExporter(SystemVerilogAssignExporter.class);

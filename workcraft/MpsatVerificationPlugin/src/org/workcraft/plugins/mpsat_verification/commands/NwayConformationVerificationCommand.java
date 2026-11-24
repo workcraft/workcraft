@@ -31,7 +31,7 @@ public class NwayConformationVerificationCommand
 
     @Override
     public String getDisplayName() {
-        return "N-way conformation...";
+        return "N-way conformation [MPSat]...";
     }
 
     @Override

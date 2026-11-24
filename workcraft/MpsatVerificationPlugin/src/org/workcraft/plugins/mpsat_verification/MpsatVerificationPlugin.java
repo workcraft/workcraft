@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.Plugin;
 import org.workcraft.plugins.PluginManager;
 import org.workcraft.plugins.mpsat_verification.commands.*;
+import org.workcraft.plugins.mpsat_verification.utils.CachedVerificationUtils;
 import org.workcraft.utils.ScriptableCommandUtils;
 import org.workcraft.verification.VerificationGoalRegistry;
 
@@ -29,35 +30,43 @@ public class MpsatVerificationPlugin implements Plugin {
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.CONSISTENCY,
                 List.of(ConsistencyVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.OUTPUT_DETERMINACY,
                 List.of(OutputDeterminacyVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.INPUT_PROPERNESS,
                 List.of(InputPropernessVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.MUTEX_PROTOCOL,
                 List.of(MutexProtocolVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.OUTPUT_PERSISTENCY,
                 List.of(OutputPersistencyVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.LOCAL_SELF_TRIGGERING,
                 List.of(LocalSelfTriggeringVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.DEADLOCK_FREENESS,
                 List.of(DeadlockFreenessVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
 
         verificationGoalRegistry.registerGoal(StgVerificationGoals.DI_INTERFACE,
                 List.of(DiInterfaceVerificationCommand.class, CombinedVerificationCommand.class),
-                CombinedVerificationCommand.class, 20);
+                CombinedVerificationCommand.class, 20,
+                CachedVerificationUtils.TOOL_NAME);
 
         // Core verification commands
         ScriptableCommandUtils.registerCommand(CombinedVerificationCommand.class, "checkStgCombined",

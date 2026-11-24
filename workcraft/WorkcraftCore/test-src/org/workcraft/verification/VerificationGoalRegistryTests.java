@@ -64,6 +64,33 @@ class VerificationGoalRegistryTests {
     }
 
     @Test
+    void testCommandsOfToolchainComeFirst() {
+        VerificationGoalRegistry registry = VerificationGoalRegistry.getInstance();
+        VerificationGoal goal = createGoal("test.toolchain");
+        registry.registerGoal(goal, List.of(BetterIndividualCommand.class, BetterCombinedCommand.class),
+                BetterCombinedCommand.class, 10, "Other");
+
+        registry.registerGoal(goal, List.of(IndividualCommand.class, CombinedCommand.class),
+                CombinedCommand.class, 20, "Default");
+
+        Assertions.assertEquals(List.of(BetterCombinedCommand.class, BetterIndividualCommand.class,
+                CombinedCommand.class, IndividualCommand.class),
+                registry.getCommandsInPreferenceOrder(goal, "Other"));
+
+        Assertions.assertEquals(registry.getCommandsInPreferenceOrder(goal),
+                registry.getCommandsInPreferenceOrder(goal, "Default"));
+
+        // Unknown toolchain falls back to the order of priorities
+        Assertions.assertEquals(registry.getCommandsInPreferenceOrder(goal),
+                registry.getCommandsInPreferenceOrder(goal, "Unknown"));
+
+        Assertions.assertEquals(registry.getCommandsInPreferenceOrder(goal),
+                registry.getCommandsInPreferenceOrder(goal, null));
+
+        Assertions.assertTrue(registry.getToolchains().containsAll(List.of("Other", "Default")));
+    }
+
+    @Test
     void testPreferredCommandMustPerformGoal() {
         VerificationGoalRegistry registry = VerificationGoalRegistry.getInstance();
         VerificationGoal goal = createGoal("test.foreign-preference");
