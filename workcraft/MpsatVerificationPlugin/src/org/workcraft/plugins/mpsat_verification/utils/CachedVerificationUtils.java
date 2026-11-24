@@ -16,7 +16,7 @@ import java.util.List;
 
 public final class CachedVerificationUtils {
 
-    private static final String TOOL_NAME = "MPSat";
+    public static final String TOOL_NAME = "MPSat";
 
     private CachedVerificationUtils() {
     }

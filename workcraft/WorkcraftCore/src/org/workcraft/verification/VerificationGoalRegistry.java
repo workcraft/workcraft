@@ -27,6 +27,8 @@ public class VerificationGoalRegistry {
     private final Map<Class<? extends Command>, List<VerificationGoal>> commandGoals = new LinkedHashMap<>();
     private final Map<String, PreferredCommand> preferredCommands = new LinkedHashMap<>();
     private final Map<String, Map<Class<? extends Command>, Integer>> commandPriorities = new LinkedHashMap<>();
+    private final Map<String, Map<String, Class<? extends Command>>> toolchainPreferredCommands = new LinkedHashMap<>();
+    private final Map<Class<? extends Command>, String> commandToolchains = new LinkedHashMap<>();
 
     private record PreferredCommand(Class<? extends Command> command, int priority) {
     }
@@ -76,6 +78,19 @@ public class VerificationGoalRegistry {
         if ((known == null) || (known.priority() < priority)) {
             preferredCommands.put(goal.getId(), new PreferredCommand(preferredCommand, priority));
         }
+    }
+
+    /**
+     * The same as above, but the commands are also attributed to the toolchain, so a user can prefer it to the
+     * toolchain of the highest priority. The preferred command is then the one that is used for the toolchain.
+     */
+    public synchronized void registerGoal(VerificationGoal goal, List<Class<? extends Command>> commands,
+            Class<? extends Command> preferredCommand, int priority, String toolchain) {
+
+        registerGoal(goal, commands, preferredCommand, priority);
+        commands.forEach(command -> commandToolchains.put(command, toolchain));
+        toolchainPreferredCommands.computeIfAbsent(goal.getId(), id -> new LinkedHashMap<>())
+                .putIfAbsent(toolchain, preferredCommand);
     }
 
     public void registerGoal(VerificationGoal goal, List<Class<? extends Command>> commands,
@@ -141,6 +156,40 @@ public class VerificationGoalRegistry {
         return new ArrayList<>(result);
     }
 
+    /**
+     * The same as above, but the commands of the toolchain go first, starting with the one that is preferred for
+     * the toolchain. The other commands follow, so the goal is achieved even if the toolchain cannot do it.
+     */
+    public synchronized List<Class<? extends Command>> getCommandsInPreferenceOrder(VerificationGoal goal,
+            String toolchain) {
+
+        List<Class<? extends Command>> commands = getCommandsInPreferenceOrder(goal);
+        if (toolchain == null) {
+            return commands;
+        }
+        Set<Class<? extends Command>> result = new LinkedHashSet<>();
+        Class<? extends Command> preferred = toolchainPreferredCommands.getOrDefault(goal.getId(), Map.of())
+                .get(toolchain);
+
+        if (preferred != null) {
+            result.add(preferred);
+        }
+        for (Class<? extends Command> command : commands) {
+            if (toolchain.equals(commandToolchains.get(command))) {
+                result.add(command);
+            }
+        }
+        result.addAll(commands);
+        return new ArrayList<>(result);
+    }
+
+    /**
+     * Toolchains that the commands are attributed to, in the order of registration.
+     */
+    public synchronized Set<String> getToolchains() {
+        return new LinkedHashSet<>(commandToolchains.values());
+    }
+
     public synchronized List<Class<? extends Command>> getCommands(VerificationGoal goal) {
         Set<Class<? extends Command>> result = goalCommands.get(goal.getId());
         return result == null ? Collections.emptyList() : new ArrayList<>(result);
@@ -152,6 +201,8 @@ public class VerificationGoalRegistry {
         commandGoals.clear();
         preferredCommands.clear();
         commandPriorities.clear();
+        toolchainPreferredCommands.clear();
+        commandToolchains.clear();
     }
 
 }
