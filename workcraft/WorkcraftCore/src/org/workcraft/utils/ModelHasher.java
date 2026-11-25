@@ -45,6 +45,7 @@ public final class ModelHasher {
     private static final String NODE_ELEMENT = "node";
     private static final String CLASS_ATTRIBUTE = "class";
     private static final String PATH_ATTRIBUTE = "path";
+    private static final String ENUM_CLASS_ATTRIBUTE = "enum-class";
     private static final String COMMENT_CLASS_NAME = CommentNode.class.getName();
 
     private ModelHasher() {
@@ -72,9 +73,9 @@ public final class ModelHasher {
 
     /**
      * Remove from the serialised math model the data that does not affect verification results: the title, the
-     * paths of file references and the comment nodes. The files that a result depends on are covered by the
-     * dependencies of the verification goal (hashed by content), and the paths are location-specific, as they
-     * are absolute for a loaded model.
+     * paths of file references, the redundant enum classes and the comment nodes. The files that a result depends
+     * on are covered by the dependencies of the verification goal (hashed by content), and the paths are
+     * location-specific, as they are absolute for a loaded model.
      */
     private static byte[] excludeNonSemantics(byte[] bytes) throws IOException, SAXException {
         Document document = XmlUtils.loadDocument(new ByteArrayInputStream(bytes));
@@ -95,8 +96,12 @@ public final class ModelHasher {
             String className = element.getAttribute(CLASS_ATTRIBUTE);
             if (NODE_ELEMENT.equals(element.getTagName()) && COMMENT_CLASS_NAME.equals(className)) {
                 commentElements.add(element);
-            } else if (PROPERTY_ELEMENT.equals(element.getTagName()) && isFileReferenceClass(className)) {
-                removePathAttributes(element);
+            } else if (PROPERTY_ELEMENT.equals(element.getTagName())) {
+                // Redundant with the property class, and to be dropped from serialisation in a future release
+                element.removeAttribute(ENUM_CLASS_ATTRIBUTE);
+                if (isFileReferenceClass(className)) {
+                    removePathAttributes(element);
+                }
             }
         }
         for (Element commentElement : commentElements) {
