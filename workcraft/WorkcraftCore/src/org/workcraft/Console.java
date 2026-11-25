@@ -18,6 +18,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,12 +77,15 @@ public class Console {
         if (!options.hasNoConfigLoadFlag()) {
             framework.loadMainConfig(configFile);
         }
+        List<File> configAdditionFiles = new ArrayList<>();
         for (String configAddition : options.getConfigAdditions()) {
             File configAdditionFile = framework.getFileByAbsoluteOrRelativePath(configAddition);
             if (configAdditionFile != null) {
                 framework.loadAdditionalConfig(configAdditionFile);
+                configAdditionFiles.add(configAdditionFile);
             }
         }
+        framework.setConfigFiles(configFile, configAdditionFiles);
         framework.applyConfig();
         // Config needs to be saved on exit
         if (!options.hasNoConfigSaveFlag()) {
