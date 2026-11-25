@@ -236,6 +236,7 @@ public final class Framework {
     public void applyConfig() {
         pluginManager.loadSettings(config);
         loadRecentFilesFromConfig();
+        workspace.trimHistories();
     }
 
     public void saveConfig(File file) {
@@ -255,6 +256,7 @@ public final class Framework {
         config.set(key, value);
         if (reloadPluginSettings) {
             pluginManager.loadSettings(config);
+            workspace.trimHistories();
         }
     }
 

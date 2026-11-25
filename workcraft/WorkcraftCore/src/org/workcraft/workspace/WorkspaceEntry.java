@@ -10,6 +10,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
+import org.workcraft.gui.tools.GraphEditor;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.observation.*;
 import org.workcraft.plugins.builtin.settings.EditorCommonSettings;
@@ -32,7 +33,7 @@ public class WorkspaceEntry implements ObservableState {
     private boolean canModify = true;
     private boolean canCopy = true;
 
-    private final MementoManager history = new MementoManager();
+    private final MementoManager history = new MementoManager(WorkspaceEntry::getUndoDepth);
     private Resource capturedMemento = null;
     private Resource savedMemento = null;
 
@@ -255,6 +256,12 @@ public class WorkspaceEntry implements ObservableState {
     public void saveMemento() {
         Resource currentMemento = capturedMemento;
         capturedMemento = null;
+        if ((currentMemento == null) && (getUndoDepth() == 0)) {
+            // Without undo history the snapshot would be dropped at once, and it is costly for large models
+            history.clearRedo();
+            updateActionState();
+            return;
+        }
         if (currentMemento == null) {
             currentMemento = WorkUtils.mementoModel(modelEntry);
         }
@@ -264,6 +271,24 @@ public class WorkspaceEntry implements ObservableState {
         history.pushUndo(currentMemento);
         history.clearRedo();
         updateActionState();
+    }
+
+    /**
+     * Depth of undo/redo history in use. Undo is only available in the GUI, so without it no history is kept; the
+     * setting itself is left unchanged, as it is saved into the config file.
+     */
+    private static int getUndoDepth() {
+        return Framework.getInstance().isInGuiMode() ? EditorCommonSettings.getUndoDepth() : 0;
+    }
+
+    public void trimHistory() {
+        history.trim(getUndoDepth());
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        GraphEditor editor = (mainWindow == null) ? null : mainWindow.getCurrentEditor();
+        // Undo and redo actions show the state of the current work only
+        if ((editor != null) && (editor.getWorkspaceEntry() == this)) {
+            updateActionState();
+        }
     }
 
     public void undo() {

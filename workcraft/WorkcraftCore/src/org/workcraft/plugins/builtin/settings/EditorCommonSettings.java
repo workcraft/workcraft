@@ -29,6 +29,18 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         PREDEFINED_SCREEN_DPI.put(282.4, "15.6\" 3840 x 2160");
     }
 
+    private static final Map<Integer, String> PREDEFINED_UNDO_DEPTHS = new LinkedHashMap<>();
+    private static final int MAX_UNDO_DEPTH = 9999;
+    private static final int MAX_RECENT_COUNT = 99;
+    private static final int MAX_LARGE_MODEL_SIZE = 9999;
+
+    static {
+        PREDEFINED_UNDO_DEPTHS.put(0, "none");
+        PREDEFINED_UNDO_DEPTHS.put(9, "small");
+        PREDEFINED_UNDO_DEPTHS.put(99, "medium");
+        PREDEFINED_UNDO_DEPTHS.put(999, "large");
+    }
+
     public enum TitleStyle {
         MINIMAL("minimal: Title"),
         SHORT("short: Title [MN]"),
@@ -111,7 +123,9 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static final String keyTitleStyle = prefix + ".titleStyle";
     private static final String keyTabStyle = prefix + ".tabStyle";
     private static final String keyDialogStyle = prefix + ".dialogStyle";
+    // Editing
     private static final String keyRecentCount = prefix + ".recentCount";
+    private static final String keyUndoDepth = prefix + ".undoDepth";
     // Canvas
     private static final String keyRedrawInterval = prefix + ".redrawInterval";
     private static final String keyBackgroundColor = prefix + ".backgroundColor";
@@ -143,7 +157,9 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final TabStyle defaultTabStyle = TabStyle.SCROLL;
     private static final DialogStyle defaultDialogStyle = DialogStyle.CROSS_PLATFORM;
+    // Editing
     private static final int defaultRecentCount = 10;
+    private static final int defaultUndoDepth = 99;
     // Canvas
     private static final int defaultRedrawInterval = 20;
     private static final Color defaultBackgroundColor = Color.WHITE;
@@ -175,7 +191,9 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     private static TitleStyle titleStyle = defaultTitleStyle;
     private static TabStyle tabStyle = defaultTabStyle;
     private static DialogStyle dialogStyle = defaultDialogStyle;
+    // Editing
     private static int recentCount = defaultRecentCount;
+    private static int undoDepth = defaultUndoDepth;
     // Canvas
     private static int redrawInterval = defaultRedrawInterval;
     private static Color backgroundColor = defaultBackgroundColor;
@@ -216,11 +234,6 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 EditorCommonSettings::setFontSize,
                 EditorCommonSettings::getFontSize));
 
-        properties.add(new PropertyDeclaration<>(Integer.class,
-                PropertyHelper.indentWithBullet("Number of recent files (0-99)"),
-                EditorCommonSettings::setRecentCount,
-                EditorCommonSettings::getRecentCount));
-
         properties.add(new PropertyDeclaration<>(TitleStyle.class,
                 PropertyHelper.indentWithBullet("Tab title style"),
                 EditorCommonSettings::setTitleStyle,
@@ -235,6 +248,23 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 PropertyHelper.indentWithBullet("Dialog style"),
                 EditorCommonSettings::setDialogStyle,
                 EditorCommonSettings::getDialogStyle));
+
+        properties.add(PropertyHelper.createSeparatorProperty("Editing"));
+
+        properties.add(new PropertyDeclaration<>(Integer.class,
+                PropertyHelper.indentWithBullet("Number of recent files (0-" + MAX_RECENT_COUNT + ")"),
+                EditorCommonSettings::setRecentCount,
+                EditorCommonSettings::getRecentCount));
+
+        properties.add(new PropertyDeclaration<>(Integer.class,
+                PropertyHelper.indentWithBullet("Number of undo/redo steps (0-" + MAX_UNDO_DEPTH + ")"),
+                EditorCommonSettings::setUndoDepth,
+                EditorCommonSettings::getUndoDepth) {
+            @Override
+            public Map<Integer, String> getChoice() {
+                return PREDEFINED_UNDO_DEPTHS;
+            }
+        });
 
         properties.add(PropertyHelper.createSeparatorProperty("Canvas"));
 
@@ -310,7 +340,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 EditorCommonSettings::getOpenNonvisual));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
-                PropertyHelper.indentWithBullet("Model size for layout warning (0-9999 elements)"),
+                PropertyHelper.indentWithBullet("Model size for layout warning (0-" + MAX_LARGE_MODEL_SIZE + " elements)"),
                 EditorCommonSettings::setLargeModelSize,
                 EditorCommonSettings::getLargeModelSize));
 
@@ -340,7 +370,9 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
         setTabStyle(config.getEnum(keyTabStyle, TabStyle.class, defaultTabStyle));
         setDialogStyle(config.getEnum(keyDialogStyle, DialogStyle.class, defaultDialogStyle));
+        // Editing
         setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
+        setUndoDepth(config.getInt(keyUndoDepth, defaultUndoDepth));
         // Canvas
         setRedrawInterval(config.getInt(keyRedrawInterval, defaultRedrawInterval));
         setBackgroundColor(config.getColor(keyBackgroundColor, defaultBackgroundColor));
@@ -372,7 +404,9 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         config.setEnum(keyTitleStyle, getTitleStyle());
         config.setEnum(keyTabStyle, getTabStyle());
         config.setEnum(keyDialogStyle, getDialogStyle());
+        // Editing
         config.setInt(keyRecentCount, getRecentCount());
+        config.setInt(keyUndoDepth, getUndoDepth());
         // Canvas
         config.setInt(keyRedrawInterval, getRedrawInterval());
         config.setColor(keyBackgroundColor, getBackgroundColor());
@@ -449,10 +483,25 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         if (value < 0) {
             value = 0;
         }
-        if (value > 99) {
-            value = 99;
+        if (value > MAX_RECENT_COUNT) {
+            value = MAX_RECENT_COUNT;
         }
         recentCount = value;
+    }
+
+    public static int getUndoDepth() {
+        return undoDepth;
+    }
+
+    public static void setUndoDepth(int value) {
+        if (value < 0) {
+            value = 0;
+        }
+        if (value > MAX_UNDO_DEPTH) {
+            value = MAX_UNDO_DEPTH;
+        }
+        // Open works are trimmed once the change is confirmed (see Workspace.trimHistories)
+        undoDepth = value;
     }
 
     public static void setRedrawInterval(int value) {
@@ -567,8 +616,8 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         if (value < 0) {
             value = 0;
         }
-        if (value > 9999) {
-            value = 9999;
+        if (value > MAX_LARGE_MODEL_SIZE) {
+            value = MAX_LARGE_MODEL_SIZE;
         }
         largeModelSize = value;
     }

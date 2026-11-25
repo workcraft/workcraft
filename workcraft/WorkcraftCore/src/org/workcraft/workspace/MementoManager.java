@@ -2,13 +2,32 @@ package org.workcraft.workspace;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.function.IntSupplier;
 
 public class MementoManager {
     private final Deque<Resource> undoStack = new ArrayDeque<>();
     private final Deque<Resource> redoStack = new ArrayDeque<>();
+    private final IntSupplier maxDepthSupplier;
+
+    public MementoManager(IntSupplier maxDepthSupplier) {
+        this.maxDepthSupplier = maxDepthSupplier;
+    }
 
     public void pushUndo(Resource memento) {
         this.undoStack.push(memento);
+        trim(maxDepthSupplier.getAsInt());
+    }
+
+    /**
+     * Drop the steps that do not fit the depth: the oldest undo steps first, then the furthest redo steps.
+     */
+    public void trim(int maxDepth) {
+        while (undoStack.size() > maxDepth) {
+            undoStack.removeLast();
+        }
+        while (undoStack.size() + redoStack.size() > maxDepth) {
+            redoStack.removeLast();
+        }
     }
 
     public Resource pullUndo() {
