@@ -284,6 +284,9 @@ public final class Framework {
      * Set a config variable. If requested, reload plugin settings.
      */
     public void setConfigVar(String key, String value, boolean reloadPluginSettings) {
+        // Flush settings changed since the last load (e.g. in the settings dialog), so reloading does not revert them;
+        // must precede setting the key, as flushing would overwrite it with the old value
+        pluginManager.saveSettings(config);
         config.set(key, value);
         if (reloadPluginSettings) {
             pluginManager.loadSettings(config);

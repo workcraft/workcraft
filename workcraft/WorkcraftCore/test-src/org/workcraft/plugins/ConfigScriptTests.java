@@ -50,4 +50,14 @@ class ConfigScriptTests {
         Assertions.assertEquals(1234, EditorCommonSettings.getFlashInterval());
     }
 
+    @Test
+    void testSetConfigVarKeepsOtherSettings() {
+        final Framework framework = Framework.getInstance();
+        // Changed directly, as the settings dialog does
+        EditorCommonSettings.setRecentCount(5);
+        framework.execJavaScript("setConfigVar('CommonEditorSettings.flashInterval', '777');");
+        Assertions.assertEquals(777, EditorCommonSettings.getFlashInterval());
+        Assertions.assertEquals(5, EditorCommonSettings.getRecentCount());
+    }
+
 }
