@@ -155,7 +155,11 @@ public class PropertyEditorTable extends JTable {
 
             propertyTable.previousFocusOwner = null;
         }
-        editor.stopCellEditing();
+        // Edit cannot stay open once the focus has left (the property panel postpones refresh until it is
+        // finished), so invalid text is dropped and the value from before the edit is kept
+        if (!editor.stopCellEditing()) {
+            editor.cancelCellEditing();
+        }
     }
 
     /**

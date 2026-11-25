@@ -1,9 +1,12 @@
 package org.workcraft.gui.properties;
 
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.controls.FlatComboBox;
 import org.workcraft.gui.controls.FlatTextField;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
@@ -12,6 +15,8 @@ import java.awt.event.ItemEvent;
 import java.util.Map;
 
 public class BasicCellEditor extends AbstractCellEditor implements TableCellEditor {
+
+    private static final Color INVALID_TEXT_COLOR = Color.RED;
 
     static class ChoiceWrapper {
         public Object object;
@@ -33,6 +38,13 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
 
     private final JComponent component;
 
+    // Text field where the value is typed (the component itself or the editor of the combo box)
+    private final JTextField textField;
+
+    // Property class that checks the typed text (its conversion throws ArgumentException if the text is not a valid
+    // value), or null to accept any text
+    private final AbstractBasicProperty<?> property;
+
     // Table this editor was last activated in
     private JTable table = null;
 
@@ -42,13 +54,24 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
     // Typed text is being applied as part of stopping the edit, so it must not stop the edit again
     private boolean committing = false;
 
+    // Text is marked as invalid
+    private boolean invalid = false;
+
+    // Stopping the edit was refused because of invalid text, so from now on the typed text must be a complete value
+    private boolean refused = false;
+
+    private Color validTextColor = null;
+
     public BasicCellEditor() {
-        this(null);
+        this(null, null);
     }
 
-    public BasicCellEditor(Map<?, String> predefinedValues) {
+    public BasicCellEditor(Map<?, String> predefinedValues, AbstractBasicProperty<?> property) {
+        this.property = property;
         if (predefinedValues == null) {
-            component = new FlatTextField();
+            FlatTextField flatTextField = new FlatTextField();
+            component = flatTextField;
+            textField = flatTextField;
             component.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusLost(FocusEvent e) {
@@ -59,6 +82,7 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
             component = new FlatComboBox();
             FlatComboBox comboBox = (FlatComboBox) component;
             comboBox.setEditable(true);
+            textField = (JTextField) comboBox.getEditor().getEditorComponent();
             // Selected item is the text of the cell value, while the list items are wrappers of the choices
             comboBox.setCurrentItemMatcher((item, selected) ->
                     (item instanceof ChoiceWrapper wrapper) && (wrapper.object != null)
@@ -66,7 +90,7 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
             // Arrow keys move the highlight in the list without changing the selected item (as in DefaultCellEditor)
             comboBox.putClientProperty("JComboBox.isTableCellEditor", Boolean.TRUE);
             // Focus can leave the editor text field while the drop-down list is open (e.g. click on canvas)
-            comboBox.getEditor().getEditorComponent().addFocusListener(new FocusAdapter() {
+            textField.addFocusListener(new FocusAdapter() {
                 @Override
                 public void focusLost(FocusEvent e) {
                     PropertyEditorTable.stopEditingOnFocusLost(table, BasicCellEditor.this, e);
@@ -90,6 +114,21 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
             });
         }
         component.setFocusable(true);
+        textField.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                recheck();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                recheck();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+            }
+        });
     }
 
     @Override
@@ -103,13 +142,63 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
                 committing = false;
             }
         }
+        // Value is only read for checking if there is a property class (subclasses may convert it with side effects)
+        String error = (property == null) ? null : getError(getCellEditorValue());
+        if (error != null) {
+            // Keep the edit open with the typed text, so that it can be corrected
+            refused = true;
+            setInvalid(true, error);
+            return false;
+        }
+        setInvalid(false, null);
         return super.stopCellEditing();
     }
 
     @Override
+    public void cancelCellEditing() {
+        refused = false;
+        setInvalid(false, null);
+        super.cancelCellEditing();
+    }
+
+    private String getError(Object value) {
+        if (value instanceof String text) {
+            try {
+                property.fromCellEditorValue(text);
+            } catch (ArgumentException e) {
+                return e.getMessage();
+            }
+        }
+        return null;
+    }
+
+    private void recheck() {
+        if (property != null) {
+            String text = textField.getText();
+            // While typing, only text that cannot be completed to a valid value is marked (e.g. "-" is not)
+            String error = (refused || !property.isValidBeginning(text)) ? getError(text) : null;
+            setInvalid(error != null, error);
+        }
+    }
+
+    private void setInvalid(boolean value, String error) {
+        if (value && !invalid) {
+            validTextColor = textField.getForeground();
+        }
+        if (value) {
+            textField.setForeground(INVALID_TEXT_COLOR);
+            textField.setToolTipText(error);
+        } else if (invalid) {
+            textField.setForeground(validTextColor);
+            textField.setToolTipText(null);
+        }
+        invalid = value;
+    }
+
+    @Override
     public Object getCellEditorValue() {
-        if (component instanceof FlatTextField textField) {
-            return textField.getText();
+        if (component instanceof FlatTextField flatTextField) {
+            return flatTextField.getText();
         }
         if (component instanceof FlatComboBox comboBox) {
             Object item = comboBox.getSelectedItem();
@@ -125,9 +214,10 @@ public class BasicCellEditor extends AbstractCellEditor implements TableCellEdit
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         this.table = table;
-
-        if ((component instanceof FlatTextField textField) && (value instanceof String stringValue)) {
-            textField.setText(stringValue);
+        refused = false;
+        setInvalid(false, null);
+        if ((component instanceof FlatTextField flatTextField) && (value instanceof String stringValue)) {
+            flatTextField.setText(stringValue);
         }
         if (component instanceof FlatComboBox comboBox) {
             initialising = true;
