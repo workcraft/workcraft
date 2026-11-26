@@ -104,8 +104,10 @@ public class MutexUtils {
                     if (stg.getPreset(predTransition).contains(predPlace)) {
                         continue;
                     }
-                    // Determine syntactic trigger transition and its signal
-                    SignalTransition requestTransition = (SignalTransition) predTransition;
+                    // Determine syntactic trigger transition and its signal (a dummy cannot be a request)
+                    if (!(predTransition instanceof SignalTransition requestTransition)) {
+                        return null;
+                    }
                     Signal requestSignal = new Signal(stg.getSignalReference(requestTransition),
                             requestTransition.getSignalType());
 

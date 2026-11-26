@@ -1175,7 +1175,9 @@ public class MainWindow extends JFrame {
             EditorPanelDockable editorPanelDockable = weDockableMap.get(we);
             ContentPanel contentPanel = (editorPanelDockable == null) ? null : editorPanelDockable.getComponent();
             if ((contentPanel != null) && (contentPanel.getContent() == currentEditor)) {
+                // Closing removes the entry from the map, so stop iterating over it
                 closeEditorPanelDockable(editorPanelDockable, true);
+                break;
             }
         }
     }

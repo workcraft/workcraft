@@ -70,7 +70,7 @@ public final class SplitTransitionTransformationCommand extends AbstractSplitTra
                 return result;
             }
             if (component instanceof VisualSignalTransition signalTransition) {
-                VisualSignalTransition result = stg.createVisualSignalTransition(stg.getSignalReference(signalTransition),
+                VisualSignalTransition result = stg.createVisualSignalTransition(signalTransition.getSignalName(),
                         signalTransition.getSignalType(), signalTransition.getDirection(),
                         Hierarchy.getNearestContainer(component));
 

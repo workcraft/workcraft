@@ -28,7 +28,7 @@ public class StgPropertyHelper {
 
     public static PropertyDescriptor<?> getSignalTypeProperty(Stg stg, SignalTransition signalTransition) {
         return new PropertyDeclaration<>(Signal.Type.class, SignalTransition.PROPERTY_SIGNAL_TYPE,
-                value -> stg.setSignalType(signalTransition.getSignalName(), value),
+                value -> stg.setSignalType(stg.getSignalReference(signalTransition), value),
                 signalTransition::getSignalType)
                 .setCombinable();
     }

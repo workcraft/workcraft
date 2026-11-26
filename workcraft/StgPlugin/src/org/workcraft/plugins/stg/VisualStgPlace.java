@@ -73,6 +73,7 @@ public class VisualStgPlace extends VisualPlace {
         super.copyStyle(src);
         if (src instanceof VisualStgPlace srcPlace) {
             getReferencedComponent().setMutex(srcPlace.getReferencedComponent().isMutex());
+            getReferencedComponent().setMutexProtocol(srcPlace.getReferencedComponent().getMutexProtocol());
         }
     }
 
