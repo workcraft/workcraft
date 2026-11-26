@@ -78,6 +78,9 @@ public final class Framework {
     private File workingDirectory = null;
     private File importContextDirectory = null;
     private File lastDirectory = null;
+    // Config files given at startup, so that saving and reloading from scripts use the same files
+    private File mainConfigFile = null;
+    private final List<File> additionalConfigFiles = new ArrayList<>();
     private boolean shutdownRequested = false;
 
     static class ExecuteScriptAction implements ContextAction<Object> {
@@ -236,6 +239,35 @@ public final class Framework {
     public void applyConfig() {
         pluginManager.loadSettings(config);
         loadRecentFilesFromConfig();
+        workspace.trimHistories();
+    }
+
+    /**
+     * Set the main config file (null for the default one) and additional config files, which are used by
+     * {@link #loadConfig()} and {@link #saveConfig()}.
+     */
+    public void setConfigFiles(File mainFile, List<File> additionalFiles) {
+        mainConfigFile = mainFile;
+        additionalConfigFiles.clear();
+        additionalConfigFiles.addAll(additionalFiles);
+    }
+
+    /**
+     * Reload the main and additional config files, and apply them to the settings.
+     */
+    public void loadConfig() {
+        loadMainConfig(mainConfigFile);
+        for (File file : additionalConfigFiles) {
+            loadAdditionalConfig(file);
+        }
+        applyConfig();
+    }
+
+    /**
+     * Save the settings into the main config file.
+     */
+    public void saveConfig() {
+        saveConfig(mainConfigFile);
     }
 
     public void saveConfig(File file) {
@@ -252,9 +284,13 @@ public final class Framework {
      * Set a config variable. If requested, reload plugin settings.
      */
     public void setConfigVar(String key, String value, boolean reloadPluginSettings) {
+        // Flush settings changed since the last load (e.g. in the settings dialog), so reloading does not revert them;
+        // must precede setting the key, as flushing would overwrite it with the old value
+        pluginManager.saveSettings(config);
         config.set(key, value);
         if (reloadPluginSettings) {
             pluginManager.loadSettings(config);
+            workspace.trimHistories();
         }
     }
 

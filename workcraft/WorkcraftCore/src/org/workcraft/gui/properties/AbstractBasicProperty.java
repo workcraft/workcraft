@@ -13,7 +13,7 @@ public abstract class AbstractBasicProperty<V> implements PropertyClass<V, Strin
 
     @Override
     public TableCellEditor getCellEditor() {
-        return new BasicCellEditor();
+        return new BasicCellEditor(null, this);
     }
 
     @Override
@@ -23,7 +23,15 @@ public abstract class AbstractBasicProperty<V> implements PropertyClass<V, Strin
 
     @Override
     public TableCellEditor getCellEditor(Map<V, String> predefinedValues) {
-        return new BasicCellEditor(predefinedValues);
+        return new BasicCellEditor(predefinedValues, this);
+    }
+
+    /**
+     * Check whether the text being typed can still be completed to a valid value, so that the editor marks only
+     * the text that cannot (e.g. "-" or "1e" are valid beginnings of a number, while "9o" is not).
+     */
+    public boolean isValidBeginning(String text) {
+        return true;
     }
 
 }

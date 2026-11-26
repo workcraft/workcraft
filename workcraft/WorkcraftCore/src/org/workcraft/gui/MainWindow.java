@@ -1279,6 +1279,7 @@ public class MainWindow extends JFrame {
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         if (dialog.reveal()) {
+            Framework.getInstance().getWorkspace().trimHistories();
             if (currentEditor != null) {
                 menu.setMenuForWorkspaceEntry(currentEditor.getWorkspaceEntry());
             }

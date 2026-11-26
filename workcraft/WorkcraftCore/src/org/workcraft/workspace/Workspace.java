@@ -181,6 +181,16 @@ public class Workspace {
         return new ArrayList<>(openFiles.values());
     }
 
+    /**
+     * Trim undo/redo history of all works to the current depth setting. Not done by the setting itself, as the
+     * settings dialog applies values while they are edited, so cancelling it would not bring back dropped steps.
+     */
+    public void trimHistories() {
+        for (WorkspaceEntry we : getWorks()) {
+            we.trimHistory();
+        }
+    }
+
     public void addListener(WorkspaceListener l) {
         workspaceListeners.add(l);
     }

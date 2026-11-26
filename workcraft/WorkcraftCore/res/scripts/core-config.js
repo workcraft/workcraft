@@ -17,7 +17,7 @@ function getConfigVar(key) {
 
 
 framework.addJavaScriptHelp("saveConfig", "",
-    "save settings into the default config file");
+    "save settings into the config file Workcraft was started with");
 
 function saveConfig() {
     framework.saveConfig();
@@ -25,7 +25,7 @@ function saveConfig() {
 
 
 framework.addJavaScriptHelp("loadConfig", "",
-    "load settings from the default config file");
+    "reload settings from the config files Workcraft was started with");
 
 function loadConfig() {
     framework.loadConfig();
