@@ -812,6 +812,29 @@ public class CircuitSettings extends AbstractModelSettings {
     }
 
     @Override
+    public void apply() {
+        // Offer values confirmed in this session in the drop-downs of the settings dialog
+        addPredefinedValue(PREDEFINED_LIBRARY_PARAMETERS, getGateLibrary());
+        addPredefinedValue(PREDEFINED_WAIT_PARAMETERS, getWaitData());
+        addPredefinedValue(PREDEFINED_WAIT0_PARAMETERS, getWait0Data());
+        addPredefinedValue(PREDEFINED_MUTEX_PARAMETERS, getMutexData());
+        addPredefinedValue(PREDEFINED_MUTEX_LATE_PARAMETERS, getMutexLateData());
+        addPredefinedValue(PREDEFINED_EXPORT_SUBSTITUTION_PARAMETERS, getExportSubstitutionLibrary());
+        addPredefinedValue(PREDEFINED_IMPORT_SUBSTITUTION_PARAMETERS, getImportSubstitutionLibrary());
+        addPredefinedValue(PREDEFINED_TIMESCALE_PARAMETERS, getVerilogTimescale());
+        // Delays share one list, so a delay confirmed in one of them is offered in all
+        addPredefinedValue(PREDEFINED_DELAY_PARAMETERS, getVerilogAssignDelay());
+        addPredefinedValue(PREDEFINED_DELAY_PARAMETERS, getWaitSigIgnoreTime());
+        addPredefinedValue(PREDEFINED_DELAY_PARAMETERS, getMutexEarlyGrantDelay());
+    }
+
+    private static void addPredefinedValue(Map<String, String> predefinedValues, String value) {
+        if ((value != null) && !value.isEmpty()) {
+            predefinedValues.putIfAbsent(value, "");
+        }
+    }
+
+    @Override
     public void save(Config config) {
         config.setDouble(keyContactFontSize, getContactFontSize());
         config.setBoolean(keyShowZeroDelayNames, getShowZeroDelayNames());

@@ -146,6 +146,19 @@ public class MpsatSynthesisSettings extends AbstractToolSettings {
     }
 
     @Override
+    public void apply() {
+        // Offer values confirmed in this session in the drop-downs of the settings dialog
+        addPredefinedValue(COST_FUNCTION_CONFLICT_RESOLUTION, getCostFunctionConflictResolution());
+        addPredefinedValue(COST_FUNCTION_TECHNOLOGY_MAPPING, getCostFunctionTechnologyMapping());
+    }
+
+    private static void addPredefinedValue(Map<String, String> predefinedValues, String value) {
+        if ((value != null) && !value.isEmpty()) {
+            predefinedValues.putIfAbsent(value, "");
+        }
+    }
+
+    @Override
     public void save(Config config) {
         config.set(keyCommand, getCommand());
         config.setInt(keyThreadCount, getThreadCount());

@@ -30,6 +30,7 @@ import org.workcraft.gui.dialogs.CreateWorkDialog;
 import org.workcraft.gui.editor.GraphEditorPanel;
 import org.workcraft.gui.layouts.MultiBorderLayout;
 import org.workcraft.gui.panels.*;
+import org.workcraft.gui.properties.Settings;
 import org.workcraft.gui.properties.SettingsEditorDialog;
 import org.workcraft.gui.tabs.*;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
@@ -1279,7 +1280,11 @@ public class MainWindow extends JFrame {
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         if (dialog.reveal()) {
-            Framework.getInstance().getWorkspace().trimHistories();
+            Framework framework = Framework.getInstance();
+            for (Settings settings : framework.getPluginManager().getSortedSettings()) {
+                settings.apply();
+            }
+            framework.getWorkspace().trimHistories();
             if (currentEditor != null) {
                 menu.setMenuForWorkspaceEntry(currentEditor.getWorkspaceEntry());
             }
