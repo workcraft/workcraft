@@ -254,6 +254,7 @@ public class PluginManager implements PluginProvider {
     public void loadSettings(Config config) {
         for (Settings settings : getSettings()) {
             settings.load(config);
+            settings.apply();
         }
     }
 
