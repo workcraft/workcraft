@@ -117,19 +117,18 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     /*
      * Keys
      */
-    // GUI
+    // Appearance
     private static final String keyScreenDpi = prefix + ".screenDpi";
     private static final String keyFontSize = prefix + ".fontSize";
     private static final String keyTitleStyle = prefix + ".titleStyle";
     private static final String keyTabStyle = prefix + ".tabStyle";
     private static final String keyDialogStyle = prefix + ".dialogStyle";
-    // Editing
+    // History
     private static final String keyRecentCount = prefix + ".recentCount";
     private static final String keyUndoDepth = prefix + ".undoDepth";
     // Canvas
     private static final String keyRedrawInterval = prefix + ".redrawInterval";
     private static final String keyBackgroundColor = prefix + ".backgroundColor";
-    private static final String keyPngBackgroundColor = prefix + ".pngBackgroundColor";
     // Grid
     private static final String keyGridVisibility = prefix + ".gridVisibility";
     private static final String keyLightGrid = prefix + ".lightGrid";
@@ -147,23 +146,23 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     // Export
     private static final String keyFlatnameSeparator = prefix + ".flatnameSeparator";
     private static final String keyExportHeaderStyle = prefix + ".exportHeaderStyle";
+    private static final String keyPngBackgroundColor = prefix + ".pngBackgroundColor";
 
     /*
      * Defaults
      */
-    // GUI
+    // Appearance
     private static final double defaultScreenDpi = DEFAULT_SCREEN_DPI;
     private static final double defaultFontSize = 10.0;
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final TabStyle defaultTabStyle = TabStyle.SCROLL;
     private static final DialogStyle defaultDialogStyle = DialogStyle.CROSS_PLATFORM;
-    // Editing
+    // History
     private static final int defaultRecentCount = 10;
     private static final int defaultUndoDepth = 99;
     // Canvas
     private static final int defaultRedrawInterval = 20;
     private static final Color defaultBackgroundColor = Color.WHITE;
-    private static final Color defaultPngBackgroundColor = new Color(0, 0, 0, 0);
     // Grid
     private static final boolean defaultGridVisibility = true;
     private static final boolean defaultLightGrid = true;
@@ -181,23 +180,23 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     // Export
     private static final String defaultFlatnameSeparator = "_";
     private static final ExportHeaderStyle defaultExportHeaderStyle = ExportHeaderStyle.DETAILED;
+    private static final Color defaultPngBackgroundColor = new Color(0, 0, 0, 0);
 
     /*
      * Variables
      */
-    // GUI
+    // Appearance
     private static double screenDpi = defaultScreenDpi;
     private static double fontSize = defaultFontSize;
     private static TitleStyle titleStyle = defaultTitleStyle;
     private static TabStyle tabStyle = defaultTabStyle;
     private static DialogStyle dialogStyle = defaultDialogStyle;
-    // Editing
+    // History
     private static int recentCount = defaultRecentCount;
     private static int undoDepth = defaultUndoDepth;
     // Canvas
     private static int redrawInterval = defaultRedrawInterval;
     private static Color backgroundColor = defaultBackgroundColor;
-    private static Color usePngBackgroundColor = defaultPngBackgroundColor;
     // Grid
     private static boolean gridVisibility = defaultGridVisibility;
     private static boolean lightGrid = defaultLightGrid;
@@ -215,9 +214,10 @@ public class EditorCommonSettings extends AbstractCommonSettings {
     // Export
     private static String flatnameSeparator = defaultFlatnameSeparator;
     private static ExportHeaderStyle exportHeaderStyle = defaultExportHeaderStyle;
+    private static Color usePngBackgroundColor = defaultPngBackgroundColor;
 
     static {
-        properties.add(PropertyHelper.createSeparatorProperty("GUI decoration"));
+        properties.add(PropertyHelper.createSeparatorProperty("Appearance"));
 
         properties.add(new PropertyDeclaration<>(Double.class,
                 PropertyHelper.indentWithBullet("Screen pixel density (DPI) - requires restart"),
@@ -249,7 +249,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 EditorCommonSettings::setDialogStyle,
                 EditorCommonSettings::getDialogStyle));
 
-        properties.add(PropertyHelper.createSeparatorProperty("Editing"));
+        properties.add(PropertyHelper.createSeparatorProperty("History"));
 
         properties.add(new PropertyDeclaration<>(Integer.class,
                 PropertyHelper.indentWithBullet("Number of recent files (0-" + MAX_RECENT_COUNT + ")"),
@@ -277,11 +277,6 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 PropertyHelper.indentWithBullet("Background color"),
                 EditorCommonSettings::setBackgroundColor,
                 EditorCommonSettings::getBackgroundColor));
-
-        properties.add(new PropertyDeclaration<>(Color.class,
-                PropertyHelper.indentWithBullet("Background color for PNG export"),
-                EditorCommonSettings::setPngBackgroundColor,
-                EditorCommonSettings::getPngBackgroundColor));
 
         properties.add(PropertyHelper.createSeparatorProperty("Grid and rulers"));
 
@@ -332,7 +327,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 EditorCommonSettings::setFlashInterval,
                 EditorCommonSettings::getFlashInterval));
 
-        properties.add(PropertyHelper.createSeparatorProperty("Model visualisation"));
+        properties.add(PropertyHelper.createSeparatorProperty("Model layout"));
 
         properties.add(new PropertyDeclaration<>(Boolean.class,
                 PropertyHelper.indentWithBullet("Open non-visual models (imported or converted)"),
@@ -344,7 +339,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 EditorCommonSettings::setLargeModelSize,
                 EditorCommonSettings::getLargeModelSize));
 
-        properties.add(PropertyHelper.createSeparatorProperty("Model export"));
+        properties.add(PropertyHelper.createSeparatorProperty("Export"));
 
         properties.add(new PropertyDeclaration<>(String.class,
                 PropertyHelper.indentWithBullet("Separator for converting page references into flat name"),
@@ -355,6 +350,11 @@ public class EditorCommonSettings extends AbstractCommonSettings {
                 PropertyHelper.indentWithBullet("File header style"),
                 EditorCommonSettings::setExportHeaderStyle,
                 EditorCommonSettings::getExportHeaderStyle));
+
+        properties.add(new PropertyDeclaration<>(Color.class,
+                PropertyHelper.indentWithBullet("PNG background color"),
+                EditorCommonSettings::setPngBackgroundColor,
+                EditorCommonSettings::getPngBackgroundColor));
     }
 
     @Override
@@ -364,19 +364,18 @@ public class EditorCommonSettings extends AbstractCommonSettings {
 
     @Override
     public void load(Config config) {
-        // GUI
+        // Appearance
         setScreenDpi(config.getDouble(keyScreenDpi, defaultScreenDpi));
         setFontSize(config.getDouble(keyFontSize, defaultFontSize));
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
         setTabStyle(config.getEnum(keyTabStyle, TabStyle.class, defaultTabStyle));
         setDialogStyle(config.getEnum(keyDialogStyle, DialogStyle.class, defaultDialogStyle));
-        // Editing
+        // History
         setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
         setUndoDepth(config.getInt(keyUndoDepth, defaultUndoDepth));
         // Canvas
         setRedrawInterval(config.getInt(keyRedrawInterval, defaultRedrawInterval));
         setBackgroundColor(config.getColor(keyBackgroundColor, defaultBackgroundColor));
-        setPngBackgroundColor(config.getColor(keyPngBackgroundColor, defaultPngBackgroundColor));
         // Grid
         setGridVisibility(config.getBoolean(keyGridVisibility, defaultGridVisibility));
         setLightGrid(config.getBoolean(keyLightGrid, defaultLightGrid));
@@ -394,23 +393,23 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         // Export
         setFlatnameSeparator(config.getString(keyFlatnameSeparator, defaultFlatnameSeparator));
         setExportHeaderStyle(config.getEnum(keyExportHeaderStyle, ExportHeaderStyle.class, defaultExportHeaderStyle));
+        setPngBackgroundColor(config.getColor(keyPngBackgroundColor, defaultPngBackgroundColor));
     }
 
     @Override
     public void save(Config config) {
-        // GUI
+        // Appearance
         config.setDouble(keyScreenDpi, getScreenDpi());
         config.setDouble(keyFontSize, getFontSize());
         config.setEnum(keyTitleStyle, getTitleStyle());
         config.setEnum(keyTabStyle, getTabStyle());
         config.setEnum(keyDialogStyle, getDialogStyle());
-        // Editing
+        // History
         config.setInt(keyRecentCount, getRecentCount());
         config.setInt(keyUndoDepth, getUndoDepth());
         // Canvas
         config.setInt(keyRedrawInterval, getRedrawInterval());
         config.setColor(keyBackgroundColor, getBackgroundColor());
-        config.setColor(keyPngBackgroundColor, getPngBackgroundColor());
         // Grid
         config.setBoolean(keyGridVisibility, getGridVisibility());
         config.setBoolean(keyLightGrid, getLightGrid());
@@ -428,6 +427,7 @@ public class EditorCommonSettings extends AbstractCommonSettings {
         // Export
         config.set(keyFlatnameSeparator, getFlatnameSeparator());
         config.setEnum(keyExportHeaderStyle, getExportHeaderStyle());
+        config.setColor(keyPngBackgroundColor, getPngBackgroundColor());
     }
 
     @Override
