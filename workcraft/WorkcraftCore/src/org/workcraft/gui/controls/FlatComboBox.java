@@ -323,7 +323,9 @@ public class FlatComboBox extends JComboBox<Object> {
         }
 
         void commit() {
-            textEditor.postActionEvent();
+            // Handled by the combo box directly, as an action event of the text field also reaches BasicComboBoxUI,
+            // which passes it on as Enter to the window (e.g. the OK binding of a dialog, closing it)
+            FlatComboBox.this.actionPerformed(new ActionEvent(textEditor, ActionEvent.ACTION_PERFORMED, null));
         }
 
         @Override
