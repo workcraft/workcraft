@@ -88,7 +88,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     @Override
     public void transformNode(VisualModel model, VisualNode node) {
         if ((model instanceof VisualStg stg) && (node instanceof VisualSignalTransition transition)) {
-            String ref = stg.getSignalReference(transition);
+            String signalName = transition.getSignalName();
             SignalTransition.Direction direction = transition.getDirection();
             Container container = Hierarchy.getNearestContainer(transition);
             String reqSuffix = SUFFIX_REQ;
@@ -97,8 +97,8 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                 reqSuffix = suffixPair.getFirst();
                 ackSuffix = suffixPair.getSecond();
             }
-            VisualSignalTransition reqTransition = stg.createVisualSignalTransition(ref + reqSuffix, Signal.Type.OUTPUT, direction, container);
-            VisualSignalTransition ackTransition = stg.createVisualSignalTransition(ref + ackSuffix, Signal.Type.INPUT, direction, container);
+            VisualSignalTransition reqTransition = stg.createVisualSignalTransition(signalName + reqSuffix, Signal.Type.OUTPUT, direction, container);
+            VisualSignalTransition ackTransition = stg.createVisualSignalTransition(signalName + ackSuffix, Signal.Type.INPUT, direction, container);
             Pair<Point2D, Point2D> positionPair = getReqAckPositions(stg, transition);
             reqTransition.setRootSpacePosition(positionPair.getFirst());
             ackTransition.setRootSpacePosition(positionPair.getSecond());
