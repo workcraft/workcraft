@@ -78,7 +78,7 @@ public class StgNameManager extends DefaultNameManager {
 
             SignalTransition.Direction oldDirection = st.getDirection();
             st.setDirectionQuiet(direction);
-            boolean isDirectionChanged = (direction == oldDirection);
+            boolean isDirectionChanged = (direction != oldDirection);
             if (isSignalNameChanged || isDirectionChanged) {
                 st.sendNotification(new PropertyChangedEvent(st, Model.PROPERTY_NAME));
             }
